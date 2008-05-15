@@ -209,7 +209,6 @@ public class Util {
                     hValue = null;
                 else if (headerValue instanceof Date)
                     hValue = formatDate((Date) headerValue, false);
-                // LATER temporarily constant not as cookie.
                 else
                     hValue = headerValue.toString();
                 headers.add(new Parameter(headerName, hValue));

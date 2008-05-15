@@ -136,7 +136,7 @@ public class ParameterList {
                 ConvertRepresentationException;
     }
 
-    static class CookieParamInjector extends ParamInjector {
+    static class CookieParamInjector extends NoEncParamInjector {
 
         private final CookieParam cookieParam;
 
@@ -152,11 +152,15 @@ public class ParameterList {
 
         /**
          * Constructor to be used, if only {@link #getParamValue()} is needed.
+         * 
+         * @param annoSaysLeaveEncoded
+         *                to check if the annotation is available.
          */
         CookieParamInjector(CookieParam cookieParam, DefaultValue defaultValue,
                 Class<?> convToCl, Type convToGen,
-                ThreadLocalizedContext tlContext) {
-            super(defaultValue, convToCl, convToGen, tlContext);
+                ThreadLocalizedContext tlContext, boolean annoSaysLeaveEncoded) {
+            super(defaultValue, convToCl, convToGen, tlContext,
+                    annoSaysLeaveEncoded);
             this.cookieParam = cookieParam;
         }
 
@@ -331,8 +335,8 @@ public class ParameterList {
             if (entity == null)
                 return null;
             if (Representation.class.isAssignableFrom(this.convToCl)) {
-                Object repr = createConcreteRepresentationInstance(this.convToCl,
-                        entity, logger);
+                Object repr = createConcreteRepresentationInstance(
+                        this.convToCl, entity, logger);
                 if (repr != null)
                     return repr;
             }
@@ -360,7 +364,7 @@ public class ParameterList {
         }
     }
 
-    static class HeaderParamInjector extends ParamInjector {
+    static class HeaderParamInjector extends NoEncParamInjector {
 
         private final HeaderParam headerParam;
 
@@ -376,11 +380,16 @@ public class ParameterList {
 
         /**
          * Constructor to be used, if only {@link #getParamValue()} is needed.
+         * 
+         * 
+         * @param annoSaysLeaveEncoded
+         *                to check if the annotation is available.
          */
         HeaderParamInjector(HeaderParam headerParam, DefaultValue defaultValue,
                 Class<?> convToCl, Type paramGenericType,
-                ThreadLocalizedContext tlContext) {
-            super(defaultValue, convToCl, paramGenericType, tlContext);
+                ThreadLocalizedContext tlContext, boolean annoSaysLeaveEncoded) {
+            super(defaultValue, convToCl, paramGenericType, tlContext,
+                    annoSaysLeaveEncoded);
             this.headerParam = headerParam;
         }
 
@@ -465,6 +474,59 @@ public class ParameterList {
     }
 
     /**
+     * Abstract super class for access to the entity or to &#64;*Param where
+     * encoded is allowed (&#64;{@link PathParam}, &#64;{@link MatrixParam}
+     * and &#64;{@link QueryParam}).
+     */
+    abstract static class NoEncParamInjector extends ParamInjector {
+
+        /**
+         * Constructor, if you want to use {@link #injectInto(Object)}.
+         */
+        NoEncParamInjector(AccessibleObject fieldOrBeanSetter,
+                ThreadLocalizedContext tlContext) {
+            super(fieldOrBeanSetter, tlContext);
+            checkForEncodedAnno(fieldOrBeanSetter);
+        }
+
+        /**
+         * Constructor to be used, if only {@link #getParamValue()} is needed.
+         * 
+         * @param annoSaysLeaveEncoded
+         *                to check if the annotation is available.
+         */
+        NoEncParamInjector(DefaultValue defaultValue, Class<?> convToCl,
+                Type convToGen, ThreadLocalizedContext tlContext,
+                boolean annoSaysLeaveEncoded) {
+            super(defaultValue, convToCl, convToGen, tlContext);
+            checkForEncodedAnno(annoSaysLeaveEncoded);
+        }
+
+        /**
+         * Checks if the annotation &#64;{@link Encoded} is available on the
+         * given field or bean setter. If yes, if logs a warning.
+         * 
+         * @param fieldOrBeanSetter
+         */
+        void checkForEncodedAnno(AccessibleObject fieldOrBeanSetter) {
+            checkForEncodedAnno(fieldOrBeanSetter
+                    .isAnnotationPresent(Encoded.class));
+        }
+
+        /**
+         * Checks if the annotation &#64;{@link Encoded} is available on the
+         * given field or bean setter. If yes, if logs a warning.
+         * 
+         * @param fieldOrBeanSetter
+         */
+        void checkForEncodedAnno(boolean annoSaysLeaveEncoded) {
+            if (annoSaysLeaveEncoded)
+                localLogger
+                        .warning("You should not use @Encoded on a @HeaderParam or @CookieParam. Will ignore it");
+        }
+    }
+
+    /**
      * Abstract super class for access to &#64;*Param.
      */
     abstract static class ParamInjector extends AbstractInjectObjectGetter
@@ -543,13 +605,13 @@ public class ParameterList {
         }
 
         /**
-         * @see ParameterList.ParamInjector#getParamValue()
+         * @see ParamInjector#getParamValue()
          */
         @Override
         public Object getParamValue() {
             // LATER de/encode: Encoded of field or bean setter
             CallContext callContext = tlContext.get();
-            // LATER Path-Param: List<String> (see PathParamTest.testGet3())
+            // LATER @PathParam(...) List<String> (see PathParamTest.testGet3())
             if (convToCl.equals(PathSegment.class)) {
                 throw new NotYetImplementedException(
                         "Sorry, @PathParam(..) PathSegment is not yet supported. You may use the non default @Context PathSegment to return the last of the available path segments (decoded), or UriInfo.getPathSegments(boolean)");
@@ -592,7 +654,7 @@ public class ParameterList {
         }
 
         /**
-         * @see ParameterList.ParamInjector#getParamValue()
+         * @see ParamInjector#getParamValue()
          */
         @Override
         public Object getParamValue() {
@@ -726,12 +788,14 @@ public class ParameterList {
                 }
                 if (cookieParam != null) {
                     parameters[i] = new CookieParamInjector(cookieParam,
-                            defValue, parameterType, genParamType, tlContext);
+                            defValue, parameterType, genParamType, tlContext,
+                            leaveEncoded);
                     continue;
                 }
                 if (headerParam != null) {
                     parameters[i] = new HeaderParamInjector(headerParam,
-                            defValue, parameterType, genParamType, tlContext);
+                            defValue, parameterType, genParamType, tlContext,
+                            leaveEncoded);
                     continue;
                 }
                 if (matrixParam != null) {
