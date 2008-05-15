@@ -42,6 +42,7 @@ import org.restlet.service.MetadataService;
 import org.restlet.service.TunnelService;
 import org.restlet.util.Engine;
 
+import com.noelios.restlet.http.HttpConstants;
 import com.noelios.restlet.util.PreferenceUtils;
 
 /**
@@ -287,9 +288,32 @@ public class TunnelFilter extends Filter {
 
     /**
      * Updates the client preferences according to the user agent properties
-     * (name, version, etc.). The list of new media type preferences is loaded
-     * from a property file called "accept.proterties" located in the classpath
-     * in the sub directory "org/restlet/service".
+     * (name, version, etc.) taken from the "agent.properties" file located in
+     * the classpath. See {@link ClientInfo#getAgentAttributes()} for more
+     * details.<br>
+     * The list of new media type preferences is loaded from a property file
+     * called "accept.properties" located in the classpath in the sub directory
+     * "org/restlet/service". This property file is composed of blocks of
+     * properties. One "block" of properties starts either with the beginning of
+     * the properties file or with the end of the previous block. One block ends
+     * with the "acceptNew" property which contains the value of the new accept
+     * header. Here is a sample block.
+     * 
+     * <pre>
+     * agentName: firefox
+     * acceptOld: text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,\*\/\*;q=0.5
+     * acceptNew: application/xhtml+xml,text/html,text/xml;q=0.9,application/xml;q=0.9,text/plain;q=0.8,image/png,\*\/\*;q=0.5
+     * </pre>
+     * 
+     * Each declared property is a condition that must be filled in order to
+     * update the client preferences. For example "agentName: firefox" expresses
+     * the fact this block concerns only "firefox" clients.
+     * 
+     * The "acceptOld" property allows to check the value of the current
+     * "Accept" header. If the lattest equals to the value of the "acceptOld"
+     * property then the preferences will be updated. This is useful for Ajax
+     * clients which looks like their browser (same agentName, agentVersion,
+     * etc.) but can provide their own "Accept" header.
      * 
      * @param request
      *                the request to update.
@@ -301,6 +325,12 @@ public class TunnelFilter extends Filter {
             URL userAgentPropertiesUrl = Engine.getClassLoader().getResource(
                     "org/restlet/service/accept.properties");
             if (userAgentPropertiesUrl != null) {
+                // Get the old Accept header value
+                Form headers = (Form) request.getAttributes().get(
+                        HttpConstants.ATTRIBUTE_HEADERS);
+                String acceptOld = headers
+                        .getFirstValue(HttpConstants.HEADER_ACCEPT);
+
                 BufferedReader reader;
                 try {
                     reader = new BufferedReader(new InputStreamReader(
@@ -309,6 +339,8 @@ public class TunnelFilter extends Filter {
 
                     boolean processAcceptHeader = true;
 
+                    // Read the entire file, excluding comment lines starting
+                    // with "#" character.
                     String line = reader.readLine();
                     for (; line != null; line = reader.readLine()) {
                         if (!line.startsWith("#")) {
@@ -316,7 +348,7 @@ public class TunnelFilter extends Filter {
                             if (keyValue.length == 2) {
                                 String key = keyValue[0].trim();
                                 String value = keyValue[1].trim();
-                                if ("accept".equalsIgnoreCase(key)) {
+                                if ("acceptNew".equalsIgnoreCase(key)) {
                                     if (processAcceptHeader) {
                                         ClientInfo clientInfo = new ClientInfo();
                                         PreferenceUtils.parseMediaTypes(value,
@@ -331,11 +363,18 @@ public class TunnelFilter extends Filter {
                                     processAcceptHeader = true;
                                 } else {
                                     if (processAcceptHeader) {
-                                        String attribute = agentAttributes
-                                                .get(key);
-                                        processAcceptHeader = attribute != null
-                                                && attribute
-                                                        .equalsIgnoreCase(value);
+                                        if ("acceptOld".equalsIgnoreCase(key)
+                                                && !(value == null || value
+                                                        .length() == 0)) {
+                                            processAcceptHeader = value
+                                                    .equalsIgnoreCase(acceptOld);
+                                        } else {
+                                            String attribute = agentAttributes
+                                                    .get(key);
+                                            processAcceptHeader = attribute != null
+                                                    && attribute
+                                                            .equalsIgnoreCase(value);
+                                        }
                                     }
                                 }
                             }
