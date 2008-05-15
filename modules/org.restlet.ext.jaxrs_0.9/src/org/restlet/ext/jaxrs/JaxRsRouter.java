@@ -35,10 +35,8 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.Response.ResponseBuilder;
@@ -91,11 +89,9 @@ import org.restlet.ext.jaxrs.internal.wrappers.ResourceObject;
 import org.restlet.ext.jaxrs.internal.wrappers.RootResourceClass;
 import org.restlet.ext.jaxrs.internal.wrappers.SubResourceLocator;
 import org.restlet.ext.jaxrs.internal.wrappers.WrapperFactory;
-import org.restlet.ext.jaxrs.internal.wrappers.WrapperUtil;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.EntityProviders;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.ExceptionMappers;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.ExtensionBackwardMapping;
-import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyReaderSet;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyWriter;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyWriterSubSet;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.Provider;
@@ -784,18 +780,13 @@ public class JaxRsRouter extends Restlet {
      * @param jaxRsResponse
      * @param jaxRsMethod
      *                the method creating the response. May be null.
-     * @see ExceptionHandler#jaxRsRespToRestletResp(javax.ws.rs.core.Response,
-     *      AbstractMethodWrapper)
      */
     void jaxRsRespToRestletResp(javax.ws.rs.core.Response jaxRsResponse,
             AbstractMethodWrapper jaxRsMethod) {
         Response restletResponse = tlContext.get().getResponse();
         restletResponse.setStatus(Status.valueOf(jaxRsResponse.getStatus()));
-        Object mediaTypeStr = jaxRsResponse.getMetadata().getFirst(
-                HttpHeaders.CONTENT_TYPE);
-        MediaType respMediaType = null;
-        if (mediaTypeStr != null)
-            respMediaType = MediaType.valueOf(mediaTypeStr.toString());
+        MultivaluedMap<String, Object> httpHeaders = jaxRsResponse.getMetadata();
+        MediaType respMediaType = Util.getMediaType(httpHeaders);
         Object jaxRsEntity = jaxRsResponse.getEntity();
         SortedMetadata<MediaType> accMediaType;
         if (respMediaType != null)
@@ -803,9 +794,9 @@ public class JaxRsRouter extends Restlet {
         else
             accMediaType = tlContext.get().getAccMediaTypes();
         restletResponse.setEntity(convertToRepresentation(jaxRsEntity,
-                jaxRsMethod, respMediaType, jaxRsResponse.getMetadata(),
+                jaxRsMethod, respMediaType, httpHeaders,
                 accMediaType));
-        Util.copyResponseHeaders(jaxRsResponse.getMetadata(), restletResponse,
+        Util.copyResponseHeaders(httpHeaders, restletResponse,
                 getLogger());
     }
 
@@ -857,8 +848,7 @@ public class JaxRsRouter extends Restlet {
      * @return the corresponding Restlet Representation. Returns
      *         <code>null</code> only if null was given.
      * @throws WebApplicationException
-     * @see WrapperUtil#convertRepresentation(ThreadLocalizedContext, Class,
-     *      Type , Annotation[], MessageBodyReaderSet, Logger)
+     * @see AbstractMethodWrapper.EntityGetter
      */
     @SuppressWarnings("unchecked")
     private Representation convertToRepresentation(Object entity,

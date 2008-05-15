@@ -20,7 +20,6 @@ package org.restlet.ext.jaxrs.internal.provider;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
@@ -53,6 +52,6 @@ public class BufferedReaderProvider implements
             Type genericType, Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
-        return new BufferedReader(new InputStreamReader(entityStream));
+        return new BufferedReader(ReaderProvider.getReader(entityStream));
     }
 }

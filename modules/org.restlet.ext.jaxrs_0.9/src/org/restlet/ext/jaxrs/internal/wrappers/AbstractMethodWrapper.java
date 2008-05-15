@@ -32,12 +32,10 @@ import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnMethodException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
-import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
 import org.restlet.ext.jaxrs.internal.util.PathRegExp;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.EntityProviders;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.ExtensionBackwardMapping;
-import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyReaderSet;
 
 /**
  * An abstract wrapper class for resource methods, sub resource methods and sub
@@ -111,39 +109,6 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
          */
         public Object getValue() {
             return toInject;
-        }
-
-    }
-
-    static class EntityGetter extends ParameterList.AbstractInjectObjectGetter
-            implements ParameterList.InjectObjectGetter {
-
-        private final Annotation[] annotations;
-
-        private final MessageBodyReaderSet mbrs;
-
-        private final Logger logger;
-
-        EntityGetter(Class<?> convToCl, Type convToGen,
-                ThreadLocalizedContext tlContext, MessageBodyReaderSet mbrs,
-                Annotation[] annotations, Logger logger) {
-            super(convToCl, convToGen, tlContext);
-            this.annotations = annotations;
-            this.mbrs = mbrs;
-            this.logger = logger;
-        }
-
-        /**
-         * @throws ConvertRepresentationException
-         * @throws WebApplicationException
-         * @throws NoMessageBodyReaderException
-         * @see IntoRrcInjector.AbstractInjectObjectGetter#getValue()
-         */
-        @Override
-        public Object getValue() throws InvocationTargetException,
-                ConvertRepresentationException {
-            return WrapperUtil.convertRepresentation(this.tlContext,
-                    this.convToCl, this.convToGen, annotations, mbrs, logger);
         }
     }
 

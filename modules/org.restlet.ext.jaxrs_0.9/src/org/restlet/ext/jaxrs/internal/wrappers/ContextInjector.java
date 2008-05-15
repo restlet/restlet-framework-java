@@ -210,7 +210,8 @@ public class ContextInjector {
             logger.config(msg);
             return new GetLastPathSegment(tlContext);
         }
-        // NICE also allow for ClientInfo und Conditions. Proxies needed for fields and bean setters.
+        // NICE also allow for ClientInfo und Conditions. Proxies needed for
+        // fields and bean setters.
         return tlContext;
     }
 

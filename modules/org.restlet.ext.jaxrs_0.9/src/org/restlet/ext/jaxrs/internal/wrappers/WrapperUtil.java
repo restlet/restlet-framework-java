@@ -17,7 +17,6 @@
  */
 package org.restlet.ext.jaxrs.internal.wrappers;
 
-import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -45,7 +44,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.ResponseBuilder;
@@ -55,22 +53,13 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
-import org.restlet.ext.jaxrs.JaxRsRouter;
-import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertParameterException;
-import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.InstantiateException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingConstructorException;
-import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
-import org.restlet.ext.jaxrs.internal.util.Converter;
-import org.restlet.ext.jaxrs.internal.util.SortedMetadata;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.ContextResolverCollection;
-import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyReader;
-import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyReaderSet;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.ReturnNullContextResolver;
-import org.restlet.resource.Representation;
 
 /**
  * Utility methods for the wrappers.
@@ -353,72 +342,7 @@ public class WrapperUtil {
         return coll;
     }
 
-    /**
-     * Converts the Restlet request {@link Representation} to the type requested
-     * by the resource method.
-     * 
-     * @param tlContext
-     *                the call context, containing the entity.
-     * @param paramType
-     *                the type to convert to.
-     * @param genericType
-     *                The generic {@link Type} to convert to.
-     * @param annotations
-     *                the annotations of the artefact to convert to
-     * @param mbrs
-     *                The Set of all available {@link MessageBodyReader}s in
-     *                the {@link JaxRsRouter}.
-     * @param logger
-     *                The logger to use
-     * @return the object converted to the wished type.
-     * @throws NoMessageBodyReaderException
-     * @throws ConvertRepresentationException
-     * @throws InvocationTargetException
-     *                 if the constructor of the {@link Representation} subclass
-     *                 throws an Exception.
-     * @throws WebApplicationException
-     * @see JaxRsRouter#convertToRepresentation(Object, AbstractMethodWrapper,
-     *      MediaType, MultivaluedMap, SortedMetadata)
-     */
-    @SuppressWarnings("unchecked")
-    static Object convertRepresentation(ThreadLocalizedContext tlContext,
-            Class<?> paramType, Type genericType, Annotation[] annotations,
-            MessageBodyReaderSet mbrs, Logger logger)
-            throws NoMessageBodyReaderException, WebApplicationException,
-            ConvertRepresentationException, InvocationTargetException {
-        Request request = tlContext.get().getRequest();
-        Representation entity = request.getEntity();
-        if (entity == null)
-            return null;
-        if (Representation.class.isAssignableFrom(paramType)) {
-            Object repr = createConcreteRepresentationInstance(paramType,
-                    entity, logger);
-            if (repr != null)
-                return repr;
-        }
-        MediaType mediaType = entity.getMediaType();
-        MessageBodyReader<?> mbr = mbrs.getBestReader(paramType, genericType,
-                annotations, mediaType);
-        if (mbr == null)
-            throw new NoMessageBodyReaderException(mediaType, paramType);
-        MultivaluedMap<String, String> httpHeaders = Util
-                .getJaxRsHttpHeaders(request);
-        try {
-            javax.ws.rs.core.MediaType jaxRsMediaType = Converter
-                    .toJaxRsMediaType(mediaType, entity.getCharacterSet());
-            return mbr.readFrom((Class) paramType, genericType, jaxRsMediaType,
-                    annotations, httpHeaders, entity.getStream());
-        } catch (WebApplicationException wae) {
-            throw wae;
-        } catch (IOException e) {
-            throw ConvertRepresentationException.object(paramType,
-                    "the message body", e);
-        } finally {
-            entity.release();
-        }
-    }
-
-    /**
+     /**
      * Converts the given mimes to a List of MediaTypes. Will never returns
      * null.
      * 
@@ -458,51 +382,6 @@ public class WrapperUtil {
             return new ArrayList<A>();
         }
         return null;
-    }
-
-    /**
-     * Creates a concrete instance of the given {@link Representation} subtype.
-     * It must contain a constructor with one parameter of type
-     * {@link Representation}.
-     * 
-     * @param representationType
-     *                the class to instantiate
-     * @param entity
-     *                the Representation to use for the constructor.
-     * @param logger
-     *                the logger to use
-     * @return the created representation, or null, if it could not be
-     *         converted.
-     * @throws ConvertRepresentationException
-     * @throws InvocationTargetException
-     */
-    private static Object createConcreteRepresentationInstance(
-            Class<?> representationType, Representation entity, Logger logger)
-            throws ConvertRepresentationException, InvocationTargetException {
-        if (representationType.equals(Representation.class))
-            return entity;
-        Constructor<?> constr;
-        try {
-            constr = representationType.getConstructor(Representation.class);
-        } catch (SecurityException e) {
-            logger.warning("The constructor " + representationType
-                    + "(Representation) is not accessable.");
-            return null;
-        } catch (NoSuchMethodException e) {
-            return null;
-        }
-        try {
-            return constr.newInstance(entity);
-        } catch (IllegalArgumentException e) {
-            throw ConvertRepresentationException.object(representationType,
-                    "the message body", e);
-        } catch (InstantiationException e) {
-            throw ConvertRepresentationException.object(representationType,
-                    "the message body", e);
-        } catch (IllegalAccessException e) {
-            throw ConvertRepresentationException.object(representationType,
-                    "the message body", e);
-        }
     }
 
     /**

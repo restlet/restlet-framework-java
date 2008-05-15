@@ -19,17 +19,25 @@ package org.restlet.ext.jaxrs.internal.provider;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.logging.Logger;
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
+
+import org.restlet.data.CharacterSet;
+import org.restlet.data.Request;
+import org.restlet.ext.jaxrs.internal.util.Util;
+import org.restlet.resource.Representation;
+import org.restlet.util.ByteUtils;
 
 /**
  * This Provider is used to read directly from a {@link Reader}.
@@ -39,6 +47,52 @@ import javax.ws.rs.ext.Provider;
  */
 @Provider
 public class ReaderProvider extends AbstractProvider<Reader> {
+
+    private static final Logger logger = Logger.getAnonymousLogger();
+
+    /**
+     * Returns a Reader wrapping the given entity stream, with respect to the
+     * {@link CharacterSet} of the entity of the current {@link Request}, or
+     * UTF-8 if no character set was given or if it is not available
+     */
+    static Reader getReader(InputStream entityStream) {
+        Representation entity = Request.getCurrent().getEntity();
+        CharacterSet cs;
+        if (entity != null) {
+            cs = entity.getCharacterSet();
+            if (cs == null)
+                cs = CharacterSet.UTF_8;
+        } else {
+            cs = CharacterSet.UTF_8;
+        }
+        try {
+            try {
+                return ByteUtils.getReader(entityStream, cs);
+            } catch (UnsupportedEncodingException e) {
+                try {
+                    Reader r;
+                    r = ByteUtils.getReader(entityStream, CharacterSet.UTF_8);
+                    logger.warning("The character set " + cs
+                            + " is not available. Will use "
+                            + CharacterSet.UTF_8);
+                    return r;
+                } catch (UnsupportedEncodingException e1) {
+                    try {
+                        return ByteUtils.getReader(entityStream, null);
+                    } catch (UnsupportedEncodingException e2) {
+                        logger.warning("Neither the character set " + cs
+                                + " nor the character set "
+                                + CharacterSet.UTF_8
+                                + " (default) is available");
+                        throw new WebApplicationException(500);
+                    }
+                }
+            }
+        } catch (IOException ioe) {
+            // this catch block could be removed if it is not reachable. 
+            throw new WebApplicationException(500);
+        }
+    }
 
     /**
      * @see javax.ws.rs.ext.MessageBodyWriter#getSize(java.lang.Object)
@@ -57,7 +111,7 @@ public class ReaderProvider extends AbstractProvider<Reader> {
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
-        return new InputStreamReader(entityStream);
+        return getReader(entityStream);
     }
 
     @Override
@@ -74,10 +128,10 @@ public class ReaderProvider extends AbstractProvider<Reader> {
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
-        int ch;
-        while ((ch = reader.read()) >= 0) {
-            entityStream.write((byte) ch);
-            // LATER charset for ReaderProvider ?
-        }
+        CharacterSet charSet = Util.getCharacterSet(httpHeaders);
+        if (charSet == null)
+            charSet = CharacterSet.UTF_8;
+        Util.copyStream(ByteUtils.getStream(reader, charSet), entityStream);
+        // NICE testen charset for ReaderProvider.writeTo(..) ?
     }
 }

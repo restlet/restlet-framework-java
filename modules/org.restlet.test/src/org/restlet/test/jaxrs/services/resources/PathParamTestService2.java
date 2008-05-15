@@ -33,7 +33,7 @@ import org.restlet.test.jaxrs.services.tests.PathParamTest2;
  * @see PathParamTest2
  * @see PathParam
  */
-@Path("pathParamTest/")
+@Path("pathParamTest2/")
 public class PathParamTestService2 {
 
     @Encoded
@@ -97,5 +97,18 @@ public class PathParamTestService2 {
     public String getMultSegment(@PathParam("string")
     String string) {
         return string;
+    }
+
+    @GET
+    @Path("abc{def}")
+    public String getX(@PathParam("def") String def) {
+        return def;
+    }
+
+    @GET
+    @Path("a{bcd}ef/{12}34")
+    public String getX2(@PathParam("bcd") String bcd,
+            @PathParam("12") String tt) {
+        return bcd+"\n"+tt;
     }
 }

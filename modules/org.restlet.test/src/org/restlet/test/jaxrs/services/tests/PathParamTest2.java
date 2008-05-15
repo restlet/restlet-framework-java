@@ -124,4 +124,24 @@ public class PathParamTest2 extends JaxRsTestCase {
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("abc/def", response.getEntity().getText());
     }
+
+    public void testX() throws Exception {
+        Response response = get("abc123");
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("123", response.getEntity().getText());
+
+        response = get("abcdef");
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("def", response.getEntity().getText());
+    }
+
+    public void testX2() throws Exception {
+        Response response = get("abcdef/1234");
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("bcd\n12", response.getEntity().getText());
+
+        response = get("aXYZef/AB34");
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("XYZ\nAB", response.getEntity().getText());
+    }
 }

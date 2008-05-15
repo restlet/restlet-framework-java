@@ -45,10 +45,13 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.ws.rs.Path;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
 
+import org.restlet.data.CharacterSet;
 import org.restlet.data.Dimension;
 import org.restlet.data.Form;
+import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
@@ -1184,5 +1187,46 @@ public class Util {
             stb.append(object);
         }
         return stb.toString();
+    }
+
+    /**
+     * Returns the Restlet {@link MediaType} of the given http headers (e.g.
+     * from a JAX-RS {@link javax.ws.rs.core.Response}).
+     * 
+     * @param httpHeaders
+     *                the JAX-RS {@link javax.ws.rs.core.Response}
+     * @return the Restlet {@link MediaType} of the given http headers, or null,
+     *         if the header "Content-Type" is not available.
+     */
+    public static MediaType getMediaType(
+            MultivaluedMap<String, Object> httpHeaders) {
+        Object contentType = httpHeaders.getFirst(HttpHeaders.CONTENT_TYPE);
+        if (contentType == null)
+            return null;
+        if (contentType instanceof MediaType)
+            return (MediaType) contentType;
+        if (contentType instanceof javax.ws.rs.core.MediaType)
+            return Converter
+                    .toRestletMediaType((javax.ws.rs.core.MediaType) contentType);
+        return Engine.getInstance().parseContentType(contentType.toString());
+    }
+
+    /**
+     * Returns the Restlet {@link CharacterSet} of the given http headers (e.g.
+     * from a JAX-RS {@link javax.ws.rs.core.Response}).
+     * 
+     * @param httpHeaders
+     *                the JAX-RS {@link javax.ws.rs.core.Response}
+     * @return the Restlet {@link CharacterSet} of the given http headers, or
+     *         null if the header "Content-Type" is not available or has no
+     *         parameter "charset".
+     */
+    public static CharacterSet getCharacterSet(
+            MultivaluedMap<String, Object> httpHeaders) {
+        MediaType mediaType = getMediaType(httpHeaders);
+        if (mediaType == null)
+            return null;
+        String charset = mediaType.getParameters().getFirstValue("charset");
+        return CharacterSet.valueOf(charset);
     }
 }
