@@ -17,9 +17,11 @@
  */
 package org.restlet.ext.jaxrs.internal.provider;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
@@ -29,6 +31,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
 
+import org.restlet.data.CharacterSet;
+import org.restlet.data.Response;
 import org.restlet.ext.jaxrs.internal.util.Util;
 
 /**
@@ -76,12 +80,38 @@ public class StringProvider extends AbstractProvider<CharSequence> {
      *      Annotation[], MediaType, MultivaluedMap, OutputStream)
      */
     @Override
-    public void writeTo(CharSequence cs, Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType,
+    public void writeTo(CharSequence charSequence, Class<?> type,
+            Type genericType, Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
-        // NICE optimize by remove toString(), if useful
-        byte[] array = cs.toString().getBytes();
-        entityStream.write(array);
+        CharacterSet cs = Response.getCurrent().getEntity().getCharacterSet();
+        InputStream inputStream = getInputStream(charSequence, cs.toString());
+        Util.copyStream(inputStream, entityStream);
+    }
+
+    /**
+     * Returns an {@link InputStream}, that returns the right encoded data
+     * according to the given {@link CharacterSet}.
+     * 
+     * @param charSequ
+     * @param charsetName
+     *                see {@link String#getBytes(String)}
+     * @return
+     */
+    private ByteArrayInputStream getInputStream(CharSequence charSequ,
+            String charsetName) {
+        byte[] bytes;
+        String string = charSequ.toString();
+        try {
+            bytes = string.getBytes(charsetName);
+        } catch (UnsupportedEncodingException e) {
+            try {
+                bytes = string.getBytes(Util.JAX_RS_DEFAULT_CHARACTER_SET
+                        .toString());
+            } catch (UnsupportedEncodingException e1) {
+                bytes = string.getBytes();
+            }
+        }
+        return new ByteArrayInputStream(bytes);
     }
 }

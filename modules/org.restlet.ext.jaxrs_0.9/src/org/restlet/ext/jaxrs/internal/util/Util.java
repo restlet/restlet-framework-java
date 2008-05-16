@@ -17,6 +17,9 @@
  */
 package org.restlet.ext.jaxrs.internal.util;
 
+import static javax.ws.rs.core.HttpHeaders.CONTENT_TYPE;
+import static org.restlet.data.CharacterSet.UTF_8;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -26,6 +29,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.nio.charset.Charset;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
@@ -45,7 +49,6 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import javax.ws.rs.Path;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.restlet.data.CharacterSet;
@@ -77,6 +80,18 @@ import org.restlet.util.Series;
  * @author Stephan Koops
  */
 public class Util {
+
+    private static final Logger logger = Logger.getAnonymousLogger();
+
+    /**
+     * The default character set to be used, if no character set is given.
+     */
+    public static final CharacterSet JAX_RS_DEFAULT_CHARACTER_SET = UTF_8;
+
+    /**
+     * Key of the parameter of the charset in the content type.
+     */
+    private static final String CHARSET = "charset";
 
     /**
      * This comparator sorts the concrete MediaTypes to the beginning and the
@@ -384,6 +399,31 @@ public class Util {
     }
 
     /**
+     * Returns the character set as String of the given http headers (e.g. from
+     * a JAX-RS {@link javax.ws.rs.core.Response}).
+     * 
+     * @param httpHeaders
+     *                the JAX-RS {@link javax.ws.rs.core.Response}
+     * @param defaultCs
+     *                the character set to return, if no one could be found.
+     * @return the Restlet {@link CharacterSet} of the given http headers, or
+     *         the given defaultCs as String if the header "Content-Type" is not
+     *         available or has no parameter "charset". Returns only null, if
+     *         the given defaultCs is null.
+     * @see #getSupportedCharSet(MultivaluedMap)
+     */
+    public static String getCharsetName(
+            MultivaluedMap<String, Object> httpHeaders, CharacterSet defaultCs) {
+        MediaType mediaType = getMediaType(httpHeaders);
+        String charset = null;
+        if (mediaType != null)
+            charset = mediaType.getParameters().getFirstValue(CHARSET);
+        if (charset == null || charset.length() == 0)
+            return defaultCs != null ? defaultCs.toString() : null;
+        return charset;
+    }
+
+    /**
      * Returns the first element of the given collection. Throws an exception if
      * the collection is empty.
      * 
@@ -678,6 +718,28 @@ public class Util {
     }
 
     /**
+     * Returns the Restlet {@link MediaType} of the given http headers (e.g.
+     * from a JAX-RS {@link javax.ws.rs.core.Response}).
+     * 
+     * @param httpHeaders
+     *                the JAX-RS {@link javax.ws.rs.core.Response}
+     * @return the Restlet {@link MediaType} of the given http headers, or null,
+     *         if the header "Content-Type" is not available.
+     */
+    public static MediaType getMediaType(
+            MultivaluedMap<String, Object> httpHeaders) {
+        Object contentType = httpHeaders.getFirst(CONTENT_TYPE);
+        if (contentType == null)
+            return null;
+        if (contentType instanceof MediaType)
+            return (MediaType) contentType;
+        if (contentType instanceof javax.ws.rs.core.MediaType)
+            return Converter
+                    .toRestletMediaType((javax.ws.rs.core.MediaType) contentType);
+        return Engine.getInstance().parseContentType(contentType.toString());
+    }
+
+    /**
      * Returns all public {@link Method}s of the class with the given name
      * (case-sensitive)
      * 
@@ -914,6 +976,77 @@ public class Util {
     }
 
     /**
+     * Returns the given character set, if it is supported on this system.
+     * Returns UTF-8 otherwise.
+     * 
+     * @param characterSet
+     *                the wished {@link CharacterSet}
+     * @return a supported {@link CharacterSet}, never null.
+     * @see #getCharsetName(MultivaluedMap, CharacterSet)
+     */
+    public static CharacterSet getSupportedCharSet(CharacterSet characterSet) {
+        if (characterSet == null)
+            return JAX_RS_DEFAULT_CHARACTER_SET;
+        if (Charset.isSupported(characterSet.toString()))
+            return characterSet;
+        return logUnsupportedCharSet(characterSet.toString());
+    }
+
+    /**
+     * Returns the character set of the http response headers. If no character
+     * set is available or it is not supported, UFT-8 is returned.
+     * 
+     * @param httpResponseHeaders
+     * @return a supported {@link CharacterSet}, never null.
+     * @see #getCharsetName(MultivaluedMap, CharacterSet)
+     */
+    public static CharacterSet getSupportedCharSet(
+            MultivaluedMap<String, Object> httpResponseHeaders) {
+        String csn = getCharsetName(httpResponseHeaders,
+                JAX_RS_DEFAULT_CHARACTER_SET);
+        if (Charset.isSupported(csn))
+            return CharacterSet.valueOf(csn);
+        return logUnsupportedCharSet(csn);
+    }
+
+    /**
+     * Logs a message that the wished character set is not supported and UTF-8
+     * is used.
+     * 
+     * @param csn
+     * @return UFT-8
+     */
+    private static CharacterSet logUnsupportedCharSet(String charsetName) {
+        logger.warning("The character set " + charsetName + " is not "
+                + "available. Will use " + JAX_RS_DEFAULT_CHARACTER_SET);
+        return JAX_RS_DEFAULT_CHARACTER_SET;
+    }
+
+    /**
+     * Injects the given toInject in the resource field or the given bean
+     * setter.
+     * 
+     * @param resource
+     * @param fieldOrBeanSetter
+     * @param toInject
+     * @throws InvocationTargetException
+     * @throws IllegalArgumentException
+     * @throws InjectException
+     */
+    public static void inject(Object resource,
+            AccessibleObject fieldOrBeanSetter, Object toInject)
+            throws InvocationTargetException, IllegalArgumentException,
+            InjectException {
+        if (fieldOrBeanSetter instanceof Field)
+            inject(resource, (Field) fieldOrBeanSetter, toInject);
+        else if (fieldOrBeanSetter instanceof Method)
+            inject(resource, (Method) fieldOrBeanSetter, toInject);
+        else
+            throw new IllegalArgumentException(
+                    "The fieldOrBeanSetter must be a java.lang.reflect.Field or a java.lang.reflect.Method");
+    }
+
+    /**
      * Inject the given toInject into the given field in the given resource (or
      * whatever)
      * 
@@ -951,30 +1084,6 @@ public class Util {
                     + toInject.getClass() + " into field " + field
                     + " of object " + resource, e);
         }
-    }
-
-    /**
-     * Injects the given toInject in the resource field or the given bean
-     * setter.
-     * 
-     * @param resource
-     * @param fieldOrBeanSetter
-     * @param toInject
-     * @throws InvocationTargetException
-     * @throws IllegalArgumentException
-     * @throws InjectException
-     */
-    public static void inject(Object resource,
-            AccessibleObject fieldOrBeanSetter, Object toInject)
-            throws InvocationTargetException, IllegalArgumentException,
-            InjectException {
-        if (fieldOrBeanSetter instanceof Field)
-            inject(resource, (Field) fieldOrBeanSetter, toInject);
-        else if (fieldOrBeanSetter instanceof Method)
-            inject(resource, (Method) fieldOrBeanSetter, toInject);
-        else
-            throw new IllegalArgumentException(
-                    "The fieldOrBeanSetter must be a java.lang.reflect.Field or a java.lang.reflect.Method");
     }
 
     /**
@@ -1186,46 +1295,5 @@ public class Util {
             stb.append(object);
         }
         return stb.toString();
-    }
-
-    /**
-     * Returns the Restlet {@link MediaType} of the given http headers (e.g.
-     * from a JAX-RS {@link javax.ws.rs.core.Response}).
-     * 
-     * @param httpHeaders
-     *                the JAX-RS {@link javax.ws.rs.core.Response}
-     * @return the Restlet {@link MediaType} of the given http headers, or null,
-     *         if the header "Content-Type" is not available.
-     */
-    public static MediaType getMediaType(
-            MultivaluedMap<String, Object> httpHeaders) {
-        Object contentType = httpHeaders.getFirst(HttpHeaders.CONTENT_TYPE);
-        if (contentType == null)
-            return null;
-        if (contentType instanceof MediaType)
-            return (MediaType) contentType;
-        if (contentType instanceof javax.ws.rs.core.MediaType)
-            return Converter
-                    .toRestletMediaType((javax.ws.rs.core.MediaType) contentType);
-        return Engine.getInstance().parseContentType(contentType.toString());
-    }
-
-    /**
-     * Returns the Restlet {@link CharacterSet} of the given http headers (e.g.
-     * from a JAX-RS {@link javax.ws.rs.core.Response}).
-     * 
-     * @param httpHeaders
-     *                the JAX-RS {@link javax.ws.rs.core.Response}
-     * @return the Restlet {@link CharacterSet} of the given http headers, or
-     *         null if the header "Content-Type" is not available or has no
-     *         parameter "charset".
-     */
-    public static CharacterSet getCharacterSet(
-            MultivaluedMap<String, Object> httpHeaders) {
-        MediaType mediaType = getMediaType(httpHeaders);
-        if (mediaType == null)
-            return null;
-        String charset = mediaType.getParameters().getFirstValue("charset");
-        return CharacterSet.valueOf(charset);
     }
 }

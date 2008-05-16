@@ -15,7 +15,7 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-package org.restlet.ext.jaxrs.internal.wrappers;
+package org.restlet.ext.jaxrs.internal.wrappers.params;
 
 import static org.restlet.ext.jaxrs.internal.wrappers.WrapperUtil.isBeanSetter;
 
@@ -32,11 +32,11 @@ import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.MessageBodyWorkers;
 
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
-import org.restlet.ext.jaxrs.internal.wrappers.ParameterList.CookieParamInjector;
-import org.restlet.ext.jaxrs.internal.wrappers.ParameterList.HeaderParamInjector;
-import org.restlet.ext.jaxrs.internal.wrappers.ParameterList.MatrixParamInjector;
-import org.restlet.ext.jaxrs.internal.wrappers.ParameterList.PathParamInjector;
-import org.restlet.ext.jaxrs.internal.wrappers.ParameterList.QueryParamInjector;
+import org.restlet.ext.jaxrs.internal.wrappers.params.ParameterList.CookieParamInjector;
+import org.restlet.ext.jaxrs.internal.wrappers.params.ParameterList.HeaderParamInjector;
+import org.restlet.ext.jaxrs.internal.wrappers.params.ParameterList.MatrixParamInjector;
+import org.restlet.ext.jaxrs.internal.wrappers.params.ParameterList.PathParamInjector;
+import org.restlet.ext.jaxrs.internal.wrappers.params.ParameterList.QueryParamInjector;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.ExtensionBackwardMapping;
 
 /**
@@ -45,7 +45,7 @@ import org.restlet.ext.jaxrs.internal.wrappers.provider.ExtensionBackwardMapping
  * 
  * @author Stephan Koops
  */
-class IntoRrcInjector extends ContextInjector {
+public class IntoRrcInjector extends ContextInjector {
 
     /**
      * @param jaxRsClass
@@ -57,7 +57,7 @@ class IntoRrcInjector extends ContextInjector {
      *                all available {@link ContextResolver}s.
      * @param extensionBackwardMapping
      */
-    IntoRrcInjector(Class<?> jaxRsClass, ThreadLocalizedContext tlContext,
+    public IntoRrcInjector(Class<?> jaxRsClass, ThreadLocalizedContext tlContext,
             boolean leaveEncoded, MessageBodyWorkers mbWorkers,
             Collection<ContextResolver<?>> allResolvers,
             ExtensionBackwardMapping extensionBackwardMapping) {

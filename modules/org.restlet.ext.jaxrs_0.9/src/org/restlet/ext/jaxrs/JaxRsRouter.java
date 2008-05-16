@@ -22,6 +22,10 @@ import static org.restlet.ext.jaxrs.internal.util.AlgorithmUtil.getBestMethod;
 import static org.restlet.ext.jaxrs.internal.util.AlgorithmUtil.getFirstMethOrLocByNumberOfLiteralCharactersAndByNumberOfCapturingGroups;
 import static org.restlet.ext.jaxrs.internal.util.AlgorithmUtil.getFirstRrcByNumberOfLiteralCharactersAndByNumberOfCapturingGroups;
 import static org.restlet.ext.jaxrs.internal.util.AlgorithmUtil.removeNotSupportedHttpMethod;
+import static org.restlet.ext.jaxrs.internal.util.Util.copyResponseHeaders;
+import static org.restlet.ext.jaxrs.internal.util.Util.getMediaType;
+import static org.restlet.ext.jaxrs.internal.util.Util.getSupportedCharSet;
+import static org.restlet.ext.jaxrs.internal.util.Util.sortByConcreteness;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -79,7 +83,6 @@ import org.restlet.ext.jaxrs.internal.util.MatchingResult;
 import org.restlet.ext.jaxrs.internal.util.PathRegExp;
 import org.restlet.ext.jaxrs.internal.util.RemainingPath;
 import org.restlet.ext.jaxrs.internal.util.SortedMetadata;
-import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.ext.jaxrs.internal.util.WrappedRequestForHttpHeaders;
 import org.restlet.ext.jaxrs.internal.wrappers.AbstractMethodWrapper;
 import org.restlet.ext.jaxrs.internal.wrappers.ResourceClass;
@@ -785,8 +788,9 @@ public class JaxRsRouter extends Restlet {
             AbstractMethodWrapper jaxRsMethod) {
         Response restletResponse = tlContext.get().getResponse();
         restletResponse.setStatus(Status.valueOf(jaxRsResponse.getStatus()));
-        MultivaluedMap<String, Object> httpHeaders = jaxRsResponse.getMetadata();
-        MediaType respMediaType = Util.getMediaType(httpHeaders);
+        MultivaluedMap<String, Object> httpHeaders = jaxRsResponse
+                .getMetadata();
+        MediaType respMediaType = getMediaType(httpHeaders);
         Object jaxRsEntity = jaxRsResponse.getEntity();
         SortedMetadata<MediaType> accMediaType;
         if (respMediaType != null)
@@ -794,10 +798,8 @@ public class JaxRsRouter extends Restlet {
         else
             accMediaType = tlContext.get().getAccMediaTypes();
         restletResponse.setEntity(convertToRepresentation(jaxRsEntity,
-                jaxRsMethod, respMediaType, httpHeaders,
-                accMediaType));
-        Util.copyResponseHeaders(httpHeaders, restletResponse,
-                getLogger());
+                jaxRsMethod, respMediaType, httpHeaders, accMediaType));
+        copyResponseHeaders(httpHeaders, restletResponse, getLogger());
     }
 
     /**
@@ -856,10 +858,14 @@ public class JaxRsRouter extends Restlet {
             MultivaluedMap<String, Object> jaxRsRespHeaders,
             SortedMetadata<MediaType> accMediaTypes)
             throws ImplementationException {
-        if (entity instanceof Representation)
-            return (Representation) entity;
         if (entity == null)
             return null;
+        if (entity instanceof Representation) {
+            Representation repr = (Representation) entity;
+            // ensures that a supported character is set, which is also supportd
+            repr.setCharacterSet(getSupportedCharSet(repr.getCharacterSet()));
+            return repr;
+        }
         Class<? extends Object> entityClass = entity.getClass();
         Type genericReturnType = null;
         Annotation[] methodAnnotations = null;
@@ -890,8 +896,11 @@ public class JaxRsRouter extends Restlet {
             mediaType = determineMediaType79(respMediaTypes);
         MultivaluedMap<String, Object> httpResponseHeaders = new WrappedRequestForHttpHeaders(
                 response, jaxRsRespHeaders, getLogger());
-        return new JaxRsOutputRepresentation(entity, genericReturnType,
-                mediaType, methodAnnotations, mbw, httpResponseHeaders);
+        Representation repr = new JaxRsOutputRepresentation(entity,
+                genericReturnType, mediaType, methodAnnotations, mbw,
+                httpResponseHeaders);
+        repr.setCharacterSet(getSupportedCharSet(httpResponseHeaders));
+        return repr;
     }
 
     /**
@@ -931,7 +940,7 @@ public class JaxRsRouter extends Restlet {
         if (accMediaTypes.isEmpty())
             accMediaTypes = SortedMetadata.getMediaTypeAll();
         // 4. Sort P and A: a is already sorted.
-        List<MediaType> pSorted = Util.sortByConcreteness(p);
+        List<MediaType> pSorted = sortByConcreteness(p);
         // 5.
         List<MediaType> m = new ArrayList<MediaType>();
         for (MediaType prod : pSorted)

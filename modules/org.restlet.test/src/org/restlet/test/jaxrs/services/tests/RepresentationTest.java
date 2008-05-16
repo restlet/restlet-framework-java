@@ -23,6 +23,7 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
+import org.restlet.test.jaxrs.services.others.Person;
 import org.restlet.test.jaxrs.services.resources.RepresentationTestService;
 
 /**
@@ -61,5 +62,18 @@ public class RepresentationTest extends JaxRsTestCase {
         Response response = get("reprString");
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
+    }
+
+    public void testJaxbPost() throws IOException {
+        Response response = post("jaxb", new StringRepresentation("abcdef"));
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        String packageName = Person.class.getPackage().getName();
+        assertEquals(packageName, response.getEntity().getText());
+
+        response = post("jaxb", (Representation) null);
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("null", response.getEntity().getText());
     }
 }

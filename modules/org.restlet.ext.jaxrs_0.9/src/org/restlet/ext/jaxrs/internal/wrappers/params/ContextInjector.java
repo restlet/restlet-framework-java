@@ -15,7 +15,7 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-package org.restlet.ext.jaxrs.internal.wrappers;
+package org.restlet.ext.jaxrs.internal.wrappers.params;
 
 import static org.restlet.ext.jaxrs.internal.wrappers.WrapperUtil.getContextResolver;
 import static org.restlet.ext.jaxrs.internal.wrappers.WrapperUtil.isBeanSetter;

@@ -34,6 +34,7 @@ import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnMethodException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.util.PathRegExp;
 import org.restlet.ext.jaxrs.internal.util.Util;
+import org.restlet.ext.jaxrs.internal.wrappers.params.ParameterList;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.EntityProviders;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.ExtensionBackwardMapping;
 
@@ -95,21 +96,6 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
         this.parameters = new ParameterList(executeMethod, annotatedMethod,
                 tlContext, this.leaveEncoded, entityProviders, allCtxResolvers,
                 extensionBackwardMapping, entityAllowed, logger);
-    }
-
-    static class ContextHolder implements ParameterList.InjectObjectGetter {
-        private Object toInject;
-
-        ContextHolder(Object toInject) {
-            this.toInject = toInject;
-        }
-
-        /**
-         * @see ContextInjector.InjectObjectGetter#get
-         */
-        public Object getValue() {
-            return toInject;
-        }
     }
 
     /**

@@ -66,6 +66,6 @@ public class MessageBodyWorkersTest extends JaxRsTestCase {
         Representation entity = response.getEntity();
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals(new MediaType("text/crazy-person"), entity.getMediaType());
-        assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><person><firstname>Angela</firstname><lastname>Merkel</lastname></person>Angela Merkel is crazy.\nHeader value for name h1 is h1v\ncontentType is text/crazy-person\ncontentType List contains text/crazy-person", entity.getText());
+        assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><person><firstname>Angela</firstname><lastname>Merkel</lastname></person>Angela Merkel is crazy.\nHeader value for name h1 is h1v", entity.getText());
     }
 }

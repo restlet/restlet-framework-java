@@ -24,7 +24,6 @@ import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.logging.Logger;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
@@ -35,6 +34,7 @@ import javax.ws.rs.ext.Provider;
 
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Request;
+import org.restlet.data.Response;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.resource.Representation;
 import org.restlet.util.ByteUtils;
@@ -48,8 +48,6 @@ import org.restlet.util.ByteUtils;
 @Provider
 public class ReaderProvider extends AbstractProvider<Reader> {
 
-    private static final Logger logger = Logger.getAnonymousLogger();
-
     /**
      * Returns a Reader wrapping the given entity stream, with respect to the
      * {@link CharacterSet} of the entity of the current {@link Request}, or
@@ -61,29 +59,17 @@ public class ReaderProvider extends AbstractProvider<Reader> {
         if (entity != null) {
             cs = entity.getCharacterSet();
             if (cs == null)
-                cs = CharacterSet.UTF_8;
+                cs = Util.JAX_RS_DEFAULT_CHARACTER_SET;
         } else {
-            cs = CharacterSet.UTF_8;
+            cs = Util.JAX_RS_DEFAULT_CHARACTER_SET;
         }
-
         try {
             return ByteUtils.getReader(entityStream, cs);
         } catch (UnsupportedEncodingException e) {
             try {
-                Reader r;
-                r = ByteUtils.getReader(entityStream, CharacterSet.UTF_8);
-                logger.warning("The character set " + cs
-                        + " is not available. Will use " + CharacterSet.UTF_8);
-                return r;
-            } catch (UnsupportedEncodingException e1) {
-                try {
-                    return ByteUtils.getReader(entityStream, null);
-                } catch (UnsupportedEncodingException e2) {
-                    logger.warning("Neither the character set " + cs
-                            + " nor the character set " + CharacterSet.UTF_8
-                            + " (default) is available");
-                    throw new WebApplicationException(500);
-                }
+                return ByteUtils.getReader(entityStream, null);
+            } catch (UnsupportedEncodingException e2) {
+                throw new WebApplicationException(500);
             }
         }
     }
@@ -122,10 +108,8 @@ public class ReaderProvider extends AbstractProvider<Reader> {
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
-        CharacterSet charSet = Util.getCharacterSet(httpHeaders);
-        if (charSet == null)
-            charSet = CharacterSet.UTF_8;
-        Util.copyStream(ByteUtils.getStream(reader, charSet), entityStream);
+        CharacterSet cs = Response.getCurrent().getEntity().getCharacterSet();
+        Util.copyStream(ByteUtils.getStream(reader, cs), entityStream);
         // NICE testen charset for ReaderProvider.writeTo(..) ?
     }
 }

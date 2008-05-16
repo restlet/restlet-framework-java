@@ -49,10 +49,7 @@ public class UtilTests extends TestCase {
      * @return the {@link CharacterSet} as String
      */
     private String getCss() {
-        CharacterSet characterSet = Util.getCharacterSet(httpHeaders);
-        if(characterSet == null)
-            return null;
-        return characterSet.toString();
+        return Util.getCharsetName(httpHeaders, null);
     }
 
     /**
@@ -95,7 +92,7 @@ public class UtilTests extends TestCase {
     }
 
     public void testGetOfContentType1() {
-        setContentType("a/b;charset=cs");
+        setContentType("a/b;charset=CS");
         assertEquals("CS", getCss());
         assertEquals("a/b", getMts());
     }
@@ -107,13 +104,13 @@ public class UtilTests extends TestCase {
     }
 
     public void testGetOfContentType3() {
-        setContentType("a/b ;charset=cs");
+        setContentType("a/b ;charset=CS");
         assertEquals("CS", getCss());
         assertEquals("a/b", getMts());
     }
 
     public void testGetOfContentType4() {
-        setContentType("a/b;d=g;charset=cs");
+        setContentType("a/b;d=g;charset=CS");
         assertEquals("CS", getCss());
         assertEquals("a/b", getMts());
     }

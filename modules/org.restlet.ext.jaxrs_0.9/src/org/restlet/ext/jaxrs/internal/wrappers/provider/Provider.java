@@ -55,9 +55,9 @@ import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingConstructorException;
 import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
 import org.restlet.ext.jaxrs.internal.util.Util;
-import org.restlet.ext.jaxrs.internal.wrappers.ContextInjector;
-import org.restlet.ext.jaxrs.internal.wrappers.ParameterList;
 import org.restlet.ext.jaxrs.internal.wrappers.WrapperUtil;
+import org.restlet.ext.jaxrs.internal.wrappers.params.ContextInjector;
+import org.restlet.ext.jaxrs.internal.wrappers.params.ParameterList;
 
 /**
  * Wraps a JAX-RS provider, see chapter 4 of JAX-RS specification.

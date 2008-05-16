@@ -15,9 +15,8 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-package org.restlet.ext.jaxrs.internal.wrappers;
+package org.restlet.ext.jaxrs.internal.wrappers.params;
 
-import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Constructor;
@@ -43,15 +42,12 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Cookie;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.ext.ContextResolver;
 
 import org.restlet.data.Form;
-import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
-import org.restlet.data.Request;
 import org.restlet.ext.jaxrs.internal.core.CallContext;
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertCookieParamException;
@@ -63,16 +59,13 @@ import org.restlet.ext.jaxrs.internal.exceptions.ConvertQueryParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
 import org.restlet.ext.jaxrs.internal.exceptions.InjectException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
-import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
 import org.restlet.ext.jaxrs.internal.todo.NotYetImplementedException;
 import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.ext.jaxrs.internal.util.Util;
-import org.restlet.ext.jaxrs.internal.wrappers.ContextInjector.Injector;
-import org.restlet.ext.jaxrs.internal.wrappers.WrapperUtil.ParamValueIter;
+import org.restlet.ext.jaxrs.internal.wrappers.WrapperUtil;
+import org.restlet.ext.jaxrs.internal.wrappers.params.ContextInjector.Injector;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.EntityProviders;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.ExtensionBackwardMapping;
-import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyReader;
-import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyReaderSet;
 import org.restlet.resource.Representation;
 import org.restlet.util.Series;
 
@@ -87,7 +80,7 @@ public class ParameterList {
     /**
      * Abstract super class for access to the entity or to &#64;*Param.
      */
-    abstract static class AbstractInjectObjectGetter implements
+    public abstract static class AbstractInjectObjectGetter implements
             InjectObjectGetter {
 
         protected final Class<?> convToCl;
@@ -255,115 +248,6 @@ public class ParameterList {
         }
     }
 
-    static class EntityGetter extends ParameterList.AbstractInjectObjectGetter
-            implements ParameterList.InjectObjectGetter {
-
-        /**
-         * Creates a concrete instance of the given {@link Representation}
-         * subtype. It must contain a constructor with one parameter of type
-         * {@link Representation}.
-         * 
-         * @param representationType
-         *                the class to instantiate
-         * @param entity
-         *                the Representation to use for the constructor.
-         * @param logger
-         *                the logger to use
-         * @return the created representation, or null, if it could not be
-         *         converted.
-         * @throws ConvertRepresentationException
-         * @throws InvocationTargetException
-         */
-        private static Object createConcreteRepresentationInstance(
-                Class<?> representationType, Representation entity,
-                Logger logger) throws ConvertRepresentationException,
-                InvocationTargetException {
-            if (representationType.equals(Representation.class))
-                return entity;
-            Constructor<?> constr;
-            try {
-                constr = representationType
-                        .getConstructor(Representation.class);
-            } catch (SecurityException e) {
-                logger.warning("The constructor " + representationType
-                        + "(Representation) is not accessable.");
-                return null;
-            } catch (NoSuchMethodException e) {
-                return null;
-            }
-            try {
-                return constr.newInstance(entity);
-            } catch (IllegalArgumentException e) {
-                throw ConvertRepresentationException.object(representationType,
-                        "the message body", e);
-            } catch (InstantiationException e) {
-                throw ConvertRepresentationException.object(representationType,
-                        "the message body", e);
-            } catch (IllegalAccessException e) {
-                throw ConvertRepresentationException.object(representationType,
-                        "the message body", e);
-            }
-        }
-
-        private final Annotation[] annotations;
-
-        private final Logger logger;
-
-        private final MessageBodyReaderSet mbrs;
-
-        EntityGetter(Class<?> convToCl, Type convToGen,
-                ThreadLocalizedContext tlContext, MessageBodyReaderSet mbrs,
-                Annotation[] annotations, Logger logger) {
-            super(convToCl, convToGen, tlContext);
-            this.annotations = annotations;
-            this.mbrs = mbrs;
-            this.logger = logger;
-        }
-
-        /**
-         * @throws ConvertRepresentationException
-         * @throws WebApplicationException
-         * @throws NoMessageBodyReaderException
-         * @see IntoRrcInjector.AbstractInjectObjectGetter#getValue()
-         */
-        @Override
-        @SuppressWarnings("unchecked")
-        public Object getValue() throws InvocationTargetException,
-                ConvertRepresentationException {
-            Request request = this.tlContext.get().getRequest();
-            Representation entity = request.getEntity();
-            if (entity == null)
-                return null;
-            if (Representation.class.isAssignableFrom(this.convToCl)) {
-                Object repr = createConcreteRepresentationInstance(
-                        this.convToCl, entity, logger);
-                if (repr != null)
-                    return repr;
-            }
-            MediaType mediaType = entity.getMediaType();
-            MessageBodyReader<?> mbr = mbrs.getBestReader(this.convToCl,
-                    this.convToGen, annotations, mediaType);
-            if (mbr == null)
-                throw new NoMessageBodyReaderException(mediaType, this.convToCl);
-            MultivaluedMap<String, String> httpHeaders = Util
-                    .getJaxRsHttpHeaders(request);
-            try {
-                javax.ws.rs.core.MediaType jaxRsMediaType = Converter
-                        .toJaxRsMediaType(mediaType, entity.getCharacterSet());
-                return mbr.readFrom((Class) this.convToCl, this.convToGen,
-                        jaxRsMediaType, annotations, httpHeaders, entity
-                                .getStream());
-            } catch (WebApplicationException wae) {
-                throw wae;
-            } catch (IOException e) {
-                throw ConvertRepresentationException.object(this.convToCl,
-                        "the message body", e);
-            } finally {
-                entity.release();
-            }
-        }
-    }
-
     static class HeaderParamInjector extends NoEncParamInjector {
 
         private final HeaderParam headerParam;
@@ -457,7 +341,7 @@ public class ParameterList {
          */
         @Override
         public Object getParamValue() {
-            // LATER de/encode: Encoded of field or bean setter
+            // LATER test: de/encode: Encoded of field or bean setter
             CallContext callContext = tlContext.get();
             String matrixParamValue = callContext
                     .getLastMatrixParamEnc(matrixParam);
@@ -609,7 +493,7 @@ public class ParameterList {
          */
         @Override
         public Object getParamValue() {
-            // LATER de/encode: Encoded of field or bean setter
+            // LATER test: de/encode: Encoded of field or bean setter
             CallContext callContext = tlContext.get();
             // LATER @PathParam(...) List<String> (see PathParamTest.testGet3())
             if (convToCl.equals(PathSegment.class)) {
@@ -658,7 +542,7 @@ public class ParameterList {
          */
         @Override
         public Object getParamValue() {
-            // LATER de/encode: Encoded of field or bean setter
+            // LATER test: de/encode: Encoded of field or bean setter
             Reference resourceRef = tlContext.get().getRequest()
                     .getResourceRef();
             String queryString = resourceRef.getQuery();
@@ -761,10 +645,10 @@ public class ParameterList {
             Annotation[] paramAnnos = paramAnnoss[i];
             Context conntextAnno = getAnnos(paramAnnos, Context.class);
             if (conntextAnno != null) {
-                parameters[i] = new AbstractMethodWrapper.ContextHolder(
-                        ContextInjector.getInjectObject(parameterType,
-                                genParamType, tlContext, entityProviders,
-                                allCtxResolvers, extensionBackwardMapping));
+                parameters[i] = new ContextHolder(ContextInjector
+                        .getInjectObject(parameterType, genParamType,
+                                tlContext, entityProviders, allCtxResolvers,
+                                extensionBackwardMapping));
                 continue;
             }
             if (paramsAllowed) {
@@ -789,13 +673,13 @@ public class ParameterList {
                 if (cookieParam != null) {
                     parameters[i] = new CookieParamInjector(cookieParam,
                             defValue, parameterType, genParamType, tlContext,
-                            leaveEncoded);
+                            getLeaveEncoded(paramAnnos));
                     continue;
                 }
                 if (headerParam != null) {
                     parameters[i] = new HeaderParamInjector(headerParam,
                             defValue, parameterType, genParamType, tlContext,
-                            leaveEncoded);
+                            getLeaveEncoded(paramAnnos));
                     continue;
                 }
                 if (matrixParam != null) {
@@ -823,8 +707,14 @@ public class ParameterList {
                                 + i
                                 + ". parameter requires one of the following annotations: "
                                 + VALID_ANNOTATIONS);
-            parameters[i] = new EntityGetter(parameterType, genParamType,
-                    tlContext, entityProviders, paramAnnos, logger);
+            if (Representation.class.isAssignableFrom(parameterType)) {
+                parameters[i] = ReprEntityGetter.create(parameterType,
+                        genParamType, logger);
+            }
+            if (parameters[i] == null) {
+                parameters[i] = new EntityGetter(parameterType, genParamType,
+                        tlContext, entityProviders, paramAnnos);
+            }
             entityAlreadyRequired = true;
         }
     }
@@ -863,7 +753,7 @@ public class ParameterList {
      * @param logger
      * @throws MissingAnnotationException
      */
-    ParameterList(Method executeMethod, Method annotatedMethod,
+    public ParameterList(Method executeMethod, Method annotatedMethod,
             ThreadLocalizedContext tlContext, boolean leaveEncoded,
             EntityProviders entityProviders,
             Collection<ContextResolver<?>> allCtxResolvers,

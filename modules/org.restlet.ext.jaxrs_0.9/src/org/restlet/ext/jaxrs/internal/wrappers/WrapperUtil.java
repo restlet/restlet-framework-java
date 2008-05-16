@@ -68,29 +68,6 @@ import org.restlet.ext.jaxrs.internal.wrappers.provider.ReturnNullContextResolve
  */
 public class WrapperUtil {
 
-    static class ParamValueIter implements Iterator<String> {
-        private Iterator<Parameter> paramIter;
-
-        ParamValueIter(Iterable<Parameter> parameters) {
-            this.paramIter = parameters.iterator();
-        }
-
-        /** @see java.util.Iterator#hasNext() */
-        public boolean hasNext() {
-            return paramIter.hasNext();
-        }
-
-        /** @see java.util.Iterator#next() */
-        public String next() {
-            return getValue(paramIter.next());
-        }
-
-        /** @see java.util.Iterator#remove() */
-        public void remove() {
-            paramIter.remove();
-        }
-    }
-
     private static final String COLL_PARAM_NOT_DEFAULT = "The collection type Collection is not supported for parameters. Use List, Set or SortedSet";
 
     private static final Boolean DEFAULT_BOOLEAN = Boolean.FALSE;
@@ -297,7 +274,7 @@ public class WrapperUtil {
 
     /**
      * @param paramClass
-     * @param convToGen
+     * @param paramGenericType
      * @param paramValueIter
      *                the values to use if multiples are required
      * @param paramValue
@@ -307,7 +284,7 @@ public class WrapperUtil {
      * @return
      * @throws ConvertParameterException
      */
-    static Object convertParamValuesFromParam(Class<?> paramClass,
+    public static Object convertParamValuesFromParam(Class<?> paramClass,
             Type paramGenericType, Iterator<String> paramValueIter,
             String paramValue, DefaultValue defaultValue, boolean leaveEncoded)
             throws ConvertParameterException {
@@ -365,10 +342,11 @@ public class WrapperUtil {
      * {@link ParameterizedType parametrized Type}.<br>
      * If the given type do not represent an collection, null is returned.
      * 
+     * @param <A> 
      * @param type
      * @return the created collection or null.
      */
-    static <A> Collection<A> createColl(ParameterizedType type) {
+    public static <A> Collection<A> createColl(ParameterizedType type) {
         Type rawType = type.getRawType();
         if (rawType.equals(List.class))
             return new ArrayList<A>(1);
@@ -452,7 +430,7 @@ public class WrapperUtil {
      * @throws RuntimeException
      */
     @SuppressWarnings("unchecked")
-    static ContextResolver<?> getContextResolver(Type genType,
+    public static ContextResolver<?> getContextResolver(Type genType,
             Collection<ContextResolver<?>> allCtxResolvers) {
         if (!(genType instanceof ParameterizedType))
             return ReturnNullContextResolver.get();
@@ -608,7 +586,7 @@ public class WrapperUtil {
      *         null, null will returned. If the parameter is not null, but it's
      *         value, "" is returned.
      */
-    static String getValue(Parameter parameter) {
+    public static String getValue(Parameter parameter) {
         if (parameter == null)
             return null;
         String paramValue = parameter.getValue();
@@ -627,7 +605,7 @@ public class WrapperUtil {
      * @return
      * @throws SecurityException
      */
-    static boolean isBeanSetter(Method method,
+    public static boolean isBeanSetter(Method method,
             Class<? extends Annotation> annotationClass)
             throws SecurityException {
         if (method.isAnnotationPresent(annotationClass)
