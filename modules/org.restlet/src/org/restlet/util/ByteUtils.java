@@ -26,6 +26,7 @@ import java.io.OutputStream;
 import java.io.PipedReader;
 import java.io.PipedWriter;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
@@ -129,9 +130,11 @@ public final class ByteUtils {
                     // The key you registered on the temporary selector
                     selectionKey.cancel();
 
-                    // Flush the cancelled key
-                    selector.selectNow();
-                    SelectorFactory.returnSelector(selector);
+                    if (selector != null) {
+                        // Flush the cancelled key
+                        selector.selectNow();
+                        SelectorFactory.returnSelector(selector);
+                    }
                 }
             }
 
@@ -490,8 +493,7 @@ public final class ByteUtils {
      * @return A readable byte channel.
      */
     @SuppressWarnings("unused")
-    public static ReadableByteChannel getChannel(InputStream inputStream)
-            throws IOException {
+    public static ReadableByteChannel getChannel(InputStream inputStream) {
         return (inputStream != null) ? Channels.newChannel(inputStream) : null;
     }
 
@@ -500,10 +502,10 @@ public final class ByteUtils {
      * 
      * @param outputStream
      *                The output stream.
+     * @return A writable byte channel.
      */
     @SuppressWarnings("unused")
-    public static WritableByteChannel getChannel(OutputStream outputStream)
-            throws IOException {
+    public static WritableByteChannel getChannel(OutputStream outputStream) {
         return (outputStream != null) ? Channels.newChannel(outputStream)
                 : null;
     }
@@ -513,7 +515,10 @@ public final class ByteUtils {
      * content and its write(WritableByteChannel) method. Internally, it uses a
      * writer thread and a pipe channel.
      * 
+     * @param representation
+     *                the representation to get the {@link OutputStream} from.
      * @return A readable byte channel.
+     * @throws IOException
      */
     public static ReadableByteChannel getChannel(
             final Representation representation) throws IOException {
@@ -548,12 +553,13 @@ public final class ByteUtils {
      * @param stream
      *                The input stream.
      * @param characterSet
-     *                The character set.
+     *                The character set. May be null.
      * @return The equivalent reader.
-     * @throws IOException
+     * @throws UnsupportedEncodingException
+     *                 if a character set is given, but not supported
      */
     public static Reader getReader(InputStream stream, CharacterSet characterSet)
-            throws IOException {
+            throws UnsupportedEncodingException {
         if (characterSet != null) {
             return new InputStreamReader(stream, characterSet.getName());
         }
@@ -564,10 +570,10 @@ public final class ByteUtils {
      * Returns a reader from a writer representation.Internally, it uses a
      * writer thread and a pipe stream.
      * 
-     * 
      * @param representation
      *                The representation to read from.
      * @return The character reader.
+     * @throws IOException
      */
     public static Reader getReader(final WriterRepresentation representation)
             throws IOException {
@@ -603,8 +609,7 @@ public final class ByteUtils {
      * @return An input stream based on a given readable byte channel.
      */
     @SuppressWarnings("unused")
-    public static InputStream getStream(ReadableByteChannel readableChannel)
-            throws IOException {
+    public static InputStream getStream(ReadableByteChannel readableChannel) {
         InputStream result = null;
 
         if (readableChannel != null) {
@@ -632,11 +637,12 @@ public final class ByteUtils {
      * its write(OutputStream) method. Internally, it uses a writer thread and a
      * pipe stream.
      * 
+     * @param representation
+     *                the representation to get the {@link OutputStream} from.
      * @return A stream with the representation's content.
      */
     @SuppressWarnings("unused")
-    public static InputStream getStream(final Representation representation)
-            throws IOException {
+    public static InputStream getStream(final Representation representation) {
         if (representation == null) {
             return null;
         }
@@ -700,9 +706,10 @@ public final class ByteUtils {
      * 
      * @param writer
      *                The writer.
+     * @return the output stream of the writer
      */
     @SuppressWarnings("unused")
-    public static OutputStream getStream(Writer writer) throws IOException {
+    public static OutputStream getStream(Writer writer) {
         return new WriterOutputStream(writer);
     }
 

@@ -13,6 +13,8 @@ Changes log
           Contributed by Kevin Conaway.
         - Fixed potential NPE in ApplicationClientDispatcher. Reported
           by Alex Milowski.
+        - Series.getValues() was not respecting the 'ignoreCase' 
+          parameter. Contributed by Stephan Koops.
     - API Enhancements
         - Matrix parameters are now fully supported by the Reference 
           and the Form classes. Added many new methods, similar to the
@@ -46,18 +48,21 @@ Changes log
         - Added APPLICATION_ALL_XML constant and proper changes to the
           MediaType.includes() to recognize those patterns. Contributed
           by Stephan Koops.
-        - Moved shared initialization logic of Resource constructor and 
+        - Moved shared initialization logic of Resource constructor ands
           init() method into initialization block.
         - Static valueOf() methods now treat "" as null.
         - Added connectTimeout attribute on both Client and 
           ClientHelper classes. Reported by Avi Flax.
-        - Added static "current" property on Application and VirtualHost 
-          returning the instance associated with the current thread.
+        - Added static "current" property on Application and 
+          VirtualHost returning the instance associated with the 
+          current thread.
         - Added Context.getThread(Runnable) method to centralize usage
           of thread (potentially doing some pooling and currently 
           copying the thread local variables).
         - Deprecated Context.getApplication(). Use static method
           Application.getCurrent() instead.
+        - Removed several unecessary throw clauses in ByteUtils and 
+          added some missing Javadocs. Contributed by Stephan Koops.
      - NRE and Extension Enhancements
         - Atom extension is now able to write Feed and Service XML
           documents and not just reading/parsing them. This can be used

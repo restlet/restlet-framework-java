@@ -65,32 +65,26 @@ public class ReaderProvider extends AbstractProvider<Reader> {
         } else {
             cs = CharacterSet.UTF_8;
         }
+
         try {
+            return ByteUtils.getReader(entityStream, cs);
+        } catch (UnsupportedEncodingException e) {
             try {
-                return ByteUtils.getReader(entityStream, cs);
-            } catch (UnsupportedEncodingException e) {
+                Reader r;
+                r = ByteUtils.getReader(entityStream, CharacterSet.UTF_8);
+                logger.warning("The character set " + cs
+                        + " is not available. Will use " + CharacterSet.UTF_8);
+                return r;
+            } catch (UnsupportedEncodingException e1) {
                 try {
-                    Reader r;
-                    r = ByteUtils.getReader(entityStream, CharacterSet.UTF_8);
-                    logger.warning("The character set " + cs
-                            + " is not available. Will use "
-                            + CharacterSet.UTF_8);
-                    return r;
-                } catch (UnsupportedEncodingException e1) {
-                    try {
-                        return ByteUtils.getReader(entityStream, null);
-                    } catch (UnsupportedEncodingException e2) {
-                        logger.warning("Neither the character set " + cs
-                                + " nor the character set "
-                                + CharacterSet.UTF_8
-                                + " (default) is available");
-                        throw new WebApplicationException(500);
-                    }
+                    return ByteUtils.getReader(entityStream, null);
+                } catch (UnsupportedEncodingException e2) {
+                    logger.warning("Neither the character set " + cs
+                            + " nor the character set " + CharacterSet.UTF_8
+                            + " (default) is available");
+                    throw new WebApplicationException(500);
                 }
             }
-        } catch (IOException ioe) {
-            // this catch block could be removed if it is not reachable. 
-            throw new WebApplicationException(500);
         }
     }
 
