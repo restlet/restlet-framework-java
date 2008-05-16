@@ -29,6 +29,7 @@ import java.nio.channels.WritableByteChannel;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.restlet.data.CharacterSet;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
 import org.restlet.data.Method;
@@ -80,14 +81,15 @@ public abstract class HttpClientCall extends HttpCall {
                     HttpConstants.HEADER_CONTENT_TYPE)) {
                 ContentType contentType = new ContentType(header.getValue());
                 result.setMediaType(contentType.getMediaType());
-                result.setCharacterSet(contentType.getCharacterSet());
+                CharacterSet characterSet = contentType.getCharacterSet();
+                if (characterSet != null)
+                    result.setCharacterSet(characterSet);
                 entityHeaderFound = true;
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_CONTENT_LENGTH)) {
                 entityHeaderFound = true;
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_EXPIRES)) {
-                entityHeaderFound = true;
                 result.setExpirationDate(parseDate(header.getValue(), false));
                 entityHeaderFound = true;
             } else if (header.getName().equalsIgnoreCase(
@@ -265,6 +267,8 @@ public abstract class HttpClientCall extends HttpCall {
      * Returns the response entity if available. Note that no metadata is
      * associated by default, you have to manually set them from your headers.
      * 
+     * @param response
+     *                the Response to get the entity from
      * @return The response entity if available.
      */
     public Representation getResponseEntity(Response response) {
@@ -389,6 +393,7 @@ public abstract class HttpClientCall extends HttpCall {
      * 
      * @param request
      *                The high-level request.
+     * @return the status of the communication
      */
     public Status sendRequest(Request request) {
         Status result = null;
