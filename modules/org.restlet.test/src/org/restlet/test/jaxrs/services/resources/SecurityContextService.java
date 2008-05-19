@@ -79,7 +79,7 @@ public class SecurityContextService {
     public String getUserPrincipal() {
         Principal principal = securityContext.getUserPrincipal();
         if (principal == null)
-            return "-";
+            return "no principal found";
         return principal.getName();
     }
 

@@ -20,7 +20,9 @@ package org.restlet.test.jaxrs.services.tests;
 import java.util.Set;
 
 import org.restlet.data.Dimension;
+import org.restlet.data.Method;
 import org.restlet.data.Response;
+import org.restlet.data.Status;
 import org.restlet.test.jaxrs.services.resources.ResponseBuilderService;
 
 /**
@@ -54,5 +56,11 @@ public class ResponseBuilderTest extends JaxRsTestCase {
                 .contains(Dimension.LANGUAGE));
         assertTrue("dimension must contain CharacterSet", dimensions
                 .contains(Dimension.CHARACTER_SET));
+    }
+    
+    public void testDelete() {
+        Response r = accessServer(Method.DELETE, getRootResourceClass(), null);
+        
+        assertEquals(Status.SUCCESS_OK, r.getStatus());
     }
 }

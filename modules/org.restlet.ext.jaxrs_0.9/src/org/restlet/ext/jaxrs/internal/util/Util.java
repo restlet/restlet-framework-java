@@ -81,17 +81,17 @@ import org.restlet.util.Series;
  */
 public class Util {
 
-    private static final Logger logger = Logger.getAnonymousLogger();
+    /**
+     * Key of the parameter of the charset in the content type.
+     */
+    private static final String CHARSET = "charset";
 
     /**
      * The default character set to be used, if no character set is given.
      */
     public static final CharacterSet JAX_RS_DEFAULT_CHARACTER_SET = UTF_8;
 
-    /**
-     * Key of the parameter of the charset in the content type.
-     */
-    private static final String CHARSET = "charset";
+    private static final Logger logger = Logger.getAnonymousLogger();
 
     /**
      * This comparator sorts the concrete MediaTypes to the beginning and the
@@ -930,7 +930,6 @@ public class Util {
      * @see Path#encode()
      */
     public static String getPathTemplate(Path path) throws IllegalPathException {
-        // LATER de/encode: EncodeOrCheck.path(CharSequence)
         String pathTemplate = path.value();
         if (pathTemplate.contains(";"))
             throw new IllegalPathException(path,
@@ -1007,19 +1006,6 @@ public class Util {
         if (Charset.isSupported(csn))
             return CharacterSet.valueOf(csn);
         return logUnsupportedCharSet(csn);
-    }
-
-    /**
-     * Logs a message that the wished character set is not supported and UTF-8
-     * is used.
-     * 
-     * @param csn
-     * @return UFT-8
-     */
-    private static CharacterSet logUnsupportedCharSet(String charsetName) {
-        logger.warning("The character set " + charsetName + " is not "
-                + "available. Will use " + JAX_RS_DEFAULT_CHARACTER_SET);
-        return JAX_RS_DEFAULT_CHARACTER_SET;
     }
 
     /**
@@ -1210,6 +1196,19 @@ public class Util {
      */
     public static boolean isNotEmpty(List<?> list) {
         return (list != null && !list.isEmpty());
+    }
+
+    /**
+     * Logs a message that the wished character set is not supported and UTF-8
+     * is used.
+     * 
+     * @param csn
+     * @return UFT-8
+     */
+    private static CharacterSet logUnsupportedCharSet(String charsetName) {
+        logger.warning("The character set " + charsetName + " is not "
+                + "available. Will use " + JAX_RS_DEFAULT_CHARACTER_SET);
+        return JAX_RS_DEFAULT_CHARACTER_SET;
     }
 
     /**

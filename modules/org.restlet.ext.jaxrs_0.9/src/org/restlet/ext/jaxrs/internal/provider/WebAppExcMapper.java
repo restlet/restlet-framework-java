@@ -15,7 +15,7 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-package org.restlet.ext.jaxrs.internal.wrappers.provider;
+package org.restlet.ext.jaxrs.internal.provider;
 
 import static javax.ws.rs.core.Response.Status.NOT_ACCEPTABLE;
 import static javax.ws.rs.core.Response.Status.UNSUPPORTED_MEDIA_TYPE;
@@ -35,6 +35,7 @@ import javax.ws.rs.ext.ExceptionMapper;
 
 import org.restlet.ext.jaxrs.internal.exceptions.NotAcceptableWebAppException;
 import org.restlet.ext.jaxrs.internal.exceptions.UnsupportedMediaTypeWebAppException;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.ExtensionBackwardMapping;
 
 /**
  * The exception mapper for {@link WebApplicationException}s.

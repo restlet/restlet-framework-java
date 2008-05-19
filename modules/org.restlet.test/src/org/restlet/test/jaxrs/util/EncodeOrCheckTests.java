@@ -92,6 +92,9 @@ public class EncodeOrCheckTests extends TestCase {
         checkForInvalidCharFail("/");
         checkForInvalidCharFail(" ");
         checkForInvalidCharFail("\0");
+        
+        checkForInvalidCharFail("abc{ }kg jj");
+        EncodeOrCheck.checkForInvalidUriChars("abc{ }kgjj", -1, "test");
     }
 
     public void testFragment() {

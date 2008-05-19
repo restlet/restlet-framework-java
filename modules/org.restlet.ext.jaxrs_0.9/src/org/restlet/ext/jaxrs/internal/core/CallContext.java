@@ -55,6 +55,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
 import org.restlet.ext.jaxrs.RoleChecker;
+import org.restlet.ext.jaxrs.internal.util.SecurityUtil;
 import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.ext.jaxrs.internal.util.EmptyIterator;
 import org.restlet.ext.jaxrs.internal.util.SortedMetadata;
@@ -425,6 +426,8 @@ public class CallContext extends JaxRsUriInfo implements UriInfo,
      * @see SecurityContext#getAuthenticationScheme()
      */
     public String getAuthenticationScheme() {
+        if (SecurityUtil.isSslClientCertAuth(request))
+            return SecurityContext.CLIENT_CERT_AUTH;
         ChallengeResponse challengeResponse = request.getChallengeResponse();
         if (challengeResponse == null)
             return null;
@@ -438,8 +441,7 @@ public class CallContext extends JaxRsUriInfo implements UriInfo,
         if (authScheme.equals(ChallengeScheme.HTTP_DIGEST))
             return SecurityContext.DIGEST_AUTH;
         return authScheme.getName();
-        // LATER is SecurityContext.CLIENT_CERT_AUTH supported?
-        // LATER FORM_AUTH wird wohl auch nicht unterstuetzt.
+        // LATER how to read FORM_AUTH and others from Servlet API?
     }
 
     /**
@@ -576,8 +578,9 @@ public class CallContext extends JaxRsUriInfo implements UriInfo,
      * @see SecurityContext#getUserPrincipal()
      */
     public Principal getUserPrincipal() {
-        return (request.getChallengeResponse() == null) ? null : request
-                .getChallengeResponse().getPrincipal();
+        if (request.getChallengeResponse() != null)
+            return request.getChallengeResponse().getPrincipal();
+        return SecurityUtil.getSslClientCertPrincipal(request);
     }
 
     /**

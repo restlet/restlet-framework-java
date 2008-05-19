@@ -20,6 +20,7 @@ package org.restlet.test.jaxrs.services.resources;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
@@ -58,5 +59,10 @@ public class ResponseBuilderService {
         variants.add(new Variant(TestUtils.createMediaType("text", "sjk", "charset", "skl"), "en", "encoding"));
         variants.add(new Variant(TestUtils.createMediaType("text", "sjk"), "de", "encoding"));
         return Response.notAcceptable(variants).build();
+    }
+    
+    @DELETE
+    public Response delete() {
+        return Response.ok().build();
     }
 }

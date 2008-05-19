@@ -75,6 +75,7 @@ import org.restlet.ext.jaxrs.internal.provider.ReaderProvider;
 import org.restlet.ext.jaxrs.internal.provider.SourceProvider;
 import org.restlet.ext.jaxrs.internal.provider.StreamingOutputProvider;
 import org.restlet.ext.jaxrs.internal.provider.StringProvider;
+import org.restlet.ext.jaxrs.internal.provider.WebAppExcMapper;
 import org.restlet.ext.jaxrs.internal.provider.WwwFormFormProvider;
 import org.restlet.ext.jaxrs.internal.provider.WwwFormMmapProvider;
 import org.restlet.ext.jaxrs.internal.util.ExceptionHandler;
@@ -98,7 +99,6 @@ import org.restlet.ext.jaxrs.internal.wrappers.provider.ExtensionBackwardMapping
 import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyWriter;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyWriterSubSet;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.Provider;
-import org.restlet.ext.jaxrs.internal.wrappers.provider.WebAppExcMapper;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.service.MetadataService;

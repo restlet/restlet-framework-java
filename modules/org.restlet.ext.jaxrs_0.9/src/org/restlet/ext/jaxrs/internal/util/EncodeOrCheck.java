@@ -71,6 +71,33 @@ public class EncodeOrCheck {
     }
 
     /**
+     * Checks / encodes all chars of the given char sequence.
+     * 
+     * @param string
+     * @param encode
+     * @return
+     */
+    public static String all(CharSequence string, boolean encode) {
+        int length = string.length();
+        StringBuilder stb = new StringBuilder(length);
+        for (int i = 0; i < length; i++) {
+            char c = string.charAt(i);
+            if (Reference.isValid(c))
+                stb.append(c);
+            else if (c == '%') {
+                if (encode)
+                    toHex(c, stb);
+                else {
+                    checkForHexDigitAndAppend(string, i, stb);
+                    i += 2;
+                }
+            } else
+                toHexOrReject(c, stb, encode);
+        }
+        return stb.toString();
+    }
+
+    /**
      * Checks, if the given {@link CharSequence} has valid hex digits at the
      * both positions after the given index.
      * 
@@ -126,11 +153,19 @@ public class EncodeOrCheck {
     public static void checkForInvalidUriChars(CharSequence uriPart,
             int indexForErrMessage, String errMessName)
             throws IllegalArgumentException {
-        // LATER de/encode: Characters in variables should not be checked.
         int l = uriPart.length();
+        boolean inVar = false;
         for (int i = 0; i < l; i++) {
             char c = uriPart.charAt(i);
+            if (inVar) {
+                if (c == '}')
+                    inVar = false;
+                continue;
+            }
             switch (c) {
+            case '{':
+                inVar = true;
+                continue;
             case ':':
             case '/':
             case '?':
@@ -294,6 +329,8 @@ public class EncodeOrCheck {
     public static CharSequence fullMatrix(CharSequence matrix, boolean encode) {
         // this method is also used by #fullQuery(query, encode);
         int l = matrix.length();
+        // LATER de/encode: matrixParam(..): hier gilt, was im pathSegment
+        // erlaubt ist, "=" und "&" und ";" nicht kodieren
         StringBuilder stb = new StringBuilder(l + 6);
         for (int i = 0; i < l; i++) {
             char c = matrix.charAt(i);
@@ -387,8 +424,6 @@ public class EncodeOrCheck {
     public static CharSequence nameOrValue(CharSequence string, boolean encode,
             int indexForErrMessage, String nameForMessage)
             throws IllegalArgumentException {
-        // LATER de/encode: matrixParam(..): hier gilt, was im pathSegment
-        // erlaubt ist, "=" und "&" und ";" nicht kodieren
         if (string == null)
             throw throwIllegalArgExc(indexForErrMessage, nameForMessage,
                     string, " must not be null");
@@ -531,30 +566,5 @@ public class EncodeOrCheck {
         }
         return stb;
         // LATER de/encode: userinfo = *(unreserved/pct-encoded/sub-delims/":")
-    }
-
-    /**
-     * @param string
-     * @param encode
-     * @return
-     */
-    public static String all(CharSequence string, boolean encode) {
-        int length = string.length();
-        StringBuilder stb = new StringBuilder(length);
-        for (int i = 0; i < length; i++) {
-            char c = string.charAt(i);
-            if (Reference.isValid(c))
-                stb.append(c);
-            else if (c == '%') {
-                if (encode)
-                    toHex(c, stb);
-                else {
-                    checkForHexDigitAndAppend(string, i, stb);
-                    i += 2;
-                }
-            } else
-                toHexOrReject(c, stb, encode);
-        }
-        return stb.toString();
     }
 }
