@@ -149,7 +149,8 @@ public class TunnelService {
     private volatile boolean userAgentTunnel;
 
     /**
-     * Constructor.
+     * Constructor that enables the query tunnel and disables the extensions and
+     * user agent tunnels.
      * 
      * @param enabled
      *                True if the service has been enabled.
@@ -166,7 +167,7 @@ public class TunnelService {
     }
 
     /**
-     * Constructor.
+     * Constructor that disables the user agent tunnel.
      * 
      * @param enabled
      *                True if the service has been enabled.
@@ -185,8 +186,8 @@ public class TunnelService {
     public TunnelService(boolean enabled, boolean methodTunnel,
             boolean preferencesTunnel, boolean queryTunnel,
             boolean extensionsTunnel) {
-        this(enabled, methodTunnel, preferencesTunnel, true, extensionsTunnel,
-                false);
+        this(enabled, methodTunnel, preferencesTunnel, queryTunnel,
+                extensionsTunnel, false);
     }
 
     /**
@@ -360,10 +361,9 @@ public class TunnelService {
 
     /**
      * Indicates if the client preferences can be tunnelled via the query
-     * parameters.
+     * parameters or file extensions.
      * 
-     * @return True if the client preferences can be tunnelled via the query
-     *         parameters.
+     * @return True if the client preferences can be tunnelled.
      */
     public boolean isPreferencesTunnel() {
         return this.preferencesTunnel;
@@ -371,10 +371,9 @@ public class TunnelService {
 
     /**
      * Indicates if the method and client preferences can be tunnelled via query
-     * parameters.
+     * parameters or file extensions.
      * 
-     * @return True if the method and client preferences can be tunnelled via
-     *         query parameters.
+     * @return True if the method and client preferences can be tunnelled.
      */
     public boolean isQueryTunnel() {
         return queryTunnel;
