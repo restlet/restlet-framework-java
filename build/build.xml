@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+﻿<?xml version="1.0"?>
 
 <!-- ========================================================
      Restlet build file  -  Copyright 2005-2007 Jerome LOUVEL
@@ -9,6 +9,10 @@
    <!-- ===  Properties setting  === -->
    <!-- ============================ -->
 
+
+   <!-- Load system specific properties -->
+   <property file="custom.properties" />
+   
    <!-- Load system specific paths -->
    <property file="build.properties" />
 
