@@ -900,21 +900,21 @@
          <property name="mod-dir-@{name}-maven2" value="${dist-maven2}/${mod-dir-@{name}-maven-groupId}/${mod-pom-@{name}-artifactId}/${version-maven}" />
          <mkdir dir="${mod-dir-@{name}-maven2}" />
 
-         <copy file="${dist-classic}/lib/${mod-@{name}-id}.jar" tofile="${mod-dir-@{name}-maven2}/${lib-pom-@{name}-artifactId}-${version-maven}.jar" overwrite="true" />
+         <copy file="${dist-classic}/lib/${mod-@{name}-id}.jar" tofile="${mod-dir-@{name}-maven2}/${mod-pom-@{name}-artifactId}-${version-maven}.jar" overwrite="true" />
 
-         <jar destfile="${mod-dir-@{name}-maven2}/${lib-pom-@{name}-artifactId}-${version-maven}-sources.jar" filesetmanifest="merge">
+         <jar destfile="${mod-dir-@{name}-maven2}/${mod-pom-@{name}-artifactId}-${version-maven}-sources.jar" filesetmanifest="merge">
             <fileset dir="${mod}/${mod-@{name}-id}/src" includes="**/*" />
          </jar>
 
          <copy file="${temp}/poms/${mod-@{name}-id}.pom" 
-               tofile="${mod-dir-@{name}-maven2}/${lib-pom-@{name}-artifactId}-${version-maven}.pom" 
+               tofile="${mod-dir-@{name}-maven2}/${mod-pom-@{name}-artifactId}-${version-maven}.pom" 
                overwrite="true" />
-         <checksum file="${mod-dir-@{name}-maven2}/${lib-pom-@{name}-artifactId}-${version-maven}.jar"/>
-         <checksum file="${mod-dir-@{name}-maven2}/${lib-pom-@{name}-artifactId}-${version-maven}.jar" algorithm="SHA" fileext=".sha1"/>
-         <checksum file="${mod-dir-@{name}-maven2}/${lib-pom-@{name}-artifactId}-${version-maven}-sources.jar"/>
-         <checksum file="${mod-dir-@{name}-maven2}/${lib-pom-@{name}-artifactId}-${version-maven}-sources.jar" algorithm="SHA" fileext=".sha1"/>
-         <checksum file="${mod-dir-@{name}-maven2}/${lib-pom-@{name}-artifactId}-${version-maven}.pom"/>
-         <checksum file="${mod-dir-@{name}-maven2}/${lib-pom-@{name}-artifactId}-${version-maven}.pom" algorithm="SHA" fileext=".sha1"/>
+         <checksum file="${mod-dir-@{name}-maven2}/${mod-pom-@{name}-artifactId}-${version-maven}.jar"/>
+         <checksum file="${mod-dir-@{name}-maven2}/${mod-pom-@{name}-artifactId}-${version-maven}.jar" algorithm="SHA" fileext=".sha1"/>
+         <checksum file="${mod-dir-@{name}-maven2}/${mod-pom-@{name}-artifactId}-${version-maven}-sources.jar"/>
+         <checksum file="${mod-dir-@{name}-maven2}/${mod-pom-@{name}-artifactId}-${version-maven}-sources.jar" algorithm="SHA" fileext=".sha1"/>
+         <checksum file="${mod-dir-@{name}-maven2}/${mod-pom-@{name}-artifactId}-${version-maven}.pom"/>
+         <checksum file="${mod-dir-@{name}-maven2}/${mod-pom-@{name}-artifactId}-${version-maven}.pom" algorithm="SHA" fileext=".sha1"/>
       </sequential>
    </macrodef>
    
