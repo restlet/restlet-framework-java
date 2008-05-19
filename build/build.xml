@@ -855,13 +855,18 @@
          </condition>
          <property name="lib-pom-@{name}-version" value="${lib-@{name}-version}" />
 
+         <condition property="lib-pom-@{name}-artifactId" value="${lib-@{name}-maven-artifactId}">
+            <isset property="lib-@{name}-maven-artifactId" />
+         </condition>
+         <property name="lib-pom-@{name}-artifactId" value="${lib-@{name}-package}" />
+
          <propertyregex property="lib-dir-@{name}-maven-groupId"
                     input="${lib-@{name}-maven-groupId}"
                     regexp="\."
                     replace="/"
                     global="true"
                     casesensitive="false" />
-         <property name="lib-dir-@{name}-maven2" value="${dist-maven2}/${lib-dir-@{name}-maven-groupId}/${lib-@{name}-package}/${lib-pom-@{name}-version}" />
+         <property name="lib-dir-@{name}-maven2" value="${dist-maven2}/${lib-dir-@{name}-maven-groupId}/${lib-pom-@{name}-artifactId}/${lib-pom-@{name}-version}" />
          <mkdir dir="${lib-dir-@{name}-maven2}" />
 
          <copy file="${dist-classic}/lib/${lib-@{name}-maven-groupId}_${lib-@{name}-version}/${lib-@{name}-package}.jar" tofile="${lib-dir-@{name}-maven2}/${lib-@{name}-package}-${lib-pom-@{name}-version}.jar" overwrite="true" />
@@ -882,8 +887,13 @@
                     replace="/"
                     global="true"
                     casesensitive="false" />
+         <condition property="mod-pom-@{name}-artifactId" value="${mod-@{name}-maven-artifactId}">
+            <isset property="mod-@{name}-maven-artifactId" />
+         </condition>
+         <property name="mod-pom-@{name}-artifactId" value="${mod-@{name}-package}" />
+
          <!-- All files generated from the modules are stampped with the current full version number -->
-         <property name="mod-dir-@{name}-maven2" value="${dist-maven2}/${mod-dir-@{name}-maven-groupId}/${mod-@{name}-package}/${version-maven}" />
+         <property name="mod-dir-@{name}-maven2" value="${dist-maven2}/${mod-dir-@{name}-maven-groupId}/${mod-pom-@{name}-artifactId}/${version-maven}" />
          <mkdir dir="${mod-dir-@{name}-maven2}" />
 
          <copy file="${dist-classic}/lib/${mod-@{name}-id}.jar" tofile="${mod-dir-@{name}-maven2}/${mod-@{name}-package}-${version-maven}.jar" overwrite="true" />
