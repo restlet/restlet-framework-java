@@ -24,6 +24,7 @@ import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
@@ -43,7 +44,8 @@ public class JsonRepresentation extends StringRepresentation {
      *                The JSON object.
      */
     public JsonRepresentation(JSONObject jsonObject) {
-        super(jsonObject.toString(), MediaType.APPLICATION_JSON);
+        super(jsonObject.toString(), MediaType.APPLICATION_JSON, null,
+                CharacterSet.UTF_8);
     }
 
     /**
@@ -76,7 +78,8 @@ public class JsonRepresentation extends StringRepresentation {
      */
     public JsonRepresentation(Representation jsonRepresentation)
             throws IOException {
-        super(jsonRepresentation.getText(), MediaType.APPLICATION_JSON);
+        super(jsonRepresentation.getText(), MediaType.APPLICATION_JSON, null,
+                CharacterSet.UTF_8);
     }
 
     /**
@@ -86,7 +89,17 @@ public class JsonRepresentation extends StringRepresentation {
      *                The JSON string.
      */
     public JsonRepresentation(String jsonString) {
-        super(jsonString, MediaType.APPLICATION_JSON);
+        super(jsonString, MediaType.APPLICATION_JSON, null, CharacterSet.UTF_8);
+    }
+
+    /**
+     * This operation is not supported since UTF-8 is the only character set
+     * allowed for JSON data.
+     */
+    @Override
+    public void setCharacterSet(CharacterSet characterSet)
+            throws UnsupportedOperationException {
+        throw new UnsupportedOperationException("");
     }
 
     /**

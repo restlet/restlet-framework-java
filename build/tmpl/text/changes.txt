@@ -15,6 +15,8 @@ Changes log
           by Alex Milowski.
         - Series.getValues() was not respecting the 'ignoreCase' 
           parameter. Contributed by Stephan Koops.
+        - Allowed only UTF-8 character set for JsonRepresentation. 
+          Reported by Michael Böckling.
     - API Enhancements
         - Matrix parameters are now fully supported by the Reference 
           and the Form classes. Added many new methods, similar to the
