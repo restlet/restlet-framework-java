@@ -714,12 +714,18 @@
          <condition property="mod-pom-@{name}-version" value="${lib-@{name}-version}-${lib-@{name}-suffix-maven}">
             <isset property="lib-@{name}-suffix-maven" />
          </condition>
-         <property name="mod-pom-@{name}-version" value="${lib-@{name}-version}" />         
+         <property name="mod-pom-@{name}-version" value="${lib-@{name}-version}" />
+
+         <condition property="mod-pom-@{name}-artifactId" value="${mod-@{name}-maven-artifactId}">
+            <isset property="mod-@{name}-maven-artifactId" />
+         </condition>
+         <property name="mod-pom-@{name}-artifactId" value="${mod-@{name}-package}" />
+
          <copy file="${tmpl}/poms/${mod-@{name}-package}.pom" tofile="${temp}/poms/${mod-@{name}-id}.pom" overwrite="true" />
          <replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@version@" value="${version-maven}" />
          <replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@lib-@{name}-version@" value="${mod-pom-@{name}-version}" />
          <replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@group-id@" value="${mod-@{name}-maven-groupId}" />
-         <replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@artifact-id@" value="${mod-@{name}-package}" />
+         <replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@artifact-id@" value="${mod-pom-@{name}-artifactId}" />
          <replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@lib-@{ext1}-version@" value="${lib-@{ext1}-version}" />
          <replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@lib-@{ext2}-version@" value="${lib-@{ext2}-version}" />
          <replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@lib-@{ext3}-version@" value="${lib-@{ext3}-version}" />
@@ -749,11 +755,16 @@
             <isset property="lib-@{name}-suffix-maven" />
          </condition>
          <property name="lib-pom-@{name}-version" value="${lib-@{name}-version}" />
-         
+
+         <condition property="lib-pom-@{name}-artifactId" value="${lib-@{name}-maven-artifactId}">
+            <isset property="lib-@{name}-maven-artifactId" />
+         </condition>
+         <property name="lib-pom-@{name}-artifactId" value="${lib-@{name}-package}" />
+      	
          <copy file="${tmpl}/poms/${lib-@{name}-package}.pom" tofile="${temp}/poms/${lib-@{name}-id}.pom" overwrite="true" />
          <replace file="${temp}/poms/${lib-@{name}-id}.pom" token="@version@" value="${lib-pom-@{name}-version}" />
          <replace file="${temp}/poms/${lib-@{name}-id}.pom" token="@group-id@" value="${lib-@{name}-maven-groupId}" />
-         <replace file="${temp}/poms/${lib-@{name}-id}.pom" token="@artifact-id@" value="${lib-@{name}-package}" />
+         <replace file="${temp}/poms/${lib-@{name}-id}.pom" token="@artifact-id@" value="${lib-pom-@{name}-artifactId}" />
          <if>
             <not><equals arg1="@{depend1}" arg2="-" /></not>
             <then>
