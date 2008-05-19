@@ -1454,6 +1454,7 @@
       <delete dir="${dist-maven2}" verbose="false" quiet="true" includeEmptyDirs="true" />
       <maven2Module name="api"/>
       <maven2Module name="ri"/>
+      <maven2Module name="atom" />
       <maven2Module name="example" />
       <maven2Module name="fileupload" />
       <maven2Module name="freemarker" />
