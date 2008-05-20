@@ -93,16 +93,6 @@ public class JsonRepresentation extends StringRepresentation {
     }
 
     /**
-     * This operation is not supported since UTF-8 is the only character set
-     * allowed for JSON data.
-     */
-    @Override
-    public void setCharacterSet(CharacterSet characterSet)
-            throws UnsupportedOperationException {
-        throw new UnsupportedOperationException("");
-    }
-
-    /**
      * Converts the representation to a JSON array.
      * 
      * @return The converted JSON array.
