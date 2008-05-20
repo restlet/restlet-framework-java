@@ -1,9 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: Noelios Restlet Engine - Extension - Java ssl utils
-Bundle-SymbolicName: com.noelios.restlet.ext.ssl
-Bundle-Version: 1.1
-Bundle-Vendor: Noelios Consulting
-Export-Package: 
-Import-Package: jsslutils.sslcontext,
- jsslutils.sslcontext.trustmanagers
