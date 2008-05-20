@@ -665,15 +665,6 @@ public class JaxRsUriInfo implements UriInfo {
     }
 
     /**
-     * @param pathParametersEncoded
-     *                the pathParametersEncoded to set
-     */
-    protected void setPathParametersEncoded(
-            MultivaluedMap<String, String> templateParametersEncoded) {
-        this.pathParametersEncoded = templateParametersEncoded;
-    }
-
-    /**
      * Sets this JaxRsUriInfo to be read only. This is the default. This method
      * is intended to be used by {@link CallContext#setReadOnly()}. Ignored by
      * {@link #addForAncestor(Object, String)}.

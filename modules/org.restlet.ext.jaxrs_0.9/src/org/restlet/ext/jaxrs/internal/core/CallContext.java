@@ -213,12 +213,12 @@ public class CallContext extends JaxRsUriInfo implements UriInfo,
     }
 
     /**
-     * @param key
-     * @param value
+     * @param varName
+     * @param varValue
      */
-    public void addPathParamsEnc(String key, String value) {
+    public void addPathParamsEnc(String varName, String varValue) {
         checkChangeable();
-        interalGetPathParamsEncoded().add(key, value);
+        interalGetPathParamsEncoded().add(varName, varValue);
     }
 
     private boolean checkIfOneMatch(List<Tag> requestETags, Tag entityTag) {
@@ -506,8 +506,8 @@ public class CallContext extends JaxRsUriInfo implements UriInfo,
      * @see #pathParamEncIter(PathParam)
      */
     public String getLastPathParamEnc(PathParam annotation) {
-        String key = annotation.value();
-        List<String> values = interalGetPathParamsEncoded().get(key);
+        String varName = annotation.value();
+        List<String> values = interalGetPathParamsEncoded().get(varName);
         if (values == null || values.isEmpty())
             return null;
         return Util.getLastElement(values);
@@ -542,8 +542,9 @@ public class CallContext extends JaxRsUriInfo implements UriInfo,
     /**
      * @see javax.ws.rs.core.HttpHeaders#getRequestHeader(java.lang.String)
      */
-    public List<String> getRequestHeader(String name) {
-        String[] values = Util.getHttpHeaders(request).getValuesArray(name);
+    public List<String> getRequestHeader(String headerName) {
+        String[] values;
+        values = Util.getHttpHeaders(request).getValuesArray(headerName);
         return Collections.unmodifiableList(Arrays.asList(values));
     }
 
@@ -642,14 +643,14 @@ public class CallContext extends JaxRsUriInfo implements UriInfo,
     /**
      * Creates a response with status 412 (Precondition Failed).
      * 
-     * @param message
+     * @param entityMessage
      *                Plain Text error message. Will be returned as entity.
      * @return Returns a response with status 412 (Precondition Failed) and the
      *         given message as entity.
      */
-    private ResponseBuilder precFailed(String message) {
+    private ResponseBuilder precFailed(String entityMessage) {
         ResponseBuilder rb = Response.status(STATUS_PREC_FAILED);
-        rb.entity(message);
+        rb.entity(entityMessage);
         rb.language(Language.ENGLISH.getName());
         rb.type(Converter.toJaxRsMediaType(
                 org.restlet.data.MediaType.TEXT_PLAIN, null));

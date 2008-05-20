@@ -79,237 +79,16 @@ import org.restlet.util.Series;
  */
 public class ParameterList {
 
-    static class CookieParamGetter extends NoEncParamGetter {
-
-        private final CookieParam cookieParam;
-
-        /**
-         * Constructor to be used, if only {@link #getParamValue()} is needed.
-         * 
-         * @param annoSaysLeaveEncoded
-         *                to check if the annotation is available.
-         */
-        CookieParamGetter(CookieParam cookieParam, DefaultValue defaultValue,
-                Class<?> convToCl, Type convToGen,
-                ThreadLocalizedContext tlContext, boolean annoSaysLeaveEncoded) {
-            super(defaultValue, convToCl, convToGen, tlContext,
-                    annoSaysLeaveEncoded);
-            this.cookieParam = cookieParam;
-        }
-
-        /**
-         * @see org.restlet.ext.jaxrs.internal.wrappers.IntoRrcInjector.AbstractParamGetter#getParamValue()
-         */
-        @Override
-        @SuppressWarnings("unchecked")
-        public Object getParamValue() {
-            String cookieName = cookieParam.value();
-            Series<org.restlet.data.Cookie> cookies;
-            cookies = tlContext.get().getRequest().getCookies();
-            if (convertTo.equals(Cookie.class)) {
-                Collection<Cookie> coll = createColl();
-                for (org.restlet.data.Cookie rc : cookies) {
-                    if (!rc.getName().equals(cookieName))
-                        continue;
-                    Cookie cookie = Converter.toJaxRsCookie(rc);
-                    if (coll == null) // no collection requested
-                        return cookie;
-                    coll.add(cookie);
-                }
-                if (coll == null)
-                    return null;
-                if (coll.isEmpty()) {
-                    String value = defaultValue.value();
-                    coll.add(new Cookie(cookieName, value));
-                }
-                if (isArray)
-                    return Util.toArray(coll, Cookie.class);
-                return coll;
-            }
-            try {
-                if (this.collType == null) { // no collection parameter
-                    String firstCookieValue = WrapperUtil.getValue(cookies
-                            .getFirst(cookieName));
-                    return convertParamValue(firstCookieValue);
-                }
-                return convertParamValues(new ParamValueIter((Series) cookies
-                        .subList(cookieName)));
-            } catch (ConvertParameterException e) {
-                throw new ConvertCookieParamException(e);
-            }
-        }
-    }
-
-    /**
-     * Abstract super class for access to the entity or to &#64;*Param where
-     * encoded is allowed (&#64;{@link PathParam}, &#64;{@link MatrixParam}
-     * and &#64;{@link QueryParam}).
-     */
-    abstract static class EncParamGetter extends AbstractParamGetter {
-
-        private final boolean encode;
-
-        /**
-         * Constructor to be used, if only {@link #getParamValue()} is needed.
-         */
-        EncParamGetter(DefaultValue defaultValue, Class<?> convToCl,
-                Type convToGen, ThreadLocalizedContext tlContext, boolean encode) {
-            super(defaultValue, convToCl, convToGen, tlContext);
-            this.encode = encode;
-        }
-
-        @Override
-        protected boolean encode() {
-            return this.encode;
-        }
-    }
-
-    static class HeaderParamGetter extends NoEncParamGetter {
-
-        private final HeaderParam headerParam;
-
-        /**
-         * Constructor to be used, if only {@link #getParamValue()} is needed.
-         * 
-         * 
-         * @param annoSaysLeaveEncoded
-         *                to check if the annotation is available.
-         */
-        HeaderParamGetter(HeaderParam headerParam, DefaultValue defaultValue,
-                Class<?> convToCl, Type paramGenericType,
-                ThreadLocalizedContext tlContext, boolean annoSaysLeaveEncoded) {
-            super(defaultValue, convToCl, paramGenericType, tlContext,
-                    annoSaysLeaveEncoded);
-            this.headerParam = headerParam;
-        }
-
-        /**
-         * @see org.restlet.ext.jaxrs.internal.wrappers.IntoRrcInjector.AbstractParamGetter#getParamValue()
-         */
-        @Override
-        public Object getParamValue() {
-            Form httpHeaders = Util
-                    .getHttpHeaders(tlContext.get().getRequest());
-            String headerName = headerParam.value();
-            try {
-                if (this.collType == null) { // no collection parameter
-                    String firstHeader = WrapperUtil.getValue(httpHeaders
-                            .getFirst(headerName, true));
-                    return convertParamValue(firstHeader);
-                }
-                return convertParamValues(new ParamValueIter(httpHeaders
-                        .subList(headerName, true)));
-            } catch (ConvertParameterException e) {
-                throw new ConvertHeaderParamException(e);
-            }
-        }
-    }
-
-    static interface ParamGetter {
-
-        /**
-         * Returns the value for this param.
-         * 
-         * @return the value for this param.
-         * @throws InvocationTargetException
-         * @throws ConvertRepresentationException
-         * @throws WebApplicationException
-         */
-        abstract Object getValue() throws InvocationTargetException,
-                ConvertRepresentationException, WebApplicationException;
-    }
-
-    static class MatrixParamGetter extends EncParamGetter {
-
-        private final MatrixParam matrixParam;
-
-        /**
-         * Constructor to be used, if only {@link #getParamValue()} is needed.
-         */
-        MatrixParamGetter(MatrixParam matrixParam, DefaultValue defaultValue,
-                Class<?> convToCl, Type convToGen,
-                ThreadLocalizedContext tlContext, boolean encode) {
-            super(defaultValue, convToCl, convToGen, tlContext, encode);
-            this.matrixParam = matrixParam;
-        }
-
-        /**
-         * @see IntoRrcInjector.AbstractParamGetter#getParamValue()
-         */
-        @Override
-        public Object getParamValue() {
-            // LATER test: de/encode: Encoded of field or bean setter
-            CallContext callContext = tlContext.get();
-            try {
-                if (this.collType == null) { // no collection parameter
-                    String matrixParamValue = callContext
-                            .getLastMatrixParamEnc(matrixParam);
-                    return convertParamValue(matrixParamValue);
-                }
-                Iterator<String> matrixParamValues = callContext
-                        .matrixParamEncIter(matrixParam);
-                return convertParamValues(matrixParamValues);
-            } catch (ConvertParameterException e) {
-                throw new ConvertMatrixParamException(e);
-            }
-        }
-    }
-
-    /**
-     * Abstract super class for access to the entity or to &#64;*Param where
-     * encoded is allowed (&#64;{@link PathParam}, &#64;{@link MatrixParam}
-     * and &#64;{@link QueryParam}).
-     */
-    abstract static class NoEncParamGetter extends AbstractParamGetter {
-
-        /**
-         * Constructor to be used, if only {@link #getParamValue()} is needed.
-         * 
-         * @param annoSaysLeaveEncoded
-         *                to check if the annotation is available.
-         */
-        NoEncParamGetter(DefaultValue defaultValue, Class<?> convToCl,
-                Type convToGen, ThreadLocalizedContext tlContext,
-                boolean annoSaysLeaveEncoded) {
-            super(defaultValue, convToCl, convToGen, tlContext);
-            checkForEncodedAnno(annoSaysLeaveEncoded);
-        }
-
-        /**
-         * Checks if the annotation &#64;{@link Encoded} is available on the
-         * given field or bean setter. If yes, if logs a warning.
-         * 
-         * @param fieldOrBeanSetter
-         */
-        void checkForEncodedAnno(AccessibleObject fieldOrBeanSetter) {
-            checkForEncodedAnno(fieldOrBeanSetter
-                    .isAnnotationPresent(Encoded.class));
-        }
-
-        /**
-         * Checks if the annotation &#64;{@link Encoded} is available on the
-         * given field or bean setter. If yes, if logs a warning.
-         * 
-         * @param fieldOrBeanSetter
-         */
-        void checkForEncodedAnno(boolean annoSaysLeaveEncoded) {
-            if (annoSaysLeaveEncoded)
-                localLogger
-                        .warning("You should not use @Encoded on a @HeaderParam or @CookieParam. Will ignore it");
-        }
-
-        @Override
-        protected boolean encode() {
-            return false;
-        }
-    }
-
     /**
      * Abstract super class for access to &#64;*Param.
      */
     abstract static class AbstractParamGetter implements ParamGetter {
 
-        protected final ThreadLocalizedContext tlContext;
+        /**
+         * The type of the collection. null, if this parameter do not represent
+         * a collection.
+         */
+        protected final Class<Collection<?>> collType;
 
         /**
          * The class to convert to. If this object getter represents an *Param
@@ -318,12 +97,6 @@ public class ParameterList {
          * generic type of it.
          */
         protected final Class<?> convertTo;
-
-        /**
-         * The type of the collection. null, if this parameter do not represent
-         * a collection.
-         */
-        protected final Class<Collection<?>> collType;
 
         /**
          * The default value for this parameter (if given)
@@ -336,12 +109,8 @@ public class ParameterList {
          */
         protected final boolean isArray;
 
-        /**
-         * Constructor to be used, if only {@link #getParamValue()} is needed.
-         * 
-         * @param fieldOrBeanSetter
-         * @param tlContext
-         */
+        protected final ThreadLocalizedContext tlContext;
+
         @SuppressWarnings("unchecked")
         AbstractParamGetter(DefaultValue defaultValue, Class<?> convToCl,
                 Type convToGen, ThreadLocalizedContext tlContext) {
@@ -360,7 +129,7 @@ public class ParameterList {
                     throw new NotYetImplementedException(
                             "Sorry, only Class is supported, but is "
                                     + argTypes[0]);
-                // TESTEN with generic parameter
+                // TESTEN @*Param with array/collection and generic parameter
                 this.collType = collType(parametrizedType);
                 this.isArray = false;
             } else {
@@ -370,42 +139,39 @@ public class ParameterList {
             }
         }
 
-        /**
-         * @return an new created instance of {@link #collType}. Returns null,
-         *         if collType is null.
-         */
-        @SuppressWarnings("unchecked")
-        protected <A> Collection<A> createColl() {
-            try {
-                if (this.collType != null)
-                    return (Collection) collType.newInstance();
-                return null;
-            } catch (Exception e) {
-                throw new RuntimeException(
-                        "Could not instantiate the collection type " + collType,
-                        e);
-            }
-        }
-
-        protected abstract boolean encode();
-
-        /**
-         * @return
-         */
-        public abstract Object getParamValue();
-
-        public Object getValue() {
-            return getParamValue();
-        }
-
-        /**
-         * @param firstHeader
-         * @return
-         * @throws ConvertParameterException
-         */
         protected Object convertParamValue(String firstHeader)
                 throws ConvertParameterException {
             return convertParamValue(firstHeader, defaultValue);
+        }
+
+        /**
+         * Converts the given paramValue (found in the path, query, matrix or
+         * header) into the given paramClass.
+         * 
+         * @param paramValue
+         * @param defaultValue
+         * @return
+         * @throws ConvertParameterException
+         * @see PathParam
+         * @see MatrixParam
+         * @see QueryParam
+         * @see HeaderParam
+         * @see CookieParam
+         */
+        protected Object convertParamValue(String paramValue,
+                DefaultValue defaultValue) throws ConvertParameterException {
+            if (encode() && paramValue != null)
+                paramValue = Reference.decode(paramValue);
+            else if (paramValue == null && defaultValue != null)
+                paramValue = defaultValue.value();
+            if (convertTo.equals(String.class)) // optimization
+                return paramValue;
+            if (convertTo.isPrimitive()) {
+                if (paramValue != null && paramValue.length() <= 0)
+                    paramValue = defaultValue.value();
+                return getParamValueForPrimitive(paramValue);
+            }
+            return convertParamValueInner(paramValue, defaultValue);
         }
 
         /**
@@ -413,7 +179,6 @@ public class ParameterList {
          * 
          * @param paramValue
          * @param defaultValue
-         * 
          * @return
          * @throws ConvertParameterException
          * @throws WebApplicationException
@@ -475,42 +240,6 @@ public class ParameterList {
             }
         }
 
-        /**
-         * Converts the given paramValue (found in the path, query, matrix or
-         * header) into the given paramClass.
-         * 
-         * @param paramValue
-         * @param defaultValue
-         *                see {@link DefaultValue}
-         * @param jaxRsRouter
-         * @return
-         * @throws ConvertParameterException
-         * @see PathParam
-         * @see MatrixParam
-         * @see QueryParam
-         * @see HeaderParam
-         */
-        protected Object convertParamValue(String paramValue,
-                DefaultValue defaultValue) throws ConvertParameterException {
-            if (encode() && paramValue != null)
-                paramValue = Reference.decode(paramValue);
-            else if (paramValue == null && defaultValue != null)
-                paramValue = defaultValue.value();
-            if (convertTo.equals(String.class)) // optimization
-                return paramValue;
-            if (convertTo.isPrimitive()) {
-                if (paramValue != null && paramValue.length() <= 0)
-                    paramValue = defaultValue.value();
-                return getParamValueForPrimitive(paramValue);
-            }
-            return convertParamValueInner(paramValue, defaultValue);
-        }
-
-        /**
-         * @param paramValueIter
-         * @return
-         * @throws ConvertParameterException
-         */
         protected Object convertParamValues(Iterator<String> paramValueIter)
                 throws ConvertParameterException {
             Collection<Object> coll = createColl();
@@ -528,9 +257,29 @@ public class ParameterList {
         }
 
         /**
-         * @param paramValue
-         * @throws ConvertParameterException
+         * @return an new created instance of {@link #collType}. Returns null,
+         *         if collType is null.
          */
+        @SuppressWarnings("unchecked")
+        protected <A> Collection<A> createColl() {
+            try {
+                if (this.collType != null)
+                    return (Collection) collType.newInstance();
+                return null;
+            } catch (Exception e) {
+                throw new RuntimeException(
+                        "Could not instantiate the collection type " + collType,
+                        e);
+            }
+        }
+
+        protected abstract boolean encode();
+
+        /**
+         * @return the concrete value of this parameter for the current request.
+         */
+        public abstract Object getParamValue();
+
         protected Object getParamValueForPrimitive(String paramValue)
                 throws ConvertParameterException {
             try {
@@ -593,20 +342,221 @@ public class ParameterList {
                 warning = "an object should be converted to a "
                         + this.convertTo
                         + ", but here are only primitives allowed.";
-            Logger.getAnonymousLogger().warning(warning);
+            localLogger.warning(warning);
             ResponseBuilder rb = javax.ws.rs.core.Response.serverError();
             rb.entity(warning);
             throw new WebApplicationException(rb.build());
         }
+
+        public Object getValue() {
+            return getParamValue();
+        }
+    }
+
+    static class CookieParamGetter extends NoEncParamGetter {
+
+        private final CookieParam cookieParam;
+
+        /**
+         * @param annoSaysLeaveEncoded
+         *                to check if the annotation is available, but should
+         *                not be.
+         */
+        CookieParamGetter(CookieParam cookieParam, DefaultValue defaultValue,
+                Class<?> convToCl, Type convToGen,
+                ThreadLocalizedContext tlContext, boolean annoSaysLeaveEncoded) {
+            super(defaultValue, convToCl, convToGen, tlContext,
+                    annoSaysLeaveEncoded);
+            this.cookieParam = cookieParam;
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public Object getParamValue() {
+            String cookieName = cookieParam.value();
+            Series<org.restlet.data.Cookie> cookies;
+            cookies = tlContext.get().getRequest().getCookies();
+            if (convertTo.equals(Cookie.class)) {
+                Collection<Cookie> coll = createColl();
+                for (org.restlet.data.Cookie rc : cookies) {
+                    if (!rc.getName().equals(cookieName))
+                        continue;
+                    Cookie cookie = Converter.toJaxRsCookie(rc);
+                    if (coll == null) // no collection requested
+                        return cookie;
+                    coll.add(cookie);
+                }
+                if (coll == null)
+                    return null;
+                if (coll.isEmpty()) {
+                    String value = defaultValue.value();
+                    coll.add(new Cookie(cookieName, value));
+                }
+                if (isArray)
+                    return Util.toArray(coll, Cookie.class);
+                return coll;
+            }
+            try {
+                if (this.collType == null) { // no collection parameter
+                    String firstCookieValue = WrapperUtil.getValue(cookies
+                            .getFirst(cookieName));
+                    return convertParamValue(firstCookieValue);
+                }
+                return convertParamValues(new ParamValueIter((Series) cookies
+                        .subList(cookieName)));
+            } catch (ConvertParameterException e) {
+                throw new ConvertCookieParamException(e);
+            }
+        }
+    }
+
+    /**
+     * Abstract super class for access to the entity or to &#64;*Param where
+     * encoded is allowed (&#64;{@link PathParam}, &#64;{@link MatrixParam}
+     * and &#64;{@link QueryParam}).
+     */
+    abstract static class EncParamGetter extends AbstractParamGetter {
+
+        private final boolean encode;
+
+        EncParamGetter(DefaultValue defaultValue, Class<?> convToCl,
+                Type convToGen, ThreadLocalizedContext tlContext, boolean encode) {
+            super(defaultValue, convToCl, convToGen, tlContext);
+            this.encode = encode;
+        }
+
+        @Override
+        protected boolean encode() {
+            return this.encode;
+        }
+    }
+
+    static class HeaderParamGetter extends NoEncParamGetter {
+
+        private final HeaderParam headerParam;
+
+        /**
+         * @param annoSaysLeaveEncoded
+         *                to check if the annotation is available.
+         */
+        HeaderParamGetter(HeaderParam headerParam, DefaultValue defaultValue,
+                Class<?> convToCl, Type paramGenericType,
+                ThreadLocalizedContext tlContext, boolean annoSaysLeaveEncoded) {
+            super(defaultValue, convToCl, paramGenericType, tlContext,
+                    annoSaysLeaveEncoded);
+            this.headerParam = headerParam;
+        }
+
+        @Override
+        public Object getParamValue() {
+            Form httpHeaders = Util
+                    .getHttpHeaders(tlContext.get().getRequest());
+            String headerName = headerParam.value();
+            try {
+                if (this.collType == null) { // no collection parameter
+                    String firstHeader = WrapperUtil.getValue(httpHeaders
+                            .getFirst(headerName, true));
+                    return convertParamValue(firstHeader);
+                }
+                return convertParamValues(new ParamValueIter(httpHeaders
+                        .subList(headerName, true)));
+            } catch (ConvertParameterException e) {
+                throw new ConvertHeaderParamException(e);
+            }
+        }
+    }
+
+    static class MatrixParamGetter extends EncParamGetter {
+
+        private final MatrixParam matrixParam;
+
+        MatrixParamGetter(MatrixParam matrixParam, DefaultValue defaultValue,
+                Class<?> convToCl, Type convToGen,
+                ThreadLocalizedContext tlContext, boolean encode) {
+            super(defaultValue, convToCl, convToGen, tlContext, encode);
+            this.matrixParam = matrixParam;
+        }
+
+        @Override
+        public Object getParamValue() {
+            // LATER test: de/encode: Encoded of field or bean setter
+            CallContext callContext = tlContext.get();
+            try {
+                if (this.collType == null) { // no collection parameter
+                    String matrixParamValue = callContext
+                            .getLastMatrixParamEnc(matrixParam);
+                    return convertParamValue(matrixParamValue);
+                }
+                Iterator<String> matrixParamValues;
+                matrixParamValues = callContext.matrixParamEncIter(matrixParam);
+                return convertParamValues(matrixParamValues);
+            } catch (ConvertParameterException e) {
+                throw new ConvertMatrixParamException(e);
+            }
+        }
+    }
+
+    /**
+     * Abstract super class for access to the entity or to &#64;*Param where
+     * encoded is allowed (&#64;{@link PathParam}, &#64;{@link MatrixParam}
+     * and &#64;{@link QueryParam}).
+     */
+    abstract static class NoEncParamGetter extends AbstractParamGetter {
+
+        /**
+         * @param annoSaysLeaveEncoded
+         *                to check if the annotation is available.
+         */
+        NoEncParamGetter(DefaultValue defaultValue, Class<?> convToCl,
+                Type convToGen, ThreadLocalizedContext tlContext,
+                boolean annoSaysLeaveEncoded) {
+            super(defaultValue, convToCl, convToGen, tlContext);
+            checkForEncodedAnno(annoSaysLeaveEncoded);
+        }
+
+        /**
+         * Checks if the annotation &#64;{@link Encoded} is available on the
+         * given field or bean setter. If yes, a warning is logged.
+         */
+        void checkForEncodedAnno(AccessibleObject fieldOrBeanSetter) {
+            checkForEncodedAnno(fieldOrBeanSetter
+                    .isAnnotationPresent(Encoded.class));
+        }
+
+        /**
+         * Checks if the annotation &#64;{@link Encoded} is available on the
+         * given field or bean setter. If yes, this method logs a warning.
+         */
+        void checkForEncodedAnno(boolean annoSaysLeaveEncoded) {
+            if (annoSaysLeaveEncoded)
+                localLogger
+                        .warning("You should not use @Encoded on a @HeaderParam or @CookieParam. Will ignore it");
+        }
+
+        @Override
+        protected boolean encode() {
+            return false;
+        }
+    }
+
+    static interface ParamGetter {
+
+        /**
+         * Returns the value for this param.
+         * 
+         * @return the value for this param.
+         * @throws InvocationTargetException
+         * @throws ConvertRepresentationException
+         * @throws WebApplicationException
+         */
+        public Object getValue() throws InvocationTargetException,
+                ConvertRepresentationException, WebApplicationException;
     }
 
     static class PathParamGetter extends EncParamGetter {
 
         private final PathParam pathParam;
 
-        /**
-         * Constructor to be used, if only {@link #getParamValue()} is needed.
-         */
         PathParamGetter(PathParam pathParam, DefaultValue defaultValue,
                 Class<?> convToCl, Type convToGen,
                 ThreadLocalizedContext tlContext, boolean encode) {
@@ -614,9 +564,6 @@ public class ParameterList {
             this.pathParam = pathParam;
         }
 
-        /**
-         * @see AbstractParamGetter#getParamValue()
-         */
         @Override
         public Object getParamValue() {
             // LATER test: de/encode: Encoded of field or bean setter
@@ -629,12 +576,12 @@ public class ParameterList {
             }
             try {
                 if (this.collType == null) { // no collection parameter
-                    String pathParamValue = callContext
-                            .getLastPathParamEnc(pathParam);
+                    String pathParamValue;
+                    pathParamValue = callContext.getLastPathParamEnc(pathParam);
                     return convertParamValue(pathParamValue);
                 }
-                Iterator<String> ppvIter = callContext
-                        .pathParamEncIter(pathParam);
+                Iterator<String> ppvIter;
+                ppvIter = callContext.pathParamEncIter(pathParam);
                 return convertParamValues(ppvIter);
             } catch (ConvertParameterException e) {
                 throw new ConvertPathParamException(e);
@@ -646,9 +593,6 @@ public class ParameterList {
 
         private final QueryParam queryParam;
 
-        /**
-         * Constructor to be used, if only {@link #getParamValue()} is needed.
-         */
         QueryParamGetter(QueryParam queryParam, DefaultValue defaultValue,
                 Class<?> convToCl, Type convToGen,
                 ThreadLocalizedContext tlContext, boolean encode) {
@@ -656,9 +600,6 @@ public class ParameterList {
             this.queryParam = queryParam;
         }
 
-        /**
-         * @see AbstractParamGetter#getParamValue()
-         */
         @Override
         public Object getParamValue() {
             // LATER test: de/encode: Encoded of field or bean setter
@@ -722,8 +663,7 @@ public class ParameterList {
         else if (rawType.equals(SortedSet.class))
             return (Class) TreeSet.class;
         else if (rawType.equals(Collection.class)) {
-            Logger logger = Logger.getAnonymousLogger();
-            logger.config(ParameterList.COLL_PARAM_NOT_DEFAULT);
+            localLogger.config(ParameterList.COLL_PARAM_NOT_DEFAULT);
             return (Class) ArrayList.class;
         }
         return null;
@@ -753,9 +693,6 @@ public class ParameterList {
 
     /**
      * Returns true, if one of the annotations is &#64;{@link Encoded}
-     * 
-     * @param annotations
-     * @return
      */
     static boolean getLeaveEncoded(Annotation[] annotations) {
         for (Annotation annot : annotations) {
@@ -766,8 +703,10 @@ public class ParameterList {
         return false;
     }
 
+    /** shortcut for {@link #parameters}.length */
     private final int paramCount;
 
+    /** @see #paramCount */
     private final ParamGetter[] parameters;
 
     /**
@@ -781,7 +720,7 @@ public class ParameterList {
      * @param extensionBackwardMapping
      * @param paramsAllowed
      *                true, if &#64;*Params are allowed as parameter, otherwise
-     *                false. LATER paramsAllowed not needed
+     *                false. LATER paramsAllowed not needed at this time
      * @param entityAllowed
      *                true, if the entity is allowed as parameter, otherwise
      *                false.
@@ -797,7 +736,7 @@ public class ParameterList {
             throws MissingAnnotationException {
         this.paramCount = parameterTypes.length;
         this.parameters = new ParamGetter[paramCount];
-        boolean entityAlreadyRequired = false;
+        boolean entityAlreadyRead = false;
         for (int i = 0; i < paramCount; i++) {
             Class<?> parameterType = parameterTypes[i];
             Type genParamType = genParamTypes[i];
@@ -823,43 +762,39 @@ public class ParameterList {
                             parameterType, genParamType, tlContext,
                             !leaveAllEncoded && !leaveThisEncoded);
                     continue;
-                }
-                if (cookieParam != null) {
+                } else if (cookieParam != null) {
                     parameters[i] = new CookieParamGetter(cookieParam,
                             defValue, parameterType, genParamType, tlContext,
                             leaveThisEncoded);
                     continue;
-                }
-                if (headerParam != null) {
+                } else if (headerParam != null) {
                     parameters[i] = new HeaderParamGetter(headerParam,
                             defValue, parameterType, genParamType, tlContext,
                             leaveThisEncoded);
                     continue;
-                }
-                if (matrixParam != null) {
+                } else if (matrixParam != null) {
                     parameters[i] = new MatrixParamGetter(matrixParam,
                             defValue, parameterType, genParamType, tlContext,
                             !leaveAllEncoded && !leaveThisEncoded);
                     continue;
-                }
-                if (queryParam != null) {
+                } else if (queryParam != null) {
                     parameters[i] = new QueryParamGetter(queryParam, defValue,
                             parameterType, genParamType, tlContext,
                             !leaveAllEncoded && !leaveThisEncoded);
                     continue;
                 }
             }
-            // could only be the entity
+            // could only be the entity here
             if (!entityAllowed) {
                 throw new MissingAnnotationException(
                         "All parameters requires one of the following annotations: "
                                 + VALID_ANNOTATIONS);
             }
-            if (entityAlreadyRequired)
+            if (entityAlreadyRead)
                 throw new MissingAnnotationException(
-                        "The entity is already read.  The "
-                                + i
-                                + ". parameter requires one of the following annotations: "
+                        "The entity is already read.  The " + i
+                                + ". parameter requires one of "
+                                + "the following annotations: "
                                 + VALID_ANNOTATIONS);
             if (Representation.class.isAssignableFrom(parameterType)) {
                 parameters[i] = ReprEntityGetter.create(parameterType,
@@ -869,7 +804,7 @@ public class ParameterList {
                 parameters[i] = new EntityGetter(parameterType, genParamType,
                         tlContext, entityProviders, paramAnnos);
             }
-            entityAlreadyRequired = true;
+            entityAlreadyRead = true;
         }
     }
 

@@ -147,7 +147,7 @@ public class RootResourceClass extends ResourceClass {
                 Object[] args = constructorParameters.get();
                 instance = WrapperUtil.createInstance(constructor, args);
             } catch (ConvertRepresentationException e) {
-                // is not possible
+                // is (or should be :-) ) not possible
                 throw new ImplementationException("Must not be possible", e);
             }
         }
