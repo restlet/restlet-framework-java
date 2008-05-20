@@ -104,6 +104,7 @@ public class Directory extends Finder {
 		this.indexName = "index";
 		this.listingAllowed = false;
 		this.modifiable = false;
+		this.negotiateContent = true;
 	}
 
 	/**
