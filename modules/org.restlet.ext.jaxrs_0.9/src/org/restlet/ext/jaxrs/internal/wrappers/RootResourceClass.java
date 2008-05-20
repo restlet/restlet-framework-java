@@ -123,7 +123,6 @@ public class RootResourceClass extends ResourceClass {
         this.constructorParameters = new ParameterList(this.constructor,
                 tlContext, constructorLeaveEncoded, entityProviders,
                 allCtxResolvers, extensionBackwardMapping, logger);
-                // FIXME constructorLeaveEncoded
     }
 
     /**

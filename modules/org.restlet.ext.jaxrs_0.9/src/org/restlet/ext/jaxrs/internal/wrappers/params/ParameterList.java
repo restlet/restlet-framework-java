@@ -622,7 +622,7 @@ public class ParameterList {
             // LATER test: de/encode: Encoded of field or bean setter
             CallContext callContext = tlContext.get();
             // LATER @PathParam(...) List<String> (see PathParamTest.testGet3())
-            if (this.convertTo.equals(PathSegment.class)) { // FIXME
+            if (this.convertTo.equals(PathSegment.class)) {
                 throw new NotYetImplementedException(
                         "Sorry, @PathParam(..) PathSegment is not yet supported. You may use the non default @Context PathSegment to return the last of the available path segments (decoded), or UriInfo.getPathSegments(boolean)");
                 // LATER @PathParam("x") PathSegment allowed.
@@ -648,9 +648,6 @@ public class ParameterList {
 
         /**
          * Constructor to be used, if only {@link #getParamValue()} is needed.
-         * 
-         * @param encode
-         *                TODO
          */
         QueryParamGetter(QueryParam queryParam, DefaultValue defaultValue,
                 Class<?> convToCl, Type convToGen,
