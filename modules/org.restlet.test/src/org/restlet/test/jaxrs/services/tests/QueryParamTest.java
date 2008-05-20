@@ -160,6 +160,39 @@ public class QueryParamTest extends JaxRsTestCase {
         assertEquals("1 2 99", response3.getEntity().getText());
     }
 
+    public void testMult1() throws Exception {
+        checkMult("array", "[null]", "[1]", "[1, 2]");
+        checkMult("arrayWithDefault", "[qv]", "[1]", "[1, 2]");
+
+        checkMult("list", "[null]", "[1]", "[1, 2]");
+        checkMult("listWithDefault", "[qv]", "[1]", "[1, 2]");
+}
+
+    /**
+     * @param relPath
+     * @param res0
+     * @param res1
+     * @param res2
+     * @throws IOException
+     */
+    private void checkMult(String relPath, String res0, String res1, String res2)
+            throws IOException {
+        Response response = get(relPath);
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals(res0, response.getEntity().getText());
+
+        response = get(relPath+"?qp=1");
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals(res1, response.getEntity().getText());
+
+        response = get(relPath+"?qp=1&qp=2");
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals(res2, response.getEntity().getText());
+    }
+
     public void testOne1() throws Exception {
         Response response = get("one?name");
         sysOutEntityIfError(response);

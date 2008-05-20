@@ -19,7 +19,6 @@ package org.restlet.ext.jaxrs.internal.wrappers.params;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 
 import javax.ws.rs.WebApplicationException;
@@ -32,7 +31,7 @@ import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
 import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
 import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.ext.jaxrs.internal.util.Util;
-import org.restlet.ext.jaxrs.internal.wrappers.params.ParameterList.AbstractInjectObjectGetter;
+import org.restlet.ext.jaxrs.internal.wrappers.params.ParameterList.ParamGetter;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyReader;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyReaderSet;
 import org.restlet.resource.Representation;
@@ -44,18 +43,29 @@ import org.restlet.resource.Representation;
  * 
  * @author Stephan Koops
  */
-public class EntityGetter extends AbstractInjectObjectGetter {
+public class EntityGetter implements ParamGetter {
 
     private final Annotation[] annotations;
 
+    /**
+     * The class to convert to, directly as the type in the parameter list.
+     */
+    protected volatile Class<?> convToCl;
+
+    private final Type convToGen;
+
     private final MessageBodyReaderSet mbrs;
+
+    protected final ThreadLocalizedContext tlContext;
 
     EntityGetter(Class<?> convToCl, Type convToGen,
             ThreadLocalizedContext tlContext, MessageBodyReaderSet mbrs,
             Annotation[] annotations) {
-        super(convToCl, convToGen, tlContext);
-        this.annotations = annotations;
+        this.tlContext = tlContext;
         this.mbrs = mbrs;
+        this.convToCl = convToCl;
+        this.convToGen = convToGen;
+        this.annotations = annotations;
     }
 
     /**
@@ -64,10 +74,8 @@ public class EntityGetter extends AbstractInjectObjectGetter {
      * @throws NoMessageBodyReaderException
      * @see IntoRrcInjector.AbstractInjectObjectGetter#getValue()
      */
-    @Override
     @SuppressWarnings("unchecked")
-    public Object getValue() throws InvocationTargetException,
-            ConvertRepresentationException {
+    public Object getValue() throws ConvertRepresentationException {
         Request request = this.tlContext.get().getRequest();
         Representation entity = request.getEntity();
         if (entity == null)

@@ -27,37 +27,25 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.logging.Logger;
 
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.ext.ContextResolver;
 
 import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
-import org.restlet.data.Reference;
 import org.restlet.data.Request;
-import org.restlet.ext.jaxrs.internal.exceptions.ConvertParameterException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.InstantiateException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingConstructorException;
-import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.ContextResolverCollection;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.ReturnNullContextResolver;
 
@@ -67,24 +55,6 @@ import org.restlet.ext.jaxrs.internal.wrappers.provider.ReturnNullContextResolve
  * @author Stephan Koops
  */
 public class WrapperUtil {
-
-    private static final String COLL_PARAM_NOT_DEFAULT = "The collection type Collection is not supported for parameters. Use List, Set or SortedSet";
-
-    private static final Boolean DEFAULT_BOOLEAN = Boolean.FALSE;
-
-    private static final Byte DEFAULT_BYTE = (byte) 0;
-
-    private static final Character DEFAULT_CHAR = new Character('\0');
-
-    private static final Double DEFAULT_DOUBLE = 0d;
-
-    private static final Float DEFAULT_FLOAT = 0.0f;
-
-    private static final Integer DEFAULT_INT = 0;
-
-    private static final Long DEFAULT_LONG = new Long(0);
-
-    private static final Short DEFAULT_SHORT = 0;
 
     private static final String JAX_RS_PACKAGE_PREFIX = "javax.ws.rs";
 
@@ -174,152 +144,6 @@ public class WrapperUtil {
     }
 
     /**
-     * Converts the given value without any decoding.
-     * 
-     * @param paramClass
-     * @param paramValue
-     * @param defaultValue
-     * @return
-     * @throws ConvertParameterException
-     * @throws WebApplicationException
-     *                 if the conversion method throws an
-     *                 WebApplicationException.
-     */
-    private static Object convertParamValueFromParam(Class<?> paramClass,
-            String paramValue, DefaultValue defaultValue)
-            throws ConvertParameterException, WebApplicationException {
-        WebApplicationException constructorWae = null;
-        try {
-            Constructor<?> constr = paramClass.getConstructor(String.class);
-            return constr.newInstance(paramValue);
-        } catch (WebApplicationException wae) {
-            constructorWae = wae;
-        } catch (Exception e) {
-            // try valueOf(String) as next step
-        }
-        Method valueOf;
-        try {
-            valueOf = paramClass.getMethod("valueOf", String.class);
-        } catch (SecurityException e) {
-            throw ConvertParameterException.object(paramClass, paramValue, e);
-        } catch (NoSuchMethodException e) {
-            throw ConvertParameterException.object(paramClass, paramValue, e);
-        }
-        try {
-            return valueOf.invoke(null, paramValue);
-        } catch (IllegalArgumentException e) {
-            if (constructorWae != null)
-                throw constructorWae;
-            throw ConvertParameterException.object(paramClass, paramValue, e);
-        } catch (IllegalAccessException e) {
-            if (constructorWae != null)
-                throw constructorWae;
-            throw ConvertParameterException.object(paramClass, paramValue, e);
-        } catch (InvocationTargetException ite) {
-            if (constructorWae != null)
-                throw constructorWae;
-            Throwable cause = ite.getCause();
-            if (cause instanceof WebApplicationException)
-                throw (WebApplicationException) cause;
-            if ((paramValue == null || paramValue.length() <= 0)
-                    && (ite.getCause() instanceof IllegalArgumentException)) {
-                if (defaultValue == null)
-                    return null;
-                else {
-                    String dfv = defaultValue.value();
-                    return convertParamValueFromParam(paramClass, dfv, null);
-                }
-            }
-            throw ConvertParameterException.object(paramClass, paramValue, ite);
-        }
-    }
-
-    /**
-     * Converts the given paramValue (found in the path, query, matrix or
-     * header) into the given paramClass.
-     * 
-     * @param paramClass
-     *                the type of the parameter to convert to
-     * @param paramValue
-     * @param defaultValue
-     *                see {@link DefaultValue}
-     * @param leaveEncoded
-     *                if true, leave {@link QueryParam}s, {@link MatrixParam}s
-     *                and {@link PathParam}s encoded. Must be FALSE for
-     *                {@link HeaderParam}s.
-     * @param jaxRsRouter
-     * @return
-     * @throws ConvertParameterException
-     * @see PathParam
-     * @see MatrixParam
-     * @see QueryParam
-     * @see HeaderParam
-     */
-    private static Object convertParamValueFromParam(Class<?> paramClass,
-            String paramValue, DefaultValue defaultValue, boolean leaveEncoded)
-            throws ConvertParameterException {
-        if (!leaveEncoded && paramValue != null)
-            paramValue = Reference.decode(paramValue);
-        else if (paramValue == null && defaultValue != null)
-            paramValue = defaultValue.value();
-        if (paramClass.equals(String.class)) // optimization
-            return paramValue;
-        if (paramClass.isPrimitive()) {
-            if (paramValue != null && paramValue.length() <= 0)
-                paramValue = defaultValue.value();
-            return getParamValueForPrimitive(paramClass, paramValue);
-        }
-        return convertParamValueFromParam(paramClass, paramValue, defaultValue);
-    }
-
-    /**
-     * @param paramClass
-     * @param paramGenericType
-     * @param paramValueIter
-     *                the values to use if multiples are required
-     * @param paramValue
-     *                the value, if only one is needed.
-     * @param defaultValue
-     * @param leaveEncoded
-     * @return
-     * @throws ConvertParameterException
-     */
-    public static Object convertParamValuesFromParam(Class<?> paramClass,
-            Type paramGenericType, Iterator<String> paramValueIter,
-            String paramValue, DefaultValue defaultValue, boolean leaveEncoded)
-            throws ConvertParameterException {
-        boolean toArray = false;
-        Collection<Object> coll = null;
-        if (paramClass.isArray()) {
-            coll = new ArrayList<Object>(1);
-            toArray = true;
-            paramClass = paramClass.getComponentType();
-        } else if (paramGenericType instanceof ParameterizedType) {
-            ParameterizedType parameterizedType = (ParameterizedType) paramGenericType;
-            coll = createColl(parameterizedType);
-            paramClass = (Class<?>) parameterizedType.getActualTypeArguments()[0];
-        }
-        if (coll == null) { // no collection type
-            return convertParamValueFromParam(paramClass, paramValue,
-                    defaultValue, leaveEncoded);
-        }
-        while (paramValueIter.hasNext()) {
-            String queryParamValue = paramValueIter.next();
-            Object convertedValue = convertParamValueFromParam(paramClass,
-                    queryParamValue, defaultValue, leaveEncoded);
-            if (convertedValue != null)
-                coll.add(convertedValue);
-            defaultValue = null;
-        }
-        if (coll.isEmpty()) // add default value
-            coll.add(convertParamValueFromParam(paramClass, paramValue,
-                    defaultValue, leaveEncoded));
-        if (toArray)
-            return Util.toArray(coll, paramClass);
-        return coll;
-    }
-
-     /**
      * Converts the given mimes to a List of MediaTypes. Will never returns
      * null.
      * 
@@ -335,31 +159,6 @@ public class WrapperUtil {
                 mediaTypes.add(MediaType.valueOf(mime));
         }
         return Collections.unmodifiableList(mediaTypes);
-    }
-
-    /**
-     * Creates the collection for the given
-     * {@link ParameterizedType parametrized Type}.<br>
-     * If the given type do not represent an collection, null is returned.
-     * 
-     * @param <A> 
-     * @param type
-     * @return the created collection or null.
-     */
-    public static <A> Collection<A> createColl(ParameterizedType type) {
-        Type rawType = type.getRawType();
-        if (rawType.equals(List.class))
-            return new ArrayList<A>(1);
-        else if (rawType.equals(Set.class))
-            return new HashSet<A>(2);
-        else if (rawType.equals(SortedSet.class))
-            return new TreeSet<A>();
-        else if (rawType.equals(Collection.class)) {
-            Logger logger = Logger.getAnonymousLogger();
-            logger.config(COLL_PARAM_NOT_DEFAULT);
-            return new ArrayList<A>();
-        }
-        return null;
     }
 
     /**
@@ -502,78 +301,6 @@ public class WrapperUtil {
             }
         }
         return null;
-    }
-
-    /**
-     * @param paramClass
-     * @param paramValue
-     * @throws ConvertParameterException
-     */
-    private static Object getParamValueForPrimitive(Class<?> paramClass,
-            String paramValue) throws ConvertParameterException {
-        try {
-            if (paramClass == Integer.TYPE) {
-                if ((paramValue == null || paramValue.length() <= 0))
-                    return DEFAULT_INT;
-                return new Integer(paramValue);
-            }
-            if (paramClass == Double.TYPE) {
-                if ((paramValue == null || paramValue.length() <= 0))
-                    return DEFAULT_DOUBLE;
-                return new Double(paramValue);
-            }
-            if (paramClass == Float.TYPE) {
-                if ((paramValue == null || paramValue.length() <= 0))
-                    return DEFAULT_FLOAT;
-                return new Float(paramValue);
-            }
-            if (paramClass == Byte.TYPE) {
-                if ((paramValue == null || paramValue.length() <= 0))
-                    return DEFAULT_BYTE;
-                return new Byte(paramValue);
-            }
-            if (paramClass == Long.TYPE) {
-                if ((paramValue == null || paramValue.length() <= 0))
-                    return DEFAULT_LONG;
-                return new Long(paramValue);
-            }
-            if (paramClass == Short.TYPE) {
-                if ((paramValue == null || paramValue.length() <= 0))
-                    return DEFAULT_SHORT;
-                return new Short(paramValue);
-            }
-            if (paramClass == Character.TYPE) {
-                if ((paramValue == null || paramValue.length() <= 0))
-                    return DEFAULT_CHAR;
-                if (paramValue.length() == 1)
-                    return paramValue.charAt(0);
-                throw ConvertParameterException.primitive(paramClass,
-                        paramValue, null);
-            }
-            if (paramClass == Boolean.TYPE) {
-                if ((paramValue == null || paramValue.length() <= 0))
-                    return DEFAULT_BOOLEAN;
-                if (paramValue.equalsIgnoreCase("true"))
-                    return Boolean.TRUE;
-                if (paramValue.equalsIgnoreCase("false"))
-                    return Boolean.FALSE;
-                throw ConvertParameterException.primitive(paramClass,
-                        paramValue, null);
-            }
-        } catch (IllegalArgumentException e) {
-            throw ConvertParameterException
-                    .primitive(paramClass, paramValue, e);
-        }
-        String warning;
-        if (paramClass == Void.TYPE)
-            warning = "an object should be converted to a void; but this could not be here";
-        else
-            warning = "an object should be converted to a " + paramClass
-                    + ", but here are only primitives allowed.";
-        Logger.getAnonymousLogger().warning(warning);
-        ResponseBuilder rb = javax.ws.rs.core.Response.serverError();
-        rb.entity(warning);
-        throw new WebApplicationException(rb.build());
     }
 
     /**

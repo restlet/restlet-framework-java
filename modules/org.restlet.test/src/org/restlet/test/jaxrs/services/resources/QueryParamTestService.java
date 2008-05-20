@@ -17,6 +17,9 @@
  */
 package org.restlet.test.jaxrs.services.resources;
 
+import java.util.Arrays;
+import java.util.List;
+
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Encoded;
 import javax.ws.rs.GET;
@@ -99,5 +102,33 @@ public class QueryParamTestService {
         String firstn = uriInfo.getQueryParameters(false).getFirst("firstname");
         String lastn = uriInfo.getQueryParameters(false).getFirst("lastname");
         return firstn + " " + lastn;
+    }
+
+    @GET
+    @ProduceMime("text/plain")
+    @Path("array")
+    public String getArrayQp(@QueryParam("qp") String[] qp) {
+        return Arrays.toString(qp);
+    }
+
+    @GET
+    @ProduceMime("text/plain")
+    @Path("arrayWithDefault")
+    public String getArrayQpDef(@QueryParam("qp") @DefaultValue("qv") String[] qp) {
+        return Arrays.toString(qp);
+    }
+
+    @GET
+    @ProduceMime("text/plain")
+    @Path("list")
+    public String getListQp(@QueryParam("qp") List<String> qp) {
+        return qp.toString();
+    }
+
+    @GET
+    @ProduceMime("text/plain")
+    @Path("listWithDefault")
+    public String getListQpDef(@QueryParam("qp") @DefaultValue("qv") List<String> qp) {
+        return qp.toString();
     }
 }

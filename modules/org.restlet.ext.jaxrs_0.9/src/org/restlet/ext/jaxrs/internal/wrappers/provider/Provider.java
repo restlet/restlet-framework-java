@@ -175,6 +175,10 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
         }
     }
 
+    // REQUEST is @Encoded allowed on provider?
+    // REQUEST @Encoded also effect fields and bean setters?
+    // -> javadoc of @Encoded
+
     /**
      * @param providerConstructor
      *                the constructor to use.

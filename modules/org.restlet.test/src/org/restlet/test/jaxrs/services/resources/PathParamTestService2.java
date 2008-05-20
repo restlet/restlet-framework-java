@@ -54,48 +54,42 @@ public class PathParamTestService2 {
     @GET
     @Path("BigDecimal/{id}")
     @ProduceMime("text/plain")
-    public String getBigDecimal(@PathParam("id")
-    BigDecimal id) {
+    public String getBigDecimal(@PathParam("id") BigDecimal id) {
         return String.valueOf(id);
     }
 
     @GET
     @Path("int/{id}")
     @ProduceMime("text/plain")
-    public String getInt(@PathParam("id")
-    int id) {
+    public String getInt(@PathParam("id") int id) {
         return String.valueOf(id);
     }
 
     @GET
     @Path("Integer/{id}")
     @ProduceMime("text/plain")
-    public String getInteger(@PathParam("id")
-    Integer id) {
+    public String getInteger(@PathParam("id") Integer id) {
         return String.valueOf(id);
     }
 
     @GET
     @Path("MediaType/{id}")
     @ProduceMime("text/plain")
-    public String getMediaType(@PathParam("id")
-    MediaType id) {
+    public String getMediaType(@PathParam("id") MediaType id) {
         return String.valueOf(id);
     }
 
     @GET
     @Path("mn{id}")
     @ProduceMime("text/plain")
-    public String getMn(@PathParam("id")
-    int id) {
+    public String getMn(@PathParam("id") int id) {
         return String.valueOf(id);
     }
 
     @GET
     @Path(value = "multSegm/{string}", limited = false)
     @ProduceMime("text/plain")
-    public String getMultSegment(@PathParam("string")
-    String string) {
+    public String getMultSegment(@PathParam("string") String string) {
         return string;
     }
 

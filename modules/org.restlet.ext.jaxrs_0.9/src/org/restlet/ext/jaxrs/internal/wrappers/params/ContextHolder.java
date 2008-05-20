@@ -23,7 +23,7 @@ package org.restlet.ext.jaxrs.internal.wrappers.params;
 
 
 
-class ContextHolder implements ParameterList.InjectObjectGetter {
+class ContextHolder implements ParameterList.ParamGetter {
     private Object toInject;
 
     ContextHolder(Object toInject) {
@@ -31,7 +31,7 @@ class ContextHolder implements ParameterList.InjectObjectGetter {
     }
 
     /**
-     * @see ContextInjector.InjectObjectGetter#get
+     * @see ContextInjector.ParamGetter#get
      */
     public Object getValue() {
         return toInject;

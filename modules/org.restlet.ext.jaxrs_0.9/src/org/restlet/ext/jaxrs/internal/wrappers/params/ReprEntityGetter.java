@@ -27,7 +27,7 @@ import javax.ws.rs.WebApplicationException;
 
 import org.restlet.data.Request;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
-import org.restlet.ext.jaxrs.internal.wrappers.params.ParameterList.InjectObjectGetter;
+import org.restlet.ext.jaxrs.internal.wrappers.params.ParameterList.ParamGetter;
 import org.restlet.resource.Representation;
 
 /**
@@ -35,7 +35,7 @@ import org.restlet.resource.Representation;
  * 
  * @author Stephan Koops
  */
-public abstract class ReprEntityGetter implements InjectObjectGetter {
+public abstract class ReprEntityGetter implements ParamGetter {
 
     /**
      * EntityGetter, if there is a constructor for only the entity.
@@ -82,10 +82,10 @@ public abstract class ReprEntityGetter implements InjectObjectGetter {
     /**
      * EntityGetter, if Representation could directly be injected
      */
-    static class DirectReprEntityGetter implements InjectObjectGetter {
+    static class DirectReprEntityGetter implements ParamGetter {
 
         /**
-         * @see org.restlet.ext.jaxrs.internal.wrappers.params.ParameterList.InjectObjectGetter#getValue()
+         * @see org.restlet.ext.jaxrs.internal.wrappers.params.ParameterList.ParamGetter#getValue()
          */
         public Object getValue() throws InvocationTargetException,
                 ConvertRepresentationException, WebApplicationException {
@@ -125,7 +125,7 @@ public abstract class ReprEntityGetter implements InjectObjectGetter {
      * @param logger
      * @return
      */
-    public static InjectObjectGetter create(Class<?> representationType,
+    public static ParamGetter create(Class<?> representationType,
             Type convToGen, Logger logger) {
         if (representationType.equals(Representation.class))
             return new DirectReprEntityGetter();
@@ -188,7 +188,7 @@ public abstract class ReprEntityGetter implements InjectObjectGetter {
     }
 
     /**
-     * @see org.restlet.ext.jaxrs.internal.wrappers.params.ParameterList.InjectObjectGetter#getValue()
+     * @see org.restlet.ext.jaxrs.internal.wrappers.params.ParameterList.ParamGetter#getValue()
      */
     public Object getValue() throws InvocationTargetException,
             ConvertRepresentationException, WebApplicationException {

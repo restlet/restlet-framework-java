@@ -20,6 +20,7 @@ package org.restlet.ext.jaxrs.internal.wrappers.params;
 import static org.restlet.ext.jaxrs.internal.wrappers.WrapperUtil.getContextResolver;
 import static org.restlet.ext.jaxrs.internal.wrappers.WrapperUtil.isBeanSetter;
 
+import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -40,6 +41,7 @@ import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
 import org.restlet.ext.jaxrs.internal.exceptions.ImplementationException;
 import org.restlet.ext.jaxrs.internal.exceptions.InjectException;
 import org.restlet.ext.jaxrs.internal.util.Util;
+import org.restlet.ext.jaxrs.internal.wrappers.params.ParameterList.AbstractParamGetter;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.ExtensionBackwardMapping;
 
 /**
@@ -253,8 +255,29 @@ public class ContextInjector {
                 extensionBackwardMapping);
     }
 
-    protected void add(Injector injector) {
-        this.injEverSameAims.add(injector);
+    protected void add(AccessibleObject fieldOrBeanSetter, AbstractParamGetter iog) {
+        this.injEverSameAims.add(new ParamValueInjector(fieldOrBeanSetter, iog));
+    }
+
+    private class ParamValueInjector implements Injector {
+
+        private AbstractParamGetter iog;
+
+        private AccessibleObject fieldOrBeanSetter;
+
+        ParamValueInjector(AccessibleObject fieldOrBeanSetter, AbstractParamGetter iog) {
+            this.fieldOrBeanSetter = fieldOrBeanSetter;
+            this.iog = iog;
+        }
+
+        /**
+         * @see org.restlet.ext.jaxrs.internal.wrappers.params.ContextInjector.Injector#injectInto(java.lang.Object)
+         */
+        public void injectInto(Object resource)
+                throws IllegalArgumentException, InjectException,
+                InvocationTargetException {
+            Util.inject(resource, fieldOrBeanSetter, iog.getParamValue());
+        }
     }
 
     /**

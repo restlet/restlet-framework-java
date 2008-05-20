@@ -64,12 +64,6 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
      */
     final Method executeMethod;
 
-    /**
-     * is true, if the wrapped java method or its class is annotated with
-     * &#64;Path.
-     */
-    final boolean leaveEncoded;
-
     final ResourceClass resourceClass;
 
     final ParameterList parameters;
@@ -88,13 +82,10 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
         this.annotatedMethod = annotatedMethod;
         this.annotatedMethod.setAccessible(true);
         this.resourceClass = resourceClass;
-        if (resourceClass.isLeaveEncoded()
-                || annotatedMethod.isAnnotationPresent(Encoded.class))
-            this.leaveEncoded = true;
-        else
-            this.leaveEncoded = false;
+        boolean leaveEncoded = resourceClass.isLeaveEncoded()
+                || annotatedMethod.isAnnotationPresent(Encoded.class);
         this.parameters = new ParameterList(executeMethod, annotatedMethod,
-                tlContext, this.leaveEncoded, entityProviders, allCtxResolvers,
+                tlContext, leaveEncoded, entityProviders, allCtxResolvers,
                 extensionBackwardMapping, entityAllowed, logger);
     }
 
