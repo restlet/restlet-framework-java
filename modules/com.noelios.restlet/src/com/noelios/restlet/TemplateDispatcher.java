@@ -32,7 +32,7 @@ import org.restlet.util.Template;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public abstract class TemplateDispatcher extends Uniform {
+public class TemplateDispatcher extends Uniform {
     /** The parent context. */
     private volatile Context context;
 
@@ -55,7 +55,9 @@ public abstract class TemplateDispatcher extends Uniform {
      * @param response
      *                The response to update.
      */
-    protected abstract void doHandle(Request request, Response response);
+    protected void doHandle(Request request, Response response) {
+        request.setOriginalRef(request.getResourceRef().getTargetRef());
+    }
 
     /**
      * Returns the parent context.

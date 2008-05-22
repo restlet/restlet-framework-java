@@ -69,7 +69,6 @@ import org.restlet.ext.jaxrs.internal.exceptions.JaxRsRuntimeException;
 import org.restlet.ext.jaxrs.internal.exceptions.MethodInvokeException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.resource.Representation;
-import org.restlet.service.TunnelService;
 import org.restlet.util.DateUtils;
 import org.restlet.util.Engine;
 import org.restlet.util.Series;
@@ -966,10 +965,7 @@ public class Util {
      * @return
      */
     public static Reference getReferenceOriginal(Request request) {
-        Reference reference = (Reference) request.getAttributes().get(
-                TunnelService.ATTRIBUTE_ORIGINAL_REF);
-        if (reference == null)
-            return getReferenceCut(request);
+        Reference reference = request.getOriginalRef();
         reference.setBaseRef(getReferenceCut(request).getBaseRef());
         return reference;
     }

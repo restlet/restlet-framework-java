@@ -112,9 +112,10 @@ public class HttpRequest extends Request {
         }
         setHostRef(sb.toString());
 
+        // Set the resource reference
         if (httpCall.getRequestUri() != null) {
-            // Set the resource reference
             setResourceRef(new Reference(getHostRef(), httpCall.getRequestUri()));
+
             if (getResourceRef().isRelative()) {
                 // Take care of the "/" between the host part and the segments.
                 if (!httpCall.getRequestUri().startsWith("/")) {
@@ -127,6 +128,8 @@ public class HttpRequest extends Request {
                             + httpCall.getRequestUri()));
                 }
             }
+
+            setOriginalRef(getResourceRef().getTargetRef());
         }
     }
 

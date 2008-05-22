@@ -70,6 +70,7 @@ public class AtomTestCase extends TestCase {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        
         deleteDir(testDir);
     }
 

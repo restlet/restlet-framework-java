@@ -186,8 +186,7 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
      * @param jaxRsTestCase
      * @throws Exception
      */
-    public void runServerUntilKeyPressed()
-            throws Exception {
+    public void runServerUntilKeyPressed() throws Exception {
         setUseTcp(true);
         startServer(this.createApplication());
         runServerAfterStart();
@@ -263,6 +262,8 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
             String subPath, Conditions conditions, ClientInfo clientInfo) {
         Reference reference = createReference(klasse, subPath);
         Request request = new Request(httpMethod, reference);
+        request.setOriginalRef(reference);
+
         if (conditions != null)
             request.setConditions(conditions);
         if (clientInfo != null)
@@ -313,7 +314,9 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
      */
     protected Request createGetRequest(String subPath) {
         Reference reference = createReference(getRootResourceClass(), subPath);
-        return new Request(Method.GET, reference);
+        Request result = new Request(Method.GET, reference);
+        result.setOriginalRef(reference);
+        return result;
     }
 
     /**

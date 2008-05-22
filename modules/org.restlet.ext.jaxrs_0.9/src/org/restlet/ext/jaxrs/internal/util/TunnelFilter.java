@@ -54,17 +54,7 @@ public class TunnelFilter extends Filter {
 
     @Override
     public int beforeHandle(Request request, Response response) {
-        Reference originalRef = new Reference(request.getResourceRef()
-                .toString());
-        boolean extensionsModified = false;
-
-        extensionsModified = processExtensions(request);
-
-        if (extensionsModified) {
-            request.getAttributes().put(TunnelService.ATTRIBUTE_ORIGINAL_REF,
-                    originalRef);
-        }
-
+        processExtensions(request);
         return CONTINUE;
     }
 

@@ -18,11 +18,8 @@
 
 package com.noelios.restlet.test;
 
-import static org.restlet.service.TunnelService.ATTRIBUTE_ORIGINAL_REF;
-
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import junit.framework.TestCase;
 
@@ -118,10 +115,8 @@ public class TunnelFilterTestCase extends TestCase {
     private void check(String expectedCut, String expectedExtensions) {
         Reference resourceRef = request.getResourceRef();
         assertEquals(expectedCut, resourceRef.toString());
-        Map<String, Object> attributes = request.getAttributes();
 
-        Reference originalRef = (Reference) attributes
-                .get(ATTRIBUTE_ORIGINAL_REF);
+        Reference originalRef = request.getOriginalRef();
         assertTrue((originalRef == null)
                 || originalRef.equals(new Reference(this.lastCreatedReference)));
         assertEquals(expectedCut, resourceRef.toString());

@@ -373,6 +373,7 @@ public class DirectoryTestCase extends TestCase {
         Request request = new Request();
         Response response = new Response(request);
         request.setResourceRef(resourceRef);
+        request.setOriginalRef(request.getResourceRef().getTargetRef());
         request.getResourceRef().setBaseRef(baseRef);
         request.setMethod(method);
         if (Method.PUT.equals(method)) {

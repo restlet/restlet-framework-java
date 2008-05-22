@@ -19,8 +19,6 @@
 package org.restlet.service;
 
 import org.restlet.data.ClientInfo;
-import org.restlet.data.Reference;
-import org.restlet.data.Request;
 
 /**
  * Service tunneling request method or client preferences. The tunneling can use
@@ -96,15 +94,6 @@ import org.restlet.data.Request;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class TunnelService {
-    /**
-     * Attribute name used to store the original resource URI in case of
-     * modification by the tunnel service (query string or file extensions).
-     * <p>
-     * In case of modification (only), the ({@link Request#getAttributes()})
-     * contains the attribute name as a key and the original resource URI as a
-     * {@link Reference} value.
-     */
-    public static final String ATTRIBUTE_ORIGINAL_REF = "org.restlet.TunnelService.originalRef";
 
     /** The name of the parameter containing the accepted character set. */
     private volatile String characterSetParameter;

@@ -47,6 +47,7 @@ public class ComponentClientDispatcher extends TemplateDispatcher {
 
     @Override
     protected void doHandle(Request request, Response response) {
+        super.doHandle(request, response);
         Protocol protocol = request.getProtocol();
 
         if (protocol.equals(Protocol.RIAP)) {

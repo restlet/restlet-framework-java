@@ -5,6 +5,19 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Bugs fixed
+        - 
+    - API Enhancements
+        - Added a "Request.originalRef" property containing the URI 
+          reference originally requested by the client. Clarified the
+          purpose of "Request.resourceRef". Suggested by Alex Milowski
+          and Rob Heittman.
+    - NRE and Extension Enhancements
+        -  
+    - Misc
+        -  
+
+- 1.1 Milestone 4 (2008-05-20)
+    - Bugs fixed
         - Fixed NPE with internal HTTP server when no reason phrase is
           available for the response status. Reported by Stephan Koops.
         - Fixed potential NPE in request processing code when a request

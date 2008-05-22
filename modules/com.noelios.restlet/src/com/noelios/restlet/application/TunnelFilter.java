@@ -66,26 +66,16 @@ public class TunnelFilter extends Filter {
 
     @Override
     public int beforeHandle(Request request, Response response) {
-        Reference originalRef = new Reference(request.getResourceRef()
-                .toString());
-        boolean queryModified = false;
-        boolean extensionsModified = false;
-
         if (getTunnelService().isUserAgentTunnel()) {
             processUserAgent(request);
         }
 
         if (getTunnelService().isExtensionsTunnel()) {
-            extensionsModified = processExtensions(request);
+            processExtensions(request);
         }
 
         if (getTunnelService().isQueryTunnel()) {
-            queryModified = processQuery(request);
-        }
-
-        if (queryModified || extensionsModified) {
-            request.getAttributes().put(TunnelService.ATTRIBUTE_ORIGINAL_REF,
-                    originalRef);
+            processQuery(request);
         }
 
         return CONTINUE;

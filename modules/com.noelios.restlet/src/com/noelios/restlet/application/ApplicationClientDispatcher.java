@@ -52,6 +52,7 @@ public class ApplicationClientDispatcher extends TemplateDispatcher {
 
     @Override
     public void doHandle(Request request, Response response) {
+        super.doHandle(request, response);
         Protocol protocol = request.getProtocol();
 
         if (protocol.equals(Protocol.RIAP)) {

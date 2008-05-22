@@ -138,6 +138,7 @@ public class HttpHeaderTest extends JaxRsTestCase {
 
         Request request = new Request(Method.POST, createReference(
                 HttpHeaderTestService.class, "language"));
+        request.setOriginalRef(request.getResourceRef());
         request.setClientInfo(clientInfo);
         request.setEntity(new StringRepresentation("entity", Language.ENGLISH));
         Restlet client = getClientConnector();

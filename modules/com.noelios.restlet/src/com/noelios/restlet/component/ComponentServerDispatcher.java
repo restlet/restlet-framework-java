@@ -41,6 +41,8 @@ public class ComponentServerDispatcher extends TemplateDispatcher {
 
     @Override
     protected void doHandle(Request request, Response response) {
+        super.doHandle(request, response);
+
         // This causes the baseRef of the resource reference to be set
         // as if it had actually arrived from a server connector.
         request.getResourceRef().setBaseRef(

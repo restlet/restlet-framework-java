@@ -40,7 +40,6 @@ import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
-import org.restlet.service.TunnelService;
 
 /**
  * Resource supported by a set of context representations (from file system,
@@ -144,8 +143,7 @@ public class DirectoryResource extends Resource {
         // Restore the original URI in case the call has been tunnelled.
         if (getApplication() != null
                 && getApplication().getTunnelService().isExtensionsTunnel()) {
-            originalRef = (Reference) request.getAttributes().get(
-                    TunnelService.ATTRIBUTE_ORIGINAL_REF);
+            originalRef = request.getOriginalRef();
 
             if (originalRef != null) {
                 originalRef.setBaseRef(request.getResourceRef().getBaseRef());
