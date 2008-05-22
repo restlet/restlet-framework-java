@@ -51,8 +51,7 @@ public class OwnProviderTest extends JaxRsTestCase {
         Response response = get();
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        MediaType respMediaType = response.getEntity().getMediaType();
-        assertEquals(new MediaType("application/crazyType"), respMediaType);
+        assertEqualMediaType(new MediaType("application/crazyType"), response);
         String actualEntity = response.getEntity().getText();
         String expectedEntity = "abc def is crazy.\nHeader value for name h1 is h1v";
         assertEquals(expectedEntity, actualEntity);

@@ -122,7 +122,7 @@ public class ProviderTestService {
             }
 
             public int length() {
-                return CS_LAST_CHAR - 32;
+                return CS_LAST_CHAR - 32 + 1;
             }
 
             public CharSequence subSequence(int start, int end) {

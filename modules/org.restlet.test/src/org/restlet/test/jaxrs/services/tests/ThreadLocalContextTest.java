@@ -61,12 +61,12 @@ public class ThreadLocalContextTest extends JaxRsTestCase {
             }
         }.start();
         Response response = get(MediaType.TEXT_HTML);
-        assertEquals(MediaType.TEXT_HTML, response.getEntity().getMediaType());
+        assertEqualMediaType(MediaType.TEXT_HTML, response);
 
         while (c.isEmpty())
             TestUtils.sleep();
 
         response = c.get(0);
-        assertEquals(MediaType.TEXT_PLAIN, response.getEntity().getMediaType());
+        assertEqualMediaType(MediaType.TEXT_PLAIN, response);
     }
 }

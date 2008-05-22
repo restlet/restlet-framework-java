@@ -69,6 +69,8 @@ public class UriBuilderTestResource {
     public Response getPlatonixAndExts(@Context HttpHeaders httpHeaders) {
         String language = Util.getFirstElementOrNull(httpHeaders
                 .getAcceptableLanguages());
+        if(language != null && language.equals("*"))
+            language = null;
         String entity = uriInfo.getPlatonicRequestUriBuilder() + "\n"
                 + uriInfo.getPathExtension();
         return Response.ok(entity).language(language).build();

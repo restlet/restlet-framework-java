@@ -67,6 +67,6 @@ public class ExcMapperTest extends JaxRsTestCase {
         Response response = get(accMediaType);
         sysOutEntityIfError(response);
         assertEquals(IllegalArgExcMapper.STATUS, response.getStatus().getCode());
-        assertEquals(expMediaType, response.getEntity().getMediaType());
+        assertEqualMediaType(expMediaType, response);
     }
 }

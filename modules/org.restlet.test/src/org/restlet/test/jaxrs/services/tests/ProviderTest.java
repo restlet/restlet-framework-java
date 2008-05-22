@@ -126,7 +126,7 @@ public class ProviderTest extends JaxRsTestCase {
         entity = response.getEntity();
         assertEquals(postEntity, entity.getText());
         if (responseMediaType != null)
-            assertEquals(responseMediaType, entity.getMediaType());
+            assertEqualMediaType(responseMediaType, entity);
     }
 
     public void testBufferedReaderGet() throws Exception {

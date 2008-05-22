@@ -68,7 +68,7 @@ public class InheritAnnotationTest extends JaxRsTestCase {
         Response response = accessServer(Method.GET, reference);
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEquals(MediaType.TEXT_PLAIN, response.getEntity().getMediaType());
+        assertEqualMediaType(MediaType.TEXT_PLAIN, response);
         String entityText = response.getEntity().getText();
         assertEquals(InheritAnnotationTestService1.RETURN_STRING, entityText);
     }
@@ -78,7 +78,7 @@ public class InheritAnnotationTest extends JaxRsTestCase {
         Response response = accessServer(Method.GET, reference);
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEquals(MediaType.TEXT_PLAIN, response.getEntity().getMediaType());
+        assertEqualMediaType(MediaType.TEXT_PLAIN, response);
         String entityText = response.getEntity().getText();
         assertEquals(InheritAnnotationTestService2.RETURN_STRING, entityText);
     }
@@ -88,7 +88,7 @@ public class InheritAnnotationTest extends JaxRsTestCase {
         Response response = accessServer(Method.GET, reference);
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEquals(MediaType.TEXT_PLAIN, response.getEntity().getMediaType());
+        assertEqualMediaType(MediaType.TEXT_PLAIN, response);
         String entityText = response.getEntity().getText();
         assertEquals(InheritAnnotationTestService2.RETURN_STRING_SUB,
                 entityText);
@@ -99,7 +99,7 @@ public class InheritAnnotationTest extends JaxRsTestCase {
         Response response = accessServer(Method.GET, reference);
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEquals(MediaType.TEXT_PLAIN, response.getEntity().getMediaType());
+        assertEqualMediaType(MediaType.TEXT_PLAIN, response);
         String entityText = response.getEntity().getText();
         assertEquals(InheritAnnotationTestService2.RETURN_STRING_SUB2,
                 entityText);

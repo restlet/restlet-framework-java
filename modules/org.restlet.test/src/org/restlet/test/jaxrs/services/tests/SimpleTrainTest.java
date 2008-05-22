@@ -84,7 +84,7 @@ public class SimpleTrainTest extends JaxRsTestCase {
         assertTrue(response.getStatus().isSuccess());
         representation = response.getEntity();
         assertEquals(SimpleTrain.RERP_PLAIN_TEXT, representation.getText());
-        assertEquals(MediaType.TEXT_PLAIN, representation.getMediaType());
+        assertEqualMediaType(MediaType.TEXT_PLAIN, representation);
     }
 
     public void testGetTextMultiple1() throws Exception {

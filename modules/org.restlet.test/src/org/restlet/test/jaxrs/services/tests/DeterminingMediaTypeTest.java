@@ -53,36 +53,36 @@ public class DeterminingMediaTypeTest extends JaxRsTestCase {
     public void testTextStar2() {
         Response response = get("textStar", MediaType.TEXT_HTML);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEquals(MediaType.TEXT_HTML, response.getEntity().getMediaType());
+        assertEqualMediaType(MediaType.TEXT_HTML, response);
     }
 
     public void testTextStar3() {
         Response response = get("textStar", MediaType.TEXT_PLAIN);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEquals(MediaType.TEXT_PLAIN, response.getEntity().getMediaType());
+        assertEqualMediaType(MediaType.TEXT_PLAIN, response);
     }
 
     public void testHtmlPlainGif1() {
         Response response = get("htmlPlainGif", MediaType.TEXT_ALL);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEquals(MediaType.TEXT_HTML, response.getEntity().getMediaType());
+        assertEqualMediaType(MediaType.TEXT_HTML, response);
     }
 
     public void testHtmlPlainGif2() {
         Response response = get("htmlPlainGif", MediaType.ALL);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEquals(MediaType.TEXT_HTML, response.getEntity().getMediaType());
+        assertEqualMediaType(MediaType.TEXT_HTML, response);
     }
 
     public void testHtmlPlainGif3() {
         Response response = get("htmlPlainGif", MediaType.IMAGE_GIF);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEquals(MediaType.IMAGE_GIF, response.getEntity().getMediaType());
+        assertEqualMediaType(MediaType.IMAGE_GIF, response);
     }
 
     public void testHtmlPlainGif4() {
         Response response = get("htmlPlainGif", MediaType.TEXT_PLAIN);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEquals(MediaType.TEXT_PLAIN, response.getEntity().getMediaType());
+        assertEqualMediaType(MediaType.TEXT_PLAIN, response);
     }
 }

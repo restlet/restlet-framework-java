@@ -48,7 +48,7 @@ public class UriBuilderByServiceTest extends JaxRsTestCase {
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         Representation entity = response.getEntity();
-        assertEquals(expectedMT, entity.getMediaType());
+        assertEqualMediaType(expectedMT, entity);
         if (checkEntityText)
             assertEquals(createBaseRef().toString(), entity.getText());
     }
@@ -67,7 +67,7 @@ public class UriBuilderByServiceTest extends JaxRsTestCase {
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         Representation entity = response.getEntity();
-        assertEquals(expMediaType, entity.getMediaType());
+        assertEqualMediaType(expMediaType, entity);
         assertEquals(expLanguage, Util.getFirstElementOrNull(entity
                 .getLanguages()));
         Reference r = createReference(getRootResourceClass(), expSubPath);
@@ -87,7 +87,7 @@ public class UriBuilderByServiceTest extends JaxRsTestCase {
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         Representation entity = response.getEntity();
-        assertEquals(expectedMT, entity.getMediaType());
+        assertEqualMediaType(expectedMT, entity.getMediaType());
         if (checkEntityText) {
             Reference r = createReference(getRootResourceClass(),
                     expectedSubPath);

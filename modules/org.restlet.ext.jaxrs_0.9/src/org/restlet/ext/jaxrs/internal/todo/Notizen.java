@@ -24,6 +24,8 @@ package org.restlet.ext.jaxrs.internal.todo;
  */
 public class Notizen {
 
+    // TODO @Path(limited=false)  effects only trailing values.
+    
     // TESTEN what happens, if ".." or "." in @Path?
     
     // TESTEN what happens, if e.g. a JaX-RS MediaType is given to the headers

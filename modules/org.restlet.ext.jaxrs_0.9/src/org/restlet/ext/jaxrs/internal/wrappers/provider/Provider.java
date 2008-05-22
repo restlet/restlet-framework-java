@@ -211,7 +211,7 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
             WebApplicationException {
         ParameterList parameters = new ParameterList(providerConstructor,
                 tlContext, false, mbWorkers, allResolvers,
-                extensionBackwardMapping, logger);
+                extensionBackwardMapping, false, logger);
         try {
             Object[] args = parameters.get();
             return WrapperUtil.createInstance(providerConstructor, args);

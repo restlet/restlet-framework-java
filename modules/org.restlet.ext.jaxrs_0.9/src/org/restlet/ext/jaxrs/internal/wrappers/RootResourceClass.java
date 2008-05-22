@@ -122,7 +122,7 @@ public class RootResourceClass extends ResourceClass {
                 || constructor.isAnnotationPresent(Encoded.class);
         this.constructorParameters = new ParameterList(this.constructor,
                 tlContext, constructorLeaveEncoded, entityProviders,
-                allCtxResolvers, extensionBackwardMapping, logger);
+                allCtxResolvers, extensionBackwardMapping, true, logger);
     }
 
     /**

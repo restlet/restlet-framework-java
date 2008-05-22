@@ -118,6 +118,14 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
         assertEquals(expected, actual);
     }
 
+    public static void assertEqualMediaType(MediaType expected, Response actualResponse) {
+        assertEqualMediaType(expected, actualResponse.getEntity());
+    }
+
+    public static void assertEqualMediaType(MediaType expected, Representation actualEntity) {
+        assertEqualMediaType(expected, actualEntity.getMediaType());
+    }
+
     /**
      * @param accMediaType
      * @param mediaTypeQuality
@@ -262,7 +270,7 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
             String subPath, Conditions conditions, ClientInfo clientInfo) {
         Reference reference = createReference(klasse, subPath);
         Request request = new Request(httpMethod, reference);
-        request.setOriginalRef(reference);
+        request.setOriginalRef(reference); // TODO could perhaps be removed
 
         if (conditions != null)
             request.setConditions(conditions);
@@ -315,7 +323,7 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
     protected Request createGetRequest(String subPath) {
         Reference reference = createReference(getRootResourceClass(), subPath);
         Request result = new Request(Method.GET, reference);
-        result.setOriginalRef(reference);
+        result.setOriginalRef(reference); // TODO could be removed perhaps
         return result;
     }
 

@@ -193,7 +193,10 @@ public abstract class ReprEntityGetter implements ParamGetter {
     public Object getValue() throws InvocationTargetException,
             ConvertRepresentationException, WebApplicationException {
         try {
-            Representation entity = Request.getCurrent().getEntity();
+            Request request = Request.getCurrent();
+            if(!request.isEntityAvailable())
+                return null;
+            Representation entity = request.getEntity();
             if(entity == null)
                 return null;
             return createInstance(entity);

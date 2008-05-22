@@ -815,6 +815,7 @@ public class ParameterList {
      * @param entityProviders
      * @param allCtxResolvers
      * @param extensionBackwardMapping
+     * @param paramsAllowed
      * @param logger
      * @throws MissingAnnotationException
      */
@@ -822,12 +823,13 @@ public class ParameterList {
             ThreadLocalizedContext tlContext, boolean leaveEncoded,
             EntityProviders entityProviders,
             Collection<ContextResolver<?>> allCtxResolvers,
-            ExtensionBackwardMapping extensionBackwardMapping, Logger logger)
+            ExtensionBackwardMapping extensionBackwardMapping,
+            boolean paramsAllowed, Logger logger)
             throws MissingAnnotationException {
         this(constr.getParameterTypes(), constr.getGenericParameterTypes(),
                 constr.getParameterAnnotations(), tlContext, leaveEncoded,
                 entityProviders, allCtxResolvers, extensionBackwardMapping,
-                true, false, logger);
+                paramsAllowed, false, logger);
     }
 
     /**
