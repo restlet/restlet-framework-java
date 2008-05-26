@@ -43,7 +43,8 @@ Changes log
           Contributed by Stephan Koops.
         - Refactored the TunnelService implementation, renamed the 
           "extensionTunnel" to "extensionsTunnel" and added the
-          "queryTunnel" property for consistency. 
+          "queryTunnel" property for consistency. Suggested by Chuck 
+          Mortimer.
         - Deprecated the Restlet.init() method. In Restlet 1.2, this 
           method will be removed and its logic directly put in the
           handle(Request, Response) method.
