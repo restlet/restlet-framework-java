@@ -1540,6 +1540,7 @@ public class Reference {
      * 
      * @return The remaining resource part or null if the prerequisites are not
      *         satisfied.
+     * @see #getRemainingPart(boolean)
      */
     public String getRemainingPart() {
         String result = null;
@@ -1559,12 +1560,12 @@ public class Reference {
     }
 
     /**
-     * Returns the optionnally decoded remaining part.
+     * Returns the optionally decoded remaining part.
      * 
      * @param decode
      *                Indicates if the result should be decoded using the
      *                {@link #decode(String)} method.
-     * @return The optionnally decoded remaining part.
+     * @return The optionally decoded remaining part.
      * @see #getRemainingPart()
      */
     public String getRemainingPart(boolean decode) {
