@@ -18,16 +18,11 @@
 
 package com.noelios.restlet.ext.xdb;
 
-import com.noelios.restlet.local.WarClientHelper;
-
 import java.io.InputStream;
-
 import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-
 import java.sql.ResultSet;
-
 import java.sql.SQLException;
 
 import javax.servlet.ServletConfig;
@@ -44,6 +39,8 @@ import org.restlet.resource.InputRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.service.MetadataService;
 
+import com.noelios.restlet.ext.servlet.ServletWarClientHelper;
+
 /**
  * Local client connector based on a XMLDB repository. WARs are deployed at
  * XMLDB repository using this directory layout /home/[SCHEMA]/wars/[AppName]/
@@ -54,7 +51,7 @@ import org.restlet.service.MetadataService;
  * 
  * @author Marcelo F. Ochoa (mochoa@ieee.org)
  */
-public class XdbServletWarClientHelper extends WarClientHelper {
+public class XdbServletWarClientHelper extends ServletWarClientHelper {
     /**
      * XMLDB base directory used to access to resources
      */
@@ -93,7 +90,7 @@ public class XdbServletWarClientHelper extends WarClientHelper {
      */
     public XdbServletWarClientHelper(Client client, ServletConfig config,
             Connection conn) {
-        super(client);
+        super(client, config.getServletContext());
         this.config = config;
         this.conn = conn;
     }
@@ -109,9 +106,10 @@ public class XdbServletWarClientHelper extends WarClientHelper {
 
     @SuppressWarnings("unchecked")
     @Override
-    protected void handleWar(Request request, Response response) {
+    public void handle(Request request, Response response) {
         PreparedStatement stmt = null;
         ResultSet rset = null;
+
         if (request.getMethod().equals(Method.GET)
                 || request.getMethod().equals(Method.HEAD)) {
             String basePath = request.getResourceRef().getPath();

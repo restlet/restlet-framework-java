@@ -14,7 +14,7 @@ Changes log
     - NRE and Extension Enhancements
         -  
     - Misc
-        -  
+        - Refactored WAR client to remove remaining class in NRE core.
 
 - 1.1 Milestone 4 (2008-05-20)
     - Bugs fixed

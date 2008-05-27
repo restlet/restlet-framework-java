@@ -27,6 +27,7 @@ import javax.servlet.ServletContext;
 import org.restlet.Client;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
+import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
 import org.restlet.data.Request;
@@ -36,7 +37,7 @@ import org.restlet.resource.InputRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.service.MetadataService;
 
-import com.noelios.restlet.local.WarClientHelper;
+import com.noelios.restlet.local.FileClientHelper;
 
 /**
  * Local client connector based on a Servlet context (JEE Web application
@@ -61,7 +62,7 @@ import com.noelios.restlet.local.WarClientHelper;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class ServletWarClientHelper extends WarClientHelper {
+public class ServletWarClientHelper extends FileClientHelper {
     /** The Servlet context to use. */
     private volatile ServletContext servletContext;
 
@@ -75,6 +76,8 @@ public class ServletWarClientHelper extends WarClientHelper {
      */
     public ServletWarClientHelper(Client client, ServletContext servletContext) {
         super(client);
+        getProtocols().clear();
+        getProtocols().add(Protocol.WAR);
         this.servletContext = servletContext;
     }
 
@@ -87,11 +90,16 @@ public class ServletWarClientHelper extends WarClientHelper {
         return this.servletContext;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    protected void handleWar(Request request, Response response) {
+    @SuppressWarnings("unchecked")
+    public void handle(Request request, Response response) {
+
         if (request.getMethod().equals(Method.GET)
                 || request.getMethod().equals(Method.HEAD)) {
+            // Ensure that all ".." and "." are normalized into the path
+            // to prevent unauthorized access to user directories.
+            request.getResourceRef().normalize();
+
             String basePath = request.getResourceRef().getPath();
             int lastSlashIndex = basePath.lastIndexOf('/');
             String entry = (lastSlashIndex == -1) ? basePath : basePath
