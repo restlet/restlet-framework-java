@@ -636,7 +636,7 @@ public class Template {
      * 
      * @return The modifiable map of variables.
      */
-    public Map<String, Variable> getVariables() {
+    public synchronized Map<String, Variable> getVariables() {
         return this.variables;
     }
 
