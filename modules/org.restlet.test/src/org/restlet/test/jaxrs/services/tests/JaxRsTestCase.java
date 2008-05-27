@@ -25,23 +25,19 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.core.ApplicationConfig;
 
 import org.restlet.Application;
-import org.restlet.Client;
 import org.restlet.Guard;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
 import org.restlet.data.Cookie;
-import org.restlet.data.Form;
 import org.restlet.data.MediaType;
-import org.restlet.data.Metadata;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
@@ -56,7 +52,6 @@ import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.resource.Representation;
 import org.restlet.test.jaxrs.server.RestletServerTestCase;
-import org.restlet.test.jaxrs.services.providers.CrazyTypeProvider;
 import org.restlet.test.jaxrs.util.TestUtils;
 
 /**
@@ -118,11 +113,13 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
         assertEquals(expected, actual);
     }
 
-    public static void assertEqualMediaType(MediaType expected, Response actualResponse) {
+    public static void assertEqualMediaType(MediaType expected,
+            Response actualResponse) {
         assertEqualMediaType(expected, actualResponse.getEntity());
     }
 
-    public static void assertEqualMediaType(MediaType expected, Representation actualEntity) {
+    public static void assertEqualMediaType(MediaType expected,
+            Representation actualEntity) {
         assertEqualMediaType(expected, actualEntity.getMediaType());
     }
 
@@ -270,7 +267,9 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
             String subPath, Conditions conditions, ClientInfo clientInfo) {
         Reference reference = createReference(klasse, subPath);
         Request request = new Request(httpMethod, reference);
-        request.setOriginalRef(reference); // TODO could perhaps be removed
+
+        // TODO could perhaps be removed
+        request.setOriginalRef(reference.getTargetRef());
 
         if (conditions != null)
             request.setConditions(conditions);
@@ -323,7 +322,9 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
     protected Request createGetRequest(String subPath) {
         Reference reference = createReference(getRootResourceClass(), subPath);
         Request result = new Request(Method.GET, reference);
-        result.setOriginalRef(reference); // TODO could be removed perhaps
+        // TODO could perhaps be removed 
+        result.setOriginalRef(reference.getTargetRef());
+
         return result;
     }
 

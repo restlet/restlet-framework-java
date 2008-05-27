@@ -862,7 +862,7 @@ public class JaxRsRouter extends Restlet {
             return null;
         if (entity instanceof Representation) {
             Representation repr = (Representation) entity;
-            // ensures that a supported character is set, which is also supportd
+            // ensures that a supported character is set, which is also supported
             repr.setCharacterSet(getSupportedCharSet(repr.getCharacterSet()));
             return repr;
         }

@@ -287,7 +287,7 @@ public abstract class RestletServerTestCase extends TestCase {
             ChallengeResponse challengeResponse, Conditions conditions,
             Collection<Cookie> addCookies, Collection<Parameter> addHeaders) {
         Request request = new Request(httpMethod, reference);
-        request.setOriginalRef(reference);
+        request.setOriginalRef(reference.getTargetRef());
         addAcceptedMediaTypes(request, accMediaTypes);
         request.setChallengeResponse(challengeResponse);
         request.setEntity(entity);
