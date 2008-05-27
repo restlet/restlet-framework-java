@@ -177,7 +177,8 @@ public class StatusFilter extends Filter {
 
     /**
      * Returns a status for a given exception or error. By default it returns an
-     * {@link Status#SERVER_ERROR_INTERNAL} status and logs a severe message.<br>
+     * {@link Status#SERVER_ERROR_INTERNAL} status including the related error
+     * or exception and logs a severe message.<br>
      * In order to customize the default behavior, this method can be overriden.
      * 
      * @param throwable
@@ -192,6 +193,6 @@ public class StatusFilter extends Filter {
             Response response) {
         getLogger().log(Level.SEVERE,
                 "Unhandled exception or error intercepted", throwable);
-        return Status.SERVER_ERROR_INTERNAL;
+        return new Status(Status.SERVER_ERROR_INTERNAL, throwable);
     }
 }

@@ -910,7 +910,7 @@ public final class Status extends Metadata {
      *                The related error or exception.
      */
     public Status(final Status status, final Throwable throwable) {
-        this(status.getCode(), status.getName(), (throwable == null) ? null
+        this(status.getCode(), throwable, status.getName(), (throwable == null) ? null
                 : throwable.getMessage(), status.getUri());
     }
 

@@ -75,7 +75,7 @@ public class ResourceException extends Exception {
      */
     public ResourceException(final int code, final String name,
             final String description, final String uri, final Throwable cause) {
-        this(new Status(code, name, description, uri), cause);
+        this(new Status(code, cause, name, description, uri), cause);
     }
 
     /**
@@ -87,7 +87,7 @@ public class ResourceException extends Exception {
      *                The wrapped cause error or exception.
      */
     public ResourceException(final int code, final Throwable cause) {
-        this(new Status(code), cause);
+        this(new Status(code, cause), cause);
     }
 
     /**
@@ -125,7 +125,7 @@ public class ResourceException extends Exception {
      */
     public ResourceException(final Status status, final String description,
             final Throwable cause) {
-        this(new Status(status, description), cause);
+        this(new Status(status, cause, description), cause);
     }
 
     /**
@@ -143,13 +143,14 @@ public class ResourceException extends Exception {
 
     /**
      * Constructor that set the status to
-     * {@link org.restlet.data.Status#SERVER_ERROR_INTERNAL}.
+     * {@link org.restlet.data.Status#SERVER_ERROR_INTERNAL} including the
+     * related error or exception.
      * 
      * @param cause
      *                The wrapped cause error or exception.
      */
     public ResourceException(final Throwable cause) {
-        this(Status.SERVER_ERROR_INTERNAL, cause);
+        this(new Status(Status.SERVER_ERROR_INTERNAL, cause), cause);
     }
 
     /**
