@@ -38,10 +38,13 @@ import org.restlet.Server;
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
+import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.util.Series;
 
+import com.noelios.restlet.http.HttpCall;
+import com.noelios.restlet.http.HttpRequest;
 import com.noelios.restlet.http.HttpServerCall;
 
 /**
@@ -50,14 +53,37 @@ import com.noelios.restlet.http.HttpServerCall;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class ServletCall extends HttpServerCall {
+
+    /**
+     * Returns the Servlet request that was used to generate the given Restlet
+     * request.
+     * 
+     * @param request
+     *                The Restlet request.
+     * @return The Servlet request or null.
+     */
+    public static HttpServletRequest getRequest(Request request) {
+        HttpServletRequest result = null;
+
+        if (request instanceof HttpRequest) {
+            HttpCall httpCall = ((HttpRequest) request).getHttpCall();
+
+            if (httpCall instanceof ServletCall) {
+                result = ((ServletCall) httpCall).getRequest();
+            }
+        }
+
+        return result;
+    }
+
     /** The HTTP Servlet request to wrap. */
     private volatile HttpServletRequest request;
 
-    /** The HTTP Servlet response to wrap. */
-    private volatile HttpServletResponse response;
-
     /** The request headers. */
     private volatile Series<Parameter> requestHeaders;
+
+    /** The HTTP Servlet response to wrap. */
+    private volatile HttpServletResponse response;
 
     /**
      * Constructor.
@@ -270,6 +296,33 @@ public class ServletCall extends HttpServerCall {
     }
 
     @Override
+    public String getSslCipherSuite() {
+        return (String) getRequest().getAttribute(
+                "javax.servlet.request.cipher_suite");
+    }
+
+    @Override
+    public List<Certificate> getSslClientCertificates() {
+        Certificate[] certificateArray = (Certificate[]) getRequest()
+                .getAttribute("javax.servlet.request.X509Certificate");
+        if (certificateArray != null) {
+            return Arrays.asList(certificateArray);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public Integer getSslKeySize() {
+        Integer keySize = (Integer) getRequest().getAttribute(
+                "javax.servlet.request.key_size");
+        if (keySize == null) {
+            keySize = super.getSslKeySize();
+        }
+        return keySize;
+    }
+
+    @Override
     public String getVersion() {
         String result = null;
         int index = getRequest().getProtocol().indexOf('/');
@@ -289,33 +342,6 @@ public class ServletCall extends HttpServerCall {
     @Override
     public boolean isConfidential() {
         return getRequest().isSecure();
-    }
-
-    @Override
-    public List<Certificate> getSslClientCertificates() {
-        Certificate[] certificateArray = (Certificate[]) getRequest()
-                .getAttribute("javax.servlet.request.X509Certificate");
-        if (certificateArray != null) {
-            return Arrays.asList(certificateArray);
-        } else {
-            return null;
-        }
-    }
-
-    @Override
-    public String getSslCipherSuite() {
-        return (String) getRequest().getAttribute(
-                "javax.servlet.request.cipher_suite");
-    }
-
-    @Override
-    public Integer getSslKeySize() {
-        Integer keySize = (Integer) getRequest().getAttribute(
-                "javax.servlet.request.key_size");
-        if (keySize == null) {
-            keySize = super.getSslKeySize();
-        }
-        return keySize;
     }
 
     /**

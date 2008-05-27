@@ -14,7 +14,8 @@ Changes log
           purpose of "Request.resourceRef". Suggested by Alex Milowski
           and Rob Heittman.
     - NRE and Extension Enhancements
-        -  
+        - Added a static HttpServletRequest getRequest(Request) method
+          to the Servlet extension.        
     - Misc
         - Refactored WAR client to remove remaining class in NRE core.
 
