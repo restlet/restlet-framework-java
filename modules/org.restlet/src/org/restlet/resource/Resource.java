@@ -388,7 +388,7 @@ public class Resource extends Handler {
      * <br>
      * The negotiated representation is obtained by calling the
      * {@link #getPreferredVariant()}. If a variant is sucessfully selected,
-     * then the {@link #getRepresentation(Variant)} method is called to get the
+     * then the {@link #represent(Variant)} method is called to get the
      * actual representation corresponding to the metadata in the variant.<br>
      * <br>
      * If no variant matching the client preferences is available, the response
@@ -399,7 +399,7 @@ public class Resource extends Handler {
      * <br>
      * If the content negotiation is turned off and only one variant is defined
      * in the "variants" property, then its representation is returned by
-     * calling the {@link #getRepresentation(Variant)} method. If several
+     * calling the {@link #represent(Variant)} method. If several
      * variants are available, then the list of available representations is
      * returned in the response entity as a textual list of URIs (only if the
      * variants have an identifier properly set).<br>
