@@ -19,7 +19,6 @@ Export-Package: org.restlet.gwt;uses:="org.restlet.gwt.data,org.restlet.gwt.reso
    javax.xml.parsers,
    org.restlet.gwt.data,
    javax.xml.transform.stream",
- org.restlet.gwt.service;uses:="org.restlet.gwt.data,org.restlet.gwt.resource",
  org.restlet.gwt.util;
   uses:="org.xml.sax,
    org.w3c.dom,
