@@ -13,6 +13,8 @@ Changes log
           reference originally requested by the client. Clarified the
           purpose of "Request.resourceRef". Suggested by Alex Milowski
           and Rob Heittman.
+        - Client now has a new constructor taking a string with the 
+       	  protocol name instead of a Protocol instance.       
     - NRE and Extension Enhancements
         - Added a static HttpServletRequest getRequest(Request) method
           to the Servlet extension.        

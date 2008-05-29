@@ -34,132 +34,142 @@ import org.restlet.util.Helper;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Client extends Connector {
-	/**
-	 * The number of milliseconds the client should wait for a response before
-	 * aborting the request and setting its status to an error status.
-	 */
-	private int connectTimeout = 0;
+    /**
+     * The number of milliseconds the client should wait for a response before
+     * aborting the request and setting its status to an error status.
+     */
+    private int connectTimeout = 0;
 
-	/** The helper provided by the implementation. */
-	private volatile Helper<Client> helper;
+    /** The helper provided by the implementation. */
+    private volatile Helper<Client> helper;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param context
-	 *            The context.
-	 * @param protocols
-	 *            The connector protocols.
-	 */
-	public Client(Context context, List<Protocol> protocols) {
-		this(context, protocols, null);
-	}
+    /**
+     * Constructor.
+     * 
+     * @param context
+     *                The context.
+     * @param protocols
+     *                The connector protocols.
+     */
+    public Client(Context context, List<Protocol> protocols) {
+        this(context, protocols, null);
+    }
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param context
-	 *            The context.
-	 * @param protocols
-	 *            The connector protocols.
-	 * @param helperClass
-	 *            Optional helper class name.
-	 */
-	public Client(Context context, List<Protocol> protocols, String helperClass) {
-		super(context, protocols);
+    /**
+     * Constructor.
+     * 
+     * @param context
+     *                The context.
+     * @param protocols
+     *                The connector protocols.
+     * @param helperClass
+     *                Optional helper class name.
+     */
+    public Client(Context context, List<Protocol> protocols, String helperClass) {
+        super(context, protocols);
 
-		if ((protocols != null) && (protocols.size() > 0)) {
-			if (Engine.getInstance() != null) {
-				this.helper = Engine.getInstance().createHelper(this,
-						helperClass);
-			}
-		}
-	}
+        if ((protocols != null) && (protocols.size() > 0)) {
+            if (Engine.getInstance() != null) {
+                this.helper = Engine.getInstance().createHelper(this,
+                        helperClass);
+            }
+        }
+    }
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param context
-	 *            The context.
-	 * @param protocol
-	 *            The connector protocol.
-	 */
-	public Client(Context context, Protocol protocol) {
-		this(context, (protocol == null) ? null : Arrays.asList(protocol), null);
-	}
+    /**
+     * Constructor.
+     * 
+     * @param context
+     *                The context.
+     * @param protocol
+     *                The connector protocol.
+     */
+    public Client(Context context, Protocol protocol) {
+        this(context, (protocol == null) ? null : Arrays.asList(protocol), null);
+    }
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param protocols
-	 *            The connector protocols.
-	 */
-	public Client(List<Protocol> protocols) {
-		this(null, protocols, null);
-	}
+    /**
+     * Constructor.
+     * 
+     * @param protocols
+     *                The connector protocols.
+     */
+    public Client(List<Protocol> protocols) {
+        this(null, protocols, null);
+    }
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param protocol
-	 *            The connector protocol.
-	 */
-	public Client(Protocol protocol) {
-		this(null, protocol);
-	}
+    /**
+     * Constructor.
+     * 
+     * @param protocol
+     *                The connector protocol.
+     */
+    public Client(Protocol protocol) {
+        this(null, protocol);
+    }
 
-	/**
-	 * Returns the connection timeout.
-	 * 
-	 * @return The connection timeout.
-	 */
-	public int getConnectTimeout() {
-		return connectTimeout;
-	}
+    /**
+     * Constructor.
+     * 
+     * @param protocolName
+     *                The connector protocol.
+     */
+    public Client(String protocolName) {
+        this(Protocol.valueOf(protocolName));
+    }
 
-	/**
-	 * Returns the helper provided by the implementation.
-	 * 
-	 * @return The helper provided by the implementation.
-	 */
-	private Helper<Client> getHelper() {
-		return this.helper;
-	}
+    /**
+     * Returns the connection timeout.
+     * 
+     * @return The connection timeout.
+     */
+    public int getConnectTimeout() {
+        return connectTimeout;
+    }
 
-	@Override
-	public void handle(Request request, Response response) {
-		super.handle(request, response);
+    /**
+     * Returns the helper provided by the implementation.
+     * 
+     * @return The helper provided by the implementation.
+     */
+    private Helper<Client> getHelper() {
+        return this.helper;
+    }
 
-		if (getHelper() != null)
-			getHelper().handle(request, response);
-	}
+    @Override
+    public void handle(Request request, Response response) {
+        super.handle(request, response);
 
-	/**
-	 * Sets the connection timeout.
-	 * 
-	 * @param connectTimeout
-	 *            The connection timeout.
-	 */
-	public void setConnectTimeout(int connectTimeout) {
-		this.connectTimeout = connectTimeout;
-	}
+        if (getHelper() != null)
+            getHelper().handle(request, response);
+    }
 
-	@Override
-	public synchronized void start() throws Exception {
-		if (isStopped()) {
-			super.start();
-			if (getHelper() != null)
-				getHelper().start();
-		}
-	}
+    /**
+     * Sets the connection timeout.
+     * 
+     * @param connectTimeout
+     *                The connection timeout.
+     */
+    public void setConnectTimeout(int connectTimeout) {
+        this.connectTimeout = connectTimeout;
+    }
 
-	@Override
-	public synchronized void stop() throws Exception {
-		if (isStarted()) {
-			if (getHelper() != null)
-				getHelper().stop();
-			super.stop();
-		}
-	}
+    @Override
+    public synchronized void start() throws Exception {
+        if (isStopped()) {
+            super.start();
+            if (getHelper() != null)
+                getHelper().start();
+        }
+    }
+
+    @Override
+    public synchronized void stop() throws Exception {
+        if (isStarted()) {
+            if (getHelper() != null)
+                getHelper().stop();
+            super.stop();
+        }
+    }
 
 }

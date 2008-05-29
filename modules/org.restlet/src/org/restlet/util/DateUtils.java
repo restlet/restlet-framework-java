@@ -40,7 +40,7 @@ public final class DateUtils {
      * Class acting as an immutable date class based on the
      * {@link java.util.Date} class.
      * 
-     * Throws {@link UnsupportedOperationException} when muttable methopds are
+     * Throws {@link UnsupportedOperationException} when muttable methods are
      * invoked.
      * 
      * @author Piyush Purang (ppurang@gmail.com)
