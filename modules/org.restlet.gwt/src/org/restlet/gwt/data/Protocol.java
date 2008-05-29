@@ -26,25 +26,8 @@ package org.restlet.gwt.data;
  */
 public final class Protocol extends Metadata {
 
-    /** SMTP protocol. */
-    public static final Protocol SMTP = new Protocol("smtp", "SMTP",
-            "Simple Mail Transfer Protocol", 25);
-
-    /** SMTP with STARTTLS protocol (started with a plain socket). */
-    public static final Protocol SMTP_STARTTLS = new Protocol("smtp",
-            "SMTP_STARTTLS",
-            "Simple Mail Transfer Protocol (starting a TLS encryption)", 25);
-
-    /** SMTPS protocol (via SSL/TLS socket). */
-    public static final Protocol SMTPS = new Protocol("smtps", "SMTPS",
-            "Simple Mail Transfer Protocol (Secure)", 465);
-
     /** Indicates that the port number is undefined. */
     public static final int UNKNOWN_PORT = -1;
-
-    /** Local Web Archive access protocol. */
-    public static final Protocol WAR = new Protocol("war", "WAR",
-            "Web Archive Access Protocol", UNKNOWN_PORT);
 
     /**
      * AJP 1.3 protocol to communicate with Apache HTTP server or Microsoft IIS.
@@ -64,7 +47,7 @@ public final class Protocol extends Metadata {
      * In order to work, CLAP requires a client connector provided by the core
      * Restlet engine.
      * 
-     * @see org.restlet.gwt.data.LocalReference
+     * @see org.restlet.data.LocalReference
      */
     public static final Protocol CLAP = new Protocol("clap", "CLAP",
             "Class Loader Access Protocol", UNKNOWN_PORT);
@@ -77,7 +60,7 @@ public final class Protocol extends Metadata {
      * In order to work, FILE requires a client connector provided by the core
      * Restlet engine.
      * 
-     * @see org.restlet.gwt.data.LocalReference
+     * @see org.restlet.data.LocalReference
      */
     public static final Protocol FILE = new Protocol("file", "FILE",
             "Local File System Protocol", UNKNOWN_PORT);
@@ -99,7 +82,7 @@ public final class Protocol extends Metadata {
      * archive files. Example URI:
      * "jar:http://www.foo.com/bar/baz.jar!/COM/foo/Quux.class".
      * 
-     * @see org.restlet.gwt.data.LocalReference
+     * @see org.restlet.data.LocalReference
      */
     public static final Protocol JAR = new Protocol("jar", "JAR",
             "Java ARchive", UNKNOWN_PORT);
@@ -107,6 +90,14 @@ public final class Protocol extends Metadata {
     /** JDBC protocol. */
     public static final Protocol JDBC = new Protocol("jdbc", "JDBC",
             "Java DataBase Connectivity", UNKNOWN_PORT);
+
+    /** POP protocol. */
+    public static final Protocol POP = new Protocol("pop", "POP",
+            "Post Office Protocol", 110);
+
+    /** POPS protocol (via SSL/TLS socket).. */
+    public static final Protocol POPS = new Protocol("pops", "POPS",
+            "Post Office Protocol (Secure)", 995);
 
     /**
      * RIAP (Restlet Internal Access Protocol) is a custom scheme to access
@@ -117,51 +108,78 @@ public final class Protocol extends Metadata {
      * In order to work, RIAP doesn't requires any client connector and is
      * automatically supported by the Restlet engine.
      * 
-     * @see org.restlet.gwt.data.LocalReference
+     * @see org.restlet.data.LocalReference
      */
     public static final Protocol RIAP = new Protocol("riap", "RIAP",
             "Restlet Internal Access Protocol", UNKNOWN_PORT);
+
+    /** SMTP protocol. */
+    public static final Protocol SMTP = new Protocol("smtp", "SMTP",
+            "Simple Mail Transfer Protocol", 25);
+
+    /**
+     * SMTP with STARTTLS protocol (started with a plain socket).
+     * 
+     * @deprecated Use the "startTls" parameter on the JavaMail connector
+     *             instead.
+     */
+    @Deprecated
+    public static final Protocol SMTP_STARTTLS = new Protocol("smtp",
+            "SMTP_STARTTLS",
+            "Simple Mail Transfer Protocol (starting a TLS encryption)", 25);
+
+    /** SMTPS protocol (via SSL/TLS socket). */
+    public static final Protocol SMTPS = new Protocol("smtps", "SMTPS",
+            "Simple Mail Transfer Protocol (Secure)", 465);
+
+    /** Local Web Archive access protocol. */
+    public static final Protocol WAR = new Protocol("war", "WAR",
+            "Web Archive Access Protocol", UNKNOWN_PORT);
 
     /**
      * Creates the protocol associated to a URI scheme name. If an existing
      * constant exists then it is returned, otherwise a new instance is created.
      * 
-     * @param schemeName
+     * @param name
      *                The scheme name.
      * @return The associated protocol.
      */
-    public static Protocol valueOf(final String schemeName) {
+    public static Protocol valueOf(final String name) {
         Protocol result = null;
 
-        if (schemeName != null) {
-            if (schemeName.equalsIgnoreCase(AJP.getSchemeName()))
+        if ((name != null) && !name.equals("")) {
+            if (name.equalsIgnoreCase(AJP.getSchemeName()))
                 result = AJP;
-            else if (schemeName.equalsIgnoreCase(CLAP.getSchemeName()))
+            else if (name.equalsIgnoreCase(CLAP.getSchemeName()))
                 result = CLAP;
-            else if (schemeName.equalsIgnoreCase(FILE.getSchemeName()))
+            else if (name.equalsIgnoreCase(FILE.getSchemeName()))
                 result = FILE;
-            else if (schemeName.equalsIgnoreCase(FTP.getSchemeName()))
+            else if (name.equalsIgnoreCase(FTP.getSchemeName()))
                 result = FTP;
-            else if (schemeName.equalsIgnoreCase(HTTP.getSchemeName()))
+            else if (name.equalsIgnoreCase(HTTP.getSchemeName()))
                 result = HTTP;
-            else if (schemeName.equalsIgnoreCase(HTTPS.getSchemeName()))
+            else if (name.equalsIgnoreCase(HTTPS.getSchemeName()))
                 result = HTTPS;
-            else if (schemeName.equalsIgnoreCase(JAR.getSchemeName()))
+            else if (name.equalsIgnoreCase(JAR.getSchemeName()))
                 result = JAR;
-            else if (schemeName.equalsIgnoreCase(JDBC.getSchemeName()))
+            else if (name.equalsIgnoreCase(JDBC.getSchemeName()))
                 result = JDBC;
-            else if (schemeName.equalsIgnoreCase(RIAP.getSchemeName()))
+            else if (name.equalsIgnoreCase(POP.getSchemeName()))
+                result = POP;
+            else if (name.equalsIgnoreCase(POPS.getSchemeName()))
+                result = POPS;
+            else if (name.equalsIgnoreCase(RIAP.getSchemeName()))
                 result = RIAP;
-            else if (schemeName.equalsIgnoreCase(SMTP.getSchemeName()))
+            else if (name.equalsIgnoreCase(SMTP.getSchemeName()))
                 result = SMTP;
-            else if (schemeName.equalsIgnoreCase(SMTP_STARTTLS.getSchemeName()))
+            else if (name.equalsIgnoreCase(SMTP_STARTTLS.getSchemeName()))
                 result = SMTP_STARTTLS;
-            else if (schemeName.equalsIgnoreCase(SMTPS.getSchemeName()))
+            else if (name.equalsIgnoreCase(SMTPS.getSchemeName()))
                 result = SMTPS;
-            else if (schemeName.equalsIgnoreCase(WAR.getSchemeName()))
+            else if (name.equalsIgnoreCase(WAR.getSchemeName()))
                 result = WAR;
             else
-                result = new Protocol(schemeName);
+                result = new Protocol(name);
         }
 
         return result;

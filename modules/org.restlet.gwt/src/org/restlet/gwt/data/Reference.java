@@ -704,8 +704,8 @@ public class Reference {
             if (this.internalRef == null) {
                 return ref.internalRef == null;
             }
-
             return this.internalRef.equals(ref.internalRef);
+
         }
 
         return false;
@@ -728,12 +728,14 @@ public class Reference {
             if (index != -1) {
                 return part.substring(2, index);
             }
+
             index = part.indexOf('?');
             if (index != -1) {
                 return part.substring(2, index);
             }
 
             return part.substring(2);
+
         }
 
         return null;
@@ -860,10 +862,11 @@ public class Reference {
                 return this.internalRef.substring(schemeIndex + 1,
                         fragmentIndex);
             }
-
             // No fragment found
             return this.internalRef.substring(schemeIndex + 1);
+
         }
+
         // No scheme found
         if (hasQuery()) {
             // Query found
@@ -873,9 +876,9 @@ public class Reference {
             // Fragment found
             return this.internalRef.substring(0, fragmentIndex);
         }
+
         // No fragment found
         return this.internalRef;
-
     }
 
     /**
@@ -1011,6 +1014,7 @@ public class Reference {
             // Fragment found
             return this.internalRef.substring(0, fragmentIndex);
         }
+
         // No fragment found
         return this.internalRef;
     }
@@ -1108,6 +1112,7 @@ public class Reference {
         if (matrixIndex != -1) {
             return lastSegment.substring(matrixIndex + 1);
         }
+
         // No matrix found
         return null;
     }
@@ -1247,14 +1252,16 @@ public class Reference {
                     return this.internalRef.substring(queryIndex + 1,
                             fragmentIndex);
                 }
+
                 return null;
             }
+
             // No fragment found
             return this.internalRef.substring(queryIndex + 1);
         }
+
         // No query found
         return null;
-
     }
 
     /**
@@ -1533,6 +1540,7 @@ public class Reference {
      * 
      * @return The remaining resource part or null if the prerequisites are not
      *         satisfied.
+     * @see #getRemainingPart(boolean)
      */
     public String getRemainingPart() {
         String result = null;
@@ -1552,12 +1560,12 @@ public class Reference {
     }
 
     /**
-     * Returns the optionnally decoded remaining part.
+     * Returns the optionally decoded remaining part.
      * 
      * @param decode
      *                Indicates if the result should be decoded using the
      *                {@link #decode(String)} method.
-     * @return The optionnally decoded remaining part.
+     * @return The optionally decoded remaining part.
      * @see #getRemainingPart()
      */
     public String getRemainingPart(boolean decode) {
@@ -1575,6 +1583,7 @@ public class Reference {
             // Scheme found
             return this.internalRef.substring(0, schemeIndex);
         }
+
         // No scheme found
         return null;
     }
@@ -2401,7 +2410,6 @@ public class Reference {
         }
 
         updateIndexes();
-
     }
 
     /**
@@ -2744,34 +2752,42 @@ public class Reference {
             if (fragment) {
                 return this.internalRef;
             }
+
             if (hasFragment()) {
                 return this.internalRef.substring(0, fragmentIndex);
             }
             return this.internalRef;
-        } else {
-            if (fragment) {
-                if (hasQuery()) {
-                    if (hasFragment()) {
-                        return this.internalRef.substring(0, queryIndex) + "#"
-                                + getFragment();
-                    } else {
-                        return this.internalRef.substring(0, queryIndex);
-                    }
-                } else {
-                    return this.internalRef;
-                }
-            } else {
-                if (hasQuery()) {
-                    return this.internalRef.substring(0, queryIndex);
-                } else {
-                    if (hasFragment()) {
-                        return this.internalRef.substring(0, fragmentIndex);
-                    } else {
-                        return this.internalRef;
-                    }
-                }
-            }
         }
+
+        if (fragment) {
+            // Fragment should be included
+            if (hasQuery()) {
+                // Query found
+                if (hasFragment()) {
+                    // Fragment found
+                    return this.internalRef.substring(0, queryIndex) + "#"
+                            + getFragment();
+                }
+
+                // No fragment found
+                return this.internalRef.substring(0, queryIndex);
+            }
+
+            // No query found
+            return this.internalRef;
+        }
+
+        // Fragment should not be included
+        if (hasQuery()) {
+            // Query found
+            return this.internalRef.substring(0, queryIndex);
+        }
+        if (hasFragment()) {
+            // Fragment found
+            return this.internalRef.substring(0, fragmentIndex);
+        }
+
+        return this.internalRef;
     }
 
     /**

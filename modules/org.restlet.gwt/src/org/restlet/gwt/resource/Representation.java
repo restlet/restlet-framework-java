@@ -18,14 +18,6 @@
 
 package org.restlet.gwt.resource;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.io.Writer;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.WritableByteChannel;
 import java.util.Date;
 
 import org.restlet.gwt.data.MediaType;
@@ -71,34 +63,8 @@ public abstract class Representation extends Variant {
         }
 
         @Override
-        public ReadableByteChannel getChannel() throws IOException {
+        public String getText() {
             return null;
-        }
-
-        @Override
-        public Reader getReader() throws IOException {
-            return null;
-        }
-
-        @Override
-        public InputStream getStream() throws IOException {
-            return null;
-        }
-
-        @Override
-        public void write(OutputStream outputStream) throws IOException {
-            // Do nothing
-        }
-
-        @Override
-        public void write(WritableByteChannel writableChannel)
-                throws IOException {
-            // Do nothing
-        }
-
-        @Override
-        public void write(Writer writer) throws IOException {
-            // Do nothing
         }
     }
 
@@ -129,8 +95,25 @@ public abstract class Representation extends Variant {
      */
     private volatile String downloadName;
 
+    /** The expiration date. */
+    private volatile Date expirationDate;
+
     /** Indicates if the representation's content is transient. */
     private volatile boolean isTransient;
+
+    /** The modification date. */
+    private volatile Date modificationDate;
+
+    /**
+     * The expected size. Dynamic representations can have any size, but
+     * sometimes we can know in advance the expected size. If this expected size
+     * is specified by the user, it has a higher priority than any size that can
+     * be guessed by the representation (like a file size).
+     */
+    private volatile long size;
+
+    /** The tag. */
+    private volatile Tag tag;
 
     /**
      * Default constructor.
@@ -149,19 +132,11 @@ public abstract class Representation extends Variant {
         super(mediaType);
         this.available = true;
         this.isTransient = false;
+        this.size = UNKNOWN_SIZE;
+        this.expirationDate = null;
+        this.modificationDate = null;
+        this.tag = null;
     }
-
-    /**
-     * Returns a channel with the representation's content.<br>
-     * If it is supported by a file, a read-only instance of FileChannel is
-     * returned.<br>
-     * This method is ensured to return a fresh channel for each invocation
-     * unless it is a transient representation, in which case null is returned.
-     * 
-     * @return A channel with the representation's content.
-     * @throws IOException
-     */
-    public abstract ReadableByteChannel getChannel() throws IOException;
 
     /**
      * Returns the suggested download file name for this representation. This is
@@ -180,10 +155,8 @@ public abstract class Representation extends Variant {
      * 
      * @return The expiration date.
      */
-    @Override
-    @SuppressWarnings("deprecation")
     public Date getExpirationDate() {
-        return super.getExpirationDate();
+        return this.expirationDate;
     }
 
     /**
@@ -192,54 +165,26 @@ public abstract class Representation extends Variant {
      * 
      * @return The modification date.
      */
-    @Override
-    @SuppressWarnings("deprecation")
     public Date getModificationDate() {
-        return super.getModificationDate();
+        return this.modificationDate;
     }
-
-    /**
-     * Returns a characters reader with the representation's content. This
-     * method is ensured to return a fresh reader for each invocation unless it
-     * is a transient representation, in which case null is returned. If the
-     * representation has no character set defined, the system's default one
-     * will be used.
-     * 
-     * @return A reader with the representation's content.
-     * @throws IOException
-     */
-    public abstract Reader getReader() throws IOException;
 
     /**
      * Returns the size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
      * 
      * @return The size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
      */
-    @Override
-    @SuppressWarnings("deprecation")
     public long getSize() {
-        return super.getSize();
+        return this.size;
     }
-
-    /**
-     * Returns a stream with the representation's content. This method is
-     * ensured to return a fresh stream for each invocation unless it is a
-     * transient representation, in which case null is returned.
-     * 
-     * @return A stream with the representation's content.
-     * @throws IOException
-     */
-    public abstract InputStream getStream() throws IOException;
 
     /**
      * Returns the tag.
      * 
      * @return The tag.
      */
-    @Override
-    @SuppressWarnings("deprecation")
     public Tag getTag() {
-        return super.getTag();
+        return this.tag;
     }
 
     /**
@@ -249,22 +194,7 @@ public abstract class Representation extends Variant {
      * 
      * @return The representation as a string value.
      */
-    public String getText() throws IOException {
-        String result = null;
-
-        if (isAvailable()) {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            write(baos);
-
-            if (getCharacterSet() != null) {
-                result = baos.toString(getCharacterSet().getName());
-            } else {
-                result = baos.toString();
-            }
-        }
-
-        return result;
-    }
+    public abstract String getText();
 
     /**
      * Indicates if some fresh content is available, without having to actually
@@ -351,10 +281,8 @@ public abstract class Representation extends Variant {
      * @param expirationDate
      *                The expiration date.
      */
-    @Override
-    @SuppressWarnings("deprecation")
     public void setExpirationDate(Date expirationDate) {
-        super.setExpirationDate(expirationDate);
+        this.expirationDate = expirationDate;
     }
 
     /**
@@ -364,10 +292,8 @@ public abstract class Representation extends Variant {
      * @param modificationDate
      *                The modification date.
      */
-    @Override
-    @SuppressWarnings("deprecation")
     public void setModificationDate(Date modificationDate) {
-        super.setModificationDate(modificationDate);
+        this.modificationDate = modificationDate;
     }
 
     /**
@@ -376,10 +302,8 @@ public abstract class Representation extends Variant {
      * @param expectedSize
      *                The expected size in bytes if known, -1 otherwise.
      */
-    @Override
-    @SuppressWarnings("deprecation")
     public void setSize(long expectedSize) {
-        super.setSize(expectedSize);
+        this.size = expectedSize;
     }
 
     /**
@@ -388,10 +312,8 @@ public abstract class Representation extends Variant {
      * @param tag
      *                The tag.
      */
-    @Override
-    @SuppressWarnings("deprecation")
     public void setTag(Tag tag) {
-        super.setTag(tag);
+        this.tag = tag;
     }
 
     /**
@@ -403,39 +325,5 @@ public abstract class Representation extends Variant {
     public void setTransient(boolean isTransient) {
         this.isTransient = isTransient;
     }
-
-    /**
-     * Writes the representation to a byte stream. This method is ensured to
-     * write the full content for each invocation unless it is a transient
-     * representation, in which case an exception is thrown.
-     * 
-     * @param outputStream
-     *                The output stream.
-     * @throws IOException
-     */
-    public abstract void write(OutputStream outputStream) throws IOException;
-
-    /**
-     * Writes the representation to a byte channel. This method is ensured to
-     * write the full content for each invocation unless it is a transient
-     * representation, in which case an exception is thrown.
-     * 
-     * @param writableChannel
-     *                A writable byte channel.
-     * @throws IOException
-     */
-    public abstract void write(WritableByteChannel writableChannel)
-            throws IOException;
-
-    /**
-     * Writes the representation to a characters writer. This method is ensured
-     * to write the full content for each invocation unless it is a transient
-     * representation, in which case an exception is thrown.
-     * 
-     * @param writer
-     *                The characters writer.
-     * @throws IOException
-     */
-    public abstract void write(Writer writer) throws IOException;
 
 }

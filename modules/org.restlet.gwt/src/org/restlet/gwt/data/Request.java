@@ -20,6 +20,7 @@ package org.restlet.gwt.data;
 
 import java.util.List;
 
+import org.restlet.gwt.Context;
 import org.restlet.gwt.resource.Representation;
 import org.restlet.gwt.util.Series;
 
@@ -72,17 +73,6 @@ public class Request extends Message {
         }
     }
 
-    /**
-     * Returns the request associated to the current thread. This is reusing the
-     * {@link Response#getCurrent()} method.
-     * 
-     * @return The thread's request.
-     */
-    public static Request getCurrent() {
-        return (Response.getCurrent() == null) ? null : Response.getCurrent()
-                .getRequest();
-    }
-
     /** The authentication response sent by a client to an origin server. */
     private volatile ChallengeResponse challengeResponse;
 
@@ -103,6 +93,9 @@ public class Request extends Message {
 
     /** The method. */
     private volatile Method method;
+
+    /** The original reference. */
+    private volatile Reference originalRef;
 
     /** The referrer reference. */
     private volatile Reference referrerRef;
@@ -261,6 +254,18 @@ public class Request extends Message {
     }
 
     /**
+     * Returns the original reference as requested by the client. Note that this
+     * property is not used during request routing. See the
+     * {@link #getResourceRef()} method for details.
+     * 
+     * @return The original reference.
+     * @see #getResourceRef()
+     */
+    public Reference getOriginalRef() {
+        return this.originalRef;
+    }
+
+    /**
      * Returns the protocol by first returning the resourceRef.schemeProtocol
      * property if it is set, or the baseRef.schemeProtocol property otherwise.
      * 
@@ -291,9 +296,30 @@ public class Request extends Message {
     }
 
     /**
-     * Returns the reference of the target resource.
+     * Returns the reference of the target resource. This reference is
+     * especially important during routing, dispatching and resource finding.
+     * During such processing, its base reference is constantly updated to
+     * reflect the reference of the parent Restlet or resource and the remaining
+     * part of the URI that must be routed or analyzed.
+     * 
+     * If you need to get the URI reference originally requested by the client,
+     * then you should use the {@link #getOriginalRef()} method instead. Also,
+     * note that beside the update of its base property, the resource reference
+     * can be modified during the request processing.
+     * 
+     * For example, the {@link TunnelService} associated to an application can
+     * extract some special extensions or query parameters and replace them by
+     * semantically equivalent properties on the request object. Therefore, the
+     * resource reference can become different from the original reference.
+     * 
+     * Finally, when sending out requests via a dispatcher such as
+     * {@link Context#getClientDispatcher()} or
+     * {@link Context#getServerDispatcher()}, if the reference contains URI
+     * template variables, those variables are automatically resolved using the
+     * request's attributes.
      * 
      * @return The reference of the target resource.
+     * @see #getOriginalRef()
      */
     public Reference getResourceRef() {
         return this.resourceRef;
@@ -418,6 +444,17 @@ public class Request extends Message {
     }
 
     /**
+     * Sets the original reference requested by the client.
+     * 
+     * @param originalRef
+     *                The original reference.
+     * @see #getOriginalRef()
+     */
+    public void setOriginalRef(Reference originalRef) {
+        this.originalRef = originalRef;
+    }
+
+    /**
      * Sets the referrer reference if available.
      * 
      * @param referrerRef
@@ -450,6 +487,7 @@ public class Request extends Message {
      * 
      * @param resourceRef
      *                The resource reference.
+     * @see #getResourceRef()
      */
     public void setResourceRef(Reference resourceRef) {
         this.resourceRef = resourceRef;
@@ -461,6 +499,7 @@ public class Request extends Message {
      * 
      * @param resourceUri
      *                The resource URI.
+     * @see #setResourceRef(Reference)
      */
     public void setResourceRef(String resourceUri) {
         if (getResourceRef() != null) {

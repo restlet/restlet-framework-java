@@ -123,7 +123,9 @@ public abstract class Helper<T extends Restlet> {
      * @param response
      *                The response to update.
      */
-    public abstract void handle(Request request, Response response);
+    public void handle(Request request, Response response) {
+
+    }
 
     /**
      * Sets the helped Restlet.

@@ -16,52 +16,57 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.gwt.resource;
+package org.restlet.gwt.internal;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.WritableByteChannel;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.restlet.gwt.data.MediaType;
-import org.restlet.gwt.util.ByteUtils;
+import org.restlet.gwt.Connector;
+import org.restlet.gwt.Context;
+import org.restlet.gwt.data.Protocol;
+import org.restlet.gwt.util.Helper;
 
 /**
- * Representation based on a BIO stream.
+ * Base connector helper.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public abstract class StreamRepresentation extends Representation {
+public abstract class ConnectorHelper<T extends Connector> extends Helper<T> {
+    /** The protocols simultaneously supported. */
+    private volatile List<Protocol> protocols;
 
     /**
      * Constructor.
-     * 
-     * @param mediaType
-     *                The media type.
      */
-    public StreamRepresentation(MediaType mediaType) {
-        super(mediaType);
+    public ConnectorHelper(T connector) {
+        super(connector);
+        this.protocols = new ArrayList<Protocol>();
+    }
+
+    /**
+     * Returns the protocols simultaneously supported.
+     * 
+     * @return The protocols simultaneously supported.
+     */
+    public List<Protocol> getProtocols() {
+        return this.protocols;
     }
 
     @Override
-    public ReadableByteChannel getChannel() throws IOException {
-        return ByteUtils.getChannel(getStream());
+    public Context createContext(String loggerName) {
+        return null;
     }
 
     @Override
-    public Reader getReader() throws IOException {
-        return ByteUtils.getReader(getStream(), getCharacterSet());
+    public synchronized void start() throws Exception {
     }
 
     @Override
-    public void write(WritableByteChannel writableChannel) throws IOException {
-        write(ByteUtils.getStream(writableChannel));
+    public synchronized void stop() throws Exception {
     }
 
     @Override
-    public void write(Writer writer) throws IOException {
-        write(ByteUtils.getStream(writer));
+    public void update() throws Exception {
     }
 
 }

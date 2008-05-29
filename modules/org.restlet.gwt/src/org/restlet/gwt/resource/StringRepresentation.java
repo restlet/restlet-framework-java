@@ -18,14 +18,6 @@
 
 package org.restlet.gwt.resource;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.util.logging.Logger;
-
 import org.restlet.gwt.data.CharacterSet;
 import org.restlet.gwt.data.Language;
 import org.restlet.gwt.data.MediaType;
@@ -36,10 +28,10 @@ import org.restlet.gwt.data.MediaType;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class StringRepresentation extends StreamRepresentation {
+public class StringRepresentation extends Representation {
 
     /** The string value. */
-    private volatile CharSequence text;
+    private volatile String text;
 
     /**
      * Constructor. The following metadata are used by default: "text/plain"
@@ -48,7 +40,7 @@ public class StringRepresentation extends StreamRepresentation {
      * @param text
      *                The string value.
      */
-    public StringRepresentation(CharSequence text) {
+    public StringRepresentation(String text) {
         this(text, MediaType.TEXT_PLAIN);
     }
 
@@ -61,7 +53,7 @@ public class StringRepresentation extends StreamRepresentation {
      * @param language
      *                The language.
      */
-    public StringRepresentation(CharSequence text, Language language) {
+    public StringRepresentation(String text, Language language) {
         this(text, MediaType.TEXT_PLAIN, language);
     }
 
@@ -74,7 +66,7 @@ public class StringRepresentation extends StreamRepresentation {
      * @param mediaType
      *                The media type.
      */
-    public StringRepresentation(CharSequence text, MediaType mediaType) {
+    public StringRepresentation(String text, MediaType mediaType) {
         this(text, mediaType, null);
     }
 
@@ -89,7 +81,7 @@ public class StringRepresentation extends StreamRepresentation {
      * @param language
      *                The language.
      */
-    public StringRepresentation(CharSequence text, MediaType mediaType,
+    public StringRepresentation(String text, MediaType mediaType,
             Language language) {
         this(text, mediaType, language, CharacterSet.ISO_8859_1);
     }
@@ -106,7 +98,7 @@ public class StringRepresentation extends StreamRepresentation {
      * @param characterSet
      *                The character set.
      */
-    public StringRepresentation(CharSequence text, MediaType mediaType,
+    public StringRepresentation(String text, MediaType mediaType,
             Language language, CharacterSet characterSet) {
         super(mediaType);
         this.text = text;
@@ -120,22 +112,8 @@ public class StringRepresentation extends StreamRepresentation {
     }
 
     @Override
-    public InputStream getStream() throws IOException {
-        if (getText() != null) {
-            if (getCharacterSet() != null) {
-                return new ByteArrayInputStream(getText().getBytes(
-                        getCharacterSet().getName()));
-            } else {
-                return new ByteArrayInputStream(getText().getBytes());
-            }
-        } else {
-            return null;
-        }
-    }
-
-    @Override
     public String getText() {
-        return (this.text == null) ? null : this.text.toString();
+        return this.text;
     }
 
     /**
@@ -175,29 +153,11 @@ public class StringRepresentation extends StreamRepresentation {
                 } else {
                     setSize(getText().getBytes().length);
                 }
-            } catch (UnsupportedEncodingException e) {
-                Logger.getLogger(StringRepresentation.class.getCanonicalName());
+            } catch (Exception e) {
                 setSize(UNKNOWN_SIZE);
             }
         } else {
             setSize(UNKNOWN_SIZE);
-        }
-    }
-
-    @Override
-    public void write(OutputStream outputStream) throws IOException {
-        if (getText() != null) {
-            OutputStreamWriter osw = null;
-
-            if (getCharacterSet() != null) {
-                osw = new OutputStreamWriter(outputStream, getCharacterSet()
-                        .getName());
-            } else {
-                osw = new OutputStreamWriter(outputStream);
-            }
-
-            osw.write(getText());
-            osw.flush();
         }
     }
 

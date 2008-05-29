@@ -34,6 +34,12 @@ import org.restlet.gwt.util.Helper;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Client extends Connector {
+    /**
+     * The number of milliseconds the client should wait for a response before
+     * aborting the request and setting its status to an error status.
+     */
+    private int connectTimeout = 0;
+
     /** The helper provided by the implementation. */
     private volatile Helper<Client> helper;
 
@@ -103,6 +109,25 @@ public class Client extends Connector {
     }
 
     /**
+     * Constructor.
+     * 
+     * @param protocolName
+     *                The connector protocol.
+     */
+    public Client(String protocolName) {
+        this(Protocol.valueOf(protocolName));
+    }
+
+    /**
+     * Returns the connection timeout.
+     * 
+     * @return The connection timeout.
+     */
+    public int getConnectTimeout() {
+        return connectTimeout;
+    }
+
+    /**
      * Returns the helper provided by the implementation.
      * 
      * @return The helper provided by the implementation.
@@ -117,6 +142,16 @@ public class Client extends Connector {
 
         if (getHelper() != null)
             getHelper().handle(request, response);
+    }
+
+    /**
+     * Sets the connection timeout.
+     * 
+     * @param connectTimeout
+     *                The connection timeout.
+     */
+    public void setConnectTimeout(int connectTimeout) {
+        this.connectTimeout = connectTimeout;
     }
 
     @Override

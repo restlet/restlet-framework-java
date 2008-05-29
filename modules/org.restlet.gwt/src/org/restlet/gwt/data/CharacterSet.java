@@ -71,7 +71,7 @@ public final class CharacterSet extends Metadata {
     public static CharacterSet valueOf(final String name) {
         CharacterSet result = null;
 
-        if (name != null) {
+        if ((name != null) && !name.equals("")) {
             if (name.equalsIgnoreCase(ALL.getName()))
                 result = ALL;
             else if (name.equalsIgnoreCase(ISO_8859_1.getName()))

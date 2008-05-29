@@ -34,8 +34,17 @@ public final class Variable {
     /** Matches all alphabetical and digital characters. */
     public static final int TYPE_ALPHA_DIGIT = 3;
 
+    /** Matches any TEXT excluding "(" and ")". */
+    public static final int TYPE_COMMENT = 14;
+
+    /** Matches any TEXT inside a comment excluding ";". */
+    public static final int TYPE_COMMENT_ATTRIBUTE = 15;
+    
     /** Matches all digital characters. */
     public static final int TYPE_DIGIT = 4;
+
+    /** Matches any CHAR except CTLs or separators. */
+    public static final int TYPE_TOKEN = 13;
 
     /** Matches all URI characters. */
     public static final int TYPE_URI_ALL = 5;

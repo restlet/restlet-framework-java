@@ -43,6 +43,9 @@ public final class MediaType extends Metadata {
     public static final MediaType APPLICATION_ALL = register("application/*",
             "All application documents");
 
+    public static final MediaType APPLICATION_ALL_XML = register(
+            "application/*+xml", "All application/*+xml documents");
+
     public static final MediaType APPLICATION_ATOM_SERVICE_XML = register(
             "application/atomsvc+xml", "Atom service documents");
 
@@ -368,7 +371,7 @@ public final class MediaType extends Metadata {
     public static MediaType valueOf(String name) {
         MediaType result = null;
 
-        if (name != null) {
+        if ((name != null) && !name.equals("")) {
             result = getTypes().get(name);
             if (result == null) {
                 result = new MediaType(name);
@@ -569,9 +572,17 @@ public final class MediaType extends Metadata {
 
         if (!result) {
             // Both media types are different
-            result = getMainType().equals(included.getMainType())
-                    && (getSubType().equals(included.getSubType()) || getSubType()
-                            .equals("*"));
+            if (this.getMainType().equals(included.getMainType())) {
+                if (this.getSubType().equals(included.getSubType())) {
+                    result = true;
+                } else if (this.getSubType().equals("*")) {
+                    result = true;
+                } else if (this.getSubType().startsWith("*+")
+                        && included.getSubType().endsWith(
+                                this.getSubType().substring(1))) {
+                    result = true;
+                }
+            }
         }
 
         return result;

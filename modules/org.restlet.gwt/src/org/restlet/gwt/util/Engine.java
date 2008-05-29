@@ -18,14 +18,8 @@
 
 package org.restlet.gwt.util;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.Collection;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.restlet.gwt.Client;
 import org.restlet.gwt.data.CharacterSet;
@@ -37,6 +31,7 @@ import org.restlet.gwt.data.Form;
 import org.restlet.gwt.data.Language;
 import org.restlet.gwt.data.MediaType;
 import org.restlet.gwt.data.Parameter;
+import org.restlet.gwt.data.Product;
 import org.restlet.gwt.data.Response;
 import org.restlet.gwt.resource.Representation;
 import org.restlet.gwt.resource.Variant;
@@ -49,25 +44,14 @@ import org.restlet.gwt.resource.Variant;
  */
 public abstract class Engine {
 
-    /** Classloader to use for dynamic class loading. */
-    private static volatile ClassLoader classloader = Engine.class
-            .getClassLoader();
-
     /** The registered engine. */
     private static volatile Engine instance = null;
-
-    /** Obtain a suitable logger. */
-    private static final Logger logger = Logger.getLogger(Engine.class
-            .getCanonicalName());
 
     /** Major version number. */
     public static final String MAJOR_NUMBER = "@major-number@";
 
     /** Minor version number. */
     public static final String MINOR_NUMBER = "@minor-number@";
-
-    /** Provider resource. */
-    private static final String providerResource = "META-INF/services/org.restlet.util.Engine";
 
     /** Release number. */
     public static final String RELEASE_NUMBER = "@release-type@@release-number@";
@@ -100,16 +84,6 @@ public abstract class Engine {
     }
 
     /**
-     * Returns a class loader to use when creating instantiating implementation
-     * classes. By default, it reused the classloader of this Engine's class.
-     * 
-     * @return the ClassLoader
-     */
-    public static ClassLoader getClassLoader() {
-        return classloader;
-    }
-
-    /**
      * Returns the registered Restlet engine.
      * 
      * @return The registered Restlet engine.
@@ -118,76 +92,9 @@ public abstract class Engine {
         Engine result = instance;
 
         if (result == null) {
-            // Find the engine class name
-            String engineClassName = null;
-
-            // Try the default classloader
-            ClassLoader cl = getClassLoader();
-            URL configURL = cl.getResource(providerResource);
-
-            if (configURL == null) {
-                // Try the current thread's classloader
-                cl = Thread.currentThread().getContextClassLoader();
-                configURL = cl.getResource(providerResource);
-            }
-
-            if (configURL == null) {
-                // Try the system classloader
-                cl = ClassLoader.getSystemClassLoader();
-                configURL = cl.getResource(providerResource);
-            }
-
-            if (configURL != null) {
-                BufferedReader reader = null;
-                try {
-                    reader = new BufferedReader(new InputStreamReader(configURL
-                            .openStream(), "utf-8"));
-                    String providerName = reader.readLine();
-
-                    if (providerName != null)
-                        engineClassName = providerName.substring(0,
-                                providerName.indexOf('#')).trim();
-                } catch (IOException e) {
-                    logger
-                            .log(
-                                    Level.SEVERE,
-                                    "Unable to register the Restlet API implementation. Please check that the JAR file is in your classpath.");
-                } finally {
-                    if (reader != null) {
-                        try {
-                            reader.close();
-                        } catch (IOException e) {
-                            logger
-                                    .warning("IOException encountered while closing an open BufferedReader"
-                                            + e.getMessage());
-                        }
-                    }
-
-                }
-
-                // Instantiate the engine
-                try {
-                    instance = (Engine) Class.forName(engineClassName)
-                            .newInstance();
-                    result = instance;
-                } catch (Exception e) {
-                    logger
-                            .log(
-                                    Level.SEVERE,
-                                    "Unable to register the Restlet API implementation",
-                                    e);
-                    throw new RuntimeException(
-                            "Unable to register the Restlet API implementation");
-                }
-            }
-
-            if (configURL == null) {
-                logger
-                        .log(
-                                Level.SEVERE,
-                                "Unable to find an implementation of the Restlet API. Please check your classpath.");
-
-            }
+            // TODO: fixme
+            instance = null;
+            result = instance;
         }
 
         return result;
@@ -215,17 +122,6 @@ public abstract class Engine {
     }
 
     /**
-     * Sets a new class loader to use when creating instantiating implementation
-     * classes.
-     * 
-     * @param newClassloader
-     *                The new class loader to use.
-     */
-    public static void setClassLoader(ClassLoader newClassloader) {
-        classloader = newClassloader;
-    }
-
-    /**
      * Sets the registered Restlet engine.
      * 
      * @param engine
@@ -236,7 +132,7 @@ public abstract class Engine {
     }
 
     /**
-     * Copies the given header parameters into teh given {@link Response}.
+     * Copies the given header parameters into the given {@link Response}.
      * 
      * @param headers
      *                The headers to copy.
@@ -244,11 +140,9 @@ public abstract class Engine {
      *                The response to update. Must contain a
      *                {@link Representation} to copy the representation headers
      *                in it.
-     * @param logger
-     *                The logger to use.
      */
     public abstract void copyResponseHeaders(Iterable<Parameter> headers,
-            Response response, Logger logger);
+            Response response);
 
     /**
      * Copies the headers of the given {@link Response} into the given
@@ -260,11 +154,9 @@ public abstract class Engine {
      *                from it.
      * @param headers
      *                The Series to copy the headers in.
-     * @param logger
-     *                The logger to use.
      */
     public abstract void copyResponseHeaders(Response response,
-            Series<Parameter> headers, Logger logger);
+            Series<Parameter> headers);
 
     /**
      * Creates a new helper for a given client connector.
@@ -310,6 +202,18 @@ public abstract class Engine {
     public abstract String formatDimensions(Collection<Dimension> dimensions);
 
     /**
+     * Formats the given List of Products to a String.
+     * 
+     * @param products
+     *                The list of products to format.
+     * @return the List of Products as String.
+     * @throws IllegalArgumentException
+     *                 Thrown if the List of Products contains illegal values
+     */
+    public abstract String formatUserAgent(List<Product> products)
+            throws IllegalArgumentException;
+
+    /**
      * Returns the best variant representation for a given resource according
      * the the client preferences.<br>
      * A default language is provided in case the variants don't match the
@@ -332,21 +236,16 @@ public abstract class Engine {
     /**
      * Parses a representation into a form.
      * 
-     * @param logger
-     *                The logger to use.
      * @param form
      *                The target form.
      * @param representation
      *                The representation to parse.
      */
-    public abstract void parse(Logger logger, Form form,
-            Representation representation);
+    public abstract void parse(Form form, Representation representation);
 
     /**
      * Parses a parameters string to parse into a given form.
      * 
-     * @param logger
-     *                The logger to use.
      * @param form
      *                The target form.
      * @param parametersString
@@ -359,9 +258,8 @@ public abstract class Engine {
      * @param separator
      *                The separator character to append between parameters.
      */
-    public abstract void parse(Logger logger, Form form,
-            String parametersString, CharacterSet characterSet, boolean decode,
-            char separator);
+    public abstract void parse(Form form, String parametersString,
+            CharacterSet characterSet, boolean decode, char separator);
 
     /**
      * Parses the given Content Type.
@@ -398,6 +296,18 @@ public abstract class Engine {
             throws IllegalArgumentException;
 
     /**
+     * Parses the given user agent String to a list of Product instances.
+     * 
+     * @param userAgent
+     * @return the List of Product objects parsed from the String
+     * @throws IllegalArgumentException
+     *                 Thrown if the String can not be parsed as a list of
+     *                 Product instances.
+     */
+    public abstract List<Product> parseUserAgent(String userAgent)
+            throws IllegalArgumentException;
+
+    /**
      * Returns the MD5 digest of the target string. Target is decoded to bytes
      * using the US-ASCII charset. The returned hexidecimal String always
      * contains 32 lowercase alphanumeric characters. For example, if target is
@@ -408,4 +318,5 @@ public abstract class Engine {
      * @return The MD5 digest of the target string.
      */
     public abstract String toMd5(String target);
+
 }

@@ -65,7 +65,7 @@ public final class Language extends Metadata {
     public static Language valueOf(final String name) {
         Language result = null;
 
-        if (name != null) {
+        if ((name != null) && !name.equals("")) {
             if (name.equalsIgnoreCase(ALL.getName()))
                 result = ALL;
             else if (name.equalsIgnoreCase(ENGLISH.getName()))

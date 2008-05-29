@@ -46,6 +46,14 @@ public final class Encoding extends Metadata {
     public static final Encoding IDENTITY = new Encoding("identity",
             "The default encoding with no transformation");
 
+    /** The FreeMarker encoding. */
+    public static final Encoding FREEMARKER = new Encoding("freemarker",
+            "FreeMarker templated representation");
+
+    /** The Velocity encoding. */
+    public static final Encoding VELOCITY = new Encoding("velocity",
+            "Velocity templated representation");
+
     /**
      * Returns the encoding associated to a name. If an existing constant exists
      * then it is returned, otherwise a new instance is created.
@@ -57,7 +65,7 @@ public final class Encoding extends Metadata {
     public static Encoding valueOf(final String name) {
         Encoding result = null;
 
-        if (name != null) {
+        if ((name != null) && !name.equals("")) {
             if (name.equalsIgnoreCase(ALL.getName()))
                 result = ALL;
             else if (name.equalsIgnoreCase(GZIP.getName()))
@@ -70,6 +78,10 @@ public final class Encoding extends Metadata {
                 result = DEFLATE;
             else if (name.equalsIgnoreCase(IDENTITY.getName()))
                 result = IDENTITY;
+            else if (name.equalsIgnoreCase(FREEMARKER.getName()))
+                result = FREEMARKER;
+            else if (name.equalsIgnoreCase(VELOCITY.getName()))
+                result = VELOCITY;
             else
                 result = new Encoding(name);
         }

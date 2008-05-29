@@ -16,57 +16,53 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.gwt.util;
+package org.restlet.gwt.internal;
 
-import java.util.AbstractList;
-import java.util.List;
-
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import org.restlet.gwt.Client;
 
 /**
- * DOM nodes set that implements the standard List interface for easier
- * iteration.
+ * Client connector helper.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class NodeSet extends AbstractList<Node> implements List<Node>, NodeList {
+public class ClientHelper extends ConnectorHelper<Client> {
 
-    /** The wrapped node list. */
-    private volatile NodeList nodes;
+    /**
+     * The number of milliseconds the client should wait for a response before
+     * aborting the request and setting its status to an error status.
+     */
+    private int connectTimeout = 0;
 
     /**
      * Constructor.
      * 
-     * @param nodes
-     *                The node list to wrap.
+     * @param client
+     *                The client to help.
      */
-    public NodeSet(NodeList nodes) {
-        this.nodes = nodes;
-    }
-
-    @Override
-    public Node get(int index) {
-        return this.nodes.item(index);
+    public ClientHelper(Client client) {
+        super(client);
+        if (client != null) {
+            this.connectTimeout = client.getConnectTimeout();
+        }
     }
 
     /**
-     * {@inheritDoc org.w3c.dom.NodeList#getLength()}
+     * Returns the connection timeout.
+     * 
+     * @return The connection timeout.
      */
-    public int getLength() {
-        return this.nodes.getLength();
+    public int getConnectTimeout() {
+        return connectTimeout;
     }
 
     /**
-     * {@inheritDoc org.w3c.dom.NodeList#item(int)}
+     * Sets the connection timeout.
+     * 
+     * @param connectTimeout
+     *                The connection timeout.
      */
-    public Node item(int index) {
-        return this.nodes.item(index);
-    }
-
-    @Override
-    public int size() {
-        return this.nodes.getLength();
+    public void setConnectTimeout(int connectTimeout) {
+        this.connectTimeout = connectTimeout;
     }
 
 }

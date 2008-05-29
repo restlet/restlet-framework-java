@@ -92,7 +92,7 @@ public final class ChallengeRequest {
      */
     public Series<Parameter> getParameters() {
         // Lazy initialization with double-check.
-        Series<org.restlet.gwt.data.Parameter> p = this.parameters;
+        Series<Parameter> p = this.parameters;
         if (p == null) {
             synchronized (this) {
                 p = this.parameters;

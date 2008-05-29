@@ -19,7 +19,6 @@
 package org.restlet.gwt.resource;
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -28,8 +27,6 @@ import org.restlet.gwt.data.Encoding;
 import org.restlet.gwt.data.Language;
 import org.restlet.gwt.data.MediaType;
 import org.restlet.gwt.data.Reference;
-import org.restlet.gwt.data.Tag;
-import org.restlet.gwt.util.DateUtils;
 import org.restlet.gwt.util.WrapperList;
 
 /**
@@ -41,15 +38,11 @@ import org.restlet.gwt.util.WrapperList;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Variant {
-
     /** The character set or null if not applicable. */
     private volatile CharacterSet characterSet;
 
     /** The additional content codings applied to the entity-body. */
     private volatile List<Encoding> encodings;
-
-    /** The expiration date. */
-    private volatile Date expirationDate;
 
     /**
      * The identifier.
@@ -61,20 +54,6 @@ public class Variant {
 
     /** The media type. */
     private volatile MediaType mediaType;
-
-    /** The modification date. */
-    private volatile Date modificationDate;
-
-    /**
-     * The expected size. Dynamic representations can have any size, but
-     * sometimes we can know in advance the expected size. If this expected size
-     * is specified by the user, it has a higher priority than any size that can
-     * be guessed by the representation (like a file size).
-     */
-    private volatile long size;
-
-    /** The tag. */
-    private volatile Tag tag;
 
     /**
      * Default constructor.
@@ -92,12 +71,8 @@ public class Variant {
     public Variant(MediaType mediaType) {
         this.characterSet = null;
         this.encodings = null;
-        this.size = Representation.UNKNOWN_SIZE;
-        this.expirationDate = null;
         this.languages = null;
         this.mediaType = mediaType;
-        this.modificationDate = null;
-        this.tag = null;
         this.identifier = null;
     }
 
@@ -127,9 +102,9 @@ public class Variant {
                     if (element == null) {
                         throw new IllegalArgumentException(
                                 "Cannot add a null encoding.");
-                    } else {
-                        return super.add(element);
                     }
+
+                    return super.add(element);
                 }
 
                 @Override
@@ -137,9 +112,9 @@ public class Variant {
                     if (element == null) {
                         throw new IllegalArgumentException(
                                 "Cannot add a null encoding.");
-                    } else {
-                        super.add(index, element);
                     }
+
+                    super.add(index, element);
                 }
 
                 @Override
@@ -154,9 +129,9 @@ public class Variant {
                     if (addNull) {
                         throw new IllegalArgumentException(
                                 "Cannot add a null encoding.");
-                    } else {
-                        return super.addAll(elements);
                     }
+
+                    return super.addAll(elements);
                 }
 
                 @Override
@@ -172,24 +147,14 @@ public class Variant {
                     if (addNull) {
                         throw new IllegalArgumentException(
                                 "Cannot add a null encoding.");
-                    } else {
-                        return super.addAll(index, elements);
                     }
+
+                    return super.addAll(index, elements);
                 }
             };
         }
 
         return this.encodings;
-    }
-
-    /**
-     * Returns the future date when this representation expire. If this
-     * information is not known, returns null.
-     * 
-     * @return The expiration date.
-     */
-    protected Date getExpirationDate() {
-        return this.expirationDate;
     }
 
     /**
@@ -219,9 +184,9 @@ public class Variant {
                     if (element == null) {
                         throw new IllegalArgumentException(
                                 "Cannot add a null language.");
-                    } else {
-                        super.add(index, element);
                     }
+
+                    super.add(index, element);
                 }
 
                 @Override
@@ -229,9 +194,9 @@ public class Variant {
                     if (element == null) {
                         throw new IllegalArgumentException(
                                 "Cannot add a null language.");
-                    } else {
-                        return super.add(element);
                     }
+
+                    return super.add(element);
                 }
 
                 @Override
@@ -246,9 +211,9 @@ public class Variant {
                     if (addNull) {
                         throw new IllegalArgumentException(
                                 "Cannot add a null language.");
-                    } else {
-                        return super.addAll(elements);
                     }
+
+                    return super.addAll(elements);
                 }
 
                 @Override
@@ -264,9 +229,9 @@ public class Variant {
                     if (addNull) {
                         throw new IllegalArgumentException(
                                 "Cannot add a null language.");
-                    } else {
-                        return super.addAll(index, elements);
                     }
+
+                    return super.addAll(index, elements);
                 }
 
             };
@@ -280,34 +245,6 @@ public class Variant {
      */
     public MediaType getMediaType() {
         return this.mediaType;
-    }
-
-    /**
-     * Returns the last date when this representation was modified. If this
-     * information is not known, returns null.
-     * 
-     * @return The modification date.
-     */
-    protected Date getModificationDate() {
-        return this.modificationDate;
-    }
-
-    /**
-     * Returns the size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
-     * 
-     * @return The size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
-     */
-    protected long getSize() {
-        return this.size;
-    }
-
-    /**
-     * Returns the tag.
-     * 
-     * @return The tag.
-     */
-    protected Tag getTag() {
-        return this.tag;
     }
 
     /**
@@ -328,17 +265,6 @@ public class Variant {
      */
     public void setEncodings(List<Encoding> encodings) {
         this.encodings = encodings;
-    }
-
-    /**
-     * Sets the future date when this representation expire. If this information
-     * is not known, pass null.
-     * 
-     * @param expirationDate
-     *                The expiration date.
-     */
-    protected void setExpirationDate(Date expirationDate) {
-        this.expirationDate = DateUtils.unmodifiable(expirationDate);
     }
 
     /**
@@ -381,37 +307,6 @@ public class Variant {
      */
     public void setMediaType(MediaType mediaType) {
         this.mediaType = mediaType;
-    }
-
-    /**
-     * Sets the last date when this representation was modified. If this
-     * information is not known, pass null.
-     * 
-     * @param modificationDate
-     *                The modification date.
-     */
-    protected void setModificationDate(Date modificationDate) {
-        this.modificationDate = DateUtils.unmodifiable(modificationDate);
-    }
-
-    /**
-     * Sets the expected size in bytes if known, -1 otherwise.
-     * 
-     * @param expectedSize
-     *                The expected size in bytes if known, -1 otherwise.
-     */
-    protected void setSize(long expectedSize) {
-        this.size = expectedSize;
-    }
-
-    /**
-     * Sets the tag.
-     * 
-     * @param tag
-     *                The tag.
-     */
-    protected void setTag(Tag tag) {
-        this.tag = tag;
     }
 
 }

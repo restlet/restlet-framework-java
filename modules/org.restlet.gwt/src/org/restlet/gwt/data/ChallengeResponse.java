@@ -18,7 +18,6 @@
 
 package org.restlet.gwt.data;
 
-import java.io.Serializable;
 import java.security.Principal;
 
 import org.restlet.gwt.util.Engine;
@@ -35,9 +34,7 @@ public final class ChallengeResponse {
      * 
      * @author Stephan Koops
      */
-    private final class PrincipalImpl implements Principal, Serializable {
-
-        private static final long serialVersionUID = -1842197948591956691L;
+    private final class PrincipalImpl implements Principal {
 
         /**
          * Constructor for deserialization.
@@ -79,7 +76,7 @@ public final class ChallengeResponse {
     /**
      * Indicates if the identifier or principal has been authenticated. The
      * application is responsible for updating this property, relying on a
-     * {@link org.restlet.gwt.Guard} or manually.
+     * {@link org.restlet.Guard} or manually.
      */
     private volatile boolean authenticated;
 
@@ -301,7 +298,7 @@ public final class ChallengeResponse {
     /**
      * Indicates if the identifier or principal has been authenticated. The
      * application is responsible for updating this property, relying on a
-     * {@link org.restlet.gwt.Guard} or manually.
+     * {@link org.restlet.Guard} or manually.
      * 
      * @return True if the identifier or principal has been authenticated.
      */
@@ -312,7 +309,7 @@ public final class ChallengeResponse {
     /**
      * Indicates if the identifier or principal has been authenticated. The
      * application is responsible for updating this property, relying on a
-     * {@link org.restlet.gwt.Guard} or manually.
+     * {@link org.restlet.Guard} or manually.
      * 
      * @param authenticated
      *                True if the identifier or principal has been

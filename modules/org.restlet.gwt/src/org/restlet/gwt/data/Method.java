@@ -226,46 +226,46 @@ public final class Method extends Metadata {
      * Returns the method associated to a given method name. If an existing
      * constant exists then it is returned, otherwise a new instance is created.
      * 
-     * @param methodName
+     * @param name
      *                The method name.
      * @return The associated method.
      */
-    public static Method valueOf(final String methodName) {
+    public static Method valueOf(final String name) {
         Method result = null;
 
-        if (methodName != null) {
-            if (methodName.equalsIgnoreCase(GET.getName()))
+        if ((name != null) && !name.equals("")) {
+            if (name.equalsIgnoreCase(GET.getName()))
                 result = GET;
-            else if (methodName.equalsIgnoreCase(POST.getName()))
+            else if (name.equalsIgnoreCase(POST.getName()))
                 result = POST;
-            else if (methodName.equalsIgnoreCase(HEAD.getName()))
+            else if (name.equalsIgnoreCase(HEAD.getName()))
                 result = HEAD;
-            else if (methodName.equalsIgnoreCase(OPTIONS.getName()))
+            else if (name.equalsIgnoreCase(OPTIONS.getName()))
                 result = OPTIONS;
-            else if (methodName.equalsIgnoreCase(PUT.getName()))
+            else if (name.equalsIgnoreCase(PUT.getName()))
                 result = PUT;
-            else if (methodName.equalsIgnoreCase(DELETE.getName()))
+            else if (name.equalsIgnoreCase(DELETE.getName()))
                 result = DELETE;
-            else if (methodName.equalsIgnoreCase(CONNECT.getName()))
+            else if (name.equalsIgnoreCase(CONNECT.getName()))
                 result = CONNECT;
-            else if (methodName.equalsIgnoreCase(COPY.getName()))
+            else if (name.equalsIgnoreCase(COPY.getName()))
                 result = COPY;
-            else if (methodName.equalsIgnoreCase(LOCK.getName()))
+            else if (name.equalsIgnoreCase(LOCK.getName()))
                 result = LOCK;
-            else if (methodName.equalsIgnoreCase(MKCOL.getName()))
+            else if (name.equalsIgnoreCase(MKCOL.getName()))
                 result = MKCOL;
-            else if (methodName.equalsIgnoreCase(MOVE.getName()))
+            else if (name.equalsIgnoreCase(MOVE.getName()))
                 result = MOVE;
-            else if (methodName.equalsIgnoreCase(PROPFIND.getName()))
+            else if (name.equalsIgnoreCase(PROPFIND.getName()))
                 result = PROPFIND;
-            else if (methodName.equalsIgnoreCase(PROPPATCH.getName()))
+            else if (name.equalsIgnoreCase(PROPPATCH.getName()))
                 result = PROPPATCH;
-            else if (methodName.equalsIgnoreCase(TRACE.getName()))
+            else if (name.equalsIgnoreCase(TRACE.getName()))
                 result = TRACE;
-            else if (methodName.equalsIgnoreCase(UNLOCK.getName()))
+            else if (name.equalsIgnoreCase(UNLOCK.getName()))
                 result = UNLOCK;
             else
-                result = new Method(methodName);
+                result = new Method(name);
         }
 
         return result;
@@ -279,7 +279,7 @@ public final class Method extends Metadata {
      * 
      * @param name
      *                The technical name of the method.
-     * @see org.restlet.gwt.data.Method#valueOf(String)
+     * @see org.restlet.data.Method#valueOf(String)
      */
     public Method(final String name) {
         this(name, null, null);
@@ -292,7 +292,7 @@ public final class Method extends Metadata {
      *                The technical name of the method.
      * @param description
      *                The description.
-     * @see org.restlet.gwt.data.Method#valueOf(String)
+     * @see org.restlet.data.Method#valueOf(String)
      */
     public Method(final String name, final String description) {
         this(name, description, null);
@@ -307,7 +307,7 @@ public final class Method extends Metadata {
      *                The description.
      * @param uri
      *                The URI of the specification describing the method.
-     * @see org.restlet.gwt.data.Method#valueOf(String)
+     * @see org.restlet.data.Method#valueOf(String)
      */
     public Method(final String name, final String description, final String uri) {
         super(name, description);

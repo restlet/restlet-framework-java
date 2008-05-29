@@ -21,9 +21,7 @@ package org.restlet.gwt.data;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.restlet.gwt.resource.DomRepresentation;
 import org.restlet.gwt.resource.Representation;
-import org.restlet.gwt.resource.SaxRepresentation;
 import org.restlet.gwt.resource.StringRepresentation;
 
 /**
@@ -38,14 +36,8 @@ public abstract class Message {
     /** The payload of the message. */
     private volatile Representation entity;
 
-    /** The optional cached DOM representation. */
-    private volatile DomRepresentation domRepresentation;
-
     /** The optional cached Form. */
     private volatile Form form;
-
-    /** The optional cached SAX representation. */
-    private volatile SaxRepresentation saxRepresentation;
 
     /**
      * Constructor.
@@ -63,9 +55,7 @@ public abstract class Message {
     public Message(Representation entity) {
         this.attributes = null;
         this.entity = entity;
-        this.domRepresentation = null;
         this.form = null;
-        this.saxRepresentation = null;
     }
 
     /**
@@ -125,24 +115,6 @@ public abstract class Message {
     }
 
     /**
-     * Returns the entity as a DOM representation.<br>
-     * This method can be called several times and will always return the same
-     * representation instance. Note that if the entity is large this method can
-     * result in important memory consumption. In this case, consider using a
-     * SAX representation.
-     * 
-     * @return The entity as a DOM representation.
-     */
-    public DomRepresentation getEntityAsDom() {
-        if (this.domRepresentation == null) {
-            this.domRepresentation = (getEntity() == null) ? null
-                    : new DomRepresentation(getEntity());
-        }
-
-        return this.domRepresentation;
-    }
-
-    /**
      * Returns the entity as a form.<br>
      * This method can be called several times and will always return the same
      * form instance. Note that if the entity is large this method can result in
@@ -156,25 +128,6 @@ public abstract class Message {
         }
 
         return this.form;
-    }
-
-    /**
-     * Returns the entity as a SAX representation.<br>
-     * This method can be called several times and will always return the same
-     * representation instance. Note that generally this type of representation
-     * can only be parsed once. If you evaluate an XPath expression, it can also
-     * only be done once. If you need to reuse the entity multiple times,
-     * consider using the getEntityAsDom() method instead.
-     * 
-     * @return The entity as a SAX representation.
-     */
-    public SaxRepresentation getEntityAsSax() {
-        if (this.saxRepresentation == null) {
-            this.saxRepresentation = (getEntity() == null) ? null
-                    : new SaxRepresentation(getEntity());
-        }
-
-        return this.saxRepresentation;
     }
 
     /**

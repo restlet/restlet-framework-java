@@ -35,29 +35,6 @@ import org.restlet.gwt.util.Series;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Response extends Message {
-    private static final ThreadLocal<Response> CURRENT = new ThreadLocal<Response>();
-
-    /**
-     * Returns the response associated to the current thread. This variable is
-     * stored internally as a thread local variable and updated when the request
-     * is handled by a Component or an Application.
-     * 
-     * @return The thread's response.
-     */
-    public static Response getCurrent() {
-        return CURRENT.get();
-    }
-
-    /**
-     * Sets the respone associated with the current thread.
-     * 
-     * @param response
-     *                The thread's response.
-     */
-    public static void setCurrent(Response response) {
-        CURRENT.set(response);
-    }
-
     /**
      * Private cookie setting series.
      * 
@@ -207,6 +184,18 @@ public class Response extends Message {
      */
     public Reference getLocationRef() {
         return this.locationRef;
+    }
+
+    /**
+     * Returns the reference that the client should follow for redirections or
+     * resource creations.
+     * 
+     * @return The redirection reference.
+     * @deprecated Use getLocationRef() instead.
+     */
+    @Deprecated
+    public Reference getRedirectRef() {
+        return getLocationRef();
     }
 
     /**
@@ -414,6 +403,32 @@ public class Response extends Message {
     }
 
     /**
+     * Sets the reference that the client should follow for redirections or
+     * resource creations.
+     * 
+     * @param locationRef
+     *                The reference to set.
+     * @deprecated Use the setLocationRef() method instead.
+     */
+    @Deprecated
+    public void setRedirectRef(Reference locationRef) {
+        setLocationRef(locationRef);
+    }
+
+    /**
+     * Sets the reference that the client should follow for redirections or
+     * resource creations.
+     * 
+     * @param locationUri
+     *                The URI to set.
+     * @deprecated Use the setLocationRef() method instead.
+     */
+    @Deprecated
+    public void setRedirectRef(String locationUri) {
+        setLocationRef(locationUri);
+    }
+
+    /**
      * Sets the associated request.
      * 
      * @param request
@@ -453,6 +468,32 @@ public class Response extends Message {
      */
     public void setStatus(Status status, String message) {
         setStatus(new Status(status, message));
+    }
+
+    /**
+     * Sets the status.
+     * 
+     * @param status
+     *                The status to set.
+     * @param throwable
+     *                The related error or exception.
+     */
+    public void setStatus(Status status, Throwable throwable) {
+        setStatus(new Status(status, throwable));
+    }
+
+    /**
+     * Sets the status.
+     * 
+     * @param status
+     *                The status to set.
+     * @param throwable
+     *                The related error or exception.
+     * @param message
+     *                The status message.
+     */
+    public void setStatus(Status status, Throwable throwable, String message) {
+        setStatus(new Status(status, throwable, message));
     }
 
 }

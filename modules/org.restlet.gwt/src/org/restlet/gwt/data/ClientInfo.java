@@ -18,14 +18,95 @@
 
 package org.restlet.gwt.data;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.restlet.gwt.resource.Variant;
 import org.restlet.gwt.util.Engine;
+import org.restlet.gwt.util.Template;
+import org.restlet.gwt.util.Variable;
 
 /**
- * Client specific data related to a call.
+ * Client specific data related to a call.<br>
+ * When extracted from a request, most of these data are directly taken from the
+ * underlying headers. There are some exceptions: agentAttributes and
+ * mainAgentProduct which are taken from the agent name (for example the
+ * "user-agent" header for HTTP requests).<br>
+ * As described by the HTTP specification, the "user-agent" can be seen as a
+ * ordered list of products name (ie a name and a version) and/or comments.<br>
+ * Each HTTP client (mainly browsers and web crawlers) defines its own
+ * "user-agent" header which can be seen as the "signature" of the client.
+ * Unfortunately, there is no rule to identify clearly a kind a client and its
+ * version (let's say firefox 2.x, Internet Explorer IE 7.0, Opera, etc)
+ * according to its signature. Each signature follow its own rules which may
+ * vary according to the version of the client.<br>
+ * In order to help retrieving interesting data such as product name (Firefox,
+ * IE, etc), version, operating system, Restlet users has the ability to define
+ * their own way to extract data from the "user-agent" header. It is based on a
+ * list of templates declared in a file called "agent.properties" and located in
+ * the classpath in the sub directory "org/restlet/data". Each template
+ * describes a typical user-agent string and allows to use predefined variables
+ * that help to retrieve the content of the agent name, version, operating
+ * system.<br>
+ * The "user-agent" string is confronted to the each template from the beginning
+ * of the property file to the end. The loop stops at the first matched
+ * template.<br>
+ * Here is a sample of such template:<br>
+ * 
+ * <pre>
+ * #Firefox for Windows
+ *  Mozilla/{mozillaVersion} (Windows; U; {agentOs}; {osData}; rv:{releaseVersion}) Gecko/{geckoReleaseDate} {agentName}/{agentVersion}
+ * </pre>
+ * 
+ * This template matches the "user-agent" string of the Firefox client for
+ * windows:
+ * 
+ * <pre>
+ *  Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1) Gecko/20060918 Firefox/2.0
+ * </pre>
+ * 
+ * At this time, six predefined variables are used:<br>
+ * <table>
+ * <tr>
+ * <th>Name</th>
+ * <th>Description</th>
+ * </tr>
+ * <tr>
+ * <td>agentName</td>
+ * <td>Name of the user agent (i.e.: Firefox)</td>
+ * </tr>
+ * <tr>
+ * <td>agentVersion</td>
+ * <td>Version of the user agent</td>
+ * </tr>
+ * <tr>
+ * <td>agentOs</td>
+ * <td>Operating system of the user agent</td>
+ * </tr>
+ * <tr>
+ * <td>agentComment</td>
+ * <td>Comment string, that is to say a sequence of characters enclosed "(", or
+ * ")"</td>
+ * </tr>
+ * <tr>
+ * <td>commentAttribute</td>
+ * <td>A sequence of characters enclosed by ";", "(", or ")"</td>
+ * </tr>
+ * <tr>
+ * <td>facultativeData</td>
+ * <td>A sequence of characters that can be empty</td>
+ * </tr>
+ * </table><br>
+ * These variables are used to generate a {@link Product} instance with the main
+ * data (name, version, comment). This instance is accessible via the
+ * {@link ClientInfo#getMainAgentProduct()} method. All other variables used in
+ * the template aims at catching a sequence of characters and are accessible via
+ * the {@link ClientInfo#getAgentAttributes()} method.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
@@ -48,6 +129,15 @@ public final class ClientInfo {
     /** The agent name. */
     private volatile String agent;
 
+    /** The main product data taken from the agent name. */
+    private volatile Product agentMainProduct;
+
+    /** The attributes data taken from the agent name. */
+    private volatile Map<String, String> agentAttributes;
+
+    /** The list of product tokens taken from the agent name. */
+    private volatile List<Product> agentProducts;
+
     /** The port number. */
     private volatile int port;
 
@@ -62,6 +152,7 @@ public final class ClientInfo {
         this.acceptedEncodings = null;
         this.acceptedLanguages = null;
         this.acceptedMediaTypes = null;
+        this.agentProducts = null;
     }
 
     /**
@@ -178,12 +269,143 @@ public final class ClientInfo {
     }
 
     /**
-     * Returns the agent name (ex: "Noelios Restlet Engine/1.1").
+     * Returns the agent name (ex: "Noelios-Restlet-Engine/1.1").
      * 
      * @return The agent name.
      */
     public String getAgent() {
         return this.agent;
+    }
+
+    /**
+     * Returns a list of attributes taken from the name of the user agent.
+     * 
+     * @return A list of attributes taken from the name of the user agent.
+     */
+    public Map<String, String> getAgentAttributes() {
+
+        if (this.agentAttributes == null) {
+            this.agentAttributes = new HashMap<String, String>();
+            Map<String, Object> map = new HashMap<String, Object>();
+
+            // Loop on a list of user-agent templates until a template match
+            // the current user-agent string. The list of templates is
+            // located in a file named "agent.properties" available on
+            // the classpath.
+            // Soem defined variables are used in order to catch the name,
+            // version and facultative comment. Respectively, these
+            // variables are called "agentName", "agentVersion" and
+            // "agentComment".
+            URL userAgentPropertiesUrl = Engine.getClassLoader().getResource(
+                    "org/restlet/data/agent.properties");
+            if (userAgentPropertiesUrl != null) {
+                BufferedReader reader;
+                try {
+                    reader = new BufferedReader(new InputStreamReader(
+                            userAgentPropertiesUrl.openStream(),
+                            CharacterSet.UTF_8.getName()));
+                    Template template = null;
+                    // Predefined variables.
+                    Variable agentName = new Variable(Variable.TYPE_TOKEN);
+                    Variable agentVersion = new Variable(Variable.TYPE_TOKEN);
+                    Variable agentComment = new Variable(Variable.TYPE_COMMENT);
+                    Variable agentCommentAttribute = new Variable(
+                            Variable.TYPE_COMMENT_ATTRIBUTE);
+                    Variable facultativeData = new Variable(Variable.TYPE_ALL,
+                            null, false, false);
+                    String line = reader.readLine();
+                    for (; line != null; line = reader.readLine()) {
+                        if (line.trim().length() > 0
+                                && !line.trim().startsWith("#")) {
+                            template = new Template(line, Template.MODE_EQUALS);
+                            // Update the predefined variables.
+                            template.getVariables().put("agentName", agentName);
+                            template.getVariables().put("agentVersion",
+                                    agentVersion);
+                            template.getVariables().put("agentComment",
+                                    agentComment);
+                            template.getVariables().put("agentOs",
+                                    agentCommentAttribute);
+                            template.getVariables().put("commentAttribute",
+                                    agentCommentAttribute);
+                            template.getVariables().put("facultativeData",
+                                    facultativeData);
+                            // Parse the template
+                            if (template.parse(getAgent(), map) > -1) {
+                                for (String key : map.keySet()) {
+                                    this.agentAttributes.put(key, (String) map
+                                            .get(key));
+                                }
+                                break;
+                            }
+                        }
+                    }
+                    reader.close();
+                } catch (IOException e) {
+                    return this.agentAttributes;
+                }
+            }
+        }
+
+        return this.agentAttributes;
+    }
+
+    /**
+     * Returns a Product object based on the name of the user agent.
+     * 
+     * @return A Product object based on name of the user agent.
+     */
+    public Product getMainAgentProduct() {
+        if (this.agentMainProduct == null) {
+            if (getAgentAttributes() != null) {
+                this.agentMainProduct = new Product(getAgentAttributes().get(
+                        "agentName"), getAgentAttributes().get("agentVersion"),
+                        getAgentAttributes().get("agentComment"));
+            }
+        }
+
+        return this.agentMainProduct;
+    }
+
+    /**
+     * Returns the name of the user agent.
+     * 
+     * @return The name of the user agent.
+     */
+    public String getAgentName() {
+        Product product = getMainAgentProduct();
+        if (product != null) {
+            return product.getName();
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the list of product tokens from the user agent name.
+     * 
+     * @return The list of product tokens from the user agent name.
+     */
+    public List<Product> getAgentProducts() {
+        if (this.agentProducts == null) {
+            this.agentProducts = Engine.getInstance()
+                    .parseUserAgent(getAgent());
+        }
+        return this.agentProducts;
+    }
+
+    /**
+     * Returns the version of the user agent.
+     * 
+     * @return The version of the user agent.
+     */
+    public String getAgentVersion() {
+        Product product = getMainAgentProduct();
+        if (product != null) {
+            return product.getVersion();
+        }
+        return null;
+
     }
 
     /**
@@ -194,28 +416,6 @@ public final class ClientInfo {
      */
     public int getPort() {
         return this.port;
-    }
-
-    /**
-     * Returns the best variant for a given resource according the the client
-     * preferences: accepted languages, accepted character sets, accepted media
-     * types and accepted encodings.<br>
-     * A default language is provided in case the variants don't match the
-     * client preferences.
-     * 
-     * @param variants
-     *                The list of variants to compare.
-     * @param defaultLanguage
-     *                The default language.
-     * @return The best variant.
-     * @see <a
-     *      href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache
-     *      content negotiation algorithm</a>
-     */
-    public Variant getPreferredVariant(List<Variant> variants,
-            Language defaultLanguage) {
-        return Engine.getInstance().getPreferredVariant(this, variants,
-                defaultLanguage);
     }
 
     /**

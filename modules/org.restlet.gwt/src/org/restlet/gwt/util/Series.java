@@ -35,7 +35,9 @@ import org.restlet.gwt.data.Parameter;
  * helper methods in java.util.Collections.
  * 
  * @author Jerome Louvel (contact@noelios.com)
- * @see org.restlet.gwt.data.Parameter
+ * @param <E>
+ *                The contained type
+ * @see org.restlet.data.Parameter
  * @see java.util.Collections
  * @see java.util.List
  */
@@ -323,7 +325,8 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
         StringBuilder sb = null;
 
         for (E param : this) {
-            if (param.getName().equalsIgnoreCase(name)) {
+            if ((ignoreCase && param.getName().equalsIgnoreCase(name))
+                    || param.getName().equals(name)) {
                 if (sb == null) {
                     if (result == null) {
                         result = param.getValue();

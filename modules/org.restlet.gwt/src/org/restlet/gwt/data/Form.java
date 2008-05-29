@@ -20,7 +20,6 @@ package org.restlet.gwt.data;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.restlet.gwt.resource.Representation;
 import org.restlet.gwt.resource.StringRepresentation;
@@ -63,86 +62,13 @@ public class Form extends Series<Parameter> {
     /**
      * Constructor.
      * 
-     * @param logger
-     *                The logger to use.
      * @param representation
      *                The representation to parse (URL encoded Web form
      *                supported).
      * @throws IOException
      */
-    public Form(Logger logger, Representation representation) {
-        Engine.getInstance().parse(logger, this, representation);
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param logger
-     *                The logger to use.
-     * @param queryString
-     *                The Web form parameters as a string.
-     * @param characterSet
-     *                The supported character encoding.
-     * @throws IOException
-     */
-    public Form(Logger logger, String queryString, CharacterSet characterSet) {
-        this(logger, queryString, characterSet, '&');
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param logger
-     *                The logger to use.
-     * @param parametersString
-     *                The parameters string to parse.
-     * @param characterSet
-     *                The supported character encoding.
-     * @param separator
-     *                The separator character to append between parameters.
-     * @throws IOException
-     */
-    public Form(Logger logger, String parametersString,
-            CharacterSet characterSet, char separator) {
-        Engine.getInstance().parse(logger, this, parametersString,
-                characterSet, true, separator);
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param webForm
-     *                The URL encoded Web form.
-     * @throws IOException
-     */
-    public Form(Representation webForm) {
-        this(Logger.getLogger(Form.class.getCanonicalName()), webForm);
-    }
-
-    /**
-     * Constructor. Uses UTF-8 as the character set for encoding non-ASCII
-     * characters.
-     * 
-     * @param queryString
-     *                The Web form parameters as a string.
-     * @throws IOException
-     */
-    public Form(String queryString) {
-        this(queryString, CharacterSet.UTF_8);
-    }
-
-    /**
-     * Constructor. Uses UTF-8 as the character set for encoding non-ASCII
-     * characters.
-     * 
-     * @param parametersString
-     *                The parameters string to parse.
-     * @param separator
-     *                The separator character to append between parameters.
-     * @throws IOException
-     */
-    public Form(String parametersString, char separator) {
-        this(parametersString, CharacterSet.UTF_8, separator);
+    public Form(Representation representation) {
+        Engine.getInstance().parse(this, representation);
     }
 
     /**
@@ -171,8 +97,34 @@ public class Form extends Series<Parameter> {
      */
     public Form(String parametersString, CharacterSet characterSet,
             char separator) {
-        this(Logger.getLogger(Form.class.getCanonicalName()), parametersString,
-                characterSet, separator);
+        Engine.getInstance().parse(this, parametersString, characterSet, true,
+                separator);
+    }
+
+    /**
+     * Constructor. Uses UTF-8 as the character set for encoding non-ASCII
+     * characters.
+     * 
+     * @param queryString
+     *                The Web form parameters as a string.
+     * @throws IOException
+     */
+    public Form(String queryString) {
+        this(queryString, CharacterSet.UTF_8);
+    }
+
+    /**
+     * Constructor. Uses UTF-8 as the character set for encoding non-ASCII
+     * characters.
+     * 
+     * @param parametersString
+     *                The parameters string to parse.
+     * @param separator
+     *                The separator character to append between parameters.
+     * @throws IOException
+     */
+    public Form(String parametersString, char separator) {
+        this(parametersString, CharacterSet.UTF_8, separator);
     }
 
     @Override
@@ -182,8 +134,9 @@ public class Form extends Series<Parameter> {
 
     @Override
     public Series<Parameter> createSeries(List<Parameter> delegate) {
-        if (delegate != null)
+        if (delegate != null) {
             return new Form(delegate);
+        }
 
         return new Form();
     }
