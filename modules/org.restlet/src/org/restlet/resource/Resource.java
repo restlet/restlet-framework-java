@@ -295,7 +295,7 @@ public class Resource extends Handler {
         try {
             result = represent(variant);
         } catch (ResourceException re) {
-            getResponse().setStatus(new Status(re.getStatus(), re.getCause()));
+            getResponse().setStatus(re.getStatus(), re);
         }
 
         return result;
