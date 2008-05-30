@@ -23,8 +23,6 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Reference to a Uniform Resource Identifier (URI). Contrary to the
@@ -122,12 +120,8 @@ public class Reference {
         try {
             result = URLDecoder.decode(toDecode, "UTF-8");
         } catch (UnsupportedEncodingException uee) {
-            Logger
-                    .getLogger(Reference.class.getCanonicalName())
-                    .log(
-                            Level.WARNING,
-                            "Unable to decode the string with the UTF-8 character set.",
-                            uee);
+            System.err
+                    .println("Unable to decode the string with the UTF-8 character set.");
         }
 
         return result;
@@ -155,12 +149,8 @@ public class Reference {
             result = (characterSet == null) ? toDecode : URLDecoder.decode(
                     toDecode, characterSet.getName());
         } catch (UnsupportedEncodingException uee) {
-            Logger
-                    .getLogger(Reference.class.getCanonicalName())
-                    .log(
-                            Level.WARNING,
-                            "Unable to decode the string with the UTF-8 character set.",
-                            uee);
+            System.err
+                    .println("Unable to decode the string with the UTF-8 character set.");
         }
 
         return result;
@@ -181,12 +171,8 @@ public class Reference {
             try {
                 result = URLEncoder.encode(toEncode, "UTF-8");
             } catch (UnsupportedEncodingException uee) {
-                Logger
-                        .getLogger(Reference.class.getCanonicalName())
-                        .log(
-                                Level.WARNING,
-                                "Unable to encode the string with the UTF-8 character set.",
-                                uee);
+                System.err
+                        .println("Unable to encode the string with the UTF-8 character set.");
             }
         }
 
@@ -216,12 +202,8 @@ public class Reference {
             result = (characterSet == null) ? toEncode : URLEncoder.encode(
                     toEncode, characterSet.getName());
         } catch (UnsupportedEncodingException uee) {
-            Logger
-                    .getLogger(Reference.class.getCanonicalName())
-                    .log(
-                            Level.WARNING,
-                            "Unable to encode the string with the UTF-8 character set.",
-                            uee);
+            System.err
+                    .println("Unable to encode the string with the UTF-8 character set.");
         }
 
         return result;
@@ -992,9 +974,8 @@ public class Reference {
                 try {
                     result = Integer.parseInt(authority.substring(index + 1));
                 } catch (NumberFormatException nfe) {
-                    Logger.getLogger(Reference.class.getCanonicalName()).log(
-                            Level.WARNING,
-                            "Can't parse hostPort : [hostRef,requestUri]=["
+                    System.err
+                            .println("Can't parse hostPort : [hostRef,requestUri]=["
                                     + getBaseRef() + "," + internalRef + "]");
                 }
             }

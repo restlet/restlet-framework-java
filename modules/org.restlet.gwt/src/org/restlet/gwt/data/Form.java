@@ -18,7 +18,6 @@
 
 package org.restlet.gwt.data;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.restlet.gwt.resource.Representation;
@@ -148,7 +147,7 @@ public class Form extends Series<Parameter> {
      * @return The encoded form.
      * @throws IOException
      */
-    public String encode() throws IOException {
+    public String encode() throws Exception {
         return encode(CharacterSet.UTF_8);
     }
 
@@ -160,7 +159,7 @@ public class Form extends Series<Parameter> {
      * @return The encoded form.
      * @throws IOException
      */
-    public String encode(CharacterSet characterSet) throws IOException {
+    public String encode(CharacterSet characterSet) throws Exception {
         return encode(characterSet, '&');
     }
 
@@ -175,7 +174,7 @@ public class Form extends Series<Parameter> {
      * @throws IOException
      */
     public String encode(CharacterSet characterSet, char separator)
-            throws IOException {
+            throws Exception {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < size(); i++) {
             if (i > 0)
@@ -210,7 +209,7 @@ public class Form extends Series<Parameter> {
     public String getMatrixString(CharacterSet characterSet) {
         try {
             return encode(characterSet, ';');
-        } catch (IOException ioe) {
+        } catch (Exception ioe) {
             return null;
         }
     }
@@ -235,7 +234,7 @@ public class Form extends Series<Parameter> {
     public String getQueryString(CharacterSet characterSet) {
         try {
             return encode(characterSet);
-        } catch (IOException ioe) {
+        } catch (Exception ioe) {
             return null;
         }
     }

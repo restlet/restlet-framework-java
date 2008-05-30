@@ -18,8 +18,6 @@
 
 package org.restlet.gwt.data;
 
-import java.io.IOException;
-
 import org.restlet.gwt.util.Engine;
 
 /**
@@ -162,7 +160,7 @@ public class Parameter implements Comparable<Parameter> {
      * @return The encoded string.
      * @throws IOException
      */
-    public String encode(CharacterSet characterSet) throws IOException {
+    public String encode(CharacterSet characterSet) throws Exception {
         StringBuilder sb = new StringBuilder();
         encode(sb, characterSet);
         return sb.toString();
@@ -179,7 +177,7 @@ public class Parameter implements Comparable<Parameter> {
      * @throws IOException
      */
     public void encode(Appendable buffer, CharacterSet characterSet)
-            throws IOException {
+            throws Exception {
         if (getName() != null) {
             buffer.append(Reference.encode(getName(), characterSet));
 
