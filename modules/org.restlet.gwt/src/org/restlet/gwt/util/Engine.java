@@ -61,29 +61,6 @@ public abstract class Engine {
             + '.' + RELEASE_NUMBER;
 
     /**
-     * Returns the class object for the given name using the context class
-     * loader first, or the classloader of the current class.
-     * 
-     * @param classname
-     *                The class name to lookup.
-     * @return The class object.
-     * @throws ClassNotFoundException
-     */
-    public static Class<?> classForName(String classname)
-            throws ClassNotFoundException {
-        Class<?> result = null;
-        ClassLoader loader = Thread.currentThread().getContextClassLoader();
-
-        if (loader != null) {
-            result = Class.forName(classname, false, loader);
-        } else {
-            result = Class.forName(classname);
-        }
-
-        return result;
-    }
-
-    /**
      * Returns the registered Restlet engine.
      * 
      * @return The registered Restlet engine.
@@ -148,12 +125,9 @@ public abstract class Engine {
      * 
      * @param client
      *                The client to help.
-     * @param helperClass
-     *                Optional helper class name.
      * @return The new helper.
      */
-    public abstract Helper<Client> createHelper(Client client,
-            String helperClass);
+    public abstract Helper<Client> createHelper(Client client);
 
     /**
      * Formats the given Cookie to a String

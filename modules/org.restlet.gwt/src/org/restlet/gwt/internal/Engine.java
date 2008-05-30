@@ -53,71 +53,6 @@ public class Engine extends org.restlet.gwt.util.Engine {
     }
 
     /**
-     * Parses the "java.version" system property and returns the first digit of
-     * the version number of the Java Runtime Environment (e.g. "1" for
-     * "1.3.0").
-     * 
-     * @see <a href="http://java.sun.com/j2se/versioning_naming.html">Official
-     *      Java versioning</a>
-     * @return The major version number of the Java Runtime Environment.
-     */
-    public static int getJavaMajorVersion() {
-        int result;
-        String javaVersion = System.getProperty("java.version");
-        try {
-            result = Integer.parseInt(javaVersion.substring(0, javaVersion
-                    .indexOf(".")));
-        } catch (Exception e) {
-            result = 0;
-        }
-
-        return result;
-    }
-
-    /**
-     * Parses the "java.version" system property and returns the second digit of
-     * the version number of the Java Runtime Environment (e.g. "3" for
-     * "1.3.0").
-     * 
-     * @see <a href="http://java.sun.com/j2se/versioning_naming.html">Official
-     *      Java versioning</a>
-     * @return The minor version number of the Java Runtime Environment.
-     */
-    public static int getJavaMinorVersion() {
-        int result;
-        String javaVersion = System.getProperty("java.version");
-        try {
-            result = Integer.parseInt(javaVersion.split("\\.")[1]);
-        } catch (Exception e) {
-            result = 0;
-        }
-
-        return result;
-    }
-
-    /**
-     * Parses the "java.version" system property and returns the update release
-     * number of the Java Runtime Environment (e.g. "10" for "1.3.0_10").
-     * 
-     * @see <a href="http://java.sun.com/j2se/versioning_naming.html">Official
-     *      Java versioning</a>
-     * @return The release number of the Java Runtime Environment or 0 if it
-     *         does not exist.
-     */
-    public static int getJavaUpdateVersion() {
-        int result;
-        String javaVersion = System.getProperty("java.version");
-        try {
-            result = Integer.parseInt(javaVersion.substring(javaVersion
-                    .indexOf('_') + 1));
-        } catch (Exception e) {
-            result = 0;
-        }
-
-        return result;
-    }
-
-    /**
      * Registers a new Noelios Restlet Engine.
      * 
      * @return The registered engine.
@@ -183,7 +118,7 @@ public class Engine extends org.restlet.gwt.util.Engine {
     }
 
     @Override
-    public ClientHelper createHelper(Client client, String helperClass) {
+    public ClientHelper createHelper(Client client) {
         ClientHelper result = null;
 
         if (client.getProtocols().size() > 0) {
@@ -193,17 +128,18 @@ public class Engine extends org.restlet.gwt.util.Engine {
                 connector = iter.next();
 
                 if (connector.getProtocols().containsAll(client.getProtocols())) {
-                    if ((helperClass == null)
-                            || connector.getClass().getCanonicalName().equals(
-                                    helperClass)) {
-                        try {
-                            result = connector.getClass().getConstructor(
-                                    Client.class).newInstance(client);
-                        } catch (Exception e) {
-                            System.err
-                                    .println("Exception while instantiation the client connector.");
-                        }
-                    }
+                    // TODO: fixme
+//                    if ((helperClass == null)
+//                            || connector.getClass().getCanonicalName().equals(
+//                                    helperClass)) {
+//                        try {
+//                            result = connector.getClass().getConstructor(
+//                                    Client.class).newInstance(client);
+//                        } catch (Exception e) {
+//                            System.err
+//                                    .println("Exception while instantiation the client connector.");
+//                        }
+//                    }
                 }
             }
 
@@ -631,8 +567,7 @@ public class Engine extends org.restlet.gwt.util.Engine {
             return ContentType.parseContentType(contentType);
         } catch (Exception e) {
             throw new IllegalArgumentException("The content type string \""
-                    + contentType + "\" can not be parsed: " + e.getMessage(),
-                    e);
+                    + contentType + "\" can not be parsed: " + e.getMessage());
         }
     }
 
@@ -642,7 +577,7 @@ public class Engine extends org.restlet.gwt.util.Engine {
         try {
             return cr.readCookie();
         } catch (Exception e) {
-            throw new IllegalArgumentException("Could not read the cookie", e);
+            throw new IllegalArgumentException("Could not read the cookie");
         }
     }
 
@@ -654,7 +589,7 @@ public class Engine extends org.restlet.gwt.util.Engine {
             return cr.readCookieSetting();
         } catch (Exception e) {
             throw new IllegalArgumentException(
-                    "Could not read the cookie setting", e);
+                    "Could not read the cookie setting");
         }
     }
 
