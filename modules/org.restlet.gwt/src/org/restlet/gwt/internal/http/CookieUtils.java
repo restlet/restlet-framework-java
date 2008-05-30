@@ -44,8 +44,8 @@ public class CookieUtils {
      *                The appendable destination.
      * @throws IOException
      */
-    private static Appendable appendValue(CharSequence value, int version,
-            Appendable destination) throws Exception {
+    private static StringBuilder appendValue(CharSequence value, int version,
+            StringBuilder destination) throws Exception {
         if (version == 0) {
             destination.append(value.toString());
         } else {
@@ -85,7 +85,7 @@ public class CookieUtils {
      * @throws IllegalArgumentException
      *                 If the Cookie contains illegal values.
      */
-    public static void format(Cookie cookie, Appendable destination)
+    public static void format(Cookie cookie, StringBuilder destination)
             throws IllegalArgumentException, Exception {
         String name = cookie.getName();
         String value = cookie.getValue();
@@ -152,7 +152,7 @@ public class CookieUtils {
      *                 If the CookieSetting can not be formatted to a String
      */
     public static void format(CookieSetting cookieSetting,
-            Appendable destination) throws Exception,
+            StringBuilder destination) throws Exception,
             IllegalArgumentException {
         String name = cookieSetting.getName();
         String value = cookieSetting.getValue();

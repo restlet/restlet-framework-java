@@ -35,6 +35,38 @@ import org.restlet.data.Reference;
  */
 public class HttpUtils {
     /**
+     * Appends a source string as an HTTP comment.
+     * 
+     * @param source
+     *                The source string to format.
+     * @param destination
+     *                The appendable destination.
+     * @throws IOException
+     */
+    public static Appendable appendComment(CharSequence source, Appendable destination)
+            throws IOException {
+        destination.append('(');
+
+        char c;
+        for (int i = 0; i < source.length(); i++) {
+            c = source.charAt(i);
+
+            if (c == '(') {
+                destination.append("\\(");
+            } else if (c == ')') {
+                destination.append("\\)");
+            } else if (c == '\\') {
+                destination.append("\\\\");
+            } else {
+                destination.append(c);
+            }
+        }
+
+        destination.append(')');
+        return destination;
+    }
+
+    /**
      * Appends a source string as an HTTP quoted string.
      * 
      * @param source
@@ -478,37 +510,5 @@ public class HttpUtils {
         os.write(header.getValue().getBytes());
         os.write(13); // CR
         os.write(10); // LF
-    }
-
-    /**
-     * Appends a source string as an HTTP comment.
-     * 
-     * @param source
-     *                The source string to format.
-     * @param destination
-     *                The appendable destination.
-     * @throws IOException
-     */
-    public Appendable appendComment(CharSequence source, Appendable destination)
-            throws IOException {
-        destination.append('(');
-
-        char c;
-        for (int i = 0; i < source.length(); i++) {
-            c = source.charAt(i);
-
-            if (c == '(') {
-                destination.append("\\(");
-            } else if (c == ')') {
-                destination.append("\\)");
-            } else if (c == '\\') {
-                destination.append("\\\\");
-            } else {
-                destination.append(c);
-            }
-        }
-
-        destination.append(')');
-        return destination;
     }
 }

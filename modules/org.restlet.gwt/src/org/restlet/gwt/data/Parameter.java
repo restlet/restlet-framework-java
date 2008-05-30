@@ -176,7 +176,7 @@ public class Parameter implements Comparable<Parameter> {
      *                The supported character encoding
      * @throws IOException
      */
-    public void encode(Appendable buffer, CharacterSet characterSet)
+    public void encode(StringBuilder buffer, CharacterSet characterSet)
             throws Exception {
         if (getName() != null) {
             buffer.append(Reference.encode(getName(), characterSet));

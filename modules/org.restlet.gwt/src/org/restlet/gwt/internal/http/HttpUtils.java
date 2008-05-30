@@ -32,6 +32,38 @@ import org.restlet.gwt.data.Reference;
  */
 public class HttpUtils {
     /**
+     * Appends a source string as an HTTP comment.
+     * 
+     * @param source
+     *                The source string to format.
+     * @param destination
+     *                The appendable destination.
+     * @throws IOException
+     */
+    public static StringBuilder appendComment(CharSequence source,
+            StringBuilder destination) throws Exception {
+        destination.append('(');
+
+        char c;
+        for (int i = 0; i < source.length(); i++) {
+            c = source.charAt(i);
+
+            if (c == '(') {
+                destination.append("\\(");
+            } else if (c == ')') {
+                destination.append("\\)");
+            } else if (c == '\\') {
+                destination.append("\\\\");
+            } else {
+                destination.append(c);
+            }
+        }
+
+        destination.append(')');
+        return destination;
+    }
+
+    /**
      * Appends a source string as an HTTP quoted string.
      * 
      * @param source
@@ -40,8 +72,8 @@ public class HttpUtils {
      *                The destination to append to.
      * @throws IOException
      */
-    public static Appendable appendQuote(CharSequence source,
-            Appendable destination) throws Exception {
+    public static StringBuilder appendQuote(CharSequence source,
+            StringBuilder destination) throws Exception {
         destination.append('"');
 
         char c;
@@ -60,6 +92,7 @@ public class HttpUtils {
         destination.append('"');
         return destination;
     }
+
     /**
      * Appends a source string as an URI encoded string.
      * 
@@ -71,8 +104,9 @@ public class HttpUtils {
      *                The supported character encoding.
      * @throws IOException
      */
-    public static Appendable appendUriEncoded(CharSequence source,
-            Appendable destination, CharacterSet characterSet) throws Exception {
+    public static StringBuilder appendUriEncoded(CharSequence source,
+            StringBuilder destination, CharacterSet characterSet)
+            throws Exception {
         destination.append(Reference.encode(source.toString(), characterSet));
         return destination;
     }
@@ -370,38 +404,6 @@ public class HttpUtils {
      */
     public static boolean isUpperCase(int character) {
         return (character >= 'A') && (character <= 'Z');
-    }
-
-    /**
-     * Appends a source string as an HTTP comment.
-     * 
-     * @param source
-     *                The source string to format.
-     * @param destination
-     *                The appendable destination.
-     * @throws IOException
-     */
-    public Appendable appendComment(CharSequence source, Appendable destination)
-            throws Exception {
-        destination.append('(');
-
-        char c;
-        for (int i = 0; i < source.length(); i++) {
-            c = source.charAt(i);
-
-            if (c == '(') {
-                destination.append("\\(");
-            } else if (c == ')') {
-                destination.append("\\)");
-            } else if (c == '\\') {
-                destination.append("\\\\");
-            } else {
-                destination.append(c);
-            }
-        }
-
-        destination.append(')');
-        return destination;
     }
 
 }

@@ -19,7 +19,6 @@
 package org.restlet.gwt.internal.http;
 
 import org.restlet.gwt.Client;
-import org.restlet.gwt.Context;
 import org.restlet.gwt.data.Request;
 import org.restlet.gwt.data.Response;
 import org.restlet.gwt.data.Status;
@@ -87,11 +86,7 @@ public abstract class HttpClientHelper extends ClientHelper {
      */
     public HttpClientConverter getConverter() throws Exception {
         if (this.converter == null) {
-            String converterClass = getParameters().getFirstValue("converter",
-                    "com.noelios.restlet.http.HttpClientConverter");
-            this.converter = (HttpClientConverter) Class
-                    .forName(converterClass).getConstructor(Context.class)
-                    .newInstance(getContext());
+            this.converter = new HttpClientConverter(getContext());
         }
 
         return this.converter;
