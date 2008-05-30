@@ -21,6 +21,7 @@ package org.restlet.gwt.data;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.restlet.gwt.internal.util.LineReader;
 import org.restlet.gwt.resource.Representation;
 import org.restlet.gwt.resource.StringRepresentation;
 import org.restlet.gwt.util.WrapperList;
@@ -69,15 +70,13 @@ public class ReferenceList extends WrapperList<Reference> {
      * @throws IOException
      */
     public ReferenceList(Representation uriList) throws Exception {
-        String content = uriList.getText();
-        // String[] lines = 
-
-        String line = br.readLine();
+        LineReader lr = new LineReader(uriList.getText());
+        String line = lr.readLine();
 
         // Checks if the list reference is specified as the first comment.
         if ((line != null) && line.startsWith("#")) {
             setIdentifier(new Reference(line.substring(1).trim()));
-            line = br.readLine();
+            line = lr.readLine();
         }
 
         while (line != null) {
@@ -85,7 +84,7 @@ public class ReferenceList extends WrapperList<Reference> {
                 add(new Reference(line.trim()));
             }
 
-            line = br.readLine();
+            line = lr.readLine();
         }
     }
 

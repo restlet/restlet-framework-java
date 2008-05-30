@@ -183,9 +183,10 @@ public class FormReader {
         StringBuilder nameBuffer = new StringBuilder();
         StringBuilder valueBuffer = new StringBuilder();
 
+        CharacterReader cr = new CharacterReader(this.text);
         int nextChar = 0;
         while ((result == null) && (nextChar != -1)) {
-            nextChar = this.stream.read();
+            nextChar = cr.read();
 
             if (readingName) {
                 if (nextChar == '=') {
