@@ -8,7 +8,7 @@ Changes log
  - 
    
 [Enhancements]
- - Updated Jetty to version 6.1.10
+ - Updated Jetty to version 6.1.11
  
 [Other changes] 
  - 
