@@ -18,11 +18,9 @@
 
 package org.restlet.gwt;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.logging.Logger;
 
 import org.restlet.gwt.data.Form;
 import org.restlet.gwt.data.Parameter;
@@ -43,39 +41,9 @@ import org.restlet.gwt.util.Series;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Context {
-    private static final ThreadLocal<Context> CURRENT = new ThreadLocal<Context>();
-
-    /**
-     * Returns the context associated to the current Restlet. The context can be
-     * the one of a Component, an Application, a Filter or any other Restlet
-     * subclass.
-     * 
-     * This variable is stored internally as a thread local variable and updated
-     * each time a request is handled by a Restlet via the
-     * {@link Restlet#handle(org.restlet.data.Request, org.restlet.data.Response)}
-     * method.
-     * 
-     * @return The current context.
-     */
-    public static Context getCurrent() {
-        return CURRENT.get();
-    }
-
-    /**
-     * Sets the context to associated with the current thread.
-     * 
-     * @param context
-     *                The thread's context.
-     */
-    public static void setCurrent(Context context) {
-        CURRENT.set(context);
-    }
 
     /** The modifiable attributes map. */
-    private volatile ConcurrentMap<String, Object> attributes;
-
-    /** The logger instance to use. */
-    private volatile Logger logger;
+    private volatile Map<String, Object> attributes;
 
     /** The modifiable series of parameters. */
     private volatile Series<Parameter> parameters;
@@ -84,29 +52,8 @@ public class Context {
      * Constructor. Writes log messages to "org.restlet".
      */
     public Context() {
-        this("org.restlet");
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param logger
-     *                The logger instance of use.
-     */
-    public Context(Logger logger) {
-        this.attributes = new ConcurrentHashMap<String, Object>();
-        this.logger = logger;
-        this.parameters = new Form(new CopyOnWriteArrayList<Parameter>());
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param loggerName
-     *                The name of the logger to use.
-     */
-    public Context(String loggerName) {
-        this(Logger.getLogger(loggerName));
+        this.attributes = new HashMap<String, Object>();
+        this.parameters = new Form(new ArrayList<Parameter>());
     }
 
     /**
@@ -134,7 +81,7 @@ public class Context {
      * 
      * @return The modifiable attributes map.
      */
-    public ConcurrentMap<String, Object> getAttributes() {
+    public Map<String, Object> getAttributes() {
         return this.attributes;
     }
 
@@ -149,15 +96,6 @@ public class Context {
      */
     public Uniform getClientDispatcher() {
         return null;
-    }
-
-    /**
-     * Returns the logger.
-     * 
-     * @return The logger.
-     */
-    public Logger getLogger() {
-        return this.logger;
     }
 
     /**
@@ -196,21 +134,11 @@ public class Context {
      *                The modifiable map of attributes.
      */
     public void setAttributes(Map<String, Object> attributes) {
-        if (attributes instanceof ConcurrentMap) {
-            this.attributes = (ConcurrentMap<String, Object>) attributes;
+        if (attributes instanceof HashMap) {
+            this.attributes = attributes;
         } else {
-            this.attributes = new ConcurrentHashMap<String, Object>(attributes);
+            this.attributes = new HashMap<String, Object>(attributes);
         }
-    }
-
-    /**
-     * Sets the logger.
-     * 
-     * @param logger
-     *                The logger.
-     */
-    public void setLogger(Logger logger) {
-        this.logger = logger;
     }
 
     /**

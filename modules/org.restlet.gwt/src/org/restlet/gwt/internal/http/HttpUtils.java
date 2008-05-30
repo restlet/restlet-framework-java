@@ -18,7 +18,6 @@
 
 package org.restlet.gwt.internal.http;
 
-import java.io.IOException;
 import java.util.Collection;
 
 import org.restlet.gwt.data.CharacterSet;

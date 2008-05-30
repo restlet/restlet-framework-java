@@ -19,7 +19,6 @@
 package org.restlet.gwt.internal.http;
 
 import java.util.Set;
-import java.util.logging.Logger;
 
 import org.restlet.gwt.Context;
 import org.restlet.gwt.data.ClientInfo;

@@ -18,8 +18,6 @@
 
 package org.restlet.gwt.internal.http;
 
-import java.util.logging.Logger;
-
 import org.restlet.gwt.Context;
 import org.restlet.gwt.data.Parameter;
 import org.restlet.gwt.util.Series;
@@ -50,15 +48,6 @@ public class HttpConverter {
      */
     public Context getContext() {
         return this.context;
-    }
-
-    /**
-     * Returns the context's logger.
-     * 
-     * @return The context's logger.
-     */
-    public Logger getLogger() {
-        return getContext().getLogger();
     }
 
     /**
@@ -134,11 +123,10 @@ public class HttpConverter {
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_WWW_AUTHENTICATE)) {
                     // Standard headers that can't be overriden
-                    getLogger()
-                            .warning(
-                                    "Addition of the standard header \""
-                                            + param.getName()
-                                            + "\" is not allowed. Please use the Restlet API instead.");
+                    System.err
+                            .println("Addition of the standard header \""
+                                    + param.getName()
+                                    + "\" is not allowed. Please use the Restlet API instead.");
                 } else if (param.getName().equalsIgnoreCase(
                         HttpConstants.HEADER_AGE)
                         || param.getName().equalsIgnoreCase(
@@ -180,11 +168,10 @@ public class HttpConverter {
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_WARNING)) {
                     // Standard headers can't shouldn't be overriden
-                    getLogger()
-                            .info(
-                                    "Addition of the standard header \""
-                                            + param.getName()
-                                            + "\" is discouraged. Future versions of the Restlet API will directly support it.");
+                    System.err
+                            .println("Addition of the standard header \""
+                                    + param.getName()
+                                    + "\" is discouraged. Future versions of the Restlet API will directly support it.");
                     existingHeaders.add(param);
                 } else {
                     existingHeaders.add(param);

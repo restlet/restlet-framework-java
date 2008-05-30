@@ -18,9 +18,6 @@
 
 package org.restlet.gwt.data;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /**
  * Validation tag equivalent to the HTTP entity tag. "A strong entity tag may be
  * shared by two entities of a resource only if they are equivalent by octet
@@ -70,8 +67,7 @@ public final class Tag extends Metadata {
         } else if (httpTagCopy.equals("*")) {
             result = new Tag("*", weak);
         } else {
-            Logger.getLogger(Tag.class.getCanonicalName()).log(Level.WARNING,
-                    "Invalid tag format detected: " + httpTagCopy);
+            System.err.println("Invalid tag format detected: " + httpTagCopy);
         }
 
         return result;

@@ -18,9 +18,6 @@
 
 package org.restlet.gwt.internal.http;
 
-import java.io.IOException;
-
-
 /**
  * HTTP-style header reader.
  * 
@@ -51,7 +48,7 @@ public class HeaderReader {
      *                The buffer to append.
      * @throws IOException
      */
-    protected void appendQuotedString(Appendable buffer) throws IOException {
+    protected void appendQuotedString(StringBuilder buffer) throws Exception {
         boolean done = false;
         boolean quotedPair = false;
         int nextChar = 0;
@@ -65,7 +62,7 @@ public class HeaderReader {
                     buffer.append((char) nextChar);
                     quotedPair = false;
                 } else {
-                    throw new IOException(
+                    throw new Exception(
                             "Invalid character detected in quoted string. Please check your value");
                 }
             } else if (HttpUtils.isDoubleQuote(nextChar)) {
@@ -77,7 +74,7 @@ public class HeaderReader {
             } else if (HttpUtils.isText(nextChar)) {
                 buffer.append((char) nextChar);
             } else {
-                throw new IOException(
+                throw new Exception(
                         "Invalid character detected in quoted string. Please check your value");
             }
         }
@@ -131,7 +128,7 @@ public class HeaderReader {
      * @return The next quoted string.
      * @throws IOException
      */
-    protected String readQuotedString() throws IOException {
+    protected String readQuotedString() throws Exception {
         StringBuilder sb = new StringBuilder();
         appendQuotedString(sb);
         return sb.toString();

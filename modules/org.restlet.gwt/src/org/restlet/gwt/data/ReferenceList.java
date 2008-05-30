@@ -18,9 +18,6 @@
 
 package org.restlet.gwt.data;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,30 +68,24 @@ public class ReferenceList extends WrapperList<Reference> {
      *                The "text/uri-list" representation to parse.
      * @throws IOException
      */
-    public ReferenceList(Representation uriList) throws IOException {
-        BufferedReader br = null;
-        try {
-            br = new BufferedReader(new InputStreamReader(uriList.getStream()));
+    public ReferenceList(Representation uriList) throws Exception {
+        String content = uriList.getText();
+        // String[] lines = 
 
-            String line = br.readLine();
+        String line = br.readLine();
 
-            // Checks if the list reference is specified as the first comment.
-            if ((line != null) && line.startsWith("#")) {
-                setIdentifier(new Reference(line.substring(1).trim()));
-                line = br.readLine();
+        // Checks if the list reference is specified as the first comment.
+        if ((line != null) && line.startsWith("#")) {
+            setIdentifier(new Reference(line.substring(1).trim()));
+            line = br.readLine();
+        }
+
+        while (line != null) {
+            if (!line.startsWith("#")) {
+                add(new Reference(line.trim()));
             }
 
-            while (line != null) {
-                if (!line.startsWith("#")) {
-                    add(new Reference(line.trim()));
-                }
-
-                line = br.readLine();
-            }
-        } finally {
-            if (br != null) {
-                br.close();
-            }
+            line = br.readLine();
         }
     }
 

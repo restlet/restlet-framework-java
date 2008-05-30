@@ -19,11 +19,9 @@
 package org.restlet.gwt.util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -215,9 +213,6 @@ public class Template {
     /** The default variable to use when no matching variable descriptor exists. */
     private volatile Variable defaultVariable;
 
-    /** The logger to use. */
-    private volatile Logger logger;
-
     /** The matching mode to use when parsing a formatted reference. */
     private volatile int matchingMode;
 
@@ -239,75 +234,11 @@ public class Template {
      * template. When formatting, the variable are replaced by an empty string
      * if they don't exist in the model.
      * 
-     * @param logger
-     *                The logger to use.
-     * @param pattern
-     *                The pattern to use for formatting or parsing.
-     */
-    public Template(Logger logger, String pattern) {
-        this(logger, pattern, MODE_EQUALS, Variable.TYPE_ALL, "", true, false);
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param logger
-     *                The logger to use.
-     * @param pattern
-     *                The pattern to use for formatting or parsing.
-     * @param matchingMode
-     *                The matching mode to use when parsing a formatted
-     *                reference.
-     */
-    public Template(Logger logger, String pattern, int matchingMode) {
-        this(logger, pattern, matchingMode, Variable.TYPE_ALL, "", true, false);
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param logger
-     *                The logger to use.
-     * @param pattern
-     *                The pattern to use for formatting or parsing.
-     * @param matchingMode
-     *                The matching mode to use when parsing a formatted
-     *                reference.
-     * @param defaultType
-     *                The default type of variables with no descriptor.
-     * @param defaultDefaultValue
-     *                The default value for null variables with no descriptor.
-     * @param defaultRequired
-     *                The default required flag for variables with no
-     *                descriptor.
-     * @param defaultFixed
-     *                The default fixed value for variables with no descriptor.
-     */
-    public Template(Logger logger, String pattern, int matchingMode,
-            int defaultType, String defaultDefaultValue,
-            boolean defaultRequired, boolean defaultFixed) {
-        this.logger = (logger == null) ? Logger.getLogger(getClass()
-                .getCanonicalName()) : logger;
-        this.pattern = pattern;
-        this.defaultVariable = new Variable(defaultType, defaultDefaultValue,
-                defaultRequired, defaultFixed);
-        this.matchingMode = matchingMode;
-        this.variables = new ConcurrentHashMap<String, Variable>();
-        this.regexPattern = null;
-        this.regexVariables = new CopyOnWriteArrayList<String>();
-    }
-
-    /**
-     * Default constructor. Each variable matches any sequence of characters by
-     * default. When parsing, the template will attempt to match the whole
-     * template. When formatting, the variable are replaced by an empty string
-     * if they don't exist in the model.
-     * 
      * @param pattern
      *                The pattern to use for formatting or parsing.
      */
     public Template(String pattern) {
-        this(null, pattern);
+        this(pattern, MODE_EQUALS, Variable.TYPE_ALL, "", true, false);
     }
 
     /**
@@ -320,7 +251,7 @@ public class Template {
      *                reference.
      */
     public Template(String pattern, int matchingMode) {
-        this(null, pattern, matchingMode);
+        this(pattern, matchingMode, Variable.TYPE_ALL, "", true, false);
     }
 
     /**
@@ -344,8 +275,13 @@ public class Template {
     public Template(String pattern, int matchingMode, int defaultType,
             String defaultDefaultValue, boolean defaultRequired,
             boolean defaultFixed) {
-        this(null, pattern, matchingMode, defaultType, defaultDefaultValue,
+        this.pattern = pattern;
+        this.defaultVariable = new Variable(defaultType, defaultDefaultValue,
                 defaultRequired, defaultFixed);
+        this.matchingMode = matchingMode;
+        this.variables = new HashMap<String, Variable>();
+        this.regexPattern = null;
+        this.regexVariables = new ArrayList<String>();
     }
 
     /**
@@ -397,8 +333,8 @@ public class Template {
                 } else if (next == '}') {
                     // End of variable detected
                     if (varBuffer.length() == 0) {
-                        getLogger().warning(
-                                "Empty pattern variables are not allowed : "
+                        System.err
+                                .println("Empty pattern variables are not allowed : "
                                         + this.regexPattern);
                     } else {
                         String varName = varBuffer.toString();
@@ -424,8 +360,8 @@ public class Template {
                     }
                     inVariable = false;
                 } else {
-                    getLogger().warning(
-                            "An invalid character was detected inside a pattern variable : "
+                    System.err
+                            .println("An invalid character was detected inside a pattern variable : "
                                     + this.regexPattern);
                 }
             } else {
@@ -433,8 +369,8 @@ public class Template {
                     inVariable = true;
                     varBuffer = new StringBuilder();
                 } else if (next == '}') {
-                    getLogger().warning(
-                            "An invalid character was detected inside a pattern variable : "
+                    System.err
+                            .println("An invalid character was detected inside a pattern variable : "
                                     + this.regexPattern);
                 } else {
                     result.append(next);
@@ -451,15 +387,6 @@ public class Template {
      */
     public Variable getDefaultVariable() {
         return this.defaultVariable;
-    }
-
-    /**
-     * Returns the logger to use.
-     * 
-     * @return The logger to use.
-     */
-    public Logger getLogger() {
-        return this.logger;
     }
 
     /**
@@ -505,8 +432,8 @@ public class Template {
                             } else if (next == '}') {
                                 // End of variable detected
                                 if (varBuffer.length() == 0) {
-                                    getLogger().warning(
-                                            "Empty pattern variables are not allowed : "
+                                    System.err
+                                            .println("Empty pattern variables are not allowed : "
                                                     + this.regexPattern);
                                 } else {
                                     String varName = varBuffer.toString();
@@ -537,8 +464,8 @@ public class Template {
                                 inVariable = false;
 
                             } else {
-                                getLogger().warning(
-                                        "An invalid character was detected inside a pattern variable : "
+                                System.err
+                                        .println("An invalid character was detected inside a pattern variable : "
                                                 + this.regexPattern);
                             }
                         } else {
@@ -546,8 +473,8 @@ public class Template {
                                 inVariable = true;
                                 varBuffer = new StringBuilder();
                             } else if (next == '}') {
-                                getLogger().warning(
-                                        "An invalid character was detected inside a pattern variable : "
+                                System.err
+                                        .println("An invalid character was detected inside a pattern variable : "
                                                 + this.regexPattern);
                             } else {
                                 patternBuffer.append(quote(next));
@@ -597,8 +524,8 @@ public class Template {
                 } else if (next == '}') {
                     // End of variable detected
                     if (varBuffer.length() == 0) {
-                        getLogger().warning(
-                                "Empty pattern variables are not allowed : "
+                        System.err
+                                .println("Empty pattern variables are not allowed : "
                                         + this.pattern);
                     } else {
                         result.add(varBuffer.toString());
@@ -609,8 +536,8 @@ public class Template {
 
                     inVariable = false;
                 } else {
-                    getLogger().warning(
-                            "An invalid character was detected inside a pattern variable : "
+                    System.err
+                            .println("An invalid character was detected inside a pattern variable : "
                                     + this.pattern);
                 }
             } else {
@@ -618,8 +545,8 @@ public class Template {
                     inVariable = true;
                     varBuffer = new StringBuilder();
                 } else if (next == '}') {
-                    getLogger().warning(
-                            "An invalid character was detected inside a pattern variable : "
+                    System.err
+                            .println("An invalid character was detected inside a pattern variable : "
                                     + this.pattern);
                 }
             }
@@ -662,8 +589,8 @@ public class Template {
                 }
             }
         } catch (StackOverflowError soe) {
-            getLogger().warning(
-                    "StackOverflowError exception encountered while matching this string : "
+            System.err
+                    .println("StackOverflowError exception encountered while matching this string : "
                             + formattedString);
         }
 
@@ -708,8 +635,8 @@ public class Template {
                 }
             }
         } catch (StackOverflowError soe) {
-            getLogger().warning(
-                    "StackOverflowError exception encountered while matching this string : "
+            System.err
+                    .println("StackOverflowError exception encountered while matching this string : "
                             + formattedString);
         }
 
@@ -788,16 +715,6 @@ public class Template {
      */
     public void setDefaultVariable(Variable defaultVariable) {
         this.defaultVariable = defaultVariable;
-    }
-
-    /**
-     * Sets the logger to use.
-     * 
-     * @param logger
-     *                The logger to use.
-     */
-    public void setLogger(Logger logger) {
-        this.logger = logger;
     }
 
     /**

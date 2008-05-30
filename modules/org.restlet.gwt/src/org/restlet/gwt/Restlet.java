@@ -18,9 +18,6 @@
 
 package org.restlet.gwt;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.restlet.gwt.data.Request;
 import org.restlet.gwt.data.Response;
 import org.restlet.gwt.data.Status;
@@ -62,13 +59,7 @@ public class Restlet extends Uniform {
      */
     public Restlet(Context context) {
         if (context == null) {
-            String logName = getClass().getCanonicalName();
-
-            if (logName == null) {
-                logName = Restlet.class.getCanonicalName();
-            }
-
-            this.context = new Context(logName);
+            this.context = new Context();
         } else {
             this.context = context;
         }
@@ -83,16 +74,6 @@ public class Restlet extends Uniform {
      */
     public Context getContext() {
         return this.context;
-    }
-
-    /**
-     * Returns the context's logger.
-     * 
-     * @return The context's logger.
-     */
-    public Logger getLogger() {
-        return (getContext() != null) ? getContext().getLogger() : Logger
-                .getLogger(getClass().getCanonicalName());
     }
 
     /**
@@ -117,14 +98,14 @@ public class Restlet extends Uniform {
                 start();
             } catch (Exception e) {
                 // Occurred while starting the Restlet
-                getContext().getLogger().log(Level.WARNING, UNABLE_TO_START, e);
+                System.err.println(UNABLE_TO_START);
                 response.setStatus(Status.SERVER_ERROR_INTERNAL);
             }
 
             if (!isStarted()) {
                 // No exception raised but the Restlet somehow couldn't be
                 // started
-                getContext().getLogger().log(Level.WARNING, UNABLE_TO_START);
+                System.err.println(UNABLE_TO_START);
                 response.setStatus(Status.SERVER_ERROR_INTERNAL);
             }
         }

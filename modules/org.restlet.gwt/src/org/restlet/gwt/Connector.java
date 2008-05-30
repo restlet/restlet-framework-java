@@ -18,8 +18,8 @@
 
 package org.restlet.gwt;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.restlet.gwt.data.Protocol;
 
@@ -69,12 +69,11 @@ public abstract class Connector extends Restlet {
     public Connector(Context context, List<Protocol> protocols) {
         super(context);
         if (protocols == null) {
-            this.protocols = new CopyOnWriteArrayList<Protocol>();
-            getLogger()
-                    .warning(
-                            "The connector has been instantiated without any protocol.");
+            this.protocols = new ArrayList<Protocol>();
+            System.err
+                    .println("The connector has been instantiated without any protocol.");
         } else {
-            this.protocols = new CopyOnWriteArrayList<Protocol>(protocols);
+            this.protocols = new ArrayList<Protocol>(protocols);
         }
     }
 

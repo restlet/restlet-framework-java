@@ -18,8 +18,6 @@
 
 package org.restlet.gwt.internal.http;
 
-import java.util.logging.Logger;
-
 import org.restlet.gwt.data.CharacterSet;
 import org.restlet.gwt.data.Encoding;
 import org.restlet.gwt.data.Language;
@@ -303,7 +301,9 @@ public abstract class HttpClientCall extends HttpCall {
                 // it is very important to reuse that exact same "rs" reference
                 // when manipulating the request stream, otherwise "insufficient
                 // data sent" exceptions will occur in "fixedLengthMode"
-                String text = getRequestEntityString();
+
+                // TODO: to refactor
+                // String text = getRequestEntityString();
 
                 // if (wbc != null) {
                 // entity.write(wbc);

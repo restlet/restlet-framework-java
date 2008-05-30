@@ -18,9 +18,8 @@
 
 package org.restlet.gwt.util;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Logger;
 
 import org.restlet.gwt.Context;
 import org.restlet.gwt.Restlet;
@@ -55,7 +54,7 @@ public abstract class Helper<T extends Restlet> {
      *                The helped Restlet.
      */
     public Helper(T helped) {
-        this.attributes = new ConcurrentHashMap<String, Object>();
+        this.attributes = new HashMap<String, Object>();
         this.helped = helped;
     }
 
@@ -94,15 +93,6 @@ public abstract class Helper<T extends Restlet> {
      */
     public T getHelped() {
         return this.helped;
-    }
-
-    /**
-     * Returns the helped Restlet logger.
-     * 
-     * @return The helped Restlet logger.
-     */
-    public Logger getLogger() {
-        return getHelped().getLogger();
     }
 
     /**

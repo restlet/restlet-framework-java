@@ -18,8 +18,6 @@
 
 package org.restlet.gwt.internal.http;
 
-import java.util.logging.Level;
-
 import org.restlet.gwt.Client;
 import org.restlet.gwt.Context;
 import org.restlet.gwt.data.Request;
@@ -77,8 +75,7 @@ public abstract class HttpClientHelper extends ClientHelper {
             HttpClientCall httpCall = getConverter().toSpecific(this, request);
             getConverter().commit(httpCall, request, response);
         } catch (Exception e) {
-            getLogger().log(Level.INFO,
-                    "Error while handling an HTTP client call", e);
+            System.err.println("Error while handling an HTTP client call");
             response.setStatus(Status.CONNECTOR_ERROR_INTERNAL, e);
         }
     }
