@@ -30,8 +30,6 @@ import org.restlet.Server;
 import org.restlet.data.Response;
 import org.restlet.util.ByteUtils;
 
-import com.noelios.restlet.util.ChunkedInputStream;
-import com.noelios.restlet.util.ChunkedOutputStream;
 import com.noelios.restlet.util.KeepAliveOutputStream;
 
 /**

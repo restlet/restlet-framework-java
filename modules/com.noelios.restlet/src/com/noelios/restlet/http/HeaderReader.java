@@ -16,11 +16,10 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.util;
+package com.noelios.restlet.http;
 
 import java.io.IOException;
 
-import com.noelios.restlet.http.HttpUtils;
 
 /**
  * HTTP-style header reader.

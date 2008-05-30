@@ -37,9 +37,6 @@ import org.restlet.resource.Representation;
 import org.restlet.util.Series;
 
 import com.noelios.restlet.authentication.AuthenticationUtils;
-import com.noelios.restlet.util.CookieReader;
-import com.noelios.restlet.util.HeaderReader;
-import com.noelios.restlet.util.PreferenceUtils;
 
 /**
  * Request wrapper for server HTTP calls.

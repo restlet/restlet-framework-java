@@ -16,11 +16,10 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.gwt.internal.util;
+package org.restlet.gwt.internal.http;
 
 import java.io.IOException;
 
-import org.restlet.gwt.internal.http.HttpUtils;
 
 /**
  * HTTP-style header reader.

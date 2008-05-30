@@ -19,7 +19,6 @@
 package com.noelios.restlet.http;
 
 import java.security.cert.Certificate;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -38,7 +37,6 @@ import org.restlet.util.DateUtils;
 import org.restlet.util.Series;
 
 import com.noelios.restlet.authentication.AuthenticationUtils;
-import com.noelios.restlet.util.CookieUtils;
 
 /**
  * Converter of low-level HTTP server calls into high-level uniform calls.
@@ -189,57 +187,10 @@ public class HttpServerConverter extends HttpConverter {
                 .getRequest().getClientInfo().getAgent().contains("MSIE"))) {
             // Add the Vary header if content negotiation was used
             Set<Dimension> dimensions = response.getDimensions();
-            String vary = createVaryHeader(dimensions);
+            String vary = HttpUtils.createVaryHeader(dimensions);
             if (vary != null)
                 responseHeaders.add(HttpConstants.HEADER_VARY, vary);
         }
-    }
-
-    /**
-     * Creates a vary header from the given dimensions.
-     * 
-     * @param dimensions
-     *                The dimensions to copy to the response.
-     * @return Returns the Vary header or null, if dimensions is null or empty.
-     */
-    public static String createVaryHeader(Collection<Dimension> dimensions) {
-        String vary = null;
-        if (dimensions != null && !dimensions.isEmpty()) {
-            StringBuilder sb = new StringBuilder();
-            boolean first = true;
-
-            if (dimensions.contains(Dimension.CLIENT_ADDRESS)
-                    || dimensions.contains(Dimension.TIME)
-                    || dimensions.contains(Dimension.UNSPECIFIED)) {
-                // From an HTTP point of view the representations can
-                // vary in unspecified ways
-                vary = "*";
-            } else {
-                for (Dimension dim : dimensions) {
-                    if (first) {
-                        first = false;
-                    } else {
-                        sb.append(", ");
-                    }
-
-                    if (dim == Dimension.CHARACTER_SET) {
-                        sb.append(HttpConstants.HEADER_ACCEPT_CHARSET);
-                    } else if (dim == Dimension.CLIENT_AGENT) {
-                        sb.append(HttpConstants.HEADER_USER_AGENT);
-                    } else if (dim == Dimension.ENCODING) {
-                        sb.append(HttpConstants.HEADER_ACCEPT_ENCODING);
-                    } else if (dim == Dimension.LANGUAGE) {
-                        sb.append(HttpConstants.HEADER_ACCEPT_LANGUAGE);
-                    } else if (dim == Dimension.MEDIA_TYPE) {
-                        sb.append(HttpConstants.HEADER_ACCEPT);
-                    } else if (dim == Dimension.AUTHORIZATION) {
-                        sb.append(HttpConstants.HEADER_AUTHORIZATION);
-                    }
-                }
-                vary = sb.toString();
-            }
-        }
-        return vary;
     }
 
     /**

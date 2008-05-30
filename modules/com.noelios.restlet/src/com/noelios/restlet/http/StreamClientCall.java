@@ -34,8 +34,6 @@ import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.util.WrapperRepresentation;
 
-import com.noelios.restlet.util.ChunkedInputStream;
-import com.noelios.restlet.util.ChunkedOutputStream;
 import com.noelios.restlet.util.KeepAliveOutputStream;
 
 /**

@@ -43,7 +43,7 @@ import org.restlet.service.TunnelService;
 import org.restlet.util.Engine;
 
 import com.noelios.restlet.http.HttpConstants;
-import com.noelios.restlet.util.PreferenceUtils;
+import com.noelios.restlet.http.PreferenceUtils;
 
 /**
  * Filter tunnelling browser calls into full REST calls. The request method can

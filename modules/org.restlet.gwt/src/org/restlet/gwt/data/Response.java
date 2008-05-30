@@ -75,9 +75,6 @@ public class Response extends Message {
     /** The set of methods allowed on the requested resource. */
     private volatile Set<Method> allowedMethods;
 
-    /** The authentication request sent by an origin server to a client. */
-    private volatile ChallengeRequest challengeRequest;
-
     /** The cookie settings provided by the server. */
     private volatile Series<CookieSetting> cookieSettings;
 
@@ -104,7 +101,6 @@ public class Response extends Message {
      */
     public Response(Request request) {
         this.allowedMethods = null;
-        this.challengeRequest = null;
         this.cookieSettings = null;
         this.dimensions = null;
         this.locationRef = null;
@@ -132,15 +128,6 @@ public class Response extends Message {
             }
         }
         return a;
-    }
-
-    /**
-     * Returns the authentication request sent by an origin server to a client.
-     * 
-     * @return The authentication request sent by an origin server to a client.
-     */
-    public ChallengeRequest getChallengeRequest() {
-        return this.challengeRequest;
     }
 
     /**
@@ -333,17 +320,6 @@ public class Response extends Message {
      */
     public void setAllowedMethods(Set<Method> allowedMethods) {
         this.allowedMethods = allowedMethods;
-    }
-
-    /**
-     * Sets the authentication request sent by an origin server to a client.
-     * 
-     * @param request
-     *                The authentication request sent by an origin server to a
-     *                client.
-     */
-    public void setChallengeRequest(ChallengeRequest request) {
-        this.challengeRequest = request;
     }
 
     /**

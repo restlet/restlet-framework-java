@@ -122,13 +122,6 @@ public abstract class Resolver<T> {
                         result = request.getClientInfo().getAddress();
                     } else if (variableName.equals("cig")) {
                         result = request.getClientInfo().getAgent();
-                    } else if (variableName.equals("cri")) {
-                        result = request.getChallengeResponse().getIdentifier();
-                    } else if (variableName.equals("crs")) {
-                        if (request.getChallengeResponse().getScheme() != null) {
-                            result = request.getChallengeResponse().getScheme()
-                                    .getTechnicalName();
-                        }
                     } else if (variableName.equals("d")) {
                         result = DateUtils.format(new Date(),
                                 DateUtils.FORMAT_RFC_1123.get(0));

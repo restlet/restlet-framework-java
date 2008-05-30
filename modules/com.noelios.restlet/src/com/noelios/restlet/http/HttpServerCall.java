@@ -41,7 +41,6 @@ import org.restlet.resource.ReadableRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.service.ConnectorService;
 
-import com.noelios.restlet.util.HeaderReader;
 
 /**
  * Abstract HTTP server connector call.

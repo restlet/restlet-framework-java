@@ -18,6 +18,8 @@
 
 package org.restlet.gwt.internal.http;
 
+import java.util.logging.Logger;
+
 import org.restlet.gwt.data.CharacterSet;
 import org.restlet.gwt.data.Encoding;
 import org.restlet.gwt.data.Language;
@@ -27,10 +29,8 @@ import org.restlet.gwt.data.Request;
 import org.restlet.gwt.data.Response;
 import org.restlet.gwt.data.Status;
 import org.restlet.gwt.data.Tag;
-import org.restlet.gwt.internal.util.HeaderReader;
-import org.restlet.gwt.resource.InputRepresentation;
-import org.restlet.gwt.resource.ReadableRepresentation;
 import org.restlet.gwt.resource.Representation;
+import org.restlet.gwt.resource.StringRepresentation;
 import org.restlet.gwt.util.Series;
 
 /**
@@ -168,11 +168,11 @@ public abstract class HttpClientCall extends HttpCall {
      */
     public HttpClientCall(HttpClientHelper helper, String method,
             String requestUri) {
-        setLogger((helper == null) ? null : helper.getLogger());
         this.helper = helper;
         setMethod(method);
         setRequestUri(requestUri);
-        setClientAddress(getLocalAddress());
+        // TODO: fix me?
+        // setClientAddress(getLocalAddress());
     }
 
     /**
@@ -197,45 +197,20 @@ public abstract class HttpClientCall extends HttpCall {
     /**
      * Returns the representation wrapping the given stream.
      * 
-     * @param stream
-     *                The response input stream.
+     * @param entity
+     *                The response entity.
      * @return The wrapping representation.
      */
-    protected Representation getRepresentation(InputStream stream) {
-        return new InputRepresentation(stream, null);
+    protected Representation getRepresentation(String entity) {
+        return new StringRepresentation(entity);
     }
-
-    /**
-     * Returns the representation wrapping the given channel.
-     * 
-     * @param channel
-     *                The response channel.
-     * @return The wrapping representation.
-     */
-    protected Representation getRepresentation(ReadableByteChannel channel) {
-        return new ReadableRepresentation(channel, null);
-    }
-
-    /**
-     * Returns the request entity channel if it exists.
-     * 
-     * @return The request entity channel if it exists.
-     */
-    public abstract WritableByteChannel getRequestEntityChannel();
 
     /**
      * Returns the request entity stream if it exists.
      * 
      * @return The request entity stream if it exists.
      */
-    public abstract OutputStream getRequestEntityStream();
-
-    /**
-     * Returns the request head stream if it exists.
-     * 
-     * @return The request head stream if it exists.
-     */
-    public abstract OutputStream getRequestHeadStream();
+    public abstract String getRequestEntityString();
 
     /**
      * Returns the response entity if available. Note that no metadata is
@@ -270,16 +245,8 @@ public abstract class HttpClientCall extends HttpCall {
                 && !response.getStatus().equals(Status.SUCCESS_PARTIAL_CONTENT)) {
             // Make sure that an InputRepresentation will not be instantiated
             // while the stream is closed.
-            InputStream stream = getUnClosedResponseEntityStream(getResponseEntityStream(size));
-            ReadableByteChannel channel = getResponseEntityChannel(size);
-
-            if (stream != null) {
-                result = getRepresentation(stream);
-            } else if (channel != null) {
-                result = getRepresentation(channel);
-                // } else {
-                // result = new EmptyRepresentation();
-            }
+            String text = getResponseEntityString(size);
+            result = getRepresentation(text);
         }
 
         result = copyResponseEntityHeaders(responseHeaders, result);
@@ -287,9 +254,8 @@ public abstract class HttpClientCall extends HttpCall {
             result.setSize(size);
             // Informs that the size has not been specified in the header.
             if (size == Representation.UNKNOWN_SIZE) {
-                getLogger()
-                        .info(
-                                "The length of the message body is unknown. The entity must be handled carefully and consumed entirely in order to surely release the connection.");
+                System.err
+                        .println("The length of the message body is unknown. The entity must be handled carefully and consumed entirely in order to surely release the connection.");
             }
         }
         // }
@@ -298,56 +264,13 @@ public abstract class HttpClientCall extends HttpCall {
     }
 
     /**
-     * Returns the response channel if it exists.
-     * 
-     * @param size
-     *                The expected entity size or -1 if unknown.
-     * @return The response channel if it exists.
-     */
-    public abstract ReadableByteChannel getResponseEntityChannel(long size);
-
-    /**
-     * Returns the response entity stream if it exists.
+     * Returns the response entity string if it exists.
      * 
      * @param size
      *                The expected entity size or -1 if unknown.
      * @return The response entity stream if it exists.
      */
-    public abstract InputStream getResponseEntityStream(long size);
-
-    /**
-     * Checks if the given input stream really contains bytes to be read. If so,
-     * returns the inputStream otherwise returns null.
-     * 
-     * @param inputStream
-     *                the inputStream to check.
-     * @return null if the given inputStream does not contain any byte, an
-     *         inputStream otherwise.
-     */
-    private InputStream getUnClosedResponseEntityStream(InputStream inputStream) {
-        InputStream result = null;
-
-        if (inputStream != null) {
-            try {
-                if (inputStream.available() > 0) {
-                    result = inputStream;
-                } else {
-                    PushbackInputStream is = new PushbackInputStream(
-                            inputStream);
-                    int i = is.read();
-                    if (i >= 0) {
-                        is.unread(i);
-                        result = is;
-                    }
-                }
-            } catch (IOException ioe) {
-                getLogger().log(Level.FINER, "End of response entity stream.",
-                        ioe);
-            }
-        }
-
-        return result;
-    }
+    public abstract String getResponseEntityString(long size);
 
     @Override
     protected boolean isClientKeepAlive() {
@@ -375,47 +298,31 @@ public abstract class HttpClientCall extends HttpCall {
                 .getEntity() : null;
         try {
             if (entity != null) {
-                // Get the connector service to callback
-                ConnectorService connectorService = getConnectorService(request);
-                if (connectorService != null)
-                    connectorService.beforeSend(entity);
-
                 // In order to workaround bug #6472250
                 // (http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6472250),
                 // it is very important to reuse that exact same "rs" reference
                 // when manipulating the request stream, otherwise "insufficient
                 // data sent" exceptions will occur in "fixedLengthMode"
-                OutputStream rs = getRequestEntityStream();
-                WritableByteChannel wbc = getRequestEntityChannel();
+                String text = getRequestEntityString();
 
-                if (wbc != null) {
-                    entity.write(wbc);
-                } else if (rs != null) {
-                    entity.write(rs);
-                    rs.flush();
-                }
-
-                // Call-back after writing
-                if (connectorService != null)
-                    connectorService.afterSend(entity);
-
-                if (rs != null) {
-                    rs.close();
-                } else if (wbc != null) {
-                    wbc.close();
-                }
+                // if (wbc != null) {
+                // entity.write(wbc);
+                // } else if (rs != null) {
+                // entity.write(rs);
+                // rs.flush();
+                // }
+                //
+                // if (rs != null) {
+                // rs.close();
+                // } else if (wbc != null) {
+                // wbc.close();
+                // }
             }
 
             // Now we can access the status code, this MUST happen after closing
             // any open request stream.
             result = new Status(getStatusCode(), null, getReasonPhrase(), null);
-        } catch (IOException ioe) {
-            getHelper()
-                    .getLogger()
-                    .log(
-                            Level.WARNING,
-                            "An error occured during the communication with the remote HTTP server.",
-                            ioe);
+        } catch (Exception ioe) {
             result = new Status(Status.CONNECTOR_ERROR_COMMUNICATION, ioe);
         } finally {
             if (entity != null) {

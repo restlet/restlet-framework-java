@@ -1,103 +1,43 @@
-/*
- * Copyright 2005-2008 Noelios Consulting.
- * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
- * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
- * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
- */
+package org.restlet.gwt.internal;
 
-package com.noelios.restlet;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLStreamHandler;
-import java.net.URLStreamHandlerFactory;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.restlet.Application;
-import org.restlet.Client;
-import org.restlet.Component;
-import org.restlet.Context;
-import org.restlet.Directory;
-import org.restlet.Guard;
-import org.restlet.Server;
-import org.restlet.data.ChallengeScheme;
-import org.restlet.data.CharacterSet;
-import org.restlet.data.ClientInfo;
-import org.restlet.data.Cookie;
-import org.restlet.data.CookieSetting;
-import org.restlet.data.Dimension;
-import org.restlet.data.Form;
-import org.restlet.data.Language;
-import org.restlet.data.MediaType;
-import org.restlet.data.Parameter;
-import org.restlet.data.Preference;
-import org.restlet.data.Product;
-import org.restlet.data.Protocol;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
-import org.restlet.resource.Representation;
-import org.restlet.resource.Resource;
-import org.restlet.resource.Variant;
-import org.restlet.util.Series;
-
-import com.noelios.restlet.application.ApplicationHelper;
-import com.noelios.restlet.authentication.AuthenticationHelper;
-import com.noelios.restlet.authentication.AuthenticationUtils;
-import com.noelios.restlet.authentication.HttpAmazonS3Helper;
-import com.noelios.restlet.authentication.HttpBasicHelper;
-import com.noelios.restlet.authentication.HttpDigestHelper;
-import com.noelios.restlet.authentication.SmtpPlainHelper;
-import com.noelios.restlet.component.ComponentHelper;
-import com.noelios.restlet.http.ContentType;
-import com.noelios.restlet.http.CookieReader;
-import com.noelios.restlet.http.CookieUtils;
-import com.noelios.restlet.http.HttpClientCall;
-import com.noelios.restlet.http.HttpClientConverter;
-import com.noelios.restlet.http.HttpServerConverter;
-import com.noelios.restlet.http.HttpUtils;
-import com.noelios.restlet.http.StreamClientHelper;
-import com.noelios.restlet.http.StreamServerHelper;
-import com.noelios.restlet.local.ClapClientHelper;
-import com.noelios.restlet.local.DirectoryResource;
-import com.noelios.restlet.local.FileClientHelper;
-import com.noelios.restlet.util.FormUtils;
-import com.noelios.restlet.util.SecurityUtils;
+import org.restlet.gwt.Client;
+import org.restlet.gwt.data.CharacterSet;
+import org.restlet.gwt.data.ClientInfo;
+import org.restlet.gwt.data.Cookie;
+import org.restlet.gwt.data.CookieSetting;
+import org.restlet.gwt.data.Dimension;
+import org.restlet.gwt.data.Form;
+import org.restlet.gwt.data.Language;
+import org.restlet.gwt.data.MediaType;
+import org.restlet.gwt.data.Parameter;
+import org.restlet.gwt.data.Preference;
+import org.restlet.gwt.data.Product;
+import org.restlet.gwt.data.Protocol;
+import org.restlet.gwt.data.Response;
+import org.restlet.gwt.internal.http.ContentType;
+import org.restlet.gwt.internal.http.CookieReader;
+import org.restlet.gwt.internal.http.CookieUtils;
+import org.restlet.gwt.internal.http.HttpClientCall;
+import org.restlet.gwt.internal.http.HttpClientConverter;
+import org.restlet.gwt.internal.http.HttpUtils;
+import org.restlet.gwt.internal.util.FormUtils;
+import org.restlet.gwt.resource.Representation;
+import org.restlet.gwt.resource.Variant;
 
 /**
  * Restlet factory supported by the engine.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class Engine extends org.restlet.util.Engine {
-    /** Obtain a suitable logger. */
-    private static Logger logger = Logger.getLogger(Engine.class
-            .getCanonicalName());
-
+public class Engine extends org.restlet.gwt.util.Engine {
     /** Complete version. */
     @SuppressWarnings("hiding")
-    public static final String VERSION = org.restlet.util.Engine.VERSION;
+    public static final String VERSION = org.restlet.gwt.util.Engine.VERSION;
 
     /** Complete version header. */
     public static final String VERSION_HEADER = "Noelios-Restlet-Engine/"
@@ -109,7 +49,7 @@ public class Engine extends org.restlet.util.Engine {
      * @return The registered Noelios Restlet engine.
      */
     public static Engine getInstance() {
-        return (Engine) org.restlet.util.Engine.getInstance();
+        return (Engine) org.restlet.gwt.util.Engine.getInstance();
     }
 
     /**
@@ -195,18 +135,12 @@ public class Engine extends org.restlet.util.Engine {
      */
     public static Engine register(boolean discoverConnectors) {
         Engine result = new Engine(discoverConnectors);
-        org.restlet.util.Engine.setInstance(result);
+        org.restlet.gwt.util.Engine.setInstance(result);
         return result;
     }
 
-    /** List of available authentication helpers. */
-    private volatile List<AuthenticationHelper> registeredAuthentications;
-
     /** List of available client connectors. */
     private volatile List<ClientHelper> registeredClients;
-
-    /** List of available server connectors. */
-    private volatile List<ServerHelper> registeredServers;
 
     /**
      * Constructor that will automatically attempt to discover connectors.
@@ -222,24 +156,9 @@ public class Engine extends org.restlet.util.Engine {
      *                True if helpers should be automatically discovered.
      */
     public Engine(boolean discoverHelpers) {
-        this.registeredClients = new CopyOnWriteArrayList<ClientHelper>();
-        this.registeredServers = new CopyOnWriteArrayList<ServerHelper>();
-        this.registeredAuthentications = new CopyOnWriteArrayList<AuthenticationHelper>();
+        this.registeredClients = new ArrayList<ClientHelper>();
 
-        if (discoverHelpers) {
-            discoverConnectors();
-            discoverAuthentications();
-        }
-    }
-
-    @Override
-    public int authenticate(Request request, Guard guard) {
-        return AuthenticationUtils.authenticate(request, guard);
-    }
-
-    @Override
-    public void challenge(Response response, boolean stale, Guard guard) {
-        AuthenticationUtils.challenge(response, stale, guard);
+        // TODO: Add GWT HTTP client
     }
 
     /**
@@ -251,52 +170,16 @@ public class Engine extends org.restlet.util.Engine {
      *                The response to update. Must contain a
      *                {@link Representation} to copy the representation headers
      *                in it.
-     * @param logger
-     *                The logger to use.
      * @see org.restlet.util.Engine#copyResponseHeaders(java.lang.Iterable,
      *      org.restlet.data.Response, java.util.logging.Logger)
      */
     @Override
     public void copyResponseHeaders(Iterable<Parameter> responseHeaders,
-            Response response, Logger logger) {
+            Response response) {
         HttpClientConverter.copyResponseTransportHeaders(responseHeaders,
-                response, logger);
+                response);
         HttpClientCall.copyResponseEntityHeaders(responseHeaders, response
                 .getEntity());
-    }
-
-    /**
-     * Copies the headers of the given {@link Response} into the given
-     * {@link Series}.
-     * 
-     * @param response
-     *                The response to update. Should contain a
-     *                {@link Representation} to copy the representation headers
-     *                from it.
-     * @param headers
-     *                The Series to copy the headers in.
-     * @param logger
-     *                The logger to use.
-     * @see org.restlet.util.Engine#copyResponseHeaders(Response, Series,
-     *      Logger)
-     */
-    @Override
-    public void copyResponseHeaders(Response response,
-            Series<Parameter> headers, Logger logger) {
-        HttpServerConverter.addResponseHeaders(response, headers);
-        HttpServerConverter.addEntityHeaders(response.getEntity(), headers);
-    }
-
-    @Override
-    public Resource createDirectoryResource(Directory handler, Request request,
-            Response response) throws IOException {
-        return new DirectoryResource(handler, request, response);
-    }
-
-    @Override
-    public ApplicationHelper createHelper(Application application,
-            Context parentContext) {
-        return new ApplicationHelper(application, parentContext);
     }
 
     @Override
@@ -317,11 +200,8 @@ public class Engine extends org.restlet.util.Engine {
                             result = connector.getClass().getConstructor(
                                     Client.class).newInstance(client);
                         } catch (Exception e) {
-                            logger
-                                    .log(
-                                            Level.SEVERE,
-                                            "Exception while instantiation the client connector.",
-                                            e);
+                            System.err
+                                    .println("Exception while instantiation the client connector.");
                         }
                     }
                 }
@@ -340,216 +220,7 @@ public class Engine extends org.restlet.util.Engine {
                 sb
                         .append(". Please add the JAR of a matching connector to your classpath.");
 
-                logger.log(Level.WARNING, sb.toString());
-            }
-        }
-
-        return result;
-    }
-
-    @Override
-    public ComponentHelper createHelper(Component component) {
-        return new ComponentHelper(component);
-    }
-
-    @Override
-    public ServerHelper createHelper(Server server, String helperClass) {
-        ServerHelper result = null;
-
-        if (server.getProtocols().size() > 0) {
-            ServerHelper connector = null;
-            for (Iterator<ServerHelper> iter = getRegisteredServers()
-                    .iterator(); (result == null) && iter.hasNext();) {
-                connector = iter.next();
-
-                if ((helperClass == null)
-                        || connector.getClass().getCanonicalName().equals(
-                                helperClass)) {
-                    if (connector.getProtocols().containsAll(
-                            server.getProtocols())) {
-                        try {
-                            result = connector.getClass().getConstructor(
-                                    Server.class).newInstance(server);
-                        } catch (Exception e) {
-                            logger
-                                    .log(
-                                            Level.SEVERE,
-                                            "Exception while instantiation the server connector.",
-                                            e);
-                        }
-                    }
-                }
-            }
-
-            if (result == null) {
-                // Couldn't find a matching connector
-                StringBuilder sb = new StringBuilder();
-                sb
-                        .append("No available server connector supports the required protocols: ");
-
-                for (Protocol p : server.getProtocols()) {
-                    sb.append("'").append(p.getName()).append("' ");
-                }
-
-                sb
-                        .append(". Please add the JAR of a matching connector to your classpath.");
-
-                logger.log(Level.WARNING, sb.toString());
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Discovers the authentication helpers and register the default helpers.
-     */
-    private void discoverAuthentications() {
-        // Find the factory class name
-        ClassLoader classLoader = org.restlet.util.Engine.getClassLoader();
-
-        discoverHelpers(classLoader,
-                "META-INF/services/com.noelios.restlet.AuthenticationHelper",
-                getRegisteredAuthentications(), null);
-
-        // Register the default helpers that will be used if no
-        // other helper has been found
-        registerDefaultAuthentications();
-    }
-
-    /**
-     * Discovers client connectors in the classpath.
-     * 
-     * @param classLoader
-     *                Classloader to search.
-     */
-    private void discoverClientConnectors(ClassLoader classLoader) {
-        discoverHelpers(classLoader,
-                "META-INF/services/com.noelios.restlet.ClientHelper",
-                getRegisteredClients(), Client.class);
-    }
-
-    /**
-     * Discovers the server and client connectors and register the default
-     * connectors.
-     */
-    private void discoverConnectors() {
-        // Find the factory class name
-        ClassLoader classLoader = org.restlet.util.Engine.getClassLoader();
-
-        // Register the client connector providers
-        discoverClientConnectors(classLoader);
-
-        // Register the server connector providers
-        discoverServerConnectors(classLoader);
-
-        // Register the default connectors that will be used if no
-        // other connector has been found
-        registerDefaultConnectors();
-    }
-
-    /**
-     * Looks for pluggable helpers in the classpath and add them to the current
-     * list.
-     * 
-     * @param classLoader
-     *                Classloader to search.
-     * @param descriptor
-     *                The descriptor location to parse.
-     * @param helpers
-     *                The list of helpers to update.
-     * @param constructorClass
-     *                The constructor parameter class to look for.
-     */
-    @SuppressWarnings("unchecked")
-    private void discoverHelpers(ClassLoader classLoader, String descriptor,
-            List helpers, Class constructorClass) {
-        try {
-            for (Enumeration<URL> configUrls = classLoader
-                    .getResources(descriptor); configUrls.hasMoreElements();) {
-                URL configURL = configUrls.nextElement();
-
-                BufferedReader reader = null;
-                try {
-                    reader = new BufferedReader(new InputStreamReader(configURL
-                            .openStream(), "utf-8"));
-                    String line = reader.readLine();
-
-                    while (line != null) {
-                        String provider = getProviderClassName(line);
-
-                        if ((provider != null) && (!provider.equals(""))) {
-                            // Instantiate the factory
-                            try {
-                                Class providerClass = Class.forName(provider);
-
-                                if (constructorClass == null) {
-                                    helpers.add(providerClass.newInstance());
-                                } else {
-                                    helpers.add(providerClass.getConstructor(
-                                            constructorClass).newInstance(
-                                            constructorClass.cast(null)));
-                                }
-                            } catch (Exception e) {
-                                logger.log(Level.SEVERE,
-                                        "Unable to register the connector "
-                                                + provider, e);
-                            }
-                        }
-
-                        line = reader.readLine();
-                    }
-                } catch (IOException e) {
-                    logger.log(Level.SEVERE,
-                            "Unable to read the provider descriptor: "
-                                    + configURL.toString());
-                } finally {
-                    if (reader != null)
-                        reader.close();
-                }
-            }
-        } catch (IOException ioe) {
-            logger.log(Level.SEVERE,
-                    "Exception while detecting the client connectors.", ioe);
-        }
-    }
-
-    /**
-     * Discovers server connectors in the classpath.
-     * 
-     * @param classLoader
-     *                Classloader to search.
-     */
-    private void discoverServerConnectors(ClassLoader classLoader) {
-        discoverHelpers(classLoader,
-                "META-INF/services/com.noelios.restlet.ServerHelper",
-                getRegisteredServers(), Server.class);
-    }
-
-    /**
-     * Finds the authentication helper supporting the given scheme.
-     * 
-     * @param challengeScheme
-     *                The challenge scheme to match.
-     * @param clientSide
-     *                Indicates if client side support is required.
-     * @param serverSide
-     *                Indicates if server side support is required.
-     * @return The authentication helper or null.
-     */
-    public AuthenticationHelper findHelper(ChallengeScheme challengeScheme,
-            boolean clientSide, boolean serverSide) {
-        AuthenticationHelper result = null;
-        List<AuthenticationHelper> helpers = getRegisteredAuthentications();
-        AuthenticationHelper current;
-
-        for (int i = 0; (result == null) && (i < helpers.size()); i++) {
-            current = helpers.get(i);
-
-            if (current.getChallengeScheme().equals(challengeScheme)
-                    && ((clientSide && current.isClientSide()) || !clientSide)
-                    && ((serverSide && current.isServerSide()) || !serverSide)) {
-                result = helpers.get(i);
+                System.err.println(sb.toString());
             }
         }
 
@@ -795,44 +466,12 @@ public class Engine extends org.restlet.util.Engine {
     }
 
     /**
-     * Parses a line to extract the provider class name.
-     * 
-     * @param line
-     *                The line to parse.
-     * @return The provider's class name or an empty string.
-     */
-    private String getProviderClassName(String line) {
-        int index = line.indexOf('#');
-        if (index != -1)
-            line = line.substring(0, index);
-        return line.trim();
-    }
-
-    /**
-     * Returns the list of available authentication helpers.
-     * 
-     * @return The list of available authentication helpers.
-     */
-    public List<AuthenticationHelper> getRegisteredAuthentications() {
-        return this.registeredAuthentications;
-    }
-
-    /**
      * Returns the list of available client connectors.
      * 
      * @return The list of available client connectors.
      */
     public List<ClientHelper> getRegisteredClients() {
         return this.registeredClients;
-    }
-
-    /**
-     * Returns the list of available server connectors.
-     * 
-     * @return The list of available server connectors.
-     */
-    public List<ServerHelper> getRegisteredServers() {
-        return this.registeredServers;
     }
 
     /**
@@ -971,18 +610,17 @@ public class Engine extends org.restlet.util.Engine {
     }
 
     @Override
-    public void parse(Logger logger, Form form, Representation webForm) {
+    public void parse(Form form, Representation webForm) {
         if (webForm != null) {
-            FormUtils.parse(logger, form, webForm);
+            FormUtils.parse(form, webForm);
         }
     }
 
     @Override
-    public void parse(Logger logger, Form form, String queryString,
-            CharacterSet characterSet, boolean decode, char separator) {
+    public void parse(Form form, String queryString, CharacterSet characterSet,
+            boolean decode, char separator) {
         if ((queryString != null) && !queryString.equals("")) {
-            FormUtils.parse(logger, form, queryString, characterSet, decode,
-                    separator);
+            FormUtils.parse(form, queryString, characterSet, decode, separator);
         }
     }
 
@@ -991,7 +629,7 @@ public class Engine extends org.restlet.util.Engine {
             throws IllegalArgumentException {
         try {
             return ContentType.parseContentType(contentType);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new IllegalArgumentException("The content type string \""
                     + contentType + "\" can not be parsed: " + e.getMessage(),
                     e);
@@ -1000,10 +638,10 @@ public class Engine extends org.restlet.util.Engine {
 
     @Override
     public Cookie parseCookie(String cookie) throws IllegalArgumentException {
-        CookieReader cr = new CookieReader(logger, cookie);
+        CookieReader cr = new CookieReader(cookie);
         try {
             return cr.readCookie();
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new IllegalArgumentException("Could not read the cookie", e);
         }
     }
@@ -1011,10 +649,10 @@ public class Engine extends org.restlet.util.Engine {
     @Override
     public CookieSetting parseCookieSetting(String cookieSetting)
             throws IllegalArgumentException {
-        CookieReader cr = new CookieReader(logger, cookieSetting);
+        CookieReader cr = new CookieReader(cookieSetting);
         try {
             return cr.readCookieSetting();
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new IllegalArgumentException(
                     "Could not read the cookie setting", e);
         }
@@ -1080,9 +718,7 @@ public class Engine extends org.restlet.util.Engine {
                                     commentBuilder.append(c);
                                 }
                             } else {
-                                result
-                                        .add(new Product(token, version,
-                                                null));
+                                result.add(new Product(token, version, null));
                                 insideToken = true;
                                 tokenBuilder = new StringBuilder();
                                 tokenBuilder.append(c);
@@ -1110,94 +746,6 @@ public class Engine extends org.restlet.util.Engine {
 
         return result;
 
-    }
-
-    /**
-     * Registers the default authentication helpers.
-     */
-    @SuppressWarnings("deprecation")
-    private void registerDefaultAuthentications() {
-        getRegisteredAuthentications().add(new HttpBasicHelper());
-        getRegisteredAuthentications().add(new HttpDigestHelper());
-        getRegisteredAuthentications().add(new SmtpPlainHelper());
-        getRegisteredAuthentications().add(new HttpAmazonS3Helper());
-
-        // In order to support the deprecated AWS constant
-        // we need to register another instance of S3 helper.
-        AuthenticationHelper helper = new HttpAmazonS3Helper();
-        helper.setChallengeScheme(ChallengeScheme.HTTP_AWS);
-        getRegisteredAuthentications().add(helper);
-    }
-
-    /**
-     * Registers the default client and server connectors.
-     */
-    private void registerDefaultConnectors() {
-        getRegisteredClients().add(new StreamClientHelper(null));
-        getRegisteredClients().add(new ClapClientHelper(null));
-        getRegisteredClients().add(new FileClientHelper(null));
-        getRegisteredServers().add(new StreamServerHelper(null));
-    }
-
-    /**
-     * Registers a factory that is used by the URL class to create the
-     * {@link URLConnection} instances when the {@link URL#openConnection()} or
-     * {@link URL#openStream()} methods are invoked.
-     * <p>
-     * The implementation is based on the client dispatcher of the current
-     * context, as provided by {@link Context#getCurrent()} method.
-     */
-    public void registerUrlFactory() {
-        // Set up an URLStreamHandlerFactory for
-        // proper creation of java.net.URL instances
-        URL.setURLStreamHandlerFactory(new URLStreamHandlerFactory() {
-            public URLStreamHandler createURLStreamHandler(String protocol) {
-                URLStreamHandler result = new URLStreamHandler() {
-
-                    @Override
-                    protected URLConnection openConnection(URL url)
-                            throws IOException {
-                        return new URLConnection(url) {
-
-                            @Override
-                            public void connect() throws IOException {
-                            }
-
-                            @Override
-                            public InputStream getInputStream()
-                                    throws IOException {
-                                InputStream result = null;
-
-                                // Retrieve the current context
-                                Context context = Context.getCurrent();
-
-                                if (context != null) {
-                                    Response response = context
-                                            .getClientDispatcher().get(
-                                                    url.toString());
-
-                                    if (response.getStatus().isSuccess()) {
-                                        result = response.getEntity()
-                                                .getStream();
-                                    }
-                                }
-
-                                return result;
-                            }
-                        };
-                    }
-
-                };
-
-                return result;
-            }
-
-        });
-    }
-
-    @Override
-    public String toMd5(String target) {
-        return SecurityUtils.toMd5(target);
     }
 
 }

@@ -41,9 +41,9 @@ import org.restlet.Server;
 import org.restlet.data.Response;
 import org.restlet.util.ByteUtils;
 
+import com.noelios.restlet.http.ChunkedInputStream;
+import com.noelios.restlet.http.ChunkedOutputStream;
 import com.noelios.restlet.http.HttpServerCall;
-import com.noelios.restlet.util.ChunkedInputStream;
-import com.noelios.restlet.util.ChunkedOutputStream;
 import com.sun.grizzly.util.ByteBufferInputStream;
 import com.sun.grizzly.util.OutputWriter;
 import com.sun.grizzly.util.SSLOutputWriter;

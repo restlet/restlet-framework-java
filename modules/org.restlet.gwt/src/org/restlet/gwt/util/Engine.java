@@ -92,8 +92,7 @@ public abstract class Engine {
         Engine result = instance;
 
         if (result == null) {
-            // TODO: fixme
-            instance = null;
+            instance = new org.restlet.gwt.internal.Engine();
             result = instance;
         }
 
@@ -143,20 +142,6 @@ public abstract class Engine {
      */
     public abstract void copyResponseHeaders(Iterable<Parameter> headers,
             Response response);
-
-    /**
-     * Copies the headers of the given {@link Response} into the given
-     * {@link Series}.
-     * 
-     * @param response
-     *                The response to update. Should contain a
-     *                {@link Representation} to copy the representation headers
-     *                from it.
-     * @param headers
-     *                The Series to copy the headers in.
-     */
-    public abstract void copyResponseHeaders(Response response,
-            Series<Parameter> headers);
 
     /**
      * Creates a new helper for a given client connector.
@@ -306,17 +291,5 @@ public abstract class Engine {
      */
     public abstract List<Product> parseUserAgent(String userAgent)
             throws IllegalArgumentException;
-
-    /**
-     * Returns the MD5 digest of the target string. Target is decoded to bytes
-     * using the US-ASCII charset. The returned hexidecimal String always
-     * contains 32 lowercase alphanumeric characters. For example, if target is
-     * "HelloWorld", this method returns "68e109f0f40ca72a15e05cc22786f8e6".
-     * 
-     * @param target
-     *                The string to encode.
-     * @return The MD5 digest of the target string.
-     */
-    public abstract String toMd5(String target);
 
 }

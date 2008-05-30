@@ -16,20 +16,14 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.util;
+package org.restlet.gwt.internal.http;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.Date;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.restlet.data.Cookie;
-import org.restlet.data.CookieSetting;
-import org.restlet.data.Parameter;
-import org.restlet.util.DateUtils;
-
-import com.noelios.restlet.http.HttpUtils;
+import org.restlet.gwt.data.Cookie;
+import org.restlet.gwt.data.CookieSetting;
+import org.restlet.gwt.data.Parameter;
+import org.restlet.gwt.util.DateUtils;
 
 /**
  * Cookie header reader.
@@ -71,20 +65,14 @@ public class CookieReader extends HeaderReader {
     /** The global cookie specification version. */
     private volatile int globalVersion;
 
-    /** The logger to use. */
-    private volatile Logger logger;
-
     /**
      * Constructor.
      * 
-     * @param logger
-     *                The logger to use.
      * @param header
      *                The header to read.
      */
-    public CookieReader(Logger logger, String header) {
+    public CookieReader(String header) {
         super(header);
-        this.logger = logger;
         this.cachedPair = null;
         this.globalVersion = -1;
     }
@@ -95,7 +83,7 @@ public class CookieReader extends HeaderReader {
      * @return The next cookie available or null.
      * @throws IOException
      */
-    public Cookie readCookie() throws IOException {
+    public Cookie readCookie() throws Exception {
         Cookie result = null;
         Parameter pair = readPair();
 
@@ -105,7 +93,7 @@ public class CookieReader extends HeaderReader {
                 if (pair.getValue() != null) {
                     this.globalVersion = Integer.parseInt(pair.getValue());
                 } else {
-                    throw new IOException(
+                    throw new Exception(
                             "Empty cookies version attribute detected. Please check your cookie header");
                 }
             } else {
@@ -157,7 +145,7 @@ public class CookieReader extends HeaderReader {
      * @return The next cookie setting available or null.
      * @throws IOException
      */
-    public CookieSetting readCookieSetting() throws IOException {
+    public CookieSetting readCookieSetting() throws Exception {
         CookieSetting result = null;
         Parameter pair = readPair();
 
@@ -209,8 +197,8 @@ public class CookieReader extends HeaderReader {
                     }
                 } else {
                     // Ignore the expires header
-                    this.logger.log(Level.WARNING,
-                            "Ignoring cookie setting expiration date. Unable to parse the date: "
+                    System.err
+                            .println("Ignoring cookie setting expiration date. Unable to parse the date: "
                                     + pair.getValue());
                 }
             } else if (pair.getName().equalsIgnoreCase(NAME_SET_MAX_AGE)) {
@@ -248,7 +236,7 @@ public class CookieReader extends HeaderReader {
      * @return The next pair as a parameter.
      * @throws IOException
      */
-    private Parameter readPair() throws IOException {
+    private Parameter readPair() throws Exception {
         Parameter result = null;
 
         if (cachedPair != null) {
@@ -278,7 +266,7 @@ public class CookieReader extends HeaderReader {
                             } else if (nextChar == -1) {
                                 // Do nothing return null preference
                             } else {
-                                throw new IOException(
+                                throw new Exception(
                                         "Empty cookie name detected. Please check your cookies");
                             }
                         } else if (nextChar == '=') {
@@ -288,7 +276,7 @@ public class CookieReader extends HeaderReader {
                                 || (this.globalVersion < 1)) {
                             nameBuffer.append((char) nextChar);
                         } else {
-                            throw new IOException(
+                            throw new Exception(
                                     "Separator and control characters are not allowed within a token. Please check your cookie header");
                         }
                     } else if (readingValue) {
@@ -306,13 +294,13 @@ public class CookieReader extends HeaderReader {
                                 || (this.globalVersion < 1)) {
                             valueBuffer.append((char) nextChar);
                         } else {
-                            throw new IOException(
+                            throw new Exception(
                                     "Separator and control characters are not allowed within a token. Please check your cookie header");
                         }
                     }
                 }
-            } catch (UnsupportedEncodingException uee) {
-                throw new IOException(
+            } catch (Exception uee) {
+                throw new Exception(
                         "Unsupported encoding. Please contact the administrator");
             }
         }

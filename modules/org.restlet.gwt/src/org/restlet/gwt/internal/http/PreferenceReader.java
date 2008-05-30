@@ -16,22 +16,19 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.util;
+package org.restlet.gwt.internal.http;
 
-import java.io.IOException;
 import java.util.Iterator;
 
-import org.restlet.data.CharacterSet;
-import org.restlet.data.Encoding;
-import org.restlet.data.Form;
-import org.restlet.data.Language;
-import org.restlet.data.MediaType;
-import org.restlet.data.Metadata;
-import org.restlet.data.Parameter;
-import org.restlet.data.Preference;
-import org.restlet.util.Series;
-
-import com.noelios.restlet.http.HttpUtils;
+import org.restlet.gwt.data.CharacterSet;
+import org.restlet.gwt.data.Encoding;
+import org.restlet.gwt.data.Form;
+import org.restlet.gwt.data.Language;
+import org.restlet.gwt.data.MediaType;
+import org.restlet.gwt.data.Metadata;
+import org.restlet.gwt.data.Parameter;
+import org.restlet.gwt.data.Preference;
+import org.restlet.gwt.util.Series;
 
 /**
  * Preference header reader. Works for character sets, encodings, languages or
@@ -194,7 +191,7 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader {
      * 
      * @return The next preference.
      */
-    public Preference<T> readPreference() throws IOException {
+    public Preference<T> readPreference() throws Exception {
         Preference<T> result = null;
 
         boolean readingMetadata = true;
@@ -233,7 +230,7 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader {
                             paramNameBuffer = new StringBuilder();
                             parameters = new Form();
                         } else {
-                            throw new IOException(
+                            throw new Exception(
                                     "Empty metadata name detected.");
                         }
                     } else if (HttpUtils.isSpace(nextChar)) {
@@ -241,7 +238,7 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader {
                     } else if (HttpUtils.isText(nextChar)) {
                         metadataBuffer.append((char) nextChar);
                     } else {
-                        throw new IOException(
+                        throw new Exception(
                                 "Control characters are not allowed within a metadata name.");
                     }
                 } else if (readingParamName) {
@@ -252,7 +249,7 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader {
                             readingParamValue = true;
                             paramValueBuffer = new StringBuilder();
                         } else {
-                            throw new IOException(
+                            throw new Exception(
                                     "Empty parameter name detected.");
                         }
                     } else if (nextChar == -1) {
@@ -263,7 +260,7 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader {
                             result = createPreference(metadataBuffer,
                                     parameters);
                         } else {
-                            throw new IOException(
+                            throw new Exception(
                                     "Empty parameter name detected.");
                         }
                     } else if (nextChar == ';') {
@@ -279,7 +276,7 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader {
                     } else if (HttpUtils.isTokenChar(nextChar)) {
                         paramNameBuffer.append((char) nextChar);
                     } else {
-                        throw new IOException(
+                        throw new Exception(
                                 "Separator and control characters are not allowed within a token.");
                     }
                 } else if (readingParamValue) {
@@ -291,7 +288,7 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader {
                             result = createPreference(metadataBuffer,
                                     parameters);
                         } else {
-                            throw new IOException(
+                            throw new Exception(
                                     "Empty parameter value detected");
                         }
                     } else if (nextChar == ';') {
@@ -318,7 +315,7 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader {
                                     paramValueBuffer.append((char) nextChar);
                                     quotedPair = false;
                                 } else {
-                                    throw new IOException(
+                                    throw new Exception(
                                             "Invalid character detected in quoted string. Please check your value");
                                 }
                             } else if (HttpUtils.isDoubleQuote(nextChar)) {
@@ -330,14 +327,14 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader {
                             } else if (HttpUtils.isText(nextChar)) {
                                 paramValueBuffer.append((char) nextChar);
                             } else {
-                                throw new IOException(
+                                throw new Exception(
                                         "Invalid character detected in quoted string. Please check your value");
                             }
                         }
                     } else if (HttpUtils.isTokenChar(nextChar)) {
                         paramValueBuffer.append((char) nextChar);
                     } else {
-                        throw new IOException(
+                        throw new Exception(
                                 "Separator and control characters are not allowed within a token");
                     }
                 }

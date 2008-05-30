@@ -30,8 +30,8 @@ import org.restlet.data.Cookie;
 import org.restlet.data.CookieSetting;
 import org.restlet.util.DateUtils;
 
-import com.noelios.restlet.util.CookieReader;
-import com.noelios.restlet.util.CookieUtils;
+import com.noelios.restlet.http.CookieReader;
+import com.noelios.restlet.http.CookieUtils;
 
 /**
  * Unit tests for the Cookie related classes.

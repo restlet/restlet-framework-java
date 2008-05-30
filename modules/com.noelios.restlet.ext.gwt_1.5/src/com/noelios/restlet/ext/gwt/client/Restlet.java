@@ -18,8 +18,6 @@
 
 package com.noelios.restlet.ext.gwt.client;
 
-import java.io.IOException;
-
 import org.restlet.gwt.Client;
 import org.restlet.gwt.data.Protocol;
 import org.restlet.gwt.data.Response;
@@ -33,29 +31,29 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * The entry point for the Restlet module.  This is a placeholder
- * for development;  the Restlet module exposes an API but no UI.
+ * The entry point for the Restlet module. This is a placeholder for
+ * development; the Restlet module exposes an API but no UI.
  */
 public class Restlet implements EntryPoint {
 
-  public void onModuleLoad() {
-	GWT.log("Restlet module loaded.",null);
-    final Button button = new Button("Restlet, Fetch!");
-    final Label label = new Label();
+    public void onModuleLoad() {
+        GWT.log("Restlet module loaded.", null);
+        final Button button = new Button("Restlet, Fetch!");
+        final Label label = new Label();
 
-    button.addClickListener(new ClickListener() {
-      public void onClick(Widget sender) {
-    	Client client = new Client(Protocol.HTTP);
-    	Response response = client.get("/demo/hello.txt");
-    	try{
-    		label.setText(response.getEntity().getText());
-    	} catch (IOException ioException) {
-    		GWT.log("Restlet I/O failed", ioException);
-    	}
-      }
-    });
+        button.addClickListener(new ClickListener() {
+            public void onClick(Widget sender) {
+                Client client = new Client(Protocol.HTTP);
+                Response response = client.get("/demo/hello.txt");
+                try {
+                    label.setText(response.getEntity().getText());
+                } catch (Exception ioException) {
+                    GWT.log("Restlet I/O failed", ioException);
+                }
+            }
+        });
 
-    RootPanel.get("slot1").add(button);
-    RootPanel.get("slot2").add(label);
-  }
+        RootPanel.get("slot1").add(button);
+        RootPanel.get("slot2").add(label);
+    }
 }

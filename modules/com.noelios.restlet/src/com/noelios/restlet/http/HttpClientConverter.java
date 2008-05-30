@@ -41,10 +41,6 @@ import org.restlet.util.Series;
 
 import com.noelios.restlet.Engine;
 import com.noelios.restlet.authentication.AuthenticationUtils;
-import com.noelios.restlet.util.CookieReader;
-import com.noelios.restlet.util.CookieUtils;
-import com.noelios.restlet.util.HeaderReader;
-import com.noelios.restlet.util.PreferenceUtils;
 
 /**
  * Converter of high-level uniform calls into low-level HTTP client calls.

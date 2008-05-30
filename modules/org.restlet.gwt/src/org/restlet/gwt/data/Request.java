@@ -73,9 +73,6 @@ public class Request extends Message {
         }
     }
 
-    /** The authentication response sent by a client to an origin server. */
-    private volatile ChallengeResponse challengeResponse;
-
     /** The client-specific information. */
     private volatile ClientInfo clientInfo;
 
@@ -165,15 +162,6 @@ public class Request extends Message {
      */
     public Request(Method method, String resourceUri, Representation entity) {
         this(method, new Reference(resourceUri), entity);
-    }
-
-    /**
-     * Returns the authentication response sent by a client to an origin server.
-     * 
-     * @return The authentication response sent by a client to an origin server.
-     */
-    public ChallengeResponse getChallengeResponse() {
-        return this.challengeResponse;
     }
 
     /**
@@ -359,17 +347,6 @@ public class Request extends Message {
         }
 
         return super.isEntityAvailable();
-    }
-
-    /**
-     * Sets the authentication response sent by a client to an origin server.
-     * 
-     * @param response
-     *                The authentication response sent by a client to an origin
-     *                server.
-     */
-    public void setChallengeResponse(ChallengeResponse response) {
-        this.challengeResponse = response;
     }
 
     /**

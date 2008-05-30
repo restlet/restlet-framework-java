@@ -19,10 +19,9 @@
 package org.restlet.gwt.internal.http;
 
 import java.util.Set;
+import java.util.logging.Logger;
 
 import org.restlet.gwt.Context;
-import org.restlet.gwt.data.ChallengeRequest;
-import org.restlet.gwt.data.ChallengeResponse;
 import org.restlet.gwt.data.ClientInfo;
 import org.restlet.gwt.data.Conditions;
 import org.restlet.gwt.data.Dimension;
@@ -33,10 +32,8 @@ import org.restlet.gwt.data.Reference;
 import org.restlet.gwt.data.Request;
 import org.restlet.gwt.data.Response;
 import org.restlet.gwt.data.Status;
-import org.restlet.gwt.internal.util.HeaderReader;
-import org.restlet.gwt.internal.util.PreferenceUtils;
+import org.restlet.gwt.internal.Engine;
 import org.restlet.gwt.util.DateUtils;
-import org.restlet.gwt.util.Engine;
 import org.restlet.gwt.util.Series;
 
 /**
@@ -235,9 +232,9 @@ public class HttpClientConverter extends HttpConverter {
                     requestHeaders.add(HttpConstants.HEADER_ACCEPT,
                             PreferenceUtils.format(client
                                     .getAcceptedMediaTypes()));
-                } catch (IOException ioe) {
-                    getLogger().log(Level.WARNING,
-                            "Unable to format the HTTP Accept header", ioe);
+                } catch (Exception ioe) {
+                    System.err
+                            .println("Unable to format the HTTP Accept header");
                 }
             } else {
                 requestHeaders.add(HttpConstants.HEADER_ACCEPT, MediaType.ALL
@@ -249,9 +246,9 @@ public class HttpClientConverter extends HttpConverter {
                     requestHeaders.add(HttpConstants.HEADER_ACCEPT_CHARSET,
                             PreferenceUtils.format(client
                                     .getAcceptedCharacterSets()));
-                } catch (IOException ioe) {
-                    getLogger().log(Level.WARNING,
-                            "Unable to format the HTTP Accept header", ioe);
+                } catch (Exception ioe) {
+                    System.err
+                            .println("Unable to format the HTTP Accept header");
                 }
             }
 
@@ -260,9 +257,9 @@ public class HttpClientConverter extends HttpConverter {
                     requestHeaders.add(HttpConstants.HEADER_ACCEPT_ENCODING,
                             PreferenceUtils.format(client
                                     .getAcceptedEncodings()));
-                } catch (IOException ioe) {
-                    getLogger().log(Level.WARNING,
-                            "Unable to format the HTTP Accept header", ioe);
+                } catch (Exception ioe) {
+                    System.err
+                            .println("Unable to format the HTTP Accept header");
                 }
             }
 
@@ -271,9 +268,9 @@ public class HttpClientConverter extends HttpConverter {
                     requestHeaders.add(HttpConstants.HEADER_ACCEPT_LANGUAGE,
                             PreferenceUtils.format(client
                                     .getAcceptedLanguages()));
-                } catch (IOException ioe) {
-                    getLogger().log(Level.WARNING,
-                            "Unable to format the HTTP Accept header", ioe);
+                } catch (Exception ioe) {
+                    System.err
+                            .println("Unable to format the HTTP Accept header");
                 }
             }
 
@@ -333,16 +330,6 @@ public class HttpClientConverter extends HttpConverter {
             Series<Parameter> additionalHeaders = (Series<Parameter>) request
                     .getAttributes().get(HttpConstants.ATTRIBUTE_HEADERS);
             addAdditionalHeaders(requestHeaders, additionalHeaders);
-
-            // Add the security headers. NOTE: This must stay at the end because
-            // the AWS challenge scheme requires access to all HTTP headers
-            ChallengeResponse challengeResponse = request
-                    .getChallengeResponse();
-            if (challengeResponse != null) {
-                requestHeaders.add(HttpConstants.HEADER_AUTHORIZATION,
-                        AuthenticationUtils.format(challengeResponse, request,
-                                requestHeaders));
-            }
         }
     }
 
@@ -362,13 +349,10 @@ public class HttpClientConverter extends HttpConverter {
             // Put the response headers in the call's attributes map
             response.getAttributes().put(HttpConstants.ATTRIBUTE_HEADERS,
                     responseHeaders);
-            copyResponseTransportHeaders(responseHeaders, response, getLogger());
+            copyResponseTransportHeaders(responseHeaders, response);
         } catch (Exception e) {
-            getLogger()
-                    .log(
-                            Level.FINE,
-                            "An error occured during the processing of the HTTP response.",
-                            e);
+            System.err
+                    .println("An error occured during the processing of the HTTP response.");
             response.setStatus(Status.CONNECTOR_ERROR_INTERNAL, e);
         }
     }
@@ -387,7 +371,7 @@ public class HttpClientConverter extends HttpConverter {
      *      org.restlet.resource.Representation)
      */
     public static void copyResponseTransportHeaders(
-            Iterable<Parameter> headers, Response response, Logger logger) {
+            Iterable<Parameter> headers, Response response) {
         // Read info from headers
         for (Parameter header : headers) {
             if (header.getName()
@@ -398,19 +382,13 @@ public class HttpClientConverter extends HttpConverter {
                     || (header.getName()
                             .equalsIgnoreCase(HttpConstants.HEADER_SET_COOKIE2))) {
                 try {
-                    CookieReader cr = new CookieReader(logger, header
-                            .getValue());
+                    CookieReader cr = new CookieReader(header.getValue());
                     response.getCookieSettings().add(cr.readCookieSetting());
                 } catch (Exception e) {
-                    logger.log(Level.WARNING,
-                            "Error during cookie setting parsing. Header: "
-                                    + header.getValue(), e);
+                    System.err
+                            .println("Error during cookie setting parsing. Header: "
+                                    + header.getValue());
                 }
-            } else if (header.getName().equalsIgnoreCase(
-                    HttpConstants.HEADER_WWW_AUTHENTICATE)) {
-                ChallengeRequest request = AuthenticationUtils
-                        .parseAuthenticateHeader(header.getValue());
-                response.setChallengeRequest(request);
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_SERVER)) {
                 response.getServerInfo().setAgent(header.getValue());

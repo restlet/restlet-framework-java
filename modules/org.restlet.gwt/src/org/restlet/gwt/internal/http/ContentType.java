@@ -21,7 +21,6 @@ package org.restlet.gwt.internal.http;
 import org.restlet.gwt.data.CharacterSet;
 import org.restlet.gwt.data.MediaType;
 import org.restlet.gwt.data.Preference;
-import org.restlet.gwt.internal.util.PreferenceReader;
 
 /**
  * Association of a media type and a character set.

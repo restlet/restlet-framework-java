@@ -18,7 +18,11 @@
 
 package org.restlet.gwt.internal.http;
 
+import java.io.IOException;
+import java.util.Collection;
+
 import org.restlet.gwt.data.CharacterSet;
+import org.restlet.gwt.data.Dimension;
 import org.restlet.gwt.data.Parameter;
 import org.restlet.gwt.data.Reference;
 
@@ -28,57 +32,6 @@ import org.restlet.gwt.data.Reference;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class HttpUtils {
-    /**
-     * Appends a source string as an HTTP comment.
-     * 
-     * @param source
-     *                The source string to format.
-     * @param destination
-     *                The appendable destination.
-     * @throws IOException
-     */
-    public Appendable appendComment(CharSequence source, Appendable destination)
-            throws Exception {
-        destination.append('(');
-
-        char c;
-        for (int i = 0; i < source.length(); i++) {
-            c = source.charAt(i);
-
-            if (c == '(') {
-                destination.append("\\(");
-            } else if (c == ')') {
-                destination.append("\\)");
-            } else if (c == '\\') {
-                destination.append("\\\\");
-            } else {
-                destination.append(c);
-            }
-        }
-
-        destination.append(')');
-        return destination;
-    }
-
-    /**
-     * Creates a parameter.
-     * 
-     * @param name
-     *                The parameter name buffer.
-     * @param value
-     *                The parameter value buffer (can be null).
-     * @return The created parameter.
-     * @throws IOException
-     */
-    public static Parameter createParameter(CharSequence name,
-            CharSequence value) {
-        if (value != null) {
-            return new Parameter(name.toString(), value.toString());
-        } else {
-            return new Parameter(name.toString(), null);
-        }
-    }
-
     /**
      * Appends a source string as an HTTP quoted string.
      * 
@@ -108,7 +61,6 @@ public class HttpUtils {
         destination.append('"');
         return destination;
     }
-
     /**
      * Appends a source string as an URI encoded string.
      * 
@@ -124,6 +76,72 @@ public class HttpUtils {
             Appendable destination, CharacterSet characterSet) throws Exception {
         destination.append(Reference.encode(source.toString(), characterSet));
         return destination;
+    }
+
+    /**
+     * Creates a parameter.
+     * 
+     * @param name
+     *                The parameter name buffer.
+     * @param value
+     *                The parameter value buffer (can be null).
+     * @return The created parameter.
+     * @throws IOException
+     */
+    public static Parameter createParameter(CharSequence name,
+            CharSequence value) {
+        if (value != null) {
+            return new Parameter(name.toString(), value.toString());
+        } else {
+            return new Parameter(name.toString(), null);
+        }
+    }
+
+    /**
+     * Creates a vary header from the given dimensions.
+     * 
+     * @param dimensions
+     *                The dimensions to copy to the response.
+     * @return Returns the Vary header or null, if dimensions is null or empty.
+     */
+    public static String createVaryHeader(Collection<Dimension> dimensions) {
+        String vary = null;
+        if (dimensions != null && !dimensions.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            boolean first = true;
+
+            if (dimensions.contains(Dimension.CLIENT_ADDRESS)
+                    || dimensions.contains(Dimension.TIME)
+                    || dimensions.contains(Dimension.UNSPECIFIED)) {
+                // From an HTTP point of view the representations can
+                // vary in unspecified ways
+                vary = "*";
+            } else {
+                for (Dimension dim : dimensions) {
+                    if (first) {
+                        first = false;
+                    } else {
+                        sb.append(", ");
+                    }
+
+                    if (dim == Dimension.CHARACTER_SET) {
+                        sb.append(HttpConstants.HEADER_ACCEPT_CHARSET);
+                    } else if (dim == Dimension.CLIENT_AGENT) {
+                        sb.append(HttpConstants.HEADER_USER_AGENT);
+                    } else if (dim == Dimension.ENCODING) {
+                        sb.append(HttpConstants.HEADER_ACCEPT_ENCODING);
+                    } else if (dim == Dimension.LANGUAGE) {
+                        sb.append(HttpConstants.HEADER_ACCEPT_LANGUAGE);
+                    } else if (dim == Dimension.MEDIA_TYPE) {
+                        sb.append(HttpConstants.HEADER_ACCEPT);
+                    } else if (dim == Dimension.AUTHORIZATION) {
+                        sb.append(HttpConstants.HEADER_AUTHORIZATION);
+                    }
+                }
+                vary = sb.toString();
+            }
+        }
+        return vary;
     }
 
     /**
@@ -157,39 +175,6 @@ public class HttpUtils {
     }
 
     /**
-     * Indicates if the given character is in ASCII range.
-     * 
-     * @param character
-     *                The character to test.
-     * @return True if the given character is in ASCII range.
-     */
-    public static boolean isAsciiChar(int character) {
-        return (character >= 0) && (character <= 127);
-    }
-
-    /**
-     * Indicates if the given character is upper case (A-Z).
-     * 
-     * @param character
-     *                The character to test.
-     * @return True if the given character is upper case (A-Z).
-     */
-    public static boolean isUpperCase(int character) {
-        return (character >= 'A') && (character <= 'Z');
-    }
-
-    /**
-     * Indicates if the given character is lower case (a-z).
-     * 
-     * @param character
-     *                The character to test.
-     * @return True if the given character is lower case (a-z).
-     */
-    public static boolean isLowerCase(int character) {
-        return (character >= 'a') && (character <= 'z');
-    }
-
-    /**
      * Indicates if the given character is alphabetical (a-z or A-Z).
      * 
      * @param character
@@ -201,25 +186,14 @@ public class HttpUtils {
     }
 
     /**
-     * Indicates if the given character is a digit (0-9).
+     * Indicates if the given character is in ASCII range.
      * 
      * @param character
      *                The character to test.
-     * @return True if the given character is a digit (0-9).
+     * @return True if the given character is in ASCII range.
      */
-    public static boolean isDigit(int character) {
-        return (character >= '0') && (character <= '9');
-    }
-
-    /**
-     * Indicates if the given character is a control character.
-     * 
-     * @param character
-     *                The character to test.
-     * @return True if the given character is a control character.
-     */
-    public static boolean isControlChar(int character) {
-        return ((character >= 0) && (character <= 31)) || (character == 127);
+    public static boolean isAsciiChar(int character) {
+        return (character >= 0) && (character <= 127);
     }
 
     /**
@@ -234,36 +208,25 @@ public class HttpUtils {
     }
 
     /**
-     * Indicates if the given character is a line feed.
+     * Indicates if the given character is a control character.
      * 
      * @param character
      *                The character to test.
-     * @return True if the given character is a line feed.
+     * @return True if the given character is a control character.
      */
-    public static boolean isLineFeed(int character) {
-        return (character == 10);
+    public static boolean isControlChar(int character) {
+        return ((character >= 0) && (character <= 31)) || (character == 127);
     }
 
     /**
-     * Indicates if the given character is a space.
+     * Indicates if the given character is a digit (0-9).
      * 
      * @param character
      *                The character to test.
-     * @return True if the given character is a space.
+     * @return True if the given character is a digit (0-9).
      */
-    public static boolean isSpace(int character) {
-        return (character == 32);
-    }
-
-    /**
-     * Indicates if the given character is an horizontal tab.
-     * 
-     * @param character
-     *                The character to test.
-     * @return True if the given character is an horizontal tab.
-     */
-    public static boolean isHorizontalTab(int character) {
-        return (character == 9);
+    public static boolean isDigit(int character) {
+        return (character >= '0') && (character <= '9');
     }
 
     /**
@@ -278,16 +241,36 @@ public class HttpUtils {
     }
 
     /**
-     * Indicates if the given character is textual (ASCII and not a control
-     * character).
+     * Indicates if the given character is an horizontal tab.
      * 
      * @param character
      *                The character to test.
-     * @return True if the given character is textual (ASCII and not a control
-     *         character).
+     * @return True if the given character is an horizontal tab.
      */
-    public static boolean isText(int character) {
-        return isAsciiChar(character) && !isControlChar(character);
+    public static boolean isHorizontalTab(int character) {
+        return (character == 9);
+    }
+
+    /**
+     * Indicates if the given character is a line feed.
+     * 
+     * @param character
+     *                The character to test.
+     * @return True if the given character is a line feed.
+     */
+    public static boolean isLineFeed(int character) {
+        return (character == 10);
+    }
+
+    /**
+     * Indicates if the given character is lower case (a-z).
+     * 
+     * @param character
+     *                The character to test.
+     * @return True if the given character is lower case (a-z).
+     */
+    public static boolean isLowerCase(int character) {
+        return (character >= 'a') && (character <= 'z');
     }
 
     /**
@@ -326,16 +309,27 @@ public class HttpUtils {
     }
 
     /**
-     * Indicates if the given character is a token character (text and not a
-     * separator).
+     * Indicates if the given character is a space.
      * 
      * @param character
      *                The character to test.
-     * @return True if the given character is a token character (text and not a
-     *         separator).
+     * @return True if the given character is a space.
      */
-    public static boolean isTokenChar(int character) {
-        return isText(character) && !isSeparator(character);
+    public static boolean isSpace(int character) {
+        return (character == 32);
+    }
+
+    /**
+     * Indicates if the given character is textual (ASCII and not a control
+     * character).
+     * 
+     * @param character
+     *                The character to test.
+     * @return True if the given character is textual (ASCII and not a control
+     *         character).
+     */
+    public static boolean isText(int character) {
+        return isAsciiChar(character) && !isControlChar(character);
     }
 
     /**
@@ -353,6 +347,62 @@ public class HttpUtils {
         }
 
         return true;
+    }
+
+    /**
+     * Indicates if the given character is a token character (text and not a
+     * separator).
+     * 
+     * @param character
+     *                The character to test.
+     * @return True if the given character is a token character (text and not a
+     *         separator).
+     */
+    public static boolean isTokenChar(int character) {
+        return isText(character) && !isSeparator(character);
+    }
+
+    /**
+     * Indicates if the given character is upper case (A-Z).
+     * 
+     * @param character
+     *                The character to test.
+     * @return True if the given character is upper case (A-Z).
+     */
+    public static boolean isUpperCase(int character) {
+        return (character >= 'A') && (character <= 'Z');
+    }
+
+    /**
+     * Appends a source string as an HTTP comment.
+     * 
+     * @param source
+     *                The source string to format.
+     * @param destination
+     *                The appendable destination.
+     * @throws IOException
+     */
+    public Appendable appendComment(CharSequence source, Appendable destination)
+            throws Exception {
+        destination.append('(');
+
+        char c;
+        for (int i = 0; i < source.length(); i++) {
+            c = source.charAt(i);
+
+            if (c == '(') {
+                destination.append("\\(");
+            } else if (c == ')') {
+                destination.append("\\)");
+            } else if (c == '\\') {
+                destination.append("\\\\");
+            } else {
+                destination.append(c);
+            }
+        }
+
+        destination.append(')');
+        return destination;
     }
 
 }

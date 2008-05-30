@@ -27,8 +27,8 @@ import junit.framework.TestCase;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
 
-import com.noelios.restlet.util.PreferenceReader;
-import com.noelios.restlet.util.PreferenceUtils;
+import com.noelios.restlet.http.PreferenceReader;
+import com.noelios.restlet.http.PreferenceUtils;
 
 /**
  * Unit tests for the Preference related classes.

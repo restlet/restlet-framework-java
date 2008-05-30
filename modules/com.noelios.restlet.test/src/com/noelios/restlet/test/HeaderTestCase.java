@@ -27,8 +27,8 @@ import org.restlet.data.Encoding;
 import org.restlet.data.MediaType;
 import org.restlet.util.DateUtils;
 
-import com.noelios.restlet.util.HeaderReader;
-import com.noelios.restlet.util.PreferenceUtils;
+import com.noelios.restlet.http.HeaderReader;
+import com.noelios.restlet.http.PreferenceUtils;
 
 /**
  * Unit tests for the header.

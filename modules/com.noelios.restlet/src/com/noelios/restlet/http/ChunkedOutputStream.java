@@ -16,12 +16,11 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.util;
+package com.noelios.restlet.http;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
-import com.noelios.restlet.http.HttpUtils;
 
 /**
  * OutputStream to write data in the HTTP chunked encoding format to a

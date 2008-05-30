@@ -16,7 +16,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.util;
+package com.noelios.restlet.http;
 
 import java.io.IOException;
 import java.util.Date;
@@ -28,7 +28,6 @@ import org.restlet.data.Cookie;
 import org.restlet.data.CookieSetting;
 import org.restlet.util.DateUtils;
 
-import com.noelios.restlet.http.HttpUtils;
 
 /**
  * Cookie manipulation utilities.

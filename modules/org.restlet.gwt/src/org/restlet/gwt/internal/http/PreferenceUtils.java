@@ -16,21 +16,18 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.util;
+package org.restlet.gwt.internal.http;
 
-import java.io.IOException;
-import java.text.NumberFormat;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 
-import org.restlet.data.CharacterSet;
-import org.restlet.data.ClientInfo;
-import org.restlet.data.Encoding;
-import org.restlet.data.Language;
-import org.restlet.data.MediaType;
-import org.restlet.data.Parameter;
-import org.restlet.data.Preference;
+import org.restlet.gwt.data.CharacterSet;
+import org.restlet.gwt.data.ClientInfo;
+import org.restlet.gwt.data.Encoding;
+import org.restlet.gwt.data.Language;
+import org.restlet.gwt.data.MediaType;
+import org.restlet.gwt.data.Parameter;
+import org.restlet.gwt.data.Preference;
 
 /**
  * Preference manipulation utilities.<br>
@@ -47,7 +44,7 @@ public class PreferenceUtils {
      * @throws IOException
      */
     public static String format(List<? extends Preference<?>> prefs)
-            throws IOException {
+            throws Exception {
         StringBuilder sb = new StringBuilder();
 
         Preference<?> pref;
@@ -72,7 +69,7 @@ public class PreferenceUtils {
      */
     @SuppressWarnings("unchecked")
     public static void format(Preference pref, Appendable destination)
-            throws IOException {
+            throws Exception {
         destination.append(pref.getMetadata().getName());
 
         if (pref.getMetadata() instanceof MediaType) {
@@ -130,14 +127,15 @@ public class PreferenceUtils {
      * @throws IOException
      */
     public static void formatQuality(float quality, Appendable destination)
-            throws IOException {
+            throws Exception {
         if (!isQuality(quality)) {
             throw new IllegalArgumentException(
                     "Invalid quality value detected. Value must be between 0 and 1.");
         } else {
-            NumberFormat formatter = NumberFormat.getNumberInstance(Locale.US);
-            formatter.setMaximumFractionDigits(2);
-            destination.append(formatter.format(quality));
+            // TODO: Replace NumberFormat
+//            NumberFormat formatter = NumberFormat.getNumberInstance(Locale.US);
+//            formatter.setMaximumFractionDigits(2);
+//            destination.append(formatter.format(quality));
         }
     }
 
@@ -203,7 +201,7 @@ public class PreferenceUtils {
                         client.getAcceptedCharacterSets().add(currentPref);
                         currentPref = pr.readPreference();
                     }
-                } catch (IOException ioe) {
+                } catch (Exception ioe) {
                     throw new IllegalArgumentException(
                             "An exception occurred during character set preferences parsing. Header: "
                                     + acceptCharsetHeader
@@ -236,7 +234,7 @@ public class PreferenceUtils {
                     preference.getAcceptedEncodings().add(currentPref);
                     currentPref = pr.readPreference();
                 }
-            } catch (IOException ioe) {
+            } catch (Exception ioe) {
                 throw new IllegalArgumentException(
                         "An exception occurred during encoding preferences parsing. Header: "
                                 + acceptEncodingHeader + ". Ignoring header.");
@@ -267,7 +265,7 @@ public class PreferenceUtils {
                     preference.getAcceptedLanguages().add(currentPref);
                     currentPref = pr.readPreference();
                 }
-            } catch (IOException ioe) {
+            } catch (Exception ioe) {
                 throw new IllegalArgumentException(
                         "An exception occurred during language preferences parsing. Header: "
                                 + acceptLanguageHeader + ". Ignoring header.");
@@ -297,7 +295,7 @@ public class PreferenceUtils {
                     preference.getAcceptedMediaTypes().add(currentPref);
                     currentPref = pr.readPreference();
                 }
-            } catch (IOException ioe) {
+            } catch (Exception ioe) {
                 throw new IllegalArgumentException(
                         "An exception occurred during media type preferences parsing. Header: "
                                 + acceptMediaTypeHeader + ". Ignoring header.");

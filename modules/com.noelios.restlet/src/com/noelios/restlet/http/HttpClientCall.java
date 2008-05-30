@@ -44,7 +44,6 @@ import org.restlet.resource.Representation;
 import org.restlet.service.ConnectorService;
 import org.restlet.util.Series;
 
-import com.noelios.restlet.util.HeaderReader;
 
 /**
  * Low-level HTTP client call.

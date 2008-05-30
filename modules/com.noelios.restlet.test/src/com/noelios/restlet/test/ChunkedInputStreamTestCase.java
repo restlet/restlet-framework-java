@@ -26,8 +26,8 @@ import java.io.OutputStream;
 
 import junit.framework.TestCase;
 
-import com.noelios.restlet.util.ChunkedInputStream;
-import com.noelios.restlet.util.ChunkedOutputStream;
+import com.noelios.restlet.http.ChunkedInputStream;
+import com.noelios.restlet.http.ChunkedOutputStream;
 
 /**
  * Test cases for the chunked decoding.

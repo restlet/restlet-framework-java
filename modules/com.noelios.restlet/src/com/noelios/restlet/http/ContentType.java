@@ -24,8 +24,6 @@ import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
 
-import com.noelios.restlet.util.PreferenceReader;
-
 /**
  * Association of a media type and a character set.
  * 
