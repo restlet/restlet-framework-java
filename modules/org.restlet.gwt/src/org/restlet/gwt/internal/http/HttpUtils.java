@@ -189,7 +189,7 @@ public class HttpUtils {
      * @throws IOException
      */
     public static void formatProduct(CharSequence nameToken,
-            CharSequence versionToken, Appendable destination) throws Exception {
+            CharSequence versionToken, StringBuilder destination) throws Exception {
         if (!isToken(nameToken)) {
             throw new IllegalArgumentException(
                     "Invalid product name detected. Only token characters are allowed.");

@@ -68,7 +68,7 @@ public class PreferenceUtils {
      * @throws IOException
      */
     @SuppressWarnings("unchecked")
-    public static void format(Preference pref, Appendable destination)
+    public static void format(Preference pref, StringBuilder destination)
             throws Exception {
         destination.append(pref.getMetadata().getName());
 
@@ -126,16 +126,17 @@ public class PreferenceUtils {
      *                The appendable destination;
      * @throws IOException
      */
-    public static void formatQuality(float quality, Appendable destination)
+    public static void formatQuality(float quality, StringBuilder destination)
             throws Exception {
         if (!isQuality(quality)) {
             throw new IllegalArgumentException(
                     "Invalid quality value detected. Value must be between 0 and 1.");
         } else {
             // TODO: Replace NumberFormat
-//            NumberFormat formatter = NumberFormat.getNumberInstance(Locale.US);
-//            formatter.setMaximumFractionDigits(2);
-//            destination.append(formatter.format(quality));
+            // NumberFormat formatter =
+            // NumberFormat.getNumberInstance(Locale.US);
+            // formatter.setMaximumFractionDigits(2);
+            // destination.append(formatter.format(quality));
         }
     }
 
