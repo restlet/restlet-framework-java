@@ -17,4 +17,5 @@
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="com.google.gwt.dev.GWTShell"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-out www com.noelios.restlet.ext.gwt.Restlet/Restlet.html"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="com.noelios.restlet.ext.gwt_1.5"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-XstartOnFirstThread"/>
 </launchConfiguration>

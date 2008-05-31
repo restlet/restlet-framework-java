@@ -5,8 +5,7 @@ Bundle-SymbolicName: com.noelios.restlet.ext.gwt
 Bundle-Version: 1.1
 Bundle-Vendor: Noelios Consulting
 Export-Package: com.noelios.restlet.ext.gwt;uses:="javax.servlet.http,com.noelios.restlet.ext.servlet"
-Import-Package: com.google.gwt.animation.client,
- com.google.gwt.core.client,
+Import-Package: com.google.gwt.core.client,
  com.google.gwt.http.client,
  com.google.gwt.user.client,
  com.google.gwt.user.client.ui,
