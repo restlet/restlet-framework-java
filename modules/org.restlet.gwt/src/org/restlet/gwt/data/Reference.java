@@ -18,11 +18,10 @@
 
 package org.restlet.gwt.data;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.google.gwt.http.client.URL;
 
 /**
  * Reference to a Uniform Resource Identifier (URI). Contrary to the
@@ -118,8 +117,8 @@ public class Reference {
         String result = null;
 
         try {
-            result = URLDecoder.decode(toDecode, "UTF-8");
-        } catch (UnsupportedEncodingException uee) {
+            result = URL.decode(toDecode);
+        } catch (NullPointerException npe) {
             System.err
                     .println("Unable to decode the string with the UTF-8 character set.");
         }
@@ -143,12 +142,17 @@ public class Reference {
      *         supported.
      */
     public static String decode(String toDecode, CharacterSet characterSet) {
+    	if(!CharacterSet.UTF_8.equals(characterSet)){
+    	    throw new IllegalArgumentException(
+    	            "Only UTF-8 URL encoding is supported under GWT");
+    	}
+    	
         String result = null;
 
         try {
-            result = (characterSet == null) ? toDecode : URLDecoder.decode(
-                    toDecode, characterSet.getName());
-        } catch (UnsupportedEncodingException uee) {
+            result = (characterSet == null) ? toDecode : URL.decode(
+                    toDecode);
+        } catch (NullPointerException npe) {
             System.err
                     .println("Unable to decode the string with the UTF-8 character set.");
         }
@@ -169,8 +173,8 @@ public class Reference {
 
         if (toEncode != null) {
             try {
-                result = URLEncoder.encode(toEncode, "UTF-8");
-            } catch (UnsupportedEncodingException uee) {
+                result = URL.encode(toEncode);
+            } catch (NullPointerException npe) {
                 System.err
                         .println("Unable to encode the string with the UTF-8 character set.");
             }
@@ -196,12 +200,16 @@ public class Reference {
      *         supported.
      */
     public static String encode(String toEncode, CharacterSet characterSet) {
+    	if(!CharacterSet.UTF_8.equals(characterSet)){
+    	    throw new IllegalArgumentException(
+    	            "Only UTF-8 URL encoding is supported under GWT");
+    	}
         String result = null;
 
         try {
-            result = (characterSet == null) ? toEncode : URLEncoder.encode(
-                    toEncode, characterSet.getName());
-        } catch (UnsupportedEncodingException uee) {
+            result = (characterSet == null) ? toEncode : URL.encode(
+                    toEncode);
+        } catch (NullPointerException npe) {
             System.err
                     .println("Unable to encode the string with the UTF-8 character set.");
         }
@@ -653,7 +661,7 @@ public class Reference {
         }
     }
 
-    @Override
+    // do not put an @Override here, even if Eclipse says so
     public Reference clone() {
         Reference newRef = new Reference();
 

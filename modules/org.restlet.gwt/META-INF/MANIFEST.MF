@@ -26,3 +26,5 @@ Export-Package: org.restlet.gwt;uses:="org.restlet.gwt.data,org.restlet.gwt.reso
    org.xml.sax.helpers,
    org.restlet.gwt.data,
    org.restlet.gwt.resource"
+Import-Package: com.google.gwt.http.client,
+ com.google.gwt.i18n.client
