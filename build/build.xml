@@ -329,6 +329,7 @@
    <path id="mod-gwt-api-path">
       <path refid="mod-ri-path" />
       <pathelement path="${classes}/${mod-ri-id}" />
+      <fileset dir="${lib}/${lib-gwt-id}" includes="*.jar" />
    </path>
 
    <path id="mod-httpclient-path">
@@ -360,6 +361,8 @@
       <path refid="mod-json-path" />
       <pathelement path="${classes}/${mod-ri-id}" />
       <fileset dir="${lib}/${lib-jaxrs-id}" includes="*.jar" />
+      <fileset dir="${lib}/${lib-fileupload-id}" includes="*.jar" />
+      <fileset dir="${lib}/${lib-servlet-id}" includes="*.jar" />
    </path>
    
    <path id="mod-jdbc-path">
