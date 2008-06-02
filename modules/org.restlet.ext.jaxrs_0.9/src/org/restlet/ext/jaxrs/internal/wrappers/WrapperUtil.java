@@ -298,6 +298,7 @@ public class WrapperUtil {
                 // Annotation of Annotation of the method is the HTTP-Method
                 String httpMethodName = httpMethodAnnot.value();
                 return org.restlet.data.Method.valueOf(httpMethodName);
+                // NICE check if another designator is available: reject or warn
             }
         }
         return null;

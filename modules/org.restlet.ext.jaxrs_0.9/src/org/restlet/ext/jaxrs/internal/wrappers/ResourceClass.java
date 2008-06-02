@@ -408,6 +408,8 @@ public class ResourceClass extends AbstractJaxRsWrapper {
                         checkForPrimitiveParameters(execMethod, logger);
                     }
                 }
+                // NICE warn, if @ConsumeMime, @ProduceMime or another
+                // non-useful annotation is available on a method to ignore.
             } catch (IllegalPathOnMethodException e) {
                 logger.warning("The method " + annotatedMethod
                         + " is annotated with an illegal path: " + e.getPath()
