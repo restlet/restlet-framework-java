@@ -22,7 +22,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.HashMap;
 
 import com.google.gwt.i18n.client.DateTimeFormat;
 
@@ -51,8 +50,6 @@ public final class DateUtils {
         // TODO Are we serializable?
         private static final long serialVersionUID = -5946186780670229206L;
 
-        private static final transient HashMap<Date, ImmutableDate> CACHE = new HashMap<Date, ImmutableDate>();
-
         /**
          * Returns an ImmutableDate object wrapping the given date.
          * 
@@ -61,10 +58,7 @@ public final class DateUtils {
          * @return an immutable date object
          */
         public static ImmutableDate valueOf(Date date) {
-            if (!CACHE.containsKey(date)) {
-                CACHE.put(date, new ImmutableDate(date));
-            }
-            return CACHE.get(date);
+            return new ImmutableDate(date);
         }
 
         /** Delegate being wrapped */
@@ -183,7 +177,7 @@ public final class DateUtils {
             throw new IllegalArgumentException(
                     "Can't compare the dates, at least one of them is null");
         }
-        
+
         long baseTime = baseDate.getTime() / 1000;
         long beforeTime = beforeDate.getTime() / 1000;
         return beforeTime < baseTime;
@@ -203,7 +197,7 @@ public final class DateUtils {
             throw new IllegalArgumentException(
                     "Can't compare the dates, at least one of them is null");
         }
-        
+
         long baseTime = baseDate.getTime() / 1000;
         long otherTime = otherDate.getTime() / 1000;
         return otherTime == baseTime;
@@ -222,14 +216,14 @@ public final class DateUtils {
         if (date == null) {
             throw new IllegalArgumentException("Date is null");
         }
-        
+
         /*
-         * GWT difference: DateTimeFormat is not passed a Locale
-         * in the same way as SimpleDateFormat.  It derives
-         * locale information from the GWT application's locale.
+         * GWT difference: DateTimeFormat is not passed a Locale in the same way
+         * as SimpleDateFormat. It derives locale information from the GWT
+         * application's locale.
          * 
-         * Default timezone is GMT unless specified via a
-         * GMT:hhmm, GMT:+hhmm, or GMT:-hhmm string.
+         * Default timezone is GMT unless specified via a GMT:hhmm, GMT:+hhmm,
+         * or GMT:-hhmm string.
          */
         DateTimeFormat formatter = DateTimeFormat.getFormat(format);
         return formatter.format(date);
@@ -257,11 +251,11 @@ public final class DateUtils {
             format = formats.get(i);
             /*
              * GWT difference: DateTimeFormat parser is is not passed a Locale
-             * in the same way as SimpleDateFormat.  It derives
-             * locale information from the GWT application's locale.
+             * in the same way as SimpleDateFormat. It derives locale
+             * information from the GWT application's locale.
              * 
-             * Default timezone is GMT unless specified via a
-             * GMT:hhmm, GMT:+hhmm, or GMT:-hhmm string.
+             * Default timezone is GMT unless specified via a GMT:hhmm,
+             * GMT:+hhmm, or GMT:-hhmm string.
              */
             DateTimeFormat parser = DateTimeFormat.getFormat(format);
 
