@@ -55,7 +55,6 @@ public class ContentType {
                 this.characterSet = new CharacterSet(charSet);
             }
         } catch (IOException ioe) {
-            ioe.printStackTrace();
             throw new IllegalArgumentException(
                     "The Content Type could not be read.", ioe);
         }

@@ -90,6 +90,10 @@ public final class ChallengeScheme extends Metadata {
                 result = HTTP_DIGEST;
             } else if (name.equalsIgnoreCase(HTTP_NTLM.getName())) {
                 result = HTTP_NTLM;
+            } else if (name.equalsIgnoreCase(POP_BASIC.getName())) {
+                result = POP_BASIC;
+            } else if (name.equalsIgnoreCase(POP_DIGEST.getName())) {
+                result = POP_DIGEST;
             } else if (name.equalsIgnoreCase(SMTP_PLAIN.getName())) {
                 result = SMTP_PLAIN;
             } else if (name.equalsIgnoreCase(POP_BASIC.getName())) {

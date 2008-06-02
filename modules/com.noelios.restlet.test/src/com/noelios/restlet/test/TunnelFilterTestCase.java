@@ -117,8 +117,7 @@ public class TunnelFilterTestCase extends TestCase {
         assertEquals(expectedCut, resourceRef.toString());
 
         Reference originalRef = request.getOriginalRef();
-        assertTrue((originalRef == null)
-                || originalRef.equals(new Reference(this.lastCreatedReference)));
+        assertEquals(originalRef, new Reference(this.lastCreatedReference));
         assertEquals(expectedCut, resourceRef.toString());
         assertEquals(expectedExtensions, resourceRef.getExtensions());
     }
@@ -169,6 +168,7 @@ public class TunnelFilterTestCase extends TestCase {
      */
     void createRequest(Method method, String reference) {
         this.request = new Request(method, reference);
+        this.request.setOriginalRef(new Reference(reference));
         this.response = new Response(request);
         this.lastCreatedReference = reference;
         setPrefs();

@@ -29,7 +29,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 
 /**
- * Unit tests for the Grizzly connector class.
+ * Unit tests for POST and PUT requests.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
