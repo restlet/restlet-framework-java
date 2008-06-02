@@ -394,11 +394,11 @@ public class ServerServlet extends HttpServlet {
 
     @Override
     public void destroy() {
-        if ((getApplication() != null) && (getApplication().isStarted())) {
+        if ((getComponent() != null) && (getComponent().isStarted())) {
             try {
-                getApplication().stop();
+                getComponent().stop();
             } catch (Exception e) {
-                log("Error during the stopping of the Restlet Application", e);
+                log("Error during the stopping of the Restlet Component", e);
             }
         }
 

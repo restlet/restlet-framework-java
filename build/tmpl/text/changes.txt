@@ -8,6 +8,8 @@ Changes log
         - Allowed subclasses of StatusService to get the throwable 
           that generate the error in getRepresentation() method. 
           Reported by Loïc Mathieu.
+        - The Servlet adapter now stops the whole Component instead
+          of just the Application.
     - API Enhancements
         - Added a "Request.originalRef" property containing the URI 
           reference originally requested by the client. Clarified the
