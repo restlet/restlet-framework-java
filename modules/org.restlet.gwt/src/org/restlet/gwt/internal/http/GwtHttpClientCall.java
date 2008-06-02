@@ -16,12 +16,11 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.gwt.internal.http.gwt;
+package org.restlet.gwt.internal.http;
 
 import org.restlet.gwt.data.Parameter;
 import org.restlet.gwt.data.Reference;
 import org.restlet.gwt.data.Request;
-import org.restlet.gwt.internal.http.HttpClientCall;
 import org.restlet.gwt.resource.Representation;
 import org.restlet.gwt.util.Series;
 

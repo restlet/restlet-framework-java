@@ -16,13 +16,11 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.gwt.internal.http.gwt;
+package org.restlet.gwt.internal.http;
 
 import org.restlet.gwt.Client;
 import org.restlet.gwt.data.Protocol;
 import org.restlet.gwt.data.Request;
-import org.restlet.gwt.internal.http.HttpClientCall;
-import org.restlet.gwt.internal.http.HttpClientHelper;
 
 /**
  * HTTP client connector using the GWT's HTTP module. Here is the list of
