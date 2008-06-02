@@ -54,11 +54,13 @@ Export-Package: org.restlet.ext.jaxrs;
    org.restlet.ext.jaxrs.internal.core"
 Import-Package: javax.activation;version="1.1.1",
  javax.mail.util,
+ javax.servlet.http,
  javax.ws.rs,
  javax.ws.rs.core,
  javax.ws.rs.ext,
  javax.xml.bind;version="2.1.0",
  javax.xml.bind.annotation;version="2.1.0",
+ org.apache.commons.fileupload,
  org.json,
  org.restlet,
  org.restlet.data,
