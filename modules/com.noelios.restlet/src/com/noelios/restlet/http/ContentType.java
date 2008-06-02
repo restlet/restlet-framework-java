@@ -56,7 +56,8 @@ public class ContentType {
             }
         } catch (IOException ioe) {
             ioe.printStackTrace();
-            // TODO IllegalArgumentException? remove line after think about :-)
+            throw new IllegalArgumentException(
+                    "The Content Type could not be read.", ioe);
         }
     }
 

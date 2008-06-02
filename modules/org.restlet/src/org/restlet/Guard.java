@@ -125,9 +125,17 @@ public class Guard extends Filter {
      *                The authentication scheme to use.
      * @param realm
      *                The authentication realm.
+     * @throws IllegalArgumentException
+     *                 if the scheme is null.
      */
-    public Guard(Context context, ChallengeScheme scheme, String realm) {
+    public Guard(Context context, ChallengeScheme scheme, String realm)
+            throws IllegalArgumentException {
         super(context);
+        if ((scheme == null)) {
+            throw new IllegalArgumentException(
+                    "Please specify an authentication scheme. Use the 'None' challenge if no authentication is required.");
+        }
+
         this.rechallengeEnabled = true;
         this.secretResolver = new Resolver<char[]>() {
             @Override
@@ -137,12 +145,6 @@ public class Guard extends Filter {
         };
 
         this.secrets = new ConcurrentHashMap<String, char[]>();
-
-        if ((scheme == null)) {
-            throw new IllegalArgumentException(
-                    "Please specify an authentication scheme. Use the 'None' challenge if no authentication is required.");
-        }
-        
         this.scheme = scheme;
         this.realm = realm;
     }

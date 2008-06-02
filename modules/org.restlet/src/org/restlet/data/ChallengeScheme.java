@@ -82,6 +82,8 @@ public final class ChallengeScheme extends Metadata {
                 result = CUSTOM;
             } else if (name.equalsIgnoreCase(HTTP_AWS.getName())) {
                 result = HTTP_AWS;
+            } else if (name.equalsIgnoreCase(HTTP_AWS_S3.getName())) {
+                result = HTTP_AWS_S3;
             } else if (name.equalsIgnoreCase(HTTP_BASIC.getName())) {
                 result = HTTP_BASIC;
             } else if (name.equalsIgnoreCase(HTTP_DIGEST.getName())) {
@@ -90,6 +92,10 @@ public final class ChallengeScheme extends Metadata {
                 result = HTTP_NTLM;
             } else if (name.equalsIgnoreCase(SMTP_PLAIN.getName())) {
                 result = SMTP_PLAIN;
+            } else if (name.equalsIgnoreCase(POP_BASIC.getName())) {
+                result = POP_BASIC;
+            } else if (name.equalsIgnoreCase(POP_DIGEST.getName())) {
+                result = POP_DIGEST;
             } else {
                 result = new ChallengeScheme(name, null, null);
             }

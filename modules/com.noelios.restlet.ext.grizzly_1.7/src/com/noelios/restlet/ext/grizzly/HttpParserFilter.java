@@ -68,7 +68,7 @@ public class HttpParserFilter implements ProtocolFilter {
         this.helper.handle(serverCall);
 
         // TODO Should we use httpCall#isKeepAlive?
-        // TODO The "keepAlive" boolean is aways set to false at this time.
+        // TODO The "keepAlive" boolean is always set to false at this time.
         // Prepare for additional calls?
         if (keepAlive) {
             context

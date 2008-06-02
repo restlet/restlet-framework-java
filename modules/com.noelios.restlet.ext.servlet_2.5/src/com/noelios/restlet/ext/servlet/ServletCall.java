@@ -94,6 +94,10 @@ public class ServletCall extends HttpServerCall {
      *                The server IP address.
      * @param serverPort
      *                The server port.
+     * @param request
+     *                The Servlet request
+     * @param response
+     *                The Servlet response.
      */
     public ServletCall(Logger logger, String serverAddress, int serverPort,
             HttpServletRequest request, HttpServletResponse response) {
@@ -250,9 +254,9 @@ public class ServletCall extends HttpServerCall {
     }
 
     /**
-     * Returns the response channel if it exists.
+     * Returns the response channel if it exists, null otherwise.
      * 
-     * @return The response channel if it exists.
+     * @return The response channel if it exists, null otherwise.
      */
     @Override
     public WritableByteChannel getResponseEntityChannel() {
@@ -261,9 +265,9 @@ public class ServletCall extends HttpServerCall {
     }
 
     /**
-     * Returns the response stream if it exists.
+     * Returns the response stream if it exists, null otherwise.
      * 
-     * @return The response stream if it exists.
+     * @return The response stream if it exists, null otherwise.
      */
     @Override
     public OutputStream getResponseEntityStream() {
