@@ -176,14 +176,26 @@ public class JaxRsUriInfo implements UriInfo {
     }
 
     private List<PathSegment> createPathSegments(boolean decode) {
-        List<String> segments = this.referenceOriginal.getRelativeRef()
+        List<String> segmentsEnc = this.referenceOriginal.getRelativeRef()
                 .getSegments();
-        int l = segments.size();
+        int l = segmentsEnc.size();
         List<PathSegment> pathSegments = new ArrayList<PathSegment>(l);
         for (int i = 0; i < l; i++)
-            pathSegments.add(new JaxRsPathSegment(segments.get(i), true,
-                    decode, false, false, i));
+            pathSegments.add(newJaxRsPathSegment(segmentsEnc.get(i), decode, i));
         return Collections.unmodifiableList(pathSegments);
+    }
+
+    /**
+     * @param segmentEnc
+     * @param decode
+     * @param i
+     * @return
+     * @throws IllegalArgumentException
+     */
+    private JaxRsPathSegment newJaxRsPathSegment(String segmentEnc,
+            boolean decode, int i) throws IllegalArgumentException {
+        return new JaxRsPathSegment(segmentEnc, decode,
+                i);
     }
 
     @Override
@@ -517,11 +529,11 @@ public class JaxRsUriInfo implements UriInfo {
     public List<PathSegment> getPathSegments(boolean decode) {
         if (decode) {
             if (this.pathSegmentsDecoded == null)
-                this.pathSegmentsDecoded = createPathSegments(decode);
+                this.pathSegmentsDecoded = createPathSegments(true);
             return pathSegmentsDecoded;
         } else {
             if (this.pathSegmentsEncoded == null)
-                this.pathSegmentsEncoded = createPathSegments(decode);
+                this.pathSegmentsEncoded = createPathSegments(false);
             return pathSegmentsEncoded;
         }
     }

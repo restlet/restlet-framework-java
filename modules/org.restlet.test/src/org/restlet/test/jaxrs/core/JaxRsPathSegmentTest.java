@@ -46,7 +46,7 @@ public class JaxRsPathSegmentTest extends TestCase {
 
     public void testParseMatrixParams() {
         MultivaluedMap<String, String> matrixParams = JaxRsPathSegment
-                .parseMatrixParams("mpn1=mpv1;mpn1=mpv2;mpn3=mpv3", true, false);
+                .parseMatrixParams("mpn1=mpv1;mpn1=mpv2;mpn3=mpv3", true);
         List<String> mpn1 = matrixParams.get("mpn1");
         assertEquals(2, mpn1.size());
         assertEquals("mpv1", mpn1.get(0));
@@ -59,7 +59,7 @@ public class JaxRsPathSegmentTest extends TestCase {
 
     public void testParseMatrixParamsTrueFalse() {
         MultivaluedMap<String, String> matrixParams = JaxRsPathSegment
-                .parseMatrixParams("mpn1=mpv1%20;mpn1=mp%20v2;mp%20n3=%20mpv3", true, false);
+                .parseMatrixParams("mpn1=mpv1%20;mpn1=mp%20v2;mp%20n3=%20mpv3", true);
         List<String> mpn1 = matrixParams.get("mpn1");
         assertEquals(2, mpn1.size());
         assertEquals("mpv1 ", mpn1.get(0));
@@ -72,7 +72,7 @@ public class JaxRsPathSegmentTest extends TestCase {
 
     public void testParseMatrixParamsFalseFalse() {
         MultivaluedMap<String, String> matrixParams = JaxRsPathSegment
-                .parseMatrixParams("mpn1=mpv1%20;mpn1=mp%20v2;mp%20n3=%20mpv3", false, false);
+                .parseMatrixParams("mpn1=mpv1%20;mpn1=mp%20v2;mp%20n3=%20mpv3", false);
         List<String> mpn1 = matrixParams.get("mpn1");
         assertEquals(2, mpn1.size());
         assertEquals("mpv1%20", mpn1.get(0));

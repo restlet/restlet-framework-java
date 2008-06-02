@@ -28,13 +28,13 @@ import javax.ws.rs.Path;
  */
 public class MatchingResult {
 
-    private String matched;
+    private final String matched;
 
-    private Map<String, String> variables;
+    private final Map<String, String> variables;
 
-    private RemainingPath finalCapturingGroup;
+    private final RemainingPath finalCapturingGroup;
 
-    private int numberOfCapturingGroups;
+    private final int numberOfCapturingGroups;
 
     /**
      * Creates a new MatchingResult

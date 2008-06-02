@@ -76,8 +76,12 @@ public class EncodeOrCheck {
      * @param string
      * @param encode
      * @return
+     * @throws IllegalArgumentException
+     *                 if encode is false and at least one character of the
+     *                 CharSequence is invalid.
      */
-    public static String all(CharSequence string, boolean encode) {
+    public static String all(CharSequence string, boolean encode)
+            throws IllegalArgumentException {
         int length = string.length();
         StringBuilder stb = new StringBuilder(length);
         for (int i = 0; i < length; i++) {
@@ -85,58 +89,11 @@ public class EncodeOrCheck {
             if (Reference.isValid(c))
                 stb.append(c);
             else if (c == '%') {
-                if (encode)
-                    toHex(c, stb);
-                else {
-                    checkForHexDigitAndAppend(string, i, stb);
-                    i += 2;
-                }
+                i = processPercent(i, encode, string, stb);
             } else
                 toHexOrReject(c, stb, encode);
         }
         return stb.toString();
-    }
-
-    /**
-     * Checks, if the given {@link CharSequence} has valid hex digits at the
-     * both positions after the given index.
-     * 
-     * @param charSequence
-     * @param percentPos
-     * @throws IllegalArgumentException
-     */
-    public static void checkForHexDigit(CharSequence charSequence,
-            int percentPos) throws IllegalArgumentException {
-        if (percentPos < 0)
-            throw new RuntimeException("the precentPos must be >= 0");
-        if (charSequence.length() <= percentPos + 2) {
-            CharSequence hexDigits = charSequence.subSequence(percentPos,
-                    charSequence.length());
-            throw new IllegalArgumentException(
-                    "A percent encoding must have two charachters, so "
-                            + hexDigits + " is not allowed");
-        }
-        char c1 = charSequence.charAt(percentPos + 1);
-        char c2 = charSequence.charAt(percentPos + 2);
-        if (!((c1 >= '0' && c1 <= '9') || (c1 >= 'A' && c1 <= 'F') || (c1 >= 'a' && c1 <= 'f'))
-                || !((c2 >= '0' && c2 <= '9') || (c2 >= 'A' && c2 <= 'F') || (c2 >= 'a' && c2 <= 'f'))) {
-            String message;
-            message = "The percent encoded char %" + c1 + c2 + " is not valid";
-            throw new IllegalArgumentException(message);
-        }
-    }
-
-    /**
-     * @param string
-     * @param i
-     * @param stb
-     */
-    private static void checkForHexDigitAndAppend(CharSequence string, int i,
-            StringBuilder stb) {
-        checkForHexDigit(string, i);
-        stb.append('%');
-        stb.append(string.charAt(i + 1));
-        stb.append(string.charAt(i + 2));
     }
 
     /**
@@ -196,39 +153,6 @@ public class EncodeOrCheck {
     }
 
     /**
-     * Checks, if the String is a valid URI scheme
-     * 
-     * @param scheme
-     *                the String to check. May contain template variables.
-     * @throws IllegalArgumentException
-     *                 If the string is not a valid URI scheme.
-     */
-    public static void checkValidScheme(String scheme)
-            throws IllegalArgumentException {
-        if (scheme == null)
-            throw new IllegalArgumentException("The scheme must not be null");
-        int schemeLength = scheme.length();
-        if (schemeLength == 0)
-            throw new IllegalArgumentException(
-                    "The scheme must not be an empty String");
-        char c = scheme.charAt(0);
-        if (!((c > 64 && c <= 90) || (c > 92 && c <= 118) || (c == '{') || (c == '}')))
-            throw new IllegalArgumentException(
-                    "The first character of a scheme must be an alphabetic character");
-        for (int i = 1; i < schemeLength; i++) {
-            c = scheme.charAt(i);
-            if ((c > 64 && c <= 90) || (c > 92 && c <= 118)
-                    || (c >= '0' && c <= '9') || (c == '+') || (c == '-')
-                    || (c == '.') || (c == '{') || (c == '}'))
-                continue;
-            String message = "The "
-                    + i
-                    + ". character of a scheme must be an alphabetic character, a number, a '+', a '-' or a '.'";
-            throw new IllegalArgumentException(message);
-        }
-    }
-
-    /**
      * Appends the given character encoded (if not unreserved) to the
      * {@link StringBuilder}.
      * 
@@ -239,7 +163,7 @@ public class EncodeOrCheck {
      * @see <a href="http://tools.ietf.org/html/rfc3986#section-2.2"> RFC 3986,
      *      section 2.2</a>
      */
-    public static void encode(char toEncode, StringBuilder stb) {
+    private static void encode(char toEncode, StringBuilder stb) {
         // this are all unreserved characters, see RFC 3986 (section 2.2)
         // http://tools.ietf.org/html/rfc3986#section-2.2
         if ((toEncode >= 'A' && toEncode <= 'Z')
@@ -257,18 +181,36 @@ public class EncodeOrCheck {
      * 
      * @param uriPart
      *                the String to encode
+     * @param allowSemicolon
+     *                if true, a ';' is encoded, otherwise an
+     *                {@link IllegalArgumentException} is thrown.
      * @param encodeSlash
      *                if encodeSlash is true, than slashes are also converted,
      *                otherwise not.
      * @return the encoded String
+     * @throws IllegalArgumentException
      */
-    public static CharSequence encodeNotBraces(CharSequence uriPart,
-            boolean encodeSlash) {
+    private static CharSequence encodeNotBraces(CharSequence uriPart,
+            boolean allowSemicolon, boolean encodeSlash)
+            throws IllegalArgumentException {
         StringBuilder stb = new StringBuilder();
         int l = uriPart.length();
         for (int i = 0; i < l; i++) {
             char c = uriPart.charAt(i);
-            if (c == '{' || c == '}' || (!encodeSlash && c == '/'))
+            if (c == '{')
+                i = processTemplVarname(uriPart, i, stb);
+            else if (c == '%')
+                i = processPercent(i, true, uriPart, stb);
+            else if (c == '}')
+                throw new IllegalArgumentException("'}' is only allowed as "
+                        + "end of a variable name in \"" + uriPart + "\"");
+            else if (c == ';') {
+                if (allowSemicolon)
+                    encode(c, stb);
+                else
+                    throw new IllegalArgumentException(
+                            "A semicolon is not allowed in a path");
+            } else if (!encodeSlash && c == '/')
                 stb.append(c);
             else
                 encode(c, stb);
@@ -283,6 +225,8 @@ public class EncodeOrCheck {
      * @param encode
      * @return
      * @throws IllegalArgumentException
+     *                 if encode is false and the fragment contains at least one
+     *                 invalid character.
      */
     public static CharSequence fragment(CharSequence fragment, boolean encode)
             throws IllegalArgumentException {
@@ -291,22 +235,22 @@ public class EncodeOrCheck {
         int length = fragment.length();
         for (int i = 0; i < length; i++) {
             char c = fragment.charAt(i);
-            if (c >= 97 && c <= 123) // lower chars and beside them
+            if (c == '{')
+                i = processTemplVarname(fragment, i, stb);
+            else if (c >= 97 && c <= 122) // lower chars and beside them
                 stb.append(c);
             else if (c >= 63 && c <= 91) // upper chars and beside them
                 stb.append(c);
             else if (c >= 38 && c <= 59) // digits and beside them
                 stb.append(c);
             else if (c == '!' || c == '#' || c == '$' || c == '=' || c == ']'
-                    || c == '_' || c == '}' || c == '~') // other allowd char
+                    || c == '_' || c == '~') // other allowed chars
                 stb.append(c);
+            else if (c == '}')
+                throw new IllegalArgumentException(
+                        "'}' is only allowed as end of an template variable name");
             else if (c == '%') {
-                if (encode)
-                    toHex(c, stb);
-                else {
-                    checkForHexDigitAndAppend(fragment, i, stb);
-                    i += 2;
-                }
+                i = processPercent(i, encode, fragment, stb);
             } else
                 toHexOrReject(c, stb, encode);
             // allowed is: 033 / 035 / 036 / 038 / 039 / 040 / 041 / 042 / 043 /
@@ -324,31 +268,13 @@ public class EncodeOrCheck {
      *                template parameters. Must not be null.
      * @param encode
      * @return
+     * @throws IllegalArgumentException
+     *                 if encode is false and at least one character is invalid.
      */
     @SuppressWarnings("unused")
-    public static CharSequence fullMatrix(CharSequence matrix, boolean encode) {
-        // this method is also used by #fullQuery(query, encode);
-        int l = matrix.length();
-        // LATER de/encode: matrixParam(..): hier gilt, was im pathSegment
-        // erlaubt ist, "=" und "&" und ";" nicht kodieren
-        StringBuilder stb = new StringBuilder(l + 6);
-        for (int i = 0; i < l; i++) {
-            char c = matrix.charAt(i);
-            if (Reference.isUnreserved(c) || Reference.isReserved(c))
-                stb.append(c);
-            else if (c == '{' || c == '}')
-                stb.append(c);
-            else if (c == '%') {
-                if (encode)
-                    toHex(c, stb);
-                else {
-                    checkForHexDigitAndAppend(matrix, i, stb);
-                    i += 2;
-                }
-            } else
-                toHexOrReject(c, stb, encode);
-        }
-        return stb;
+    public static CharSequence fullMatrix(CharSequence matrix, boolean encode)
+            throws IllegalArgumentException {
+        return fullQueryOrMatrix(matrix, ';', "%20", encode);
     }
 
     /**
@@ -362,14 +288,55 @@ public class EncodeOrCheck {
      */
     @SuppressWarnings("unused")
     public static CharSequence fullQuery(CharSequence query, boolean encode) {
-        return fullMatrix(query, encode);
+        return fullQueryOrMatrix(query, '&', "+", encode);
     }
 
     /**
-     * @param host
-     *                must not be null
+     * @param string
+     * @param delimiter
+     * @param spaceReplace
+     *                The String to replace a space with ("+" or "%20")
      * @param encode
      * @return
+     * @throws IllegalArgumentException
+     */
+    private static CharSequence fullQueryOrMatrix(CharSequence string,
+            char delimiter, String spaceReplace, boolean encode)
+            throws IllegalArgumentException {
+        int l = string.length();
+        StringBuilder stb = new StringBuilder(l + 6);
+        for (int i = 0; i < l; i++) {
+            char c = string.charAt(i);
+            if (c == '{')
+                i = processTemplVarname(string, i, stb);
+            else if (c == delimiter || c == '=')
+                stb.append(c);
+            else if (c == ' ') {
+                if (encode)
+                    stb.append(spaceReplace);
+                else
+                    throw new IllegalArgumentException(
+                            "A space is not allowed. Switch encode to on to auto encode it.");
+            } else if (Reference.isUnreserved(c))
+                stb.append(c);
+            else if (c == '}')
+                throw new IllegalArgumentException("'}' is only allowed as "
+                        + "end of a variable name in \"" + string + "\"");
+            else if (c == '%') {
+                i = processPercent(i, encode, string, stb);
+            } else
+                toHexOrReject(c, stb, encode);
+        }
+        return stb;
+    }
+
+    /**
+     * Checks, if the host String contains is valid.
+     * 
+     * @param host
+     *                Could include template variable names. Must not be null,
+     *                will throw a NullPointerException.
+     * @return the valid host.
      * @throws IllegalArgumentException
      *                 if the host contains an invalid character.
      */
@@ -377,25 +344,15 @@ public class EncodeOrCheck {
         if (host.length() == 0)
             throw new IllegalArgumentException("The host must not be empty");
         int length = host.length();
+        // LATER de/encode: host
         for (int i = 0; i < length; i++) {
             char ch = host.charAt(i);
             if (ch <= ' ' || ch >= 127) {
-                String message = "The " + i + ". character is not valid";
-                throw new IllegalArgumentException(message);
+                throw new IllegalArgumentException(
+                        ("The " + i + ". character is not valid"));
             }
         }
         return host;
-    }
-
-    /**
-     * Writes the ASCII chars from 32 to 127 to System.out
-     * 
-     * @param args
-     */
-    public static void main(String[] args) {
-        for (char c = 32; c <= 127; c++) {
-            System.out.println(((int) c) + " " + c);
-        }
     }
 
     /**
@@ -404,16 +361,10 @@ public class EncodeOrCheck {
      * 
      * @param string
      *                the string to encode or check. Must not be null; result
-     *                are not defined, may contain URI template parameters.
+     *                are not defined. May contain URI template parameters.
      * @param encode
-     *                see {@link #encode}
-     * @param encodeSlash
-     *                if encode is true: if encodeSlash is true, than slashes
-     *                are also converted, otherwise not. if encode is false,
-     *                this is ignored.
-     * @param indexForErrMessage
-     *                index in an array or list if necessary. If not necessary,
-     *                set it lower than zero.
+     *                if true, the String is encoded, if false it is checked, if
+     *                all chars are valid.
      * @param nameForMessage
      *                The name for the message
      * @return
@@ -422,34 +373,16 @@ public class EncodeOrCheck {
      *                 invalid.
      */
     public static CharSequence nameOrValue(CharSequence string, boolean encode,
-            int indexForErrMessage, String nameForMessage)
-            throws IllegalArgumentException {
-        if (string == null)
-            throw throwIllegalArgExc(indexForErrMessage, nameForMessage,
-                    string, " must not be null");
-        if (encode)
-            return encodeNotBraces(string, true);
-        else
-            EncodeOrCheck.checkForInvalidUriChars(string, indexForErrMessage,
-                    nameForMessage);
-
-        return string.toString();
-    }
-
-    /**
-     * @param string
-     *                String to convert, may contain URI template parameters.
-     * @param encode
-     *                if true, the String is encoded, if false it is checked, if
-     *                all chars are valid.
-     * @param nameForMessage
-     *                The name for the message
-     * @return
-     * @throws IllegalArgumentException
-     */
-    public static CharSequence nameOrValue(CharSequence string, boolean encode,
             String nameForMessage) throws IllegalArgumentException {
-        return nameOrValue(string, encode, Integer.MIN_VALUE, nameForMessage);
+        if (string == null)
+            throw throwIllegalArgExc(Integer.MIN_VALUE, nameForMessage, string,
+                    " must not be null");
+        if (encode)
+            return encodeNotBraces(string, true, true);
+        else
+            EncodeOrCheck.checkForInvalidUriChars(string, Integer.MIN_VALUE,
+                    nameForMessage);
+        return string.toString();
     }
 
     /**
@@ -457,28 +390,185 @@ public class EncodeOrCheck {
      *                the path to check; must not be null.
      * @param encode
      * @return
+     * @throws IllegalArgumentException
+     *                 id encode is false and the path contains an invalid
+     *                 character.
      */
     public static CharSequence pathSegmentWithMatrix(CharSequence path,
-            boolean encode) {
+            boolean encode) throws IllegalArgumentException {
         int l = path.length();
         StringBuilder stb = new StringBuilder(l + 6);
         for (int i = 0; i < l; i++) {
             char c = path.charAt(i);
-            if (Reference.isUnreserved(c) || Reference.isReserved(c))
+            if (c == '{')
+                i = processTemplVarname(path, i, stb);
+            else if (Reference.isUnreserved(c) || Reference.isReserved(c))
                 stb.append(c);
-            else if (c == '{' || c == '}')
-                stb.append(c);
+            else if (c == '}')
+                throw new IllegalArgumentException("'}' is only allowed "
+                        + "as end of a variable name in \"" + path + "\"");
             else if (c == '%') {
-                if (encode)
-                    toHex(c, stb);
-                else {
-                    checkForHexDigitAndAppend(path, i, stb);
-                    i += 2;
-                }
+                i = processPercent(i, encode, path, stb);
             } else
                 toHexOrReject(c, stb, encode);
         }
         return stb;
+    }
+
+    /**
+     * This methods encodes the given path, but doesn't encode braces.
+     * 
+     * @param path
+     *                the path to encode
+     * @return the encoded String
+     * @throws IllegalArgumentException
+     *                 if the path is not valid
+     */
+    public static CharSequence pathWithoutMatrix(CharSequence path)
+            throws IllegalArgumentException {
+        return encodeNotBraces(path, false, false);
+    }
+
+    /**
+     * appends the '%' at the given position i to the given StringBuilder. <br>
+     * Preconditions (not checked !!):
+     * <ul>
+     * <li>i > 0</li>
+     * <li>at position i is a '%'.</li>
+     * </ul>
+     * 
+     * @param i
+     *                the index in the uriPart
+     * @param encode
+     * @param uriPart
+     * @param stb
+     * 
+     * @return
+     */
+    private static int processPercent(int i, boolean encode,
+            CharSequence uriPart, StringBuilder stb) {
+        boolean startsValidPercentEnc = true;
+        char c1 = 'X';
+        char c2 = 'X';
+        if (uriPart.length() <= i + 2) {
+            if (!encode) {
+                CharSequence hexDigits = uriPart.subSequence(i, uriPart
+                        .length());
+                throw new IllegalArgumentException(
+                        "A percent encoding must have two charachters, so "
+                                + hexDigits + " is not allowed");
+            }
+            startsValidPercentEnc = false;
+        } else {
+            c1 = uriPart.charAt(i + 1);
+            c2 = uriPart.charAt(i + 2);
+            if (!((c1 >= '0' && c1 <= '9') || (c1 >= 'A' && c1 <= 'F') || (c1 >= 'a' && c1 <= 'f'))
+                    || !((c2 >= '0' && c2 <= '9') || (c2 >= 'A' && c2 <= 'F') || (c2 >= 'a' && c2 <= 'f'))) {
+                if (!encode)
+                    throw new IllegalArgumentException(
+                            "The percent encoded char %" + c1 + c2
+                                    + " is not valid");
+                startsValidPercentEnc = false;
+            }
+        }
+        if (encode) {
+            if (startsValidPercentEnc)
+                stb.append('%');
+            else
+                toHex('%', stb);
+            return i;
+        } else {
+            stb.append('%');
+            stb.append(c1);
+            stb.append(c2);
+            return i + 2;
+        }
+    }
+
+    /**
+     * Reads and checks the template variable name. The starting "{" is at given
+     * position i.
+     * 
+     * @param uriPart
+     *                the processed part of the uri
+     * @param braceIndex
+     *                the current for variable value (position of "{"). The
+     *                method do not check, if this is the position of the '{'.
+     * @param stb
+     *                the StringBuilder to append the variable name with "{" and
+     *                "}" to. Will be changed, also if an error occurs. May be
+     *                null; then nothing is appended.
+     * @return the position of the corresponding "}" to assign to the for
+     *         variable.
+     * @throws IllegalArgumentException
+     *                 if the rest of the uriPart contains a '{' or no '}'.
+     */
+    private static int processTemplVarname(CharSequence uriPart,
+            int braceIndex, StringBuilder stb) throws IllegalArgumentException {
+        int l = uriPart.length();
+        if (stb != null)
+            stb.append('{');
+        for (int i = braceIndex + 1; i < l; i++) {
+            char c = uriPart.charAt(i);
+            if (c == '{')
+                throw new IllegalArgumentException("A variable must not "
+                        + "contain an extra '{' in \"" + uriPart + "\"");
+            if (stb != null)
+                stb.append(c);
+            if (c == '}') {
+                if (i == braceIndex + 1)
+                    throw new IllegalArgumentException(
+                            "The template variable name '{}' is not allowed in "
+                                    + "\"" + uriPart + "\"");
+                return i;
+            }
+        }
+        throw new IllegalArgumentException("No '}' found after '{' "
+                + "at position " + braceIndex + " of \"" + uriPart + "\"");
+    }
+
+    /**
+     * Checks, if the String is a valid URI scheme
+     * 
+     * @param scheme
+     *                the String to check. May contain template variables.
+     * @return the valid scheme
+     * @throws IllegalArgumentException
+     *                 If the string is not a valid URI scheme.
+     */
+    public static String scheme(String scheme) throws IllegalArgumentException {
+        if (scheme == null)
+            throw new IllegalArgumentException("The scheme must not be null");
+        int schemeLength = scheme.length();
+        if (schemeLength == 0)
+            throw new IllegalArgumentException(
+                    "The scheme must not be an empty String");
+        for (int i = 0; i < schemeLength; i++) {
+            char c = scheme.charAt(i);
+            if (c == '{')
+                i = processTemplVarname(scheme, i, null);
+            else if (c == '}')
+                throw new IllegalArgumentException("The '}' is only allowed "
+                        + "as end of a variable name in \"" + scheme + "\"");
+            else if ((c > 64 && c <= 90) || (c > 92 && c <= 118))
+                continue;
+            else if (((c >= '0' && c <= '9') || (c == '+') || (c == '-') || (c == '.'))
+                    && i > 0) // not at the first position
+                continue;
+            else {
+                if (i == 0)
+                    throw new IllegalArgumentException(
+                            "The first character of a scheme must be an alphabetic character or a template variable name begin with '{'. Scheme is \""
+                                    + scheme + "\"");
+                throw new IllegalArgumentException(
+                        "The "
+                                + i
+                                + ". character of a scheme "
+                                + "must be an alphabetic character, a number, a '+', a '-' or a '.'. Template variable names are also allowed. Scheme is \""
+                                + scheme + "\"");
+            }
+        }
+        return scheme;
     }
 
     /**
@@ -517,18 +607,31 @@ public class EncodeOrCheck {
      * @param toEncode
      * @param stb
      */
-    private static void toHex(char toEncode, StringBuilder stb) {
+    public static void toHex(char toEncode, StringBuilder stb) {
         stb.append('%');
         stb.append(HEX_DIGITS[(toEncode >> 4) & 0xF]);
         stb.append(HEX_DIGITS[toEncode & 0xF]);
     }
 
-    private static void toHexOrReject(char c, StringBuilder stb, boolean encode) {
-        if (encode)
-            toHex(c, stb);
-        else {
-            String message = "The character " + c + " is not valid";
-            throw new IllegalArgumentException(message);
+    /**
+     * if encode is true, the given char is appended as hex string to the
+     * {@link StringBuilder}. If encode is false, an
+     * {@link IllegalArgumentException} is thrown.
+     * 
+     * @param c
+     * @param stb
+     * @param encode
+     * @throws IllegalArgumentException
+     */
+    private static void toHexOrReject(char c, StringBuilder stb, boolean encode)
+            throws IllegalArgumentException {
+        if (encode) {
+            stb.append('%');
+            stb.append(HEX_DIGITS[(c >> 4) & 0xF]);
+            stb.append(HEX_DIGITS[c & 0xF]);
+        } else {
+            throw new IllegalArgumentException(
+                    ("The character " + c + " is not valid"));
         }
     }
 
@@ -543,28 +646,24 @@ public class EncodeOrCheck {
      */
     public static CharSequence userInfo(CharSequence userInfo, boolean encode)
             throws IllegalArgumentException {
-        // This method is optimized for speed, so it is not very good readable.
         int length = userInfo.length();
         StringBuilder stb = new StringBuilder(length);
         for (int i = 0; i < length; i++) {
             char c = userInfo.charAt(i);
-            if (Reference.isUnreserved(c) || Reference.isSubDelimiter(c))
+            if (c == '{')
+                i = processTemplVarname(userInfo, i, stb);
+            else if (Reference.isUnreserved(c) || Reference.isSubDelimiter(c))
                 stb.append(c);
-            else if (c == '{' || c == '}')
-                stb.append(c);
+            else if (c == '}')
+                throw new IllegalArgumentException("'}' is only allowed "
+                        + "as end of a variable name in \"" + userInfo + "\"");
             else if (c == ':')
                 stb.append(c);
             else if (c == '%') {
-                if (encode)
-                    toHex(c, stb);
-                else {
-                    checkForHexDigitAndAppend(userInfo, i, stb);
-                    i += 2;
-                }
+                i = processPercent(i, encode, userInfo, stb);
             } else
                 toHexOrReject(c, stb, encode);
         }
         return stb;
-        // LATER de/encode: userinfo = *(unreserved/pct-encoded/sub-delims/":")
     }
 }

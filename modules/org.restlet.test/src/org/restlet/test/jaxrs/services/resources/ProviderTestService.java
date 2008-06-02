@@ -26,6 +26,9 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 
+import javax.mail.BodyPart;
+import javax.mail.MessagingException;
+import javax.mail.Multipart;
 import javax.ws.rs.ConsumeMime;
 import javax.ws.rs.GET;
 import javax.ws.rs.MatrixParam;
@@ -227,6 +230,15 @@ public class ProviderTestService {
         return person.toString();
     }
 
+    @POST
+    @Path("multipart/form-data")
+    @ConsumeMime("multipart/form-data")
+    public Object multipartPost(@QueryParam("attrNo") int attrNo,
+            Multipart multipart) throws MessagingException, IOException {
+        BodyPart bodyPart = multipart.getBodyPart(attrNo);
+        return bodyPart.getInputStream();
+    }
+    
     @GET
     @Path("MultivaluedMap")
     @ProduceMime("application/x-www-form-urlencoded")

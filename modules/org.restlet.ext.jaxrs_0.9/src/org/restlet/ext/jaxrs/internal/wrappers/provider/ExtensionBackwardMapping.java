@@ -32,7 +32,7 @@ import org.restlet.service.MetadataService;
  */
 public class ExtensionBackwardMapping {
 
-    private MetadataService metadataService;
+    private final MetadataService metadataService;
 
     /**
      * Creates a new ExtensionBackwardMapping

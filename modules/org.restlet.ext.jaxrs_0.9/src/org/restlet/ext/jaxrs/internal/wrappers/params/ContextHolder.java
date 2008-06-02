@@ -21,10 +21,9 @@
  */
 package org.restlet.ext.jaxrs.internal.wrappers.params;
 
-
-
 class ContextHolder implements ParameterList.ParamGetter {
-    private Object toInject;
+
+    private final Object toInject;
 
     ContextHolder(Object toInject) {
         this.toInject = toInject;

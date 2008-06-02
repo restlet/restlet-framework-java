@@ -37,7 +37,7 @@ public class UnsupportedMediaTypeWebAppException extends
 
     private static final long serialVersionUID = 767927925135821476L;
 
-    private Collection<Variant> accepted;
+    private final Collection<Variant> accepted;
 
     /**
      * @param accepted

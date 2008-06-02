@@ -53,6 +53,7 @@ public class PathParamTest2 extends JaxRsTestCase {
         assertEquals(" ", response.getEntity().getText());
     }
 
+    /** @see PathParamTestService2#encoded(String) */
     public void testEncoded() throws Exception {
         Response response = get("encoded/x");
         assertEquals(Status.SUCCESS_OK, response.getStatus());

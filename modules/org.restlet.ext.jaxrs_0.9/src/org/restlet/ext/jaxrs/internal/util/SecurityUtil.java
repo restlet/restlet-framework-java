@@ -52,7 +52,7 @@ public class SecurityUtil {
         return null;
     }
     
-    // TODO load auth data from Servlet-API ?
+    // LATER load auth data from Servlet-API ?
 
     /**
      * Returns the client certificates from the given Request.

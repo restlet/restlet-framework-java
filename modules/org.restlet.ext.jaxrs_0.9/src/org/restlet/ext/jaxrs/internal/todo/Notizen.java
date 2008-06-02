@@ -24,7 +24,8 @@ package org.restlet.ext.jaxrs.internal.todo;
  */
 public class Notizen {
 
-    // TODO @Path(limited=false)  effects only trailing values.
+    // LATER @Path(limited=false)  effects only trailing values; implement when
+    // @Path template matching is ready
     
     // TESTEN what happens, if ".." or "." in @Path?
     

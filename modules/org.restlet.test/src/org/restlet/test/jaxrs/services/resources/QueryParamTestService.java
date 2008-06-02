@@ -40,6 +40,13 @@ import org.restlet.test.jaxrs.services.tests.QueryParamTest;
 @Path("queryParamTest")
 public class QueryParamTestService {
 
+    @QueryParam("decoded")
+    private String decoded;
+
+    @Encoded
+    @QueryParam("encoded")
+    private String encoded;
+
     @GET
     @ProduceMime("text/plain")
     @Path("encodedA")
@@ -48,13 +55,42 @@ public class QueryParamTestService {
             @QueryParam("lastname") String lastname) {
         return firstname + " " + lastname;
     }
-
+    
     @GET
     @ProduceMime("text/plain")
     @Path("a")
     public String getA(@QueryParam("firstname") String firstname,
             @QueryParam("lastname") String lastname) {
         return firstname + " " + lastname;
+    }
+    
+    @GET
+    @ProduceMime("text/plain")
+    @Path("array")
+    public String getArrayQp(@QueryParam("qp") String[] qp) {
+        return Arrays.toString(qp);
+    }
+
+    @GET
+    @ProduceMime("text/plain")
+    @Path("arrayWithDefault")
+    public String getArrayQpDef(
+            @QueryParam("qp") @DefaultValue("qv") String[] qp) {
+        return Arrays.toString(qp);
+    }
+
+    @GET
+    @ProduceMime("text/plain")
+    @Path("decoded")
+    public String getFieldDecoded() {
+        return decoded;
+    }
+
+    @GET
+    @ProduceMime("text/plain")
+    @Path("encoded")
+    public String getFieldEncoded() {
+        return encoded;
     }
 
     @GET
@@ -65,7 +101,7 @@ public class QueryParamTestService {
             @QueryParam("n3") @DefaultValue("99") int n3) {
         return n1+" "+n2+" "+n3;
     }
-
+    
     @GET
     @ProduceMime(MediaType.TEXT_PLAIN)
     @Path("Integer")
@@ -73,6 +109,21 @@ public class QueryParamTestService {
             @QueryParam("n2") @DefaultValue("xx") Integer n2,
             @QueryParam("n3") @DefaultValue("99") Integer n3) {
         return n1+" "+n2+" "+n3;
+    }
+    
+    @GET
+    @ProduceMime("text/plain")
+    @Path("list")
+    public String getListQp(@QueryParam("qp") List<String> qp) {
+        return qp.toString();
+    }
+
+    @GET
+    @ProduceMime("text/plain")
+    @Path("listWithDefault")
+    public String getListQpDef(
+            @QueryParam("qp") @DefaultValue("qv") List<String> qp) {
+        return qp.toString();
     }
 
     @GET
@@ -85,7 +136,7 @@ public class QueryParamTestService {
             return "[empty]";
         return name;
     }
-    
+
     @GET
     @ProduceMime("text/plain")
     @Path("qpDecoded")
@@ -94,7 +145,7 @@ public class QueryParamTestService {
         String lastname = uriInfo.getQueryParameters().getFirst("lastname");
         return firstname + " " + lastname;
     }
-    
+
     @GET
     @ProduceMime("text/plain")
     @Path("qpEncoded")
@@ -102,33 +153,5 @@ public class QueryParamTestService {
         String firstn = uriInfo.getQueryParameters(false).getFirst("firstname");
         String lastn = uriInfo.getQueryParameters(false).getFirst("lastname");
         return firstn + " " + lastn;
-    }
-
-    @GET
-    @ProduceMime("text/plain")
-    @Path("array")
-    public String getArrayQp(@QueryParam("qp") String[] qp) {
-        return Arrays.toString(qp);
-    }
-
-    @GET
-    @ProduceMime("text/plain")
-    @Path("arrayWithDefault")
-    public String getArrayQpDef(@QueryParam("qp") @DefaultValue("qv") String[] qp) {
-        return Arrays.toString(qp);
-    }
-
-    @GET
-    @ProduceMime("text/plain")
-    @Path("list")
-    public String getListQp(@QueryParam("qp") List<String> qp) {
-        return qp.toString();
-    }
-
-    @GET
-    @ProduceMime("text/plain")
-    @Path("listWithDefault")
-    public String getListQpDef(@QueryParam("qp") @DefaultValue("qv") List<String> qp) {
-        return qp.toString();
     }
 }

@@ -471,7 +471,7 @@ public class JaxRsUriBuilderTest extends TestCase {
         uriBuilder1Enc.replaceMatrixParams(null);
         assertEquals(URI_1, uriBuilder1Enc.build());
         uriBuilder1Enc.matrixParam("jkj$sdf", "ij a%20");
-        assertEqualsURI(URI_1 + ";jkj%24sdf=ij%20a%2520", uriBuilder1Enc);
+        assertEqualsURI(URI_1 + ";jkj%24sdf=ij%20a%20", uriBuilder1Enc);
     }
 
     /**
@@ -741,7 +741,7 @@ public class JaxRsUriBuilderTest extends TestCase {
         assertEqualsURI("http://localhost/path1/path2?a=b&c=d", uriBuilder1Enc);
 
         uriBuilder1Enc.replaceQueryParams("ksd hflk");
-        assertEqualsURI("http://localhost/path1/path2?ksd%20hflk",
+        assertEqualsURI("http://localhost/path1/path2?ksd+hflk",
                 uriBuilder1Enc);
 
         uriBuilder1Enc.replaceQueryParams("e=f");

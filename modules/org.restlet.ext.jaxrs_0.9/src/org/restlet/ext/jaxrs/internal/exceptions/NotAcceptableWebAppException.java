@@ -36,7 +36,7 @@ public class NotAcceptableWebAppException extends WebApplicationException {
 
     private static final long serialVersionUID = 6895779829973209211L;
 
-    private Collection<Variant> supported;
+    private final Collection<Variant> supported;
 
     /**
      * @param supported

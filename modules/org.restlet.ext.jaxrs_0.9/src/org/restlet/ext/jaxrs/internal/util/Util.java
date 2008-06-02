@@ -29,6 +29,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -57,7 +59,6 @@ import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
 import org.restlet.data.Parameter;
-import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.ext.jaxrs.internal.core.UnmodifiableMultivaluedMap;
@@ -559,6 +560,21 @@ public class Util {
             throws NoSuchElementException {
         return map.values().iterator().next();
     }
+    
+    /**
+     * Example: in List&lt;String&lt; -&gt; out: String.class  
+     * @param genericType
+     * @return otherwise null
+     */
+    public static Class<?> getGenericClass(Type genericType) {
+        if (!(genericType instanceof ParameterizedType))
+            return null;
+        ParameterizedType pt = (ParameterizedType) genericType;
+        Type atp = pt.getActualTypeArguments()[0];
+        if (atp instanceof Class)
+            return (Class<?>)atp;
+        return null;
+    }
 
     /**
      * Returns the HTTP headers of the Restlet {@link Request} as {@link Form}.
@@ -930,12 +946,13 @@ public class Util {
      */
     public static String getPathTemplate(Path path) throws IllegalPathException {
         String pathTemplate = path.value();
-        if (pathTemplate.contains(";"))
-            throw new IllegalPathException(path,
-                    "A path must not contain a semicolon");
         if (path.encode()) {
-            pathTemplate = EncodeOrCheck.encodeNotBraces(pathTemplate, false)
-                    .toString();
+            try {
+                pathTemplate = EncodeOrCheck.pathWithoutMatrix(pathTemplate)
+                        .toString();
+            } catch (IllegalArgumentException e) {
+                throw new IllegalPathException(path, e);
+            }
         } else {
             try {
                 EncodeOrCheck.checkForInvalidUriChars(pathTemplate, -1,
@@ -945,29 +962,6 @@ public class Util {
             }
         }
         return pathTemplate;
-    }
-
-    /**
-     * Returns the reference of the request, without the cut extensions of the
-     * Reference, cut by the TunnelFilter
-     * 
-     * @param request
-     * @return
-     */
-    public static Reference getReferenceCut(Request request) {
-        return request.getResourceRef();
-    }
-
-    /**
-     * Returns the original Reference of this request
-     * 
-     * @param request
-     * @return
-     */
-    public static Reference getReferenceOriginal(Request request) {
-        Reference reference = request.getOriginalRef();
-        reference.setBaseRef(getReferenceCut(request).getBaseRef());
-        return reference;
     }
 
     /**
@@ -1115,7 +1109,6 @@ public class Util {
             IllegalArgumentException {
         if (javaMethod == null)
             return;
-        javaMethod.setAccessible(true);
         try {
             AccessController
                     .doPrivileged(new PrivilegedExceptionAction<Object>() {
@@ -1276,7 +1269,7 @@ public class Util {
      * @param delimiter
      * @return the concatenated
      */
-    public static Object toString(Collection<?> collection, String delimiter) {
+    public static String toString(Collection<?> collection, String delimiter) {
         if (collection == null || collection.isEmpty())
             return "";
         Iterator<?> iterator = collection.iterator();

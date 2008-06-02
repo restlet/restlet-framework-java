@@ -835,8 +835,7 @@ public class JaxRsUriBuilder extends UriBuilder {
      */
     @Override
     public UriBuilder scheme(String scheme) throws IllegalArgumentException {
-        EncodeOrCheck.checkValidScheme(scheme);
-        this.scheme = scheme;
+        this.scheme = EncodeOrCheck.scheme(scheme);
         return this;
     }
 

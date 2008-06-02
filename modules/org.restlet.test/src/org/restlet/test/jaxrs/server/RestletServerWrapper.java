@@ -23,6 +23,8 @@ import org.restlet.Component;
 import org.restlet.Restlet;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 
 /**
  * This class allows easy testing of JAX-RS implementations by starting a server
@@ -42,7 +44,13 @@ public class RestletServerWrapper implements ServerWrapper {
      * @see org.restlet.test.jaxrs.server.ServerWrapper#getClientConnector()
      */
     public Restlet getClientConnector() {
-        return new Client(Protocol.HTTP);
+        return new Client(Protocol.HTTP) {
+            @Override
+            public void handle(Request request, Response response) {
+                request.setOriginalRef(request.getResourceRef());
+                super.handle(request, response);
+            }
+        };
     }
 
     public int getServerPort() {

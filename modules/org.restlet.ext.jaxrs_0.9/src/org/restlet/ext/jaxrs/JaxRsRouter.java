@@ -67,10 +67,12 @@ import org.restlet.ext.jaxrs.internal.provider.BufferedReaderProvider;
 import org.restlet.ext.jaxrs.internal.provider.ByteArrayProvider;
 import org.restlet.ext.jaxrs.internal.provider.DataSourceProvider;
 import org.restlet.ext.jaxrs.internal.provider.FileProvider;
+import org.restlet.ext.jaxrs.internal.provider.FileUploadProvider;
 import org.restlet.ext.jaxrs.internal.provider.InputStreamProvider;
 import org.restlet.ext.jaxrs.internal.provider.JaxbElementProvider;
 import org.restlet.ext.jaxrs.internal.provider.JaxbProvider;
 import org.restlet.ext.jaxrs.internal.provider.JsonProvider;
+import org.restlet.ext.jaxrs.internal.provider.MultipartProvider;
 import org.restlet.ext.jaxrs.internal.provider.ReaderProvider;
 import org.restlet.ext.jaxrs.internal.provider.SourceProvider;
 import org.restlet.ext.jaxrs.internal.provider.StreamingOutputProvider;
@@ -225,11 +227,13 @@ public class JaxRsRouter extends Restlet {
         this.addProvider(BufferedReaderProvider.class, true);
         this.addProvider(ByteArrayProvider.class, true);
         this.addProvider(DataSourceProvider.class, true);
+        this.addProvider(FileUploadProvider.class, true); // not yet tested
         this.addProvider(FileProvider.class, true);
         this.addProvider(InputStreamProvider.class, true);
         this.addProvider(JaxbElementProvider.class, true);
         this.addProvider(JaxbProvider.class, true);
         this.addProvider(JsonProvider.class, true);
+        this.addProvider(MultipartProvider.class, true); // not yet tested
         this.addProvider(ReaderProvider.class, true);
         this.addProvider(StreamingOutputProvider.class, true);
         this.addProvider(StringProvider.class, true);
@@ -571,7 +575,7 @@ public class JaxRsRouter extends Restlet {
             // (c) and (d) Filter E: remove members do not match U or final
             // match not empty
             for (ResourceMethodOrLocator methodOrLocator : resClass
-                    .getSubResourceMethodsAndLocators()) {
+                    .getResourceMethodsAndLocators()) {
                 PathRegExp pathRegExp = methodOrLocator.getPathRegExp();
                 MatchingResult matchingResult = pathRegExp.match(u);
                 if (matchingResult == null)

@@ -121,14 +121,14 @@ public class PathRegExp {
         return "/" + pathPattern;
     }
 
-    private boolean isEmptyOrSlash;
+    private final boolean isEmptyOrSlash;
 
     /** Contains the number of literal chars in this Regular Expression */
     private Integer noLitChars;
 
-    private String pathPattern;
+    private final String pathPattern;
 
-    private Template template;
+    private final Template template;
 
     private PathRegExp(Path path) throws IllegalArgumentException,
             IllegalPathException {

@@ -41,6 +41,21 @@ import org.restlet.test.jaxrs.util.TestUtils;
 @Path("matrixParamTest")
 public class MatrixParamTestService {
 
+    private String encoded;
+
+    private String decoded;
+
+    @Encoded
+    @MatrixParam("encoded")
+    public void setEncoded(String encoded) {
+        this.encoded = encoded;
+    }
+
+    @MatrixParam("decoded")
+    public void setDecoded(String decoded) {
+        this.decoded = decoded;
+    }
+
     @GET
     @ProduceMime("text/plain")
     public String get(@MatrixParam("firstname") String firstname,
@@ -64,6 +79,20 @@ public class MatrixParamTestService {
         String vorname = pSeg.getMatrixParameters().getFirst("firstname");
         String nachname = pSeg.getMatrixParameters().getFirst("lastname");
         return vorname + " " + nachname;
+    }
+
+    @GET
+    @ProduceMime("text/plain")
+    @Path("setterDecoded")
+    public String getSetterDecoded() {
+        return decoded;
+    }
+
+    @GET
+    @ProduceMime("text/plain")
+    @Path("setterEncoded")
+    public String getSetterEncoded() {
+        return encoded;
     }
 
     @GET
@@ -124,8 +153,7 @@ public class MatrixParamTestService {
     }
     
     @Path("sub")
-    public MatrixParamTestService getSub()
-    {
+    public MatrixParamTestService getSub() {
         return new MatrixParamTestService();
     }
 }

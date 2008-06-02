@@ -57,20 +57,24 @@ import org.restlet.ext.jaxrs.internal.wrappers.provider.ExtensionBackwardMapping
  */
 public class ResourceMethod extends AbstractMethodWrapper implements
         ResourceMethodOrLocator {
+    // NICE a subset of MessageBodyReaders could be cached here.
+    // . . . . . . . . . . (the concrete media type of the request could differ)
+    // NICE check, which subset of MessageBodyWriters could be cached here.
+    // . . (the media type is available via @ProduceMime on the entity provider)
 
     /** @see ConsumeMime */
-    private volatile List<MediaType> consumedMimes;
+    private final List<MediaType> consumedMimes;
 
-    private volatile org.restlet.data.Method httpMethod;
+    private final org.restlet.data.Method httpMethod;
 
     /** @see ProduceMime */
-    private volatile List<MediaType> producedMimes;
+    private final List<MediaType> producedMimes;
 
     /**
      * Contains the list of supported {@link Variant}s (lazy initialized by
      * {@link #getSupportedVariants()}.
      */
-    private volatile Collection<Variant> supportedVariants;
+    private final Collection<Variant> supportedVariants;
 
     /**
      * Creates a wrapper for a resource method.
@@ -100,21 +104,74 @@ public class ResourceMethod extends AbstractMethodWrapper implements
      * @throws MissingAnnotationException
      * @throws IllegalArgumentException
      */
-    ResourceMethod(
-            Method executeMethod,
-            Method annotatedMethod,
-            ResourceClass resourceClass,
-            org.restlet.data.Method httpMethod,
-            ThreadLocalizedContext tlContext,
-            EntityProviders entityProviders,
+    ResourceMethod(Method executeMethod, Method annotatedMethod,
+            ResourceClass resourceClass, org.restlet.data.Method httpMethod,
+            ThreadLocalizedContext tlContext, EntityProviders entityProviders,
             Collection<ContextResolver<?>> allCtxResolvers,
-            ExtensionBackwardMapping extensionBackwardMapping,
-            Logger logger) throws IllegalPathOnMethodException,
-            IllegalArgumentException, MissingAnnotationException {
+            ExtensionBackwardMapping extensionBackwardMapping, Logger logger)
+            throws IllegalPathOnMethodException, IllegalArgumentException,
+            MissingAnnotationException {
         super(executeMethod, annotatedMethod, resourceClass, tlContext,
                 entityProviders, allCtxResolvers, extensionBackwardMapping,
                 true, logger);
-        this.httpMethod = httpMethod;
+        if (httpMethod != null)
+            this.httpMethod = httpMethod;
+        else
+            this.httpMethod = WrapperUtil.getHttpMethod(this.annotatedMethod);
+        this.consumedMimes = createConsumedMimes();
+        this.producedMimes = createProducedMimes();
+        this.supportedVariants = createSupportedVariants();
+    }
+
+    /**
+     * Creates the list of the consumed mimes from the
+     * {@link AbstractMethodWrapper#annotatedMethod} and the
+     * {@link AbstractMethodWrapper#executeMethod} to be stored in the final
+     * instance variable {@link #consumedMimes}.
+     */
+    private List<MediaType> createConsumedMimes() {
+        ConsumeMime consumeMime;
+        consumeMime = this.annotatedMethod.getAnnotation(ConsumeMime.class);
+        if (consumeMime == null)
+            consumeMime = this.executeMethod.getDeclaringClass().getAnnotation(
+                    ConsumeMime.class);
+        if (consumeMime != null)
+            return WrapperUtil.convertToMediaTypes(consumeMime.value());
+        else
+            return Collections.singletonList(MediaType.ALL);
+    }
+
+    /**
+     * Creates the list of the produced mimes from the
+     * {@link AbstractMethodWrapper#annotatedMethod} and the
+     * {@link AbstractMethodWrapper#executeMethod} to be stored in the final
+     * instance variable {@link #producedMimes}.
+     */
+    private List<MediaType> createProducedMimes() {
+        ProduceMime produceMime;
+        produceMime = this.annotatedMethod.getAnnotation(ProduceMime.class);
+        if (produceMime == null)
+            produceMime = this.executeMethod.getDeclaringClass().getAnnotation(
+                    ProduceMime.class);
+        if (produceMime != null)
+            return WrapperUtil.convertToMediaTypes(produceMime.value());
+        else
+            return Collections.emptyList();
+    }
+
+    /**
+     * Creates the list of the supported variants from the
+     * {@link #getProducedMimes()}to be stored in the
+     * final instance variable {@link #supportedVariants}.
+     */
+    private Collection<Variant> createSupportedVariants() {
+        Collection<Variant> supportedVariants = new ArrayList<Variant>();
+        for (MediaType mediaType : this.getProducedMimes()) {
+            javax.ws.rs.core.MediaType mt;
+            mt = Converter.toJaxRsMediaType(mediaType);
+            supportedVariants.add(new Variant(mt, null, null));
+        }
+        return supportedVariants;
     }
 
     /**
@@ -123,19 +180,7 @@ public class ResourceMethod extends AbstractMethodWrapper implements
      *         returns a List with MediaType.ALL. Will never return null.
      */
     public List<MediaType> getConsumedMimes() {
-        if (this.consumedMimes == null) {
-            ConsumeMime consumeMime;
-            consumeMime = this.annotatedMethod.getAnnotation(ConsumeMime.class);
-            if (consumeMime == null)
-                consumeMime = this.executeMethod.getDeclaringClass()
-                        .getAnnotation(ConsumeMime.class);
-            if (consumeMime == null)
-                this.consumedMimes = Collections.singletonList(MediaType.ALL);
-            else
-                this.consumedMimes = WrapperUtil
-                        .convertToMediaTypes(consumeMime.value());
-        }
-        return consumedMimes;
+        return this.consumedMimes;
     }
 
     /**
@@ -154,19 +199,16 @@ public class ResourceMethod extends AbstractMethodWrapper implements
      *         This method never returns null.
      */
     public List<MediaType> getProducedMimes() {
-        if (producedMimes == null) {
-            ProduceMime produceMime;
-            produceMime = this.annotatedMethod.getAnnotation(ProduceMime.class);
-            if (produceMime == null)
-                produceMime = this.executeMethod.getDeclaringClass()
-                        .getAnnotation(ProduceMime.class);
-            if (produceMime != null)
-                this.producedMimes = WrapperUtil
-                        .convertToMediaTypes(produceMime.value());
-            else
-                this.producedMimes = Collections.emptyList();
-        }
         return producedMimes;
+    }
+
+    /**
+     * Returns the {@link Variant}s supported by this resource method.
+     * 
+     * @return the {@link Variant}s supported by this resource method.
+     */
+    public Collection<Variant> getSupportedVariants() {
+        return this.supportedVariants;
     }
 
     /**
@@ -275,8 +317,6 @@ public class ResourceMethod extends AbstractMethodWrapper implements
         if (requestedMethod == null)
             throw new IllegalArgumentException(
                     "null is not a valid HTTP method");
-        if (this.httpMethod == null)
-            this.httpMethod = WrapperUtil.getHttpMethod(this.annotatedMethod);
         if (alsoGet && this.httpMethod.equals(org.restlet.data.Method.GET))
             return true;
         return this.httpMethod.equals(requestedMethod);
@@ -286,23 +326,5 @@ public class ResourceMethod extends AbstractMethodWrapper implements
     public String toString() {
         return this.getClass().getSimpleName() + "[" + executeMethod.toString()
                 + ", " + this.httpMethod + "]";
-    }
-
-    /**
-     * Returns the {@link Variant}s supported by this resource method.
-     * 
-     * @return the {@link Variant}s supported by this resource method.
-     */
-    public Collection<Variant> getSupportedVariants() {
-        if (this.supportedVariants == null) {
-            Collection<Variant> supportedVariants = new ArrayList<Variant>();
-            for (MediaType mediaType : this.getProducedMimes()) {
-                javax.ws.rs.core.MediaType mt;
-                mt = Converter.toJaxRsMediaType(mediaType);
-                supportedVariants.add(new Variant(mt, null, null));
-            }
-            this.supportedVariants = supportedVariants;
-        }
-        return this.supportedVariants;
     }
 }

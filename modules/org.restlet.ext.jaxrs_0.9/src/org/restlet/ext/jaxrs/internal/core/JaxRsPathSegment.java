@@ -51,8 +51,7 @@ public class JaxRsPathSegment implements PathSegment {
      * Method is public for testing, otherwise it would be package visible.
      */
     public static MultivaluedMapImpl<String, String> parseMatrixParams(
-            String matrParamString, boolean decode,
-            boolean encodeAndCheckWhenNotDecode) {
+            String matrParamString, boolean decode) {
         MultivaluedMapImpl<String, String> matrixParameters = new MultivaluedMapImpl<String, String>();
         if (matrParamString == null)
             return matrixParameters;
@@ -70,19 +69,13 @@ public class JaxRsPathSegment implements PathSegment {
                 valueEnc = matrParamEnc.substring(posEquSign + 1);
             }
             if (nameEnc.length() == 0 && valueEnc == null)
-                continue;
+                continue;	
             String name;
             String value;
             if (decode) {
                 name = Reference.decode(nameEnc);
                 value = Reference.decode(valueEnc);
-            } else if (encodeAndCheckWhenNotDecode) {
-                name = EncodeOrCheck.nameOrValue(nameEnc, true, i,
-                        " matrix parameter name").toString();
-                value = EncodeOrCheck.nameOrValue(valueEnc, true, i,
-                        " matrix parameter value").toString();
             } else {
-
                 name = nameEnc;
                 value = valueEnc;
             }
@@ -91,42 +84,27 @@ public class JaxRsPathSegment implements PathSegment {
         return matrixParameters;
     }
 
-    private boolean decode;
-
-    private boolean encode;
+    private final boolean decode;
 
     /**
-     * encoded or decoded, depends on {@link #decode} and {@link #encode}.
+     * The matrix parameters. Encoded or decoded, depends on {@link #decode}.
      */
-    private MultivaluedMap<String, String> matrixParameters;
+    private volatile MultivaluedMap<String, String> matrixParameters;
 
     /**
-     * the matrix parameters, as given in constructor. If the parameters are
-     * parsed ({@link #getMatrixParameters()}, this instance variable will be
-     * set to null.
+     * the encoded matrix parameters, as given in constructor.
      */
-    private String matrParamEncoded;
+    private final String matrParamEncoded;
 
-    /** encoded or decoded, depends on {@link #decode} and {@link #encode} */
-    private String path;
-
-    private boolean unmodifiable;
+    /** encoded or decoded, depends on {@link #decode} */
+    private final String path;
 
     /**
-     * @param segment
-     *                Segment with matrix parameter.
-     * @param unmodifiable
-     *                indicates if this instance is modifiable or not
+     * @param segmentEnc
+     *                Segment with matrix parameter. The segment is encoded.
      * @param decode
      *                true, if the path and the marix parameters should be
      *                decoded.
-     * @param encode
-     *                true, if the path and the marix parameters should be
-     *                encoded. Braces are not encoded. (they are used for
-     *                variables.)
-     * @param checkForInvalidChars
-     *                if true, than the path is checked for invalid chars, if
-     *                decode and encode is both false.
      * @param indexForErrMess
      *                If the user adds more than one path segment with one call,
      *                you can give the index for an error message here. Set -1,
@@ -135,13 +113,9 @@ public class JaxRsPathSegment implements PathSegment {
      * @throws IllegalArgumentException
      *                 the segment is null, if decode and encode is both true
      */
-    public JaxRsPathSegment(String segment, boolean unmodifiable,
-            boolean decode, boolean encode, boolean checkForInvalidChars,
+    public JaxRsPathSegment(String segmentEnc, boolean decode,
             int indexForErrMess) throws IllegalArgumentException {
-        if (decode && encode)
-            throw new IllegalArgumentException(
-                    "It is not meaningful to require decode AND encode");
-        if (segment == null) {
+        if (segmentEnc == null) {
             if (indexForErrMess >= 0)
                 throw new IllegalArgumentException("The " + indexForErrMess
                         + ". segment must not be null");
@@ -149,69 +123,17 @@ public class JaxRsPathSegment implements PathSegment {
                 throw new IllegalArgumentException(
                         "The segment must not be null");
         }
-        this.unmodifiable = unmodifiable;
         this.decode = decode;
-        this.encode = encode;
-        int indexOfSemic = segment.indexOf(';');
+        int indexOfSemic = segmentEnc.indexOf(';');
         String path;
         if (indexOfSemic >= 0) {
-            path = segment.substring(0, indexOfSemic);
-            this.matrParamEncoded = segment.substring(indexOfSemic + 1);
+            path = segmentEnc.substring(0, indexOfSemic);
+            this.matrParamEncoded = segmentEnc.substring(indexOfSemic + 1);
         } else {
-            path = segment;
+            path = segmentEnc;
             this.matrParamEncoded = null;
         }
-        if (decode) {
-            this.path = Reference.decode(path);
-        } else if (encode) {
-            this.path = EncodeOrCheck.encodeNotBraces(path, true).toString();
-        } else {
-            if (checkForInvalidChars)
-                EncodeOrCheck.checkForInvalidUriChars(path, indexForErrMess,
-                        "new path segment");
-            this.path = path;
-        }
-    }
-
-    /**
-     * Creates a new PathSegment. An object created with this constructor will
-     * not decode anything.
-     * 
-     * @param path
-     *                The segment path. If decoding is necessary, it must be
-     *                decoded externally.
-     * @param unmodifiable
-     *                indicates if this instance is modifiable or not
-     * @param matrixParameters
-     *                The matrix parameters of this segment. If decoding is
-     *                necessary, it must be decoded externally. If it is null,
-     *                it will created on first invoke of
-     *                {@link #getMatrixParameters()}
-     * @see #clone()
-     */
-    public JaxRsPathSegment(String path, boolean unmodifiable,
-            MultivaluedMap<String, String> matrixParameters) {
-        this.path = path;
-        this.unmodifiable = unmodifiable;
-        if (unmodifiable
-                && !(matrixParameters instanceof UnmodifiableMultivaluedMap))
-            this.matrixParameters = UnmodifiableMultivaluedMap.get(
-                    matrixParameters, false);
-        this.matrixParameters = matrixParameters;
-        this.matrParamEncoded = null;
-        // the other instance variables will not be used, so forget them
-    }
-
-    @Override
-    public JaxRsPathSegment clone() {
-        MultivaluedMapImpl<String, String> clonedMatrParams = null;
-        if (this.matrixParameters != null
-                && !(this.matrixParameters instanceof UnmodifiableMultivaluedMap)) {
-            if (this.matrixParameters instanceof MultivaluedMapImpl)
-                clonedMatrParams = ((MultivaluedMapImpl<String, String>) this.matrixParameters)
-                        .clone();
-        }
-        return new JaxRsPathSegment(path, unmodifiable, clonedMatrParams);
+        this.path = decode ? Reference.decode(path) : path;
     }
 
     @Override
@@ -236,9 +158,7 @@ public class JaxRsPathSegment implements PathSegment {
      */
     public MultivaluedMap<String, String> getMatrixParameters() {
         if (this.matrixParameters == null) {
-            this.matrixParameters = parseMatrixParams(matrParamEncoded, decode,
-                    encode);
-            this.matrParamEncoded = null;
+            this.matrixParameters = parseMatrixParams(matrParamEncoded, decode);
         }
         return matrixParameters;
     }
@@ -254,18 +174,6 @@ public class JaxRsPathSegment implements PathSegment {
     @Override
     public int hashCode() {
         return this.path.hashCode() ^ this.getMatrixParameters().hashCode();
-    }
-
-    /**
-     * Sets the matrix parameters.
-     * 
-     * @param matrixParams
-     *                new matrix parameters
-     */
-    public void setMatrixParameters(MultivaluedMap<String, String> matrixParams) {
-        if (unmodifiable)
-            throw new IllegalStateException("This instance is not modifiable");
-        this.matrixParameters = matrixParams;
     }
 
     /**

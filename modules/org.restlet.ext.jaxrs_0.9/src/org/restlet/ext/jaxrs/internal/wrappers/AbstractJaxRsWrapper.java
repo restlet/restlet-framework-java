@@ -27,7 +27,7 @@ import org.restlet.ext.jaxrs.internal.util.PathRegExp;
  */
 public abstract class AbstractJaxRsWrapper {
 
-    private PathRegExp pathRegExp;
+    private final PathRegExp pathRegExp;
 
     /**
      * Creates a new AbstractJaxRsWrapper without a path.

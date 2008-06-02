@@ -26,7 +26,7 @@ import java.util.NoSuchElementException;
  * @author Stephan Koops
  * @param <T> 
  */
-public class EmptyIterator<T> implements Iterator<T> {
+public final class EmptyIterator<T> implements Iterator<T> {
     
     /**
      * Iterator without any element.

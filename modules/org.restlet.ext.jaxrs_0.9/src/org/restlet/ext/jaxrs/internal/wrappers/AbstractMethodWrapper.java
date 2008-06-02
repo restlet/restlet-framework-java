@@ -80,7 +80,7 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
         this.executeMethod = executeMethod;
         this.executeMethod.setAccessible(true);
         this.annotatedMethod = annotatedMethod;
-        this.annotatedMethod.setAccessible(true);
+        // NICE log message, if an Exception with no exc mapper is declared.
         this.resourceClass = resourceClass;
         boolean leaveEncoded = resourceClass.isLeaveEncoded()
                 || annotatedMethod.isAnnotationPresent(Encoded.class);
@@ -90,9 +90,10 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
     }
 
     /**
-     * Returns the array of
+     * Returns the array of the annotations on the Java method
      * 
-     * @return
+     * @return the array of the annotations on the Java method
+     * @see Method#getAnnotations()
      */
     public Annotation[] getAnnotations() {
         return annotatedMethod.getAnnotations();
@@ -109,6 +110,8 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
     }
 
     /**
+     * Returns the name of the method
+     * 
      * @return Returns the name of the method
      */
     public String getName() {

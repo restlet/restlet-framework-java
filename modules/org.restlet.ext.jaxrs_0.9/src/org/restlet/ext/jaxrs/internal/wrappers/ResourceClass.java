@@ -66,11 +66,26 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      */
     private final boolean leaveEncoded;
 
-    private Collection<SubResourceLocator> subResourceLocators;
+    /**
+     * The sub resource locators of this resource class. (It is initialized in
+     * method.)
+     * {@link #initResourceMethodsAndLocators(ThreadLocalizedContext, EntityProviders, Collection, ExtensionBackwardMapping, Logger)}
+     */
+    private final Collection<SubResourceLocator> subResourceLocators = new ArrayList<SubResourceLocator>();
 
-    private Collection<ResourceMethod> subResourceMethods;
+    /**
+     * The resource methods of this resource class. (It is initialized in
+     * method.)
+     * {@link #initResourceMethodsAndLocators(ThreadLocalizedContext, EntityProviders, Collection, ExtensionBackwardMapping, Logger)}
+     */
+    private final Collection<ResourceMethod> resourceMethods = new ArrayList<ResourceMethod>();
 
-    private Collection<ResourceMethodOrLocator> subResourceMethodsAndLocators;
+    /**
+     * The resource methods and sub resource locators of this resource class.
+     * (It is initialized in method.)
+     * {@link #initResourceMethodsAndLocators(ThreadLocalizedContext, EntityProviders, Collection, ExtensionBackwardMapping, Logger)}
+     */
+    private final Collection<ResourceMethodOrLocator> resourceMethodsAndLocators = new ArrayList<ResourceMethodOrLocator>();
 
     /**
      * Creates a new root resource class wrapper. Will not set the path, because
@@ -94,7 +109,8 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      */
     ResourceClass(Class<?> jaxRsClass, ThreadLocalizedContext tlContext,
             EntityProviders entityProviders,
-            Collection<ContextResolver<?>> allCtxResolvers, ExtensionBackwardMapping extensionBackwardMapping, Logger logger)
+            Collection<ContextResolver<?>> allCtxResolvers,
+            ExtensionBackwardMapping extensionBackwardMapping, Logger logger)
             throws IllegalArgumentException, MissingAnnotationException {
         super();
         this.leaveEncoded = jaxRsClass.isAnnotationPresent(Encoded.class);
@@ -128,12 +144,13 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      */
     protected ResourceClass(Class<?> jaxRsClass,
             ThreadLocalizedContext tlContext, EntityProviders entityProviders,
-            Collection<ContextResolver<?>> allCtxResolvers, ExtensionBackwardMapping extensionBackwardMapping,
-            Logger logger, @SuppressWarnings("unused")
+            Collection<ContextResolver<?>> allCtxResolvers,
+            ExtensionBackwardMapping extensionBackwardMapping, Logger logger,
+            @SuppressWarnings("unused")
             Logger sameLogger) throws IllegalArgumentException,
             IllegalPathOnClassException, MissingAnnotationException {
         super(PathRegExp.createForClass(jaxRsClass));
-        this.leaveEncoded = false; // LATER de/encode: leaveEncoded = false ?
+        this.leaveEncoded = jaxRsClass.isAnnotationPresent(Encoded.class);
         this.jaxRsClass = jaxRsClass;
         this.initResourceMethodsAndLocators(tlContext, entityProviders,
                 allCtxResolvers, extensionBackwardMapping, logger);
@@ -299,9 +316,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
         // NICE results may be chached, if any method is returned.
         // The 404 case will be called rarely and produce a lot of cached data.
         List<ResourceMethod> resourceMethods = new ArrayList<ResourceMethod>();
-        Iterable<ResourceMethod> subResourceMethods = this
-                .getSubResourceMethods();
-        for (ResourceMethod method : subResourceMethods) {
+        for (ResourceMethod method : this.resourceMethods) {
             PathRegExp methodPath = method.getPathRegExp();
             if (remainingPath.isEmptyOrSlash()) {
                 if (methodPath.isEmptyOrSlash())
@@ -331,15 +346,15 @@ public class ResourceClass extends AbstractJaxRsWrapper {
     /**
      * @return Return the sub resource methods of the given class.
      */
-    public final Iterable<ResourceMethod> getSubResourceMethods() {
-        return this.subResourceMethods;
+    public final Iterable<ResourceMethod> getResourceMethods() {
+        return this.resourceMethods;
     }
 
     /**
      * @return Returns the sub resource locatores and sub resource methods.
      */
-    public final Collection<ResourceMethodOrLocator> getSubResourceMethodsAndLocators() {
-        return this.subResourceMethodsAndLocators;
+    public final Collection<ResourceMethodOrLocator> getResourceMethodsAndLocators() {
+        return this.resourceMethodsAndLocators;
     }
 
     @Override
@@ -352,7 +367,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      *         methods or sub resource locators.
      */
     public final boolean hasSubResourceMethodsOrLocators() {
-        return !this.getSubResourceMethodsAndLocators().isEmpty();
+        return !this.resourceMethodsAndLocators.isEmpty();
     }
 
     private void initResourceMethodsAndLocators(
@@ -360,9 +375,6 @@ public class ResourceClass extends AbstractJaxRsWrapper {
             Collection<ContextResolver<?>> allCtxResolvers,
             ExtensionBackwardMapping extensionBackwardMapping, Logger logger)
             throws IllegalArgumentException, MissingAnnotationException {
-        Collection<ResourceMethodOrLocator> srmls = new ArrayList<ResourceMethodOrLocator>();
-        Collection<ResourceMethod> subRsesMeths = new ArrayList<ResourceMethod>();
-        Collection<SubResourceLocator> subResLocs = new ArrayList<SubResourceLocator>();
         Method[] classMethods = jaxRsClass.getDeclaredMethods();
         for (Method execMethod : classMethods) {
             Method annotatedMethod = getAnnotatedJavaMethod(execMethod);
@@ -379,8 +391,8 @@ public class ResourceClass extends AbstractJaxRsWrapper {
                             annotatedMethod, this, httpMethod, tlContext,
                             entityProviders, allCtxResolvers,
                             extensionBackwardMapping, logger);
-                    subRsesMeths.add(subResMeth);
-                    srmls.add(subResMeth);
+                    this.resourceMethods.add(subResMeth);
+                    this.resourceMethodsAndLocators.add(subResMeth);
                     checkForPrimitiveParameters(execMethod, logger);
                 } else {
                     if (path != null) {
@@ -389,9 +401,10 @@ public class ResourceClass extends AbstractJaxRsWrapper {
                             continue;
                         SubResourceLocator subResLoc = new SubResourceLocator(
                                 execMethod, annotatedMethod, this, tlContext,
-                                entityProviders, allCtxResolvers, extensionBackwardMapping, logger);
-                        subResLocs.add(subResLoc);
-                        srmls.add(subResLoc);
+                                entityProviders, allCtxResolvers,
+                                extensionBackwardMapping, logger);
+                        this.subResourceLocators.add(subResLoc);
+                        this.resourceMethodsAndLocators.add(subResLoc);
                         checkForPrimitiveParameters(execMethod, logger);
                     }
                 }
@@ -401,9 +414,6 @@ public class ResourceClass extends AbstractJaxRsWrapper {
                         + ". Ignoring this method. (" + e.getMessage() + ")");
             }
         }
-        this.subResourceLocators = subResLocs;
-        this.subResourceMethods = subRsesMeths;
-        this.subResourceMethodsAndLocators = srmls;
     }
 
     /**

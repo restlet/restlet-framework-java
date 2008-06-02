@@ -63,7 +63,7 @@ public abstract class ReprEntityGetter implements ParamGetter {
      * Representation
      */
     static class ClassReprEntityGetter extends ReprEntityGetter {
-        private Class<?> clazz;
+        private final Class<?> clazz;
 
         ClassReprEntityGetter(Class<?> genClass, Constructor<?> constructor) {
             super(constructor);
@@ -100,7 +100,7 @@ public abstract class ReprEntityGetter implements ParamGetter {
      */
     static class ReprClassEntityGetter extends ReprEntityGetter {
 
-        private Class<?> clazz;
+        private final Class<?> clazz;
 
         ReprClassEntityGetter(Constructor<?> constructor, Class<?> genClass) {
             super(constructor);
@@ -169,7 +169,7 @@ public abstract class ReprEntityGetter implements ParamGetter {
         }
     }
 
-    Constructor<? extends Representation> constr;
+    final Constructor<? extends Representation> constr;
 
     @SuppressWarnings("unchecked")
     ReprEntityGetter(Constructor<?> constr) {

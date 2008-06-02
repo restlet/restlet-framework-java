@@ -160,7 +160,7 @@ public class ParameterList {
          */
         protected Object convertParamValue(String paramValue,
                 DefaultValue defaultValue) throws ConvertParameterException {
-            if (encode() && paramValue != null)
+            if (decode() && paramValue != null)
                 paramValue = Reference.decode(paramValue);
             else if (paramValue == null && defaultValue != null)
                 paramValue = defaultValue.value();
@@ -273,7 +273,7 @@ public class ParameterList {
             }
         }
 
-        protected abstract boolean encode();
+        protected abstract boolean decode();
 
         /**
          * @return the concrete value of this parameter for the current request.
@@ -358,15 +358,16 @@ public class ParameterList {
         private final CookieParam cookieParam;
 
         /**
-         * @param annoSaysLeaveEncoded
+         * @param annoSaysLeaveClassEncoded
          *                to check if the annotation is available, but should
          *                not be.
          */
         CookieParamGetter(CookieParam cookieParam, DefaultValue defaultValue,
                 Class<?> convToCl, Type convToGen,
-                ThreadLocalizedContext tlContext, boolean annoSaysLeaveEncoded) {
+                ThreadLocalizedContext tlContext,
+                boolean annoSaysLeaveClassEncoded) {
             super(defaultValue, convToCl, convToGen, tlContext,
-                    annoSaysLeaveEncoded);
+                    annoSaysLeaveClassEncoded);
             this.cookieParam = cookieParam;
         }
 
@@ -417,17 +418,18 @@ public class ParameterList {
      */
     abstract static class EncParamGetter extends AbstractParamGetter {
 
-        private final boolean encode;
+        private final boolean decode;
 
         EncParamGetter(DefaultValue defaultValue, Class<?> convToCl,
-                Type convToGen, ThreadLocalizedContext tlContext, boolean encode) {
+                Type convToGen, ThreadLocalizedContext tlContext,
+                boolean leaveEncoded) {
             super(defaultValue, convToCl, convToGen, tlContext);
-            this.encode = encode;
+            this.decode = !leaveEncoded;
         }
 
         @Override
-        protected boolean encode() {
-            return this.encode;
+        protected boolean decode() {
+            return this.decode;
         }
     }
 
@@ -436,14 +438,15 @@ public class ParameterList {
         private final HeaderParam headerParam;
 
         /**
-         * @param annoSaysLeaveEncoded
+         * @param annoSaysLeaveClassEncoded
          *                to check if the annotation is available.
          */
         HeaderParamGetter(HeaderParam headerParam, DefaultValue defaultValue,
                 Class<?> convToCl, Type paramGenericType,
-                ThreadLocalizedContext tlContext, boolean annoSaysLeaveEncoded) {
+                ThreadLocalizedContext tlContext,
+                boolean annoSaysLeaveClassEncoded) {
             super(defaultValue, convToCl, paramGenericType, tlContext,
-                    annoSaysLeaveEncoded);
+                    annoSaysLeaveClassEncoded);
             this.headerParam = headerParam;
         }
 
@@ -472,14 +475,13 @@ public class ParameterList {
 
         MatrixParamGetter(MatrixParam matrixParam, DefaultValue defaultValue,
                 Class<?> convToCl, Type convToGen,
-                ThreadLocalizedContext tlContext, boolean encode) {
-            super(defaultValue, convToCl, convToGen, tlContext, encode);
+                ThreadLocalizedContext tlContext, boolean leaveEncoded) {
+            super(defaultValue, convToCl, convToGen, tlContext, leaveEncoded);
             this.matrixParam = matrixParam;
         }
 
         @Override
         public Object getParamValue() {
-            // LATER test: de/encode: Encoded of field or bean setter
             CallContext callContext = tlContext.get();
             try {
                 if (this.collType == null) { // no collection parameter
@@ -534,7 +536,7 @@ public class ParameterList {
         }
 
         @Override
-        protected boolean encode() {
+        protected boolean decode() {
             return false;
         }
     }
@@ -559,14 +561,13 @@ public class ParameterList {
 
         PathParamGetter(PathParam pathParam, DefaultValue defaultValue,
                 Class<?> convToCl, Type convToGen,
-                ThreadLocalizedContext tlContext, boolean encode) {
-            super(defaultValue, convToCl, convToGen, tlContext, encode);
+                ThreadLocalizedContext tlContext, boolean leaveEncoded) {
+            super(defaultValue, convToCl, convToGen, tlContext, leaveEncoded);
             this.pathParam = pathParam;
         }
 
         @Override
         public Object getParamValue() {
-            // LATER test: de/encode: Encoded of field or bean setter
             CallContext callContext = tlContext.get();
             // LATER @PathParam(...) List<String> (see PathParamTest.testGet3())
             if (this.convertTo.equals(PathSegment.class)) {
@@ -595,18 +596,19 @@ public class ParameterList {
 
         QueryParamGetter(QueryParam queryParam, DefaultValue defaultValue,
                 Class<?> convToCl, Type convToGen,
-                ThreadLocalizedContext tlContext, boolean encode) {
-            super(defaultValue, convToCl, convToGen, tlContext, encode);
+                ThreadLocalizedContext tlContext, boolean leaveEncoded) {
+            super(defaultValue, convToCl, convToGen, tlContext,
+                    leaveEncoded);
             this.queryParam = queryParam;
         }
 
         @Override
         public Object getParamValue() {
-            // LATER test: de/encode: Encoded of field or bean setter
             Reference resourceRef = tlContext.get().getRequest()
                     .getResourceRef();
             String queryString = resourceRef.getQuery();
             Form form = Converter.toFormEncoded(queryString, localLogger);
+            // NICE cache Form
             String paramName = queryParam.value();
             List<Parameter> parameters = form.subList(paramName);
             try {
@@ -720,7 +722,7 @@ public class ParameterList {
      * @param extensionBackwardMapping
      * @param paramsAllowed
      *                true, if &#64;*Params are allowed as parameter, otherwise
-     *                false. LATER paramsAllowed not needed at this time
+     *                false.
      * @param entityAllowed
      *                true, if the entity is allowed as parameter, otherwise
      *                false.
@@ -760,7 +762,7 @@ public class ParameterList {
                 if (pathParam != null) {
                     parameters[i] = new PathParamGetter(pathParam, defValue,
                             parameterType, genParamType, tlContext,
-                            !leaveAllEncoded && !leaveThisEncoded);
+                            leaveAllEncoded || leaveThisEncoded);
                     continue;
                 } else if (cookieParam != null) {
                     parameters[i] = new CookieParamGetter(cookieParam,
@@ -775,12 +777,12 @@ public class ParameterList {
                 } else if (matrixParam != null) {
                     parameters[i] = new MatrixParamGetter(matrixParam,
                             defValue, parameterType, genParamType, tlContext,
-                            !leaveAllEncoded && !leaveThisEncoded);
+                            leaveAllEncoded || leaveThisEncoded);
                     continue;
                 } else if (queryParam != null) {
                     parameters[i] = new QueryParamGetter(queryParam, defValue,
                             parameterType, genParamType, tlContext,
-                            !leaveAllEncoded && !leaveThisEncoded);
+                            leaveAllEncoded || leaveThisEncoded);
                     continue;
                 }
             }

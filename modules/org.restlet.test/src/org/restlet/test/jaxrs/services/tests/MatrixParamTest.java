@@ -24,6 +24,7 @@ import javax.ws.rs.MatrixParam;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.test.jaxrs.services.resources.MatrixParamTestService;
+import org.restlet.test.jaxrs.services.resources.QueryParamTestService;
 
 /**
  * @author Stephan Koops
@@ -72,6 +73,7 @@ public class MatrixParamTest extends JaxRsTestCase {
         assertEquals("null Goofy", response.getEntity().getText());
     }
 
+    /** @see MatrixParamTestService#encoded(String, String) */
     public void testEncoded() throws IOException {
         Response response = get("encoded;firstname=George%20U.;lastname=Bush");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
@@ -82,6 +84,32 @@ public class MatrixParamTest extends JaxRsTestCase {
         Response response = get("b;firstname=George%20U.;lastname=Bush");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("George U. Bush", response.getEntity().getText());
+    }
+
+    /** @see QueryParamTestService#getDecoded() */
+    public void testSetterDecoded() throws Exception {
+        Response response1 = get(";decoded=abc/setterDecoded");
+        sysOutEntityIfError(response1);
+        assertEquals(Status.SUCCESS_OK, response1.getStatus());
+        assertEquals("abc", response1.getEntity().getText());
+
+        Response response2 = get(";decoded=%20/setterDecoded");
+        sysOutEntityIfError(response2);
+        assertEquals(Status.SUCCESS_OK, response2.getStatus());
+        assertEquals(" ", response2.getEntity().getText());
+    }
+
+    /** @see QueryParamTestService#getEncoded() */
+    public void testSetterEncoded() throws Exception {
+        Response response1 = get(";encoded=abc/setterEncoded");
+        sysOutEntityIfError(response1);
+        assertEquals(Status.SUCCESS_OK, response1.getStatus());
+        assertEquals("abc", response1.getEntity().getText());
+
+        Response response2 = get(";encoded=%20/setterEncoded");
+        sysOutEntityIfError(response2);
+        assertEquals(Status.SUCCESS_OK, response2.getStatus());
+        assertEquals("%20", response2.getEntity().getText());
     }
 
     public void testWithDefault() throws IOException {

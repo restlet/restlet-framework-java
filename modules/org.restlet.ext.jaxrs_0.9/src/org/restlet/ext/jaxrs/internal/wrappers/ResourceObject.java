@@ -24,9 +24,10 @@ package org.restlet.ext.jaxrs.internal.wrappers;
  * @author Stephan Koops
  */
 public class ResourceObject {
-    private Object jaxRsResourceObject;
 
-    private ResourceClass resourceClass;
+    private final Object jaxRsResourceObject;
+
+    private final ResourceClass resourceClass;
 
     /**
      * Creates a new wrapper for a resource object

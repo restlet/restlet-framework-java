@@ -44,15 +44,15 @@ public class JaxRsOutputRepresentation<T> extends OutputRepresentation {
     private static final Logger LOGGER = Logger
             .getLogger("JaxRsOutputRepresentation");
 
-    private MessageBodyWriter<T> mbw;
+    private final MessageBodyWriter<T> mbw;
 
-    private T object;
+    private final T object;
 
-    private Type genericType;
+    private final Type genericType;
 
-    private Annotation[] annotations;
+    private final Annotation[] annotations;
 
-    private MultivaluedMap<String, Object> httpHeaders;
+    private final MultivaluedMap<String, Object> httpHeaders;
 
     /**
      * Creates a new JaxRsOutputRepresentation.

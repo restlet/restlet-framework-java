@@ -338,7 +338,6 @@ public class WrapperUtil {
         if (method.isAnnotationPresent(annotationClass)
                 && method.getName().startsWith("set")
                 && method.getParameterTypes().length == 1) {
-            method.setAccessible(true);
             return true;
         }
         return false;

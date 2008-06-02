@@ -27,7 +27,8 @@ import org.restlet.data.Parameter;
 import org.restlet.ext.jaxrs.internal.wrappers.WrapperUtil;
 
 class ParamValueIter implements Iterator<String> {
-    private Iterator<Parameter> paramIter;
+
+    private final Iterator<Parameter> paramIter;
 
     ParamValueIter(Iterable<Parameter> parameters) {
         this.paramIter = parameters.iterator();

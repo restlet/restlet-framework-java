@@ -27,6 +27,7 @@ import java.util.Collection;
 
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.DefaultValue;
+import javax.ws.rs.Encoded;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.PathParam;
@@ -53,7 +54,7 @@ public class IntoRrcInjector extends ContextInjector {
     /**
      * @param jaxRsClass
      * @param tlContext
-     * @param leaveEncoded
+     * @param leaveClassEncoded
      * @param mbWorkers
      *                all entity providers.
      * @param allResolvers
@@ -61,13 +62,13 @@ public class IntoRrcInjector extends ContextInjector {
      * @param extensionBackwardMapping
      */
     public IntoRrcInjector(Class<?> jaxRsClass,
-            ThreadLocalizedContext tlContext, boolean leaveEncoded,
+            ThreadLocalizedContext tlContext, boolean leaveClassEncoded,
             MessageBodyWorkers mbWorkers,
             Collection<ContextResolver<?>> allResolvers,
             ExtensionBackwardMapping extensionBackwardMapping) {
         super(jaxRsClass, tlContext, mbWorkers, allResolvers,
                 extensionBackwardMapping);
-        this.init(jaxRsClass, tlContext, leaveEncoded);
+        this.init(jaxRsClass, tlContext, leaveClassEncoded);
     }
 
     private Type getConvGenTo(AccessibleObject fieldOrBeanSetter) {
@@ -98,39 +99,36 @@ public class IntoRrcInjector extends ContextInjector {
 
     /**
      * initiates the fields to cache the fields that needs injection.
+     * 
+     * @param lcEnc
+     *                leave class encoded
      */
     private void init(Class<?> jaxRsClass, ThreadLocalizedContext tlContext,
-            boolean leaveEncoded) {
-        boolean encode = !leaveEncoded;
+            boolean lcEnc) {
         do {
             for (Field field : jaxRsClass.getDeclaredFields()) {
-                field.setAccessible(true);
                 if (field.isAnnotationPresent(PathParam.class))
-                    add(field, newPathParamGetter(field, tlContext, encode));
+                    add(field, newPathParamGetter(field, tlContext, lcEnc));
                 else if (field.isAnnotationPresent(CookieParam.class))
-                    add(field, newCookieParamGetter(field, tlContext,
-                            leaveEncoded));
+                    add(field, newCookieParamGetter(field, tlContext, lcEnc));
                 else if (field.isAnnotationPresent(HeaderParam.class))
-                    add(field, newHeaderParamGetter(field, tlContext,
-                            leaveEncoded));
+                    add(field, newHeaderParamGetter(field, tlContext, lcEnc));
                 else if (field.isAnnotationPresent(MatrixParam.class))
-                    add(field, newMatrixParamGetter(field, tlContext, encode));
+                    add(field, newMatrixParamGetter(field, tlContext, lcEnc));
                 else if (field.isAnnotationPresent(QueryParam.class))
-                    add(field, newQueryParamGetter(field, tlContext, encode));
+                    add(field, newQueryParamGetter(field, tlContext, lcEnc));
             }
             for (Method method : jaxRsClass.getDeclaredMethods()) {
                 if (isBeanSetter(method, PathParam.class))
-                    add(method, newPathParamGetter(method, tlContext, encode));
+                    add(method, newPathParamGetter(method, tlContext, lcEnc));
                 else if (isBeanSetter(method, CookieParam.class))
-                    add(method, newCookieParamGetter(method, tlContext,
-                            leaveEncoded));
+                    add(method, newCookieParamGetter(method, tlContext, lcEnc));
                 else if (isBeanSetter(method, HeaderParam.class))
-                    add(method, newHeaderParamGetter(method, tlContext,
-                            leaveEncoded));
+                    add(method, newHeaderParamGetter(method, tlContext, lcEnc));
                 else if (isBeanSetter(method, MatrixParam.class))
-                    add(method, newMatrixParamGetter(method, tlContext, encode));
+                    add(method, newMatrixParamGetter(method, tlContext, lcEnc));
                 else if (isBeanSetter(method, QueryParam.class))
-                    add(method, newQueryParamGetter(method, tlContext, encode));
+                    add(method, newQueryParamGetter(method, tlContext, lcEnc));
             }
             jaxRsClass = jaxRsClass.getSuperclass();
         } while (jaxRsClass != null);
@@ -138,51 +136,54 @@ public class IntoRrcInjector extends ContextInjector {
 
     private CookieParamGetter newCookieParamGetter(
             AccessibleObject fieldOrBeanSetter,
-            ThreadLocalizedContext tlContext, boolean annoSaysLeaveEncoded) {
+            ThreadLocalizedContext tlContext, boolean annoSaysLeaveClassEncoded) {
         return new CookieParamGetter(fieldOrBeanSetter
                 .getAnnotation(CookieParam.class), fieldOrBeanSetter
                 .getAnnotation(DefaultValue.class),
                 getConvTo(fieldOrBeanSetter), getConvGenTo(fieldOrBeanSetter),
-                tlContext, annoSaysLeaveEncoded);
+                tlContext, annoSaysLeaveClassEncoded);
     }
 
     private HeaderParamGetter newHeaderParamGetter(
             AccessibleObject fieldOrBeanSetter,
-            ThreadLocalizedContext tlContext, boolean annoSaysLeaveEncoded) {
+            ThreadLocalizedContext tlContext, boolean annoSaysLeaveClassEncoded) {
         return new HeaderParamGetter(fieldOrBeanSetter
                 .getAnnotation(HeaderParam.class), fieldOrBeanSetter
                 .getAnnotation(DefaultValue.class),
                 getConvTo(fieldOrBeanSetter), getConvGenTo(fieldOrBeanSetter),
-                tlContext, annoSaysLeaveEncoded);
+                tlContext, annoSaysLeaveClassEncoded);
     }
 
     private MatrixParamGetter newMatrixParamGetter(
             AccessibleObject fieldOrBeanSetter,
-            ThreadLocalizedContext tlContext, boolean encode) {
+            ThreadLocalizedContext tlContext, boolean leaveClassEncoded) {
         return new MatrixParamGetter(fieldOrBeanSetter
                 .getAnnotation(MatrixParam.class), fieldOrBeanSetter
                 .getAnnotation(DefaultValue.class),
                 getConvTo(fieldOrBeanSetter), getConvGenTo(fieldOrBeanSetter),
-                tlContext, encode);
+                tlContext, leaveClassEncoded
+                        || fieldOrBeanSetter.isAnnotationPresent(Encoded.class));
     }
 
     private PathParamGetter newPathParamGetter(
             AccessibleObject fieldOrBeanSetter,
-            ThreadLocalizedContext tlContext, boolean encode) {
+            ThreadLocalizedContext tlContext, boolean leaveClassEncoded) {
         return new PathParamGetter(fieldOrBeanSetter
                 .getAnnotation(PathParam.class), fieldOrBeanSetter
                 .getAnnotation(DefaultValue.class),
                 getConvTo(fieldOrBeanSetter), getConvGenTo(fieldOrBeanSetter),
-                tlContext, encode);
+                tlContext, leaveClassEncoded
+                        || fieldOrBeanSetter.isAnnotationPresent(Encoded.class));
     }
 
     private QueryParamGetter newQueryParamGetter(
             AccessibleObject fieldOrBeanSetter,
-            ThreadLocalizedContext tlContext, boolean encode) {
+            ThreadLocalizedContext tlContext, boolean leaveClassEncoded) {
         return new QueryParamGetter(fieldOrBeanSetter
                 .getAnnotation(QueryParam.class), fieldOrBeanSetter
                 .getAnnotation(DefaultValue.class),
                 getConvTo(fieldOrBeanSetter), getConvGenTo(fieldOrBeanSetter),
-                tlContext, encode);
+                tlContext, leaveClassEncoded
+                        || fieldOrBeanSetter.isAnnotationPresent(Encoded.class));
     }
 }

@@ -54,17 +54,18 @@ public class ContextInjector {
 
     static class BeanSetter implements InjectionAim {
 
-        private Method beanSetter;
+        private final Method beanSetter;
 
         private BeanSetter(Method beanSetter) {
             this.beanSetter = beanSetter;
+            this.beanSetter.setAccessible(true);
         }
 
         /**
          * @throws InvocationTargetException
          * @throws InjectException
          * @throws IllegalArgumentException
-         * @see ContextInjector.InjectionAim#injectInto(Object, Object)
+         * @see InjectionAim#injectInto(Object, Object)
          */
         public void injectInto(Object resource, Object toInject)
                 throws IllegalArgumentException, InjectException,
@@ -79,9 +80,10 @@ public class ContextInjector {
      * used for the &#64;{@link Context} objects.
      */
     private static class EverSameInjector implements Injector {
-        private Object injectable;
+        
+        private final Object injectable;
 
-        private InjectionAim injectionAim;
+        private final InjectionAim injectionAim;
 
         private EverSameInjector(InjectionAim injectionAim, Object injectable) {
             this.injectionAim = injectionAim;
@@ -100,17 +102,18 @@ public class ContextInjector {
 
     static class FieldWrapper implements InjectionAim {
 
-        private Field field;
+        private final Field field;
 
         private FieldWrapper(Field field) {
             this.field = field;
+            this.field.setAccessible(true);
         }
 
         /**
          * @throws InvocationTargetException
          * @throws InjectException
          * @throws IllegalArgumentException
-         * @see ContextInjector.InjectionAim#injectInto(Object, Object)
+         * @see InjectionAim#injectInto(Object, Object)
          */
         public void injectInto(Object resource, Object toInject)
                 throws IllegalArgumentException, InjectException,
@@ -121,7 +124,7 @@ public class ContextInjector {
 
     private static class GetLastPathSegment implements PathSegment {
 
-        private ThreadLocalizedContext tlContext;
+        private final ThreadLocalizedContext tlContext;
 
         GetLastPathSegment(ThreadLocalizedContext tlContext) {
             this.tlContext = tlContext;
@@ -177,12 +180,35 @@ public class ContextInjector {
          * @throws InvocationTargetException
          * @throws InjectException
          * @throws IllegalArgumentException
-         * @see ContextInjector.InjectionAim#injectInto(Object, Object)
+         * @see InjectionAim#injectInto(Object, Object)
          */
         public abstract void injectInto(Object resource)
                 throws IllegalArgumentException, InjectException,
                 InvocationTargetException;
 
+    }
+
+    private class ParamValueInjector implements Injector {
+
+        private final AccessibleObject fieldOrBeanSetter;
+
+        private final AbstractParamGetter iog;
+
+        ParamValueInjector(AccessibleObject fieldOrBeanSetter,
+                AbstractParamGetter iog) {
+            this.fieldOrBeanSetter = fieldOrBeanSetter;
+            this.fieldOrBeanSetter.setAccessible(true);
+            this.iog = iog;
+        }
+
+        /**
+         * @see org.restlet.ext.jaxrs.internal.wrappers.params.ContextInjector.Injector#injectInto(java.lang.Object)
+         */
+        public void injectInto(Object resource)
+                throws IllegalArgumentException, InjectException,
+                InvocationTargetException {
+            Util.inject(resource, fieldOrBeanSetter, iog.getParamValue());
+        }
     }
 
     private static Logger logger = Logger.getAnonymousLogger();
@@ -255,29 +281,10 @@ public class ContextInjector {
                 extensionBackwardMapping);
     }
 
-    protected void add(AccessibleObject fieldOrBeanSetter, AbstractParamGetter iog) {
-        this.injEverSameAims.add(new ParamValueInjector(fieldOrBeanSetter, iog));
-    }
-
-    private class ParamValueInjector implements Injector {
-
-        private AbstractParamGetter iog;
-
-        private AccessibleObject fieldOrBeanSetter;
-
-        ParamValueInjector(AccessibleObject fieldOrBeanSetter, AbstractParamGetter iog) {
-            this.fieldOrBeanSetter = fieldOrBeanSetter;
-            this.iog = iog;
-        }
-
-        /**
-         * @see org.restlet.ext.jaxrs.internal.wrappers.params.ContextInjector.Injector#injectInto(java.lang.Object)
-         */
-        public void injectInto(Object resource)
-                throws IllegalArgumentException, InjectException,
-                InvocationTargetException {
-            Util.inject(resource, fieldOrBeanSetter, iog.getParamValue());
-        }
+    protected void add(AccessibleObject fieldOrBeanSetter,
+            AbstractParamGetter iog) {
+        this.injEverSameAims
+                .add(new ParamValueInjector(fieldOrBeanSetter, iog));
     }
 
     /**
@@ -299,7 +306,6 @@ public class ContextInjector {
             ExtensionBackwardMapping extensionBackwardMapping) {
         do {
             for (Field field : jaxRsClass.getDeclaredFields()) {
-                field.setAccessible(true);
                 if (field.isAnnotationPresent(Context.class)) {
                     InjectionAim aim = new FieldWrapper(field);
                     Class<?> declaringClass = field.getType();

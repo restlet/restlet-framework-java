@@ -28,7 +28,7 @@ import javax.ws.rs.ext.ContextResolver;
  */
 public class ContextResolverCollection implements ContextResolver<Object> {
 
-    private Collection<ContextResolver<?>> resolvers;
+    private final Collection<ContextResolver<?>> resolvers;
 
     /**
      * @param resolvers

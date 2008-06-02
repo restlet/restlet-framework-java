@@ -49,6 +49,9 @@ public class RemainingPath implements Comparable<RemainingPath> {
         return stb.toString();
     }
 
+    /** contains the given remaining path without matrix parameters. */
+    private final String remainingPart;
+
     /**
      * Creates a new RemianingPath wrapper.
      * 
@@ -58,12 +61,31 @@ public class RemainingPath implements Comparable<RemainingPath> {
         this.remainingPart = removeMatrixParams(remainingPart);
     }
 
-    /** contains the given remaining path without matrix parameters. */
-    private String remainingPart;
+    public int compareTo(RemainingPath other) {
+        return this.remainingPart.compareTo(other.remainingPart);
+    }
 
     @Override
-    public String toString() {
-        return remainingPart;
+    public boolean equals(Object other) {
+        if (other == this)
+            return true;
+        if (!(other instanceof RemainingPath))
+            return false;
+        return this.remainingPart.equals(other.toString());
+    }
+
+    /**
+     * Returns the path without matrix and query parameters.
+     * 
+     * @return the path without matrix and query parameters.
+     */
+    public String getWithoutParams() {
+        return this.remainingPart;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.remainingPart.hashCode();
     }
 
     /**
@@ -76,29 +98,7 @@ public class RemainingPath implements Comparable<RemainingPath> {
     }
 
     @Override
-    public boolean equals(Object other) {
-        if (other == this)
-            return true;
-        if (!(other instanceof RemainingPath))
-            return false;
-        return this.remainingPart.equals(other.toString());
-    }
-
-    @Override
-    public int hashCode() {
-        return this.remainingPart.hashCode();
-    }
-
-    public int compareTo(RemainingPath other) {
-        return this.remainingPart.compareTo(other.remainingPart);
-    }
-
-    /**
-     * Returns the path without matrix and query parameters.
-     * 
-     * @return the path without matrix and query parameters.
-     */
-    public String getWithoutParams() {
-        return this.remainingPart;
+    public String toString() {
+        return remainingPart;
     }
 }

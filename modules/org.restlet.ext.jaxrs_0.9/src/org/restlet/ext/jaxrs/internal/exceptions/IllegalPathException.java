@@ -27,9 +27,10 @@ import javax.ws.rs.Path;
  * @author Stephan Koops
  */
 public class IllegalPathException extends JaxRsException {
+
     private static final long serialVersionUID = 6796414811480666857L;
 
-    private Path path;
+    private final Path path;
 
     /**
      * 

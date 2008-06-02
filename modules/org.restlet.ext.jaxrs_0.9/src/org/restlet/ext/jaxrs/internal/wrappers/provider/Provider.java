@@ -73,27 +73,27 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
     /**
      * the mimes this MessageBodyReader consumes.
      */
-    private List<org.restlet.data.MediaType> consumedMimes;
+    private final List<org.restlet.data.MediaType> consumedMimes;
 
     /**
      * the {@link ContextResolver}, if this providers is a
      * {@link ContextResolver}
      */
-    private javax.ws.rs.ext.ContextResolver<T> contextResolver;
+    private final javax.ws.rs.ext.ContextResolver<T> contextResolver;
 
-    private javax.ws.rs.ext.ExceptionMapper<T> excMapper;
+    private final javax.ws.rs.ext.ExceptionMapper<T> excMapper;
 
-    private Object jaxRsProvider;
+    private final Object jaxRsProvider;
 
-    private List<org.restlet.data.MediaType> producedMimes;
+    private final List<org.restlet.data.MediaType> producedMimes;
 
     /**
      * The JAX-RS {@link javax.ws.rs.ext.MessageBodyReader} this wrapper
      * represent.
      */
-    private javax.ws.rs.ext.MessageBodyReader<T> reader;
+    private final javax.ws.rs.ext.MessageBodyReader<T> reader;
 
-    private javax.ws.rs.ext.MessageBodyWriter<T> writer;
+    private final javax.ws.rs.ext.MessageBodyWriter<T> writer;
 
     /**
      * Creates a new wrapper for a Provider and initializes the provider. If the
@@ -141,43 +141,63 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
             throw new IllegalArgumentException(
                     "The JAX-RS provider class must not be null");
         Util.checkClassConcrete(jaxRsProviderClass, "provider");
+        Object jaxRsProvider = null;
         if (objectFactory != null)
-            this.jaxRsProvider = objectFactory.getInstance(jaxRsProviderClass);
-        if (this.jaxRsProvider == null) {
+            jaxRsProvider = objectFactory.getInstance(jaxRsProviderClass);
+        if (jaxRsProvider == null) {
             Constructor<?> providerConstructor = WrapperUtil
                     .findJaxRsConstructor(jaxRsProviderClass, "provider");
-            this.jaxRsProvider = createInstance(providerConstructor,
+            jaxRsProvider = createInstance(providerConstructor,
                     jaxRsProviderClass, tlContext, mbWorkers, allResolvers,
                     extensionBackwardMapping, logger);
         }
+        this.jaxRsProvider = jaxRsProvider;
         boolean isProvider = false;
         if (jaxRsProvider instanceof javax.ws.rs.ext.MessageBodyWriter) {
             this.writer = (javax.ws.rs.ext.MessageBodyWriter<T>) jaxRsProvider;
             isProvider = true;
+        } else {
+            this.writer = null;
         }
         if (jaxRsProvider instanceof javax.ws.rs.ext.MessageBodyReader) {
             this.reader = (javax.ws.rs.ext.MessageBodyReader<T>) jaxRsProvider;
             isProvider = true;
+        } else {
+            this.reader = null;
         }
         if (jaxRsProvider instanceof javax.ws.rs.ext.ExceptionMapper) {
             this.excMapper = (javax.ws.rs.ext.ExceptionMapper<T>) jaxRsProvider;
             isProvider = true;
+        } else {
+            this.excMapper = null;
         }
         if (jaxRsProvider instanceof javax.ws.rs.ext.ContextResolver) {
             this.contextResolver = (javax.ws.rs.ext.ContextResolver<T>) jaxRsProvider;
             isProvider = true;
+        } else {
+            this.contextResolver = null;
         }
         if (!isProvider) {
             logger
                     .config("The provider "
-                            + jaxRsProviderClass.getClass()
+                            + jaxRsProviderClass
                             + " is neither a MessageBodyWriter nor a MessageBodyReader nor a ContextResolver nor an ExceptionMapper");
         }
-    }
+        ConsumeMime pm = jaxRsProvider.getClass().getAnnotation(
+                ConsumeMime.class);
+        if (pm != null)
+            this.consumedMimes = WrapperUtil.convertToMediaTypes(pm.value());
+        else
+            this.consumedMimes = Collections.singletonList(MediaType.ALL);
 
-    // REQUEST is @Encoded allowed on provider?
-    // REQUEST @Encoded also effect fields and bean setters?
-    // -> javadoc of @Encoded
+        ProduceMime cm = jaxRsProvider.getClass().getAnnotation(
+                ProduceMime.class);
+        if (cm != null) {
+            this.producedMimes = WrapperUtil.convertToMediaTypes(cm.value());
+        } else {
+            this.producedMimes = Collections.singletonList(MediaType.ALL);
+        }
+    }
 
     /**
      * @param providerConstructor
@@ -270,14 +290,6 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * @return List of produced {@link MediaType}s.
      */
     public List<MediaType> getConsumedMimes() {
-        if (consumedMimes == null) {
-            ConsumeMime pm = reader.getClass().getAnnotation(ConsumeMime.class);
-            if (pm != null)
-                this.consumedMimes = WrapperUtil
-                        .convertToMediaTypes(pm.value());
-            else
-                this.consumedMimes = Collections.singletonList(MediaType.ALL);
-        }
         return consumedMimes;
     }
 
@@ -321,15 +333,6 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * @return List of produced {@link MediaType}s.
      */
     public List<MediaType> getProducedMimes() {
-        if (producedMimes == null) {
-            ProduceMime pm = writer.getClass().getAnnotation(ProduceMime.class);
-            if (pm != null) {
-                String[] pmStr = pm.value();
-                this.producedMimes = WrapperUtil.convertToMediaTypes(pmStr);
-            } else {
-                this.producedMimes = Collections.singletonList(MediaType.ALL);
-            }
-        }
         return producedMimes;
     }
 

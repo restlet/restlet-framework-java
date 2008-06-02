@@ -65,7 +65,9 @@ import org.restlet.resource.Representation;
 /**
  * Contains all request specific data of the interfaces injectable for &#64;{@link Context}.
  * Implemetation of the JAX-RS interfaces {@link HttpHeaders}, {@link UriInfo},
- * {@link javax.ws.rs.core.Request} and {@link SecurityContext}.
+ * {@link javax.ws.rs.core.Request} and {@link SecurityContext}.<br>
+ * This class is not required to be thread safe, because it is only used by one
+ * thread.
  * 
  * @author Stephan Koops
  */
@@ -194,8 +196,7 @@ public class CallContext extends JaxRsUriInfo implements UriInfo,
      */
     public CallContext(Request request, org.restlet.data.Response response,
             RoleChecker roleChecker) {
-        super(Util.getReferenceOriginal(request),
-                Util.getReferenceCut(request), false);
+        super(request.getOriginalRef(), request.getResourceRef(), false);
         if (response == null)
             throw new IllegalArgumentException(
                     "The Restlet Response must not be null");
@@ -440,8 +441,11 @@ public class CallContext extends JaxRsUriInfo implements UriInfo,
             return SecurityContext.BASIC_AUTH;
         if (authScheme.equals(ChallengeScheme.HTTP_DIGEST))
             return SecurityContext.DIGEST_AUTH;
+        // if (authScheme.equals(ChallengeScheme.HTTPS_CLIENT_CERT))
+        //     return SecurityContext.CLIENT_CERT_AUTH;
+        // if (authScheme.equals(ChallengeScheme.HTTP_SERVLET_FORM))
+        //     return SecurityContext.FORM_AUTH;
         return authScheme.getName();
-        // LATER how to read FORM_AUTH and others from Servlet API?
     }
 
     /**
@@ -479,6 +483,8 @@ public class CallContext extends JaxRsUriInfo implements UriInfo,
     }
 
     /**
+     * Returns the last matrix parameter with the given name; leaves it encoded.
+     * 
      * @param matrixParamAnnot
      * @return
      * @see #matrixParamEncIter(MatrixParam)
@@ -609,6 +615,7 @@ public class CallContext extends JaxRsUriInfo implements UriInfo,
      * @see SecurityContext#isUserInRole(String)
      */
     public boolean isUserInRole(String role) {
+        // TODO here ServletRequest.isUserInRole(role)
         Principal principal = (request.getChallengeResponse() == null) ? null
                 : request.getChallengeResponse().getPrincipal();
         if (this.roleChecker == null)

@@ -35,7 +35,8 @@ import org.restlet.util.Series;
  * This class wraps the request to get the headers from, if needed in a
  * {@link MessageBodyWriter}. The changing of the http headers is not supported
  * by this runtime environment, because it is not a good design and Restlet does
- * not support it.
+ * not support it.<br>
+ * This class is not thread safe.
  * 
  * @author Stephan Koops
  */
@@ -50,7 +51,7 @@ public class WrappedRequestForHttpHeaders implements
     /** may be null */
     private MultivaluedMap<String, Object> jaxRsRespHeaders;
 
-    private Logger logger;
+    private final Logger logger;
 
     /** null, if content was copied to the {@link #headers}. */
     private Response restletResponse;

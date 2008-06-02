@@ -287,7 +287,6 @@ public abstract class RestletServerTestCase extends TestCase {
             ChallengeResponse challengeResponse, Conditions conditions,
             Collection<Cookie> addCookies, Collection<Parameter> addHeaders) {
         Request request = new Request(httpMethod, reference);
-        request.setOriginalRef(reference.getTargetRef());
         addAcceptedMediaTypes(request, accMediaTypes);
         request.setChallengeResponse(challengeResponse);
         request.setEntity(entity);
@@ -311,6 +310,7 @@ public abstract class RestletServerTestCase extends TestCase {
         Reference reference = request.getResourceRef();
         if (reference.getBaseRef() == null)
             reference.setBaseRef(reference.getHostIdentifier());
+        request.setOriginalRef(reference.getTargetRef());
         Restlet connector = getClientConnector();
         if (shouldAccessWithoutTcp()) {
             String hostDomain = request.getResourceRef().getHostDomain();

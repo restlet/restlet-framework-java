@@ -29,28 +29,6 @@ import org.restlet.test.jaxrs.services.resources.QueryParamTestService;
  */
 public class QueryParamTest extends JaxRsTestCase {
 
-    @Override
-    protected Class<?> getRootResourceClass() {
-        return QueryParamTestService.class;
-    }
-
-    public void testDecoded() throws IOException {
-        Response response = get("qpDecoded?firstname=George%20U.&lastname=Bush");
-        sysOutEntityIfError(response);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEquals("George U. Bush", response.getEntity().getText());
-    }
-
-    public void testA() throws IOException {
-        checkBothGiven("a");
-        checkOneGiven("a");
-    }
-
-    public void testQpDecoded() throws IOException {
-        checkBothGiven("qpDecoded");
-        checkOneGiven("qpDecoded");
-    }
-
     public void checkBothGiven(String subPath) throws IOException {
         Response response = get(subPath + "?firstname=Angela&lastname=Merkel");
         sysOutEntityIfError(response);
@@ -61,6 +39,31 @@ public class QueryParamTest extends JaxRsTestCase {
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("Angela Merkel", response.getEntity().getText());
+    }
+
+    /**
+     * @param relPath
+     * @param res0
+     * @param res1
+     * @param res2
+     * @throws IOException
+     */
+    private void checkMult(String relPath, String res0, String res1, String res2)
+            throws IOException {
+        Response response = get(relPath);
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals(res0, response.getEntity().getText());
+
+        response = get(relPath + "?qp=1");
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals(res1, response.getEntity().getText());
+
+        response = get(relPath + "?qp=1&qp=2");
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals(res2, response.getEntity().getText());
     }
 
     public void checkOneGiven(String subPath) throws IOException {
@@ -75,16 +78,21 @@ public class QueryParamTest extends JaxRsTestCase {
         assertEquals("null Goofy", response.getEntity().getText());
     }
 
-    public void testQpEncoded() throws IOException {
-        Response response = get("qpEncoded?firstname=George%20U.&lastname=Bush");
-        sysOutEntityIfError(response);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEquals("George%20U. Bush", response.getEntity().getText());
+    @Override
+    protected Class<?> getRootResourceClass() {
+        return QueryParamTestService.class;
+    }
 
-        response = get("qpEncoded?lastname=Bush&firstname=George%20U.");
+    public void testA() throws IOException {
+        checkBothGiven("a");
+        checkOneGiven("a");
+    }
+
+    public void testDecoded() throws IOException {
+        Response response = get("qpDecoded?firstname=George%20U.&lastname=Bush");
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEquals("George%20U. Bush", response.getEntity().getText());
+        assertEquals("George U. Bush", response.getEntity().getText());
     }
 
     public void testEncodedA() throws IOException {
@@ -92,6 +100,32 @@ public class QueryParamTest extends JaxRsTestCase {
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("George%20U. Bush", response.getEntity().getText());
+    }
+
+    /** @see QueryParamTestService#getDecoded() */
+    public void testFieldDecoded() throws Exception {
+        Response response1 = get("decoded?decoded=abc");
+        sysOutEntityIfError(response1);
+        assertEquals(Status.SUCCESS_OK, response1.getStatus());
+        assertEquals("abc", response1.getEntity().getText());
+
+        Response response2 = get("decoded?decoded=%20");
+        sysOutEntityIfError(response2);
+        assertEquals(Status.SUCCESS_OK, response2.getStatus());
+        assertEquals(" ", response2.getEntity().getText());
+    }
+
+    /** @see QueryParamTestService#getEncoded() */
+    public void testFieldEncoded() throws Exception {
+        Response response1 = get("encoded?encoded=abc");
+        sysOutEntityIfError(response1);
+        assertEquals(Status.SUCCESS_OK, response1.getStatus());
+        assertEquals("abc", response1.getEntity().getText());
+
+        Response response2 = get("encoded?encoded=%20");
+        sysOutEntityIfError(response2);
+        assertEquals(Status.SUCCESS_OK, response2.getStatus());
+        assertEquals("%20", response2.getEntity().getText());
     }
 
     /**
@@ -159,40 +193,15 @@ public class QueryParamTest extends JaxRsTestCase {
         assertEquals(Status.SUCCESS_OK, response3.getStatus());
         assertEquals("1 2 99", response3.getEntity().getText());
     }
-
+    
     public void testMult1() throws Exception {
         checkMult("array", "[null]", "[1]", "[1, 2]");
         checkMult("arrayWithDefault", "[qv]", "[1]", "[1, 2]");
 
         checkMult("list", "[null]", "[1]", "[1, 2]");
         checkMult("listWithDefault", "[qv]", "[1]", "[1, 2]");
-}
-
-    /**
-     * @param relPath
-     * @param res0
-     * @param res1
-     * @param res2
-     * @throws IOException
-     */
-    private void checkMult(String relPath, String res0, String res1, String res2)
-            throws IOException {
-        Response response = get(relPath);
-        sysOutEntityIfError(response);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEquals(res0, response.getEntity().getText());
-
-        response = get(relPath+"?qp=1");
-        sysOutEntityIfError(response);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEquals(res1, response.getEntity().getText());
-
-        response = get(relPath+"?qp=1&qp=2");
-        sysOutEntityIfError(response);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEquals(res2, response.getEntity().getText());
     }
-
+    
     public void testOne1() throws Exception {
         Response response = get("one?name");
         sysOutEntityIfError(response);
@@ -219,5 +228,22 @@ public class QueryParamTest extends JaxRsTestCase {
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("[null]", response.getEntity().getText());
+    }
+
+    public void testQpDecoded() throws IOException {
+        checkBothGiven("qpDecoded");
+        checkOneGiven("qpDecoded");
+    }
+
+    public void testQpEncoded() throws IOException {
+        Response response = get("qpEncoded?firstname=George%20U.&lastname=Bush");
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("George%20U. Bush", response.getEntity().getText());
+
+        response = get("qpEncoded?lastname=Bush&firstname=George%20U.");
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("George%20U. Bush", response.getEntity().getText());
     }
 }
