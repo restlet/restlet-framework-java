@@ -200,9 +200,10 @@ public class CallContext extends JaxRsUriInfo implements UriInfo,
         if (response == null)
             throw new IllegalArgumentException(
                     "The Restlet Response must not be null");
-        if (request == null)
-            throw new IllegalArgumentException(
-                    "The Restlet Request must not be null");
+        // TODO: check unecessary null check at this point
+        // if (request == null)
+        // throw new IllegalArgumentException(
+        // "The Restlet Request must not be null");
         if (roleChecker == null)
             throw new IllegalArgumentException(
                     "The RoleChecker must not be null.");
@@ -442,9 +443,9 @@ public class CallContext extends JaxRsUriInfo implements UriInfo,
         if (authScheme.equals(ChallengeScheme.HTTP_DIGEST))
             return SecurityContext.DIGEST_AUTH;
         // if (authScheme.equals(ChallengeScheme.HTTPS_CLIENT_CERT))
-        //     return SecurityContext.CLIENT_CERT_AUTH;
+        // return SecurityContext.CLIENT_CERT_AUTH;
         // if (authScheme.equals(ChallengeScheme.HTTP_SERVLET_FORM))
-        //     return SecurityContext.FORM_AUTH;
+        // return SecurityContext.FORM_AUTH;
         return authScheme.getName();
     }
 
