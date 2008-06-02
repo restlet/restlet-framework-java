@@ -48,6 +48,7 @@ import javax.ws.rs.ext.Provider;
 @Provider
 @ConsumeMime("multipart/form-data")
 @ProduceMime("multipart/form-data")
+@SuppressWarnings("all")
 public class MultipartProvider implements MessageBodyReader<Multipart>,
         MessageBodyWriter<Multipart> {
     // NICE test MultipartProvider
