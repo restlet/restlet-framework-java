@@ -142,16 +142,15 @@ public class Reference {
      *         supported.
      */
     public static String decode(String toDecode, CharacterSet characterSet) {
-    	if(!CharacterSet.UTF_8.equals(characterSet)){
-    	    throw new IllegalArgumentException(
-    	            "Only UTF-8 URL encoding is supported under GWT");
-    	}
-    	
+        if (!CharacterSet.UTF_8.equals(characterSet)) {
+            throw new IllegalArgumentException(
+                    "Only UTF-8 URL encoding is supported under GWT");
+        }
+
         String result = null;
 
         try {
-            result = (characterSet == null) ? toDecode : URL.decode(
-                    toDecode);
+            result = (characterSet == null) ? toDecode : URL.decode(toDecode);
         } catch (NullPointerException npe) {
             System.err
                     .println("Unable to decode the string with the UTF-8 character set.");
@@ -200,15 +199,14 @@ public class Reference {
      *         supported.
      */
     public static String encode(String toEncode, CharacterSet characterSet) {
-    	if(!CharacterSet.UTF_8.equals(characterSet)){
-    	    throw new IllegalArgumentException(
-    	            "Only UTF-8 URL encoding is supported under GWT");
-    	}
+        if (!CharacterSet.UTF_8.equals(characterSet)) {
+            throw new IllegalArgumentException(
+                    "Only UTF-8 URL encoding is supported under GWT");
+        }
         String result = null;
 
         try {
-            result = (characterSet == null) ? toEncode : URL.encode(
-                    toEncode);
+            result = (characterSet == null) ? toEncode : URL.encode(toEncode);
         } catch (NullPointerException npe) {
             System.err
                     .println("Unable to encode the string with the UTF-8 character set.");
@@ -662,6 +660,7 @@ public class Reference {
     }
 
     // do not put an @Override here, even if Eclipse says so
+    @SuppressWarnings("all")
     public Reference clone() {
         Reference newRef = new Reference();
 

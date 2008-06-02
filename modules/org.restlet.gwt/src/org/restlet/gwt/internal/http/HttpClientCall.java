@@ -204,9 +204,9 @@ public abstract class HttpClientCall extends HttpCall {
     }
 
     /**
-     * Returns the request entity stream if it exists.
+     * Returns the request entity string if it exists.
      * 
-     * @return The request entity stream if it exists.
+     * @return The request entity string if it exists.
      */
     public abstract String getRequestEntityString();
 
@@ -288,50 +288,8 @@ public abstract class HttpClientCall extends HttpCall {
      * 
      * @param request
      *                The high-level request.
-     * @return the status of the communication
      */
-    public Status sendRequest(Request request) {
-        Status result = null;
-        Representation entity = request.isEntityAvailable() ? request
-                .getEntity() : null;
-        try {
-            if (entity != null) {
-                // In order to workaround bug #6472250
-                // (http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6472250),
-                // it is very important to reuse that exact same "rs" reference
-                // when manipulating the request stream, otherwise "insufficient
-                // data sent" exceptions will occur in "fixedLengthMode"
-
-                // TODO: to refactor
-                // String text = getRequestEntityString();
-
-                // if (wbc != null) {
-                // entity.write(wbc);
-                // } else if (rs != null) {
-                // entity.write(rs);
-                // rs.flush();
-                // }
-                //
-                // if (rs != null) {
-                // rs.close();
-                // } else if (wbc != null) {
-                // wbc.close();
-                // }
-            }
-
-            // Now we can access the status code, this MUST happen after closing
-            // any open request stream.
-            result = new Status(getStatusCode(), null, getReasonPhrase(), null);
-        } catch (Exception ioe) {
-            result = new Status(Status.CONNECTOR_ERROR_COMMUNICATION, ioe);
-        } finally {
-            if (entity != null) {
-                entity.release();
-            }
-        }
-
-        return result;
-    }
+    public abstract void sendRequest(Request request) throws Exception;
 
     /**
      * Indicates if the request entity should be chunked.

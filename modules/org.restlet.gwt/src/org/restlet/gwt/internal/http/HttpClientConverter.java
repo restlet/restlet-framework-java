@@ -82,13 +82,17 @@ public class HttpClientConverter extends HttpConverter {
      *                The high-level request.
      * @param response
      *                The high-level response.
+     * @throws Exception
      */
     public void commit(HttpClientCall httpCall, Request request,
-            Response response) {
+            Response response) throws Exception {
         if (httpCall != null) {
             // Send the request to the client
-            response.setStatus(httpCall.sendRequest(request));
+            httpCall.sendRequest(request);
 
+            // MOVE ALL THE CODE BELOW IN A CALLBACK
+            // Status retrieval!!
+           
             // Get the server address
             response.getServerInfo().setAddress(httpCall.getServerAddress());
             response.getServerInfo().setPort(httpCall.getServerPort());

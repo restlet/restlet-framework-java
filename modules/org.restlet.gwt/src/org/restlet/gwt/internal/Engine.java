@@ -25,6 +25,7 @@ import org.restlet.gwt.internal.http.CookieUtils;
 import org.restlet.gwt.internal.http.HttpClientCall;
 import org.restlet.gwt.internal.http.HttpClientConverter;
 import org.restlet.gwt.internal.http.HttpUtils;
+import org.restlet.gwt.internal.http.gwt.GwtHttpClientHelper;
 import org.restlet.gwt.internal.util.FormUtils;
 import org.restlet.gwt.resource.Representation;
 import org.restlet.gwt.resource.Variant;
@@ -93,7 +94,9 @@ public class Engine extends org.restlet.gwt.util.Engine {
     public Engine(boolean discoverHelpers) {
         this.registeredClients = new ArrayList<ClientHelper>();
 
-        // TODO: Add GWT HTTP client
+        if (discoverHelpers) {
+            getRegisteredClients().add(new GwtHttpClientHelper(null));
+        }
     }
 
     /**
@@ -128,18 +131,9 @@ public class Engine extends org.restlet.gwt.util.Engine {
                 connector = iter.next();
 
                 if (connector.getProtocols().containsAll(client.getProtocols())) {
-                    // TODO: fixme
-//                    if ((helperClass == null)
-//                            || connector.getClass().getCanonicalName().equals(
-//                                    helperClass)) {
-//                        try {
-//                            result = connector.getClass().getConstructor(
-//                                    Client.class).newInstance(client);
-//                        } catch (Exception e) {
-//                            System.err
-//                                    .println("Exception while instantiation the client connector.");
-//                        }
-//                    }
+                    // Not very dynamic but works as we only have one helper
+                    // available currently
+                    result = new GwtHttpClientHelper(client);
                 }
             }
 

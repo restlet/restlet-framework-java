@@ -66,14 +66,11 @@ public abstract class Engine {
      * @return The registered Restlet engine.
      */
     public static Engine getInstance() {
-        Engine result = instance;
-
-        if (result == null) {
-            instance = new org.restlet.gwt.internal.Engine();
-            result = instance;
+        if (instance == null) {
+            org.restlet.gwt.internal.Engine.register();
         }
 
-        return result;
+        return instance;
     }
 
     /**
