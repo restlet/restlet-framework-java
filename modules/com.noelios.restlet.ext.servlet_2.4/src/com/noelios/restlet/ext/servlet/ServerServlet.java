@@ -70,7 +70,16 @@ import com.noelios.restlet.http.HttpServerHelper;
  * The enumeration of initParameters of your Servlet will be copied to the
  * "context.parameters" property of your application. This way, you can pass
  * additional initialization parameters to your Restlet application, and share
- * them with existing Servlets.
+ * them with existing Servlets.<br>
+ * It is also possible to specify a component class to be instantiated instead
+ * of a default component. You just need to add a
+ * "org.restlet.attribute.component" context parameter to your ServerServlet,
+ * with the qualified class name to instantiate as value. Once instantiated, a
+ * server connector will be added to this component and the application
+ * specified via the other context parameter will be normally attached to its
+ * default virtual host. This allows you to manually attach private applications
+ * to its internal router or to declare client connectors, for example for the
+ * CLAP, FILE or HTTP protocols.
  * 
  * @see <a href="http://java.sun.com/j2ee/">J2EE home page</a>
  * @author Jerome Louvel (contact@noelios.com)
