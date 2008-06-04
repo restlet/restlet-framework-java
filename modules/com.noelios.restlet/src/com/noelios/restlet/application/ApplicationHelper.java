@@ -86,8 +86,8 @@ public class ApplicationHelper extends ChainHelper<Application> {
     }
 
     /**
-     * In addition to the default behavior, it sets the request and response
-     * {@link Application#KEY} attributes with the application instance.
+     * In addition to the default behavior, it saves the current application
+     * instance into the current thread.
      * 
      * @param request
      *                The request to handle.
