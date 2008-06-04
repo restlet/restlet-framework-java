@@ -16,7 +16,10 @@ Changes log
           purpose of "Request.resourceRef". Suggested by Alex Milowski
           and Rob Heittman.
         - Client now has a new constructor taking a string with the 
-       	  protocol name instead of a Protocol instance.       
+       	  protocol name instead of a Protocol instance.
+       	- Replaced "Response.challengeRequest" by "challengeRequests" 
+       	  list property to conform to HTTP semantics. Contributed by
+       	  Bruno Harbulot.       
     - NRE and Extension Enhancements
         - Added a static HttpServletRequest getRequest(Request) method
           to the Servlet extension.        

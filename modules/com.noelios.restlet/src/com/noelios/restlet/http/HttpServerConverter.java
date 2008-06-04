@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.logging.Level;
 
 import org.restlet.Context;
+import org.restlet.data.ChallengeRequest;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Dimension;
 import org.restlet.data.Encoding;
@@ -176,9 +177,12 @@ public class HttpServerConverter extends HttpConverter {
         }
 
         // Set the security data
-        if (response.getChallengeRequest() != null) {
-            responseHeaders.add(HttpConstants.HEADER_WWW_AUTHENTICATE,
-                    AuthenticationUtils.format(response.getChallengeRequest()));
+        if (response.getChallengeRequests() != null) {
+            for (ChallengeRequest challengeRequest : response
+                    .getChallengeRequests()) {
+                responseHeaders.add(HttpConstants.HEADER_WWW_AUTHENTICATE,
+                        AuthenticationUtils.format(challengeRequest));
+            }
         }
 
         // Send the Vary header only to none-MSIE user agents as MSIE seems

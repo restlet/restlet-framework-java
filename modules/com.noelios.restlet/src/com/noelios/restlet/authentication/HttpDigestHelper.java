@@ -172,7 +172,16 @@ public class HttpDigestHelper extends AuthenticationHelper {
             response.getAttributes().put("stale", "true");
         }
 
-        Series<Parameter> parameters = response.getChallengeRequest()
+        // This is temporary, pending Guard re-factoring. We still assume 
+        // there is only one challenge scheme, that of the Guard.
+        ChallengeRequest mainChallengeRequest = null;
+        for (ChallengeRequest challengeRequest: response.getChallengeRequests()) {
+            if (challengeRequest.getScheme().equals(guard.getScheme())) {
+                mainChallengeRequest = challengeRequest;
+                break;
+            }
+        }
+        Series<Parameter> parameters = mainChallengeRequest
                 .getParameters();
         StringBuffer domain = new StringBuffer();
 

@@ -68,8 +68,9 @@ public class Dispatcher {
 
         if (model.getResponse().getStatus().equals(
                 Status.CLIENT_ERROR_UNAUTHORIZED)) {
+            // TODO: check for support of several challenge requests
             ChallengeRequest challengeRequest = model.getResponse()
-                    .getChallengeRequest();
+                    .getChallengeRequests().get(0);
             view.output("%s authentication for realm '%s'", challengeRequest
                     .getScheme().getTechnicalName(), challengeRequest
                     .getRealm());

@@ -22,6 +22,7 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.restlet.Restlet;
 import org.restlet.util.Series;
@@ -102,8 +103,8 @@ public class Response extends Message {
     /** The set of methods allowed on the requested resource. */
     private volatile Set<Method> allowedMethods;
 
-    /** The authentication request sent by an origin server to a client. */
-    private volatile ChallengeRequest challengeRequest;
+    /** The authentication requests sent by an origin server to a client. */
+    private volatile List<ChallengeRequest> challengeRequests;
 
     /** The cookie settings provided by the server. */
     private volatile Series<CookieSetting> cookieSettings;
@@ -131,7 +132,7 @@ public class Response extends Message {
      */
     public Response(Request request) {
         this.allowedMethods = null;
-        this.challengeRequest = null;
+        this.challengeRequests = null;
         this.cookieSettings = null;
         this.dimensions = null;
         this.locationRef = null;
@@ -165,9 +166,35 @@ public class Response extends Message {
      * Returns the authentication request sent by an origin server to a client.
      * 
      * @return The authentication request sent by an origin server to a client.
+     * @deprecated Use the {@link #getChallengeRequests()} method instead.
      */
+    @Deprecated
     public ChallengeRequest getChallengeRequest() {
-        return this.challengeRequest;
+        List<ChallengeRequest> requests = this.challengeRequests;
+        if ((requests != null) && (requests.size() > 0)) {
+            return requests.get(0);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Returns the list of authentication requests sent by an origin server to a
+     * client. If none is found, an empty list is returned.
+     * 
+     * @return The list of authentication requests.
+     */
+    public List<ChallengeRequest> getChallengeRequests() {
+        // Lazy initialization with double-check.
+        List<ChallengeRequest> cr = this.challengeRequests;
+        if (cr == null) {
+            synchronized (this) {
+                cr = this.challengeRequests;
+                if (cr == null)
+                    this.challengeRequests = cr = new CopyOnWriteArrayList<ChallengeRequest>();
+            }
+        }
+        return cr;
     }
 
     /**
@@ -370,7 +397,21 @@ public class Response extends Message {
      *                client.
      */
     public void setChallengeRequest(ChallengeRequest request) {
-        this.challengeRequest = request;
+        List<ChallengeRequest> requests = new CopyOnWriteArrayList<ChallengeRequest>();
+        requests.add(request);
+        setChallengeRequests(requests);
+    }
+
+    /**
+     * Sets the list of authentication requests sent by an origin server to a
+     * client.
+     * 
+     * @param requests
+     *                The list of authentication requests sent by an origin
+     *                server to a client.
+     */
+    public void setChallengeRequests(List<ChallengeRequest> requests) {
+        this.challengeRequests = requests;
     }
 
     /**

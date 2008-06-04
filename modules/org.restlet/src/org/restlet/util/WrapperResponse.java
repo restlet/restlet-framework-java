@@ -18,6 +18,7 @@
 
 package org.restlet.util;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -112,10 +113,24 @@ public class WrapperResponse extends Response {
      * Returns the authentication request sent by an origin server to a client.
      * 
      * @return The authentication request sent by an origin server to a client.
+     * @deprecated Use the {@link #getChallengeRequests()} instead.
      */
+    @Deprecated
     @Override
     public ChallengeRequest getChallengeRequest() {
         return getWrappedResponse().getChallengeRequest();
+    }
+
+    /**
+     * Returns the list of authentication requests sent by an origin server to a
+     * client.
+     * 
+     * @return The list of authentication requests sent by an origin server to a
+     *         client.
+     */
+    @Override
+    public List<ChallengeRequest> getChallengeRequests() {
+        return getWrappedResponse().getChallengeRequests();
     }
 
     /**
@@ -376,6 +391,19 @@ public class WrapperResponse extends Response {
     @Override
     public void setChallengeRequest(ChallengeRequest request) {
         getWrappedResponse().setChallengeRequest(request);
+    }
+
+    /**
+     * Sets the list of authentication requests sent by an origin server to a
+     * client.
+     * 
+     * @param requests
+     *                The list of authentication requests sent by an origin
+     *                server to a client.
+     */
+    @Override
+    public void setChallengeRequests(List<ChallengeRequest> requests) {
+        getWrappedResponse().setChallengeRequests(requests);
     }
 
     /**
