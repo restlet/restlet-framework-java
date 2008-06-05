@@ -376,12 +376,12 @@ public class Request extends Message {
     /**
      * Sets the authentication response sent by a client to an origin server.
      * 
-     * @param response
+     * @param challengeResponse
      *                The authentication response sent by a client to an origin
      *                server.
      */
-    public void setChallengeResponse(ChallengeResponse response) {
-        this.challengeResponse = response;
+    public void setChallengeResponse(ChallengeResponse challengeResponse) {
+        this.challengeResponse = challengeResponse;
     }
 
     /**
