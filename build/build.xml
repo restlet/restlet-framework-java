@@ -1401,10 +1401,12 @@
       <copy file="${tmpl}/text/readme.txt" tofile="${dist-classic}/readme.txt" />
       <copy file="${tmpl}/text/trademarks.txt" tofile="${dist-classic}/trademarks.txt" />
 
-       <!-- Copy the build properties files. -->
-    <copy todir="${dist-classic}/src">
-       <filelist dir="${basedir}" files="build.properties, libraries.properties, modules.properties" />
-    </copy>
+      <!-- Copy the build properties files. -->
+      <copy todir="${dist-classic}/src">
+         <fileset dir="${basedir}">
+           <include name="*.properties"/>
+        </fileset>
+      </copy>
 
       <!-- Packages libraries -->
 <!-- disabled for now  <stageLibrary name="bouncycastle" /> -->
