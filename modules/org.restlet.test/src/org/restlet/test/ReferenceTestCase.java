@@ -598,19 +598,19 @@ public class ReferenceTestCase extends RestletTestCase {
 
         reference.setHostDomain("www.example.com");
         assertEquals("login:password@www.example.com:81", reference.getAuthority());
-        assertEquals("localhost", reference.getHostDomain());
+        assertEquals("www.example.com", reference.getHostDomain());
         assertEquals(81, reference.getHostPort());
         assertEquals("login:password", reference.getUserInfo());
         
         reference.setHostPort(82);
         assertEquals("login:password@www.example.com:82", reference.getAuthority());
-        assertEquals("localhost", reference.getHostDomain());
+        assertEquals("www.example.com", reference.getHostDomain());
         assertEquals(82, reference.getHostPort());
         assertEquals("login:password", reference.getUserInfo());
         
         reference.setUserInfo("login");
         assertEquals("login@www.example.com:82", reference.getAuthority());
-        assertEquals("localhost", reference.getHostDomain());
+        assertEquals("www.example.com", reference.getHostDomain());
         assertEquals(82, reference.getHostPort());
         assertEquals("login", reference.getUserInfo());
     }
