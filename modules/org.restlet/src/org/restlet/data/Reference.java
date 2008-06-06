@@ -560,7 +560,8 @@ public class Reference {
 
         if (authority != null) {
             int index1 = authority.indexOf('@');
-            int index2 = authority.indexOf(':');
+            // We must prevent the case where the userinfo part contains ':'
+            int index2 = authority.indexOf(':', (index1 == -1 ? 0 : index1));
 
             if (index1 != -1) {
                 // User info found
@@ -610,7 +611,9 @@ public class Reference {
         String authority = getAuthority();
 
         if (authority != null) {
-            int index = authority.indexOf(':');
+            int index1 = authority.indexOf('@');
+            // We must prevent the case where the userinfo part contains ':'
+            int index = authority.indexOf(':', (index1 == -1 ? 0 : index1));
 
             if (index != -1) {
                 try {
@@ -1560,7 +1563,8 @@ public class Reference {
             }
 
             int index1 = authority.indexOf('@');
-            int index2 = authority.indexOf(':');
+            // We must prevent the case where the userinfo part contains ':'
+            int index2 = authority.indexOf(':', (index1 == -1 ? 0 : index1));
 
             if (index1 != -1) {
                 // User info found
@@ -1598,7 +1602,9 @@ public class Reference {
         String authority = getAuthority();
 
         if (authority != null) {
-            int index = authority.indexOf(':');
+            int index1 = authority.indexOf('@');
+            // We must prevent the case where the userinfo part contains ':'
+            int index = authority.indexOf(':', (index1 == -1 ? 0 : index1));
             String newPort = (port == null) ? "" : ":" + port;
 
             if (index != -1) {
