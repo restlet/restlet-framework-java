@@ -866,7 +866,7 @@ public class JaxRsRouter extends Restlet {
             return null;
         if (entity instanceof Representation) {
             Representation repr = (Representation) entity;
-            // ensures that a supported character is set, which is also supported
+            // ensures that a supported character set is set
             repr.setCharacterSet(getSupportedCharSet(repr.getCharacterSet()));
             return repr;
         }
@@ -876,6 +876,12 @@ public class JaxRsRouter extends Restlet {
         if (resourceMethod != null) { // is default
             genericReturnType = resourceMethod.getGenericReturnType();
             methodAnnotations = resourceMethod.getAnnotations();
+        }
+        if (genericReturnType instanceof Class
+                && ((Class) genericReturnType)
+                        .isAssignableFrom(javax.ws.rs.core.Response.class)) {
+            // LATER >= 0.81: use generic type from GenericEntity
+            genericReturnType = entityClass;
         }
         MessageBodyWriterSubSet mbws = entityProviders.writerSubSet(
                 entityClass, genericReturnType, methodAnnotations);

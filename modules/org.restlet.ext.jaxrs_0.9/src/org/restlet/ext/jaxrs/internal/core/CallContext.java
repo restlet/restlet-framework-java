@@ -197,13 +197,10 @@ public class CallContext extends JaxRsUriInfo implements UriInfo,
     public CallContext(Request request, org.restlet.data.Response response,
             RoleChecker roleChecker) {
         super(request.getOriginalRef(), request.getResourceRef(), false);
+        // (request == null) already catched by earlier NPE
         if (response == null)
             throw new IllegalArgumentException(
                     "The Restlet Response must not be null");
-        // TODO: check unecessary null check at this point
-        // if (request == null)
-        // throw new IllegalArgumentException(
-        // "The Restlet Request must not be null");
         if (roleChecker == null)
             throw new IllegalArgumentException(
                     "The RoleChecker must not be null.");

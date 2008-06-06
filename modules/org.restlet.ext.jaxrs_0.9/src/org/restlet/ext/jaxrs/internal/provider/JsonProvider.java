@@ -52,7 +52,7 @@ import org.restlet.ext.jaxrs.internal.util.Util;
 public class JsonProvider extends AbstractProvider<Object> {
 
     // NICE better JSON support planned for later.
-    
+
     /**
      * @see javax.ws.rs.ext.MessageBodyWriter#getSize(java.lang.Object)
      */
@@ -82,7 +82,7 @@ public class JsonProvider extends AbstractProvider<Object> {
             ioe.initCause(e);
             throw ioe;
         }
-        if (JSONString.class.isAssignableFrom(type))
+        if (JSONString.class.isAssignableFrom(type)) {
             return new JSONString() {
                 public String toJSONString() {
                     return jsonString;
@@ -93,6 +93,7 @@ public class JsonProvider extends AbstractProvider<Object> {
                     return jsonString;
                 }
             };
+        }
         throw new IllegalArgumentException("the given type " + type
                 + " is not supported");
     }

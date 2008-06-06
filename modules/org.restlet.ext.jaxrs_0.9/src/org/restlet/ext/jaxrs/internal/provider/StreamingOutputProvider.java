@@ -32,6 +32,7 @@ import javax.ws.rs.ext.Provider;
  * This Provider is used to read directly from an {@link StreamingOutput}.
  * 
  * @author Stephan Koops
+ * @see StreamingOutput
  */
 @Provider
 public class StreamingOutputProvider implements

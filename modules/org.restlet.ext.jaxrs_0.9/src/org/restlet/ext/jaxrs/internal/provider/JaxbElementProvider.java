@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.logging.Logger;
 
@@ -36,6 +35,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 import org.restlet.ext.jaxrs.internal.exceptions.ImplementationException;
+import org.restlet.ext.jaxrs.internal.util.Util;
 
 /**
  * Provider for {@link JAXBElement}s.
@@ -65,15 +65,7 @@ public class JaxbElementProvider extends AbstractJaxbProvider<JAXBElement<?>> {
             Annotation[] annotations) {
         if (!JAXBElement.class.isAssignableFrom(type))
             return false;
-        if (!(genericType instanceof ParameterizedType))
-            return false;
-        ParameterizedType pt = (ParameterizedType) genericType;
-        Type atp = pt.getActualTypeArguments()[0];
-        if (atp instanceof Class)
-            return true;
-        if (atp instanceof ParameterizedType)
-            return (((ParameterizedType) atp).getRawType() instanceof Class);
-        return false;
+        return Util.getGenericClass(genericType) != null;
     }
 
     /**
@@ -84,15 +76,7 @@ public class JaxbElementProvider extends AbstractJaxbProvider<JAXBElement<?>> {
             Annotation[] annotations) {
         if (!type.isAssignableFrom(JAXBElement.class))
             return false;
-        if (!(genericType instanceof ParameterizedType))
-            return false;
-        ParameterizedType pt = (ParameterizedType) genericType;
-        Type atp = pt.getActualTypeArguments()[0];
-        if (atp instanceof Class)
-            return true;
-        if (atp instanceof ParameterizedType)
-            return (((ParameterizedType) atp).getRawType() instanceof Class);
-        return false;
+        return Util.getGenericClass(genericType) != null;
     }
 
     /**
@@ -105,14 +89,8 @@ public class JaxbElementProvider extends AbstractJaxbProvider<JAXBElement<?>> {
             Type genericType, Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, String> httpResponseHeaders,
             InputStream entityStream) throws IOException {
-        ParameterizedType pt = (ParameterizedType) genericType;
-        Type atp = pt.getActualTypeArguments()[0];
-        Class<?> clazz;
-        if (atp instanceof Class)
-            clazz = (Class<?>) atp;
-        else if (atp instanceof ParameterizedType)
-            clazz = (Class<?>) ((ParameterizedType) atp).getRawType();
-        else
+        Class<?> clazz = Util.getGenericClass(genericType);
+        if(clazz == null)
             throw new ImplementationException(
                     "The JaxbElement provider has gotten a type it could not unmarshal. Perhaps is the JaxbElementProvider not consistent to itself.");
         QName qName = new QName("testQName"); // LATER QName for JAXBElement?

@@ -560,9 +560,10 @@ public class Util {
             throws NoSuchElementException {
         return map.values().iterator().next();
     }
-    
+
     /**
-     * Example: in List&lt;String&lt; -&gt; out: String.class  
+     * Example: in List&lt;String&lt; -&gt; out: String.class
+     * 
      * @param genericType
      * @return otherwise null
      */
@@ -572,7 +573,14 @@ public class Util {
         ParameterizedType pt = (ParameterizedType) genericType;
         Type atp = pt.getActualTypeArguments()[0];
         if (atp instanceof Class)
-            return (Class<?>)atp;
+            return (Class<?>) atp;
+        if (atp instanceof ParameterizedType) {
+            Type rawType = ((ParameterizedType) atp).getRawType();
+            if (rawType instanceof Class)
+                return (Class<?>) rawType;
+            else
+                return null;
+        }
         return null;
     }
 
