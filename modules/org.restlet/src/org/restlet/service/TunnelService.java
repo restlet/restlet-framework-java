@@ -19,6 +19,7 @@
 package org.restlet.service;
 
 import org.restlet.data.ClientInfo;
+import org.restlet.data.Request;
 
 /**
  * Service tunneling request method or client preferences. The tunneling can use
@@ -333,7 +334,7 @@ public class TunnelService {
      * 
      * @return True if the client preferences can be tunnelled via the
      *         extensions
-     * @see #ATTRIBUTE_ORIGINAL_REF
+     * @see Request#getOriginalRef()
      */
     public boolean isExtensionsTunnel() {
         return this.extensionsTunnel;
