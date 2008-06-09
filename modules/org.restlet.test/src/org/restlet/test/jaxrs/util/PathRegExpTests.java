@@ -27,7 +27,6 @@ import org.restlet.ext.jaxrs.internal.util.RemainingPath;
  * @author Stephan Koops
  * @see PathRegExp
  */
-@SuppressWarnings("all")
 public class PathRegExpTests extends TestCase {
 
     /**

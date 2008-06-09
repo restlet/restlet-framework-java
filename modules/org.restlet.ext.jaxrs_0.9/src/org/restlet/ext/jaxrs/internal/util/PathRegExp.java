@@ -19,6 +19,7 @@ package org.restlet.ext.jaxrs.internal.util;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.Path;
@@ -156,16 +157,24 @@ public class PathRegExp {
         patternStb.append('}');
         this.template = new Template(patternStb.toString(),
                 org.restlet.util.Template.MODE_EQUALS);
-        Variable defaultVariable = this.template.getDefaultVariable();
-        if (limitedToOneSegment)
-            defaultVariable.setType(Variable.TYPE_URI_SEGMENT);
-        else
-            defaultVariable.setType(Variable.TYPE_URI_PATH);
+        this.template.getDefaultVariable().setType(Variable.TYPE_URI_PATH);
 
-        Variable restVar = template.getVariables().get(VARNAME_FUER_REST);
+        Map<String, Variable> variables = template.getVariables();
+        List<String> varNames = this.template.getVariableNames();
+        if (varNames.size() > 1) {
+            String lastVarName = varNames.get(varNames.size() - 2);
+            Variable lastVariable;
+            if (limitedToOneSegment
+                    && pathPattern.endsWith("{" + lastVarName + "}"))
+                lastVariable = new Variable(Variable.TYPE_URI_SEGMENT);
+            else
+                lastVariable = new Variable(Variable.TYPE_URI_PATH);
+            variables.put(lastVarName, lastVariable);
+        }
+        Variable restVar = variables.get(VARNAME_FUER_REST);
         if (restVar == null) {
             restVar = new Variable(Variable.TYPE_ALL);
-            template.getVariables().put(VARNAME_FUER_REST, restVar);
+            variables.put(VARNAME_FUER_REST, restVar);
         }
         restVar.setRequired(false);
     }
