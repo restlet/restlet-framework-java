@@ -47,12 +47,16 @@ import com.noelios.restlet.ext.servlet.ServerServlet;
 import com.noelios.restlet.http.HttpServerCall;
 import com.noelios.restlet.http.HttpServerHelper;
 
+import java.security.AccessControlException;
+
+import java.sql.Driver;
+
 /**
  * Servlet acting like an HTTP server connector. See <a
  * href="/documentation/1.0/faq#02">Developper FAQ #2</a> for details on how to
  * integrate a Restlet application into a servlet container.<br/> Here is a
  * sample configuration for your Restlet webapp:
- * 
+ *
  * <pre>
  * &lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt;
  * &lt;!DOCTYPE web-app PUBLIC
@@ -60,8 +64,8 @@ import com.noelios.restlet.http.HttpServerHelper;
  *       &quot;http://java.sun.com/dtd/web-app_2_3.dtd&quot;&gt;
  * &lt;web-app&gt;
  *         &lt;display-name&gt;Restlet adapter&lt;/display-name&gt;
- * 
- * 
+ *
+ *
  *       &lt;!-- Restlet adapter --&gt;
  *       &lt;servlet&gt;
  *        &lt;servlet-name&gt;XDBServerServlet&lt;/servlet-name&gt;
@@ -73,35 +77,25 @@ import com.noelios.restlet.http.HttpServerHelper;
  *            xmlns=&quot;http://xmlns.oracle.com/xdb/xdbconfig.xsd&quot;&gt;
  *            &lt;param-name&gt;org.restlet.application&lt;/param-name&gt;
  *            &lt;param-value&gt;
- *               org.restlet.example.tutorial.Part12
+ *               SCOTT:org.restlet.example.tutorial.Part12
  *            &lt;/param-value&gt;
  *            &lt;description&gt;REST Application&lt;/description&gt;
  *          &lt;/init-param&gt;
- *          &lt;init-param
- *            xmlns=&quot;http://xmlns.oracle.com/xdb/xdbconfig.xsd&quot;&gt;
- *            &lt;param-name&gt;org.restlet.query&lt;/param-name&gt;
- *            &lt;param-value&gt;
- *               keywords,kwd,true;xx,yy,false
- *            &lt;/param-value&gt;
- *            &lt;description&gt;
- *              route.extractQuery arguments
- *            &lt;/description&gt;
- *          &lt;/init-param&gt;
  *       &lt;/servlet&gt;
- * 
+ *
  *       &lt;!-- Catch all requests --&gt;
  *       &lt;servlet-mapping&gt;
  *         &lt;servlet-name&gt;XDBServerServlet&lt;/servlet-name&gt;
- *         &lt;url-pattern&gt;/users/*&lt;/url-pattern&gt;
+ *         &lt;url-pattern&gt;/userapp/*&lt;/url-pattern&gt;
  *       &lt;/servlet-mapping&gt;
  * &lt;/web-app&gt;
  * </pre>
- * 
+ *
  * The enumeration of initParameters of your Servlet will be copied to the
  * "context.parameters" property of your application. This way, you can pass
  * additional initialization parameters to your Restlet application, and share
  * them with existing Servlets.
- * 
+ *
  * @see <a href="http://java.sun.com/j2ee/">J2EE home page</a>
  * @author Marcelo F. Ochoa (mochoa@ieee.org)
  */
@@ -137,26 +131,56 @@ public class XdbServerServlet extends ServerServlet {
 
     /**
      * Returns a JDBC connection. Works inside or outside the OJVM.
-     * 
+     * outside the it uses db.str, db.usr and db.pwd System's properties
      * @return A JDBC connection.
      * @throws ServletException
      */
     protected static Connection getConnection() throws ServletException {
         Connection conn = null;
 
-        try {
-            if (System.getProperty("java.vm.name").equals("JServer VM")) {
-                conn = DriverManager.getConnection("jdbc:oracle:kprb:",
-                        "default", "default");
-            } else {
-                throw new ServletException(
-                        "Class designed to be used with Server side driver");
+        if (System.getProperty("java.vm.name").equals("JServer VM")) {
+            try {
+                conn = DriverManager.getConnection(
+                             "jdbc:oracle:kprb:", "default", "default");
+            } catch (SQLException s) {
+                System.err.println("Exception getting SQL Connection: " +
+                                   s.getLocalizedMessage());
+                throw new ServletException("Unable to connect using: jdbc:oracle:kprb:",
+                                           s);
             }
-        } catch (SQLException s) {
-            System.err.println("Exception getting SQL Connection: "
-                    + s.getLocalizedMessage());
-            throw new ServletException(
-                    "Unable to connect using: jdbc:oracle:kprb:", s);
+        } else {
+            Class<?> targetClass;
+            try {
+                targetClass =
+                        Engine.classForName("oracle.jdbc.driver.OracleDriver");
+                Driver drv = (Driver)targetClass.newInstance();
+                DriverManager.registerDriver(drv);
+                conn = DriverManager.getConnection("jdbc:oracle:oci:@" + 
+                                                   System.getProperty("db.str",
+                                                                     "orcl"),
+                            System.getProperty("db.usr", "lucene"),
+                            System.getProperty("db.pwd", "lucene"));
+            } catch (SQLException s) {
+                System.err.println("Exception getting SQL Connection: " +
+                                   s.getLocalizedMessage());
+                throw new ServletException(
+                 "Unable to connect using: jdbc:oracle:oci:@"+
+                 System.getProperty("db.str",
+                                   "orcl")+"["+
+                 System.getProperty("db.usr", "lucene")+":"+
+                 System.getProperty("db.pwd", "lucene")+"]",
+                                           s);
+            } catch (ClassNotFoundException cnf) {
+                System.err.println("Exception getting oracle.jdbc.driver.OracleDriver class: " +
+                                   cnf.getLocalizedMessage());
+            } catch (InstantiationException ie) {
+                System.err.println("Exception in Driver.newIntance(): " +
+                                   ie.getLocalizedMessage());
+            } catch (IllegalAccessException iae) {
+                System.err.println("Exception in Driver.newIntance(): " +
+                                   iae.getLocalizedMessage());
+            }
+
         }
 
         return conn;
@@ -262,15 +286,16 @@ public class XdbServerServlet extends ServerServlet {
 
     @Override
     public String getInitParameter(String name, String defaultValue) {
-        String app = getServletConfig().getServletName();
-
-        // Try to load from XMLDB repository
-        String result = getConfigParameter(app, name);
-
+        String result = null;
+        
         // XDB do not support Servlet Context parameter
         // use Servlet init parameter instead
+        result = this.getInitParameter(name);
+
         if (result == null) {
-            result = this.getInitParameter(name);
+            String app = getServletConfig().getServletName();
+            // Try to load from XMLDB repository
+            result = getConfigParameter(app, name);
         }
 
         if (result == null) {
@@ -325,12 +350,18 @@ public class XdbServerServlet extends ServerServlet {
             closeDbResources(preparedstatement, null);
         }
 
-        if ((getApplication() != null) && (getApplication().isStopped())) {
-            try {
-                getApplication().start();
-            } catch (Exception e) {
-                log("Error during the starting of the Restlet Application", e);
+        try {
+            if ((getApplication() != null) && (getApplication().isStopped())) {
+                try {
+                    getApplication().start();
+                } catch (Exception e) {
+                    log("Error during the starting of the Restlet Application",
+                        e);
+                }
             }
+        } catch (AccessControlException ace) {
+            log("Error loading Restlet Application", ace);
+            throw new ServletException("Error loading Restlet application",ace);
         }
     }
 
@@ -373,6 +404,11 @@ public class XdbServerServlet extends ServerServlet {
                 log(
                         "[Noelios Restlet Engine] - Could not instantiate a class using SCHEMA: "
                                 + sch + " and class: " + cName, ite);
+                targetClass = Engine.classForName(className);
+            } catch (AccessControlException ace) {
+                log(
+                        "[Noelios Restlet Engine] - Could not instantiate a class using oracle.aurora.rdbms.DbmsJava "
+                                + sch + " and class: " + cName, ace);
                 targetClass = Engine.classForName(className);
             }
         } else
