@@ -513,38 +513,6 @@ public class JaxRsRouter extends Restlet {
     }
 
     /**
-     * Instantiates the root resource class and handles thrown exceptions.
-     * 
-     * @param rrc
-     *                the root resource class to instantiate
-     * @return the instance of the root resource
-     * @throws WebApplicationException
-     *                 if a WebApplicationException was thrown while creating
-     *                 the instance.
-     * @throws RequestHandledException
-     *                 If an Exception was thrown and the request is already
-     *                 handeled.
-     */
-    private ResourceObject instantiateRrc(RootResourceClass rrc)
-            throws WebApplicationException, RequestHandledException {
-        ResourceObject o;
-        try {
-            o = rrc.createInstance(this.objectFactory);
-        } catch (WebApplicationException e) {
-            throw e;
-        } catch (RuntimeException e) {
-            throw excHandler.runtimeExecption(e, null, tlContext.get(),
-                    "Could not create new instance of root resource class");
-        } catch (InstantiateException e) {
-            throw excHandler.instantiateExecption(e, tlContext.get(),
-                    "Could not create new instance of root resource class");
-        } catch (InvocationTargetException e) {
-            throw handleInvocationTargetExc(e);
-        }
-        return o;
-    }
-
-    /**
      * Obtains the object that will handle the request, see JAX-RS-Spec
      * (2008-04-16), section 3.7.2 "Request Matching", Part 2: "Obtain the
      * object that will handle the request"
@@ -607,26 +575,7 @@ public class JaxRsRouter extends Restlet {
             // (g) and (i)
             u = matchingResult.getFinalCapturingGroup();
             SubResourceLocator subResourceLocator = (SubResourceLocator) firstMeth;
-            try {
-                o = subResourceLocator.createSubResource(o, wrapperFactory,
-                        getLogger());
-            } catch (WebApplicationException e) {
-                throw e;
-            } catch (RuntimeException e) {
-                throw excHandler.runtimeExecption(e, subResourceLocator,
-                        callContext,
-                        "Could not create new instance of resource class");
-            } catch (MissingAnnotationException e) {
-                throw excHandler.missingAnnotation(e, callContext,
-                        "Could not create new instance of resource class");
-            } catch (InstantiateException e) {
-                throw excHandler.instantiateExecption(e, callContext,
-                        "Could not create new instance of resource class");
-            } catch (InvocationTargetException e) {
-                throw handleInvocationTargetExc(e);
-            } catch (ConvertRepresentationException e) {
-                throw excHandler.convertRepresentationExc(e);
-            }
+            o = createSubResource(o, subResourceLocator, callContext);
             resClass = o.getResourceClass();
             // (j) Go to step 2a (repeat for)
         }
@@ -743,6 +692,81 @@ public class JaxRsRouter extends Restlet {
     }
 
     /**
+     * Determines the MediaType for a response, see JAX-RS-Spec (2008-04-16),
+     * section 3.8 "Determining the MediaType of Responses", Parts 1-6
+     * 
+     * @param resourceMethod
+     *                The ResourceMethod that created the entity.
+     * @param mbwsForEntityClass
+     *                {@link MessageBodyWriter}s, that support the entity
+     *                class.
+     * @param accMediaTypes
+     *                see {@link SortedMetadata}
+     * @param restletResponse
+     *                The Restlet {@link Response}; needed for a not acceptable
+     *                return.
+     * @return
+     * @throws RequestHandledException
+     */
+    private List<MediaType> determineMediaType16(ResourceMethod resourceMethod,
+            MessageBodyWriterSubSet mbwsForEntityClass)
+            throws WebApplicationException {
+        CallContext callContext = tlContext.get();
+        SortedMetadata<MediaType> accMediaTypes = callContext
+                .getAccMediaTypes();
+        // 1. Gather the set of producible media types P:
+        // (a) + (b)
+        Collection<MediaType> p = resourceMethod.getProducedMimes();
+        // 1. (c)
+        if (p.isEmpty()) {
+            p = mbwsForEntityClass.getAllProducibleMediaTypes();
+            // 2.
+            if (p.isEmpty())
+                return Collections.singletonList(MediaType.ALL);
+        }
+        // 3. Obtain the acceptable media types A. If A = {}, set A = {'*/*'}
+        if (accMediaTypes.isEmpty())
+            accMediaTypes = SortedMetadata.getMediaTypeAll();
+        // 4. Sort P and A: a is already sorted.
+        List<MediaType> pSorted = sortByConcreteness(p);
+        // 5.
+        List<MediaType> m = new ArrayList<MediaType>();
+        for (MediaType prod : pSorted)
+            for (MediaType acc : accMediaTypes)
+                if (prod.isCompatible(acc))
+                    m.add(MediaType.getMostSpecific(prod, acc));
+        // 6.
+        if (m.isEmpty())
+            excHandler.notAcceptableWhileDetermineMediaType();
+        return m;
+    }
+
+    /**
+     * Determines the MediaType for a response, see JAX-RS-Spec (2008-04-16),
+     * section 3.8 "Determining the MediaType of Responses", Part 7-9
+     * 
+     * @param m
+     *                the possible {@link MediaType}s.
+     * @param restletResponse
+     *                The Restlet {@link Response}; needed for a not acceptable
+     *                return.
+     * @return the determined {@link MediaType}
+     * @throws RequestHandledException
+     */
+    private MediaType determineMediaType79(List<MediaType> m)
+            throws WebApplicationException {
+        // 7.
+        for (MediaType mediaType : m)
+            if (mediaType.isConcrete())
+                return mediaType;
+        // 8.
+        if (m.contains(MediaType.ALL) || m.contains(MediaType.APPLICATION_ALL))
+            return MediaType.APPLICATION_OCTET_STREAM;
+        // 9.
+        throw excHandler.notAcceptableWhileDetermineMediaType();
+    }
+
+    /**
      * Sets the result of the resource method invocation into the response. Do
      * necessary converting.
      * 
@@ -788,7 +812,7 @@ public class JaxRsRouter extends Restlet {
      * @param jaxRsMethod
      *                the method creating the response. May be null.
      */
-    void jaxRsRespToRestletResp(javax.ws.rs.core.Response jaxRsResponse,
+    private void jaxRsRespToRestletResp(javax.ws.rs.core.Response jaxRsResponse,
             AbstractMethodWrapper jaxRsMethod) {
         Response restletResponse = tlContext.get().getResponse();
         restletResponse.setStatus(Status.valueOf(jaxRsResponse.getStatus()));
@@ -804,32 +828,6 @@ public class JaxRsRouter extends Restlet {
         restletResponse.setEntity(convertToRepresentation(jaxRsEntity,
                 jaxRsMethod, respMediaType, httpHeaders, accMediaType));
         copyResponseHeaders(httpHeaders, restletResponse, getLogger());
-    }
-
-    /**
-     * Handles the given Exception, catched by an invoke of a resource method or
-     * a creation if a sub resource object.
-     * 
-     * @param ite
-     * @param methodName
-     * @throws RequestHandledException
-     *                 throws this message to exit the method and indicate, that
-     *                 the request was handled.
-     * @throws RequestHandledException
-     */
-    private RequestHandledException handleInvocationTargetExc(
-            InvocationTargetException ite) throws RequestHandledException {
-        Throwable cause = ite.getCause();
-        if (cause instanceof ResourceException) {
-            // avoid mapping to a JAX-RS Response and back to a Restlet Response
-            Status status = ((ResourceException) cause).getStatus();
-            Response restletResponse = tlContext.get().getResponse();
-            restletResponse.setStatus(status);
-        } else {
-            javax.ws.rs.core.Response jaxRsResp = excMappers.convert(cause);
-            jaxRsRespToRestletResp(jaxRsResp, null);
-        }
-        throw new RequestHandledException();
     }
 
     /**
@@ -914,78 +912,95 @@ public class JaxRsRouter extends Restlet {
     }
 
     /**
-     * Determines the MediaType for a response, see JAX-RS-Spec (2008-04-16),
-     * section 3.8 "Determining the MediaType of Responses", Parts 1-6
+     * Handles the given Exception, catched by an invoke of a resource method or
+     * a creation if a sub resource object.
      * 
-     * @param resourceMethod
-     *                The ResourceMethod that created the entity.
-     * @param mbwsForEntityClass
-     *                {@link MessageBodyWriter}s, that support the entity
-     *                class.
-     * @param accMediaTypes
-     *                see {@link SortedMetadata}
-     * @param restletResponse
-     *                The Restlet {@link Response}; needed for a not acceptable
-     *                return.
-     * @return
+     * @param ite
+     * @param methodName
+     * @throws RequestHandledException
+     *                 throws this message to exit the method and indicate, that
+     *                 the request was handled.
      * @throws RequestHandledException
      */
-    private List<MediaType> determineMediaType16(ResourceMethod resourceMethod,
-            MessageBodyWriterSubSet mbwsForEntityClass)
-            throws WebApplicationException {
-        CallContext callContext = tlContext.get();
-        SortedMetadata<MediaType> accMediaTypes = callContext
-                .getAccMediaTypes();
-        // 1. Gather the set of producible media types P:
-        // (a) + (b)
-        Collection<MediaType> p = resourceMethod.getProducedMimes();
-        // 1. (c)
-        if (p.isEmpty()) {
-            p = mbwsForEntityClass.getAllProducibleMediaTypes();
-            // 2.
-            if (p.isEmpty())
-                return Collections.singletonList(MediaType.ALL);
+    private RequestHandledException handleInvocationTargetExc(
+            InvocationTargetException ite) throws RequestHandledException {
+        Throwable cause = ite.getCause();
+        if (cause instanceof ResourceException) {
+            // avoid mapping to a JAX-RS Response and back to a Restlet Response
+            Status status = ((ResourceException) cause).getStatus();
+            Response restletResponse = tlContext.get().getResponse();
+            restletResponse.setStatus(status);
+        } else {
+            javax.ws.rs.core.Response jaxRsResp = excMappers.convert(cause);
+            jaxRsRespToRestletResp(jaxRsResp, null);
         }
-        // 3. Obtain the acceptable media types A. If A = {}, set A = {'*/*'}
-        if (accMediaTypes.isEmpty())
-            accMediaTypes = SortedMetadata.getMediaTypeAll();
-        // 4. Sort P and A: a is already sorted.
-        List<MediaType> pSorted = sortByConcreteness(p);
-        // 5.
-        List<MediaType> m = new ArrayList<MediaType>();
-        for (MediaType prod : pSorted)
-            for (MediaType acc : accMediaTypes)
-                if (prod.isCompatible(acc))
-                    m.add(MediaType.getMostSpecific(prod, acc));
-        // 6.
-        if (m.isEmpty())
-            excHandler.notAcceptableWhileDetermineMediaType();
-        return m;
+        throw new RequestHandledException();
     }
 
     /**
-     * Determines the MediaType for a response, see JAX-RS-Spec (2008-04-16),
-     * section 3.8 "Determining the MediaType of Responses", Part 7-9
+     * Instantiates the root resource class and handles thrown exceptions.
      * 
-     * @param m
-     *                the possible {@link MediaType}s.
-     * @param restletResponse
-     *                The Restlet {@link Response}; needed for a not acceptable
-     *                return.
-     * @return the determined {@link MediaType}
+     * @param rrc
+     *                the root resource class to instantiate
+     * @return the instance of the root resource
+     * @throws WebApplicationException
+     *                 if a WebApplicationException was thrown while creating
+     *                 the instance.
+     * @throws RequestHandledException
+     *                 If an Exception was thrown and the request is already
+     *                 handeled.
+     */
+    private ResourceObject instantiateRrc(RootResourceClass rrc)
+            throws WebApplicationException, RequestHandledException {
+        ResourceObject o;
+        try {
+            o = rrc.createInstance(this.objectFactory);
+        } catch (WebApplicationException e) {
+            throw e;
+        } catch (RuntimeException e) {
+            throw excHandler.runtimeExecption(e, null, tlContext.get(),
+                    "Could not create new instance of root resource class");
+        } catch (InstantiateException e) {
+            throw excHandler.instantiateExecption(e, tlContext.get(),
+                    "Could not create new instance of root resource class");
+        } catch (InvocationTargetException e) {
+            throw handleInvocationTargetExc(e);
+        }
+        return o;
+    }
+
+    /**
+     * @param o
+     * @param subResourceLocator
+     * @param callContext
+     * @return
+     * @throws WebApplicationException
      * @throws RequestHandledException
      */
-    private MediaType determineMediaType79(List<MediaType> m)
-            throws WebApplicationException {
-        // 7.
-        for (MediaType mediaType : m)
-            if (mediaType.isConcrete())
-                return mediaType;
-        // 8.
-        if (m.contains(MediaType.ALL) || m.contains(MediaType.APPLICATION_ALL))
-            return MediaType.APPLICATION_OCTET_STREAM;
-        // 9.
-        throw excHandler.notAcceptableWhileDetermineMediaType();
+    private ResourceObject createSubResource(ResourceObject o,
+            SubResourceLocator subResourceLocator, CallContext callContext)
+            throws WebApplicationException, RequestHandledException {
+        try {
+            o = subResourceLocator.createSubResource(o, wrapperFactory,
+                    getLogger());
+        } catch (WebApplicationException e) {
+            throw e;
+        } catch (RuntimeException e) {
+            throw excHandler.runtimeExecption(e, subResourceLocator,
+                    callContext,
+                    "Could not create new instance of resource class");
+        } catch (MissingAnnotationException e) {
+            throw excHandler.missingAnnotation(e, callContext,
+                    "Could not create new instance of resource class");
+        } catch (InstantiateException e) {
+            throw excHandler.instantiateExecption(e, callContext,
+                    "Could not create new instance of resource class");
+        } catch (InvocationTargetException e) {
+            throw handleInvocationTargetExc(e);
+        } catch (ConvertRepresentationException e) {
+            throw excHandler.convertRepresentationExc(e);
+        }
+        return o;
     }
 
     /**
