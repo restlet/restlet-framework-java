@@ -352,7 +352,6 @@ public class JaxRsUriBuilder extends UriBuilder {
             path.append(ext);
         }
         return this;
-        // REQUEST UriBuilder.addToExtension(String) ? Use in WebAppExcMapper
     }
 
     /**

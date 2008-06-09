@@ -29,7 +29,7 @@ public class Notizen {
     
     // TESTEN what happens, if ".." or "." in @Path?
     
-    // TESTEN what happens, if e.g. a JaX-RS MediaType is given to the headers
+    // REQUEST what happens, if e.g. a JaX-RS MediaType is given to the headers
     // in a JAX-RS Response?
 
     // REQUESTED rename @DefaultValue to @Default? it's shorter

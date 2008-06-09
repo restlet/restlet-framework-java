@@ -613,7 +613,7 @@ public class CallContext extends JaxRsUriInfo implements UriInfo,
      * @see SecurityContext#isUserInRole(String)
      */
     public boolean isUserInRole(String role) {
-        // TODO here ServletRequest.isUserInRole(role)
+        // LATER here ServletRequest.isUserInRole(role)
         Principal principal = (request.getChallengeResponse() == null) ? null
                 : request.getChallengeResponse().getPrincipal();
         if (this.roleChecker == null)

@@ -83,9 +83,9 @@ public class JaxRsUriInfo implements UriInfo {
 
     private boolean readOnly = false;
 
-    private Reference referenceOriginal;
-
     private Reference referenceCut;
+
+    private Reference referenceOriginal;
 
     /**
      * Creates a new UriInfo. When using this constructor, the
@@ -175,27 +175,42 @@ public class JaxRsUriInfo implements UriInfo {
                     "The CallContext is no longer changeable");
     }
 
+    /**
+     * Creates an unmodifiable List of {@link PathSegment}s.
+     * 
+     * @param decode indicates, if the values should be decoded or not
+     * @return
+     */
     private List<PathSegment> createPathSegments(boolean decode) {
-        List<String> segmentsEnc = this.referenceOriginal.getRelativeRef()
-                .getSegments();
+        List<String> segmentsEnc;
+        segmentsEnc = this.referenceOriginal.getRelativeRef().getSegments();
         int l = segmentsEnc.size();
         List<PathSegment> pathSegments = new ArrayList<PathSegment>(l);
-        for (int i = 0; i < l; i++)
-            pathSegments.add(newJaxRsPathSegment(segmentsEnc.get(i), decode, i));
+        for (int i = 0; i < l; i++) {
+            String segmentEnc = segmentsEnc.get(i);
+            pathSegments.add(new JaxRsPathSegment(segmentEnc, decode, i));
+        }
         return Collections.unmodifiableList(pathSegments);
     }
 
     /**
-     * @param segmentEnc
-     * @param decode
-     * @param i
+     * @param ref
      * @return
      * @throws IllegalArgumentException
      */
-    private JaxRsPathSegment newJaxRsPathSegment(String segmentEnc,
-            boolean decode, int i) throws IllegalArgumentException {
-        return new JaxRsPathSegment(segmentEnc, decode,
-                i);
+    private UriBuilder createUriBuilder(Reference ref) {
+        // NICE what happens, if the Reference is invalid for the UriBuilder?
+        UriBuilder b = new JaxRsUriBuilder();
+        b.encode(false);
+        b.scheme(ref.getScheme(false));
+        b.userInfo(ref.getUserInfo(false));
+        b.host(ref.getHostDomain(false));
+        b.port(ref.getHostPort());
+        b.path(ref.getPath(false));
+        b.replaceQueryParams(ref.getQuery(false));
+        b.fragment(ref.getFragment(false));
+        b.encode(true);
+        return b;
     }
 
     @Override
@@ -244,26 +259,6 @@ public class JaxRsUriInfo implements UriInfo {
     }
 
     /**
-     * @param ref
-     * @return
-     * @throws IllegalArgumentException
-     */
-    private UriBuilder createUriBuilder(Reference ref) {
-        // NICE what happens, if the Reference is invalid for the UriBuilder?
-        UriBuilder b = new JaxRsUriBuilder();
-        b.encode(false);
-        b.scheme(ref.getScheme(false));
-        b.userInfo(ref.getUserInfo(false));
-        b.host(ref.getHostDomain(false));
-        b.port(ref.getHostPort());
-        b.path(ref.getPath(false));
-        b.replaceQueryParams(ref.getQuery(false));
-        b.fragment(ref.getFragment(false));
-        b.encode(true);
-        return b;
-    }
-
-    /**
      * @see javax.ws.rs.core.UriInfo#getAncestorResources()
      */
     public List<Object> getAncestorResources() {
@@ -271,14 +266,18 @@ public class JaxRsUriInfo implements UriInfo {
     }
 
     /**
-     * Get a list of URIs for ancestor resources. Each entry is a relative URI
-     * that is a partial path that matched a resource class, a sub-resource
-     * method or a sub-resource locator. The entries are ordered according to
-     * request URI matching order, with the root resource URI first. E.g.:
+     * Get a read-only list of URIs for ancestor resources. Each entry is a
+     * relative URI that is a partial path that matched a resource class, a
+     * sub-resource method or a sub-resource locator. All sequences of escaped
+     * octets are decoded, equivalent to
+     * <code>getAncestorResourceURIs(true)</code>. Entries do not include
+     * query parameters but do include matrix parameters if present in the
+     * request URI. Entries are ordered in reverse request URI matching order,
+     * with the root resource URI last. E.g.:
      * 
      * <pre>
      * &#064;Path(&quot;foo&quot;)
-     * public class FooResource {
+     * ublic class FooResource {
      *  &#064;GET
      *  public String getFoo() {...}
      * 
@@ -297,10 +296,11 @@ public class JaxRsUriInfo implements UriInfo {
      * "foo".
      * </p>
      * 
-     * @return a list of URIs for ancestor resources.
+     * @return a read-only list of URI paths for ancestor resources.
      * @see javax.ws.rs.core.UriInfo#getAncestorResourceURIs()
      */
     public List<String> getAncestorResourceURIs() {
+        // TODO encode: JaxRsUriBuilder.getAncestorResourceURIs(true)
         Logger
                 .getAnonymousLogger()
                 .config(
@@ -318,13 +318,13 @@ public class JaxRsUriInfo implements UriInfo {
      * 
      * <pre>
      * &#064;Path(&quot;foo&quot;)
-     * public class FooResource {
-     *   &#064;GET
-     *   public String getFoo() {...}
+     * ublic class FooResource {
+     *  &#064;GET
+     *  public String getFoo() {...}
      * 
-     *   &#064;Path(&quot;bar&quot;)
-     *   &#064;GET
-     *   public String getFooBar() {...}
+     *  &#064;Path(&quot;bar&quot;)
+     *  &#064;GET
+     *  public String getFooBar() {...}
      * </pre>
      * 
      * <p>
@@ -341,14 +341,16 @@ public class JaxRsUriInfo implements UriInfo {
      *                controls whether sequences of escaped octets are decoded
      *                (true) or not (false).
      * @return a read-only list of URI paths for ancestor resources.
-     * @see javax.ws.rs.core.UriInfo#getAncestorResourceURIs(boolean)
      */
     public List<String> getAncestorResourceURIs(boolean decode) {
+        // TESTEN ancestorResourceURIs must include matrix parameters.
+        if (decode)
+            return this.getAncestorResourceURIs();
+        // TODO encode: JaxRsUriBuilder.getAncestorResourceURIs(false)
         Logger
                 .getAnonymousLogger()
                 .config(
                         "UriInfo.getAncestorResourceURIs() is not checked for coded or encoded.");
-        // LATER de/encode: JaxRsUriBuilder.getAncestorResourceURIs(bool decode)
         if (decode && !decode)
             decode = false;
         return ancestorResourceURIsUnomd;
@@ -413,8 +415,8 @@ public class JaxRsUriInfo implements UriInfo {
      * @see UriInfo#getPath(boolean)
      */
     public String getPath(boolean decode) {
-        String path = this.referenceOriginal.getRelativeRef().toString(
-                true, true);
+        String path = this.referenceOriginal.getRelativeRef().toString(true,
+                true);
         if (!decode)
             return path;
         return Reference.decode(path);
