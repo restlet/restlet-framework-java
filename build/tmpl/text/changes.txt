@@ -7,9 +7,11 @@ Changes log
     - Bugs fixed
         - Allowed subclasses of StatusService to get the throwable 
           that generate the error in getRepresentation() method. 
-          Reported by Loïc Mathieu.
+          Reported by Loï¿½c Mathieu.
         - The Servlet adapter now stops the whole Component instead
           of just the Application.
+        - Fixed Apache HttpClient extension bug regarding multiple 
+          headers. Reported by Stephan Koops.
     - API Enhancements
         - Added a "Request.originalRef" property containing the URI 
           reference originally requested by the client. Clarified the
@@ -40,7 +42,7 @@ Changes log
         - Series.getValues() was not respecting the 'ignoreCase' 
           parameter. Contributed by Stephan Koops.
         - Allowed only UTF-8 character set for JsonRepresentation. 
-          Reported by Michael Böckling.
+          Reported by Michael Bï¿½ckling.
     - API Enhancements
         - Matrix parameters are now fully supported by the Reference 
           and the Form classes. Added many new methods, similar to the
@@ -133,7 +135,7 @@ Changes log
           Suggested by Hendy Irawan, with help from Edward Yakop.
         - Updated db4o 7.2 to latest stable build.
         - Added Spring example based on REST book chapter 7. 
-          Contributed by Konstantin Läufer.
+          Contributed by Konstantin Lï¿½ufer.
         - Removed unecessary libraries from distribution.
         - The WAR client is now only available for Application deployed
           using ServletServer or a subclass. 

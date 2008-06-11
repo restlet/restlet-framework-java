@@ -252,7 +252,7 @@ public class HttpMethodCall extends HttpClientCall {
 
             // Set the request headers
             for (Parameter header : getRequestHeaders()) {
-                getHttpMethod().setRequestHeader(header.getName(),
+                getHttpMethod().addRequestHeader(header.getName(),
                         header.getValue());
             }
 
