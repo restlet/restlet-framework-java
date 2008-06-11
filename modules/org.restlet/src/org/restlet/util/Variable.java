@@ -18,6 +18,8 @@
 
 package org.restlet.util;
 
+import org.restlet.data.Reference;
+
 /**
  * Variable descriptor for reference templates.
  * 
@@ -25,6 +27,7 @@ package org.restlet.util;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public final class Variable {
+
     /** Matches all characters. */
     public static final int TYPE_ALL = 1;
 
@@ -39,7 +42,7 @@ public final class Variable {
 
     /** Matches any TEXT inside a comment excluding ";". */
     public static final int TYPE_COMMENT_ATTRIBUTE = 15;
-    
+
     /** Matches all digital characters. */
     public static final int TYPE_DIGIT = 4;
 
@@ -68,10 +71,45 @@ public final class Variable {
     public static final int TYPE_URI_UNRESERVED = 11;
 
     /** Matches all alphabetical and digital characters plus the underscore. */
-    public static final int TYPE_WORD = 12;
+    public static final int TYPE_WORD = 12;;
+
+    /**
+     * According to the type of the variable, encodes the value given in
+     * parameters.
+     * 
+     * @param variable
+     *                The variable.
+     * @param value
+     *                The value to encode.
+     * @return The encoded value, according to the variable type.
+     */
+    public static String encode(Variable variable, String value) {
+        switch (variable.type) {
+        case Variable.TYPE_URI_ALL:
+            return Reference.encode(value);
+        case Variable.TYPE_URI_UNRESERVED:
+            return Reference.encode(value);
+        case Variable.TYPE_URI_FRAGMENT:
+            return Reference.encode(value);
+        case Variable.TYPE_URI_PATH:
+            return Reference.encode(value);
+        case Variable.TYPE_URI_QUERY:
+            return Reference.encode(value);
+        case Variable.TYPE_URI_SEGMENT:
+            return Reference.encode(value);
+        default:
+            return value;
+        }
+    }
+
+    /** Indicates if the parsed value must be decoded. */
+    private volatile boolean decodedOnParse;
 
     /** The default value to use if the key couldn't be found in the model. */
     private volatile String defaultValue;
+
+    /** Indicates if the formatted value must be encoded. */
+    private volatile boolean encodedOnFormat;
 
     /**
      * Indicates if the value is fixed, in which case the "defaultValue"
@@ -119,10 +157,35 @@ public final class Variable {
      */
     public Variable(int type, String defaultValue, boolean required,
             boolean fixed) {
+        this(type, defaultValue, required, fixed, false, false);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param type
+     *                The type of variable. See TYPE_* constants.
+     * @param defaultValue
+     *                The default value to use if the key couldn't be found in
+     *                the model.
+     * @param required
+     *                Indicates if the variable is required or optional.
+     * @param fixed
+     *                Indicates if the value is fixed, in which case the
+     *                "defaultValue" property is always used.
+     * @param decodedOnParse
+     *                Indicates if the parsed value must be decoded.
+     * @param encodedOnFormat
+     *                Indicates if the formatted value must be encoded.
+     */
+    public Variable(int type, String defaultValue, boolean required,
+            boolean fixed, boolean decodedOnParse, boolean encodedOnFormat) {
         this.type = type;
         this.defaultValue = defaultValue;
         this.required = required;
         this.fixed = fixed;
+        this.decodedOnParse = decodedOnParse;
+        this.encodedOnFormat = encodedOnFormat;
     }
 
     /**
@@ -146,6 +209,24 @@ public final class Variable {
     }
 
     /**
+     * Indicates if the parsed value must be decoded.
+     * 
+     * @return True if the parsed value must be decoded, false otherwise.
+     */
+    public boolean isDecodedOnParse() {
+        return decodedOnParse;
+    }
+
+    /**
+     * Indicates if the formatted value must be encoded.
+     * 
+     * @return True if the formatted value must be encoded, false otherwise.
+     */
+    public boolean isEncodedOnFormat() {
+        return encodedOnFormat;
+    }
+
+    /**
      * Returns true if the value is fixed, in which case the "defaultValue"
      * property is always used.
      * 
@@ -166,6 +247,16 @@ public final class Variable {
     }
 
     /**
+     * Indicates if the parsed value must be decoded.
+     * 
+     * @param decodedOnParse
+     *                True if the parsed value must be decoded, false otherwise.
+     */
+    public void setDecodedOnParse(boolean decodedOnParse) {
+        this.decodedOnParse = decodedOnParse;
+    }
+
+    /**
      * Sets the default value to use if the key couldn't be found in the model.
      * 
      * @param defaultValue
@@ -174,6 +265,17 @@ public final class Variable {
      */
     public void setDefaultValue(String defaultValue) {
         this.defaultValue = defaultValue;
+    }
+
+    /**
+     * Indicates if the formatted value must be encoded.
+     * 
+     * @param encodedOnFormat
+     *                True if the formatted value must be encoded, false
+     *                otherwise.
+     */
+    public void setEncodedOnFormat(boolean encodedOnFormat) {
+        this.encodedOnFormat = encodedOnFormat;
     }
 
     /**
