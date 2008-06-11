@@ -98,8 +98,10 @@ public class StreamClientCall extends HttpClientCall {
      *                The request to send.
      */
     public StreamClientCall(StreamClientHelper helper, Request request) {
-        super(helper, request.getMethod().toString(), request.getResourceRef()
-                .getIdentifier());
+        // The path of the request uri must not be empty.
+        super(helper, request.getMethod().toString(), (request.getResourceRef()
+                .getPath() == null) ? request.getResourceRef().getIdentifier()
+                + "/" : request.getResourceRef().getIdentifier());
         // Set the HTTP version
         setVersion("HTTP/1.1");
     }
