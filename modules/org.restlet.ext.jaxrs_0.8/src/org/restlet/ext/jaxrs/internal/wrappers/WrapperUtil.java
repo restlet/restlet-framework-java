@@ -144,6 +144,17 @@ public class WrapperUtil {
     }
 
     /**
+     * Checks, if the method is volatile(the return type of a sub class differs
+     * from the return type of the superclass, but is compatibel).
+     * 
+     * @param javaMethod
+     * @return true, if the method is volatile, otherwise false.
+     */
+    static boolean isVolatile(Method javaMethod) {
+        return Modifier.isVolatile(javaMethod.getModifiers());
+    }
+
+    /**
      * Converts the given mimes to a List of MediaTypes. Will never returns
      * null.
      * 

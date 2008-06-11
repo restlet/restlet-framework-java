@@ -50,4 +50,6 @@ public interface ObjectFactory {
      * @throws InstantiateException
      */
     public <T> T getInstance(Class<T> jaxRsClass) throws InstantiateException;
+    // LATER move InstantiateException from package internal to another package
+    // if more exceptions should be used public, perhaps own package for Except.
 }

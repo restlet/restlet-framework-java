@@ -17,8 +17,8 @@
  */
 package org.restlet.ext.jaxrs.internal.wrappers;
 
+import static org.restlet.ext.jaxrs.internal.wrappers.WrapperUtil.*;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -175,31 +175,6 @@ public class ResourceClass extends AbstractJaxRsWrapper {
         }
     }
 
-    /**
-     * Checks, if the method is not volatile and public. If the method is not
-     * public, a warning is logged and true returned. If the method is volatile
-     * (this occurs, if the return type of a sub class differs from the return
-     * type of the superclass, but is compatibel), true is returned, but no
-     * message logged. Otherwise anything is ok and false is returned.
-     * 
-     * @param javaMethod
-     * @param logger
-     *                The Logger to log the warning
-     * @return true, if the method is not public, false if it is public.
-     */
-    private boolean checkResMethodVolatileOrNotPublic(Method javaMethod,
-            Logger logger) {
-        final int modifiers = javaMethod.getModifiers();
-        if (!Modifier.isPublic(modifiers)) {
-            logger.warning("The method " + javaMethod + " must be public");
-            return false;
-        }
-        if (Modifier.isVolatile(modifiers)) {
-            return false;
-        }
-        return true;
-    }
-
     @Override
     public boolean equals(Object anotherObject) {
         if (this == anotherObject)
@@ -251,7 +226,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
     private Method getAnnotatedJavaMethod(Method javaMethod) {
         if (javaMethod == null)
             return null;
-        boolean useMethod = WrapperUtil.checkForJaxRsAnnotations(javaMethod);
+        boolean useMethod = checkForJaxRsAnnotations(javaMethod);
         if (useMethod)
             return javaMethod;
         Class<?> methodClass = javaMethod.getDeclaringClass();
@@ -375,17 +350,16 @@ public class ResourceClass extends AbstractJaxRsWrapper {
             Collection<ContextResolver<?>> allCtxResolvers,
             ExtensionBackwardMapping extensionBackwardMapping, Logger logger)
             throws IllegalArgumentException, MissingAnnotationException {
-        Method[] classMethods = jaxRsClass.getDeclaredMethods();
-        for (Method execMethod : classMethods) {
+        for (Method execMethod : jaxRsClass.getMethods()) {
             Method annotatedMethod = getAnnotatedJavaMethod(execMethod);
             if (annotatedMethod == null)
                 continue;
             Path path = annotatedMethod.getAnnotation(Path.class);
             org.restlet.data.Method httpMethod;
-            httpMethod = WrapperUtil.getHttpMethod(annotatedMethod);
+            httpMethod = getHttpMethod(annotatedMethod);
             try {
                 if (httpMethod != null) {
-                    if (!checkResMethodVolatileOrNotPublic(execMethod, logger))
+                    if (isVolatile(execMethod))
                         continue;
                     ResourceMethod subResMeth = new ResourceMethod(execMethod,
                             annotatedMethod, this, httpMethod, tlContext,
@@ -396,8 +370,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
                     checkForPrimitiveParameters(execMethod, logger);
                 } else {
                     if (path != null) {
-                        if (!checkResMethodVolatileOrNotPublic(execMethod,
-                                logger))
+                        if (isVolatile(execMethod))
                             continue;
                         SubResourceLocator subResLoc = new SubResourceLocator(
                                 execMethod, annotatedMethod, this, tlContext,
