@@ -43,6 +43,16 @@ import org.w3c.dom.NodeList;
 public class RepresentationMessage extends MimeMessage {
 
     /**
+     * Constructor.
+     * 
+     * @param session
+     *                The current JavaMail session.
+     */
+    public RepresentationMessage(Session session) {
+        super(session);
+    }
+
+    /**
      * Creates a JavaMail message by parsing an XML representation.
      * 
      * @param xmlMessage
