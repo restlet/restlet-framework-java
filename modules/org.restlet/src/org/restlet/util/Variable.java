@@ -77,14 +77,12 @@ public final class Variable {
      * According to the type of the variable, encodes the value given in
      * parameters.
      * 
-     * @param variable
-     *                The variable.
      * @param value
      *                The value to encode.
      * @return The encoded value, according to the variable type.
      */
-    public static String encode(Variable variable, String value) {
-        switch (variable.type) {
+    public String encode(String value) {
+        switch (this.type) {
         case Variable.TYPE_URI_ALL:
             return Reference.encode(value);
         case Variable.TYPE_URI_UNRESERVED:
