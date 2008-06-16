@@ -36,11 +36,9 @@ import org.restlet.test.jaxrs.services.tests.UriBuilderByServiceTest;
  */
 @Path("UriBuilder")
 public class UriBuilderTestResource {
+
     @Context
     UriInfo uriInfo;
-
-    // REQUESTED rename UriInfo.getPlatonicRequestUriBuilder() to
-    // .getPlatonicUriBuilder() or uriInfo.getPlatonicPathUriBuilder() ?
 
     @GET
     @Path("absolute")

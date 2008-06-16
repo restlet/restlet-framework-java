@@ -88,8 +88,7 @@ public class EmployeesResource {
 
     /** Create sub resource for one concrete employee. */
     @Path("{staffNo}")
-    public EmployeeResource getSub(@PathParam("staffNo")
-    int staffNo) {
+    public EmployeeResource getSub(@PathParam("staffNo") int staffNo) {
         if (!employeeMgr.exists(staffNo))
             throw new WebApplicationException(Status.NOT_FOUND);
         return new EmployeeResource(staffNo);
@@ -122,23 +121,19 @@ public class EmployeesResource {
                 ps.println("\" method=\"POST\">");
                 ps.println("<table><tr>");
                 ps.println("<td>firstname:</td>");
-                ps
-                        .println("<td><input type=\"text\" name=\"firstname\" /></td>");
+                ps.println("<td><input type=\"text\" name=\"firstname\" /></td>");
                 ps.println("</tr><tr>");
                 ps.println("<td>lastname:</td>");
-                ps
-                        .println("<td><input type=\"text\" name=\"lastname\" /></td>");
+                ps.println("<td><input type=\"text\" name=\"lastname\" /></td>");
                 ps.println("</tr><tr>");
                 ps.println("<td>sex:</td>");
                 ps.println("<td><input type=\"text\" name=\"sex\" /></td>");
                 ps.println("</tr><tr>");
                 ps.println("<td>department:</td>");
-                ps
-                        .println("<td><input type=\"text\" name=\"department\" /></td>");
+                ps.println("<td><input type=\"text\" name=\"department\" /></td>");
                 ps.println("</tr><tr>");
                 ps.println("<td></td>");
-                ps
-                        .println("<td><input type=\"submit\" value=\"create employee\" /></td>");
+                ps.println("<td><input type=\"submit\" value=\"create employee\" /></td>");
                 ps.println("</tr></table>");
                 ps.println("</form>");
                 ps.println("</body></html>");

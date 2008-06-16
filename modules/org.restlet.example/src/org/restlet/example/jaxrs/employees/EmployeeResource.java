@@ -41,8 +41,7 @@ public class EmployeeResource {
 
     @GET
     @ProduceMime( { "application/xml", "text/xml", "application/json" })
-    public Employee get(@Context
-    UriInfo uriInfo) {
+    public Employee get(@Context UriInfo uriInfo) {
         // load employee with requested id
         Employee employee = employeeMgr.getFull(staffNo);
 
@@ -63,9 +62,8 @@ public class EmployeeResource {
     }
 
     @DELETE
-    public Object delete(@Context
-    HttpHeaders httpHeaders, @Context
-    UriInfo uriInfo) {
+    public Object delete(@Context HttpHeaders httpHeaders,
+            @Context UriInfo uriInfo) {
         employeeMgr.remove(staffNo);
         if (httpHeaders.getAcceptableMediaTypes().contains(
                 MediaType.TEXT_HTML_TYPE))
@@ -89,8 +87,7 @@ public class EmployeeResource {
 
     @GET
     @ProduceMime("text/html")
-    public StreamingOutput getHtml(@Context
-    final UriInfo uriInfo) {
+    public StreamingOutput getHtml(@Context final UriInfo uriInfo) {
         final Employee employee = get(uriInfo);
         final URI employeesUri = createEmployeesUri(uriInfo);
         return new StreamingOutput() {
@@ -131,8 +128,7 @@ public class EmployeeResource {
                 ps.print("<form action=\"");
                 ps.print(uriInfo.getAbsolutePath());
                 ps.println("?method=DELETE\" method=\"POST\">");
-                ps
-                        .println("<input type=\"submit\" value=\"Delete employee\" />");
+                ps.println("<input type=\"submit\" value=\"Delete employee\" />");
                 ps.println("</form>");
                 ps.print("<hr><a href=\"");
                 ps.print(employeesUri);

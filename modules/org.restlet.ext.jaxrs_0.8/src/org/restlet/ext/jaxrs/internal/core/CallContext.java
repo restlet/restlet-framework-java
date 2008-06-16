@@ -66,8 +66,8 @@ import org.restlet.resource.Representation;
  * Contains all request specific data of the interfaces injectable for &#64;{@link Context}.
  * Implemetation of the JAX-RS interfaces {@link HttpHeaders}, {@link UriInfo},
  * {@link javax.ws.rs.core.Request} and {@link SecurityContext}.<br>
- * This class is not required to be thread safe, because it is only used by one
- * thread.
+ * This class is not required to be thread safe, because it is only used for one
+ * client request in one thread at the same time.
  * 
  * @author Stephan Koops
  */
@@ -169,8 +169,6 @@ public class CallContext extends JaxRsUriInfo implements UriInfo,
     private MediaType mediaType;
 
     private Request request;
-
-    // HttpHeaders methods
 
     private UnmodifiableMultivaluedMap<String, String> requestHeaders;
 
@@ -388,9 +386,7 @@ public class CallContext extends JaxRsUriInfo implements UriInfo,
      * For use from JAX-RS interface.
      * 
      * @see HttpHeaders#getAcceptableMediaTypes()
-     * @deprecated returns JAX-RS {@link MediaType}s
      */
-    @Deprecated
     public List<MediaType> getAcceptableMediaTypes() {
         if (this.acceptedMediaTypes == null) {
             List<MediaType> accMediaTypes = new ArrayList<MediaType>();
