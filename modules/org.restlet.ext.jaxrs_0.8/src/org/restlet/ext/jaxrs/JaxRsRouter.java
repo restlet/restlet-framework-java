@@ -692,88 +692,15 @@ public class JaxRsRouter extends Restlet {
     }
 
     /**
-     * Determines the MediaType for a response, see JAX-RS-Spec (2008-04-16),
-     * section 3.8 "Determining the MediaType of Responses", Parts 1-6
-     * 
-     * @param resourceMethod
-     *                The ResourceMethod that created the entity.
-     * @param mbwsForEntityClass
-     *                {@link MessageBodyWriter}s, that support the entity
-     *                class.
-     * @param accMediaTypes
-     *                see {@link SortedMetadata}
-     * @param restletResponse
-     *                The Restlet {@link Response}; needed for a not acceptable
-     *                return.
-     * @return
-     * @throws RequestHandledException
-     */
-    private List<MediaType> determineMediaType16(ResourceMethod resourceMethod,
-            MessageBodyWriterSubSet mbwsForEntityClass)
-            throws WebApplicationException {
-        CallContext callContext = tlContext.get();
-        SortedMetadata<MediaType> accMediaTypes = callContext
-                .getAccMediaTypes();
-        // 1. Gather the set of producible media types P:
-        // (a) + (b)
-        Collection<MediaType> p = resourceMethod.getProducedMimes();
-        // 1. (c)
-        if (p.isEmpty()) {
-            p = mbwsForEntityClass.getAllProducibleMediaTypes();
-            // 2.
-            if (p.isEmpty())
-                return Collections.singletonList(MediaType.ALL);
-        }
-        // 3. Obtain the acceptable media types A. If A = {}, set A = {'*/*'}
-        if (accMediaTypes.isEmpty())
-            accMediaTypes = SortedMetadata.getMediaTypeAll();
-        // 4. Sort P and A: a is already sorted.
-        List<MediaType> pSorted = sortByConcreteness(p);
-        // 5.
-        List<MediaType> m = new ArrayList<MediaType>();
-        for (MediaType prod : pSorted)
-            for (MediaType acc : accMediaTypes)
-                if (prod.isCompatible(acc))
-                    m.add(MediaType.getMostSpecific(prod, acc));
-        // 6.
-        if (m.isEmpty())
-            excHandler.notAcceptableWhileDetermineMediaType();
-        return m;
-    }
-
-    /**
-     * Determines the MediaType for a response, see JAX-RS-Spec (2008-04-16),
-     * section 3.8 "Determining the MediaType of Responses", Part 7-9
-     * 
-     * @param m
-     *                the possible {@link MediaType}s.
-     * @param restletResponse
-     *                The Restlet {@link Response}; needed for a not acceptable
-     *                return.
-     * @return the determined {@link MediaType}
-     * @throws RequestHandledException
-     */
-    private MediaType determineMediaType79(List<MediaType> m)
-            throws WebApplicationException {
-        // 7.
-        for (MediaType mediaType : m)
-            if (mediaType.isConcrete())
-                return mediaType;
-        // 8.
-        if (m.contains(MediaType.ALL) || m.contains(MediaType.APPLICATION_ALL))
-            return MediaType.APPLICATION_OCTET_STREAM;
-        // 9.
-        throw excHandler.notAcceptableWhileDetermineMediaType();
-    }
-
-    /**
      * Sets the result of the resource method invocation into the response. Do
      * necessary converting.
      * 
      * @param result
-     *                the result of the resource method
+     *                the object returned by the resource method
      * @param resourceMethod
-     *                the resource method, needed for the conversion.
+     *                the resource method; it is needed for the conversion.
+     *                Could be null, if an exception is handled, e.g. a
+     *                {@link WebApplicationException}.
      */
     private void handleResult(Object result, ResourceMethod resourceMethod) {
         Response restletResponse = tlContext.get().getResponse();
@@ -781,26 +708,24 @@ public class JaxRsRouter extends Restlet {
             restletResponse.setStatus(Status.SUCCESS_NO_CONTENT);
             restletResponse.setEntity(null);
             return;
+        }
+        // method returned an object
+        if (result instanceof javax.ws.rs.core.Response) {
+            jaxRsRespToRestletResp((javax.ws.rs.core.Response) result,
+                    resourceMethod);
+        } else if (result instanceof ResponseBuilder) {
+            String warning = "the method " + resourceMethod
+                    + " returnef a ResponseBuilder. You should "
+                    + "call responseBuilder.build() in the resource method";
+            getLogger().warning(warning);
+            jaxRsRespToRestletResp(((ResponseBuilder) result).build(),
+                    resourceMethod);
         } else {
             restletResponse.setStatus(Status.SUCCESS_OK);
-            if (result instanceof javax.ws.rs.core.Response) {
-                jaxRsRespToRestletResp((javax.ws.rs.core.Response) result,
-                        resourceMethod);
-            } else if (result instanceof javax.ws.rs.core.Response.ResponseBuilder) {
-                String warning = "the method "
-                        + resourceMethod
-                        + " returnef a ResponseBuilder. This is not allowed by default. Call responseBuilder.build() in the resource method";
-                getLogger().warning(warning);
-                javax.ws.rs.core.Response jaxRsResponse = ((javax.ws.rs.core.Response.ResponseBuilder) result)
-                        .build();
-                jaxRsRespToRestletResp(jaxRsResponse, resourceMethod);
-            } else {
-                SortedMetadata<MediaType> accMediaTypes = tlContext.get()
-                        .getAccMediaTypes();
-                restletResponse.setEntity(convertToRepresentation(result,
-                        resourceMethod, null, null, accMediaTypes));
-                // NICE perhaps another default as option (email 2008-01-29)
-            }
+            SortedMetadata<MediaType> accMediaTypes;
+            accMediaTypes = tlContext.get().getAccMediaTypes();
+            restletResponse.setEntity(convertToRepresentation(result,
+                    resourceMethod, null, null, accMediaTypes));
         }
     }
 
@@ -809,11 +734,16 @@ public class JaxRsRouter extends Restlet {
      * {@link Response}.
      * 
      * @param jaxRsResponse
-     * @param jaxRsMethod
-     *                the method creating the response. May be null.
+     *                The response returned by the resource method, perhaps as
+     *                attribute of a {@link WebApplicationException}.
+     * @param resourceMethod
+     *                The resource method creating the response. Could be null,
+     *                if an exception is handled, e.g. a
+     *                {@link WebApplicationException}.
      */
-    private void jaxRsRespToRestletResp(javax.ws.rs.core.Response jaxRsResponse,
-            AbstractMethodWrapper jaxRsMethod) {
+    private void jaxRsRespToRestletResp(
+            javax.ws.rs.core.Response jaxRsResponse,
+            AbstractMethodWrapper resourceMethod) {
         Response restletResponse = tlContext.get().getResponse();
         restletResponse.setStatus(Status.valueOf(jaxRsResponse.getStatus()));
         MultivaluedMap<String, Object> httpHeaders = jaxRsResponse
@@ -826,7 +756,7 @@ public class JaxRsRouter extends Restlet {
         else
             accMediaType = tlContext.get().getAccMediaTypes();
         restletResponse.setEntity(convertToRepresentation(jaxRsEntity,
-                jaxRsMethod, respMediaType, httpHeaders, accMediaType));
+                resourceMethod, respMediaType, httpHeaders, accMediaType));
         copyResponseHeaders(httpHeaders, restletResponse, getLogger());
     }
 
@@ -837,8 +767,8 @@ public class JaxRsRouter extends Restlet {
      * @param entity
      *                the entity to convert.
      * @param resourceMethod
-     *                The {@link ResourceMethod} created the entity. Could be
-     *                null, if an exception is handled, e.g. a
+     *                The resource method created the entity. Could be null, if
+     *                an exception is handled, e.g. a
      *                {@link WebApplicationException}.
      * @param responseMediaType
      *                The MediaType of the JAX-RS response. May be null.
@@ -887,7 +817,7 @@ public class JaxRsRouter extends Restlet {
         if (responseMediaType != null)
             respMediaTypes = Collections.singletonList(responseMediaType);
         else if (resourceMethod instanceof ResourceMethod)
-            respMediaTypes = determineMediaType16(
+            respMediaTypes = determineMediaTypeA(
                     (ResourceMethod) resourceMethod, mbws);
         else
             respMediaTypes = Collections.singletonList(MediaType.TEXT_PLAIN);
@@ -901,7 +831,7 @@ public class JaxRsRouter extends Restlet {
         if (responseMediaType != null)
             mediaType = responseMediaType;
         else
-            mediaType = determineMediaType79(respMediaTypes);
+            mediaType = determineMediaTypeB(respMediaTypes);
         MultivaluedMap<String, Object> httpResponseHeaders = new WrappedRequestForHttpHeaders(
                 response, jaxRsRespHeaders, getLogger());
         Representation repr = new JaxRsOutputRepresentation(entity,
@@ -909,6 +839,81 @@ public class JaxRsRouter extends Restlet {
                 httpResponseHeaders);
         repr.setCharacterSet(getSupportedCharSet(httpResponseHeaders));
         return repr;
+    }
+
+    /**
+     * Determines the MediaType for a response, see JAX-RS-Spec (2008-04-16),
+     * section 3.8 "Determining the MediaType of Responses", Parts 1-6
+     * 
+     * @param resourceMethod
+     *                The ResourceMethod that created the entity.
+     * @param mbwsForEntityClass
+     *                {@link MessageBodyWriter}s, that support the entity
+     *                class.
+     * @param accMediaTypes
+     *                see {@link SortedMetadata}
+     * @param restletResponse
+     *                The Restlet {@link Response}; needed for a not acceptable
+     *                return.
+     * @return
+     * @throws RequestHandledException
+     */
+    private List<MediaType> determineMediaTypeA(ResourceMethod resourceMethod,
+            MessageBodyWriterSubSet mbwsForEntityClass)
+            throws WebApplicationException {
+        CallContext callContext = tlContext.get();
+        SortedMetadata<MediaType> accMediaTypes = callContext
+                .getAccMediaTypes();
+        // 1. Gather the set of producible media types P:
+        // (a) + (b)
+        Collection<MediaType> p = resourceMethod.getProducedMimes();
+        // 1. (c)
+        if (p.isEmpty()) {
+            p = mbwsForEntityClass.getAllProducibleMediaTypes();
+            // 2.
+            if (p.isEmpty())
+                return Collections.singletonList(MediaType.ALL);
+        }
+        // 3. Obtain the acceptable media types A. If A = {}, set A = {'*/*'}
+        if (accMediaTypes.isEmpty())
+            accMediaTypes = SortedMetadata.getMediaTypeAll();
+        // 4. Sort P and A: a is already sorted.
+        List<MediaType> pSorted = sortByConcreteness(p);
+        // 5.
+        List<MediaType> m = new ArrayList<MediaType>();
+        for (MediaType prod : pSorted)
+            for (MediaType acc : accMediaTypes)
+                if (prod.isCompatible(acc))
+                    m.add(MediaType.getMostSpecific(prod, acc));
+        // 6.
+        if (m.isEmpty())
+            excHandler.notAcceptableWhileDetermineMediaType();
+        return m;
+    }
+
+    /**
+     * Determines the MediaType for a response, see JAX-RS-Spec (2008-04-16),
+     * section 3.8 "Determining the MediaType of Responses", Part 7-9
+     * 
+     * @param m
+     *                the possible {@link MediaType}s.
+     * @param restletResponse
+     *                The Restlet {@link Response}; needed for a not acceptable
+     *                return.
+     * @return the determined {@link MediaType}
+     * @throws RequestHandledException
+     */
+    private MediaType determineMediaTypeB(List<MediaType> m)
+            throws WebApplicationException {
+        // 7.
+        for (MediaType mediaType : m)
+            if (mediaType.isConcrete())
+                return mediaType;
+        // 8.
+        if (m.contains(MediaType.ALL) || m.contains(MediaType.APPLICATION_ALL))
+            return MediaType.APPLICATION_OCTET_STREAM;
+        // 9.
+        throw excHandler.notAcceptableWhileDetermineMediaType();
     }
 
     /**
