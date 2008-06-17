@@ -12,6 +12,8 @@ Changes log
           of just the Application.
         - Fixed Apache HttpClient extension bug regarding multiple 
           headers. Reported by Stephan Koops.
+        - Fixed potential concurrency issues in Response. Reported 
+          by Stephan Koops.
     - API Enhancements
         - Added a "Request.originalRef" property containing the URI 
           reference originally requested by the client. Clarified the

@@ -340,6 +340,7 @@ public class TriggerResource extends Resource {
      * @return The URI of the mail.
      * @throws ResourceException
      */
+    @SuppressWarnings("unused")
     protected Reference getMailRef(String identifier) throws ResourceException {
         Template mailTemplate = new Template(getMailUriTemplate());
         Reference result = new Reference(mailTemplate.format(new MailResolver(
@@ -434,6 +435,7 @@ public class TriggerResource extends Resource {
      * @return The target challengeResponse object.
      * @throws ResourceException
      */
+    @SuppressWarnings("unused")
     protected ChallengeResponse getTargetChallengeResponse(
             Resolver<String> resolver) throws ResourceException {
         ChallengeScheme challengeScheme = ChallengeScheme.valueOf(resolver
@@ -495,6 +497,7 @@ public class TriggerResource extends Resource {
      * @return The target reference.
      * @throws ResourceException
      */
+    @SuppressWarnings("unused")
     protected Reference getTargetRef(Resolver<String> resolver)
             throws ResourceException {
         Template targetTemplate = new Template(getTargetUri());

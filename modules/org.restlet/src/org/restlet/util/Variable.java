@@ -71,7 +71,7 @@ public final class Variable {
     public static final int TYPE_URI_UNRESERVED = 11;
 
     /** Matches all alphabetical and digital characters plus the underscore. */
-    public static final int TYPE_WORD = 12;;
+    public static final int TYPE_WORD = 12;
 
     /**
      * According to the type of the variable, encodes the value given in

@@ -18,11 +18,10 @@
 
 package org.restlet.data;
 
-import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.restlet.Restlet;
 import org.restlet.util.Series;
@@ -156,7 +155,7 @@ public class Response extends Message {
             synchronized (this) {
                 a = this.allowedMethods;
                 if (a == null)
-                    this.allowedMethods = a = new HashSet<Method>();
+                    this.allowedMethods = a = new CopyOnWriteArraySet<Method>();
             }
         }
         return a;
@@ -226,7 +225,7 @@ public class Response extends Message {
      */
     public Set<Dimension> getDimensions() {
         if (this.dimensions == null)
-            this.dimensions = EnumSet.noneOf(Dimension.class);
+            this.dimensions = new CopyOnWriteArraySet<Dimension>();
         return this.dimensions;
     }
 
@@ -380,7 +379,9 @@ public class Response extends Message {
     }
 
     /**
-     * Sets the set of methods allowed on the requested resource.
+     * Sets the set of methods allowed on the requested resource. The set
+     * instance set must be thread-safe (use {@link CopyOnWriteArraySet} for
+     * example.
      * 
      * @param allowedMethods
      *                The set of methods allowed on the requested resource.
@@ -404,7 +405,8 @@ public class Response extends Message {
 
     /**
      * Sets the list of authentication requests sent by an origin server to a
-     * client.
+     * client. The list instance set must be thread-safe (use
+     * {@link CopyOnWriteArrayList} for example.
      * 
      * @param requests
      *                The list of authentication requests sent by an origin
@@ -425,7 +427,9 @@ public class Response extends Message {
     }
 
     /**
-     * Sets the set of dimensions on which the response entity may vary.
+     * Sets the set of dimensions on which the response entity may vary. The set
+     * instance set must be thread-safe (use {@link CopyOnWriteArraySet} for
+     * example.
      * 
      * @param dimensions
      *                The set of dimensions on which the response entity may

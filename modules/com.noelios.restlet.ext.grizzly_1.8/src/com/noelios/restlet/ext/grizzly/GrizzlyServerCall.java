@@ -44,7 +44,7 @@ import org.restlet.util.ByteUtils;
 import com.noelios.restlet.http.ChunkedInputStream;
 import com.noelios.restlet.http.ChunkedOutputStream;
 import com.noelios.restlet.http.HttpServerCall;
-import com.sun.grizzly.util.ByteBufferInputStream;
+import com.sun.grizzly.util.InputReader;
 import com.sun.grizzly.util.OutputWriter;
 import com.sun.grizzly.util.SSLOutputWriter;
 
@@ -59,7 +59,7 @@ public class GrizzlyServerCall extends HttpServerCall {
     private final ByteBuffer byteBuffer;
 
     /** Recycled request stream. */
-    private final ByteBufferInputStream requestStream;
+    private final InputReader requestStream;
 
     /** The underlying socket channel. */
     private final SocketChannel socketChannel;
@@ -82,7 +82,7 @@ public class GrizzlyServerCall extends HttpServerCall {
         setConfidential(confidential);
 
         this.byteBuffer = byteBuffer;
-        this.requestStream = new ByteBufferInputStream();
+        this.requestStream = new InputReader();
         this.requestStream.setSelectionKey(key);
         this.requestStream.setByteBuffer(byteBuffer);
         this.socketChannel = (SocketChannel) key.channel();
