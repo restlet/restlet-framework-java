@@ -52,11 +52,6 @@ import org.restlet.util.Series;
  * changed in the process. In addition, a resource is always identified by a
  * URI.<br>
  * <br>
- * Typically created by Finders, Resource instances are the final handlers of
- * calls received by server connectors or by the internal router. Unlike the
- * other processors in the chain, a Resource is not shared between calls and
- * doesn't have to be thread-safe.<br>
- * <br>
  * This is the point where the RESTful view of your Web application can be
  * integrated with your domain objects. Those domain objects can be implemented
  * using any technology, relational databases, object databases, transactional
@@ -73,6 +68,11 @@ import org.restlet.util.Series;
  * the creation of costly representations is delegated to the
  * {@link #represent(Variant)} method when actually needed.<br>
  * <br>
+ * 
+ * Concurrency note: typically created by Routers, Resource instances are the
+ * final handlers of requests. Unlike the other processors in the Restlet chain,
+ * a Resource instance is not reused by several calls and is only invoked by one
+ * thread. Therefore, it doesn't have to be thread-safe.<br>
  * 
  * @see <a
  *      href="http://roy.gbiv.com/pubs/dissertation/rest_arch_style.htm#sec_5_2_1_1">Source

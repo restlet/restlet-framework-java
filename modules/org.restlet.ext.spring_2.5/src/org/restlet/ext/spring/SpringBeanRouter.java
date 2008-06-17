@@ -54,6 +54,10 @@ import org.springframework.beans.factory.BeanFactory;
  * <code>"/studies/{study-identifier}/template"</code> to the corresponding
  * Resource subclass.
  * 
+ * Concurrency note: instances of this class or its subclasses can be invoked by
+ * several threads at the same time and therefore must be thread-safe. You
+ * should be especially careful when storing state in member variables.
+ * 
  * @author Rhett Sutphin
  */
 public class SpringBeanRouter extends Router implements

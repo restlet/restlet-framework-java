@@ -36,6 +36,10 @@ import org.restlet.data.Protocol;
  * concerns and hiding the underlying implementation of resources and
  * communication mechanisms" Roy T. Fielding
  * 
+ * Concurrency note: instances of this class or its subclasses can be invoked by
+ * several threads at the same time and therefore must be thread-safe. You
+ * should be especially careful when storing state in member variables.
+ * 
  * @see <a
  *      href="http://roy.gbiv.com/pubs/dissertation/software_arch.htm#sec_1_2_2">Source
  *      dissertation</a>

@@ -50,6 +50,10 @@ import com.noelios.restlet.http.PreferenceUtils;
  * be changed (via POST requests only) as well as the accepted media types,
  * languages, encodings and character sets.
  * 
+ * Concurrency note: instances of this class or its subclasses can be invoked by
+ * several threads at the same time and therefore must be thread-safe. You
+ * should be especially careful when storing state in member variables.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class TunnelFilter extends Filter {

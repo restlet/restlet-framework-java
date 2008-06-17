@@ -89,6 +89,10 @@ import org.w3c.dom.NodeList;
  * &lt;/component&gt;
  * </pre>
  * 
+ * Concurrency note: instances of this class or its subclasses can be invoked by
+ * several threads at the same time and therefore must be thread-safe. You
+ * should be especially careful when storing state in member variables.
+ * 
  * @see <a
  *      href="http://roy.gbiv.com/pubs/dissertation/software_arch.htm#sec_1_2_1">Source
  *      dissertation</a>

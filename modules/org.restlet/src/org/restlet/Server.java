@@ -33,6 +33,10 @@ import org.restlet.util.Helper;
  * Connector acting as a generic server. It internally uses one of the available
  * connectors registered with the current Restlet implementation.
  * 
+ * Concurrency note: instances of this class or its subclasses can be invoked by
+ * several threads at the same time and therefore must be thread-safe. You
+ * should be especially careful when storing state in member variables.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Server extends Connector {

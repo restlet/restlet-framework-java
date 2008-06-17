@@ -30,6 +30,10 @@ import org.restlet.util.Template;
 /**
  * Rewrites URIs then redirects the call or the client to a new destination.
  * 
+ * Concurrency note: instances of this class or its subclasses can be invoked by
+ * several threads at the same time and therefore must be thread-safe. You
+ * should be especially careful when storing state in member variables.
+ * 
  * @see org.restlet.util.Template
  * @see <a
  *      href="http://www.restlet.org/documentation/1.1/tutorial#part10">Tutorial:

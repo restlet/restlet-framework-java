@@ -32,6 +32,10 @@ import org.restlet.data.Status;
  * the appropriate host routers. The host routers then dispatch them to the user
  * applications.
  * 
+ * Concurrency note: instances of this class or its subclasses can be invoked by
+ * several threads at the same time and therefore must be thread-safe. You
+ * should be especially careful when storing state in member variables.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class ServerRouter extends Router {

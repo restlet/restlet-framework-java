@@ -23,7 +23,9 @@ Changes log
        	  protocol name instead of a Protocol instance.
        	- Replaced "Response.challengeRequest" by "challengeRequests" 
        	  list property to conform to HTTP semantics. Contributed by
-       	  Bruno Harbulot.      
+       	  Bruno Harbulot.
+       	- Clarified concurrency constraints on Uniform/Restlet subclasses 
+       	  and on Resource class. Suggested by Bruno Harbulot.
     - NRE and Extension Enhancements
         - Added a static HttpServletRequest getRequest(Request) method
           to the Servlet extension.        

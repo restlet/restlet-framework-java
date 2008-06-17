@@ -29,6 +29,10 @@ import com.noelios.restlet.StatusFilter;
 /**
  * Status filter that tries to obtain ouput representation from an application.
  * 
+ * Concurrency note: instances of this class or its subclasses can be invoked by
+ * several threads at the same time and therefore must be thread-safe. You
+ * should be especially careful when storing state in member variables.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class ApplicationStatusFilter extends StatusFilter {

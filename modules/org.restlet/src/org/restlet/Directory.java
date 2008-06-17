@@ -56,6 +56,10 @@ import org.restlet.util.Engine;
  * idea</a>, using a different and faster implementation contributed by Rob
  * Heittman.
  * 
+ * Concurrency note: instances of this class or its subclasses can be invoked by
+ * several threads at the same time and therefore must be thread-safe. You
+ * should be especially careful when storing state in member variables.
+ * 
  * @see <a
  *      href="http://www.restlet.org/documentation/1.1/tutorial#part06">Tutorial:
  *      Serving static files</a>

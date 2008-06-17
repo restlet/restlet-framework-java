@@ -43,6 +43,10 @@ import org.restlet.resource.Representation;
  * will always be a candidate for encoding. Candidate representations need to
  * respect media type criteria by the lists of accepted and ignored media types.
  * 
+ * Concurrency note: instances of this class or its subclasses can be invoked by
+ * several threads at the same time and therefore must be thread-safe. You
+ * should be especially careful when storing state in member variables.
+ * 
  * @author Lars Heuer (heuer[at]semagia.com) <a
  *         href="http://semagia.com/">Semagia</a>
  * @author Jerome Louvel (contact@noelios.com) <a

@@ -10,6 +10,9 @@ import org.restlet.example.book.restlet.ch8.objects.User;
 /**
  * Guard access to the RMEP application.
  * 
+ * Concurrency note: instances of this class or its subclasses can be invoked by
+ * several threads at the same time and therefore must be thread-safe. You
+ * should be especially careful when storing state in member variables.
  */
 public class RmepGuard extends Guard {
 

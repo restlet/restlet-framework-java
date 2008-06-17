@@ -37,6 +37,10 @@ import org.restlet.resource.Representation;
  * Finally, it attaches the Restlet Application to the virtual host using the
  * "base" attribute of the WADL "resources" element.
  * 
+ * Concurrency note: instances of this class or its subclasses can be invoked by
+ * several threads at the same time and therefore must be thread-safe. You
+ * should be especially careful when storing state in member variables.
+ * 
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class WadlComponent extends Component {

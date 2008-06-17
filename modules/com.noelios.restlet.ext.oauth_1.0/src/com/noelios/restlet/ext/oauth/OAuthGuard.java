@@ -29,8 +29,11 @@ import org.restlet.data.Request;
 /**
  * Handles authentication using
  * 
- * @see <a href="http://oauth.net">OAuth</a>
+ * Concurrency note: instances of this class or its subclasses can be invoked by
+ * several threads at the same time and therefore must be thread-safe. You
+ * should be especially careful when storing state in member variables.
  * 
+ * @see <a href="http://oauth.net">OAuth</a>
  * @author Adam Rosien
  */
 public class OAuthGuard extends Guard {

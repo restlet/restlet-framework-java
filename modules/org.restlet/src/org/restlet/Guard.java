@@ -67,6 +67,10 @@ import org.restlet.util.Resolver;
  * </ol>
  * </ol>
  * 
+ * Concurrency note: instances of this class or its subclasses can be invoked by
+ * several threads at the same time and therefore must be thread-safe. You
+ * should be especially careful when storing state in member variables.
+ * 
  * @see <a
  *      href="http://www.restlet.org/documentation/1.1/tutorial#part09">Tutorial:
  *      Guarding access to sensitive resources</a>
@@ -125,7 +129,8 @@ public class Guard extends Filter {
      *                The authentication scheme to use.
      * @param realm
      *                The authentication realm.
-     * @throws IllegalArgumentException if the scheme is null
+     * @throws IllegalArgumentException
+     *                 if the scheme is null
      */
     public Guard(Context context, ChallengeScheme scheme, String realm)
             throws IllegalArgumentException {

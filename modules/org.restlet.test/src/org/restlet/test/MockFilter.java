@@ -27,6 +27,10 @@ import org.restlet.data.Response;
  * Thin layer around an AbstractFilter. Takes care about being started and
  * having a target when it should handle a call.
  * 
+ * Concurrency note: instances of this class or its subclasses can be invoked by
+ * several threads at the same time and therefore must be thread-safe. You
+ * should be especially careful when storing state in member variables.
+ * 
  * @author Lars Heuer (heuer[at]semagia.com) <a
  *         href="http://www.semagia.com/">Semagia</a>
  */

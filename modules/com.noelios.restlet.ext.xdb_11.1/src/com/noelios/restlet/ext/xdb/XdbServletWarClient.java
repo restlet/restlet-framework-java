@@ -42,6 +42,10 @@ import com.noelios.restlet.ClientHelper;
  * translated to an XMLDB directory:
  * /home/SCOTT/wars/HelloRestlet/WEB-INF/web.xml
  * 
+ * Concurrency note: instances of this class or its subclasses can be invoked by
+ * several threads at the same time and therefore must be thread-safe. You
+ * should be especially careful when storing state in member variables.
+ * 
  * @author Marcelo F. Ochoa (mochoa@ieee.org)
  */
 public class XdbServletWarClient extends Client {

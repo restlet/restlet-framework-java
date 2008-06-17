@@ -46,6 +46,10 @@ import org.restlet.data.Response;
  * that must match the domain name, port, scheme for references or IP address
  * and port number for server information. The default values match everything.
  * 
+ * Concurrency note: instances of this class or its subclasses can be invoked by
+ * several threads at the same time and therefore must be thread-safe. You
+ * should be especially careful when storing state in member variables.
+ * 
  * @see java.util.regex.Pattern
  * @see <a href="http://en.wikipedia.org/wiki/Virtual_hosting">Wikipedia -
  *      Virtual Hosting</a>

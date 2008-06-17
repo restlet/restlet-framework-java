@@ -66,6 +66,10 @@ import org.restlet.service.TunnelService;
  * Service Request 311</a>.
  * </p>
  * 
+ * Concurrency note: instances of this class or its subclasses can be invoked by
+ * several threads at the same time and therefore must be thread-safe. You
+ * should be especially careful when storing state in member variables.
+ * 
  * @author Stephan Koops
  */
 public class JaxRsApplication extends Application {
