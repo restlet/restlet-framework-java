@@ -12,8 +12,8 @@ Changes log
           of just the Application.
         - Fixed Apache HttpClient extension bug regarding multiple 
           headers. Reported by Stephan Koops.
-        - Fixed potential concurrency issues in Response. Reported 
-          by Stephan Koops.
+        - Fixed potential concurrency issues in Response and
+          WrapperList/Series/Form. Reported by Stephan Koops.
     - API Enhancements
         - Added a "Request.originalRef" property containing the URI 
           reference originally requested by the client. Clarified the
@@ -23,7 +23,7 @@ Changes log
        	  protocol name instead of a Protocol instance.
        	- Replaced "Response.challengeRequest" by "challengeRequests" 
        	  list property to conform to HTTP semantics. Contributed by
-       	  Bruno Harbulot.       
+       	  Bruno Harbulot.      
     - NRE and Extension Enhancements
         - Added a static HttpServletRequest getRequest(Request) method
           to the Servlet extension.        

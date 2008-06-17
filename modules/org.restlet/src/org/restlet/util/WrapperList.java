@@ -18,15 +18,16 @@
 
 package org.restlet.util;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Vector;
 
 /**
  * List wrapper. Modifiable list that delegates all methods to a wrapped list.
- * This allows an easy subclassing.
+ * This allows an easy subclassing. By default, it wraps a thread-safe
+ * {@link Vector} instance.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  * @see java.util.Collections
@@ -37,7 +38,7 @@ public class WrapperList<E> implements List<E> {
     private final List<E> delegate;
 
     /**
-     * Constructor.
+     * Constructor. Uses a default initial capacity of 10 items.
      */
     public WrapperList() {
         this(10);
@@ -50,7 +51,7 @@ public class WrapperList<E> implements List<E> {
      *                The initial list capacity.
      */
     public WrapperList(int initialCapacity) {
-        this(new ArrayList<E>(initialCapacity));
+        this(new Vector<E>(initialCapacity));
     }
 
     /**
