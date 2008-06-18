@@ -18,6 +18,10 @@
 
 package com.noelios.restlet.ext.xdb;
 
+import com.noelios.restlet.http.ChunkedInputStream;
+
+import com.noelios.restlet.http.ChunkedOutputStream;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -43,20 +47,28 @@ import org.restlet.data.Status;
 import org.restlet.util.Series;
 
 import com.noelios.restlet.http.HttpServerCall;
+import com.noelios.restlet.http.InputEntityStream;
+import com.noelios.restlet.util.KeepAliveOutputStream;
 
 /**
  * Call that is used by the XDB Servlet HTTP connector. This is a downgrade
  * version to Servlet 2.2 of ServletCall class.
- * 
+ *
  * @see com.noelios.restlet.ext.servlet.ServletCall
  * @author Marcelo F. Ochoa (mochoa@ieee.org)
  */
 public class XdbServletCall extends HttpServerCall {
+    /** The request entity stream */
+    private volatile InputStream requestEntityStream;
+
     /** The HTTP Servlet request to wrap. */
     private volatile HttpServletRequest request;
 
     /** The HTTP Servlet response to wrap. */
     private volatile HttpServletResponse response;
+
+    /** The response entity output stream. */
+    private volatile OutputStream responseEntityStream;
 
     /** The request headers. */
     private volatile Series<Parameter> requestHeaders;
@@ -122,15 +134,6 @@ public class XdbServletCall extends HttpServerCall {
     public ReadableByteChannel getRequestEntityChannel(long size) {
         // Can't do anything
         return null;
-    }
-
-    @Override
-    public InputStream getRequestEntityStream(long size) {
-        try {
-            return getRequest().getInputStream();
-        } catch (IOException e) {
-            return null;
-        }
     }
 
     @Override
@@ -200,18 +203,40 @@ public class XdbServletCall extends HttpServerCall {
         return null;
     }
 
-    /**
-     * Returns the response stream if it exists.
-     * 
-     * @return The response stream if it exists.
-     */
     @Override
     public OutputStream getResponseEntityStream() {
-        try {
-            return getResponse().getOutputStream();
-        } catch (IOException e) {
-            return null;
+        if (responseEntityStream == null)
+            try {
+                if (isResponseChunked()) {
+                    responseEntityStream =
+                            new ChunkedOutputStream(getResponse().getOutputStream());
+                } else {
+                    responseEntityStream =
+                            new KeepAliveOutputStream(getResponse().getOutputStream());
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        return responseEntityStream;
+    }
+
+    @Override
+    public InputStream getRequestEntityStream(long size) {
+        if (requestEntityStream == null) {
+            try {
+                if (isRequestChunked()) {
+                    requestEntityStream =
+                            new ChunkedInputStream(getRequest().getInputStream());
+                } else {
+                    requestEntityStream =
+                            new InputEntityStream(getRequest().getInputStream(),
+                                                  size);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+        return requestEntityStream;
     }
 
     @Override
@@ -239,7 +264,7 @@ public class XdbServletCall extends HttpServerCall {
             return Arrays.asList(certificateArray);
         }
 
-        return null;
+        return Arrays.asList(new Certificate[0]);
     }
 
     @Override
