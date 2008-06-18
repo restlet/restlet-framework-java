@@ -94,8 +94,6 @@ public class Transformer extends Filter {
         this.transformSheet = transformSheet;
         this.resultMediaType = MediaType.APPLICATION_XML;
         this.resultCharacterSet = null;
-        this.resultEncodings = new CopyOnWriteArrayList<Encoding>();
-        this.resultLanguages = new CopyOnWriteArrayList<Language>();
     }
 
     @Override
@@ -139,7 +137,16 @@ public class Transformer extends Filter {
      * @return The encoding of the result representation.
      */
     public List<Encoding> getResultEncodings() {
-        return this.resultEncodings;
+        // Lazy initialization with double-check.
+        List<Encoding> re = this.resultEncodings;
+        if (re == null) {
+            synchronized (this) {
+                re = this.resultEncodings;
+                if (re == null)
+                    this.resultEncodings = re = new CopyOnWriteArrayList<Encoding>();
+            }
+        }
+        return re;
     }
 
     /**
@@ -148,7 +155,16 @@ public class Transformer extends Filter {
      * @return The language of the result representation.
      */
     public List<Language> getResultLanguages() {
-        return this.resultLanguages;
+        // Lazy initialization with double-check.
+        List<Language> v = this.resultLanguages;
+        if (v == null) {
+            synchronized (this) {
+                v = this.resultLanguages;
+                if (v == null)
+                    this.resultLanguages = v = new CopyOnWriteArrayList<Language>();
+            }
+        }
+        return v;
     }
 
     /**

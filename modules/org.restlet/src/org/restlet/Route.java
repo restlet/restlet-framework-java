@@ -166,11 +166,7 @@ public class Route extends Filter {
     public Route(Router router, Template template, Restlet next) {
         super(router == null ? null : router.getContext(), next);
         this.router = router;
-        this.cookieExtracts = new CopyOnWriteArrayList<ExtractInfo>();
-        this.queryExtracts = new CopyOnWriteArrayList<ExtractInfo>();
-        this.entityExtracts = new CopyOnWriteArrayList<ExtractInfo>();
         this.template = template;
-        this.validations = new CopyOnWriteArrayList<ValidateInfo>();
     }
 
     /**
@@ -365,7 +361,16 @@ public class Route extends Filter {
      * @return The list of query extracts.
      */
     private List<ExtractInfo> getCookieExtracts() {
-        return this.cookieExtracts;
+        // Lazy initialization with double-check.
+        List<ExtractInfo> ce = this.cookieExtracts;
+        if (ce == null) {
+            synchronized (this) {
+                ce = this.cookieExtracts;
+                if (ce == null)
+                    this.cookieExtracts = ce = new CopyOnWriteArrayList<ExtractInfo>();
+            }
+        }
+        return ce;
     }
 
     /**
@@ -374,7 +379,16 @@ public class Route extends Filter {
      * @return The list of query extracts.
      */
     private List<ExtractInfo> getEntityExtracts() {
-        return this.entityExtracts;
+        // Lazy initialization with double-check.
+        List<ExtractInfo> ee = this.entityExtracts;
+        if (ee == null) {
+            synchronized (this) {
+                ee = this.entityExtracts;
+                if (ee == null)
+                    this.entityExtracts = ee = new CopyOnWriteArrayList<ExtractInfo>();
+            }
+        }
+        return ee;
     }
 
     /**
@@ -383,7 +397,16 @@ public class Route extends Filter {
      * @return The list of query extracts.
      */
     private List<ExtractInfo> getQueryExtracts() {
-        return this.queryExtracts;
+        // Lazy initialization with double-check.
+        List<ExtractInfo> qe = this.queryExtracts;
+        if (qe == null) {
+            synchronized (this) {
+                qe = this.queryExtracts;
+                if (qe == null)
+                    this.queryExtracts = qe = new CopyOnWriteArrayList<ExtractInfo>();
+            }
+        }
+        return qe;
     }
 
     /**
@@ -410,7 +433,16 @@ public class Route extends Filter {
      * @return The list of attribute validations.
      */
     private List<ValidateInfo> getValidations() {
-        return this.validations;
+        // Lazy initialization with double-check.
+        List<ValidateInfo> v = this.validations;
+        if (v == null) {
+            synchronized (this) {
+                v = this.validations;
+                if (v == null)
+                    this.validations = v = new CopyOnWriteArrayList<ValidateInfo>();
+            }
+        }
+        return v;
     }
 
     /**

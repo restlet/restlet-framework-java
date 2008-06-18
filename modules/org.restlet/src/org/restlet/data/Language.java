@@ -18,8 +18,8 @@
 
 package org.restlet.data;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Language used in representations and preferences. A language tag is composed
@@ -136,20 +136,25 @@ public final class Language extends Metadata {
      * @return The list of subtags for this language Tag.
      */
     public List<String> getSubTags() {
-        if (this.subTags == null) {
-            this.subTags = new ArrayList<String>();
-
-            if (getName() != null) {
-                String[] tags = getName().split("-");
-                if (tags.length > 0) {
-                    for (int i = 1; i < tags.length; i++) {
-                        this.subTags.add(tags[i]);
+        // Lazy initialization with double-check.
+        List<String> v = this.subTags;
+        if (v == null) {
+            synchronized (this) {
+                v = this.subTags;
+                if (v == null) {
+                    this.subTags = v = new CopyOnWriteArrayList<String>();
+                    if (getName() != null) {
+                        String[] tags = getName().split("-");
+                        if (tags.length > 0) {
+                            for (int i = 1; i < tags.length; i++) {
+                                this.subTags.add(tags[i]);
+                            }
+                        }
                     }
                 }
             }
         }
-
-        return this.subTags;
+        return v;
     }
 
     /** {@inheritDoc} */
