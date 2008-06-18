@@ -218,6 +218,7 @@ public class WrapperUtil {
             if (!Modifier.isPublic(constr.getModifiers()))
                 continue;
             int constrParamNo = constr.getParameterTypes().length;
+            // LATER warn if multiple constrs are possible (see spec f. details)
             if (constrParamNo <= constructorParamNo)
                 continue; // ignore this constructor
             if (!checkParamAnnotations(constr))

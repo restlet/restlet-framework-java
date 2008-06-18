@@ -436,6 +436,10 @@ public class JaxRsRouter extends Restlet {
             }
         } catch (RequestHandledException e) {
             // Exception was handled and data were set into the Response.
+        } finally {
+            Representation entity = request.getEntity();
+            if (entity != null)
+                entity.release();
         }
     }
 

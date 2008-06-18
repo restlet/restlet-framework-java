@@ -224,6 +224,7 @@ public class ResponseBuilderImpl extends ResponseBuilder {
                 this.cookie(new NewCookie((Cookie) value));
             else if (value instanceof CharSequence)
                 this.cookie(NewCookie.valueOf(value.toString()));
+            // REQUESTED what should happens, if null was given?
             else
                 throw new IllegalArgumentException(
                         "A Cookie must be of type NewCookie or String");
