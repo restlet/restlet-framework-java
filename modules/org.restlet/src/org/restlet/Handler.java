@@ -57,6 +57,11 @@ import org.restlet.util.Template;
  * whether or not your Handler should be invoked. It is also used by the
  * handleOptions() method to return the list of allowed methods.
  * 
+ * Concurrency note: typically created by Routers, Resource instances are the
+ * final handlers of requests. Unlike the other processors in the Restlet chain,
+ * a Resource instance is not reused by several calls and is only invoked by one
+ * thread. Therefore, it doesn't have to be thread-safe.<br>
+ * 
  * @see org.restlet.Finder
  * @author Jerome Louvel (contact@noelios.com)
  */
