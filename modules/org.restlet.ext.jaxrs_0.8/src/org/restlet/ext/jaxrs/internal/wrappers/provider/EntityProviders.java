@@ -20,8 +20,6 @@ package org.restlet.ext.jaxrs.internal.wrappers.provider;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -152,7 +150,7 @@ public class EntityProviders implements javax.ws.rs.ext.MessageBodyWorkers,
             Type genericType, Annotation[] annotations, MediaType mediaType) {
         // NICE optimization: may be cached for speed.
         for (MessageBodyReader mbr : this.messageBodyReaders) {
-            if (mbr.supports(mediaType))
+            if (mbr.supportsRead(mediaType))
                 if (isReadable(mbr, paramType, genericType, annotations))
                     return mbr;
         }
@@ -181,11 +179,10 @@ public class EntityProviders implements javax.ws.rs.ext.MessageBodyWorkers,
     public <T> javax.ws.rs.ext.MessageBodyWriter<T> getMessageBodyWriter(
             Class<T> type, Type genericType, Annotation[] annotations,
             javax.ws.rs.core.MediaType mediaType) {
-        Collection<MediaType> restletMediaTypes = Collections
-                .singleton(Converter.toRestletMediaType(mediaType));
+        MediaType restletMediaType = Converter.toRestletMediaType(mediaType);
         List<MessageBodyWriter> mbws = (List) this.messageBodyWriters;
         for (MessageBodyWriter<T> mbw : mbws) {
-            if (mbw.supportAtLeastOne(restletMediaTypes))
+            if (mbw.supportsWrite(restletMediaType))
                 if (isWriteable(mbw, type, genericType, annotations))
                     return mbw.getJaxRsWriter();
         }

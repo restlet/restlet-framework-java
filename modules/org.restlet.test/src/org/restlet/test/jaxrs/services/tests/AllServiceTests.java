@@ -50,6 +50,7 @@ public class AllServiceTests extends TestCase {
         mySuite.addTestSuite(MatrixParamTest2.class);
         mySuite.addTestSuite(MessageBodyWorkersTest.class);
         mySuite.addTestSuite(MethodAheadLocatorTest.class);
+        mySuite.addTestSuite(NoProviderTest.class);
         mySuite.addTestSuite(OwnProviderTest.class);
         mySuite.addTestSuite(PathParamTest.class);
         mySuite.addTestSuite(PathParamTest2.class);

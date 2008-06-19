@@ -47,7 +47,9 @@ public interface MessageBodyWriter<T> {
      * Returns the list of produced {@link MediaType}s of the wrapped
      * {@link javax.ws.rs.ext.MessageBodyWriter}.
      * 
-     * @return List of produced {@link MediaType}s.
+     * @return List of produced {@link MediaType}s. If the entity provider is
+     *         not annotated with &#64; {@link javax.ws.rs.ProduceMime}, '*<!---->/*'
+     *         is returned.
      */
     public List<MediaType> getProducedMimes();
 
@@ -77,14 +79,25 @@ public interface MessageBodyWriter<T> {
 
     /**
      * Checks, if the wrapped MessageBodyWriter supports at least one of the
-     * requested {@link MediaType}s.
+     * given {@link MediaType}s.
      * 
      * @param mediaTypes
      *                the {@link MediaType}s
      * @return true, if at least one of the requested {@link MediaType}s is
      *         supported, otherwise false.
      */
-    public boolean supportAtLeastOne(Iterable<MediaType> mediaTypes);
+    public boolean supportsWrite(Iterable<MediaType> mediaTypes);
+
+    /**
+     * Checks, if the wrapped MessageBodyWriter supports the given
+     * {@link MediaType}.
+     * 
+     * @param mediaType
+     *                the {@link MediaType}
+     * @return true, if the requested {@link MediaType} is supported, otherwise
+     *         false.
+     */
+    public boolean supportsWrite(MediaType mediaType);
 
     /**
      * Write a type to an HTTP response. The response header map is mutable but

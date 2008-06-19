@@ -209,7 +209,8 @@ public class ExceptionHandler {
      * @return staticly to throw, if needed by compiler.
      */
     public WebApplicationException noMessageBodyWriter() {
-        // NICE return supported MediaTypes as entity
+        // NICE get as parameters the accMediaTypes and the entityClass.
+        // and return supported MediaTypes as entity
         throw new WebApplicationException(Status.NOT_ACCEPTABLE);
     }
 

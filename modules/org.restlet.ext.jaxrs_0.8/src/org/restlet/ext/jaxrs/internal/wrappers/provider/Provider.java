@@ -330,7 +330,9 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * Returns the list of produced {@link MediaType}s of the wrapped
      * {@link javax.ws.rs.ext.MessageBodyWriter}.
      * 
-     * @return List of produced {@link MediaType}s.
+     * @return List of produced {@link MediaType}s. If the entity provider is
+     *         not annotated with &#64; {@link ProduceMime}, '*<!---->/*' is
+     *         returned.
      */
     public List<MediaType> getProducedMimes() {
         return producedMimes;
@@ -503,6 +505,20 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
     }
 
     /**
+     * Checks, if this MessageBodyReader supports the given MediaType.
+     * 
+     * @param mediaType
+     * @return
+     */
+    public boolean supportsRead(MediaType mediaType) {
+        for (MediaType cm : getConsumedMimes()) {
+            if (cm.isCompatible(mediaType))
+                return true;
+        }
+        return false;
+    }
+
+    /**
      * Checks, if the wrapped MessageBodyWriter supports at least one of the
      * requested {@link MediaType}s.
      * 
@@ -511,7 +527,7 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * @return true, if at least one of the requested {@link MediaType}s is
      *         supported, otherwise false.
      */
-    public boolean supportAtLeastOne(Iterable<MediaType> mediaTypes) {
+    public boolean supportsWrite(Iterable<MediaType> mediaTypes) {
         for (MediaType produced : getProducedMimes()) {
             for (MediaType requested : mediaTypes) {
                 if (requested.isCompatible(produced))
@@ -522,14 +538,17 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
     }
 
     /**
-     * Checks, if this MessageBodyReader supports the given MediaType.
+     * Checks, if the wrapped MessageBodyWriter supports at least one of the
+     * requested {@link MediaType}s.
      * 
-     * @param mediaType
-     * @return
+     * @param mediaTypes
+     *                the {@link MediaType}s
+     * @return true, if at least one of the requested {@link MediaType}s is
+     *         supported, otherwise false.
      */
-    public boolean supports(MediaType mediaType) {
-        for (MediaType cm : getConsumedMimes()) {
-            if (cm.isCompatible(mediaType))
+    public boolean supportsWrite(MediaType requested) {
+        for (MediaType produced : getProducedMimes()) {
+            if (requested.isCompatible(produced))
                 return true;
         }
         return false;

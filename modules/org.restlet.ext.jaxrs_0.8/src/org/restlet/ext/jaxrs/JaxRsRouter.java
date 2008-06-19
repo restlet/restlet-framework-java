@@ -778,8 +778,9 @@ public class JaxRsRouter extends Restlet {
      *                The resource method created the entity. Could be null, if
      *                an exception is handled, e.g. a
      *                {@link WebApplicationException}.
-     * @param responseMediaType
-     *                The MediaType of the JAX-RS response. May be null.
+     * @param givenResponseMediaType
+     *                The MediaType of the JAX-RS
+     *                {@link javax.ws.rs.core.Response}. May be null.
      * @param jaxRsRespHeaders
      *                The headers added to the {@link javax.ws.rs.core.Response}
      *                by the {@link ResponseBuilder}.
@@ -794,7 +795,8 @@ public class JaxRsRouter extends Restlet {
      */
     @SuppressWarnings("unchecked")
     private Representation convertToRepresentation(Object entity,
-            AbstractMethodWrapper resourceMethod, MediaType responseMediaType,
+            AbstractMethodWrapper resourceMethod,
+            MediaType givenResponseMediaType,
             MultivaluedMap<String, Object> jaxRsRespHeaders,
             SortedMetadata<MediaType> accMediaTypes)
             throws ImplementationException {
@@ -821,98 +823,73 @@ public class JaxRsRouter extends Restlet {
         }
         MessageBodyWriterSubSet mbws = entityProviders.writerSubSet(
                 entityClass, genericReturnType, methodAnnotations);
-        List<MediaType> respMediaTypes;
-        if (responseMediaType != null)
-            respMediaTypes = Collections.singletonList(responseMediaType);
+        if (mbws.isEmpty())
+            throw excHandler.noMessageBodyWriter();
+        MediaType respMediaType;
+        if (givenResponseMediaType != null)
+            respMediaType = givenResponseMediaType;
         else if (resourceMethod instanceof ResourceMethod)
-            respMediaTypes = determineMediaTypeA(
-                    (ResourceMethod) resourceMethod, mbws);
+            respMediaType = determineMediaType((ResourceMethod) resourceMethod,
+                    mbws);
         else
-            respMediaTypes = Collections.singletonList(MediaType.TEXT_PLAIN);
-        MessageBodyWriter<?> mbw = mbws.getBestWriter(respMediaTypes,
+            respMediaType = MediaType.TEXT_PLAIN;
+        MessageBodyWriter<?> mbw = mbws.getBestWriter(respMediaType,
                 accMediaTypes);
-        Response response = tlContext.get().getResponse();
         if (mbw == null)
-            excHandler.noMessageBodyWriter();// NICE accMediaTypes,
-        // entityClass);
-        MediaType mediaType;
-        if (responseMediaType != null)
-            mediaType = responseMediaType;
-        else
-            mediaType = determineMediaTypeB(respMediaTypes);
+            throw excHandler.noMessageBodyWriter();
+        Response response = tlContext.get().getResponse();
         MultivaluedMap<String, Object> httpResponseHeaders = new WrappedRequestForHttpHeaders(
                 response, jaxRsRespHeaders, getLogger());
         Representation repr = new JaxRsOutputRepresentation(entity,
-                genericReturnType, mediaType, methodAnnotations, mbw,
+                genericReturnType, respMediaType, methodAnnotations, mbw,
                 httpResponseHeaders);
         repr.setCharacterSet(getSupportedCharSet(httpResponseHeaders));
         return repr;
     }
 
     /**
-     * Determines the MediaType for a response, see JAX-RS-Spec (2008-04-16),
-     * section 3.8 "Determining the MediaType of Responses", Parts 1-6
+     * Determines the MediaType for a response, see JAX-RS-Spec (2008-04-18),
+     * section 3.8 "Determining the MediaType of Responses"
      * 
      * @param resourceMethod
      *                The ResourceMethod that created the entity.
-     * @param mbwsForEntityClass
-     *                {@link MessageBodyWriter}s, that support the entity
-     *                class.
-     * @param accMediaTypes
-     *                see {@link SortedMetadata}
-     * @param restletResponse
-     *                The Restlet {@link Response}; needed for a not acceptable
-     *                return.
-     * @return
+     * @param mbws
+     *                The {@link MessageBodyWriter}s, that support the class of
+     *                the returned entity object.
+     * @return the determined {@link MediaType}
      * @throws RequestHandledException
+     * @throws WebApplicationException
      */
-    private List<MediaType> determineMediaTypeA(ResourceMethod resourceMethod,
-            MessageBodyWriterSubSet mbwsForEntityClass)
-            throws WebApplicationException {
+    private MediaType determineMediaType(ResourceMethod resourceMethod,
+            MessageBodyWriterSubSet mbws) throws WebApplicationException {
         CallContext callContext = tlContext.get();
-        SortedMetadata<MediaType> accMediaTypes = callContext
-                .getAccMediaTypes();
         // 1. Gather the set of producible media types P:
         // (a) + (b)
         Collection<MediaType> p = resourceMethod.getProducedMimes();
         // 1. (c)
         if (p.isEmpty()) {
-            p = mbwsForEntityClass.getAllProducibleMediaTypes();
+            p = mbws.getAllProducibleMediaTypes();
             // 2.
             if (p.isEmpty())
-                return Collections.singletonList(MediaType.ALL);
+                // '*/*', in conjunction with 8.:
+                return MediaType.APPLICATION_OCTET_STREAM;
         }
-        // 3. Obtain the acceptable media types A. If A = {}, set A = {'*/*'}
-        if (accMediaTypes.isEmpty())
-            accMediaTypes = SortedMetadata.getMediaTypeAll();
-        // 4. Sort P and A: a is already sorted.
+        // 3. Obtain the acceptable media types A.
+        SortedMetadata<MediaType> a = callContext.getAccMediaTypes();
+        // 3. If A = {}, set A = {'*/*'}
+        if (a.isEmpty())
+            a = SortedMetadata.getMediaTypeAll();
+        // 4. Sort P and A (A is already sorted)
         List<MediaType> pSorted = sortByConcreteness(p);
         // 5.
         List<MediaType> m = new ArrayList<MediaType>();
         for (MediaType prod : pSorted)
-            for (MediaType acc : accMediaTypes)
+            for (MediaType acc : a)
                 if (prod.isCompatible(acc))
                     m.add(MediaType.getMostSpecific(prod, acc));
         // 6.
         if (m.isEmpty())
             excHandler.notAcceptableWhileDetermineMediaType();
-        return m;
-    }
-
-    /**
-     * Determines the MediaType for a response, see JAX-RS-Spec (2008-04-16),
-     * section 3.8 "Determining the MediaType of Responses", Part 7-9
-     * 
-     * @param m
-     *                the possible {@link MediaType}s.
-     * @param restletResponse
-     *                The Restlet {@link Response}; needed for a not acceptable
-     *                return.
-     * @return the determined {@link MediaType}
-     * @throws RequestHandledException
-     */
-    private MediaType determineMediaTypeB(List<MediaType> m)
-            throws WebApplicationException {
         // 7.
         for (MediaType mediaType : m)
             if (mediaType.isConcrete())

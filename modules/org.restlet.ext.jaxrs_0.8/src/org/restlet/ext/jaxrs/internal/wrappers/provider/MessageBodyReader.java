@@ -93,5 +93,5 @@ public interface MessageBodyReader<T> {
      * @param mediaType
      * @return
      */
-    public boolean supports(MediaType mediaType);
+    public boolean supportsRead(MediaType mediaType);
 }

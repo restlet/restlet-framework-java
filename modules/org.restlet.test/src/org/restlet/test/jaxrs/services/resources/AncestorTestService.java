@@ -17,37 +17,68 @@
  */
 package org.restlet.test.jaxrs.services.resources;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.ProduceMime;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
-
-import org.restlet.test.jaxrs.services.tests.AncestorTest;
+import javax.ws.rs.core.Response.Status;
 
 /**
  * @author Stephan Koops
- * @see AncestorTest
+ * @see org.restlet.test.jaxrs.services.tests.AncestorTest
  * @see UriInfo#getAncestorResources()
  * @see UriInfo#getAncestorResourceURIs()
  */
 @Path("ancestorTest")
 public class AncestorTestService {
 
+    /**
+     * @param subUriInfo
+     * @param attribute
+     * @throws NoSuchMethodException
+     * @throws SecurityException
+     * @throws IllegalAccessException
+     * @throws IllegalArgumentException
+     * @throws InvocationTargetException
+     */
+    private static Object getAttribute(UriInfo subUriInfo, String attribute) {
+        String getterName = "get" + attribute.substring(0, 1).toUpperCase()
+                + attribute.substring(1);
+        Method subMethod;
+        try {
+            subMethod = subUriInfo.getClass().getMethod(getterName);
+        } catch (SecurityException e) {
+            throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+        } catch (NoSuchMethodException e) {
+            throw new WebApplicationException(Status.NOT_FOUND);
+        }
+        try {
+            return subMethod.invoke(subUriInfo);
+        } catch (IllegalArgumentException e) {
+            throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+        } catch (IllegalAccessException e) {
+            throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+        } catch (InvocationTargetException e) {
+            throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Context
+    private UriInfo mainUriInfo;
+
     @GET
     @ProduceMime("text/plain")
-    @Path("uris")
-    public String getUris(@Context UriInfo uriInfo) {
-        StringBuilder stb = new StringBuilder();
-        List<String> uris = uriInfo.getAncestorResourceURIs();
-        stb.append(uris.size());
-        for (String uri : uris) {
-            stb.append('\n');
-            stb.append(uri);
-        }
-        return stb.toString();
+    public String get(@Context UriInfo uriInfo) {
+        int uriSize = uriInfo.getAncestorResourceURIs().size();
+        int resourcesSize = uriInfo.getAncestorResources().size();
+        return uriSize + "\n" + resourcesSize;
     }
 
     @GET
@@ -63,13 +94,10 @@ public class AncestorTestService {
         }
         return stb.toString();
     }
-    
-    @GET
-    @ProduceMime("text/plain")
-    public String get(@Context UriInfo uriInfo) {
-        int uriSize = uriInfo.getAncestorResourceURIs().size();
-        int resourcesSize = uriInfo.getAncestorResources().size();
-        return uriSize+"\n"+resourcesSize;
+
+    @Path("sameSub")
+    public AncestorTestService getSameSub() {
+        return getSub();
     }
 
     @Path("sub")
@@ -77,8 +105,27 @@ public class AncestorTestService {
         return new AncestorTestService();
     }
 
-    @Path("sameSub")
-    public AncestorTestService getSameSub() {
-        return getSub();
+    @GET
+    @ProduceMime("text/plain")
+    @Path("uriInfo/{attribute}")
+    public String getUriInfoAttribute(@Context UriInfo subUriInfo,
+            @PathParam("attribute") String attribute) {
+        Object mainAttrValue = getAttribute(mainUriInfo, attribute);
+        Object subAttrValue = getAttribute(subUriInfo, attribute);
+        return mainAttrValue + "\n" + subAttrValue;
+    }
+
+    @GET
+    @ProduceMime("text/plain")
+    @Path("uris")
+    public String getUris(@Context UriInfo uriInfo) {
+        StringBuilder stb = new StringBuilder();
+        List<String> uris = uriInfo.getAncestorResourceURIs();
+        stb.append(uris.size());
+        for (String uri : uris) {
+            stb.append('\n');
+            stb.append(uri);
+        }
+        return stb.toString();
     }
 }

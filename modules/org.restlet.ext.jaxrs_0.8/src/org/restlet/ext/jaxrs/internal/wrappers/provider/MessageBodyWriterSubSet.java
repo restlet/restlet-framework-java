@@ -40,7 +40,10 @@ public class MessageBodyWriterSubSet {
     /**
      * returns a list of all producible media types.
      * 
-     * @return a list of all producible media types.
+     * @return a list of all producible media types. If this set is not empty,
+     *         this result is not empty. '*<!---->/*' is returned for a message
+     *         body writer with no &#64;{@link javax.ws.rs.ProduceMime}
+     *         annotation.
      */
     public Collection<MediaType> getAllProducibleMediaTypes() {
         List<MediaType> p = new ArrayList<MediaType>();
@@ -53,9 +56,10 @@ public class MessageBodyWriterSubSet {
      * Finds a {@link MessageBodyWriter} in this Set that best matches media
      * types of the response method and of the accepted {@link MediaType}s.
      * 
-     * @param responseMediaTypes
+     * @param determinedResponseMediaType
      *                The {@link MediaType}s of the response, declared by the
-     *                resource methods.
+     *                resource methods or given by the
+     *                {@link javax.ws.rs.core.Response}.
      * @param accMediaTypes
      *                the accepted media types.
      * @return A {@link MessageBodyWriter} that best matches the given accepted.
@@ -63,19 +67,26 @@ public class MessageBodyWriterSubSet {
      *         found in this set.
      */
     public MessageBodyWriter<?> getBestWriter(
-            Collection<MediaType> responseMediaTypes,
+            MediaType determinedResponseMediaType,
             SortedMetadata<MediaType> accMediaTypes) {
-        if(accMediaTypes == null)
-            throw new Error();
         List<MessageBodyWriter<?>> mbws = new ArrayList<MessageBodyWriter<?>>();
         for (MessageBodyWriter<?> mbw : this.mbws) {
-            if (mbw.supportAtLeastOne(responseMediaTypes))
+            if (mbw.supportsWrite(determinedResponseMediaType))
                 mbws.add(mbw);
         }
         for (Iterable<MediaType> amts : accMediaTypes.listOfColls())
             for (MessageBodyWriter<?> mbw : mbws)
-                if (mbw.supportAtLeastOne(amts))
+                if (mbw.supportsWrite(amts))
                     return mbw;
         return null;
+    }
+
+    /**
+     * Returns true, if this set is empty
+     * 
+     * @return true, if this set is empty
+     */
+    public boolean isEmpty() {
+        return this.mbws.isEmpty();
     }
 }
