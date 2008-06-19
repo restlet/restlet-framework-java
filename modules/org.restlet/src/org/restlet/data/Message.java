@@ -109,10 +109,6 @@ public abstract class Message {
 	 * prevent future optimizations. The other standard HTTP headers (that are
 	 * not supported) can be added as attributes via the
 	 * "org.restlet.http.headers" key.<br>
-	 * The mapping between the HTTP headers and the Restlet API is available at
-	 * this URL: <a
-	 * href="http://wiki.restlet.org/docs_1.1/g1/43-restlet/130-restlet.html">Mapping
-	 * HTTP to Restlet API</a>
 	 * 
 	 * @return The modifiable attributes map.
 	 */
