@@ -52,26 +52,27 @@ public class EmployeesResource {
         return employees;
     }
 
+    /** Creates a new employee from XML or JSON */
     @POST
     @ConsumeMime( { "application/xml", "text/xml", "application/json" })
     public Response createEmployee(Employee employee) {
         int staffNo = employeeMgr.createEmployee(employee);
         String uriExts = uriInfo.getPathExtension();
-        return createdResponse(Status.CREATED, staffNo, uriExts);
+        URI location = createdLocation(staffNo, uriExts);
+        return Response.created(location).build();
     }
 
     /**
-     * Creates a Response, that the employee is created.
+     * Creates the URI for the location of an created employee.
      * 
-     * @param returnStatus
-     *                a Browser should get status "See other"
+     * @param staffNo the number of the created employee
+     * @param extension the file extension to use for content negotiation
+     * @return the URI for the location of an created employee.
      */
-    private Response createdResponse(Status returnStatus, int staffNo,
-            String extension) {
+    private URI createdLocation(int staffNo, String extension) {
         UriBuilder locBuilder = uriInfo.getPlatonicRequestUriBuilder();
         locBuilder.path("{staffNo}").extension(extension);
-        URI location = locBuilder.build(staffNo);
-        return Response.status(returnStatus).location(location).build();
+        return locBuilder.build(staffNo);
     }
 
     @POST
@@ -83,7 +84,8 @@ public class EmployeesResource {
         employee.setSex(employeeData.getFirst("sex"));
         employee.setDepartment(employeeData.getFirst("department"));
         int persNo = employeeMgr.createEmployee(employee);
-        return createdResponse(Status.SEE_OTHER, persNo, "html");
+        URI location = createdLocation(persNo, "html");
+        return Response.seeOther(location).build();
     }
 
     /** Create sub resource for one concrete employee. */

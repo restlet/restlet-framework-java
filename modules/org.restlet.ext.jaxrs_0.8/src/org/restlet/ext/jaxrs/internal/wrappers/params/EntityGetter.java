@@ -37,9 +37,10 @@ import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyReaderSet;
 import org.restlet.resource.Representation;
 
 /**
- * An EntityGetter converts the given entity to the type requested by the
- * resource method.<br>
- * This class is not used, if a subclass of {@link Representation} is requested.
+ * An EntityGetter converts the given entity from the request to the type
+ * requested by the resource method.<br>
+ * This class is not used, if a subclass of {@link Representation} is requested,
+ * see {@link ReprEntityGetter} and its subclasses.
  * 
  * @author Stephan Koops
  */
