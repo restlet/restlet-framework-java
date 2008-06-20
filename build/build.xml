@@ -434,8 +434,8 @@
    </path>
 
    <path id="mod-shell-path">
-      <path refid="mod-ri-path" />
-      <pathelement path="${classes}/${mod-ri-id}" />
+      <path refid="mod-api-path" />
+      <pathelement path="${classes}/${mod-api-id}" />
       <fileset dir="${lib}/${lib-antlr-id}" includes="*.jar" />
       <fileset dir="${lib}/${lib-jline-id}" includes="*.jar" />
    </path>
@@ -1039,8 +1039,8 @@
       <replace file="${mod}/${mod-api-id}/src/org/restlet/util/Engine.java" token="@release-number@" value="${release-number}" />
       
       <!-- Invokes the ANTLR3 Translator generator on the grammar file provided for the "shell" extension. -->
-      <antlrBuild grammar="${mod}/${mod-shell-id}/src/com/noelios/restlet/ext/shell/controller/commands/usage/Usage.g"
-                  outputDirectory="${mod}/${mod-shell-id}/src/com/noelios/restlet/ext/shell/controller/commands/usage/"
+      <antlrBuild grammar="${mod}/${mod-shell-id}/src/org/restlet/ext/shell/controller/commands/usage/Usage.g"
+                  outputDirectory="${mod}/${mod-shell-id}/src/org/restlet/ext/shell/controller/commands/usage/"
                   libDirectory="${lib}"/>
       
       <compileModule name="api" />
