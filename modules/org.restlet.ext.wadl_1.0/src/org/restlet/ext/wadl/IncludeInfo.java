@@ -21,6 +21,9 @@ package org.restlet.ext.wadl;
 import java.util.List;
 
 import org.restlet.data.Reference;
+import org.restlet.util.XmlWriter;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.AttributesImpl;
 
 /**
  * Allows inclusion of grammars by reference.
@@ -29,24 +32,48 @@ import org.restlet.data.Reference;
  */
 public class IncludeInfo {
 
-    private List<DocumentationInfo> documentations;
+	private List<DocumentationInfo> documentations;
 
-    private Reference targetRef;
+	private Reference targetRef;
 
-    public List<DocumentationInfo> getDocumentations() {
-        return documentations;
-    }
+	public List<DocumentationInfo> getDocumentations() {
+		return documentations;
+	}
 
-    public Reference getTargetRef() {
-        return targetRef;
-    }
+	public Reference getTargetRef() {
+		return targetRef;
+	}
 
-    public void setDocumentations(List<DocumentationInfo> doc) {
-        this.documentations = doc;
-    }
+	public void setDocumentations(List<DocumentationInfo> doc) {
+		this.documentations = doc;
+	}
 
-    public void setTargetRef(Reference href) {
-        this.targetRef = href;
-    }
+	public void setTargetRef(Reference href) {
+		this.targetRef = href;
+	}
 
+	/**
+	 * Writes the current object as an XML element using the given SAX writer.
+	 * 
+	 * @param writer
+	 *            The SAX writer.
+	 * @throws SAXException
+	 */
+	public void writeElement(XmlWriter writer) throws SAXException {
+		AttributesImpl attributes = new AttributesImpl();
+		if (getTargetRef() != null && getTargetRef().toString() != null) {
+			attributes.addAttribute("", "href", null, "xs:anyURI",
+					getTargetRef().toString());
+		}
+
+		if (getDocumentations() != null) {
+			writer.startElement("", "include", null, attributes);
+			for (DocumentationInfo documentationInfo : getDocumentations()) {
+				documentationInfo.writeElement(writer);
+			}
+			writer.endElement("", "include");
+		} else {
+			writer.emptyElement("", "include", null, attributes);
+		}
+	}
 }

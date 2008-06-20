@@ -18,11 +18,26 @@
 
 package org.restlet.ext.wadl;
 
+import org.restlet.util.XmlWriter;
+import org.xml.sax.SAXException;
+
 /**
  * Describes an error condition for response descriptions.
  * 
  * @author Jerome Louvel
  */
 public class FaultInfo extends RepresentationInfo {
+
+    /**
+     * Writes the current object as an XML element using the given SAX writer.
+     * 
+     * @param writer
+     *                The SAX writer.
+     * @throws SAXException
+     */
+    public void writeElement(XmlWriter writer)
+            throws SAXException {
+    	// TODO Que faire?
+    }
 
 }

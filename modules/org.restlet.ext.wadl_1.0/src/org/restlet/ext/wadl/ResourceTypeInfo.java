@@ -20,6 +20,10 @@ package org.restlet.ext.wadl;
 
 import java.util.List;
 
+import org.restlet.util.XmlWriter;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.AttributesImpl;
+
 /**
  * Describes a reusable type of resources.
  * 
@@ -27,44 +31,78 @@ import java.util.List;
  */
 public class ResourceTypeInfo {
 
-    private List<DocumentationInfo> documentations;
+	private List<DocumentationInfo> documentations;
 
-    private String identifier;
+	private String identifier;
 
-    private List<MethodInfo> methods;
+	private List<MethodInfo> methods;
 
-    private List<ParameterInfo> parameters;
+	private List<ParameterInfo> parameters;
 
-    public List<DocumentationInfo> getDocumentations() {
-        return documentations;
-    }
+	public List<DocumentationInfo> getDocumentations() {
+		return documentations;
+	}
 
-    public String getIdentifier() {
-        return identifier;
-    }
+	public String getIdentifier() {
+		return identifier;
+	}
 
-    public List<MethodInfo> getMethods() {
-        return methods;
-    }
+	public List<MethodInfo> getMethods() {
+		return methods;
+	}
 
-    public List<ParameterInfo> getParameters() {
-        return parameters;
-    }
+	public List<ParameterInfo> getParameters() {
+		return parameters;
+	}
 
-    public void setDocumentations(List<DocumentationInfo> doc) {
-        this.documentations = doc;
-    }
+	public void setDocumentations(List<DocumentationInfo> doc) {
+		this.documentations = doc;
+	}
 
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
-    }
+	public void setIdentifier(String identifier) {
+		this.identifier = identifier;
+	}
 
-    public void setMethods(List<MethodInfo> methods) {
-        this.methods = methods;
-    }
+	public void setMethods(List<MethodInfo> methods) {
+		this.methods = methods;
+	}
 
-    public void setParameters(List<ParameterInfo> parameters) {
-        this.parameters = parameters;
-    }
+	public void setParameters(List<ParameterInfo> parameters) {
+		this.parameters = parameters;
+	}
+
+	/**
+	 * Writes the current object as an XML element using the given SAX writer.
+	 * 
+	 * @param writer
+	 *            The SAX writer.
+	 * @throws SAXException
+	 */
+	public void writeElement(XmlWriter writer) throws SAXException {
+		AttributesImpl attributes = new AttributesImpl();
+		if (getIdentifier() != null && !getIdentifier().equals("")) {
+			attributes.addAttribute("", "id", null, "xs:ID", getIdentifier());
+		}
+
+		writer.startElement("", "resource_type", null, attributes);
+		if (getDocumentations() != null) {
+			for (DocumentationInfo documentationInfo : getDocumentations()) {
+				documentationInfo.writeElement(writer);
+			}
+		}
+
+		if (getMethods() != null) {
+			for (MethodInfo methodInfo : getMethods()) {
+				methodInfo.writeElement(writer);
+			}
+		}
+		if (getParameters() != null) {
+			for (ParameterInfo parameterInfo : getParameters()) {
+				parameterInfo.writeElement(writer);
+			}
+		}
+		writer.endElement("", "resource_type");
+
+	}
 
 }

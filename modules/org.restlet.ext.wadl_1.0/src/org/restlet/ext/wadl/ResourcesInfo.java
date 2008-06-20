@@ -21,6 +21,9 @@ package org.restlet.ext.wadl;
 import java.util.List;
 
 import org.restlet.data.Reference;
+import org.restlet.util.XmlWriter;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.AttributesImpl;
 
 /**
  * Describes the root resources of an application.
@@ -29,34 +32,62 @@ import org.restlet.data.Reference;
  */
 public class ResourcesInfo {
 
-    private Reference baseRef;
+	private Reference baseRef;
 
-    private List<DocumentationInfo> documentations;
+	private List<DocumentationInfo> documentations;
 
-    private List<ResourceInfo> resources;
+	private List<ResourceInfo> resources;
 
-    public Reference getBaseRef() {
-        return baseRef;
-    }
+	public Reference getBaseRef() {
+		return baseRef;
+	}
 
-    public List<DocumentationInfo> getDocumentations() {
-        return documentations;
-    }
+	public List<DocumentationInfo> getDocumentations() {
+		return documentations;
+	}
 
-    public List<ResourceInfo> getResources() {
-        return resources;
-    }
+	public List<ResourceInfo> getResources() {
+		return resources;
+	}
 
-    public void setBaseRef(Reference baseRef) {
-        this.baseRef = baseRef;
-    }
+	public void setBaseRef(Reference baseRef) {
+		this.baseRef = baseRef;
+	}
 
-    public void setDocumentations(List<DocumentationInfo> doc) {
-        this.documentations = doc;
-    }
+	public void setDocumentations(List<DocumentationInfo> doc) {
+		this.documentations = doc;
+	}
 
-    public void setResources(List<ResourceInfo> resources) {
-        this.resources = resources;
-    }
+	public void setResources(List<ResourceInfo> resources) {
+		this.resources = resources;
+	}
+
+	/**
+	 * Writes the current object as an XML element using the given SAX writer.
+	 * 
+	 * @param writer
+	 *            The SAX writer.
+	 * @throws SAXException
+	 */
+	public void writeElement(XmlWriter writer) throws SAXException {
+		AttributesImpl attributes = new AttributesImpl();
+		if (getBaseRef() != null) {
+			attributes.addAttribute("", "base", null, "xs:anyURI", getBaseRef()
+					.toString());
+		}
+
+		writer.startElement("", "resources", null, attributes);
+		if (getDocumentations() != null) {
+			for (DocumentationInfo documentationInfo : getDocumentations()) {
+				documentationInfo.writeElement(writer);
+			}
+		}
+		if (getResources() != null) {
+			for (ResourceInfo resourceInfo : getResources()) {
+				resourceInfo.writeElement(writer);
+			}
+		}
+		writer.endElement("", "resources");
+	}
 
 }

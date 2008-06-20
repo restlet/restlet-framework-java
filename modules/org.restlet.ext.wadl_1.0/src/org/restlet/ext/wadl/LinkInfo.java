@@ -20,6 +20,10 @@ package org.restlet.ext.wadl;
 
 import java.util.List;
 
+import org.restlet.util.XmlWriter;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.AttributesImpl;
+
 /**
  * Allows description of links between representations and resources.
  * 
@@ -27,44 +31,75 @@ import java.util.List;
  */
 public class LinkInfo {
 
-    private List<DocumentationInfo> documentations;
+	private List<DocumentationInfo> documentations;
 
-    private String relationship;
+	private String relationship;
 
-    private ResourceTypeInfo resourceType;
+	private ResourceTypeInfo resourceType;
 
-    private String reverseRelationship;
+	private String reverseRelationship;
 
-    public List<DocumentationInfo> getDocumentations() {
-        return documentations;
-    }
+	public List<DocumentationInfo> getDocumentations() {
+		return documentations;
+	}
 
-    public String getRelationship() {
-        return relationship;
-    }
+	public String getRelationship() {
+		return relationship;
+	}
 
-    public ResourceTypeInfo getResourceType() {
-        return resourceType;
-    }
+	public ResourceTypeInfo getResourceType() {
+		return resourceType;
+	}
 
-    public String getReverseRelationship() {
-        return reverseRelationship;
-    }
+	public String getReverseRelationship() {
+		return reverseRelationship;
+	}
 
-    public void setDocumentations(List<DocumentationInfo> doc) {
-        this.documentations = doc;
-    }
+	public void setDocumentations(List<DocumentationInfo> doc) {
+		this.documentations = doc;
+	}
 
-    public void setRelationship(String relationship) {
-        this.relationship = relationship;
-    }
+	public void setRelationship(String relationship) {
+		this.relationship = relationship;
+	}
 
-    public void setResourceType(ResourceTypeInfo resourceType) {
-        this.resourceType = resourceType;
-    }
+	public void setResourceType(ResourceTypeInfo resourceType) {
+		this.resourceType = resourceType;
+	}
 
-    public void setReverseRelationship(String reverseRelationship) {
-        this.reverseRelationship = reverseRelationship;
-    }
+	public void setReverseRelationship(String reverseRelationship) {
+		this.reverseRelationship = reverseRelationship;
+	}
+
+	/**
+	 * Writes the current object as an XML element using the given SAX writer.
+	 * 
+	 * @param writer
+	 *            The SAX writer.
+	 * @throws SAXException
+	 */
+	public void writeElement(XmlWriter writer) throws SAXException {
+		AttributesImpl attributes = new AttributesImpl();
+		if (getRelationship() != null && !getRelationship().equals("")) {
+			attributes.addAttribute("", "rel", null, "xs:token",
+					getRelationship());
+		}
+		if (getReverseRelationship() != null
+				&& !getReverseRelationship().equals("")) {
+			attributes.addAttribute("", "rev", null, "xs:token",
+					getReverseRelationship());
+		}
+
+		// TODO Prise en compte de ResourceType. Comme attribut?
+		writer.startElement("", "link", null, attributes);
+
+		if (getDocumentations() != null) {
+			for (DocumentationInfo documentationInfo : getDocumentations()) {
+				documentationInfo.writeElement(writer);
+			}
+		}
+
+		writer.endElement("link");
+	}
 
 }

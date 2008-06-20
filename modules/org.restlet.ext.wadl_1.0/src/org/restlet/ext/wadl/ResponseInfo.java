@@ -20,6 +20,9 @@ package org.restlet.ext.wadl;
 
 import java.util.List;
 
+import org.restlet.util.XmlWriter;
+import org.xml.sax.SAXException;
+
 /**
  * Describes the properties of a response associated to a parent method.
  * 
@@ -27,44 +30,77 @@ import java.util.List;
  */
 public class ResponseInfo {
 
-    private List<DocumentationInfo> documentations;
+	private List<DocumentationInfo> documentations;
 
-    private List<FaultInfo> faults;
+	private List<FaultInfo> faults;
 
-    private List<ParameterInfo> parameters;
+	private List<ParameterInfo> parameters;
 
-    private List<RepresentationInfo> representations;
+	private List<RepresentationInfo> representations;
 
-    public List<DocumentationInfo> getDocumentations() {
-        return documentations;
-    }
+	public List<DocumentationInfo> getDocumentations() {
+		return documentations;
+	}
 
-    public List<FaultInfo> getFaults() {
-        return faults;
-    }
+	public List<FaultInfo> getFaults() {
+		return faults;
+	}
 
-    public List<ParameterInfo> getParameters() {
-        return parameters;
-    }
+	public List<ParameterInfo> getParameters() {
+		return parameters;
+	}
 
-    public List<RepresentationInfo> getRepresentations() {
-        return representations;
-    }
+	public List<RepresentationInfo> getRepresentations() {
+		return representations;
+	}
 
-    public void setDocumentations(List<DocumentationInfo> doc) {
-        this.documentations = doc;
-    }
+	public void setDocumentations(List<DocumentationInfo> doc) {
+		this.documentations = doc;
+	}
 
-    public void setFaults(List<FaultInfo> faults) {
-        this.faults = faults;
-    }
+	public void setFaults(List<FaultInfo> faults) {
+		this.faults = faults;
+	}
 
-    public void setParameters(List<ParameterInfo> parameters) {
-        this.parameters = parameters;
-    }
+	public void setParameters(List<ParameterInfo> parameters) {
+		this.parameters = parameters;
+	}
 
-    public void setRepresentations(List<RepresentationInfo> representations) {
-        this.representations = representations;
-    }
+	public void setRepresentations(List<RepresentationInfo> representations) {
+		this.representations = representations;
+	}
+
+	/**
+	 * Writes the current object as an XML element using the given SAX writer.
+	 * 
+	 * @param writer
+	 *            The SAX writer.
+	 * @throws SAXException
+	 */
+	public void writeElement(XmlWriter writer) throws SAXException {
+		writer.startElement("", "response");
+		if (getDocumentations() != null) {
+			for (DocumentationInfo documentationInfo : getDocumentations()) {
+				documentationInfo.writeElement(writer);
+			}
+		}
+		if (getFaults() != null) {
+			for (FaultInfo faultInfo : getFaults()) {
+				faultInfo.writeElement(writer);
+			}
+		}
+		if (getParameters() != null) {
+			for (ParameterInfo parameterInfo : getParameters()) {
+				parameterInfo.writeElement(writer);
+			}
+		}
+		if (getRepresentations() != null) {
+			for (RepresentationInfo representationInfo : getRepresentations()) {
+				representationInfo.writeElement(writer);
+			}
+		}
+		writer.endElement("", "response");
+
+	}
 
 }

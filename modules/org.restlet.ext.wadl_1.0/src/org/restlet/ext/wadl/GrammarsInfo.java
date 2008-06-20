@@ -20,6 +20,9 @@ package org.restlet.ext.wadl;
 
 import java.util.List;
 
+import org.restlet.util.XmlWriter;
+import org.xml.sax.SAXException;
+
 /**
  * Describes the grammars used by representation descriptions. This is
  * especially useful to formally describe XML representations using XML Schema
@@ -29,23 +32,47 @@ import java.util.List;
  */
 public class GrammarsInfo {
 
-    private List<DocumentationInfo> documentations;
+	private List<DocumentationInfo> documentations;
 
-    private List<IncludeInfo> includes;
+	private List<IncludeInfo> includes;
 
-    public List<DocumentationInfo> getDocumentations() {
-        return documentations;
-    }
+	public List<DocumentationInfo> getDocumentations() {
+		return documentations;
+	}
 
-    public List<IncludeInfo> getIncludes() {
-        return includes;
-    }
+	public List<IncludeInfo> getIncludes() {
+		return includes;
+	}
 
-    public void setDocumentations(List<DocumentationInfo> doc) {
-        this.documentations = doc;
-    }
+	public void setDocumentations(List<DocumentationInfo> doc) {
+		this.documentations = doc;
+	}
 
-    public void setIncludes(List<IncludeInfo> includes) {
-        this.includes = includes;
-    }
+	public void setIncludes(List<IncludeInfo> includes) {
+		this.includes = includes;
+	}
+
+	/**
+	 * Writes the current object as an XML element using the given SAX writer.
+	 * 
+	 * @param writer
+	 *            The SAX writer.
+	 * @throws SAXException
+	 */
+	public void writeElement(XmlWriter writer) throws SAXException {
+		writer.startElement("", "grammars");
+
+		if (getDocumentations() != null) {
+			for (DocumentationInfo documentationInfo : getDocumentations()) {
+				documentationInfo.writeElement(writer);
+			}
+		}
+		if (getIncludes() != null) {
+			for (IncludeInfo includeInfo : getIncludes()) {
+				includeInfo.writeElement(writer);
+			}
+		}
+
+		writer.endElement("", "grammars");
+	}
 }

@@ -18,11 +18,15 @@
 
 package org.restlet.ext.wadl;
 
+import java.util.Iterator;
 import java.util.List;
 
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
+import org.restlet.util.XmlWriter;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.AttributesImpl;
 
 /**
  * Describres a variant representation for a target resource.
@@ -31,74 +35,137 @@ import org.restlet.data.Status;
  */
 public class RepresentationInfo {
 
-    private List<DocumentationInfo> documentations;
+	private List<DocumentationInfo> documentations;
 
-    private String identifier;
+	private String identifier;
 
-    private MediaType mediaType;
+	private MediaType mediaType;
 
-    private List<ParameterInfo> parameters;
+	private List<ParameterInfo> parameters;
 
-    private List<Reference> profiles;
+	private List<Reference> profiles;
 
-    private List<Status> statuses;
+	private List<Status> statuses;
 
-    private String xmlElement;
+	private String xmlElement;
 
-    public List<DocumentationInfo> getDocumentations() {
-        return documentations;
-    }
+	public List<DocumentationInfo> getDocumentations() {
+		return documentations;
+	}
 
-    public String getIdentifier() {
-        return identifier;
-    }
+	public String getIdentifier() {
+		return identifier;
+	}
 
-    public MediaType getMediaType() {
-        return mediaType;
-    }
+	public MediaType getMediaType() {
+		return mediaType;
+	}
 
-    public List<ParameterInfo> getParameters() {
-        return parameters;
-    }
+	public List<ParameterInfo> getParameters() {
+		return parameters;
+	}
 
-    public List<Reference> getProfiles() {
-        return profiles;
-    }
+	public List<Reference> getProfiles() {
+		return profiles;
+	}
 
-    public List<Status> getStatuses() {
-        return statuses;
-    }
+	public List<Status> getStatuses() {
+		return statuses;
+	}
 
-    public String getXmlElement() {
-        return xmlElement;
-    }
+	public String getXmlElement() {
+		return xmlElement;
+	}
 
-    public void setDocumentations(List<DocumentationInfo> doc) {
-        this.documentations = doc;
-    }
+	public void setDocumentations(List<DocumentationInfo> doc) {
+		this.documentations = doc;
+	}
 
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
-    }
+	public void setIdentifier(String identifier) {
+		this.identifier = identifier;
+	}
 
-    public void setMediaType(MediaType mediaType) {
-        this.mediaType = mediaType;
-    }
+	public void setMediaType(MediaType mediaType) {
+		this.mediaType = mediaType;
+	}
 
-    public void setParameters(List<ParameterInfo> parameters) {
-        this.parameters = parameters;
-    }
+	public void setParameters(List<ParameterInfo> parameters) {
+		this.parameters = parameters;
+	}
 
-    public void setProfiles(List<Reference> profiles) {
-        this.profiles = profiles;
-    }
+	public void setProfiles(List<Reference> profiles) {
+		this.profiles = profiles;
+	}
 
-    public void setStatuses(List<Status> statuses) {
-        this.statuses = statuses;
-    }
+	public void setStatuses(List<Status> statuses) {
+		this.statuses = statuses;
+	}
 
-    public void setXmlElement(String xmlElement) {
-        this.xmlElement = xmlElement;
-    }
+	public void setXmlElement(String xmlElement) {
+		this.xmlElement = xmlElement;
+	}
+
+	/**
+	 * Writes the current object as an XML element using the given SAX writer.
+	 * 
+	 * @param writer
+	 *            The SAX writer.
+	 * @throws SAXException
+	 */
+	public void writeElement(XmlWriter writer) throws SAXException {
+		AttributesImpl attributes = new AttributesImpl();
+		if (getIdentifier() != null && !getIdentifier().equals("")) {
+			attributes.addAttribute("", "id", null, "xs:ID", getIdentifier());
+		}
+		if (getMediaType() != null) {
+			attributes.addAttribute("", "mediaType", null, "xs:string",
+					getMediaType().toString());
+		}
+		if (getProfiles() != null && !getProfiles().isEmpty()) {
+			StringBuilder builder = new StringBuilder();
+			for (Iterator<Reference> iterator = getProfiles().iterator(); iterator
+					.hasNext();) {
+				Reference reference = iterator.next();
+				builder.append(reference.toString());
+				if (iterator.hasNext()) {
+					builder.append(" ");
+				}
+			}
+			attributes.addAttribute("", "profile", null, "xs:string", builder
+					.toString());
+		}
+		if (getStatuses() != null && !getStatuses().isEmpty()) {
+			StringBuilder builder = new StringBuilder();
+			for (Iterator<Status> iterator = getStatuses().iterator(); iterator
+					.hasNext();) {
+				Status status = iterator.next();
+				builder.append(status.getCode());
+				if (iterator.hasNext()) {
+					builder.append(" ");
+				}
+			}
+			attributes.addAttribute("", "status", null, "xs:string", builder
+					.toString());
+		}
+		if (getXmlElement() != null && !getXmlElement().equals("")) {
+			attributes.addAttribute("", "element", null, "xs:QName",
+					getXmlElement());
+		}
+
+		writer.startElement("", "representation_type", null, attributes);
+
+		if (getDocumentations() != null) {
+			for (DocumentationInfo documentationInfo : getDocumentations()) {
+				documentationInfo.writeElement(writer);
+			}
+		}
+		if (getParameters() != null) {
+			for (ParameterInfo parameterInfo : getParameters()) {
+				parameterInfo.writeElement(writer);
+			}
+		}
+
+		writer.endElement("", "representation_type");
+	}
 
 }
