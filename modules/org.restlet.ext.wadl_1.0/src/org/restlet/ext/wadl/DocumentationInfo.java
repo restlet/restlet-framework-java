@@ -94,7 +94,7 @@ public class DocumentationInfo {
 		} else {
 
 			if (getXmlContent() != null) {
-				// TODO que faire?
+				// TODO what do we do?
 			} else {
 				writer.dataElement("", "doc", null, attributes,
 						getTextContent());

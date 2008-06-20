@@ -122,12 +122,6 @@ public class ApplicationInfo {
 			}
 		}
 
-		if (getFaults() != null) {
-			for (FaultInfo faultInfo : getFaults()) {
-				faultInfo.writeElement(writer);
-			}
-		}
-
 		if (getGrammars() != null) {
 			getGrammars().writeElement(writer);
 		}
