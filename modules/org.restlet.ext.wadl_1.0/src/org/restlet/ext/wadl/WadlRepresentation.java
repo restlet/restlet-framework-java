@@ -26,6 +26,8 @@ import javax.xml.namespace.QName;
 import org.restlet.data.MediaType;
 import org.restlet.resource.Representation;
 import org.restlet.resource.XmlRepresentation;
+import org.restlet.util.XmlWriter;
+import org.xml.sax.SAXException;
 
 /**
  * Root of a WADL description document.
@@ -34,46 +36,57 @@ import org.restlet.resource.XmlRepresentation;
  */
 public class WadlRepresentation extends XmlRepresentation {
 
-    /** Web Application Description Language namespace. */
-    public static final String APP_NAMESPACE = "http://research.sun.com/wadl/2006/10";
+	/** Web Application Description Language namespace. */
+	public static final String APP_NAMESPACE = "http://research.sun.com/wadl/2006/10";
 
-    private ApplicationInfo application;
+	private ApplicationInfo application;
 
-    public WadlRepresentation() {
-        super(MediaType.APPLICATION_WADL_XML);
-    }
+	public WadlRepresentation() {
+		super(MediaType.APPLICATION_WADL_XML);
+	}
 
-    public WadlRepresentation(ApplicationInfo application) {
-        super(MediaType.APPLICATION_WADL_XML);
-        this.application = application;
-    }
+	public WadlRepresentation(ApplicationInfo application) {
+		super(MediaType.APPLICATION_WADL_XML);
+		this.application = application;
+	}
 
-    public WadlRepresentation(Representation xmlRepresentation) {
-        super(MediaType.APPLICATION_WADL_XML);
+	public WadlRepresentation(Representation xmlRepresentation) {
+		super(MediaType.APPLICATION_WADL_XML);
 
-        // TODO: parse the given document using SAX to produce an
-        // ApplicationInfo instance.
-    }
+		// TODO: parse the given document using SAX to produce an
+		// ApplicationInfo instance.
+	}
 
-    @Override
-    public Object evaluate(String expression, QName returnType)
-            throws Exception {
-        // TODO Auto-generated method stub
-        return null;
-    }
+	@Override
+	public Object evaluate(String expression, QName returnType)
+			throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    public ApplicationInfo getApplication() {
-        return application;
-    }
+	public ApplicationInfo getApplication() {
+		return application;
+	}
 
-    public void setApplication(ApplicationInfo application) {
-        this.application = application;
-    }
+	public void setApplication(ApplicationInfo application) {
+		this.application = application;
+	}
 
-    @Override
-    public void write(OutputStream outputStream) throws IOException {
-        // Convert the attache ApplicationInfo instance into an equivalent WADL
-        // XML document.
-    }
+	@Override
+	public void write(OutputStream outputStream) throws IOException {
+		// Convert the attached ApplicationInfo instance into an equivalent WADL
+		// XML document.
+		XmlWriter writer = new XmlWriter(outputStream, "UTF-8");
+		try {
+			writer.setPrefix(APP_NAMESPACE, "wadl");
+			writer.setDataFormat(true);
+			writer.setIndentStep(3);
+			writer.startDocument();
+			application.writeElement(writer);
+			writer.endDocument();
+		} catch (SAXException e) {
+			e.printStackTrace();
+		}
+	}
 
 }
