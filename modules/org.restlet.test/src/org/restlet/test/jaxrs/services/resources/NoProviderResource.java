@@ -21,13 +21,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.ProduceMime;
 
-import org.restlet.test.jaxrs.services.providers.GenericTypeMBW;
-import org.restlet.test.jaxrs.services.tests.GenericTypeTestCase;
-
 /**
  * @author Stephan Koops
- * @see GenericTypeMBW
- * @see GenericTypeTestCase
  */
 @Path("GenericType")
 public class NoProviderResource {
