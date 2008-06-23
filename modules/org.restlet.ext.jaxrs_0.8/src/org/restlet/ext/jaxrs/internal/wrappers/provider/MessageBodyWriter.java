@@ -17,13 +17,7 @@
  */
 package org.restlet.ext.jaxrs.internal.wrappers.provider;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
 import java.util.List;
-
-import javax.ws.rs.core.MultivaluedMap;
 
 import org.restlet.data.MediaType;
 
@@ -34,7 +28,8 @@ import org.restlet.data.MediaType;
  * @param <T>
  *                the java type to convert.
  */
-public interface MessageBodyWriter<T> {
+public interface MessageBodyWriter<T> extends
+        javax.ws.rs.ext.MessageBodyWriter<T> {
 
     /**
      * Returns the JAX-RS {@link javax.ws.rs.ext.MessageBodyWriter}.
@@ -66,18 +61,6 @@ public interface MessageBodyWriter<T> {
     public long getSize(T t);
 
     /**
-     * Checks, if the given class could be written by this MessageBodyWriter.
-     * 
-     * @param type
-     * @param genericType
-     * @param annotations
-     * @return
-     * @see javax.ws.rs.ext.MessageBodyWriter#isWriteable(Class)
-     */
-    public boolean isWriteable(Class<T> type, Type genericType,
-            Annotation[] annotations);
-
-    /**
      * Checks, if the wrapped MessageBodyWriter supports at least one of the
      * given {@link MediaType}s.
      * 
@@ -98,34 +81,4 @@ public interface MessageBodyWriter<T> {
      *         false.
      */
     public boolean supportsWrite(MediaType mediaType);
-
-    /**
-     * Write a type to an HTTP response. The response header map is mutable but
-     * any changes must be made before writing to the output stream since the
-     * headers will be flushed prior to writing the response body.
-     * 
-     * @param object
-     *                the type to write.
-     * @param type
-     *                the class of the object
-     * @param genericType
-     *                The generic {@link Type} to convert to.
-     * @param annotations
-     *                the annotations of the artefact to convert to
-     * @param mediaType
-     *                the media type of the HTTP entity.
-     * @param httpHeaders
-     *                a mutable map of the HTTP response headers.
-     * @param entityStream
-     *                the {@link OutputStream} for the HTTP entity.
-     * @throws java.io.IOException
-     *                 if an IO error arises
-     * @see javax.ws.rs.ext.MessageBodyWriter#writeTo(Object, Class, Type,
-     *      Annotation[], javax.ws.rs.core.MediaType, MultivaluedMap,
-     *      OutputStream)
-     */
-    public void writeTo(T object, Class<?> type, Type genericType,
-            Annotation[] annotations, javax.ws.rs.core.MediaType mediaType,
-            MultivaluedMap<String, Object> httpHeaders,
-            OutputStream entityStream) throws IOException;
 }

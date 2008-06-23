@@ -17,13 +17,7 @@
  */
 package org.restlet.ext.jaxrs.internal.wrappers.provider;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
 import java.util.List;
-
-import javax.ws.rs.core.MultivaluedMap;
 
 import org.restlet.data.MediaType;
 
@@ -35,7 +29,7 @@ import org.restlet.data.MediaType;
  *                the java type to convert to.
  */
 @SuppressWarnings("unchecked")
-public interface MessageBodyReader<T> {
+public interface MessageBodyReader<T> extends javax.ws.rs.ext.MessageBodyReader<T> {
 
     /**
      * Returns the list of produced {@link MediaType}s of the wrapped
@@ -51,41 +45,6 @@ public interface MessageBodyReader<T> {
      * @return the JAX-RS MessageBodyReader
      */
     public javax.ws.rs.ext.MessageBodyReader<T> getJaxRsReader();
-
-    /**
-     * Checks, if this MessageBodyReader could read the given type.
-     * 
-     * @param type
-     * @param genericType
-     * @param annotations
-     * @return
-     * @see javax.ws.rs.ext.MessageBodyReader#isReadable(Class, Type,
-     *      Annotation[])
-     */
-    public boolean isReadable(Class<T> type, Type genericType,
-            Annotation[] annotations);
-
-    /**
-     * Reads an object of the given type from the given entityStream.
-     * 
-     * @param type
-     * @param genericType
-     *                The generic {@link Type} to convert to.
-     * @param annotations
-     *                the annotations of the artefact to convert to
-     * @param mediaType
-     * @param httpHeaders
-     * @param entityStream
-     * @return the object of the given type.
-     * @throws IOException
-     * @see javax.ws.rs.ext.MessageBodyReader#readFrom(Class, Type,
-     *      Annotation[], javax.ws.rs.core.MediaType, MultivaluedMap,
-     *      InputStream)
-     */
-    public T readFrom(Class<T> type, Type genericType,
-            Annotation[] annotations, javax.ws.rs.core.MediaType mediaType,
-            MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
-            throws IOException;
 
     /**
      * Checks, if this MessageBodyReader supports the given MediaType.

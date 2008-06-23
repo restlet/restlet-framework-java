@@ -439,7 +439,7 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * @see javax.ws.rs.ext.MessageBodyReader#isReadable(Class, Type,
      *      Annotation[])
      */
-    public boolean isReadable(Class<T> type, Type genericType,
+    public boolean isReadable(Class<?> type, Type genericType,
             Annotation[] annotations) {
         return reader.isReadable(type, genericType, annotations);
     }
@@ -464,7 +464,7 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * @return
      * @see javax.ws.rs.ext.MessageBodyWriter#isWriteable(Class)
      */
-    public boolean isWriteable(Class<T> type, Type genericType,
+    public boolean isWriteable(Class<?> type, Type genericType,
             Annotation[] annotations) {
         return writer.isWriteable(type, genericType, annotations);
     }

@@ -49,8 +49,8 @@ public class EntityProviders implements javax.ws.rs.ext.MessageBodyWorkers,
      * @see #isWriteable(MessageBodyWriter, Class, Type, Annotation[])
      */
     @SuppressWarnings("unchecked")
-    private static boolean isReadable(MessageBodyReader mbr, Class<?> paramType,
-            Type genericType, Annotation[] annotations) {
+    private static boolean isReadable(MessageBodyReader mbr,
+            Class<?> paramType, Type genericType, Annotation[] annotations) {
         try {
             return mbr.isReadable(paramType, genericType, annotations);
         } catch (NullPointerException e) {
@@ -84,8 +84,8 @@ public class EntityProviders implements javax.ws.rs.ext.MessageBodyWorkers,
      * @see #isReadable(MessageBodyReader, Class, Type, Annotation[])
      */
     @SuppressWarnings("unchecked")
-    private static boolean isWriteable(MessageBodyWriter mbw, Class<?> entityClass,
-            Type genericType, Annotation[] annotations)
+    private static boolean isWriteable(MessageBodyWriter mbw,
+            Class<?> entityClass, Type genericType, Annotation[] annotations)
             throws NullPointerException, IllegalArgumentException {
         try {
             return mbw.isWriteable(entityClass, genericType, annotations);
@@ -104,9 +104,17 @@ public class EntityProviders implements javax.ws.rs.ext.MessageBodyWorkers,
         }
     }
 
-    private final List<MessageBodyReader<?>> messageBodyReaders = new CopyOnWriteArrayList<MessageBodyReader<?>>();
+    private final List<MessageBodyReader<?>> messageBodyReaders;
 
-    private final List<MessageBodyWriter<?>> messageBodyWriters = new CopyOnWriteArrayList<MessageBodyWriter<?>>();
+    private final List<MessageBodyWriter<?>> messageBodyWriters;
+
+    /**
+     * Creates a new EntotProviders.
+     */
+    public EntityProviders() {
+        this.messageBodyReaders = new CopyOnWriteArrayList<MessageBodyReader<?>>();
+        this.messageBodyWriters = new CopyOnWriteArrayList<MessageBodyWriter<?>>();
+    }
 
     /**
      * Adds the given provider to this EntityProviders. If the Provider is not
