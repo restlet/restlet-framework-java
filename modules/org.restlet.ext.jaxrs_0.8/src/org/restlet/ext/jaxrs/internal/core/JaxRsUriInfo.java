@@ -300,7 +300,7 @@ public class JaxRsUriInfo implements UriInfo {
      * @see javax.ws.rs.core.UriInfo#getAncestorResourceURIs()
      */
     public List<String> getAncestorResourceURIs() {
-        // TODO encode: JaxRsUriBuilder.getAncestorResourceURIs(true)
+        // LATER encode: JaxRsUriBuilder.getAncestorResourceURIs(true)
         Logger
                 .getAnonymousLogger()
                 .config(
@@ -346,7 +346,7 @@ public class JaxRsUriInfo implements UriInfo {
         // TESTEN ancestorResourceURIs must include matrix parameters.
         if (decode)
             return this.getAncestorResourceURIs();
-        // TODO encode: JaxRsUriBuilder.getAncestorResourceURIs(false)
+        // LATER encode: JaxRsUriBuilder.getAncestorResourceURIs(false)
         Logger
                 .getAnonymousLogger()
                 .config(
