@@ -307,7 +307,7 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
             Guard guard = createGuard(application.getContext(), challengeScheme);
             application.setGuard(guard);
         }
-        application.attach(appConfig);
+        application.add(appConfig);
         return application;
     }
 

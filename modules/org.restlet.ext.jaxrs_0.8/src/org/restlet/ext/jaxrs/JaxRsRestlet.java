@@ -107,9 +107,9 @@ import org.restlet.service.MetadataService;
 
 /**
  * <p>
- * The router choose the JAX-RS resource class and method to use for a request.
- * Typcally you should instantiate a {@link JaxRsApplication} to run JAX-RS
- * resource classes.
+ * This class choose the JAX-RS resource class and method to use for a request
+ * and handles the result from he resource method. Typcally you should
+ * instantiate a {@link JaxRsApplication} to run JAX-RS resource classes.
  * </p>
  * <p>
  * <i>The JAX-RS extension as well as the JAX-RS specification are currently
@@ -181,8 +181,8 @@ public class JaxRsRestlet extends Restlet {
      * has a role, the request is returned with HTTP status 500 (Internal Server
      * Error), see {@link SecurityContext#isUserInRole(String)}. You may set a
      * {@link RoleChecker} by using the constructor
-     * {@link JaxRsRestlet#JaxRsRouter(Context, RoleChecker, MetadataService)} or
-     * method {@link #setRoleChecker(RoleChecker)}.
+     * {@link JaxRsRestlet#JaxRsRouter(Context, RoleChecker, MetadataService)}
+     * or method {@link #setRoleChecker(RoleChecker)}.
      * 
      * @param context
      *                the context from the parent, see

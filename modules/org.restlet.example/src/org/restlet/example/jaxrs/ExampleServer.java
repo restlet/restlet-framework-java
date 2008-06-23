@@ -48,7 +48,7 @@ public class ExampleServer {
         JaxRsApplication application = new JaxRsApplication(comp.getContext());
         
         // attach ApplicationConfig
-        application.attach(new ExampleAppConfig());
+        application.add(new ExampleAppConfig());
 
         // Attach the application to the component and start it
         comp.getDefaultHost().attach(application);

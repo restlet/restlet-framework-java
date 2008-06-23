@@ -50,8 +50,8 @@ import org.restlet.service.TunnelService;
  * To set up a JAX-RS runtime environment you should instantiate a
  * {@link JaxRsApplication#JaxRsApplication(Context)}.
  * <ul>
- * <li>Attach your {@link ApplicationConfig}(s) by calling
- * {@link #attach(ApplicationConfig)}.</li>
+ * <li>Add your {@link ApplicationConfig}(s) by calling
+ * {@link #add(ApplicationConfig)}.</li>
  * <li> If you need authentication, set a {@link Guard} and perhaps an
  * {@link RoleChecker}, see {@link #setGuard(Guard)} or
  * {@link #setAuthentication(Guard, RoleChecker)}.</li>
@@ -95,7 +95,7 @@ public class JaxRsApplication extends Application {
 
     /**
      * Creates an new JaxRsApplication, without any access control. Attach
-     * {@link ApplicationConfig}s by using {@link #attach(ApplicationConfig)}.<br>
+     * {@link ApplicationConfig}s by using {@link #add(ApplicationConfig)}.<br>
      * If a method calls {@link SecurityContext#isUserInRole(String)}, status
      * 500 is returned to the client, see {@link RoleChecker#REJECT_WITH_ERROR}.
      * Use {@link #setGuard(Guard)} and {@link #setRoleChecker(RoleChecker)} or
@@ -108,6 +108,87 @@ public class JaxRsApplication extends Application {
         super(parentContext);
         this.getTunnelService().setExtensionsTunnel(false);
         this.jaxRsRestlet = new JaxRsRestlet(getContext(), getMetadataService());
+    }
+
+    /**
+     * <p>
+     * Attaches an {@link ApplicationConfig} to this Application.<br>
+     * The providers are available for all root resource classes provided to
+     * this JaxRsApplication. If you won't mix them, instantiate another
+     * JaxRsApplication.
+     * </p>
+     * <p>
+     * If the given ApplicationConfig is the first attached ApplicationConfig,
+     * the default extension mappings are remove and replaced by the given, see
+     * {@link TunnelService}.
+     * </p>
+     * 
+     * @param appConfig
+     *                Contains the classes to load as root resource classes and
+     *                as providers. Invalid root resource classes and provider
+     *                classes are ignored, according to JAX-RS specification.
+     * @return true, if all resource classes and providers could be added, or
+     *         false if not.
+     * @throws IllegalArgumentException
+     *                 if the appConfig is null.
+     * @see #add(ApplicationConfig, boolean)
+     */
+    public boolean add(ApplicationConfig appConfig)
+            throws IllegalArgumentException {
+        return add(appConfig, true);
+    }
+
+    /**
+     * Attaches an {@link ApplicationConfig} to this Application.<br>
+     * The providers are available for all root resource classes provided to
+     * this JaxRsApplication. If you won't mix them, instantiate another
+     * JaxRsApplication.
+     * 
+     * @param appConfig
+     *                Contains the classes to load as root resource classes and
+     *                as providers. Invalid root resource classes and provider
+     *                classes are ignored, according to JAX-RS specification.
+     * @param clearMetadataIfFirst
+     *                If this flag is true and the given ApplicationConfig is
+     *                the first attached ApplicationConfig, the default
+     *                extension mappings are remove an replaced by the given,
+     *                see {@link TunnelService}
+     * @return true, if all resource classes and providers could be added, or
+     *         false if not.
+     * @throws IllegalArgumentException
+     *                 if the appConfig is null.
+     * @see #add(ApplicationConfig)
+     */
+    public boolean add(ApplicationConfig appConfig, boolean clearMetadataIfFirst)
+            throws IllegalArgumentException {
+        if (appConfig == null)
+            throw new IllegalArgumentException(
+                    "The ApplicationConfig must not be null");
+        if (clearMetadataIfFirst && !appConfigAttached) {
+            this.getMetadataService().clearExtensions();
+        }
+        this.addExtensionMappings(appConfig);
+        JaxRsRestlet r = this.jaxRsRestlet;
+        Collection<Class<?>> rrcs = appConfig.getResourceClasses();
+        Collection<Class<?>> providerClasses = appConfig.getProviderClasses();
+        boolean everythingFine = true;
+        if (rrcs == null || rrcs.isEmpty()) {
+            r.getLogger().warning(
+                    "The ApplicationConfig " + appConfig.getClass().getName()
+                            + " contains no root resource classes.");
+            everythingFine = false;
+        } else {
+            for (Class<?> rrc : rrcs) {
+                everythingFine &= r.addRootResourceClass(rrc);
+            }
+        }
+        if (providerClasses != null) {
+            for (Class<?> providerClass : providerClasses) {
+                everythingFine &= r.addProvider(providerClass);
+            }
+        }
+        this.appConfigAttached = true;
+        return everythingFine;
     }
 
     /**
@@ -139,43 +220,32 @@ public class JaxRsApplication extends Application {
     }
 
     /**
-     * <p>
-     * Attaches an {@link ApplicationConfig} to this Application.<br>
-     * The providers are available for all root resource classes provided to
-     * this JaxRsApplication. If you won't mix them, instantiate another
-     * JaxRsApplication.
-     * </p>
-     * <p>
-     * If the given ApplicationConfig is the first attached ApplicationConfig,
-     * the default extension mappings are remove and replaced by the given, see
-     * {@link TunnelService}.
-     * </p>
+     * Attaches an {@link ApplicationConfig} to this Application. Please use
+     * method {@link #add(ApplicationConfig)}.
      * 
      * @param appConfig
      *                Contains the classes to load as root resource classes and
-     *                as providers. Invalid root resource classes and provider
-     *                classes are ignored, according to JAX-RS specification.
+     *                as providers.
      * @return true, if all resource classes and providers could be added, or
      *         false if not.
      * @throws IllegalArgumentException
      *                 if the appConfig is null.
-     * @see #attach(ApplicationConfig, boolean)
+     * @see #add(ApplicationConfig, boolean)
+     * @deprecated Use {@link #add(ApplicationConfig)} instead
      */
+    @Deprecated
     public boolean attach(ApplicationConfig appConfig)
             throws IllegalArgumentException {
-        return attach(appConfig, true);
+        return add(appConfig);
     }
 
     /**
-     * Attaches an {@link ApplicationConfig} to this Application.<br>
-     * The providers are available for all root resource classes provided to
-     * this JaxRsApplication. If you won't mix them, instantiate another
-     * JaxRsApplication.
+     * Attaches an {@link ApplicationConfig} to this Application. Please use
+     * method {@link #add(ApplicationConfig, boolean)}.
      * 
      * @param appConfig
      *                Contains the classes to load as root resource classes and
-     *                as providers. Invalid root resource classes and provider
-     *                classes are ignored, according to JAX-RS specification.
+     *                as providers.
      * @param clearMetadataIfFirst
      *                If this flag is true and the given ApplicationConfig is
      *                the first attached ApplicationConfig, the default
@@ -185,38 +255,13 @@ public class JaxRsApplication extends Application {
      *         false if not.
      * @throws IllegalArgumentException
      *                 if the appConfig is null.
-     * @see #attach(ApplicationConfig)
+     * @see #add(ApplicationConfig)
+     * @deprecated Use {@link #add(ApplicationConfig,boolean)} instead
      */
+    @Deprecated
     public boolean attach(ApplicationConfig appConfig,
             boolean clearMetadataIfFirst) throws IllegalArgumentException {
-        if (appConfig == null)
-            throw new IllegalArgumentException(
-                    "The ApplicationConfig must not be null");
-        if (clearMetadataIfFirst && !appConfigAttached) {
-            this.getMetadataService().clearExtensions();
-        }
-        this.addExtensionMappings(appConfig);
-        JaxRsRestlet r = this.jaxRsRestlet;
-        Collection<Class<?>> rrcs = appConfig.getResourceClasses();
-        Collection<Class<?>> providerClasses = appConfig.getProviderClasses();
-        boolean everythingFine = true;
-        if (rrcs == null || rrcs.isEmpty()) {
-            r.getLogger().warning(
-                    "The ApplicationConfig " + appConfig.getClass().getName()
-                            + " contains no root resource classes.");
-            everythingFine = false;
-        } else {
-            for (Class<?> rrc : rrcs) {
-                everythingFine &= r.addRootResourceClass(rrc);
-            }
-        }
-        if (providerClasses != null) {
-            for (Class<?> providerClass : providerClasses) {
-                everythingFine &= r.addProvider(providerClass);
-            }
-        }
-        this.appConfigAttached = true;
-        return everythingFine;
+        return add(appConfig, clearMetadataIfFirst);
     }
 
     @Override

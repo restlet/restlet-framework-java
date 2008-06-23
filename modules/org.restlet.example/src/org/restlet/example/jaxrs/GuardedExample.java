@@ -98,7 +98,7 @@ public class GuardedExample {
         application.setAuthentication(guard, roleChecker);
 
         // attach ApplicationConfig
-        application.attach(new ExampleAppConfig());
+        application.add(new ExampleAppConfig());
 
         // Attach the application to the component and start it
         comp.getDefaultHost().attach(application);
