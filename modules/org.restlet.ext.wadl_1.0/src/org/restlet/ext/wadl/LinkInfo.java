@@ -18,8 +18,10 @@
 
 package org.restlet.ext.wadl;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.restlet.data.Reference;
 import org.restlet.util.XmlWriter;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
@@ -35,19 +37,28 @@ public class LinkInfo {
 
 	private String relationship;
 
-	private ResourceTypeInfo resourceType;
+	private Reference resourceType;
 
 	private String reverseRelationship;
 
 	public List<DocumentationInfo> getDocumentations() {
-		return documentations;
+		// Lazy initialization with double-check.
+		List<DocumentationInfo> d = this.documentations;
+		if (d == null) {
+			synchronized (this) {
+				d = this.documentations;
+				if (d == null)
+					this.documentations = d = new ArrayList<DocumentationInfo>();
+			}
+		}
+		return d;
 	}
 
 	public String getRelationship() {
 		return relationship;
 	}
 
-	public ResourceTypeInfo getResourceType() {
+	public Reference getResourceType() {
 		return resourceType;
 	}
 
@@ -63,7 +74,7 @@ public class LinkInfo {
 		this.relationship = relationship;
 	}
 
-	public void setResourceType(ResourceTypeInfo resourceType) {
+	public void setResourceType(Reference resourceType) {
 		this.resourceType = resourceType;
 	}
 
@@ -91,6 +102,11 @@ public class LinkInfo {
 		}
 
 		// TODO Prise en compte de ResourceType. Comme attribut?
+		if (getResourceType() != null && getResourceType().toString() != null) {
+			attributes.addAttribute("", "resource_type", null, "xs:anyURI",
+					getResourceType().toString());
+		}
+
 		writer.startElement("", "link", null, attributes);
 
 		if (getDocumentations() != null) {

@@ -18,6 +18,7 @@
 
 package org.restlet.ext.wadl;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -50,7 +51,16 @@ public class RepresentationInfo {
 	private String xmlElement;
 
 	public List<DocumentationInfo> getDocumentations() {
-		return documentations;
+		// Lazy initialization with double-check.
+		List<DocumentationInfo> d = this.documentations;
+		if (d == null) {
+			synchronized (this) {
+				d = this.documentations;
+				if (d == null)
+					this.documentations = d = new ArrayList<DocumentationInfo>();
+			}
+		}
+		return d;
 	}
 
 	public String getIdentifier() {
@@ -62,15 +72,42 @@ public class RepresentationInfo {
 	}
 
 	public List<ParameterInfo> getParameters() {
-		return parameters;
+		// Lazy initialization with double-check.
+		List<ParameterInfo> p = this.parameters;
+		if (p == null) {
+			synchronized (this) {
+				p = this.parameters;
+				if (p == null)
+					this.parameters = p = new ArrayList<ParameterInfo>();
+			}
+		}
+		return p;
 	}
 
 	public List<Reference> getProfiles() {
-		return profiles;
+		// Lazy initialization with double-check.
+		List<Reference> p = this.profiles;
+		if (p == null) {
+			synchronized (this) {
+				p = this.profiles;
+				if (p == null)
+					this.profiles = p = new ArrayList<Reference>();
+			}
+		}
+		return p;
 	}
 
 	public List<Status> getStatuses() {
-		return statuses;
+		// Lazy initialization with double-check.
+		List<Status> s = this.statuses;
+		if (s == null) {
+			synchronized (this) {
+				s = this.statuses;
+				if (s == null)
+					this.statuses = s = new ArrayList<Status>();
+			}
+		}
+		return s;
 	}
 
 	public String getXmlElement() {

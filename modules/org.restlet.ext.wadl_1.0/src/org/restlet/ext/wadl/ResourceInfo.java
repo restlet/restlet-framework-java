@@ -18,6 +18,7 @@
 
 package org.restlet.ext.wadl;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -51,11 +52,29 @@ public class ResourceInfo {
 	private List<Reference> type;
 
 	public List<ResourceInfo> getChildResources() {
-		return childResources;
+		// Lazy initialization with double-check.
+		List<ResourceInfo> r = this.childResources;
+		if (r == null) {
+			synchronized (this) {
+				r = this.childResources;
+				if (r == null)
+					this.childResources = r = new ArrayList<ResourceInfo>();
+			}
+		}
+		return r;
 	}
 
 	public List<DocumentationInfo> getDocumentations() {
-		return documentations;
+		// Lazy initialization with double-check.
+		List<DocumentationInfo> d = this.documentations;
+		if (d == null) {
+			synchronized (this) {
+				d = this.documentations;
+				if (d == null)
+					this.documentations = d = new ArrayList<DocumentationInfo>();
+			}
+		}
+		return d;
 	}
 
 	public String getIdentifier() {
@@ -63,11 +82,29 @@ public class ResourceInfo {
 	}
 
 	public List<MethodInfo> getMethods() {
-		return methods;
+		// Lazy initialization with double-check.
+		List<MethodInfo> m = this.methods;
+		if (m == null) {
+			synchronized (this) {
+				m = this.methods;
+				if (m == null)
+					this.methods = m = new ArrayList<MethodInfo>();
+			}
+		}
+		return m;
 	}
 
 	public List<ParameterInfo> getParameters() {
-		return parameters;
+		// Lazy initialization with double-check.
+		List<ParameterInfo> p = this.parameters;
+		if (p == null) {
+			synchronized (this) {
+				p = this.parameters;
+				if (p == null)
+					this.parameters = p = new ArrayList<ParameterInfo>();
+			}
+		}
+		return p;
 	}
 
 	public String getPath() {
@@ -79,7 +116,16 @@ public class ResourceInfo {
 	}
 
 	public List<Reference> getType() {
-		return type;
+		// Lazy initialization with double-check.
+		List<Reference> t = this.type;
+		if (t == null) {
+			synchronized (this) {
+				t = this.type;
+				if (t == null)
+					this.type = t = new ArrayList<Reference>();
+			}
+		}
+		return t;
 	}
 
 	public void setChildResources(List<ResourceInfo> resources) {
@@ -171,7 +217,7 @@ public class ResourceInfo {
 				parameterInfo.writeElement(writer);
 			}
 		}
-		
+
 		writer.endElement("", "resource");
 	}
 

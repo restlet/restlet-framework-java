@@ -18,6 +18,7 @@
 
 package org.restlet.ext.wadl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.util.XmlWriter;
@@ -53,7 +54,7 @@ public class ParameterInfo {
 
 	private ParameterStyle style;
 
-	private String token;
+	private String name;
 
 	private String type;
 
@@ -62,7 +63,16 @@ public class ParameterInfo {
 	}
 
 	public List<DocumentationInfo> getDocumentations() {
-		return documentations;
+		// Lazy initialization with double-check.
+		List<DocumentationInfo> d = this.documentations;
+		if (d == null) {
+			synchronized (this) {
+				d = this.documentations;
+				if (d == null)
+					this.documentations = d = new ArrayList<DocumentationInfo>();
+			}
+		}
+		return d;
 	}
 
 	public String getFixed() {
@@ -78,7 +88,16 @@ public class ParameterInfo {
 	}
 
 	public List<OptionInfo> getOptions() {
-		return options;
+		// Lazy initialization with double-check.
+		List<OptionInfo> o = this.options;
+		if (o == null) {
+			synchronized (this) {
+				o = this.options;
+				if (o == null)
+					this.options = o = new ArrayList<OptionInfo>();
+			}
+		}
+		return o;
 	}
 
 	public String getPath() {
@@ -89,8 +108,8 @@ public class ParameterInfo {
 		return style;
 	}
 
-	public String getToken() {
-		return token;
+	public String getName() {
+		return name;
 	}
 
 	public String getType() {
@@ -145,8 +164,8 @@ public class ParameterInfo {
 		this.style = style;
 	}
 
-	public void setToken(String token) {
-		this.token = token;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public void setType(String type) {
@@ -185,8 +204,8 @@ public class ParameterInfo {
 					.toString());
 		}
 
-		if (getToken() != null && !getToken().equals("")) {
-			attributes.addAttribute("", "name", null, "xs:NMTOKEN", getToken());
+		if (getName() != null && !getName().equals("")) {
+			attributes.addAttribute("", "name", null, "xs:NMTOKEN", getName());
 		}
 
 		if (getType() != null && !getType().equals("")) {

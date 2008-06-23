@@ -18,6 +18,7 @@
 
 package org.restlet.ext.wadl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.util.XmlWriter;
@@ -45,11 +46,29 @@ public class ApplicationInfo {
 	private List<ResourceTypeInfo> resourceTypes;
 
 	public List<DocumentationInfo> getDocumentations() {
-		return documentations;
+		// Lazy initialization with double-check.
+		List<DocumentationInfo> d = this.documentations;
+		if (d == null) {
+			synchronized (this) {
+				d = this.documentations;
+				if (d == null)
+					this.documentations = d = new ArrayList<DocumentationInfo>();
+			}
+		}
+		return d;
 	}
 
 	public List<FaultInfo> getFaults() {
-		return faults;
+		// Lazy initialization with double-check.
+		List<FaultInfo> f = this.faults;
+		if (f == null) {
+			synchronized (this) {
+				f = this.faults;
+				if (f == null)
+					this.faults = f = new ArrayList<FaultInfo>();
+			}
+		}
+		return f;
 	}
 
 	public GrammarsInfo getGrammars() {
@@ -57,11 +76,29 @@ public class ApplicationInfo {
 	}
 
 	public List<MethodInfo> getMethods() {
-		return methods;
+		// Lazy initialization with double-check.
+		List<MethodInfo> m = this.methods;
+		if (m == null) {
+			synchronized (this) {
+				m = this.methods;
+				if (m == null)
+					this.methods = m = new ArrayList<MethodInfo>();
+			}
+		}
+		return m;
 	}
 
 	public List<RepresentationInfo> getRepresentations() {
-		return representations;
+		// Lazy initialization with double-check.
+		List<RepresentationInfo> r = this.representations;
+		if (r == null) {
+			synchronized (this) {
+				r = this.representations;
+				if (r == null)
+					this.representations = r = new ArrayList<RepresentationInfo>();
+			}
+		}
+		return r;
 	}
 
 	public ResourcesInfo getResources() {
@@ -69,7 +106,16 @@ public class ApplicationInfo {
 	}
 
 	public List<ResourceTypeInfo> getResourceTypes() {
-		return resourceTypes;
+		// Lazy initialization with double-check.
+		List<ResourceTypeInfo> rt = this.resourceTypes;
+		if (rt == null) {
+			synchronized (this) {
+				rt = this.resourceTypes;
+				if (rt == null)
+					this.resourceTypes = rt = new ArrayList<ResourceTypeInfo>();
+			}
+		}
+		return rt;
 	}
 
 	public void setDocumentations(List<DocumentationInfo> doc) {

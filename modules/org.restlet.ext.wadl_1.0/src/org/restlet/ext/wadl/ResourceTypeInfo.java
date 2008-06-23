@@ -18,6 +18,7 @@
 
 package org.restlet.ext.wadl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.util.XmlWriter;
@@ -40,7 +41,16 @@ public class ResourceTypeInfo {
 	private List<ParameterInfo> parameters;
 
 	public List<DocumentationInfo> getDocumentations() {
-		return documentations;
+		// Lazy initialization with double-check.
+		List<DocumentationInfo> d = this.documentations;
+		if (d == null) {
+			synchronized (this) {
+				d = this.documentations;
+				if (d == null)
+					this.documentations = d = new ArrayList<DocumentationInfo>();
+			}
+		}
+		return d;
 	}
 
 	public String getIdentifier() {
@@ -48,11 +58,29 @@ public class ResourceTypeInfo {
 	}
 
 	public List<MethodInfo> getMethods() {
-		return methods;
+		// Lazy initialization with double-check.
+		List<MethodInfo> m = this.methods;
+		if (m == null) {
+			synchronized (this) {
+				m = this.methods;
+				if (m == null)
+					this.methods = m = new ArrayList<MethodInfo>();
+			}
+		}
+		return m;
 	}
 
 	public List<ParameterInfo> getParameters() {
-		return parameters;
+		// Lazy initialization with double-check.
+		List<ParameterInfo> p = this.parameters;
+		if (p == null) {
+			synchronized (this) {
+				p = this.parameters;
+				if (p == null)
+					this.parameters = p = new ArrayList<ParameterInfo>();
+			}
+		}
+		return p;
 	}
 
 	public void setDocumentations(List<DocumentationInfo> doc) {

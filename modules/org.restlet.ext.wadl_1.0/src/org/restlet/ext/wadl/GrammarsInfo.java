@@ -18,6 +18,7 @@
 
 package org.restlet.ext.wadl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.util.XmlWriter;
@@ -37,11 +38,29 @@ public class GrammarsInfo {
 	private List<IncludeInfo> includes;
 
 	public List<DocumentationInfo> getDocumentations() {
-		return documentations;
+		// Lazy initialization with double-check.
+		List<DocumentationInfo> d = this.documentations;
+		if (d == null) {
+			synchronized (this) {
+				d = this.documentations;
+				if (d == null)
+					this.documentations = d = new ArrayList<DocumentationInfo>();
+			}
+		}
+		return d;
 	}
 
 	public List<IncludeInfo> getIncludes() {
-		return includes;
+		// Lazy initialization with double-check.
+		List<IncludeInfo> i = this.includes;
+		if (i == null) {
+			synchronized (this) {
+				i = this.includes;
+				if (i == null)
+					this.includes = i = new ArrayList<IncludeInfo>();
+			}
+		}
+		return i;
 	}
 
 	public void setDocumentations(List<DocumentationInfo> doc) {

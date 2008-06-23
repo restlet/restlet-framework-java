@@ -18,6 +18,7 @@
 
 package org.restlet.ext.wadl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.data.Reference;
@@ -43,11 +44,29 @@ public class ResourcesInfo {
 	}
 
 	public List<DocumentationInfo> getDocumentations() {
-		return documentations;
+		// Lazy initialization with double-check.
+		List<DocumentationInfo> d = this.documentations;
+		if (d == null) {
+			synchronized (this) {
+				d = this.documentations;
+				if (d == null)
+					this.documentations = d = new ArrayList<DocumentationInfo>();
+			}
+		}
+		return d;
 	}
 
 	public List<ResourceInfo> getResources() {
-		return resources;
+		// Lazy initialization with double-check.
+		List<ResourceInfo> r = this.resources;
+		if (r == null) {
+			synchronized (this) {
+				r = this.resources;
+				if (r == null)
+					this.resources = r = new ArrayList<ResourceInfo>();
+			}
+		}
+		return r;
 	}
 
 	public void setBaseRef(Reference baseRef) {
