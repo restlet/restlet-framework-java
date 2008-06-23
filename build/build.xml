@@ -436,6 +436,7 @@
    <path id="mod-shell-path">
       <path refid="mod-api-path" />
       <pathelement path="${classes}/${mod-api-id}" />
+      <fileset dir="${lib}/${lib-antlr-id}" includes="*.jar" />
       <fileset dir="${lib}/${lib-jline-id}" includes="*.jar" />
    </path>
 
