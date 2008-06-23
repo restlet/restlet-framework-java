@@ -32,7 +32,6 @@ import javax.ws.rs.core.Variant;
 import javax.ws.rs.ext.ContextResolver;
 
 import org.restlet.data.MediaType;
-import org.restlet.ext.jaxrs.JaxRsRouter;
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertCookieParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertHeaderParamException;
@@ -88,11 +87,12 @@ public class ResourceMethod extends AbstractMethodWrapper implements
      *                the wrapped class of the method.
      * @param httpMethod
      *                the HTTP method of the Java method. It will be checked be
-     *                the {@link JaxRsRouter}, so avoiding double work. It will
-     *                be requested from the javaMethod.
+     *                the {@link org.restlet.ext.jaxrs.JaxRsRestlet}, so
+     *                avoiding double work. It will be requested from the
+     *                javaMethod.
      * @param tlContext
      *                the {@link ThreadLocalizedContext} of the
-     *                {@link JaxRsRouter}.
+     *                {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
      * @param entityProviders
      *                all entity providers
      * @param allCtxResolvers
@@ -161,8 +161,8 @@ public class ResourceMethod extends AbstractMethodWrapper implements
 
     /**
      * Creates the list of the supported variants from the
-     * {@link #getProducedMimes()}to be stored in the
-     * final instance variable {@link #supportedVariants}.
+     * {@link #getProducedMimes()}to be stored in the final instance variable
+     * {@link #supportedVariants}.
      */
     private Collection<Variant> createSupportedVariants() {
         Collection<Variant> supportedVariants = new ArrayList<Variant>();

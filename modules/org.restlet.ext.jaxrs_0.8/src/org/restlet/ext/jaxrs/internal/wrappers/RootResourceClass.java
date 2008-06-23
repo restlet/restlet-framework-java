@@ -27,7 +27,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.ext.ContextResolver;
 
-import org.restlet.ext.jaxrs.JaxRsRouter;
 import org.restlet.ext.jaxrs.ObjectFactory;
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
@@ -87,7 +86,7 @@ public class RootResourceClass extends ResourceClass {
      *                the root resource class to wrap
      * @param tlContext
      *                the {@link ThreadLocalizedContext} of the
-     *                {@link JaxRsRouter}.
+     *                {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
      * @param entityProviders
      *                all entity providers.
      * @param allCtxResolvers
@@ -107,15 +106,17 @@ public class RootResourceClass extends ResourceClass {
      */
     RootResourceClass(Class<?> jaxRsClass, ThreadLocalizedContext tlContext,
             EntityProviders entityProviders,
-            Collection<ContextResolver<?>> allCtxResolvers, ExtensionBackwardMapping extensionBackwardMapping, Logger logger)
+            Collection<ContextResolver<?>> allCtxResolvers,
+            ExtensionBackwardMapping extensionBackwardMapping, Logger logger)
             throws IllegalArgumentException, MissingAnnotationException,
             IllegalPathOnClassException, MissingConstructorException {
-        super(jaxRsClass, tlContext, entityProviders, allCtxResolvers, extensionBackwardMapping,
-                logger, logger);
+        super(jaxRsClass, tlContext, entityProviders, allCtxResolvers,
+                extensionBackwardMapping, logger, logger);
         Util.checkClassConcrete(getJaxRsClass(), "root resource class");
         checkClassForPathAnnot(jaxRsClass, "root resource class");
         this.injectHelper = new IntoRrcInjector(jaxRsClass, tlContext,
-                isLeaveEncoded(), entityProviders, allCtxResolvers, extensionBackwardMapping);
+                isLeaveEncoded(), entityProviders, allCtxResolvers,
+                extensionBackwardMapping);
         this.constructor = WrapperUtil.findJaxRsConstructor(getJaxRsClass(),
                 "root resource class");
         boolean constructorLeaveEncoded = this.isLeaveEncoded()

@@ -26,7 +26,6 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.ext.ContextResolver;
 
-import org.restlet.ext.jaxrs.JaxRsRouter;
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertCookieParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertHeaderParamException;
@@ -61,7 +60,7 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
      *                the wrapped resource class.
      * @param tlContext
      *                the {@link ThreadLocalizedContext} of the
-     *                {@link JaxRsRouter}.
+     *                {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
      * @param entityProviders
      *                all entity providers
      * @param allCtxResolvers

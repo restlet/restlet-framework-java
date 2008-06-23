@@ -32,7 +32,6 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
 import org.restlet.data.Method;
-import org.restlet.ext.jaxrs.JaxRsRouter;
 import org.restlet.ext.jaxrs.internal.core.CallContext;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
 import org.restlet.ext.jaxrs.internal.exceptions.InstantiateException;
@@ -47,8 +46,8 @@ import org.restlet.ext.jaxrs.internal.wrappers.ResourceMethod;
 /**
  * <p>
  * This class contains the methods to handle exceptions occuring in the
- * {@link JaxRsRouter}, e.g. while identifying the method that should handle
- * the request.<br>
+ * {@link org.restlet.ext.jaxrs.JaxRsRestlet}, e.g. while identifying the
+ * method that should handle the request.<br>
  * Therefor it contains some Restlets that handles this exceptions.
  * </p>
  * <p>

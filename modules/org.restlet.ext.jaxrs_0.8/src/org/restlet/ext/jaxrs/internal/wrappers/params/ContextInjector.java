@@ -36,7 +36,6 @@ import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.MessageBodyWorkers;
 
-import org.restlet.ext.jaxrs.JaxRsRouter;
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
 import org.restlet.ext.jaxrs.internal.exceptions.ImplementationException;
 import org.restlet.ext.jaxrs.internal.exceptions.InjectException;
@@ -80,7 +79,7 @@ public class ContextInjector {
      * used for the &#64;{@link Context} objects.
      */
     private static class EverSameInjector implements Injector {
-        
+
         private final Object injectable;
 
         private final InjectionAim injectionAim;
@@ -292,7 +291,7 @@ public class ContextInjector {
      * 
      * @param tlContext
      *                the {@link ThreadLocalizedContext} of the
-     *                {@link JaxRsRouter}.
+     *                {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
      * @param mbWorkers
      *                all entity providers.
      * @param allResolvers

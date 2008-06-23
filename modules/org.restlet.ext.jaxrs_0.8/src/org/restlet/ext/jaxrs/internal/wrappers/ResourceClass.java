@@ -33,7 +33,6 @@ import javax.ws.rs.Encoded;
 import javax.ws.rs.Path;
 import javax.ws.rs.ext.ContextResolver;
 
-import org.restlet.ext.jaxrs.JaxRsRouter;
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnMethodException;
@@ -94,7 +93,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * @param jaxRsClass
      * @param tlContext
      *                the {@link ThreadLocalizedContext} of the
-     *                {@link JaxRsRouter}.
+     *                {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
      * @param entityProviders
      *                all entity providers
      * @param allCtxResolvers
@@ -125,7 +124,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * @param jaxRsClass
      * @param tlContext
      *                the {@link ThreadLocalizedContext} of the
-     *                {@link JaxRsRouter}.
+     *                {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
      * @param entityProviders
      *                all entity providers
      * @param allCtxResolvers

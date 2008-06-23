@@ -125,11 +125,11 @@ import org.restlet.service.MetadataService;
  * 
  * @author Stephan Koops
  */
-public class JaxRsRouter extends Restlet {
+public class JaxRsRestlet extends Restlet {
 
     /**
      * This set must only changed by adding a root resource class to this
-     * JaxRsRouter.
+     * JaxRsRestlet.
      */
     private final Set<RootResourceClass> rootResourceClasses = new CopyOnWriteArraySet<RootResourceClass>();
 
@@ -176,12 +176,12 @@ public class JaxRsRouter extends Restlet {
     private volatile ObjectFactory objectFactory;
 
     /**
-     * Creates a new JaxRsRouter with the given Context. Only the default
+     * Creates a new JaxRsRestlet with the given Context. Only the default
      * providers are loaded. If a resource class later wants to check if a user
      * has a role, the request is returned with HTTP status 500 (Internal Server
      * Error), see {@link SecurityContext#isUserInRole(String)}. You may set a
      * {@link RoleChecker} by using the constructor
-     * {@link JaxRsRouter#JaxRsRouter(Context, RoleChecker, MetadataService)} or
+     * {@link JaxRsRestlet#JaxRsRouter(Context, RoleChecker, MetadataService)} or
      * method {@link #setRoleChecker(RoleChecker)}.
      * 
      * @param context
@@ -189,14 +189,14 @@ public class JaxRsRouter extends Restlet {
      *                {@link Restlet#Restlet(Context)}.
      * @param metadataService
      *                the metadata service of the {@link JaxRsApplication}.
-     * @see #JaxRsRouter(Context, RoleChecker, MetadataService)
+     * @see #JaxRsRestlet(Context, RoleChecker, MetadataService)
      */
-    public JaxRsRouter(Context context, MetadataService metadataService) {
+    public JaxRsRestlet(Context context, MetadataService metadataService) {
         this(context, null, metadataService);
     }
 
     /**
-     * Creates a new JaxRsRouter with the given Context. Only the default
+     * Creates a new JaxRsRestlet with the given Context. Only the default
      * providers are loaded.
      * 
      * @param context
@@ -209,9 +209,9 @@ public class JaxRsRouter extends Restlet {
      *                {@link RoleChecker#REJECT_WITH_ERROR}.
      * @param metadataService
      *                the metadata service of the {@link JaxRsApplication}.
-     * @see #JaxRsRouter(Context, MetadataService)
+     * @see #JaxRsRestlet(Context, MetadataService)
      */
-    public JaxRsRouter(Context context, RoleChecker roleChecker,
+    public JaxRsRestlet(Context context, RoleChecker roleChecker,
             MetadataService metadataService) {
         super(context);
         this.extensionBackwardMapping = new ExtensionBackwardMapping(
@@ -256,7 +256,7 @@ public class JaxRsRouter extends Restlet {
      * 
      * @param rootResourceClass
      *                the JAX-RS root resource class to add. If the root
-     *                resource class is already available in this JaxRsRouter,
+     *                resource class is already available in this JaxRsRestlet,
      *                it is ignored for later calls of this method.
      * @return true if the class is added or was already included, or false if
      *         the given class is not a valid root resource class (a warning was
@@ -315,7 +315,7 @@ public class JaxRsRouter extends Restlet {
     }
 
     /**
-     * Adds the provider object to this JaxRsRouter.
+     * Adds the provider object to this JaxRsRestlet.
      * 
      * @param jaxRsProviderClass
      *                the JAX-RS provider class.
@@ -330,7 +330,7 @@ public class JaxRsRouter extends Restlet {
     }
 
     /**
-     * Adds the provider object to this JaxRsRouter.
+     * Adds the provider object to this JaxRsRestlet.
      * 
      * @param jaxRsProviderClass
      *                the JAX-RS provider class.
@@ -1101,9 +1101,9 @@ public class JaxRsRouter extends Restlet {
     }
 
     /**
-     * Returns a Collection with all root uris attached to this JaxRsRouter.
+     * Returns a Collection with all root uris attached to this JaxRsRestlet.
      * 
-     * @return a Collection with all root uris attached to this JaxRsRouter.
+     * @return a Collection with all root uris attached to this JaxRsRestlet.
      */
     public Collection<String> getRootUris() {
         List<String> uris = new ArrayList<String>();

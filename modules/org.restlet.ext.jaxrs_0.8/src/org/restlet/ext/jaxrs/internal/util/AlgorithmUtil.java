@@ -27,7 +27,6 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.ext.jaxrs.JaxRsRouter;
 import org.restlet.ext.jaxrs.internal.core.CallContext;
 import org.restlet.ext.jaxrs.internal.wrappers.ResourceMethod;
 import org.restlet.ext.jaxrs.internal.wrappers.ResourceMethodOrLocator;
@@ -35,7 +34,8 @@ import org.restlet.ext.jaxrs.internal.wrappers.RootResourceClass;
 import org.restlet.ext.jaxrs.internal.wrappers.SubResourceLocator;
 
 /**
- * This class contains helper methods for the algorithm in {@link JaxRsRouter}.
+ * This class contains helper methods for the algorithm in
+ * {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
  * 
  * @author Stephan Koops
  */

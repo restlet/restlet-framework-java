@@ -485,9 +485,9 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * @param type
      * @param genericType
      *                The generic {@link Type} to convert to.
-     * @param mediaType
      * @param annotations
      *                the annotations of the artefact to convert to
+     * @param mediaType
      * @param httpHeaders
      * @param entityStream
      * @return
@@ -497,7 +497,7 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      *      InputStream)
      */
     public T readFrom(Class<T> type, Type genericType,
-            javax.ws.rs.core.MediaType mediaType, Annotation[] annotations,
+            Annotation[] annotations, javax.ws.rs.core.MediaType mediaType,
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
         return this.reader.readFrom(type, genericType, annotations, mediaType,

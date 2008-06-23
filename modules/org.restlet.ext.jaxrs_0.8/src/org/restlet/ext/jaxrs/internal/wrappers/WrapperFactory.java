@@ -24,7 +24,6 @@ import java.util.logging.Logger;
 
 import javax.ws.rs.ext.ContextResolver;
 
-import org.restlet.ext.jaxrs.JaxRsRouter;
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
@@ -54,7 +53,7 @@ public class WrapperFactory {
     /**
      * @param tlContext
      *                the {@link ThreadLocalizedContext} of the
-     *                {@link JaxRsRouter}.
+     *                {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
      * @param entityProviders
      * @param allCtxResolvers
      * @param extensionBackwardMapping

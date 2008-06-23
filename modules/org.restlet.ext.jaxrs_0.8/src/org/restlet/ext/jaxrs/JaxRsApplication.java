@@ -80,8 +80,8 @@ public class JaxRsApplication extends Application {
     /** The {@link Guard} to use. May be null. */
     private volatile Guard guard;
 
-    /** The {@link JaxRsRouter} to use. */
-    private volatile JaxRsRouter jaxRsRouter;
+    /** The {@link JaxRsRestlet} to use. */
+    private volatile JaxRsRestlet jaxRsRestlet;
 
     /**
      * Creates an new JaxRsApplication. You should typically use one of the
@@ -107,7 +107,7 @@ public class JaxRsApplication extends Application {
     public JaxRsApplication(Context parentContext) {
         super(parentContext);
         this.getTunnelService().setExtensionsTunnel(false);
-        this.jaxRsRouter = new JaxRsRouter(getContext(), getMetadataService());
+        this.jaxRsRestlet = new JaxRsRestlet(getContext(), getMetadataService());
     }
 
     /**
@@ -196,7 +196,7 @@ public class JaxRsApplication extends Application {
             this.getMetadataService().clearExtensions();
         }
         this.addExtensionMappings(appConfig);
-        JaxRsRouter r = this.jaxRsRouter;
+        JaxRsRestlet r = this.jaxRsRestlet;
         Collection<Class<?>> rrcs = appConfig.getResourceClasses();
         Collection<Class<?>> providerClasses = appConfig.getProviderClasses();
         boolean everythingFine = true;
@@ -222,7 +222,7 @@ public class JaxRsApplication extends Application {
     @Override
     public Restlet createRoot() {
 
-        Restlet restlet = jaxRsRouter;
+        Restlet restlet = jaxRsRestlet;
 
         if (this.guard != null) {
             this.guard.setNext(restlet);
@@ -253,7 +253,7 @@ public class JaxRsApplication extends Application {
      *         instantiation, if given.
      */
     public ObjectFactory getObjectFactory() {
-        return this.jaxRsRouter.getObjectFactory();
+        return this.jaxRsRestlet.getObjectFactory();
     }
 
     /**
@@ -262,7 +262,7 @@ public class JaxRsApplication extends Application {
      * @return the current RoleChecker
      */
     public RoleChecker getRoleChecker() {
-        return this.jaxRsRouter.getRoleChecker();
+        return this.jaxRsRestlet.getRoleChecker();
     }
 
     /**
@@ -271,7 +271,7 @@ public class JaxRsApplication extends Application {
      * @return an unmodifiable set with the attached root resource classes.
      */
     public Collection<Class<?>> getRootResources() {
-        return this.jaxRsRouter.getRootResourceClasses();
+        return this.jaxRsRestlet.getRootResourceClasses();
     }
 
     /**
@@ -281,14 +281,14 @@ public class JaxRsApplication extends Application {
      * @return an unmodifiable set of supported URIs (relative).
      */
     public Collection<String> getRootUris() {
-        return this.jaxRsRouter.getRootUris();
+        return this.jaxRsRestlet.getRootUris();
     }
 
     /**
      * <i>This method is planned!</i><br>
      * It should return {@link Route}s to attach them to a {@link Router}.<br>
-     * The {@link JaxRsRouter} does not allow other Restlets directly beside it.
-     * Example: {@link JaxRsRouter} handles http://host/path1. So you can't
+     * The {@link JaxRsRestlet} does not allow other Restlets directly beside
+     * it. Example: {@link JaxRsRestlet} handles http://host/path1. So you can't
      * directly add another Restlet handling http://host/path2. When addings
      * this {@link Route}s to the main {@link Router} for "host" you can add
      * another {@link Restlet} (e.g. a {@link Directory} or {@link Finder}) for
@@ -344,7 +344,7 @@ public class JaxRsApplication extends Application {
      *                instantiation.
      */
     public void setObjectFactory(ObjectFactory objectFactory) {
-        this.jaxRsRouter.setObjectFactory(objectFactory);
+        this.jaxRsRestlet.setObjectFactory(objectFactory);
     }
 
     /**
@@ -356,6 +356,6 @@ public class JaxRsApplication extends Application {
      * @see #setGuard(Guard)
      */
     public void setRoleChecker(RoleChecker roleChecker) {
-        this.jaxRsRouter.setRoleChecker(roleChecker);
+        this.jaxRsRestlet.setRoleChecker(roleChecker);
     }
 }

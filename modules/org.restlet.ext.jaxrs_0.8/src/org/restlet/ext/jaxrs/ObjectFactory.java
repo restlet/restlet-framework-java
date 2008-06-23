@@ -34,7 +34,7 @@ import org.restlet.ext.jaxrs.internal.exceptions.InstantiateException;
  * 
  * @author Bruno Dumon
  * @see JaxRsApplication#setObjectFactory(ObjectFactory)
- * @see JaxRsRouter#setObjectFactory(ObjectFactory)
+ * @see JaxRsRestlet#setObjectFactory(ObjectFactory)
  */
 public interface ObjectFactory {
     /**
@@ -52,7 +52,7 @@ public interface ObjectFactory {
     public <T> T getInstance(Class<T> jaxRsClass) throws InstantiateException;
     // LATER move InstantiateException from package internal to another package
     // if more exceptions should be used public, perhaps own package for Except.
-    
+
     // LATER if a resource class is a singelton, it must be ensured, that it
     // has no @*Param on fields and perhaps bean setters.
 }

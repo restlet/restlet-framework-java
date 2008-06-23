@@ -92,7 +92,7 @@ public class EntityGetter implements ParamGetter {
             javax.ws.rs.core.MediaType jaxRsMediaType = Converter
                     .toJaxRsMediaType(mediaType, entity.getCharacterSet());
             return mbr.readFrom((Class) this.convToCl, this.convToGen,
-                    jaxRsMediaType, annotations, httpHeaders, entity
+                    annotations, jaxRsMediaType, httpHeaders, entity
                             .getStream());
         } catch (WebApplicationException wae) {
             throw wae;
