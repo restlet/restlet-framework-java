@@ -17,10 +17,8 @@
  */
 package org.restlet.ext.jaxrs.internal.wrappers;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.logging.Logger;
 
@@ -47,20 +45,11 @@ import org.restlet.ext.jaxrs.internal.wrappers.provider.ExtensionBackwardMapping
 public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
 
     /**
-     * the Java method that should be referenced for annotations. This method
-     * could be different from the method is called for executing, see section
-     * 3.6 "Annotation Inheritance" of JSR-311-spec.
-     * 
-     * @see #executeMethod
-     */
-    final Method annotatedMethod;
-
-    /**
      * the Java method that should be called. This method could be different
      * from the method containing the annotations, see section 3.6 "Annotation
      * Inheritance" of JSR-311-spec.
      * 
-     * @see #annotatedMethod
+     * @see ResourceMethod#annotatedMethod
      */
     final Method executeMethod;
 
@@ -79,7 +68,6 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
         super(PathRegExp.createForMethod(annotatedMethod));
         this.executeMethod = executeMethod;
         this.executeMethod.setAccessible(true);
-        this.annotatedMethod = annotatedMethod;
         // NICE log message, if an Exception with no exc mapper is declared.
         this.resourceClass = resourceClass;
         boolean leaveEncoded = resourceClass.isLeaveEncoded()
@@ -87,26 +75,6 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
         this.parameters = new ParameterList(executeMethod, annotatedMethod,
                 tlContext, leaveEncoded, entityProviders, allCtxResolvers,
                 extensionBackwardMapping, entityAllowed, logger);
-    }
-
-    /**
-     * Returns the array of the annotations on the Java method
-     * 
-     * @return the array of the annotations on the Java method
-     * @see Method#getAnnotations()
-     */
-    public Annotation[] getAnnotations() {
-        return annotatedMethod.getAnnotations();
-    }
-
-    /**
-     * Returns the generic return type of the wrapped method.
-     * 
-     * @return the generic return type of the wrapped method.
-     * @see Method#getGenericReturnType()
-     */
-    public Type getGenericReturnType() {
-        return executeMethod.getGenericReturnType();
     }
 
     /**
@@ -137,16 +105,6 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
      */
     public ResourceClass getResourceClass() {
         return this.resourceClass;
-    }
-
-    /**
-     * Returns the return type of the wrapped method.
-     * 
-     * @return the return type of the wrapped method.
-     * @see Method#getReturnType()
-     */
-    public Class<? extends Object> getReturnType() {
-        return executeMethod.getReturnType();
     }
 
     /**

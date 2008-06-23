@@ -49,7 +49,7 @@ public abstract class AbstractJaxRsWrapper {
     }
 
     /**
-     * @return Returns the regular expression for the URI template
+     * @return Returns the regular expression for the URI template.
      */
     protected PathRegExp getPathRegExp() {
         return this.pathRegExp;

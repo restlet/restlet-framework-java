@@ -751,7 +751,7 @@ public class JaxRsRestlet extends Restlet {
      */
     private void jaxRsRespToRestletResp(
             javax.ws.rs.core.Response jaxRsResponse,
-            AbstractMethodWrapper resourceMethod) {
+            ResourceMethod resourceMethod) {
         Response restletResponse = tlContext.get().getResponse();
         restletResponse.setStatus(Status.valueOf(jaxRsResponse.getStatus()));
         MultivaluedMap<String, Object> httpHeaders = jaxRsResponse
@@ -795,8 +795,7 @@ public class JaxRsRestlet extends Restlet {
      */
     @SuppressWarnings("unchecked")
     private Representation convertToRepresentation(Object entity,
-            AbstractMethodWrapper resourceMethod,
-            MediaType givenResponseMediaType,
+            ResourceMethod resourceMethod, MediaType givenResponseMediaType,
             MultivaluedMap<String, Object> jaxRsRespHeaders,
             SortedMetadata<MediaType> accMediaTypes)
             throws ImplementationException {
@@ -828,9 +827,8 @@ public class JaxRsRestlet extends Restlet {
         MediaType respMediaType;
         if (givenResponseMediaType != null)
             respMediaType = givenResponseMediaType;
-        else if (resourceMethod instanceof ResourceMethod)
-            respMediaType = determineMediaType((ResourceMethod) resourceMethod,
-                    mbws);
+        else if (resourceMethod != null)
+            respMediaType = determineMediaType(resourceMethod, mbws);
         else
             respMediaType = MediaType.TEXT_PLAIN;
         MessageBodyWriter<?> mbw = mbws.getBestWriter(respMediaType,

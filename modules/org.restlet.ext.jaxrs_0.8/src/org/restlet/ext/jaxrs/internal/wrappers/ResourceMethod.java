@@ -17,8 +17,10 @@
  */
 package org.restlet.ext.jaxrs.internal.wrappers;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -76,6 +78,15 @@ public class ResourceMethod extends AbstractMethodWrapper implements
     private final Collection<Variant> supportedVariants;
 
     /**
+     * the Java method that should be referenced for annotations. This method
+     * could be different from the method is called for executing, see section
+     * 3.6 "Annotation Inheritance" of JSR-311-spec.
+     * 
+     * @see AbstractMethodWrapper#executeMethod
+     */
+    private final Method annotatedMethod;
+
+    /**
      * Creates a wrapper for a resource method.
      * 
      * @param executeMethod
@@ -114,6 +125,7 @@ public class ResourceMethod extends AbstractMethodWrapper implements
         super(executeMethod, annotatedMethod, resourceClass, tlContext,
                 entityProviders, allCtxResolvers, extensionBackwardMapping,
                 true, logger);
+        this.annotatedMethod = annotatedMethod;
         if (httpMethod != null)
             this.httpMethod = httpMethod;
         else
@@ -175,12 +187,32 @@ public class ResourceMethod extends AbstractMethodWrapper implements
     }
 
     /**
+     * Returns the array of the annotations on the Java method
+     * 
+     * @return the array of the annotations on the Java method
+     * @see Method#getAnnotations()
+     */
+    public Annotation[] getAnnotations() {
+        return annotatedMethod.getAnnotations();
+    }
+
+    /**
      * @return Returns an unmodifiable List with the MediaTypes the given
      *         resourceMethod consumes. If no consumeMime is given, this method
      *         returns a List with MediaType.ALL. Will never return null.
      */
     public List<MediaType> getConsumedMimes() {
         return this.consumedMimes;
+    }
+
+    /**
+     * Returns the generic return type of the wrapped method.
+     * 
+     * @return the generic return type of the wrapped method.
+     * @see Method#getGenericReturnType()
+     */
+    public Type getGenericReturnType() {
+        return executeMethod.getGenericReturnType();
     }
 
     /**
