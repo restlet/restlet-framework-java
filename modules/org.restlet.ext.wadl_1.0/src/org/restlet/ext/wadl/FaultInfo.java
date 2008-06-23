@@ -18,10 +18,82 @@
 
 package org.restlet.ext.wadl;
 
+import java.util.Iterator;
+
+import org.restlet.data.Reference;
+import org.restlet.data.Status;
+import org.restlet.util.XmlWriter;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.AttributesImpl;
+
 /**
  * Describes an error condition for response descriptions.
  * 
  * @author Jerome Louvel
  */
 public class FaultInfo extends RepresentationInfo {
+	
+	/**
+	 * Writes the current object as an XML element using the given SAX writer.
+	 * 
+	 * @param writer
+	 *            The SAX writer.
+	 * @throws SAXException
+	 */
+	public void writeElement(XmlWriter writer) throws SAXException {
+		AttributesImpl attributes = new AttributesImpl();
+		if (getIdentifier() != null && !getIdentifier().equals("")) {
+			attributes.addAttribute("", "id", null, "xs:ID", getIdentifier());
+		}
+		if (getMediaType() != null) {
+			attributes.addAttribute("", "mediaType", null, "xs:string",
+					getMediaType().toString());
+		}
+		if (getProfiles() != null && !getProfiles().isEmpty()) {
+			StringBuilder builder = new StringBuilder();
+			for (Iterator<Reference> iterator = getProfiles().iterator(); iterator
+					.hasNext();) {
+				Reference reference = iterator.next();
+				builder.append(reference.toString());
+				if (iterator.hasNext()) {
+					builder.append(" ");
+				}
+			}
+			attributes.addAttribute("", "profile", null, "xs:string", builder
+					.toString());
+		}
+		if (getStatuses() != null && !getStatuses().isEmpty()) {
+			StringBuilder builder = new StringBuilder();
+			for (Iterator<Status> iterator = getStatuses().iterator(); iterator
+					.hasNext();) {
+				Status status = iterator.next();
+				builder.append(status.getCode());
+				if (iterator.hasNext()) {
+					builder.append(" ");
+				}
+			}
+			attributes.addAttribute("", "status", null, "xs:string", builder
+					.toString());
+		}
+		if (getXmlElement() != null && !getXmlElement().equals("")) {
+			attributes.addAttribute("", "element", null, "xs:QName",
+					getXmlElement());
+		}
+
+		writer.startElement("", "fault", null, attributes);
+
+		if (getDocumentations() != null) {
+			for (DocumentationInfo documentationInfo : getDocumentations()) {
+				documentationInfo.writeElement(writer);
+			}
+		}
+		if (getParameters() != null) {
+			for (ParameterInfo parameterInfo : getParameters()) {
+				parameterInfo.writeElement(writer);
+			}
+		}
+
+		writer.endElement("", "fault");
+	}
+
 }

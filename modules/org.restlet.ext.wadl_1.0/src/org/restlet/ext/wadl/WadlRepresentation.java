@@ -20,6 +20,7 @@ package org.restlet.ext.wadl;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,8 +31,11 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
+import org.restlet.resource.InputRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.resource.SaxRepresentation;
+import org.restlet.resource.TransformRepresentation;
+import org.restlet.util.Engine;
 import org.restlet.util.XmlWriter;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -70,7 +74,7 @@ public class WadlRepresentation extends SaxRepresentation {
 		private ResourceTypeInfo currentResourceType;
 		private ResponseInfo currentResponse;
 		private WadlRepresentation wadlRepresentation;
-		// private Date currentDate;
+
 		private List<State> states;
 
 		public ContentReader(WadlRepresentation wadlRepresentation) {
@@ -260,7 +264,9 @@ public class WadlRepresentation extends SaxRepresentation {
 		@Override
 		public void startElement(String uri, String localName, String qName,
 				Attributes attrs) throws SAXException {
-			this.contentBuffer.delete(0, this.contentBuffer.length() + 1);
+			if (getState() != State.DOCUMENTATION) {
+				this.contentBuffer.delete(0, this.contentBuffer.length() + 1);
+			}
 
 			// TODO the "doc" tag can contain XML content.
 
@@ -669,6 +675,18 @@ public class WadlRepresentation extends SaxRepresentation {
 	 */
 	public Representation getHtmlRepresentation() {
 		Representation representation = null;
+		URL wadlHtmlXsltUrl = Engine.getClassLoader().getResource(
+				"org/restlet/ext/wadl/wadl_documentation.xsl");
+		if (wadlHtmlXsltUrl != null) {
+			try {
+				InputRepresentation xslRep = new InputRepresentation(
+						wadlHtmlXsltUrl.openStream(),
+						MediaType.APPLICATION_W3C_XSLT);
+				representation = new TransformRepresentation(this, xslRep);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 
 		return representation;
 	}
