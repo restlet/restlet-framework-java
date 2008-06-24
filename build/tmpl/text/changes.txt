@@ -26,11 +26,17 @@ Changes log
        	  Bruno Harbulot.
        	- Clarified concurrency constraints on Uniform/Restlet subclasses 
        	  and on Resource class. Suggested by Bruno Harbulot.
+       	- Added public Resource#getAllowedMethods() method.
     - NRE and Extension Enhancements
         - Added a static HttpServletRequest getRequest(Request) method
           to the Servlet extension.
         - DirectoryResource now exposes isDirectoryTarget() and 
-          isFileTarget() methods. Suggested by Jean-Yves Cronier.        
+          isFileTarget() methods. Suggested by Jean-Yves Cronier.
+        - Enhanced WADL extension to support all WADL description 
+          properties and both formatting and parsing. Also added new
+          WadlRepresentation and WadlResource classes to facilitate the
+          description of Resources as WADL documents. 
+          Sponsored by NetDev Ltd (http://www.netdev.co.uk).        
     - Misc
         - Refactored WAR client to remove remaining class in NRE core.
         - Updated GWT JAR to 1.5 RC1

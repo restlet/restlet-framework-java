@@ -18,6 +18,7 @@
 
 package org.restlet;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -166,6 +167,17 @@ public abstract class Handler {
     public Reference generateRef(String uriTemplate) {
         Template tplt = new Template(getLogger(), uriTemplate);
         return new Reference(tplt.format(getRequest(), getResponse()));
+    }
+
+    /**
+     * Returns the set of allowed methods.
+     * 
+     * @return The set of allowed methods.
+     */
+    public Set<Method> getAllowedMethods() {
+        Set<Method> result = new HashSet<Method>();
+        updateAllowedMethods(result);
+        return result;
     }
 
     /**
@@ -355,8 +367,18 @@ public abstract class Handler {
     /**
      * Updates the set of allowed methods on the response.
      */
-    protected void updateAllowedMethods() {
-        Set<Method> allowedMethods = getResponse().getAllowedMethods();
+    public void updateAllowedMethods() {
+        updateAllowedMethods(getResponse().getAllowedMethods());
+    }
+
+    /**
+     * Updates the set of methods with the ones allowed by this resource
+     * instance.
+     * 
+     * @param allowedMethods
+     *                The set to update.
+     */
+    private void updateAllowedMethods(Set<Method> allowedMethods) {
         for (java.lang.reflect.Method classMethod : getClass().getMethods()) {
             if (classMethod.getName().startsWith("allow")
                     && (classMethod.getParameterTypes().length == 0)) {

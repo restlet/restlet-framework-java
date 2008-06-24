@@ -20,7 +20,6 @@ package org.restlet;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Set;
 import java.util.logging.Level;
 
 import org.restlet.data.Method;
@@ -99,7 +98,7 @@ public class Finder extends Restlet {
      *                The target handler.
      * @return True if a method is allowed on a target handler.
      */
-    private boolean allowMethod(Method method, Handler target) {
+    private boolean allow(Method method, Handler target) {
         boolean result = false;
 
         if (target != null) {
@@ -336,10 +335,10 @@ public class Finder extends Restlet {
                     response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
                             "No method specified");
                 } else {
-                    if (!allowMethod(method, target)) {
+                    if (!allow(method, target)) {
                         response
                                 .setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-                        updateAllowedMethods(response, target);
+                        target.updateAllowedMethods();
                     } else {
                         if (method.equals(Method.GET)) {
                             target.handleGet();
@@ -406,30 +405,6 @@ public class Finder extends Restlet {
      */
     public void setTargetClass(Class<? extends Handler> targetClass) {
         this.targetClass = targetClass;
-    }
-
-    /**
-     * Updates the set of allowed methods on the response based on a target
-     * handler.
-     * 
-     * @param response
-     *                The response to update.
-     * @param target
-     *                The target handler.
-     */
-    private void updateAllowedMethods(Response response, Handler target) {
-        Set<Method> allowedMethods = response.getAllowedMethods();
-        for (java.lang.reflect.Method classMethod : target.getClass()
-                .getMethods()) {
-            if (classMethod.getName().startsWith("allow")
-                    && (classMethod.getParameterTypes().length == 0)) {
-                if ((Boolean) invoke(target, classMethod)) {
-                    Method allowedMethod = Method.valueOf(classMethod.getName()
-                            .substring(5));
-                    allowedMethods.add(allowedMethod);
-                }
-            }
-        }
     }
 
 }
