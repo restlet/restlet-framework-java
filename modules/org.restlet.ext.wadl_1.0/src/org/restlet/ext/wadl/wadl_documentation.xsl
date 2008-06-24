@@ -1,55 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-   wadl_documentation.xsl (2007-12-19)
-   
-   An XSLT stylesheet for generating HTML documentation from WADL,
-   by Mark Nottingham <mnot@yahoo-inc.com>.
-   
-   Copyright (c) 2006-2007 Yahoo! Inc.
-   
-   This work is licensed under the Creative Commons Attribution-ShareAlike 2.5 
-   License. To view a copy of this license, visit 
-   http://creativecommons.org/licenses/by-sa/2.5/ 
-   or send a letter to 
-   Creative Commons
-   543 Howard Street, 5th Floor
-   San Francisco, California, 94105, USA
+  wadl_documentation.xsl (2007-12-19)
+
+  An XSLT stylesheet for generating HTML documentation from WADL,
+  by Mark Nottingham <mnot@yahoo-inc.com>.
+
+  Copyright (c) 2006-2007 Yahoo! Inc.
+  
+  This work is licensed under the Creative Commons Attribution-ShareAlike 2.5 
+  License. To view a copy of this license, visit 
+    http://creativecommons.org/licenses/by-sa/2.5/ 
+  or send a letter to 
+    Creative Commons
+    543 Howard Street, 5th Floor
+    San Francisco, California, 94105, USA
 -->
 <!-- 
-   * FIXME
-   - Doesn't inherit query/header params from resource/@type
-   - XML schema import, include, redefine don't import
+ * FIXME
+    - Doesn't inherit query/header params from resource/@type
+    - XML schema import, include, redefine don't import
 -->
 <!--
-   * TODO
-   - forms
-   - link to or include non-schema variable type defs (as a separate list?)
-   - @href error handling
+  * TODO
+    - forms
+    - link to or include non-schema variable type defs (as a separate list?)
+    - @href error handling
 -->
 
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-   version="1.0" xmlns:wadl="http://research.sun.com/wadl/2006/10"
-   xmlns:xs="http://www.w3.org/2001/XMLSchema"
-   xmlns:html="http://www.w3.org/1999/xhtml"
-   xmlns:exsl="http://exslt.org/common" xmlns:ns="urn:namespace"
-   extension-element-prefixes="exsl"
-   xmlns="http://www.w3.org/1999/xhtml"
-   exclude-result-prefixes="xsl wadl xs html ns">
+<xsl:stylesheet 
+ xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0"
+ xmlns:wadl="http://research.sun.com/wadl/2006/10"
+ xmlns:xs="http://www.w3.org/2001/XMLSchema"
+ xmlns:html="http://www.w3.org/1999/xhtml"
+ xmlns:exsl="http://exslt.org/common"
+ xmlns:ns="urn:namespace"
+ extension-element-prefixes="exsl"
+ xmlns="http://www.w3.org/1999/xhtml"
+ exclude-result-prefixes="xsl wadl xs html ns"
+>
 
-   <xsl:output method="html" encoding="UTF-8" indent="yes"
-      doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN"
-      doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd" />
+    <xsl:output 
+        method="html" 
+        encoding="UTF-8" 
+        indent="yes"
+        doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN"
+        doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"
+    />
 
-   <xsl:variable name="wadl-ns">
-      http://research.sun.com/wadl/2006/10
-   </xsl:variable>
+    <xsl:variable name="wadl-ns">http://research.sun.com/wadl/2006/10</xsl:variable>
 
-
-   <!-- expand @hrefs, @types into a full tree -->
-
-   <xsl:variable name="resources">
-      <xsl:apply-templates select="/wadl:application/wadl:resources"
-         mode="expand" />
+    
+    <!-- expand @hrefs, @types into a full tree -->
+    
+    <xsl:variable name="resources">
+        <xsl:apply-templates select="/wadl:application/wadl:resources" mode="expand"/>
     </xsl:variable>
     
     <xsl:template match="wadl:resources" mode="expand">
@@ -351,12 +355,9 @@
         </li>
     </xsl:template>
 
-<!-- [fault] -->
     <xsl:template match="wadl:representation|wadl:fault" mode="toc">
         <xsl:variable name="id"><xsl:call-template name="get-id"/></xsl:variable>
         <xsl:variable name="href" select="@id"/>
-        <p><xsl:call-template name="get-id"/></p>
-        <!--          -->
         <xsl:choose>
             <xsl:when test="preceding::wadl:*[@id=$href]"/> 
             <xsl:otherwise>               
@@ -367,7 +368,6 @@
                 </li>
             </xsl:otherwise>
         </xsl:choose>
-
     </xsl:template>        
 
     <!-- Listings -->
@@ -495,7 +495,6 @@
         </xsl:if>
     </xsl:template>
 
-
     <xsl:template match="wadl:representation|wadl:fault">
         <xsl:variable name="id"><xsl:call-template name="get-id"/></xsl:variable>
         <li>
@@ -504,8 +503,7 @@
             </a>
         </li>
     </xsl:template>    
-
-    <!-- [fault] -->
+    
     <xsl:template match="wadl:representation|wadl:fault" mode="list">
         <xsl:variable name="id"><xsl:call-template name="get-id"/></xsl:variable>
         <xsl:variable name="href" select="@id"/>

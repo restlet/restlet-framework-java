@@ -39,6 +39,7 @@ import org.restlet.util.Engine;
 import org.restlet.util.XmlWriter;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
+import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.helpers.DefaultHandler;
 
 /**
@@ -51,47 +52,73 @@ public class WadlRepresentation extends SaxRepresentation {
     // -------------------
     // Content reader part
     // -------------------
-    private static class ContentReader extends DefaultHandler {
+    private static class ContentReader extends DefaultHandler implements
+            LexicalHandler {
         public enum State {
-            APPLICATION, DOCUMENTATION, FAULT, GRAMMARS, INCLUDE, LINK, METHOD, OPTION, PARAMETER, REPRESENTATION, REQUEST, RESOURCE, RESOURCES, RESOURCETYPE, RESPONSE, NONE
+            APPLICATION, DOCUMENTATION, FAULT, GRAMMARS, INCLUDE, LINK, METHOD, NONE, OPTION, PARAMETER, REPRESENTATION, REQUEST, RESOURCE, RESOURCES, RESOURCETYPE, RESPONSE
         }
 
+        /** Glean the content of the current parsed element. */
         private StringBuilder contentBuffer;
 
+        /** The current parsed "application" tag. */
         private ApplicationInfo currentApplication;
 
+        /** The current parsed "documentation" tag. */
         private DocumentationInfo currentDocumentation;
 
+        /** The current parsed "fault" tag. */
         private FaultInfo currentFault;
 
+        /** The current parsed "grammars" tag. */
         private GrammarsInfo currentGrammars;
 
+        /** The current parsed "include" tag. */
         private IncludeInfo currentInclude;
 
+        /** The current parsed "link" tag. */
         private LinkInfo currentLink;
 
+        /** The current parsed "method" tag. */
         private MethodInfo currentMethod;
 
+        /** The current parsed "option" tag. */
         private OptionInfo currentOption;
 
+        /** The current parsed "param" tag. */
         private ParameterInfo currentParameter;
 
+        /** The current parsed "representaiton" tag. */
         private RepresentationInfo currentRepresentation;
 
+        /** The current parsed "request" tag. */
         private RequestInfo currentRequest;
 
-        private List<ResourceInfo> currentResourcesList;
-
+        /** The current parsed "resources" tag. */
         private ResourcesInfo currentResources;
 
+        /** The list of the current parsed "resource" tags. */
+        private List<ResourceInfo> currentResourcesList;
+
+        /** The current parsed "resource_type" tag. */
         private ResourceTypeInfo currentResourceType;
 
+        /** The current parsed "response" tag. */
         private ResponseInfo currentResponse;
 
-        private WadlRepresentation wadlRepresentation;
-
+        /** The stack of parser states. */
         private List<State> states;
 
+        /** The WadlRepresentation instance that represents the parsed document. */
+        private WadlRepresentation wadlRepresentation;
+
+        /**
+         * Constructor
+         * 
+         * @param wadlRepresentation
+         *                The WadlRepresentation instance that represents the
+         *                parsed document.
+         */
         public ContentReader(WadlRepresentation wadlRepresentation) {
             this.states = new ArrayList<State>();
             this.states.add(State.NONE);
@@ -129,32 +156,16 @@ public class WadlRepresentation extends SaxRepresentation {
             contentBuffer.append(ch, start, length);
         }
 
-        /**
-         * Returns the state at the beginning of the stack
-         * 
-         * @return
-         */
-        private State popState() {
-            return this.states.remove(0);
+        @Override
+        public void comment(char[] ch, int start, int length)
+                throws SAXException {
         }
 
-        /**
-         * Adds the given state.
-         * 
-         * @param state
-         */
-        private void pushState(State state) {
-            this.states.add(0, state);
-        }
-
-        /**
-         * Returns the state at the beginning of the stack
-         * 
-         * @return
-         */
-        private State getState() {
-            State result = this.states.get(0);
-            return result;
+        @Override
+        public void endCDATA() throws SAXException {
+            if (getState() == State.DOCUMENTATION) {
+                contentBuffer.append("]]>");
+            }
         }
 
         /**
@@ -164,32 +175,11 @@ public class WadlRepresentation extends SaxRepresentation {
         public void endDocument() throws SAXException {
             popState();
             this.contentBuffer = null;
-            // TODO reminder.
             wadlRepresentation.setApplication(this.currentApplication);
         }
 
-        /**
-         * Returns a parameterStyle value according to the given string or null.
-         * 
-         * @param parameterStyle
-         *                The given string.
-         * @return
-         */
-        public ParameterStyle getParameterStyle(String parameterStyle) {
-            ParameterStyle result = null;
-            if ("header".equalsIgnoreCase(parameterStyle)) {
-                result = ParameterStyle.HEADER;
-            } else if ("matrix".equalsIgnoreCase(parameterStyle)) {
-                result = ParameterStyle.MATRIX;
-            } else if ("plain".equalsIgnoreCase(parameterStyle)) {
-                result = ParameterStyle.PLAIN;
-            } else if ("query".equalsIgnoreCase(parameterStyle)) {
-                result = ParameterStyle.QUERY;
-            } else if ("template".equalsIgnoreCase(parameterStyle)) {
-                result = ParameterStyle.TEMPLATE;
-            }
-
-            return result;
+        @Override
+        public void endDTD() throws SAXException {
         }
 
         /**
@@ -209,13 +199,6 @@ public class WadlRepresentation extends SaxRepresentation {
         @Override
         public void endElement(String uri, String localName, String qName)
                 throws SAXException {
-            if (getState() == State.DOCUMENTATION && localName != "doc") {
-                this.contentBuffer.append("</");
-                this.contentBuffer.append(uri).append(":");
-                this.contentBuffer.append(localName);
-                this.contentBuffer.append(">");
-            }
-
             if (uri.equalsIgnoreCase(APP_NAMESPACE)) {
                 if (localName.equals("currentApplication")) {
                     popState();
@@ -255,12 +238,80 @@ public class WadlRepresentation extends SaxRepresentation {
             }
         }
 
+        @Override
+        public void endEntity(String name) throws SAXException {
+        }
+
+        /**
+         * Returns a parameterStyle value according to the given string or null.
+         * 
+         * @param parameterStyle
+         *                The given string.
+         * @return
+         */
+        public ParameterStyle getParameterStyle(String parameterStyle) {
+            ParameterStyle result = null;
+            if ("header".equalsIgnoreCase(parameterStyle)) {
+                result = ParameterStyle.HEADER;
+            } else if ("matrix".equalsIgnoreCase(parameterStyle)) {
+                result = ParameterStyle.MATRIX;
+            } else if ("plain".equalsIgnoreCase(parameterStyle)) {
+                result = ParameterStyle.PLAIN;
+            } else if ("query".equalsIgnoreCase(parameterStyle)) {
+                result = ParameterStyle.QUERY;
+            } else if ("template".equalsIgnoreCase(parameterStyle)) {
+                result = ParameterStyle.TEMPLATE;
+            }
+
+            return result;
+        }
+
+        /**
+         * Returns the state at the beginning of the stack
+         * 
+         * @return
+         */
+        private State getState() {
+            State result = this.states.get(0);
+            return result;
+        }
+
+        /**
+         * Returns the state at the beginning of the stack
+         * 
+         * @return
+         */
+        private State popState() {
+            return this.states.remove(0);
+        }
+
+        /**
+         * Adds the given state.
+         * 
+         * @param state
+         */
+        private void pushState(State state) {
+            this.states.add(0, state);
+        }
+
+        @Override
+        public void startCDATA() throws SAXException {
+            if (getState() == State.DOCUMENTATION) {
+                contentBuffer.append("<![CDATA[");
+            }
+        }
+
         /**
          * Receive notification of the beginning of a document.
          */
         @Override
         public void startDocument() throws SAXException {
             this.contentBuffer = new StringBuilder();
+        }
+
+        @Override
+        public void startDTD(String name, String publicId, String systemId)
+                throws SAXException {
         }
 
         /**
@@ -287,22 +338,7 @@ public class WadlRepresentation extends SaxRepresentation {
                 Attributes attrs) throws SAXException {
             if (getState() != State.DOCUMENTATION) {
                 this.contentBuffer.delete(0, this.contentBuffer.length() + 1);
-            } else {
-                this.contentBuffer.append("<");
-                this.contentBuffer.append(uri).append(":");
-                this.contentBuffer.append(localName);
-                if (attrs != null) {
-                    for (int i = 0; i < attrs.getLength(); i++) {
-                        this.contentBuffer.append(" ");
-                        this.contentBuffer.append(attrs.getLocalName(i));
-                        this.contentBuffer.append("=");
-                        this.contentBuffer.append(attrs.getValue(i));
-                    }
-                }
-                this.contentBuffer.append(">");
             }
-
-            // TODO the "doc" tag can contain XML content.
 
             if (uri.equalsIgnoreCase(APP_NAMESPACE)) {
                 if (localName.equals("application")) {
@@ -310,7 +346,7 @@ public class WadlRepresentation extends SaxRepresentation {
                     pushState(State.APPLICATION);
                 } else if (localName.equals("doc")) {
                     this.currentDocumentation = new DocumentationInfo();
-                    // TODO lang or xml:lang?
+
                     if (attrs.getIndex("xml:lang") != -1) {
                         this.currentDocumentation.setLanguage(Language
                                 .valueOf(attrs.getValue("xml:lang")));
@@ -637,17 +673,31 @@ public class WadlRepresentation extends SaxRepresentation {
                 }
             }
         }
+
+        @Override
+        public void startEntity(String name) throws SAXException {
+        }
     }
 
     /** Web Application Description Language namespace. */
     public static final String APP_NAMESPACE = "http://research.sun.com/wadl/2006/10";
 
+    /** The root element of the WADL document. */
     private ApplicationInfo application;
 
+    /**
+     * Constructor.
+     */
     public WadlRepresentation() {
         super(MediaType.APPLICATION_WADL_XML);
     }
 
+    /**
+     * Constructor.
+     * 
+     * @param application
+     *                The root element of the WADL document.
+     */
     public WadlRepresentation(ApplicationInfo application) {
         super(MediaType.APPLICATION_WADL_XML);
         this.application = application;
@@ -673,33 +723,16 @@ public class WadlRepresentation extends SaxRepresentation {
     @Override
     public Object evaluate(String expression, QName returnType)
             throws Exception {
-        // TODO Auto-generated method stub
         return null;
     }
 
+    /**
+     * Returns the root element of the WADL document.
+     * 
+     * @return The root element of the WADL document.
+     */
     public ApplicationInfo getApplication() {
         return application;
-    }
-
-    public void setApplication(ApplicationInfo application) {
-        this.application = application;
-    }
-
-    @Override
-    public void write(OutputStream outputStream) throws IOException {
-        // Convert the attached ApplicationInfo instance into an equivalent WADL
-        // XML document.
-        XmlWriter writer = new XmlWriter(outputStream, "UTF-8");
-        try {
-            writer.setPrefix(APP_NAMESPACE, "wadl");
-            writer.setDataFormat(true);
-            writer.setIndentStep(3);
-            writer.startDocument();
-            application.writeElement(writer);
-            writer.endDocument();
-        } catch (SAXException e) {
-            e.printStackTrace();
-        }
     }
 
     /**
@@ -723,6 +756,33 @@ public class WadlRepresentation extends SaxRepresentation {
         }
 
         return representation;
+    }
+
+    /**
+     * Sets the root element of the WADL document.
+     * 
+     * @param application
+     *                The root element of the WADL document.
+     */
+    public void setApplication(ApplicationInfo application) {
+        this.application = application;
+    }
+
+    @Override
+    public void write(OutputStream outputStream) throws IOException {
+        // Convert the attached ApplicationInfo instance into an equivalent WADL
+        // XML document.
+        XmlWriter writer = new XmlWriter(outputStream, "UTF-8");
+        try {
+            writer.setPrefix(APP_NAMESPACE, "wadl");
+            writer.setDataFormat(true);
+            writer.setIndentStep(3);
+            writer.startDocument();
+            application.writeElement(writer);
+            writer.endDocument();
+        } catch (SAXException e) {
+            e.printStackTrace();
+        }
     }
 
 }
