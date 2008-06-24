@@ -31,7 +31,15 @@ import org.restlet.resource.Resource;
 import org.restlet.resource.Variant;
 
 /**
+ * Resource that is able to automatically describe itself with WADL. This
+ * description can be customized by overriding the {@link #getApplicationInfo()},
+ * {@link #getResourceInfo()} and {@link #getMethodInfo(Method)} methods.
  * 
+ * When used to describe a class of resources in the context of a parent
+ * application, a special instance will be created using the default constructor
+ * (with no request, response associated). In this case, the resource should do
+ * its best to return the generic information when the WADL description methods
+ * are invoked, like {@link #getResourceInfo()} and delegate methods.
  * 
  * @author Jerome Louvel
  */
@@ -55,7 +63,7 @@ public class WadlResource extends Resource {
      * @return An application description.
      * @see WadlResource#getResourceInfo()
      */
-    public ApplicationInfo getApplicationInfo() {
+    protected ApplicationInfo getApplicationInfo() {
         ApplicationInfo result = new ApplicationInfo();
         ResourcesInfo resources = new ResourcesInfo();
         resources.setBaseRef(getResourcesBase());
@@ -74,7 +82,60 @@ public class WadlResource extends Resource {
     protected MethodInfo getMethodInfo(Method method) {
         MethodInfo methodInfo = new MethodInfo();
         methodInfo.setName(method);
+        methodInfo.setRequest(getRequestInfo(method));
+        methodInfo.setResponse(getResponseInfo(method));
         return methodInfo;
+    }
+
+    /**
+     * Returns the description of the parameters of this resource. Returns null
+     * by default.
+     * 
+     * @return The description of the parameters.
+     */
+    protected List<ParameterInfo> getParametersInfo() {
+        List<ParameterInfo> result = null;
+        return result;
+    }
+
+    /**
+     * Returns the description of the parameters of the given representation.
+     * Returns null by default.
+     * 
+     * @param representation
+     *                The parent representation.
+     * @return The description of the parameters.
+     */
+    protected List<ParameterInfo> getParametersInfo(
+            RepresentationInfo representation) {
+        List<ParameterInfo> result = null;
+        return result;
+    }
+
+    /**
+     * Returns the description of the parameters of the given request. Returns
+     * null by default.
+     * 
+     * @param request
+     *                The parent request.
+     * @return The description of the parameters.
+     */
+    protected List<ParameterInfo> getParametersInfo(RequestInfo request) {
+        List<ParameterInfo> result = null;
+        return result;
+    }
+
+    /**
+     * Returns the description of the parameters of the given response. Returns
+     * null by default.
+     * 
+     * @param response
+     *                The parent response.
+     * @return The description of the parameters.
+     */
+    protected List<ParameterInfo> getParametersInfo(ResponseInfo response) {
+        List<ParameterInfo> result = null;
+        return result;
     }
 
     /**
@@ -83,11 +144,8 @@ public class WadlResource extends Resource {
      * 
      * @return The preferred WADL variant.
      */
-    private Variant getPreferredWadlVariant() {
+    protected Variant getPreferredWadlVariant() {
         Variant result = null;
-        List<Variant> variants = new ArrayList<Variant>();
-        variants.add(new Variant(MediaType.APPLICATION_WADL_XML));
-        variants.add(new Variant(MediaType.TEXT_HTML));
 
         // Compute the preferred variant. Get the default language
         // preference from the Application (if any).
@@ -98,10 +156,29 @@ public class WadlResource extends Resource {
             language = app.getMetadataService().getDefaultLanguage();
         }
 
-        result = getRequest().getClientInfo().getPreferredVariant(variants,
-                language);
+        result = getRequest().getClientInfo().getPreferredVariant(
+                getWadlVariants(), language);
 
         return result;
+    }
+
+    protected RepresentationInfo getRepresentationInfo(Variant variant) {
+        RepresentationInfo result = new RepresentationInfo();
+        result.setMediaType(variant.getMediaType());
+        result.setParameters(getParametersInfo(result));
+        return result;
+    }
+
+    /**
+     * Returns a WADL description of the request to the given method. Returns
+     * null by default.
+     * 
+     * @param method
+     *                The method to describe.
+     * @return A request description.
+     */
+    protected RequestInfo getRequestInfo(Method method) {
+        return null;
     }
 
     /**
@@ -119,6 +196,7 @@ public class WadlResource extends Resource {
             methods.add(getMethodInfo(name));
         }
 
+        result.setParameters(getParametersInfo());
         return result;
     }
 
@@ -142,9 +220,53 @@ public class WadlResource extends Resource {
         return getRequest().getRootRef();
     }
 
+    /**
+     * Returns a WADL description of the response to the given method. By
+     * default it will describe the available variants for the GET and the
+     * OPTIONS methods based on the {@link #getVariants()} and
+     * {@link #getWadlVariants()} methods.
+     * 
+     * @param method
+     *                The method to describe.
+     * @return A response description.
+     */
+    protected ResponseInfo getResponseInfo(Method method) {
+        ResponseInfo result = null;
+
+        if (Method.GET.equals(method)) {
+            result = new ResponseInfo();
+
+            // Describe each variant
+            for (Variant variant : getVariants()) {
+                result.getRepresentations().add(getRepresentationInfo(variant));
+            }
+        } else if (Method.OPTIONS.equals(method)) {
+            result = new ResponseInfo();
+
+            // Describe each variant
+            for (Variant variant : getWadlVariants()) {
+                result.getRepresentations().add(getRepresentationInfo(variant));
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the available WADL variants.
+     * 
+     * @return The available WADL variants.
+     */
+    protected List<Variant> getWadlVariants() {
+        List<Variant> result = new ArrayList<Variant>();
+        result.add(new Variant(MediaType.APPLICATION_WADL_XML));
+        result.add(new Variant(MediaType.TEXT_HTML));
+        return result;
+    }
+
     @Override
     public void handleOptions() {
-        getResponse().setEntity(representWadl());
+        getResponse().setEntity(wadlRepresent());
     }
 
     /**
@@ -152,8 +274,8 @@ public class WadlResource extends Resource {
      * 
      * @return The WADL description.
      */
-    private Representation representWadl() {
-        return representWadl(getPreferredWadlVariant());
+    protected Representation wadlRepresent() {
+        return wadlRepresent(getPreferredWadlVariant());
     }
 
     /**
@@ -163,7 +285,7 @@ public class WadlResource extends Resource {
      *                The WADL variant.
      * @return The WADL description.
      */
-    private Representation representWadl(Variant variant) {
+    protected Representation wadlRepresent(Variant variant) {
         Representation result = null;
 
         if (MediaType.APPLICATION_WADL_XML.equals(variant.getMediaType())) {
