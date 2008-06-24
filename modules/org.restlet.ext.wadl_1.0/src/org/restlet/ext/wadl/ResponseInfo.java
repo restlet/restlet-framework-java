@@ -121,11 +121,6 @@ public class ResponseInfo {
 				documentationInfo.writeElement(writer);
 			}
 		}
-		if (getFaults() != null) {
-			for (FaultInfo faultInfo : getFaults()) {
-				faultInfo.writeElement(writer);
-			}
-		}
 		if (getParameters() != null) {
 			for (ParameterInfo parameterInfo : getParameters()) {
 				parameterInfo.writeElement(writer);
@@ -134,6 +129,11 @@ public class ResponseInfo {
 		if (getRepresentations() != null) {
 			for (RepresentationInfo representationInfo : getRepresentations()) {
 				representationInfo.writeElement(writer);
+			}
+		}
+		if (getFaults() != null) {
+			for (FaultInfo faultInfo : getFaults()) {
+				faultInfo.writeElement(writer);
 			}
 		}
 		writer.endElement("", "response");

@@ -189,7 +189,7 @@ public class RepresentationInfo {
 					getXmlElement());
 		}
 
-		writer.startElement("", "representation_type", null, attributes);
+		writer.startElement("", "representation", null, attributes);
 
 		if (getDocumentations() != null) {
 			for (DocumentationInfo documentationInfo : getDocumentations()) {
@@ -202,7 +202,7 @@ public class RepresentationInfo {
 			}
 		}
 
-		writer.endElement("", "representation_type");
+		writer.endElement("", "representation");
 	}
 
 }

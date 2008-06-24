@@ -194,6 +194,12 @@ public class WadlRepresentation extends SaxRepresentation {
 		@Override
 		public void endElement(String uri, String localName, String qName)
 				throws SAXException {
+			if (getState() == State.DOCUMENTATION && localName != "doc") {
+				this.contentBuffer.append("</");
+				this.contentBuffer.append(uri).append(":");
+				this.contentBuffer.append(localName);
+				this.contentBuffer.append(">");
+			}
 
 			if (uri.equalsIgnoreCase(APP_NAMESPACE)) {
 				if (localName.equals("currentApplication")) {
@@ -217,7 +223,7 @@ public class WadlRepresentation extends SaxRepresentation {
 					popState();
 				} else if (localName.equals("param")) {
 					popState();
-				} else if (localName.equals("representation_type")) {
+				} else if (localName.equals("representation")) {
 					popState();
 				} else if (localName.equals("request")) {
 					popState();
@@ -266,6 +272,19 @@ public class WadlRepresentation extends SaxRepresentation {
 				Attributes attrs) throws SAXException {
 			if (getState() != State.DOCUMENTATION) {
 				this.contentBuffer.delete(0, this.contentBuffer.length() + 1);
+			} else {
+				this.contentBuffer.append("<");
+				this.contentBuffer.append(uri).append(":");
+				this.contentBuffer.append(localName);
+				if (attrs != null) {
+					for (int i = 0; i < attrs.getLength(); i++) {
+						this.contentBuffer.append(" ");
+						this.contentBuffer.append(attrs.getLocalName(i));
+						this.contentBuffer.append("=");
+						this.contentBuffer.append(attrs.getValue(i));
+					}
+				}
+				this.contentBuffer.append(">");
 			}
 
 			// TODO the "doc" tag can contain XML content.
@@ -471,7 +490,7 @@ public class WadlRepresentation extends SaxRepresentation {
 								.parseBoolean(attrs.getValue("repeating")));
 					}
 					if (attrs.getIndex("required") != -1) {
-						this.currentParameter.setRepeating(Boolean
+						this.currentParameter.setRequired(Boolean
 								.parseBoolean(attrs.getValue("required")));
 					}
 
@@ -496,7 +515,7 @@ public class WadlRepresentation extends SaxRepresentation {
 					}
 
 					pushState(State.PARAMETER);
-				} else if (localName.equals("representation_type")) {
+				} else if (localName.equals("representation")) {
 					this.currentRepresentation = new RepresentationInfo();
 					if (attrs.getIndex("id") != -1) {
 						this.currentRepresentation.setIdentifier(attrs

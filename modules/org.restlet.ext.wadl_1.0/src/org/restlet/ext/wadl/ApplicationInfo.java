@@ -162,12 +162,6 @@ public class ApplicationInfo {
 			}
 		}
 
-		if (getFaults() != null) {
-			for (FaultInfo faultInfo : getFaults()) {
-				faultInfo.writeElement(writer);
-			}
-		}
-
 		if (getGrammars() != null) {
 			getGrammars().writeElement(writer);
 		}
@@ -191,6 +185,12 @@ public class ApplicationInfo {
 		if (getResourceTypes() != null) {
 			for (ResourceTypeInfo resourceTypeInfo : getResourceTypes()) {
 				resourceTypeInfo.writeElement(writer);
+			}
+		}
+
+		if (getFaults() != null) {
+			for (FaultInfo faultInfo : getFaults()) {
+				faultInfo.writeElement(writer);
 			}
 		}
 
