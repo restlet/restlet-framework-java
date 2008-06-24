@@ -32,68 +32,69 @@ import org.xml.sax.helpers.AttributesImpl;
  * @author Jerome Louvel
  */
 public class FaultInfo extends RepresentationInfo {
-	
-	/**
-	 * Writes the current object as an XML element using the given SAX writer.
-	 * 
-	 * @param writer
-	 *            The SAX writer.
-	 * @throws SAXException
-	 */
-	public void writeElement(XmlWriter writer) throws SAXException {
-		AttributesImpl attributes = new AttributesImpl();
-		if (getIdentifier() != null && !getIdentifier().equals("")) {
-			attributes.addAttribute("", "id", null, "xs:ID", getIdentifier());
-		}
-		if (getMediaType() != null) {
-			attributes.addAttribute("", "mediaType", null, "xs:string",
-					getMediaType().toString());
-		}
-		if (getProfiles() != null && !getProfiles().isEmpty()) {
-			StringBuilder builder = new StringBuilder();
-			for (Iterator<Reference> iterator = getProfiles().iterator(); iterator
-					.hasNext();) {
-				Reference reference = iterator.next();
-				builder.append(reference.toString());
-				if (iterator.hasNext()) {
-					builder.append(" ");
-				}
-			}
-			attributes.addAttribute("", "profile", null, "xs:string", builder
-					.toString());
-		}
-		if (getStatuses() != null && !getStatuses().isEmpty()) {
-			StringBuilder builder = new StringBuilder();
-			for (Iterator<Status> iterator = getStatuses().iterator(); iterator
-					.hasNext();) {
-				Status status = iterator.next();
-				builder.append(status.getCode());
-				if (iterator.hasNext()) {
-					builder.append(" ");
-				}
-			}
-			attributes.addAttribute("", "status", null, "xs:string", builder
-					.toString());
-		}
-		if (getXmlElement() != null && !getXmlElement().equals("")) {
-			attributes.addAttribute("", "element", null, "xs:QName",
-					getXmlElement());
-		}
 
-		writer.startElement("", "fault", null, attributes);
+    /**
+     * Writes the current object as an XML element using the given SAX writer.
+     * 
+     * @param writer
+     *                The SAX writer.
+     * @throws SAXException
+     */
+    @Override
+    public void writeElement(XmlWriter writer) throws SAXException {
+        AttributesImpl attributes = new AttributesImpl();
+        if (getIdentifier() != null && !getIdentifier().equals("")) {
+            attributes.addAttribute("", "id", null, "xs:ID", getIdentifier());
+        }
+        if (getMediaType() != null) {
+            attributes.addAttribute("", "mediaType", null, "xs:string",
+                    getMediaType().toString());
+        }
+        if (getProfiles() != null && !getProfiles().isEmpty()) {
+            StringBuilder builder = new StringBuilder();
+            for (Iterator<Reference> iterator = getProfiles().iterator(); iterator
+                    .hasNext();) {
+                Reference reference = iterator.next();
+                builder.append(reference.toString());
+                if (iterator.hasNext()) {
+                    builder.append(" ");
+                }
+            }
+            attributes.addAttribute("", "profile", null, "xs:string", builder
+                    .toString());
+        }
+        if (getStatuses() != null && !getStatuses().isEmpty()) {
+            StringBuilder builder = new StringBuilder();
+            for (Iterator<Status> iterator = getStatuses().iterator(); iterator
+                    .hasNext();) {
+                Status status = iterator.next();
+                builder.append(status.getCode());
+                if (iterator.hasNext()) {
+                    builder.append(" ");
+                }
+            }
+            attributes.addAttribute("", "status", null, "xs:string", builder
+                    .toString());
+        }
+        if (getXmlElement() != null && !getXmlElement().equals("")) {
+            attributes.addAttribute("", "element", null, "xs:QName",
+                    getXmlElement());
+        }
 
-		if (getDocumentations() != null) {
-			for (DocumentationInfo documentationInfo : getDocumentations()) {
-				documentationInfo.writeElement(writer);
-			}
-		}
-		if (getParameters() != null) {
-			for (ParameterInfo parameterInfo : getParameters()) {
-				parameterInfo.writeElement(writer);
-			}
-		}
+        writer.startElement("", "fault", null, attributes);
 
-		writer.endElement("", "fault");
-	}
+        if (getDocumentations() != null) {
+            for (DocumentationInfo documentationInfo : getDocumentations()) {
+                documentationInfo.writeElement(writer);
+            }
+        }
+        if (getParameters() != null) {
+            for (ParameterInfo parameterInfo : getParameters()) {
+                parameterInfo.writeElement(writer);
+            }
+        }
+
+        writer.endElement("", "fault");
+    }
 
 }

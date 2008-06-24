@@ -25,24 +25,24 @@ package org.restlet.ext.wadl;
  */
 public enum ParameterStyle {
 
-	HEADER, MATRIX, PLAIN, QUERY, TEMPLATE;
+    HEADER, MATRIX, PLAIN, QUERY, TEMPLATE;
 
-	public String toString() {
-		String result = null;
-		if (this.equals(HEADER)) {
-			result = "header";
-		} else if (this.equals(MATRIX)) {
-			result = "matrix";
-		} else if (this.equals(PLAIN)) {
-			result = "plain";
-		} else if (this.equals(QUERY)) {
-			result = "query";
-		} else if (this.equals(TEMPLATE)) {
-			result = "template";
-		}
+    @Override
+    public String toString() {
+        String result = null;
+        if (this.equals(HEADER)) {
+            result = "header";
+        } else if (this.equals(MATRIX)) {
+            result = "matrix";
+        } else if (this.equals(PLAIN)) {
+            result = "plain";
+        } else if (this.equals(QUERY)) {
+            result = "query";
+        } else if (this.equals(TEMPLATE)) {
+            result = "template";
+        }
 
-		return result;
-
-	};
+        return result;
+    }
 
 }

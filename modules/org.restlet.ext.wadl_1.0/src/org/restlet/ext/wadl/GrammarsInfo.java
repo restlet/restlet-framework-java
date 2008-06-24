@@ -33,65 +33,65 @@ import org.xml.sax.SAXException;
  */
 public class GrammarsInfo {
 
-	private List<DocumentationInfo> documentations;
+    private List<DocumentationInfo> documentations;
 
-	private List<IncludeInfo> includes;
+    private List<IncludeInfo> includes;
 
-	public List<DocumentationInfo> getDocumentations() {
-		// Lazy initialization with double-check.
-		List<DocumentationInfo> d = this.documentations;
-		if (d == null) {
-			synchronized (this) {
-				d = this.documentations;
-				if (d == null)
-					this.documentations = d = new ArrayList<DocumentationInfo>();
-			}
-		}
-		return d;
-	}
+    public List<DocumentationInfo> getDocumentations() {
+        // Lazy initialization with double-check.
+        List<DocumentationInfo> d = this.documentations;
+        if (d == null) {
+            synchronized (this) {
+                d = this.documentations;
+                if (d == null)
+                    this.documentations = d = new ArrayList<DocumentationInfo>();
+            }
+        }
+        return d;
+    }
 
-	public List<IncludeInfo> getIncludes() {
-		// Lazy initialization with double-check.
-		List<IncludeInfo> i = this.includes;
-		if (i == null) {
-			synchronized (this) {
-				i = this.includes;
-				if (i == null)
-					this.includes = i = new ArrayList<IncludeInfo>();
-			}
-		}
-		return i;
-	}
+    public List<IncludeInfo> getIncludes() {
+        // Lazy initialization with double-check.
+        List<IncludeInfo> i = this.includes;
+        if (i == null) {
+            synchronized (this) {
+                i = this.includes;
+                if (i == null)
+                    this.includes = i = new ArrayList<IncludeInfo>();
+            }
+        }
+        return i;
+    }
 
-	public void setDocumentations(List<DocumentationInfo> doc) {
-		this.documentations = doc;
-	}
+    public void setDocumentations(List<DocumentationInfo> doc) {
+        this.documentations = doc;
+    }
 
-	public void setIncludes(List<IncludeInfo> includes) {
-		this.includes = includes;
-	}
+    public void setIncludes(List<IncludeInfo> includes) {
+        this.includes = includes;
+    }
 
-	/**
-	 * Writes the current object as an XML element using the given SAX writer.
-	 * 
-	 * @param writer
-	 *            The SAX writer.
-	 * @throws SAXException
-	 */
-	public void writeElement(XmlWriter writer) throws SAXException {
-		writer.startElement("", "grammars");
+    /**
+     * Writes the current object as an XML element using the given SAX writer.
+     * 
+     * @param writer
+     *                The SAX writer.
+     * @throws SAXException
+     */
+    public void writeElement(XmlWriter writer) throws SAXException {
+        writer.startElement("", "grammars");
 
-		if (getDocumentations() != null) {
-			for (DocumentationInfo documentationInfo : getDocumentations()) {
-				documentationInfo.writeElement(writer);
-			}
-		}
-		if (getIncludes() != null) {
-			for (IncludeInfo includeInfo : getIncludes()) {
-				includeInfo.writeElement(writer);
-			}
-		}
+        if (getDocumentations() != null) {
+            for (DocumentationInfo documentationInfo : getDocumentations()) {
+                documentationInfo.writeElement(writer);
+            }
+        }
+        if (getIncludes() != null) {
+            for (IncludeInfo includeInfo : getIncludes()) {
+                includeInfo.writeElement(writer);
+            }
+        }
 
-		writer.endElement("", "grammars");
-	}
+        writer.endElement("", "grammars");
+    }
 }

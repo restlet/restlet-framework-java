@@ -31,113 +31,113 @@ import org.xml.sax.SAXException;
  */
 public class ResponseInfo {
 
-	private List<DocumentationInfo> documentations;
+    private List<DocumentationInfo> documentations;
 
-	private List<FaultInfo> faults;
+    private List<FaultInfo> faults;
 
-	private List<ParameterInfo> parameters;
+    private List<ParameterInfo> parameters;
 
-	private List<RepresentationInfo> representations;
+    private List<RepresentationInfo> representations;
 
-	public List<DocumentationInfo> getDocumentations() {
-		// Lazy initialization with double-check.
-		List<DocumentationInfo> d = this.documentations;
-		if (d == null) {
-			synchronized (this) {
-				d = this.documentations;
-				if (d == null)
-					this.documentations = d = new ArrayList<DocumentationInfo>();
-			}
-		}
-		return d;
-	}
+    public List<DocumentationInfo> getDocumentations() {
+        // Lazy initialization with double-check.
+        List<DocumentationInfo> d = this.documentations;
+        if (d == null) {
+            synchronized (this) {
+                d = this.documentations;
+                if (d == null)
+                    this.documentations = d = new ArrayList<DocumentationInfo>();
+            }
+        }
+        return d;
+    }
 
-	public List<FaultInfo> getFaults() {
-		// Lazy initialization with double-check.
-		List<FaultInfo> f = this.faults;
-		if (f == null) {
-			synchronized (this) {
-				f = this.faults;
-				if (f == null)
-					this.faults = f = new ArrayList<FaultInfo>();
-			}
-		}
-		return f;
-	}
+    public List<FaultInfo> getFaults() {
+        // Lazy initialization with double-check.
+        List<FaultInfo> f = this.faults;
+        if (f == null) {
+            synchronized (this) {
+                f = this.faults;
+                if (f == null)
+                    this.faults = f = new ArrayList<FaultInfo>();
+            }
+        }
+        return f;
+    }
 
-	public List<ParameterInfo> getParameters() {
-		// Lazy initialization with double-check.
-		List<ParameterInfo> p = this.parameters;
-		if (p == null) {
-			synchronized (this) {
-				p = this.parameters;
-				if (p == null)
-					this.parameters = p = new ArrayList<ParameterInfo>();
-			}
-		}
-		return p;
-	}
+    public List<ParameterInfo> getParameters() {
+        // Lazy initialization with double-check.
+        List<ParameterInfo> p = this.parameters;
+        if (p == null) {
+            synchronized (this) {
+                p = this.parameters;
+                if (p == null)
+                    this.parameters = p = new ArrayList<ParameterInfo>();
+            }
+        }
+        return p;
+    }
 
-	public List<RepresentationInfo> getRepresentations() {
-		// Lazy initialization with double-check.
-		List<RepresentationInfo> r = this.representations;
-		if (r == null) {
-			synchronized (this) {
-				r = this.representations;
-				if (r == null)
-					this.representations = r = new ArrayList<RepresentationInfo>();
-			}
-		}
-		return r;
-	}
+    public List<RepresentationInfo> getRepresentations() {
+        // Lazy initialization with double-check.
+        List<RepresentationInfo> r = this.representations;
+        if (r == null) {
+            synchronized (this) {
+                r = this.representations;
+                if (r == null)
+                    this.representations = r = new ArrayList<RepresentationInfo>();
+            }
+        }
+        return r;
+    }
 
-	public void setDocumentations(List<DocumentationInfo> doc) {
-		this.documentations = doc;
-	}
+    public void setDocumentations(List<DocumentationInfo> doc) {
+        this.documentations = doc;
+    }
 
-	public void setFaults(List<FaultInfo> faults) {
-		this.faults = faults;
-	}
+    public void setFaults(List<FaultInfo> faults) {
+        this.faults = faults;
+    }
 
-	public void setParameters(List<ParameterInfo> parameters) {
-		this.parameters = parameters;
-	}
+    public void setParameters(List<ParameterInfo> parameters) {
+        this.parameters = parameters;
+    }
 
-	public void setRepresentations(List<RepresentationInfo> representations) {
-		this.representations = representations;
-	}
+    public void setRepresentations(List<RepresentationInfo> representations) {
+        this.representations = representations;
+    }
 
-	/**
-	 * Writes the current object as an XML element using the given SAX writer.
-	 * 
-	 * @param writer
-	 *            The SAX writer.
-	 * @throws SAXException
-	 */
-	public void writeElement(XmlWriter writer) throws SAXException {
-		writer.startElement("", "response");
-		if (getDocumentations() != null) {
-			for (DocumentationInfo documentationInfo : getDocumentations()) {
-				documentationInfo.writeElement(writer);
-			}
-		}
-		if (getParameters() != null) {
-			for (ParameterInfo parameterInfo : getParameters()) {
-				parameterInfo.writeElement(writer);
-			}
-		}
-		if (getRepresentations() != null) {
-			for (RepresentationInfo representationInfo : getRepresentations()) {
-				representationInfo.writeElement(writer);
-			}
-		}
-		if (getFaults() != null) {
-			for (FaultInfo faultInfo : getFaults()) {
-				faultInfo.writeElement(writer);
-			}
-		}
-		writer.endElement("", "response");
+    /**
+     * Writes the current object as an XML element using the given SAX writer.
+     * 
+     * @param writer
+     *                The SAX writer.
+     * @throws SAXException
+     */
+    public void writeElement(XmlWriter writer) throws SAXException {
+        writer.startElement("", "response");
+        if (getDocumentations() != null) {
+            for (DocumentationInfo documentationInfo : getDocumentations()) {
+                documentationInfo.writeElement(writer);
+            }
+        }
+        if (getParameters() != null) {
+            for (ParameterInfo parameterInfo : getParameters()) {
+                parameterInfo.writeElement(writer);
+            }
+        }
+        if (getRepresentations() != null) {
+            for (RepresentationInfo representationInfo : getRepresentations()) {
+                representationInfo.writeElement(writer);
+            }
+        }
+        if (getFaults() != null) {
+            for (FaultInfo faultInfo : getFaults()) {
+                faultInfo.writeElement(writer);
+            }
+        }
+        writer.endElement("", "response");
 
-	}
+    }
 
 }

@@ -32,57 +32,57 @@ import org.xml.sax.helpers.AttributesImpl;
  */
 public class OptionInfo {
 
-	private List<DocumentationInfo> documentations;
+    private List<DocumentationInfo> documentations;
 
-	private String value;
+    private String value;
 
-	public List<DocumentationInfo> getDocumentations() {
-		// Lazy initialization with double-check.
-		List<DocumentationInfo> d = this.documentations;
-		if (d == null) {
-			synchronized (this) {
-				d = this.documentations;
-				if (d == null)
-					this.documentations = d = new ArrayList<DocumentationInfo>();
-			}
-		}
-		return d;
-	}
+    public List<DocumentationInfo> getDocumentations() {
+        // Lazy initialization with double-check.
+        List<DocumentationInfo> d = this.documentations;
+        if (d == null) {
+            synchronized (this) {
+                d = this.documentations;
+                if (d == null)
+                    this.documentations = d = new ArrayList<DocumentationInfo>();
+            }
+        }
+        return d;
+    }
 
-	public String getValue() {
-		return value;
-	}
+    public String getValue() {
+        return value;
+    }
 
-	public void setDocumentations(List<DocumentationInfo> doc) {
-		this.documentations = doc;
-	}
+    public void setDocumentations(List<DocumentationInfo> doc) {
+        this.documentations = doc;
+    }
 
-	public void setValue(String value) {
-		this.value = value;
-	}
+    public void setValue(String value) {
+        this.value = value;
+    }
 
-	/**
-	 * Writes the current object as an XML element using the given SAX writer.
-	 * 
-	 * @param writer
-	 *            The SAX writer.
-	 * @throws SAXException
-	 */
-	public void writeElement(XmlWriter writer) throws SAXException {
-		AttributesImpl attributes = new AttributesImpl();
-		if (getValue() != null && !getValue().equals("")) {
-			attributes.addAttribute("", "id", null, "xs:string", getValue());
-		}
+    /**
+     * Writes the current object as an XML element using the given SAX writer.
+     * 
+     * @param writer
+     *                The SAX writer.
+     * @throws SAXException
+     */
+    public void writeElement(XmlWriter writer) throws SAXException {
+        AttributesImpl attributes = new AttributesImpl();
+        if (getValue() != null && !getValue().equals("")) {
+            attributes.addAttribute("", "id", null, "xs:string", getValue());
+        }
 
-		writer.startElement("", "option", null, attributes);
+        writer.startElement("", "option", null, attributes);
 
-		if (getDocumentations() != null) {
-			for (DocumentationInfo documentationInfo : getDocumentations()) {
-				documentationInfo.writeElement(writer);
-			}
-		}
+        if (getDocumentations() != null) {
+            for (DocumentationInfo documentationInfo : getDocumentations()) {
+                documentationInfo.writeElement(writer);
+            }
+        }
 
-		writer.endElement("", "option");
-	}
+        writer.endElement("", "option");
+    }
 
 }

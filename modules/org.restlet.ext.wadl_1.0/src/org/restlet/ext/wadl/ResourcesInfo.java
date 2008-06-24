@@ -33,80 +33,80 @@ import org.xml.sax.helpers.AttributesImpl;
  */
 public class ResourcesInfo {
 
-	private Reference baseRef;
+    private Reference baseRef;
 
-	private List<DocumentationInfo> documentations;
+    private List<DocumentationInfo> documentations;
 
-	private List<ResourceInfo> resources;
+    private List<ResourceInfo> resources;
 
-	public Reference getBaseRef() {
-		return baseRef;
-	}
+    public Reference getBaseRef() {
+        return baseRef;
+    }
 
-	public List<DocumentationInfo> getDocumentations() {
-		// Lazy initialization with double-check.
-		List<DocumentationInfo> d = this.documentations;
-		if (d == null) {
-			synchronized (this) {
-				d = this.documentations;
-				if (d == null)
-					this.documentations = d = new ArrayList<DocumentationInfo>();
-			}
-		}
-		return d;
-	}
+    public List<DocumentationInfo> getDocumentations() {
+        // Lazy initialization with double-check.
+        List<DocumentationInfo> d = this.documentations;
+        if (d == null) {
+            synchronized (this) {
+                d = this.documentations;
+                if (d == null)
+                    this.documentations = d = new ArrayList<DocumentationInfo>();
+            }
+        }
+        return d;
+    }
 
-	public List<ResourceInfo> getResources() {
-		// Lazy initialization with double-check.
-		List<ResourceInfo> r = this.resources;
-		if (r == null) {
-			synchronized (this) {
-				r = this.resources;
-				if (r == null)
-					this.resources = r = new ArrayList<ResourceInfo>();
-			}
-		}
-		return r;
-	}
+    public List<ResourceInfo> getResources() {
+        // Lazy initialization with double-check.
+        List<ResourceInfo> r = this.resources;
+        if (r == null) {
+            synchronized (this) {
+                r = this.resources;
+                if (r == null)
+                    this.resources = r = new ArrayList<ResourceInfo>();
+            }
+        }
+        return r;
+    }
 
-	public void setBaseRef(Reference baseRef) {
-		this.baseRef = baseRef;
-	}
+    public void setBaseRef(Reference baseRef) {
+        this.baseRef = baseRef;
+    }
 
-	public void setDocumentations(List<DocumentationInfo> doc) {
-		this.documentations = doc;
-	}
+    public void setDocumentations(List<DocumentationInfo> doc) {
+        this.documentations = doc;
+    }
 
-	public void setResources(List<ResourceInfo> resources) {
-		this.resources = resources;
-	}
+    public void setResources(List<ResourceInfo> resources) {
+        this.resources = resources;
+    }
 
-	/**
-	 * Writes the current object as an XML element using the given SAX writer.
-	 * 
-	 * @param writer
-	 *            The SAX writer.
-	 * @throws SAXException
-	 */
-	public void writeElement(XmlWriter writer) throws SAXException {
-		AttributesImpl attributes = new AttributesImpl();
-		if (getBaseRef() != null) {
-			attributes.addAttribute("", "base", null, "xs:anyURI", getBaseRef()
-					.toString());
-		}
+    /**
+     * Writes the current object as an XML element using the given SAX writer.
+     * 
+     * @param writer
+     *                The SAX writer.
+     * @throws SAXException
+     */
+    public void writeElement(XmlWriter writer) throws SAXException {
+        AttributesImpl attributes = new AttributesImpl();
+        if (getBaseRef() != null) {
+            attributes.addAttribute("", "base", null, "xs:anyURI", getBaseRef()
+                    .toString());
+        }
 
-		writer.startElement("", "resources", null, attributes);
-		if (getDocumentations() != null) {
-			for (DocumentationInfo documentationInfo : getDocumentations()) {
-				documentationInfo.writeElement(writer);
-			}
-		}
-		if (getResources() != null) {
-			for (ResourceInfo resourceInfo : getResources()) {
-				resourceInfo.writeElement(writer);
-			}
-		}
-		writer.endElement("", "resources");
-	}
+        writer.startElement("", "resources", null, attributes);
+        if (getDocumentations() != null) {
+            for (DocumentationInfo documentationInfo : getDocumentations()) {
+                documentationInfo.writeElement(writer);
+            }
+        }
+        if (getResources() != null) {
+            for (ResourceInfo resourceInfo : getResources()) {
+                resourceInfo.writeElement(writer);
+            }
+        }
+        writer.endElement("", "resources");
+    }
 
 }

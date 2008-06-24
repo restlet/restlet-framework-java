@@ -33,57 +33,57 @@ import org.xml.sax.helpers.AttributesImpl;
  */
 public class IncludeInfo {
 
-	private List<DocumentationInfo> documentations;
+    private List<DocumentationInfo> documentations;
 
-	private Reference targetRef;
+    private Reference targetRef;
 
-	public List<DocumentationInfo> getDocumentations() {
-		// Lazy initialization with double-check.
-		List<DocumentationInfo> d = this.documentations;
-		if (d == null) {
-			synchronized (this) {
-				d = this.documentations;
-				if (d == null)
-					this.documentations = d = new ArrayList<DocumentationInfo>();
-			}
-		}
-		return d;
-	}
+    public List<DocumentationInfo> getDocumentations() {
+        // Lazy initialization with double-check.
+        List<DocumentationInfo> d = this.documentations;
+        if (d == null) {
+            synchronized (this) {
+                d = this.documentations;
+                if (d == null)
+                    this.documentations = d = new ArrayList<DocumentationInfo>();
+            }
+        }
+        return d;
+    }
 
-	public Reference getTargetRef() {
-		return targetRef;
-	}
+    public Reference getTargetRef() {
+        return targetRef;
+    }
 
-	public void setDocumentations(List<DocumentationInfo> doc) {
-		this.documentations = doc;
-	}
+    public void setDocumentations(List<DocumentationInfo> doc) {
+        this.documentations = doc;
+    }
 
-	public void setTargetRef(Reference href) {
-		this.targetRef = href;
-	}
+    public void setTargetRef(Reference href) {
+        this.targetRef = href;
+    }
 
-	/**
-	 * Writes the current object as an XML element using the given SAX writer.
-	 * 
-	 * @param writer
-	 *            The SAX writer.
-	 * @throws SAXException
-	 */
-	public void writeElement(XmlWriter writer) throws SAXException {
-		AttributesImpl attributes = new AttributesImpl();
-		if (getTargetRef() != null && getTargetRef().toString() != null) {
-			attributes.addAttribute("", "href", null, "xs:anyURI",
-					getTargetRef().toString());
-		}
+    /**
+     * Writes the current object as an XML element using the given SAX writer.
+     * 
+     * @param writer
+     *                The SAX writer.
+     * @throws SAXException
+     */
+    public void writeElement(XmlWriter writer) throws SAXException {
+        AttributesImpl attributes = new AttributesImpl();
+        if (getTargetRef() != null && getTargetRef().toString() != null) {
+            attributes.addAttribute("", "href", null, "xs:anyURI",
+                    getTargetRef().toString());
+        }
 
-		if (getDocumentations() != null && !getDocumentations().isEmpty()) {
-			writer.startElement("", "include", null, attributes);
-			for (DocumentationInfo documentationInfo : getDocumentations()) {
-				documentationInfo.writeElement(writer);
-			}
-			writer.endElement("", "include");
-		} else {
-			writer.emptyElement("", "include", null, attributes);
-		}
-	}
+        if (getDocumentations() != null && !getDocumentations().isEmpty()) {
+            writer.startElement("", "include", null, attributes);
+            for (DocumentationInfo documentationInfo : getDocumentations()) {
+                documentationInfo.writeElement(writer);
+            }
+            writer.endElement("", "include");
+        } else {
+            writer.emptyElement("", "include", null, attributes);
+        }
+    }
 }

@@ -31,75 +31,75 @@ import org.xml.sax.helpers.AttributesImpl;
  */
 public class DocumentationInfo {
 
-	private Language language;
+    private Language language;
 
-	private String textContent;
+    private String textContent;
 
-	private String title;
+    private String title;
 
-	private Element xmlContent;
+    private Element xmlContent;
 
-	public Language getLanguage() {
-		return language;
-	}
+    public Language getLanguage() {
+        return language;
+    }
 
-	public String getTextContent() {
-		return textContent;
-	}
+    public String getTextContent() {
+        return textContent;
+    }
 
-	public String getTitle() {
-		return title;
-	}
+    public String getTitle() {
+        return title;
+    }
 
-	public Element getXmlContent() {
-		return xmlContent;
-	}
+    public Element getXmlContent() {
+        return xmlContent;
+    }
 
-	public void setLanguage(Language language) {
-		this.language = language;
-	}
+    public void setLanguage(Language language) {
+        this.language = language;
+    }
 
-	public void setTextContent(String textContent) {
-		this.textContent = textContent;
-	}
+    public void setTextContent(String textContent) {
+        this.textContent = textContent;
+    }
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-	public void setXmlContent(Element xmlContent) {
-		this.xmlContent = xmlContent;
-	}
+    public void setXmlContent(Element xmlContent) {
+        this.xmlContent = xmlContent;
+    }
 
-	/**
-	 * Writes the current object as an XML element using the given SAX writer.
-	 * 
-	 * @param writer
-	 *            The SAX writer.
-	 * @throws SAXException
-	 */
-	public void writeElement(XmlWriter writer) throws SAXException {
-		AttributesImpl attributes = new AttributesImpl();
-		if (getTitle() != null && !getTitle().equals("")) {
-			attributes.addAttribute("", "title", null, "xs:string", getTitle());
-		}
-		if (getLanguage() != null && getLanguage().toString() != null) {
-			attributes.addAttribute("", "xml:lang", null, "xs:string",
-					getLanguage().toString());
-		}
+    /**
+     * Writes the current object as an XML element using the given SAX writer.
+     * 
+     * @param writer
+     *                The SAX writer.
+     * @throws SAXException
+     */
+    public void writeElement(XmlWriter writer) throws SAXException {
+        AttributesImpl attributes = new AttributesImpl();
+        if (getTitle() != null && !getTitle().equals("")) {
+            attributes.addAttribute("", "title", null, "xs:string", getTitle());
+        }
+        if (getLanguage() != null && getLanguage().toString() != null) {
+            attributes.addAttribute("", "xml:lang", null, "xs:string",
+                    getLanguage().toString());
+        }
 
-		if ((getTextContent() == null || getTextContent().equals(""))
-				&& getXmlContent() == null) {
-			writer.emptyElement("", "doc", null, attributes);
-		} else {
+        if ((getTextContent() == null || getTextContent().equals(""))
+                && getXmlContent() == null) {
+            writer.emptyElement("", "doc", null, attributes);
+        } else {
 
-			if (getXmlContent() != null) {
-				// TODO what do we do?
-			} else {
-				writer.dataElement("", "doc", null, attributes,
-						getTextContent());
-			}
-		}
-	}
+            if (getXmlContent() != null) {
+                // TODO what do we do?
+            } else {
+                writer.dataElement("", "doc", null, attributes,
+                        getTextContent());
+            }
+        }
+    }
 
 }

@@ -33,89 +33,89 @@ import org.xml.sax.helpers.AttributesImpl;
  */
 public class LinkInfo {
 
-	private List<DocumentationInfo> documentations;
+    private List<DocumentationInfo> documentations;
 
-	private String relationship;
+    private String relationship;
 
-	private Reference resourceType;
+    private Reference resourceType;
 
-	private String reverseRelationship;
+    private String reverseRelationship;
 
-	public List<DocumentationInfo> getDocumentations() {
-		// Lazy initialization with double-check.
-		List<DocumentationInfo> d = this.documentations;
-		if (d == null) {
-			synchronized (this) {
-				d = this.documentations;
-				if (d == null)
-					this.documentations = d = new ArrayList<DocumentationInfo>();
-			}
-		}
-		return d;
-	}
+    public List<DocumentationInfo> getDocumentations() {
+        // Lazy initialization with double-check.
+        List<DocumentationInfo> d = this.documentations;
+        if (d == null) {
+            synchronized (this) {
+                d = this.documentations;
+                if (d == null)
+                    this.documentations = d = new ArrayList<DocumentationInfo>();
+            }
+        }
+        return d;
+    }
 
-	public String getRelationship() {
-		return relationship;
-	}
+    public String getRelationship() {
+        return relationship;
+    }
 
-	public Reference getResourceType() {
-		return resourceType;
-	}
+    public Reference getResourceType() {
+        return resourceType;
+    }
 
-	public String getReverseRelationship() {
-		return reverseRelationship;
-	}
+    public String getReverseRelationship() {
+        return reverseRelationship;
+    }
 
-	public void setDocumentations(List<DocumentationInfo> doc) {
-		this.documentations = doc;
-	}
+    public void setDocumentations(List<DocumentationInfo> doc) {
+        this.documentations = doc;
+    }
 
-	public void setRelationship(String relationship) {
-		this.relationship = relationship;
-	}
+    public void setRelationship(String relationship) {
+        this.relationship = relationship;
+    }
 
-	public void setResourceType(Reference resourceType) {
-		this.resourceType = resourceType;
-	}
+    public void setResourceType(Reference resourceType) {
+        this.resourceType = resourceType;
+    }
 
-	public void setReverseRelationship(String reverseRelationship) {
-		this.reverseRelationship = reverseRelationship;
-	}
+    public void setReverseRelationship(String reverseRelationship) {
+        this.reverseRelationship = reverseRelationship;
+    }
 
-	/**
-	 * Writes the current object as an XML element using the given SAX writer.
-	 * 
-	 * @param writer
-	 *            The SAX writer.
-	 * @throws SAXException
-	 */
-	public void writeElement(XmlWriter writer) throws SAXException {
-		AttributesImpl attributes = new AttributesImpl();
-		if (getRelationship() != null && !getRelationship().equals("")) {
-			attributes.addAttribute("", "rel", null, "xs:token",
-					getRelationship());
-		}
-		if (getReverseRelationship() != null
-				&& !getReverseRelationship().equals("")) {
-			attributes.addAttribute("", "rev", null, "xs:token",
-					getReverseRelationship());
-		}
+    /**
+     * Writes the current object as an XML element using the given SAX writer.
+     * 
+     * @param writer
+     *                The SAX writer.
+     * @throws SAXException
+     */
+    public void writeElement(XmlWriter writer) throws SAXException {
+        AttributesImpl attributes = new AttributesImpl();
+        if (getRelationship() != null && !getRelationship().equals("")) {
+            attributes.addAttribute("", "rel", null, "xs:token",
+                    getRelationship());
+        }
+        if (getReverseRelationship() != null
+                && !getReverseRelationship().equals("")) {
+            attributes.addAttribute("", "rev", null, "xs:token",
+                    getReverseRelationship());
+        }
 
-		// TODO Prise en compte de ResourceType. Comme attribut?
-		if (getResourceType() != null && getResourceType().toString() != null) {
-			attributes.addAttribute("", "resource_type", null, "xs:anyURI",
-					getResourceType().toString());
-		}
+        // TODO Prise en compte de ResourceType. Comme attribut?
+        if (getResourceType() != null && getResourceType().toString() != null) {
+            attributes.addAttribute("", "resource_type", null, "xs:anyURI",
+                    getResourceType().toString());
+        }
 
-		writer.startElement("", "link", null, attributes);
+        writer.startElement("", "link", null, attributes);
 
-		if (getDocumentations() != null) {
-			for (DocumentationInfo documentationInfo : getDocumentations()) {
-				documentationInfo.writeElement(writer);
-			}
-		}
+        if (getDocumentations() != null) {
+            for (DocumentationInfo documentationInfo : getDocumentations()) {
+                documentationInfo.writeElement(writer);
+            }
+        }
 
-		writer.endElement("link");
-	}
+        writer.endElement("link");
+    }
 
 }
