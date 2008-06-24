@@ -28,7 +28,9 @@ Changes log
        	  and on Resource class. Suggested by Bruno Harbulot.
     - NRE and Extension Enhancements
         - Added a static HttpServletRequest getRequest(Request) method
-          to the Servlet extension.        
+          to the Servlet extension.
+        - DirectoryResource now exposes isDirectoryTarget() and 
+          isFileTarget() methods. Suggested by Jean-Yves Cronier.        
     - Misc
         - Refactored WAR client to remove remaining class in NRE core.
         - Updated GWT JAR to 1.5 RC1

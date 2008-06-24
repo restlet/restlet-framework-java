@@ -50,34 +50,29 @@ import org.restlet.resource.Variant;
  * @see <a
  *      href="http://httpd.apache.org/docs/2.0/content-negotiation.html">Apache
  *      mod_negotiation module</a>
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  * @author Thierry Boileau
  */
 public class DirectoryResource extends Resource {
 
-    /** The parent directory handler. */
-    private Directory directory;
+    /**
+     * Returns the set of extensions contained in a given directory entry name.
+     * 
+     * @param entryName
+     *                The directory entry name.
+     * @return The set of extensions.
+     */
+    public static Set<String> getExtensions(String entryName) {
+        Set<String> result = new TreeSet<String>();
+        String[] tokens = entryName.split("\\.");
+        for (int i = 1; i < tokens.length; i++) {
+            result.add(tokens[i].toLowerCase());
+        }
+        return result;
+    }
 
-    /** The resource path relative to the directory URI. */
-    private String relativePart;
-
-    /** The context's target URI (file, clap URI). */
-    private String targetUri;
-
-    /** Indicates if the target resource is a directory. */
-    private boolean targetDirectory;
-
-    /** Indicates if the target resource is a file. */
-    private boolean targetFile;
-
-    /** Indicates if the target resource is a directory with an index. */
-    private boolean targetIndex;
-
-    /** The context's directory URI (file, clap URI). */
-    private String directoryUri;
-
-    /** The original target URI, in cas of extensions tunneling. */
-    private Reference originalRef;
+    /** The base set of extensions. */
+    private Set<String> baseExtensions;
 
     /**
      * The local base name of the resource. For example, "foo.en" and
@@ -85,23 +80,44 @@ public class DirectoryResource extends Resource {
      */
     private String baseName;
 
-    /** The base set of extensions. */
-    private Set<String> baseExtensions;
-
-    /** The unique representation of the target URI, if it exists. */
-    private Reference uniqueReference;
+    /** The parent directory handler. */
+    private Directory directory;
 
     /** If the resource is a directory, this contains its content. */
     private ReferenceList directoryContent;
-
-    /** If the resource is a file, this contains its content. */
-    private Representation fileContent;
 
     /**
      * If the resource is a directory, the non-trailing slash caracter leads to
      * redirection.
      */
     private boolean directoryRedirection;
+
+    /** Indicates if the target resource is a directory. */
+    private boolean directoryTarget;
+
+    /** The context's directory URI (file, clap URI). */
+    private String directoryUri;
+
+    /** If the resource is a file, this contains its content. */
+    private Representation fileContent;
+
+    /** Indicates if the target resource is a file. */
+    private boolean fileTarget;
+
+    /** Indicates if the target resource is a directory with an index. */
+    private boolean indexTarget;
+
+    /** The original target URI, in cas of extensions tunneling. */
+    private Reference originalRef;
+
+    /** The resource path relative to the directory URI. */
+    private String relativePart;
+
+    /** The context's target URI (file, clap URI). */
+    private String targetUri;
+
+    /** The unique representation of the target URI, if it exists. */
+    private Reference uniqueReference;
 
     /**
      * This constructor aims at answering the following questions:<br>
@@ -173,8 +189,8 @@ public class DirectoryResource extends Resource {
             // when handling directories
             if (MediaType.TEXT_URI_LIST.equals(contextResponse.getEntity()
                     .getMediaType())) {
-                this.targetDirectory = true;
-                this.targetFile = false;
+                this.directoryTarget = true;
+                this.fileTarget = false;
                 this.directoryContent = new ReferenceList(contextResponse
                         .getEntity());
                 if (!request.getResourceRef().getIdentifier().endsWith("/")) {
@@ -193,7 +209,7 @@ public class DirectoryResource extends Resource {
                     this.directoryUri = this.targetUri;
                     this.baseName = getDirectory().getIndexName();
                     this.targetUri = this.directoryUri + this.baseName;
-                    this.targetIndex = true;
+                    this.indexTarget = true;
                 } else {
                     this.directoryUri = this.targetUri;
                     this.baseName = null;
@@ -201,13 +217,13 @@ public class DirectoryResource extends Resource {
             } else {
                 // Allows underlying helpers that do not support "content
                 // negotiation" to return the targetted file.
-                this.targetDirectory = false;
-                this.targetFile = true;
+                this.directoryTarget = false;
+                this.fileTarget = true;
                 this.fileContent = contextResponse.getEntity();
             }
         } else {
-            this.targetDirectory = false;
-            this.targetFile = false;
+            this.directoryTarget = false;
+            this.fileTarget = false;
 
             // Let's try with the facultative index, in case the underlying
             // client connector does not handle directory listing.
@@ -221,11 +237,11 @@ public class DirectoryResource extends Resource {
                     this.targetUri = this.directoryUri + this.baseName;
                     contextResponse = getClientDispatcher().get(this.targetUri);
                     if (contextResponse.getEntity() != null) {
-                        this.targetDirectory = true;
+                        this.directoryTarget = true;
                         this.directoryContent = new ReferenceList();
                         this.directoryContent
                                 .add(new Reference(this.targetUri));
-                        this.targetIndex = true;
+                        this.indexTarget = true;
                     }
                 }
             } else {
@@ -241,12 +257,12 @@ public class DirectoryResource extends Resource {
                         this.directoryUri = this.targetUri + "/";
                         this.baseName = getDirectory().getIndexName();
                         this.targetUri = this.directoryUri + this.baseName;
-                        this.targetDirectory = true;
+                        this.directoryTarget = true;
                         this.directoryRedirection = true;
                         this.directoryContent = new ReferenceList();
                         this.directoryContent
                                 .add(new Reference(this.targetUri));
-                        this.targetIndex = true;
+                        this.indexTarget = true;
                     }
                 }
             }
@@ -254,7 +270,7 @@ public class DirectoryResource extends Resource {
 
         // In case the request does not target a directory and the file has not
         // been found, try with the tunnelled URI
-        if (isNegotiateContent() && !targetDirectory && !targetFile
+        if (isNegotiateContent() && !directoryTarget && !fileTarget
                 && originalRef != null) {
             this.relativePart = request.getResourceRef().getRemainingPart();
 
@@ -271,7 +287,7 @@ public class DirectoryResource extends Resource {
 
         // Try to get the directory content, in case the request does not target
         // a directory
-        if (!this.targetDirectory) {
+        if (!this.directoryTarget) {
             int lastSlashIndex = targetUri.lastIndexOf('/');
             if (lastSlashIndex == -1) {
                 this.directoryUri = "";
@@ -314,92 +330,6 @@ public class DirectoryResource extends Resource {
         getLogger().info("Converted base name : " + this.baseName);
     }
 
-    @Override
-    public void handleGet() {
-        if (directoryRedirection && !targetIndex) {
-            // If this request targets a directory and if the target URI does
-            // not end with a trailing "/", the client is told to redirect to a
-            // correct URI.
-
-            // Restore the cut extensions in case the call has been tunnelled.
-            if (originalRef != null) {
-                getResponse().redirectPermanent(
-                        originalRef.getIdentifier() + "/");
-            } else {
-                getResponse().redirectPermanent(
-                        getRequest().getResourceRef().getIdentifier() + "/");
-            }
-        } else {
-            super.handleGet();
-        }
-    }
-
-    @Override
-    public void removeRepresentations() throws ResourceException {
-        if (directoryRedirection && !targetIndex) {
-            if (originalRef != null) {
-                getResponse().redirectSeeOther(
-                        originalRef.getIdentifier() + "/");
-            } else {
-                getResponse().redirectSeeOther(
-                        getRequest().getResourceRef().getIdentifier() + "/");
-            }
-        } else {
-            Request contextRequest = new Request(Method.DELETE, this.targetUri);
-            Response contextResponse = new Response(contextRequest);
-
-            if (targetDirectory && !targetIndex) {
-                contextRequest.setResourceRef(this.targetUri);
-                getClientDispatcher().handle(contextRequest, contextResponse);
-            } else {
-                // Check if there is only one representation
-
-                // Try to get the unique representation of the resource
-                ReferenceList references = getVariantsReferences();
-                if (!references.isEmpty()) {
-                    if (uniqueReference != null) {
-                        contextRequest.setResourceRef(uniqueReference);
-                        getClientDispatcher().handle(contextRequest,
-                                contextResponse);
-                    } else {
-                        // We found variants, but not the right one
-                        contextResponse
-                                .setStatus(new Status(
-                                        Status.CLIENT_ERROR_NOT_ACCEPTABLE,
-                                        "Unable to process properly the request. Several variants exist but none of them suits precisely. "));
-                    }
-                } else {
-                    contextResponse.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
-                }
-            }
-
-            getResponse().setStatus(contextResponse.getStatus());
-        }
-    }
-
-    @Override
-    public void storeRepresentation(Representation entity)
-            throws ResourceException {
-        if (directoryRedirection && !targetIndex) {
-            if (originalRef != null) {
-                getResponse().redirectSeeOther(
-                        originalRef.getIdentifier() + "/");
-            } else {
-                getResponse().redirectSeeOther(
-                        getRequest().getResourceRef().getIdentifier() + "/");
-            }
-        } else {
-            // We allow the transfer of the PUT calls only if the readOnly flag
-            // is not set
-            Request contextRequest = new Request(Method.PUT, this.targetUri);
-            contextRequest.setEntity(entity);
-            Response contextResponse = new Response(contextRequest);
-            contextRequest.setResourceRef(this.targetUri);
-            getClientDispatcher().handle(contextRequest, contextResponse);
-            getResponse().setStatus(contextResponse.getStatus());
-        }
-    }
-
     /**
      * Returns the local base name of the file. For example, "foo.en" and
      * "foo.en-GB.html" return "foo".
@@ -408,6 +338,15 @@ public class DirectoryResource extends Resource {
      */
     public String getBaseName() {
         return this.baseName;
+    }
+
+    /**
+     * Returns a client dispatcher.
+     * 
+     * @return A client dispatcher.
+     */
+    private Uniform getClientDispatcher() {
+        return getDirectory().getContext().getClientDispatcher();
     }
 
     /**
@@ -429,12 +368,34 @@ public class DirectoryResource extends Resource {
     }
 
     /**
-     * Returns a client dispatcher.
+     * Allows to sort the list of representations set by the resource.
      * 
-     * @return A client dispatcher.
+     * @return A Comparator instance imposing a sort order of representations or
+     *         null if no special order is wanted.
      */
-    private Uniform getClientDispatcher() {
-        return getDirectory().getContext().getClientDispatcher();
+    private Comparator<Representation> getRepresentationsComparator() {
+        // Sort the list of representations by their identifier.
+        Comparator<Representation> identifiersComparator = new Comparator<Representation>() {
+            public int compare(Representation rep0, Representation rep1) {
+                boolean bRep0Null = (rep0.getIdentifier() == null);
+                boolean bRep1Null = (rep1.getIdentifier() == null);
+
+                if (bRep0Null && bRep1Null) {
+                    return 0;
+                }
+                if (bRep0Null) {
+                    return -1;
+                }
+
+                if (bRep1Null) {
+                    return 1;
+                }
+
+                return rep0.getIdentifier().getLastSegment().compareTo(
+                        rep1.getIdentifier().getLastSegment());
+            }
+        };
+        return identifiersComparator;
     }
 
     /**
@@ -505,7 +466,7 @@ public class DirectoryResource extends Resource {
             results.addAll(resultSet);
 
             if (resultSet.isEmpty()) {
-                if (this.targetDirectory && getDirectory().isListingAllowed()) {
+                if (this.directoryTarget && getDirectory().isListingAllowed()) {
                     ReferenceList userList = new ReferenceList(
                             this.directoryContent.size());
                     // Set the list identifier
@@ -535,42 +496,11 @@ public class DirectoryResource extends Resource {
 
                 }
             }
-        } else if (this.targetFile && (this.fileContent != null)) {
+        } else if (this.fileTarget && (this.fileContent != null)) {
             results.add(this.fileContent);
         }
 
         return results;
-    }
-
-    /**
-     * Allows to sort the list of representations set by the resource.
-     * 
-     * @return A Comparator instance imposing a sort order of representations or
-     *         null if no special order is wanted.
-     */
-    private Comparator<Representation> getRepresentationsComparator() {
-        // Sort the list of representations by their identifier.
-        Comparator<Representation> identifiersComparator = new Comparator<Representation>() {
-            public int compare(Representation rep0, Representation rep1) {
-                boolean bRep0Null = (rep0.getIdentifier() == null);
-                boolean bRep1Null = (rep1.getIdentifier() == null);
-
-                if (bRep0Null && bRep1Null) {
-                    return 0;
-                }
-                if (bRep0Null) {
-                    return -1;
-                }
-
-                if (bRep1Null) {
-                    return 1;
-                }
-
-                return rep0.getIdentifier().getLastSegment().compareTo(
-                        rep1.getIdentifier().getLastSegment());
-            }
-        };
-        return identifiersComparator;
     }
 
     /**
@@ -651,20 +581,85 @@ public class DirectoryResource extends Resource {
         return result;
     }
 
-    /**
-     * Returns the set of extensions contained in a given directory entry name.
-     * 
-     * @param entryName
-     *                The directory entry name.
-     * @return The set of extensions.
-     */
-    public static Set<String> getExtensions(String entryName) {
-        Set<String> result = new TreeSet<String>();
-        String[] tokens = entryName.split("\\.");
-        for (int i = 1; i < tokens.length; i++) {
-            result.add(tokens[i].toLowerCase());
+    @Override
+    public void handleGet() {
+        if (directoryRedirection && !indexTarget) {
+            // If this request targets a directory and if the target URI does
+            // not end with a trailing "/", the client is told to redirect to a
+            // correct URI.
+
+            // Restore the cut extensions in case the call has been tunnelled.
+            if (originalRef != null) {
+                getResponse().redirectPermanent(
+                        originalRef.getIdentifier() + "/");
+            } else {
+                getResponse().redirectPermanent(
+                        getRequest().getResourceRef().getIdentifier() + "/");
+            }
+        } else {
+            super.handleGet();
         }
-        return result;
+    }
+
+    /**
+     * Indicates if the target resource is a directory.
+     * 
+     * @return True if the target resource is a directory.
+     */
+    public boolean isDirectoryTarget() {
+        return directoryTarget;
+    }
+
+    /**
+     * Indicates if the target resource is a file.
+     * 
+     * @return True if the target resource is a file.
+     */
+    public boolean isFileTarget() {
+        return fileTarget;
+    }
+
+    @Override
+    public void removeRepresentations() throws ResourceException {
+        if (directoryRedirection && !indexTarget) {
+            if (originalRef != null) {
+                getResponse().redirectSeeOther(
+                        originalRef.getIdentifier() + "/");
+            } else {
+                getResponse().redirectSeeOther(
+                        getRequest().getResourceRef().getIdentifier() + "/");
+            }
+        } else {
+            Request contextRequest = new Request(Method.DELETE, this.targetUri);
+            Response contextResponse = new Response(contextRequest);
+
+            if (directoryTarget && !indexTarget) {
+                contextRequest.setResourceRef(this.targetUri);
+                getClientDispatcher().handle(contextRequest, contextResponse);
+            } else {
+                // Check if there is only one representation
+
+                // Try to get the unique representation of the resource
+                ReferenceList references = getVariantsReferences();
+                if (!references.isEmpty()) {
+                    if (uniqueReference != null) {
+                        contextRequest.setResourceRef(uniqueReference);
+                        getClientDispatcher().handle(contextRequest,
+                                contextResponse);
+                    } else {
+                        // We found variants, but not the right one
+                        contextResponse
+                                .setStatus(new Status(
+                                        Status.CLIENT_ERROR_NOT_ACCEPTABLE,
+                                        "Unable to process properly the request. Several variants exist but none of them suits precisely. "));
+                    }
+                } else {
+                    contextResponse.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+                }
+            }
+
+            getResponse().setStatus(contextResponse.getStatus());
+        }
     }
 
     /**
@@ -675,5 +670,28 @@ public class DirectoryResource extends Resource {
      */
     public void setTargetUri(String targetUri) {
         this.targetUri = targetUri;
+    }
+
+    @Override
+    public void storeRepresentation(Representation entity)
+            throws ResourceException {
+        if (directoryRedirection && !indexTarget) {
+            if (originalRef != null) {
+                getResponse().redirectSeeOther(
+                        originalRef.getIdentifier() + "/");
+            } else {
+                getResponse().redirectSeeOther(
+                        getRequest().getResourceRef().getIdentifier() + "/");
+            }
+        } else {
+            // We allow the transfer of the PUT calls only if the readOnly flag
+            // is not set
+            Request contextRequest = new Request(Method.PUT, this.targetUri);
+            contextRequest.setEntity(entity);
+            Response contextResponse = new Response(contextRequest);
+            contextRequest.setResourceRef(this.targetUri);
+            getClientDispatcher().handle(contextRequest, contextResponse);
+            getResponse().setStatus(contextResponse.getStatus());
+        }
     }
 }
