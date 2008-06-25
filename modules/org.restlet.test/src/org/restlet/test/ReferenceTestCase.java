@@ -449,32 +449,34 @@ public class ReferenceTestCase extends RestletTestCase {
         ref.setSchemeSpecificPart(part);
         assertEquals(part, ref.getSchemeSpecificPart());
     }
-    
-    public void testUserinfo() {
+
+    public void testUserInfo() {
         Reference reference = new Reference("http://localhost:81");
         // This format is deprecated, however we may prevent failures.
         reference.setUserInfo("login:password");
         assertEquals("login:password@localhost:81", reference.getAuthority());
         assertEquals("localhost", reference.getHostDomain());
-        assertEquals("81", reference.getHostPort());
+        assertEquals(81, reference.getHostPort());
         assertEquals("login:password", reference.getUserInfo());
 
         reference.setHostDomain("www.example.com");
-        assertEquals("login:password@www.example.com.com:81", reference.getAuthority());
-        assertEquals("localhost", reference.getHostDomain());
-        assertEquals("81", reference.getHostPort());
+        assertEquals("login:password@www.example.com:81", reference
+                .getAuthority());
+        assertEquals("www.example.com", reference.getHostDomain());
+        assertEquals(81, reference.getHostPort());
         assertEquals("login:password", reference.getUserInfo());
-        
+
         reference.setHostPort(82);
-        assertEquals("login:password@www.example.com.com:82", reference.getAuthority());
-        assertEquals("localhost", reference.getHostDomain());
-        assertEquals("82", reference.getHostPort());
+        assertEquals("login:password@www.example.com:82", reference
+                .getAuthority());
+        assertEquals("www.example.com", reference.getHostDomain());
+        assertEquals(82, reference.getHostPort());
         assertEquals("login:password", reference.getUserInfo());
-        
+
         reference.setUserInfo("login");
-        assertEquals("login@www.example.com.com:82", reference.getAuthority());
-        assertEquals("localhost", reference.getHostDomain());
-        assertEquals("82", reference.getHostPort());
+        assertEquals("login@www.example.com:82", reference.getAuthority());
+        assertEquals("www.example.com", reference.getHostDomain());
+        assertEquals(82, reference.getHostPort());
         assertEquals("login", reference.getUserInfo());
     }
 
