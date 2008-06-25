@@ -39,18 +39,31 @@ public class RepresentationInfo {
     /** Doc elements used to document that element. */
     private List<DocumentationInfo> documentations;
 
+    /** Identifier for that element. */
     private String identifier;
 
+    /** Media type of that element. */
     private MediaType mediaType;
 
+    /** List of parameters. */
     private List<ParameterInfo> parameters;
 
+    /** List of locations of one or more meta data profiles. */
     private List<Reference> profiles;
 
+    /**
+     * List of statuses associated with this response representation.
+     */
     private List<Status> statuses;
 
+    /** Qualified name of the root element for this XML-based representation. */
     private String xmlElement;
 
+    /**
+     * Returns the list of documentation elements.
+     * 
+     * @return The list of documentation elements.
+     */
     public List<DocumentationInfo> getDocumentations() {
         // Lazy initialization with double-check.
         List<DocumentationInfo> d = this.documentations;
@@ -64,14 +77,29 @@ public class RepresentationInfo {
         return d;
     }
 
+    /**
+     * Returns the identifier for that element.
+     * 
+     * @return The identifier for that element.
+     */
     public String getIdentifier() {
         return identifier;
     }
 
+    /**
+     * Returns the media type of that element.
+     * 
+     * @return The media type of that element.
+     */
     public MediaType getMediaType() {
         return mediaType;
     }
 
+    /**
+     * Returns the list of parameters.
+     * 
+     * @return The list of parameters.
+     */
     public List<ParameterInfo> getParameters() {
         // Lazy initialization with double-check.
         List<ParameterInfo> p = this.parameters;
@@ -85,6 +113,11 @@ public class RepresentationInfo {
         return p;
     }
 
+    /**
+     * Returns the list of locations of one or more meta data profiles.
+     * 
+     * @return The list of locations of one or more meta data profiles.
+     */
     public List<Reference> getProfiles() {
         // Lazy initialization with double-check.
         List<Reference> p = this.profiles;
@@ -98,6 +131,13 @@ public class RepresentationInfo {
         return p;
     }
 
+    /**
+     * Returns the list of statuses associated with this response
+     * representation.
+     * 
+     * @return The list of statuses associated with this response
+     *         representation.
+     */
     public List<Status> getStatuses() {
         // Lazy initialization with double-check.
         List<Status> s = this.statuses;
@@ -111,34 +151,86 @@ public class RepresentationInfo {
         return s;
     }
 
+    /**
+     * Returns the qualified name of the root element for this XML-based
+     * representation.
+     * 
+     * @return The qualified name of the root element for this XML-based
+     *         representation.
+     */
     public String getXmlElement() {
         return xmlElement;
     }
 
+    /**
+     * Sets t
+     * 
+     * @param doc
+     *                T
+     */
     public void setDocumentations(List<DocumentationInfo> doc) {
         this.documentations = doc;
     }
 
+    /**
+     * Sets the identifier for that element.
+     * 
+     * @param identifier
+     *                The identifier for that element.
+     */
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
     }
 
+    /**
+     * Sets the media type of that element.
+     * 
+     * @param doc
+     *                The media type of that element.
+     */
     public void setMediaType(MediaType mediaType) {
         this.mediaType = mediaType;
     }
 
+    /**
+     * Sets the list of parameters.
+     * 
+     * @param doc
+     *                The list of parameters.
+     */
     public void setParameters(List<ParameterInfo> parameters) {
         this.parameters = parameters;
     }
 
+    /**
+     * Sets the list of locations of one or more meta data profiles.
+     * 
+     * @param doc
+     *                The list of locations of one or more meta data profiles.
+     */
     public void setProfiles(List<Reference> profiles) {
         this.profiles = profiles;
     }
 
+    /**
+     * Sets the list of statuses associated with this response representation.
+     * 
+     * @param doc
+     *                The list of statuses associated with this response
+     *                representation.
+     */
     public void setStatuses(List<Status> statuses) {
         this.statuses = statuses;
     }
 
+    /**
+     * Sets the qualified name of the root element for this XML-based
+     * representation.
+     * 
+     * @param doc
+     *                The qualified name of the root element for this XML-based
+     *                representation.
+     */
     public void setXmlElement(String xmlElement) {
         this.xmlElement = xmlElement;
     }

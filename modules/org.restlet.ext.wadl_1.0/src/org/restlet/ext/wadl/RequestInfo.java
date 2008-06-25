@@ -34,10 +34,17 @@ public class RequestInfo {
     /** Doc elements used to document that element. */
     private List<DocumentationInfo> documentations;
 
+    /** List of parameters. */
     private List<ParameterInfo> parameters;
 
+    /** List of supported input representations. */
     private List<RepresentationInfo> representations;
 
+    /**
+     * Returns the list of documentation elements.
+     * 
+     * @return The list of documentation elements.
+     */
     public List<DocumentationInfo> getDocumentations() {
         // Lazy initialization with double-check.
         List<DocumentationInfo> d = this.documentations;
@@ -51,6 +58,11 @@ public class RequestInfo {
         return d;
     }
 
+    /**
+     * Returns the list of parameters.
+     * 
+     * @return The list of parameters.
+     */
     public List<ParameterInfo> getParameters() {
         // Lazy initialization with double-check.
         List<ParameterInfo> p = this.parameters;
@@ -64,6 +76,11 @@ public class RequestInfo {
         return p;
     }
 
+    /**
+     * Returns the list of supported input representations.
+     * 
+     * @return The list of supported input representations.
+     */
     public List<RepresentationInfo> getRepresentations() {
         // Lazy initialization with double-check.
         List<RepresentationInfo> r = this.representations;
@@ -77,14 +94,32 @@ public class RequestInfo {
         return r;
     }
 
+    /**
+     * Sets the list of documentation elements.
+     * 
+     * @param doc
+     *                The list of documentation elements.
+     */
     public void setDocumentations(List<DocumentationInfo> doc) {
         this.documentations = doc;
     }
 
+    /**
+     * Sets the list of parameters.
+     * 
+     * @param parameters
+     *                The list of parameters.
+     */
     public void setParameters(List<ParameterInfo> parameters) {
         this.parameters = parameters;
     }
 
+    /**
+     * Sets the list of supported input representations.
+     * 
+     * @param representations
+     *                The list of supported input representations.
+     */
     public void setRepresentations(List<RepresentationInfo> representations) {
         this.representations = representations;
     }
