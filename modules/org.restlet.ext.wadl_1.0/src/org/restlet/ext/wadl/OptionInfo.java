@@ -35,8 +35,14 @@ public class OptionInfo {
     /** Doc elements used to document that element. */
     private List<DocumentationInfo> documentations;
 
+    /** Value of this option element. */
     private String value;
 
+    /**
+     * Returns the list of documentation elements.
+     * 
+     * @return The list of documentation elements.
+     */
     public List<DocumentationInfo> getDocumentations() {
         // Lazy initialization with double-check.
         List<DocumentationInfo> d = this.documentations;
@@ -50,14 +56,31 @@ public class OptionInfo {
         return d;
     }
 
+    /**
+     * Returns the value of this option element.
+     * 
+     * @return The value of this option element.
+     */
     public String getValue() {
         return value;
     }
 
+    /**
+     * Sets the list of documentation elements.
+     * 
+     * @param doc
+     *                The list of documentation elements.
+     */
     public void setDocumentations(List<DocumentationInfo> doc) {
         this.documentations = doc;
     }
 
+    /**
+     * Sets the value of this option element.
+     * 
+     * @param value
+     *                The value of this option element.
+     */
     public void setValue(String value) {
         this.value = value;
     }

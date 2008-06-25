@@ -37,16 +37,26 @@ public class MethodInfo {
     /** Doc elements used to document that element. */
     private List<DocumentationInfo> documentations;
 
+    /** Identifier for the method. */
     private String identifier;
 
+    /** Name of the method. */
     private Method name;
 
+    /** Describes the input to the method. */
     private RequestInfo request;
 
+    /** Describes the output of the method. */
     private ResponseInfo response;
 
+    /** Reference to a method definition element. */
     private Reference targetRef;
 
+    /**
+     * Return the list of documentation elements.
+     * 
+     * @return The list of documentation elements.
+     */
     public List<DocumentationInfo> getDocumentations() {
         // Lazy initialization with double-check.
         List<DocumentationInfo> d = this.documentations;
@@ -60,46 +70,108 @@ public class MethodInfo {
         return d;
     }
 
+    /**
+     * Returns the identifier for the method.
+     * 
+     * @return The identifier for the method.
+     */
     public String getIdentifier() {
         return identifier;
     }
+
+    /**
+     * Returns the name of the method.
+     * 
+     * @return The name of the method.
+     */
 
     public Method getName() {
         return name;
     }
 
+    /**
+     * Returns the input to the method.
+     * 
+     * @return The input to the method.
+     */
     public RequestInfo getRequest() {
         return request;
     }
 
+    /**
+     * Returns the output of the method.
+     * 
+     * @return The output of the method.
+     */
     public ResponseInfo getResponse() {
         return response;
     }
 
+    /**
+     * Returns the reference to a method definition element.
+     * 
+     * @return The reference to a method definition element.
+     */
     public Reference getTargetRef() {
         return targetRef;
     }
 
+    /**
+     * Sets the list of documentation elements.
+     * 
+     * @param doc
+     *                The list of documentation elements.
+     */
     public void setDocumentations(List<DocumentationInfo> doc) {
         this.documentations = doc;
     }
 
+    /**
+     * Sets the identifier for the method.
+     * 
+     * @param identifier
+     *                The identifier for the method.
+     */
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
     }
 
+    /**
+     * Sets the name of the method.
+     * 
+     * @param name
+     *                The name of the method.
+     */
     public void setName(Method name) {
         this.name = name;
     }
 
+    /**
+     * Sets the input to the method.
+     * 
+     * @param request
+     *                The input to the method.
+     */
     public void setRequest(RequestInfo request) {
         this.request = request;
     }
 
+    /**
+     * Setst the output of the method.
+     * 
+     * @param response
+     *                The output of the method.
+     */
     public void setResponse(ResponseInfo response) {
         this.response = response;
     }
 
+    /**
+     * Sets the reference to a method definition element.
+     * 
+     * @param targetRef
+     *                The reference to a method definition element.
+     */
     public void setTargetRef(Reference targetRef) {
         this.targetRef = targetRef;
     }
