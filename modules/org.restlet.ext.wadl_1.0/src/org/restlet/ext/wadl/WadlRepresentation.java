@@ -156,12 +156,10 @@ public class WadlRepresentation extends SaxRepresentation {
             contentBuffer.append(ch, start, length);
         }
 
-        @Override
         public void comment(char[] ch, int start, int length)
                 throws SAXException {
         }
 
-        @Override
         public void endCDATA() throws SAXException {
             if (getState() == State.DOCUMENTATION) {
                 contentBuffer.append("]]>");
@@ -178,7 +176,6 @@ public class WadlRepresentation extends SaxRepresentation {
             wadlRepresentation.setApplication(this.currentApplication);
         }
 
-        @Override
         public void endDTD() throws SAXException {
         }
 
@@ -238,7 +235,6 @@ public class WadlRepresentation extends SaxRepresentation {
             }
         }
 
-        @Override
         public void endEntity(String name) throws SAXException {
         }
 
@@ -309,7 +305,6 @@ public class WadlRepresentation extends SaxRepresentation {
             this.contentBuffer = new StringBuilder();
         }
 
-        @Override
         public void startDTD(String name, String publicId, String systemId)
                 throws SAXException {
         }
@@ -674,7 +669,6 @@ public class WadlRepresentation extends SaxRepresentation {
             }
         }
 
-        @Override
         public void startEntity(String name) throws SAXException {
         }
     }
