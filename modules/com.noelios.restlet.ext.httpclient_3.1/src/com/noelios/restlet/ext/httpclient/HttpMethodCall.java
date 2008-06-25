@@ -41,6 +41,7 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.httpclient.methods.TraceMethod;
+import org.apache.commons.httpclient.params.HttpMethodParams;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
@@ -117,6 +118,22 @@ public class HttpMethodCall extends HttpClientCall {
             this.httpMethod.setFollowRedirects(this.clientHelper
                     .isFollowRedirects());
             this.httpMethod.setDoAuthentication(false);
+
+            if (this.clientHelper.getRetryHandler() != null) {
+                try {
+                    this.httpMethod.getParams().setParameter(
+                            HttpMethodParams.RETRY_HANDLER,
+                            Class.forName(this.clientHelper.getRetryHandler())
+                                    .newInstance());
+                } catch (Exception e) {
+                    this.clientHelper
+                            .getLogger()
+                            .log(
+                                    Level.WARNING,
+                                    "An error occurred during the instantiation of the retry handler.",
+                                    e);
+                }
+            }
 
             this.responseHeadersAdded = false;
             setConfidential(this.httpMethod.getURI().getScheme()

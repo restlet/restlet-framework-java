@@ -84,6 +84,15 @@ import com.noelios.restlet.http.HttpClientCall;
  * <td>Sets the read timeout to a specified timeout, in milliseconds. A timeout
  * of zero is interpreted as an infinite timeout.</td>
  * </tr>
+ * <tr>
+ * <td>retryHandler</td>
+ * <td>String</td>
+ * <td>null</td>
+ * <td>Class name of the retry handler to use instead of HTTP Client default
+ * behavior. The given class name must implement the
+ * org.apache.commons.httpclient.HttpMethodRetryHandler interface and have a
+ * default constructor</td>
+ * </tr>
  * </table>
  * 
  * @see <a
@@ -180,6 +189,18 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
     public int getReadTimeout() {
         return Integer.parseInt(getParameters().getFirstValue("readTimeout",
                 "0"));
+    }
+
+    /**
+     * Returns the class name of the retry handler to use instead of HTTP Client
+     * default behavior. The given class name must implement the
+     * org.apache.commons.httpclient.HttpMethodRetryHandler interface and have a
+     * default constructor.
+     * 
+     * @return The class name of the retry handler.
+     */
+    public String getRetryHandler() {
+        return getParameters().getFirstValue("retryHandler", null);
     }
 
     /**

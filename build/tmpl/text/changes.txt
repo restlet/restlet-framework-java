@@ -36,7 +36,9 @@ Changes log
           properties and both formatting and parsing. Also added new
           WadlRepresentation and WadlResource classes to facilitate the
           description of Resources as WADL documents. 
-          Sponsored by NetDev Ltd (http://www.netdev.co.uk).        
+          Sponsored by NetDev Ltd (http://www.netdev.co.uk).
+        - The Apache HTTP Client extension can now have a retry handler
+          parameter set. Suggested by Sanjay Acharya.        
     - Misc
         - Refactored WAR client to remove remaining class in NRE core.
         - Updated GWT JAR to 1.5 RC1
