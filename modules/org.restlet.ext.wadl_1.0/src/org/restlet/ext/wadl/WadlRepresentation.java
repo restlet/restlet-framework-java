@@ -290,7 +290,6 @@ public class WadlRepresentation extends SaxRepresentation {
             this.states.add(0, state);
         }
 
-        @Override
         public void startCDATA() throws SAXException {
             if (getState() == State.DOCUMENTATION) {
                 contentBuffer.append("<![CDATA[");
