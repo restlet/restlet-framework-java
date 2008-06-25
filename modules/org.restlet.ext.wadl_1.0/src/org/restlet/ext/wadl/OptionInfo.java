@@ -32,6 +32,7 @@ import org.xml.sax.helpers.AttributesImpl;
  */
 public class OptionInfo {
 
+    /** Doc elements used to document that element. */
     private List<DocumentationInfo> documentations;
 
     private String value;
@@ -74,15 +75,17 @@ public class OptionInfo {
             attributes.addAttribute("", "id", null, "xs:string", getValue());
         }
 
-        writer.startElement("", "option", null, attributes);
+        if (getDocumentations().isEmpty()) {
+            writer.emptyElement("", "option", null, attributes);
+        } else {
+            writer.startElement("", "option", null, attributes);
 
-        if (getDocumentations() != null) {
             for (DocumentationInfo documentationInfo : getDocumentations()) {
                 documentationInfo.writeElement(writer);
             }
-        }
 
-        writer.endElement("", "option");
+            writer.endElement("", "option");
+        }
     }
 
 }

@@ -32,6 +32,7 @@ import org.xml.sax.helpers.AttributesImpl;
  */
 public class ResourceTypeInfo {
 
+    /** Doc elements used to document that element. */
     private List<DocumentationInfo> documentations;
 
     private String identifier;
@@ -112,25 +113,25 @@ public class ResourceTypeInfo {
             attributes.addAttribute("", "id", null, "xs:ID", getIdentifier());
         }
 
-        writer.startElement("", "resource_type", null, attributes);
-        if (getDocumentations() != null) {
+        if (getDocumentations().isEmpty() && getMethods().isEmpty()
+                && getParameters().isEmpty()) {
+            writer.emptyElement("", "resource_type", null, attributes);
+        } else {
+            writer.startElement("", "resource_type", null, attributes);
             for (DocumentationInfo documentationInfo : getDocumentations()) {
                 documentationInfo.writeElement(writer);
             }
-        }
 
-        if (getMethods() != null) {
             for (MethodInfo methodInfo : getMethods()) {
                 methodInfo.writeElement(writer);
             }
-        }
-        if (getParameters() != null) {
+
             for (ParameterInfo parameterInfo : getParameters()) {
                 parameterInfo.writeElement(writer);
             }
-        }
-        writer.endElement("", "resource_type");
 
+            writer.endElement("", "resource_type");
+        }
     }
 
 }

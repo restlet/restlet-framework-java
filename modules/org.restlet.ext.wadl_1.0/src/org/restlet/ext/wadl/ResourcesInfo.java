@@ -35,6 +35,7 @@ public class ResourcesInfo {
 
     private Reference baseRef;
 
+    /** Doc elements used to document that element. */
     private List<DocumentationInfo> documentations;
 
     private List<ResourceInfo> resources;
@@ -95,18 +96,20 @@ public class ResourcesInfo {
                     .toString());
         }
 
-        writer.startElement("", "resources", null, attributes);
-        if (getDocumentations() != null) {
+        if (getDocumentations().isEmpty() && getResources().isEmpty()) {
+            writer.emptyElement("", "resources", null, attributes);
+        } else {
+            writer.startElement("", "resources", null, attributes);
+
             for (DocumentationInfo documentationInfo : getDocumentations()) {
                 documentationInfo.writeElement(writer);
             }
-        }
-        if (getResources() != null) {
+
             for (ResourceInfo resourceInfo : getResources()) {
                 resourceInfo.writeElement(writer);
             }
+            writer.endElement("", "resources");
         }
-        writer.endElement("", "resources");
     }
 
 }

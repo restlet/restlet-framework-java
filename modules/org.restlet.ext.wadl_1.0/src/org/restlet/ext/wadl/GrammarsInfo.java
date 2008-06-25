@@ -33,8 +33,10 @@ import org.xml.sax.SAXException;
  */
 public class GrammarsInfo {
 
+    /** Doc elements used to document that element. */
     private List<DocumentationInfo> documentations;
 
+    /** Definitions of data format descriptions to be included by reference. */
     private List<IncludeInfo> includes;
 
     public List<DocumentationInfo> getDocumentations() {
@@ -79,19 +81,21 @@ public class GrammarsInfo {
      * @throws SAXException
      */
     public void writeElement(XmlWriter writer) throws SAXException {
-        writer.startElement("", "grammars");
 
-        if (getDocumentations() != null) {
+        if (getDocumentations().isEmpty() && getIncludes().isEmpty()) {
+            writer.emptyElement("", "grammars");
+        } else {
+            writer.startElement("", "grammars");
+
             for (DocumentationInfo documentationInfo : getDocumentations()) {
                 documentationInfo.writeElement(writer);
             }
-        }
-        if (getIncludes() != null) {
+
             for (IncludeInfo includeInfo : getIncludes()) {
                 includeInfo.writeElement(writer);
             }
-        }
 
-        writer.endElement("", "grammars");
+            writer.endElement("", "grammars");
+        }
     }
 }

@@ -33,6 +33,7 @@ import org.xml.sax.helpers.AttributesImpl;
  */
 public class LinkInfo {
 
+    /** Doc elements used to document that element. */
     private List<DocumentationInfo> documentations;
 
     private String relationship;
@@ -107,15 +108,17 @@ public class LinkInfo {
                     getResourceType().toString());
         }
 
-        writer.startElement("", "link", null, attributes);
+        if (getDocumentations().isEmpty()) {
+            writer.emptyElement("", "link", null, attributes);
+        } else {
+            writer.startElement("", "link", null, attributes);
 
-        if (getDocumentations() != null) {
             for (DocumentationInfo documentationInfo : getDocumentations()) {
                 documentationInfo.writeElement(writer);
             }
-        }
 
-        writer.endElement("link");
+            writer.endElement("link");
+        }
     }
 
 }

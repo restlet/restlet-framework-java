@@ -31,10 +31,12 @@ import org.xml.sax.SAXException;
  */
 public class ApplicationInfo {
 
+    /** Doc elements used to document that element. */
     private List<DocumentationInfo> documentations;
 
     private List<FaultInfo> faults;
 
+    /** Container for definitions of the format of data exchanged. */
     private GrammarsInfo grammars;
 
     private List<MethodInfo> methods;
@@ -102,7 +104,16 @@ public class ApplicationInfo {
     }
 
     public ResourcesInfo getResources() {
-        return resources;
+        // Lazy initialization with double-check.
+        ResourcesInfo r = this.resources;
+        if (r == null) {
+            synchronized (this) {
+                r = this.resources;
+                if (r == null)
+                    this.resources = r = new ResourcesInfo();
+            }
+        }
+        return r;
     }
 
     public List<ResourceTypeInfo> getResourceTypes() {
@@ -156,42 +167,32 @@ public class ApplicationInfo {
     public void writeElement(XmlWriter writer) throws SAXException {
         writer.startElement("", "application");
 
-        if (getDocumentations() != null) {
-            for (DocumentationInfo documentationInfo : getDocumentations()) {
-                documentationInfo.writeElement(writer);
-            }
+        for (DocumentationInfo documentationInfo : getDocumentations()) {
+            documentationInfo.writeElement(writer);
         }
 
         if (getGrammars() != null) {
             getGrammars().writeElement(writer);
         }
 
-        if (getMethods() != null) {
-            for (MethodInfo methodInfo : getMethods()) {
-                methodInfo.writeElement(writer);
-            }
+        for (MethodInfo methodInfo : getMethods()) {
+            methodInfo.writeElement(writer);
         }
 
-        if (getRepresentations() != null) {
-            for (RepresentationInfo representationInfo : getRepresentations()) {
-                representationInfo.writeElement(writer);
-            }
+        for (RepresentationInfo representationInfo : getRepresentations()) {
+            representationInfo.writeElement(writer);
         }
 
         if (getResources() != null) {
             getResources().writeElement(writer);
         }
 
-        if (getResourceTypes() != null) {
-            for (ResourceTypeInfo resourceTypeInfo : getResourceTypes()) {
-                resourceTypeInfo.writeElement(writer);
-            }
+        for (ResourceTypeInfo resourceTypeInfo : getResourceTypes()) {
+            resourceTypeInfo.writeElement(writer);
         }
 
-        if (getFaults() != null) {
-            for (FaultInfo faultInfo : getFaults()) {
-                faultInfo.writeElement(writer);
-            }
+        for (FaultInfo faultInfo : getFaults()) {
+            faultInfo.writeElement(writer);
         }
 
         writer.endElement("", "application");

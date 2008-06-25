@@ -192,6 +192,7 @@ public class WadlResource extends Resource {
 
         // Introspect the current resource to detect the allowed methods
         List<MethodInfo> methods = result.getMethods();
+        // TODO : chercher à instancier et calculer la valeur, non?
         for (Method name : getAllowedMethods()) {
             methods.add(getMethodInfo(name));
         }

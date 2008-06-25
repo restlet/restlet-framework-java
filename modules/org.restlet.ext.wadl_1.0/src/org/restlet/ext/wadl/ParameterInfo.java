@@ -36,6 +36,7 @@ public class ParameterInfo {
 
     private String defaultValue;
 
+    /** Doc elements used to document that element. */
     private List<DocumentationInfo> documentations;
 
     private String fixed;
@@ -221,24 +222,26 @@ public class ParameterInfo {
             attributes.addAttribute("", "required", null, "xs:boolean", "true");
         }
 
-        writer.startElement("", "param", null, attributes);
+        if (getLink() == null && getDocumentations().isEmpty()
+                && getOptions().isEmpty()) {
+            writer.emptyElement("", "param", null, attributes);
+        } else {
+            writer.startElement("", "param", null, attributes);
 
-        if (getLink() != null) {
-            getLink().writeElement(writer);
-        }
+            if (getLink() != null) {
+                getLink().writeElement(writer);
+            }
 
-        if (getDocumentations() != null) {
             for (DocumentationInfo documentationInfo : getDocumentations()) {
                 documentationInfo.writeElement(writer);
             }
-        }
 
-        if (getOptions() != null) {
             for (OptionInfo optionInfo : getOptions()) {
                 optionInfo.writeElement(writer);
             }
+
+            writer.endElement("", "param");
         }
-        writer.endElement("", "param");
     }
 
 }

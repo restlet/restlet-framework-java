@@ -34,6 +34,7 @@ import org.xml.sax.helpers.AttributesImpl;
  */
 public class MethodInfo {
 
+    /** Doc elements used to document that element. */
     private List<DocumentationInfo> documentations;
 
     private String identifier;
@@ -125,22 +126,27 @@ public class MethodInfo {
                     getTargetRef().toString());
         }
 
-        writer.startElement("", "method", null, attributes);
+        if (getDocumentations().isEmpty() && getRequest() == null
+                && getResponse() == null) {
+            writer.emptyElement("", "method", null, attributes);
+        } else {
+            writer.startElement("", "method", null, attributes);
 
-        if (getDocumentations() != null) {
-            for (DocumentationInfo documentationInfo : getDocumentations()) {
-                documentationInfo.writeElement(writer);
+            if (getDocumentations() != null) {
+                for (DocumentationInfo documentationInfo : getDocumentations()) {
+                    documentationInfo.writeElement(writer);
+                }
             }
-        }
-        if (getRequest() != null) {
-            getRequest().writeElement(writer);
-        }
+            if (getRequest() != null) {
+                getRequest().writeElement(writer);
+            }
 
-        if (getResponse() != null) {
-            getResponse().writeElement(writer);
-        }
+            if (getResponse() != null) {
+                getResponse().writeElement(writer);
+            }
 
-        writer.endElement("", "method");
+            writer.endElement("", "method");
+        }
     }
 
 }

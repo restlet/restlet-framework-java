@@ -33,6 +33,7 @@ import org.xml.sax.helpers.AttributesImpl;
  */
 public class IncludeInfo {
 
+    /** Doc elements used to document that element. */
     private List<DocumentationInfo> documentations;
 
     private Reference targetRef;
@@ -76,14 +77,14 @@ public class IncludeInfo {
                     getTargetRef().toString());
         }
 
-        if (getDocumentations() != null && !getDocumentations().isEmpty()) {
+        if (getDocumentations().isEmpty()) {
+            writer.emptyElement("", "include", null, attributes);
+        } else {
             writer.startElement("", "include", null, attributes);
             for (DocumentationInfo documentationInfo : getDocumentations()) {
                 documentationInfo.writeElement(writer);
             }
             writer.endElement("", "include");
-        } else {
-            writer.emptyElement("", "include", null, attributes);
         }
     }
 }

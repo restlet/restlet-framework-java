@@ -31,6 +31,7 @@ import org.xml.sax.SAXException;
  */
 public class ResponseInfo {
 
+    /** Doc elements used to document that element. */
     private List<DocumentationInfo> documentations;
 
     private List<FaultInfo> faults;
@@ -115,29 +116,30 @@ public class ResponseInfo {
      * @throws SAXException
      */
     public void writeElement(XmlWriter writer) throws SAXException {
-        writer.startElement("", "response");
-        if (getDocumentations() != null) {
+
+        if (getDocumentations().isEmpty() && getFaults().isEmpty()
+                && getParameters().isEmpty() && getRepresentations().isEmpty()) {
+            writer.emptyElement("", "response");
+        } else {
+            writer.startElement("", "response");
+
             for (DocumentationInfo documentationInfo : getDocumentations()) {
                 documentationInfo.writeElement(writer);
             }
-        }
-        if (getParameters() != null) {
+
             for (ParameterInfo parameterInfo : getParameters()) {
                 parameterInfo.writeElement(writer);
             }
-        }
-        if (getRepresentations() != null) {
+
             for (RepresentationInfo representationInfo : getRepresentations()) {
                 representationInfo.writeElement(writer);
             }
-        }
-        if (getFaults() != null) {
+
             for (FaultInfo faultInfo : getFaults()) {
                 faultInfo.writeElement(writer);
             }
+
+            writer.endElement("", "response");
         }
-        writer.endElement("", "response");
-
     }
-
 }

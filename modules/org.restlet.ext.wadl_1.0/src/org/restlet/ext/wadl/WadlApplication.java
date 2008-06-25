@@ -18,17 +18,30 @@
 
 package org.restlet.ext.wadl;
 
+import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 
 import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Context;
+import org.restlet.Filter;
+import org.restlet.Finder;
+import org.restlet.Handler;
+import org.restlet.Restlet;
+import org.restlet.Route;
 import org.restlet.Router;
 import org.restlet.Server;
 import org.restlet.VirtualHost;
+import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
+import org.restlet.data.Status;
 import org.restlet.resource.Representation;
+import org.restlet.resource.Resource;
+import org.restlet.resource.Variant;
 
 /**
  * WADL configured application. Can automatically configure itself given a WADL
@@ -85,9 +98,12 @@ public class WadlApplication extends Application {
             this.router = root;
             setRoot(root);
 
-            for (ResourceInfo resource : wadlRep.getApplication()
-                    .getResources().getResources()) {
-                attachResource(resource, null, router);
+            if (wadlRep.getApplication() != null
+                    && wadlRep.getApplication().getResources() != null) {
+                for (ResourceInfo resource : wadlRep.getApplication()
+                        .getResources().getResources()) {
+                    attachResource(resource, null, router);
+                }
             }
 
             // Analyzes the WADL resources base
@@ -179,10 +195,10 @@ public class WadlApplication extends Application {
             // The "id" attribute conveys the target class name
             Class targetClass = Class.forName(currentResource.getIdentifier());
 
-            // attach the resource itself
+            // Attach the resource itself
             router.attach(uriPattern, targetClass);
 
-            // attach any children of the resource
+            // Attach any children of the resource
             for (ResourceInfo childResource : currentResource
                     .getChildResources()) {
                 attachResource(childResource, currentResource, router);
@@ -232,7 +248,14 @@ public class WadlApplication extends Application {
      */
     public void attachToHost(VirtualHost host) {
         if (getBaseRef() != null) {
-            host.attach(getBaseRef().getPath(), this);
+            // TODO Added test on the path that may be null.
+            String path = getBaseRef().getPath();
+            if (path == null) {
+                host.attach("", this);
+            } else {
+                host.attach(path, this);
+            }
+
         } else {
             getLogger()
                     .warning(
@@ -247,6 +270,117 @@ public class WadlApplication extends Application {
      */
     public Reference getBaseRef() {
         return this.baseRef;
+    }
+
+    /**
+     * Completes the data available about a given Filter instance.
+     * 
+     * @param resourceInfo
+     *                The ResourceInfo object to complete.
+     * @param filter
+     *                The Filter instance to document.
+     */
+
+    private void getResourceInfo(ResourceInfo resourceInfo, Filter filter) {
+        getResourceInfo(resourceInfo, filter.getNext());
+    }
+
+    /**
+     * Completes the data available about a given Finder instance.
+     * 
+     * @param resourceInfo
+     *                The ResourceInfo object to complete.
+     * @param finder
+     *                The Finder instance to document.
+     */
+    private void getResourceInfo(ResourceInfo resourceInfo, Finder finder) {
+        // The handler instance targeted by this finder.
+        Handler handler = finder.createTarget(finder.getTargetClass(), null,
+                null);
+
+        // The set of allowed methods
+        Set<Method> methods = handler.getAllowedMethods();
+
+        if (handler instanceof WadlResource) {
+            // This kind of resource gives more information
+            WadlResource resource = (WadlResource) handler;
+            for (Method method : methods) {
+                resourceInfo.getMethods().add(resource.getMethodInfo(method));
+            }
+        } else if (handler instanceof Resource) {
+            Resource resource = (Resource) handler;
+            for (Method method : methods) {
+                MethodInfo methodInfo = new MethodInfo();
+                methodInfo.setName(method);
+                // Can document the list of supported variants.
+                if (Method.GET.equals(method)) {
+                    ResponseInfo responseInfo = new ResponseInfo();
+                    for (Variant variant : resource.getVariants()) {
+                        RepresentationInfo representationInfo = new RepresentationInfo();
+                        representationInfo.setMediaType(variant.getMediaType());
+                        responseInfo.getRepresentations().add(
+                                representationInfo);
+                    }
+                    methodInfo.setResponse(responseInfo);
+                }
+
+                resourceInfo.getMethods().add(methodInfo);
+            }
+        } else {
+            // Can only give information about the list of allowed methods.
+            for (Method method : methods) {
+                MethodInfo methodInfo = new MethodInfo();
+                methodInfo.setName(method);
+                resourceInfo.getMethods().add(methodInfo);
+            }
+        }
+    }
+
+    /**
+     * Completes the data available about a given Restlet instance.
+     * 
+     * @param resourceInfo
+     *                The ResourceInfo object to complete.
+     * @param restlet
+     *                The Restlet instance to document.
+     */
+    private void getResourceInfo(ResourceInfo resourceInfo, Restlet restlet) {
+        if (restlet instanceof Finder) {
+            getResourceInfo(resourceInfo, (Finder) restlet);
+        } else if (restlet instanceof Router) {
+            getResourceInfos((Router) restlet, resourceInfo.getChildResources());
+        } else if (restlet instanceof Filter) {
+            getResourceInfo(resourceInfo, (Filter) restlet);
+        }
+    }
+
+    /**
+     * Returns the WADL data about the given Route instance.
+     * 
+     * @param route
+     *                The Route instance to document.
+     * @return The WADL data about the given Route instance.
+     */
+    private ResourceInfo getResourceInfo(Route route) {
+        ResourceInfo result = new ResourceInfo();
+        result.setPath(route.getTemplate().getPattern());
+        getResourceInfo(result, route.getNext());
+        return result;
+    }
+
+    /**
+     * Completes the list of ResourceInfo instances for the given Router
+     * instance.
+     * 
+     * @param router
+     *                The router to document.
+     * @param list
+     *                The list of ResourceInfo instances to complete.
+     */
+    private void getResourceInfos(Router router, List<ResourceInfo> list) {
+        for (Route route : getRouter().getRoutes()) {
+            list.add(getResourceInfo(route));
+        }
     }
 
     /**
@@ -292,6 +426,21 @@ public class WadlApplication extends Application {
         }
 
         return host;
+    }
+
+    @Override
+    public void handle(Request request, Response response) {
+        if (Method.OPTIONS.equals(request.getMethod())) {
+            // Returns a WADL representation of the application.
+            ApplicationInfo applicationInfo = new ApplicationInfo();
+            applicationInfo.getResources().setBaseRef(this.getBaseRef());
+            getResourceInfos(getRouter(), applicationInfo.getResources()
+                    .getResources());
+            response.setEntity(new WadlRepresentation(applicationInfo));
+            response.setStatus(Status.SUCCESS_OK);
+        } else {
+            super.handle(request, response);
+        }
     }
 
     /**

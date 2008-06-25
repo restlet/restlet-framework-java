@@ -36,6 +36,7 @@ import org.xml.sax.helpers.AttributesImpl;
  */
 public class RepresentationInfo {
 
+    /** Doc elements used to document that element. */
     private List<DocumentationInfo> documentations;
 
     private String identifier;
@@ -189,20 +190,21 @@ public class RepresentationInfo {
                     getXmlElement());
         }
 
-        writer.startElement("", "representation", null, attributes);
+        if (getDocumentations().isEmpty() && getParameters().isEmpty()) {
+            writer.emptyElement("", "representation", null, attributes);
+        } else {
+            writer.startElement("", "representation", null, attributes);
 
-        if (getDocumentations() != null) {
             for (DocumentationInfo documentationInfo : getDocumentations()) {
                 documentationInfo.writeElement(writer);
             }
-        }
-        if (getParameters() != null) {
+
             for (ParameterInfo parameterInfo : getParameters()) {
                 parameterInfo.writeElement(writer);
             }
-        }
 
-        writer.endElement("", "representation");
+            writer.endElement("", "representation");
+        }
     }
 
 }

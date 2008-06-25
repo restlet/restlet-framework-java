@@ -37,6 +37,7 @@ public class ResourceInfo {
 
     private List<ResourceInfo> childResources;
 
+    /** Doc elements used to document that element. */
     private List<DocumentationInfo> documentations;
 
     private String identifier;
@@ -195,30 +196,30 @@ public class ResourceInfo {
                     .toString());
         }
 
-        writer.startElement("", "resource", null, attributes);
+        if (getChildResources().isEmpty() && getDocumentations().isEmpty()
+                && getMethods().isEmpty() && getParameters().isEmpty()) {
+            writer.emptyElement("", "resource", null, attributes);
+        } else {
+            writer.startElement("", "resource", null, attributes);
 
-        if (getChildResources() != null) {
             for (ResourceInfo resourceInfo : getChildResources()) {
                 resourceInfo.writeElement(writer);
             }
-        }
-        if (getDocumentations() != null) {
+
             for (DocumentationInfo documentationInfo : getDocumentations()) {
                 documentationInfo.writeElement(writer);
             }
-        }
-        if (getMethods() != null) {
+
             for (MethodInfo methodInfo : getMethods()) {
                 methodInfo.writeElement(writer);
             }
-        }
-        if (getParameters() != null) {
+
             for (ParameterInfo parameterInfo : getParameters()) {
                 parameterInfo.writeElement(writer);
             }
-        }
 
-        writer.endElement("", "resource");
+            writer.endElement("", "resource");
+        }
     }
 
 }

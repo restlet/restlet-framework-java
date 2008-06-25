@@ -18,6 +18,8 @@
 
 package org.restlet.ext.wadl;
 
+import java.io.IOException;
+
 import org.restlet.data.Language;
 import org.restlet.util.XmlWriter;
 import org.w3c.dom.Element;
@@ -96,8 +98,14 @@ public class DocumentationInfo {
             if (getXmlContent() != null) {
                 // TODO what do we do?
             } else {
-                writer.dataElement("", "doc", null, attributes,
-                        getTextContent());
+                writer.startElement("", "doc", null, attributes);
+                try {
+                    writer.getWriter().write(getTextContent());
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                writer.endElement("", "doc");
             }
         }
     }
