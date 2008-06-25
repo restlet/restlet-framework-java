@@ -39,6 +39,11 @@ public class GrammarsInfo {
     /** Definitions of data format descriptions to be included by reference. */
     private List<IncludeInfo> includes;
 
+    /**
+     * Returns the list of documentation elements.
+     * 
+     * @return The list of documentation elements.
+     */
     public List<DocumentationInfo> getDocumentations() {
         // Lazy initialization with double-check.
         List<DocumentationInfo> d = this.documentations;
@@ -52,6 +57,11 @@ public class GrammarsInfo {
         return d;
     }
 
+    /**
+     * Returns the list of include elements.
+     * 
+     * @return The list of include elements.
+     */
     public List<IncludeInfo> getIncludes() {
         // Lazy initialization with double-check.
         List<IncludeInfo> i = this.includes;
@@ -65,10 +75,22 @@ public class GrammarsInfo {
         return i;
     }
 
+    /**
+     * Sets the list of documentation elements.
+     * 
+     * @param doc
+     *                The list of documentation elements.
+     */
     public void setDocumentations(List<DocumentationInfo> doc) {
         this.documentations = doc;
     }
 
+    /**
+     * Sets the list of include elements.
+     * 
+     * @param includes
+     *                The list of include elements.
+     */
     public void setIncludes(List<IncludeInfo> includes) {
         this.includes = includes;
     }

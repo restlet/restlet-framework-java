@@ -56,7 +56,7 @@ public class ApplicationInfo {
     private List<ResourceTypeInfo> resourceTypes;
 
     /**
-     * Return the list of documentation elements.
+     * Returns the list of documentation elements.
      * 
      * @return The list of documentation elements.
      */
@@ -74,7 +74,7 @@ public class ApplicationInfo {
     }
 
     /**
-     * Return the list of fault elements.
+     * Returns the list of fault elements.
      * 
      * @return The list of fault elements.
      */
@@ -92,7 +92,7 @@ public class ApplicationInfo {
     }
 
     /**
-     * Return the grammar elements.
+     * Returns the grammar elements.
      * 
      * @return The grammar elements.
      */
@@ -101,7 +101,7 @@ public class ApplicationInfo {
     }
 
     /**
-     * Return the list of method elements.
+     * Returns the list of method elements.
      * 
      * @return The list of method elements.
      */
@@ -119,7 +119,7 @@ public class ApplicationInfo {
     }
 
     /**
-     * Return the list of representation elements.
+     * Returns the list of representation elements.
      * 
      * @return The list of representation elements.
      */
@@ -137,7 +137,7 @@ public class ApplicationInfo {
     }
 
     /**
-     * Return the resources root element.
+     * Returns the resources root element.
      * 
      * @return The resources root element.
      */
@@ -155,7 +155,7 @@ public class ApplicationInfo {
     }
 
     /**
-     * Return the list of resource type elements.
+     * Returns the list of resource type elements.
      * 
      * @return The list of resource type elements.
      */

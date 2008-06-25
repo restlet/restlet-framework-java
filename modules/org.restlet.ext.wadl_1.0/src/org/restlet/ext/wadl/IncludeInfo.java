@@ -36,8 +36,14 @@ public class IncludeInfo {
     /** Doc elements used to document that element. */
     private List<DocumentationInfo> documentations;
 
+    /** URI for the referenced definitions. */
     private Reference targetRef;
 
+    /**
+     * Returns the list of documentation elements.
+     * 
+     * @return The list of documentation elements.
+     */
     public List<DocumentationInfo> getDocumentations() {
         // Lazy initialization with double-check.
         List<DocumentationInfo> d = this.documentations;
@@ -51,14 +57,31 @@ public class IncludeInfo {
         return d;
     }
 
+    /**
+     * Returns the URI of the referenced definition.
+     * 
+     * @return The URI of the referenced definition.
+     */
     public Reference getTargetRef() {
         return targetRef;
     }
 
+    /**
+     * Sets the list of documentation elements.
+     * 
+     * @param doc
+     *                The list of documentation elements.
+     */
     public void setDocumentations(List<DocumentationInfo> doc) {
         this.documentations = doc;
     }
 
+    /**
+     * Sets the URI of the referenced definition.
+     * 
+     * @param href
+     *                The URI of the referenced definition.
+     */
     public void setTargetRef(Reference href) {
         this.targetRef = href;
     }

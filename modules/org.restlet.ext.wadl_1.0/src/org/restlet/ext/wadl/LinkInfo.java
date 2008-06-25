@@ -36,12 +36,28 @@ public class LinkInfo {
     /** Doc elements used to document that element. */
     private List<DocumentationInfo> documentations;
 
+    /**
+     * Identifies the relationship of the resource identified by the link to the
+     * resource whose representation the link is embedded in.
+     */
     private String relationship;
 
+    /**
+     * Defines the capabilities of the resource that the link identifies.
+     */
     private Reference resourceType;
 
+    /**
+     * Identifies the relationship of the resource whose representation the link
+     * is embedded in to the resource identified by the link.
+     */
     private String reverseRelationship;
 
+    /**
+     * Returns the list of documentation elements.
+     * 
+     * @return The list of documentation elements.
+     */
     public List<DocumentationInfo> getDocumentations() {
         // Lazy initialization with double-check.
         List<DocumentationInfo> d = this.documentations;
@@ -55,30 +71,69 @@ public class LinkInfo {
         return d;
     }
 
+    /**
+     * Returns the relationship attribute value.
+     * 
+     * @return The relationship attribute value.
+     */
     public String getRelationship() {
         return relationship;
     }
 
+    /**
+     * Returns the reference to the resource type of the linked resource.
+     * 
+     * @return The reference to the resource type of the linked resource.
+     */
     public Reference getResourceType() {
         return resourceType;
     }
 
+    /**
+     * Returns the reverse relationship attribute value.
+     * 
+     * @return The reverse relationship attribute value.
+     */
     public String getReverseRelationship() {
         return reverseRelationship;
     }
 
+    /**
+     * Sets the list of documentation elements.
+     * 
+     * @param doc
+     *                The list of documentation elements.
+     */
     public void setDocumentations(List<DocumentationInfo> doc) {
         this.documentations = doc;
     }
 
+    /**
+     * Sets the relationship attribute value.
+     * 
+     * @param relationship
+     *                The relationship attribute value.
+     */
     public void setRelationship(String relationship) {
         this.relationship = relationship;
     }
 
+    /**
+     * The reference to the resource type of the linked resource.
+     * 
+     * @param resourceType
+     *                The reference to the resource type of the linked resource.
+     */
     public void setResourceType(Reference resourceType) {
         this.resourceType = resourceType;
     }
 
+    /**
+     * Sets the reverse relationship attribute value.
+     * 
+     * @param reverseRelationship
+     *                The reverse relationship attribute value.
+     */
     public void setReverseRelationship(String reverseRelationship) {
         this.reverseRelationship = reverseRelationship;
     }
