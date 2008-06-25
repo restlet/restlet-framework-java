@@ -163,10 +163,10 @@ public class RepresentationInfo {
     }
 
     /**
-     * Sets t
+     * Sets the list of documentation elements.
      * 
      * @param doc
-     *                T
+     *                The list of documentation elements.
      */
     public void setDocumentations(List<DocumentationInfo> doc) {
         this.documentations = doc;
@@ -185,7 +185,7 @@ public class RepresentationInfo {
     /**
      * Sets the media type of that element.
      * 
-     * @param doc
+     * @param mediaType
      *                The media type of that element.
      */
     public void setMediaType(MediaType mediaType) {
@@ -195,7 +195,7 @@ public class RepresentationInfo {
     /**
      * Sets the list of parameters.
      * 
-     * @param doc
+     * @param parameters
      *                The list of parameters.
      */
     public void setParameters(List<ParameterInfo> parameters) {
@@ -205,7 +205,7 @@ public class RepresentationInfo {
     /**
      * Sets the list of locations of one or more meta data profiles.
      * 
-     * @param doc
+     * @param profiles
      *                The list of locations of one or more meta data profiles.
      */
     public void setProfiles(List<Reference> profiles) {
@@ -215,7 +215,7 @@ public class RepresentationInfo {
     /**
      * Sets the list of statuses associated with this response representation.
      * 
-     * @param doc
+     * @param statuses
      *                The list of statuses associated with this response
      *                representation.
      */
@@ -227,7 +227,7 @@ public class RepresentationInfo {
      * Sets the qualified name of the root element for this XML-based
      * representation.
      * 
-     * @param doc
+     * @param xmlElement
      *                The qualified name of the root element for this XML-based
      *                representation.
      */
