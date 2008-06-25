@@ -32,43 +32,90 @@ import org.xml.sax.helpers.AttributesImpl;
  * @author Jerome Louvel
  */
 public class DocumentationInfo {
-
+    /** The language of that documentation element. */
     private Language language;
 
+    /** The content of that element as text. */
     private String textContent;
 
+    /** The title of that documentation element. */
     private String title;
 
+    /** The content of that element as XML element. */
     private Element xmlContent;
 
+    /**
+     * Returns the language of that documentation element.
+     * 
+     * @return The language of this documentation element.
+     */
     public Language getLanguage() {
         return language;
     }
 
+    /**
+     * Returns the language of that documentation element.
+     * 
+     * @return The content of that element as text.
+     */
     public String getTextContent() {
         return textContent;
     }
 
+    /**
+     * Returns the title of that documentation element.
+     * 
+     * @return The title of that documentation element.
+     */
     public String getTitle() {
         return title;
     }
 
+    /**
+     * Returns the content of that element as XML element.
+     * 
+     * @return The content of that element as XML element.
+     */
     public Element getXmlContent() {
         return xmlContent;
     }
 
+    /**
+     * The language of that documentation element.
+     * 
+     * @param language
+     *                The language of that documentation element.
+     */
     public void setLanguage(Language language) {
         this.language = language;
     }
 
+    /**
+     * Sets the content of that element as text.
+     * 
+     * @param textContent
+     *                The content of that element as text.
+     */
     public void setTextContent(String textContent) {
         this.textContent = textContent;
     }
 
+    /**
+     * Sets the title of that documentation element.
+     * 
+     * @param title
+     *                The title of that documentation element.
+     */
     public void setTitle(String title) {
         this.title = title;
     }
 
+    /**
+     * Sets the content of that element as XML element.
+     * 
+     * @param xmlContent
+     *                The content of that element as XML element.
+     */
     public void setXmlContent(Element xmlContent) {
         this.xmlContent = xmlContent;
     }

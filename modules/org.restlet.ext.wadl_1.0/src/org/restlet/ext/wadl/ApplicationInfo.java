@@ -34,19 +34,32 @@ public class ApplicationInfo {
     /** Doc elements used to document that element. */
     private List<DocumentationInfo> documentations;
 
+    /** List of faults (representations that denote an error condition). */
     private List<FaultInfo> faults;
 
     /** Container for definitions of the format of data exchanged. */
     private GrammarsInfo grammars;
 
+    /** List of methods. */
     private List<MethodInfo> methods;
 
+    /** List of representations. */
     private List<RepresentationInfo> representations;
 
+    /** Resources provided by the application. */
     private ResourcesInfo resources;
 
+    /**
+     * Describes a set of methods that define the behavior of a type of
+     * resource.
+     */
     private List<ResourceTypeInfo> resourceTypes;
 
+    /**
+     * Return the list of documentation elements.
+     * 
+     * @return The list of documentation elements.
+     */
     public List<DocumentationInfo> getDocumentations() {
         // Lazy initialization with double-check.
         List<DocumentationInfo> d = this.documentations;
@@ -60,6 +73,11 @@ public class ApplicationInfo {
         return d;
     }
 
+    /**
+     * Return the list of fault elements.
+     * 
+     * @return The list of fault elements.
+     */
     public List<FaultInfo> getFaults() {
         // Lazy initialization with double-check.
         List<FaultInfo> f = this.faults;
@@ -73,10 +91,20 @@ public class ApplicationInfo {
         return f;
     }
 
+    /**
+     * Return the grammar elements.
+     * 
+     * @return The grammar elements.
+     */
     public GrammarsInfo getGrammars() {
         return grammars;
     }
 
+    /**
+     * Return the list of method elements.
+     * 
+     * @return The list of method elements.
+     */
     public List<MethodInfo> getMethods() {
         // Lazy initialization with double-check.
         List<MethodInfo> m = this.methods;
@@ -90,6 +118,11 @@ public class ApplicationInfo {
         return m;
     }
 
+    /**
+     * Return the list of representation elements.
+     * 
+     * @return The list of representation elements.
+     */
     public List<RepresentationInfo> getRepresentations() {
         // Lazy initialization with double-check.
         List<RepresentationInfo> r = this.representations;
@@ -103,6 +136,11 @@ public class ApplicationInfo {
         return r;
     }
 
+    /**
+     * Return the resources root element.
+     * 
+     * @return The resources root element.
+     */
     public ResourcesInfo getResources() {
         // Lazy initialization with double-check.
         ResourcesInfo r = this.resources;
@@ -116,6 +154,11 @@ public class ApplicationInfo {
         return r;
     }
 
+    /**
+     * Return the list of resource type elements.
+     * 
+     * @return The list of resource type elements.
+     */
     public List<ResourceTypeInfo> getResourceTypes() {
         // Lazy initialization with double-check.
         List<ResourceTypeInfo> rt = this.resourceTypes;
@@ -129,30 +172,72 @@ public class ApplicationInfo {
         return rt;
     }
 
+    /**
+     * Sets the list of documentation elements.
+     * 
+     * @param doc
+     *                The list of documentation elements.
+     */
     public void setDocumentations(List<DocumentationInfo> doc) {
         this.documentations = doc;
     }
 
+    /**
+     * Sets the list of fault elements.
+     * 
+     * @param faults
+     *                The list of documentation elements.
+     */
     public void setFaults(List<FaultInfo> faults) {
         this.faults = faults;
     }
 
+    /**
+     * Sets the grammars element.
+     * 
+     * @param grammars
+     *                The grammars element.
+     */
     public void setGrammars(GrammarsInfo grammars) {
         this.grammars = grammars;
     }
 
+    /**
+     * Sets the list of documentation elements.
+     * 
+     * @param methods
+     *                The list of method elements.
+     */
     public void setMethods(List<MethodInfo> methods) {
         this.methods = methods;
     }
 
+    /**
+     * sets the list of representation elements.
+     * 
+     * @param representations
+     *                The list of representation elements.
+     */
     public void setRepresentations(List<RepresentationInfo> representations) {
         this.representations = representations;
     }
 
+    /**
+     * Sets the list of resource elements.
+     * 
+     * @param resources
+     *                The list of resource elements.
+     */
     public void setResources(ResourcesInfo resources) {
         this.resources = resources;
     }
 
+    /**
+     * sets the list of resource type elements.
+     * 
+     * @param resourceTypes
+     *                The list of resource type elements.
+     */
     public void setResourceTypes(List<ResourceTypeInfo> resourceTypes) {
         this.resourceTypes = resourceTypes;
     }
