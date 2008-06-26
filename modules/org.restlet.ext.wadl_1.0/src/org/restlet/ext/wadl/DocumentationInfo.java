@@ -18,7 +18,11 @@
 
 package org.restlet.ext.wadl;
 
+import static org.restlet.ext.wadl.WadlRepresentation.APP_NAMESPACE;
+
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.restlet.data.Language;
 import org.restlet.util.XmlWriter;
@@ -32,6 +36,10 @@ import org.xml.sax.helpers.AttributesImpl;
  * @author Jerome Louvel
  */
 public class DocumentationInfo {
+    /** Obtain a suitable logger. */
+    private static Logger logger = Logger.getLogger(DocumentationInfo.class
+            .getCanonicalName());
+
     /** The language of that documentation element. */
     private Language language;
 
@@ -139,22 +147,24 @@ public class DocumentationInfo {
 
         if ((getTextContent() == null || getTextContent().equals(""))
                 && getXmlContent() == null) {
-            writer.emptyElement("", "doc", null, attributes);
+            writer.emptyElement(APP_NAMESPACE, "doc", null, attributes);
         } else {
 
             if (getXmlContent() != null) {
                 // TODO what do we do?
             } else {
-                writer.startElement("", "doc", null, attributes);
+                writer.startElement(APP_NAMESPACE, "doc", null, attributes);
                 try {
                     writer.getWriter().write(getTextContent());
                 } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    logger
+                            .log(
+                                    Level.SEVERE,
+                                    "Error when writing the text content of the current \"doc\" tag.",
+                                    e);
                 }
-                writer.endElement("", "doc");
+                writer.endElement(APP_NAMESPACE, "doc");
             }
         }
     }
-
 }

@@ -18,6 +18,8 @@
 
 package org.restlet.ext.wadl;
 
+import static org.restlet.ext.wadl.WadlRepresentation.APP_NAMESPACE;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -134,9 +136,9 @@ public class RequestInfo {
     public void writeElement(XmlWriter writer) throws SAXException {
         if (getDocumentations().isEmpty() && getParameters().isEmpty()
                 && getRepresentations().isEmpty()) {
-            writer.emptyElement("", "request");
+            writer.emptyElement(APP_NAMESPACE, "request");
         } else {
-            writer.startElement("", "request");
+            writer.startElement(APP_NAMESPACE, "request");
 
             for (DocumentationInfo documentationInfo : getDocumentations()) {
                 documentationInfo.writeElement(writer);
@@ -150,7 +152,7 @@ public class RequestInfo {
                 representationInfo.writeElement(writer);
             }
 
-            writer.endElement("", "request");
+            writer.endElement(APP_NAMESPACE, "request");
         }
     }
 

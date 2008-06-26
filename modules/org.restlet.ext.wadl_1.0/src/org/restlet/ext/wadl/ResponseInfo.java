@@ -18,6 +18,8 @@
 
 package org.restlet.ext.wadl;
 
+import static org.restlet.ext.wadl.WadlRepresentation.APP_NAMESPACE;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -169,9 +171,9 @@ public class ResponseInfo {
 
         if (getDocumentations().isEmpty() && getFaults().isEmpty()
                 && getParameters().isEmpty() && getRepresentations().isEmpty()) {
-            writer.emptyElement("", "response");
+            writer.emptyElement(APP_NAMESPACE, "response");
         } else {
-            writer.startElement("", "response");
+            writer.startElement(APP_NAMESPACE, "response");
 
             for (DocumentationInfo documentationInfo : getDocumentations()) {
                 documentationInfo.writeElement(writer);
@@ -189,7 +191,7 @@ public class ResponseInfo {
                 faultInfo.writeElement(writer);
             }
 
-            writer.endElement("", "response");
+            writer.endElement(APP_NAMESPACE, "response");
         }
     }
 }

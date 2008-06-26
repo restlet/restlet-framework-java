@@ -18,6 +18,8 @@
 
 package org.restlet.ext.wadl;
 
+import static org.restlet.ext.wadl.WadlRepresentation.APP_NAMESPACE;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -99,15 +101,15 @@ public class OptionInfo {
         }
 
         if (getDocumentations().isEmpty()) {
-            writer.emptyElement("", "option", null, attributes);
+            writer.emptyElement(APP_NAMESPACE, "option", null, attributes);
         } else {
-            writer.startElement("", "option", null, attributes);
+            writer.startElement(APP_NAMESPACE, "option", null, attributes);
 
             for (DocumentationInfo documentationInfo : getDocumentations()) {
                 documentationInfo.writeElement(writer);
             }
 
-            writer.endElement("", "option");
+            writer.endElement(APP_NAMESPACE, "option");
         }
     }
 

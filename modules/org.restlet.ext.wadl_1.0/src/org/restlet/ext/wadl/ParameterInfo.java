@@ -18,6 +18,8 @@
 
 package org.restlet.ext.wadl;
 
+import static org.restlet.ext.wadl.WadlRepresentation.APP_NAMESPACE;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -388,9 +390,9 @@ public class ParameterInfo {
 
         if (getLink() == null && getDocumentations().isEmpty()
                 && getOptions().isEmpty()) {
-            writer.emptyElement("", "param", null, attributes);
+            writer.emptyElement(APP_NAMESPACE, "param", null, attributes);
         } else {
-            writer.startElement("", "param", null, attributes);
+            writer.startElement(APP_NAMESPACE, "param", null, attributes);
 
             if (getLink() != null) {
                 getLink().writeElement(writer);
@@ -404,7 +406,7 @@ public class ParameterInfo {
                 optionInfo.writeElement(writer);
             }
 
-            writer.endElement("", "param");
+            writer.endElement(APP_NAMESPACE, "param");
         }
     }
 

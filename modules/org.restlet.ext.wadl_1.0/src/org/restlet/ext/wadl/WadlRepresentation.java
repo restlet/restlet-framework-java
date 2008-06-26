@@ -23,6 +23,8 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.namespace.QName;
 
@@ -48,6 +50,10 @@ import org.xml.sax.helpers.DefaultHandler;
  * @author Jerome Louvel
  */
 public class WadlRepresentation extends SaxRepresentation {
+
+    /** Obtain a suitable logger. */
+    private static Logger logger = Logger.getLogger(WadlRepresentation.class
+            .getCanonicalName());
 
     // -------------------
     // Content reader part
@@ -767,15 +773,15 @@ public class WadlRepresentation extends SaxRepresentation {
         // XML document.
         XmlWriter writer = new XmlWriter(outputStream, "UTF-8");
         try {
-            writer.setPrefix(APP_NAMESPACE, "wadl");
+            writer.forceNSDecl(APP_NAMESPACE, "");
             writer.setDataFormat(true);
             writer.setIndentStep(3);
             writer.startDocument();
-            application.writeElement(writer);
+            this.application.writeElement(writer);
             writer.endDocument();
         } catch (SAXException e) {
-            e.printStackTrace();
+            logger.log(Level.SEVERE,
+                    "Error when writing the WADL Representation.", e);
         }
     }
-
 }

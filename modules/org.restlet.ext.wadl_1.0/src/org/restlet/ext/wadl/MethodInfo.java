@@ -18,6 +18,8 @@
 
 package org.restlet.ext.wadl;
 
+import static org.restlet.ext.wadl.WadlRepresentation.APP_NAMESPACE;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -200,9 +202,9 @@ public class MethodInfo {
 
         if (getDocumentations().isEmpty() && getRequest() == null
                 && getResponse() == null) {
-            writer.emptyElement("", "method", null, attributes);
+            writer.emptyElement(APP_NAMESPACE, "method", null, attributes);
         } else {
-            writer.startElement("", "method", null, attributes);
+            writer.startElement(APP_NAMESPACE, "method", null, attributes);
 
             if (getDocumentations() != null) {
                 for (DocumentationInfo documentationInfo : getDocumentations()) {
@@ -217,7 +219,7 @@ public class MethodInfo {
                 getResponse().writeElement(writer);
             }
 
-            writer.endElement("", "method");
+            writer.endElement(APP_NAMESPACE, "method");
         }
     }
 

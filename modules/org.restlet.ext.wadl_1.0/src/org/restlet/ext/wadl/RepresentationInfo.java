@@ -18,6 +18,8 @@
 
 package org.restlet.ext.wadl;
 
+import static org.restlet.ext.wadl.WadlRepresentation.APP_NAMESPACE;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -283,9 +285,11 @@ public class RepresentationInfo {
         }
 
         if (getDocumentations().isEmpty() && getParameters().isEmpty()) {
-            writer.emptyElement("", "representation", null, attributes);
+            writer.emptyElement(APP_NAMESPACE, "representation", null,
+                    attributes);
         } else {
-            writer.startElement("", "representation", null, attributes);
+            writer.startElement(APP_NAMESPACE, "representation", null,
+                    attributes);
 
             for (DocumentationInfo documentationInfo : getDocumentations()) {
                 documentationInfo.writeElement(writer);
@@ -295,7 +299,7 @@ public class RepresentationInfo {
                 parameterInfo.writeElement(writer);
             }
 
-            writer.endElement("", "representation");
+            writer.endElement(APP_NAMESPACE, "representation");
         }
     }
 

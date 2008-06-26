@@ -18,6 +18,7 @@
 
 package org.restlet.ext.wadl;
 
+import static org.restlet.ext.wadl.WadlRepresentation.APP_NAMESPACE;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -250,7 +251,7 @@ public class ApplicationInfo {
      * @throws SAXException
      */
     public void writeElement(XmlWriter writer) throws SAXException {
-        writer.startElement("", "application");
+        writer.startElement(APP_NAMESPACE, "application");
 
         for (DocumentationInfo documentationInfo : getDocumentations()) {
             documentationInfo.writeElement(writer);
@@ -280,6 +281,6 @@ public class ApplicationInfo {
             faultInfo.writeElement(writer);
         }
 
-        writer.endElement("", "application");
+        writer.endElement(APP_NAMESPACE, "application");
     }
 }

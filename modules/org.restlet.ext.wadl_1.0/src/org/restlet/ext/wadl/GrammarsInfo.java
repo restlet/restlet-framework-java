@@ -18,6 +18,8 @@
 
 package org.restlet.ext.wadl;
 
+import static org.restlet.ext.wadl.WadlRepresentation.APP_NAMESPACE;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -105,9 +107,9 @@ public class GrammarsInfo {
     public void writeElement(XmlWriter writer) throws SAXException {
 
         if (getDocumentations().isEmpty() && getIncludes().isEmpty()) {
-            writer.emptyElement("", "grammars");
+            writer.emptyElement(APP_NAMESPACE, "grammars");
         } else {
-            writer.startElement("", "grammars");
+            writer.startElement(APP_NAMESPACE, "grammars");
 
             for (DocumentationInfo documentationInfo : getDocumentations()) {
                 documentationInfo.writeElement(writer);
@@ -117,7 +119,7 @@ public class GrammarsInfo {
                 includeInfo.writeElement(writer);
             }
 
-            writer.endElement("", "grammars");
+            writer.endElement(APP_NAMESPACE, "grammars");
         }
     }
 }

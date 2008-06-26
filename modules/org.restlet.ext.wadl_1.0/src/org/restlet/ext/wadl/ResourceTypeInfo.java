@@ -18,6 +18,8 @@
 
 package org.restlet.ext.wadl;
 
+import static org.restlet.ext.wadl.WadlRepresentation.APP_NAMESPACE;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -162,9 +164,11 @@ public class ResourceTypeInfo {
 
         if (getDocumentations().isEmpty() && getMethods().isEmpty()
                 && getParameters().isEmpty()) {
-            writer.emptyElement("", "resource_type", null, attributes);
+            writer.emptyElement(APP_NAMESPACE, "resource_type", null,
+                    attributes);
         } else {
-            writer.startElement("", "resource_type", null, attributes);
+            writer.startElement(APP_NAMESPACE, "resource_type", null,
+                    attributes);
             for (DocumentationInfo documentationInfo : getDocumentations()) {
                 documentationInfo.writeElement(writer);
             }
@@ -177,7 +181,7 @@ public class ResourceTypeInfo {
                 parameterInfo.writeElement(writer);
             }
 
-            writer.endElement("", "resource_type");
+            writer.endElement(APP_NAMESPACE, "resource_type");
         }
     }
 

@@ -18,6 +18,8 @@
 
 package org.restlet.ext.wadl;
 
+import static org.restlet.ext.wadl.WadlRepresentation.APP_NAMESPACE;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -101,13 +103,13 @@ public class IncludeInfo {
         }
 
         if (getDocumentations().isEmpty()) {
-            writer.emptyElement("", "include", null, attributes);
+            writer.emptyElement(APP_NAMESPACE, "include", null, attributes);
         } else {
-            writer.startElement("", "include", null, attributes);
+            writer.startElement(APP_NAMESPACE, "include", null, attributes);
             for (DocumentationInfo documentationInfo : getDocumentations()) {
                 documentationInfo.writeElement(writer);
             }
-            writer.endElement("", "include");
+            writer.endElement(APP_NAMESPACE, "include");
         }
     }
 }

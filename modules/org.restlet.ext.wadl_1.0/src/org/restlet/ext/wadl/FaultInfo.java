@@ -18,6 +18,8 @@
 
 package org.restlet.ext.wadl;
 
+import static org.restlet.ext.wadl.WadlRepresentation.APP_NAMESPACE;
+
 import java.util.Iterator;
 
 import org.restlet.data.Reference;
@@ -82,9 +84,9 @@ public class FaultInfo extends RepresentationInfo {
         }
 
         if (getDocumentations().isEmpty() && getParameters().isEmpty()) {
-            writer.emptyElement("", "fault", null, attributes);
+            writer.emptyElement(APP_NAMESPACE, "fault", null, attributes);
         } else {
-            writer.startElement("", "fault", null, attributes);
+            writer.startElement(APP_NAMESPACE, "fault", null, attributes);
 
             for (DocumentationInfo documentationInfo : getDocumentations()) {
                 documentationInfo.writeElement(writer);
@@ -93,7 +95,7 @@ public class FaultInfo extends RepresentationInfo {
                 parameterInfo.writeElement(writer);
             }
 
-            writer.endElement("", "fault");
+            writer.endElement(APP_NAMESPACE, "fault");
         }
     }
 

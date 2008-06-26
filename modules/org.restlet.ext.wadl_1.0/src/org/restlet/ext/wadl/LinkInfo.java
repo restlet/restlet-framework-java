@@ -18,6 +18,8 @@
 
 package org.restlet.ext.wadl;
 
+import static org.restlet.ext.wadl.WadlRepresentation.APP_NAMESPACE;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -157,22 +159,21 @@ public class LinkInfo {
                     getReverseRelationship());
         }
 
-        // TODO Prise en compte de ResourceType. Comme attribut?
         if (getResourceType() != null && getResourceType().toString() != null) {
             attributes.addAttribute("", "resource_type", null, "xs:anyURI",
                     getResourceType().toString());
         }
 
         if (getDocumentations().isEmpty()) {
-            writer.emptyElement("", "link", null, attributes);
+            writer.emptyElement(APP_NAMESPACE, "link", null, attributes);
         } else {
-            writer.startElement("", "link", null, attributes);
+            writer.startElement(APP_NAMESPACE, "link", null, attributes);
 
             for (DocumentationInfo documentationInfo : getDocumentations()) {
                 documentationInfo.writeElement(writer);
             }
 
-            writer.endElement("link");
+            writer.endElement(APP_NAMESPACE, "link");
         }
     }
 
