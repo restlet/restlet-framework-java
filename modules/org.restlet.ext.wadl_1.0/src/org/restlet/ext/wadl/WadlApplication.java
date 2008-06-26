@@ -18,8 +18,10 @@
 
 package org.restlet.ext.wadl;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 
 import org.restlet.Application;
@@ -299,7 +301,14 @@ public class WadlApplication extends Application {
                 null);
 
         // The set of allowed methods
-        Set<Method> methods = handler.getAllowedMethods();
+        List<Method> methods = new ArrayList<Method>();
+        methods.addAll(handler.getAllowedMethods());
+
+        Collections.sort(methods, new Comparator<Method>() {
+            public int compare(Method m1, Method m2) {
+                return m1.getName().compareTo(m2.getName());
+            }
+        });
 
         if (handler instanceof WadlResource) {
             // This kind of resource gives more information
@@ -430,7 +439,8 @@ public class WadlApplication extends Application {
 
     @Override
     public void handle(Request request, Response response) {
-        if (Method.OPTIONS.equals(request.getMethod())) {
+        if (Method.OPTIONS.equals(request.getMethod())
+                && request.getResourceRef().getIdentifier().endsWith("*")) {
             // Returns a WADL representation of the application.
             ApplicationInfo applicationInfo = new ApplicationInfo();
             applicationInfo.getResources().setBaseRef(this.getBaseRef());
