@@ -34,12 +34,20 @@ public class ResponseInfo {
     /** Doc elements used to document that element. */
     private List<DocumentationInfo> documentations;
 
+    /** List of faults (representations that denote an error condition). */
     private List<FaultInfo> faults;
 
+    /** List of parameters. */
     private List<ParameterInfo> parameters;
 
+    /** List of representations. */
     private List<RepresentationInfo> representations;
 
+    /**
+     * Returns the list of documentation elements.
+     * 
+     * @return The list of documentation elements.
+     */
     public List<DocumentationInfo> getDocumentations() {
         // Lazy initialization with double-check.
         List<DocumentationInfo> d = this.documentations;
@@ -53,6 +61,13 @@ public class ResponseInfo {
         return d;
     }
 
+    /**
+     * Returns the list of faults (representations that denote an error
+     * condition).
+     * 
+     * @return The list of faults (representations that denote an error
+     *         condition).
+     */
     public List<FaultInfo> getFaults() {
         // Lazy initialization with double-check.
         List<FaultInfo> f = this.faults;
@@ -66,6 +81,11 @@ public class ResponseInfo {
         return f;
     }
 
+    /**
+     * Returns the list of parameters.
+     * 
+     * @return The list of parameters.
+     */
     public List<ParameterInfo> getParameters() {
         // Lazy initialization with double-check.
         List<ParameterInfo> p = this.parameters;
@@ -79,6 +99,11 @@ public class ResponseInfo {
         return p;
     }
 
+    /**
+     * Returns the list of representations
+     * 
+     * @return The list of representations
+     */
     public List<RepresentationInfo> getRepresentations() {
         // Lazy initialization with double-check.
         List<RepresentationInfo> r = this.representations;
@@ -92,18 +117,43 @@ public class ResponseInfo {
         return r;
     }
 
+    /**
+     * Sets the list of documentation elements.
+     * 
+     * @param doc
+     *                The list of documentation elements.
+     */
     public void setDocumentations(List<DocumentationInfo> doc) {
         this.documentations = doc;
     }
 
+    /**
+     * Sets the list of faults (representations that denote an error condition).
+     * 
+     * @param faults
+     *                The list of faults (representations that denote an error
+     *                condition).
+     */
     public void setFaults(List<FaultInfo> faults) {
         this.faults = faults;
     }
 
+    /**
+     * Sets the list of parameters.
+     * 
+     * @param parameters
+     *                The list of parameters.
+     */
     public void setParameters(List<ParameterInfo> parameters) {
         this.parameters = parameters;
     }
 
+    /**
+     * Sets the list of representations
+     * 
+     * @param representations
+     *                The list of representations
+     */
     public void setRepresentations(List<RepresentationInfo> representations) {
         this.representations = representations;
     }

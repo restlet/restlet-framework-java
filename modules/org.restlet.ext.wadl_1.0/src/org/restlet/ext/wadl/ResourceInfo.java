@@ -34,24 +34,35 @@ import org.xml.sax.helpers.AttributesImpl;
  * @author Jerome Louvel
  */
 public class ResourceInfo {
-
+    /** List of child resources. */
     private List<ResourceInfo> childResources;
 
     /** Doc elements used to document that element. */
     private List<DocumentationInfo> documentations;
 
+    /** Identifier for that element. */
     private String identifier;
 
+    /** List of supported methods. */
     private List<MethodInfo> methods;
 
+    /** List of parameters. */
     private List<ParameterInfo> parameters;
 
+    /** URI template for the identifier of the resource. */
     private String path;
 
+    /** Media type for the query component of the resource URI. */
     private MediaType queryType;
 
+    /** List of references to resource type elements. */
     private List<Reference> type;
 
+    /**
+     * Returns the list of child resources.
+     * 
+     * @return The list of child resources.
+     */
     public List<ResourceInfo> getChildResources() {
         // Lazy initialization with double-check.
         List<ResourceInfo> r = this.childResources;
@@ -65,6 +76,11 @@ public class ResourceInfo {
         return r;
     }
 
+    /**
+     * Returns the list of documentation elements.
+     * 
+     * @return The list of documentation elements.
+     */
     public List<DocumentationInfo> getDocumentations() {
         // Lazy initialization with double-check.
         List<DocumentationInfo> d = this.documentations;
@@ -78,10 +94,20 @@ public class ResourceInfo {
         return d;
     }
 
+    /**
+     * Returns the identifier for that element.
+     * 
+     * @return The identifier for that element.
+     */
     public String getIdentifier() {
         return identifier;
     }
 
+    /**
+     * Returns the list of supported methods.
+     * 
+     * @return The list of supported methods.
+     */
     public List<MethodInfo> getMethods() {
         // Lazy initialization with double-check.
         List<MethodInfo> m = this.methods;
@@ -95,6 +121,11 @@ public class ResourceInfo {
         return m;
     }
 
+    /**
+     * Returns the list of parameters.
+     * 
+     * @return The list of parameters.
+     */
     public List<ParameterInfo> getParameters() {
         // Lazy initialization with double-check.
         List<ParameterInfo> p = this.parameters;
@@ -108,14 +139,29 @@ public class ResourceInfo {
         return p;
     }
 
+    /**
+     * Returns the URI template for the identifier of the resource.
+     * 
+     * @return The URI template for the identifier of the resource.
+     */
     public String getPath() {
         return path;
     }
 
+    /**
+     * Returns the media type for the query component of the resource URI.
+     * 
+     * @return The media type for the query component of the resource URI.
+     */
     public MediaType getQueryType() {
         return queryType;
     }
 
+    /**
+     * Returns the list of references to resource type elements.
+     * 
+     * @return The list of references to resource type elements.
+     */
     public List<Reference> getType() {
         // Lazy initialization with double-check.
         List<Reference> t = this.type;
@@ -129,34 +175,83 @@ public class ResourceInfo {
         return t;
     }
 
+    /**
+     * Sets the list of child resources.
+     * 
+     * @param resources
+     *                The list of child resources.
+     */
     public void setChildResources(List<ResourceInfo> resources) {
         this.childResources = resources;
     }
 
+    /**
+     * Sets the list of documentation elements.
+     * 
+     * @param doc
+     *                The list of documentation elements.
+     */
     public void setDocumentations(List<DocumentationInfo> doc) {
         this.documentations = doc;
     }
 
+    /**
+     * Sets the identifier for that element.
+     * 
+     * @param identifier
+     *                The identifier for that element.
+     */
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
     }
 
+    /**
+     * Sets the list of supported methods.
+     * 
+     * @param methods
+     *                The list of supported methods.
+     */
     public void setMethods(List<MethodInfo> methods) {
         this.methods = methods;
     }
 
+    /**
+     * Sets the list of parameters.
+     * 
+     * @param parameters
+     *                The list of parameters.
+     */
     public void setParameters(List<ParameterInfo> parameters) {
         this.parameters = parameters;
     }
 
+    /**
+     * Sets the URI template for the identifier of the resource.
+     * 
+     * @param path
+     *                The URI template for the identifier of the resource.
+     */
     public void setPath(String path) {
         this.path = path;
     }
 
+    /**
+     * Sets the media type for the query component of the resource URI.
+     * 
+     * @param queryType
+     *                The media type for the query component of the resource
+     *                URI.
+     */
     public void setQueryType(MediaType queryType) {
         this.queryType = queryType;
     }
 
+    /**
+     * Sets the list of references to resource type elements.
+     * 
+     * @param type
+     *                The list of references to resource type elements.
+     */
     public void setType(List<Reference> type) {
         this.type = type;
     }

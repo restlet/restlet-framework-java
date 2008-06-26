@@ -32,18 +32,29 @@ import org.xml.sax.helpers.AttributesImpl;
  * @author Jerome Louvel
  */
 public class ResourcesInfo {
-
+    /** Base URI for each child resource identifier. */
     private Reference baseRef;
 
     /** Doc elements used to document that element. */
     private List<DocumentationInfo> documentations;
 
+    /** List of child resources. */
     private List<ResourceInfo> resources;
 
+    /**
+     * Returns the base URI for each child resource identifier.
+     * 
+     * @return The base URI for each child resource identifier.
+     */
     public Reference getBaseRef() {
         return baseRef;
     }
 
+    /**
+     * Returns the list of documentation elements.
+     * 
+     * @return The list of documentation elements.
+     */
     public List<DocumentationInfo> getDocumentations() {
         // Lazy initialization with double-check.
         List<DocumentationInfo> d = this.documentations;
@@ -57,6 +68,11 @@ public class ResourcesInfo {
         return d;
     }
 
+    /**
+     * Returns the list of child resources.
+     * 
+     * @return The list of child resources.
+     */
     public List<ResourceInfo> getResources() {
         // Lazy initialization with double-check.
         List<ResourceInfo> r = this.resources;
@@ -70,14 +86,32 @@ public class ResourcesInfo {
         return r;
     }
 
+    /**
+     * Sets the base URI for each child resource identifier.
+     * 
+     * @param baseRef
+     *                The base URI for each child resource identifier.
+     */
     public void setBaseRef(Reference baseRef) {
         this.baseRef = baseRef;
     }
 
+    /**
+     * Sets the list of documentation elements.
+     * 
+     * @param doc
+     *                The list of documentation elements.
+     */
     public void setDocumentations(List<DocumentationInfo> doc) {
         this.documentations = doc;
     }
 
+    /**
+     * Sets the list of child resources.
+     * 
+     * @param resources
+     *                The list of child resources.
+     */
     public void setResources(List<ResourceInfo> resources) {
         this.resources = resources;
     }

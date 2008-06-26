@@ -35,12 +35,20 @@ public class ResourceTypeInfo {
     /** Doc elements used to document that element. */
     private List<DocumentationInfo> documentations;
 
+    /** Identifier for that element. */
     private String identifier;
 
+    /** List of supported methods. */
     private List<MethodInfo> methods;
 
+    /** List of parameters. */
     private List<ParameterInfo> parameters;
 
+    /**
+     * Returns the list of documentation elements.
+     * 
+     * @return The list of documentation elements.
+     */
     public List<DocumentationInfo> getDocumentations() {
         // Lazy initialization with double-check.
         List<DocumentationInfo> d = this.documentations;
@@ -54,10 +62,20 @@ public class ResourceTypeInfo {
         return d;
     }
 
+    /**
+     * Returns the identifier for that element.
+     * 
+     * @return The identifier for that element.
+     */
     public String getIdentifier() {
         return identifier;
     }
 
+    /**
+     * Returns the list of supported methods.
+     * 
+     * @return The list of supported methods.
+     */
     public List<MethodInfo> getMethods() {
         // Lazy initialization with double-check.
         List<MethodInfo> m = this.methods;
@@ -71,6 +89,11 @@ public class ResourceTypeInfo {
         return m;
     }
 
+    /**
+     * Returns the list of parameters.
+     * 
+     * @return The list of parameters.
+     */
     public List<ParameterInfo> getParameters() {
         // Lazy initialization with double-check.
         List<ParameterInfo> p = this.parameters;
@@ -84,18 +107,42 @@ public class ResourceTypeInfo {
         return p;
     }
 
+    /**
+     * Sets the list of documentation elements.
+     * 
+     * @param doc
+     *                The list of documentation elements.
+     */
     public void setDocumentations(List<DocumentationInfo> doc) {
         this.documentations = doc;
     }
 
+    /**
+     * Sets the identifier for that element.
+     * 
+     * @param identifier
+     *                The identifier for that element.
+     */
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
     }
 
+    /**
+     * Sets the list of supported methods.
+     * 
+     * @param methods
+     *                The list of supported methods.
+     */
     public void setMethods(List<MethodInfo> methods) {
         this.methods = methods;
     }
 
+    /**
+     * Sets the list of parameters.
+     * 
+     * @param parameters
+     *                The list of parameters.
+     */
     public void setParameters(List<ParameterInfo> parameters) {
         this.parameters = parameters;
     }
