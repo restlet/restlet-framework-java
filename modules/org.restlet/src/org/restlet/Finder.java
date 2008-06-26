@@ -157,7 +157,7 @@ public class Finder extends Restlet {
      *                The response to update.
      * @return The created handler or null.
      */
-    protected Handler createTarget(Class<? extends Handler> targetClass,
+    public Handler createTarget(Class<? extends Handler> targetClass,
             Request request, Response response) {
         Handler result = null;
 
