@@ -19,13 +19,18 @@
 package org.restlet.ext.wadl;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.restlet.Application;
+import org.restlet.Context;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
 import org.restlet.resource.Variant;
@@ -44,6 +49,27 @@ import org.restlet.resource.Variant;
  * @author Jerome Louvel
  */
 public class WadlResource extends Resource {
+
+    /**
+     * Constructor.
+     */
+    public WadlResource() {
+        super();
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param context
+     *                The parent context.
+     * @param request
+     *                The request to handle.
+     * @param response
+     *                The response to return.
+     */
+    public WadlResource(Context context, Request request, Response response) {
+        super(context, request, response);
+    }
 
     /**
      * Indicates if OPTIONS calls are allowed by checking the "readable"
@@ -192,8 +218,17 @@ public class WadlResource extends Resource {
 
         // Introspect the current resource to detect the allowed methods
         List<MethodInfo> methods = result.getMethods();
-        // TODO : chercher à instancier et calculer la valeur, non?
-        for (Method name : getAllowedMethods()) {
+        // The set of allowed methods
+        List<Method> methodsList = new ArrayList<Method>();
+        methodsList.addAll(getAllowedMethods());
+
+        Collections.sort(methodsList, new Comparator<Method>() {
+            public int compare(Method m1, Method m2) {
+                return m1.getName().compareTo(m2.getName());
+            }
+        });
+
+        for (Method name : methodsList) {
             methods.add(getMethodInfo(name));
         }
 
@@ -209,7 +244,7 @@ public class WadlResource extends Resource {
     protected String getResourcePath() {
         Reference ref = new Reference(getRequest().getRootRef(), getRequest()
                 .getResourceRef());
-        return ref.getRelativePart();
+        return ref.getRemainingPart();
     }
 
     /**
