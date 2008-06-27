@@ -436,8 +436,9 @@
    <path id="mod-shell-path">
       <path refid="mod-api-path" />
       <pathelement path="${classes}/${mod-api-id}" />
-      <fileset dir="${lib}/${lib-antlr-id}" includes="*.jar" />
+      <fileset dir="${lib}/${lib-cli-id}" includes="*.jar" />
       <fileset dir="${lib}/${lib-jline-id}" includes="*.jar" />
+      <fileset dir="${lib}/${lib-script-id}" includes="*.jar" />
    </path>
 
    <path id="mod-simple-path">
@@ -665,7 +666,7 @@
       <attribute name="ext4" default="" />
       <sequential>
          <!-- sets the final pom version -->
-         <condition property="mod-pom-@{name}-version" value="${lib-@{name}-version}.${lib-@{name}-release}-${lib-@{name}-suffix-maven}">
+         <condition property="mod-pom-@{name}-version" value="${lib-@{name}-version}.${lib-@{name}-release}${lib-@{name}-suffix-maven}">
             <and>
                <isset property="lib-@{name}-release" />
                <isset property="lib-@{name}-suffix-maven" />
@@ -674,7 +675,7 @@
          <condition property="mod-pom-@{name}-version" value="${lib-@{name}-version}.${lib-@{name}-release}">
             <isset property="lib-@{name}-release" />
          </condition>
-         <condition property="mod-pom-@{name}-version" value="${lib-@{name}-version}-${lib-@{name}-suffix-maven}">
+         <condition property="mod-pom-@{name}-version" value="${lib-@{name}-version}${lib-@{name}-suffix-maven}">
             <isset property="lib-@{name}-suffix-maven" />
          </condition>
          <property name="mod-pom-@{name}-version" value="${lib-@{name}-version}" />
@@ -705,7 +706,7 @@
       <attribute name="type2" default="-" />
       <sequential>
          <!-- sets the final pom version -->
-         <condition property="lib-pom-@{name}-version" value="${lib-@{name}-version}.${lib-@{name}-release}-${lib-@{name}-suffix-maven}">
+         <condition property="lib-pom-@{name}-version" value="${lib-@{name}-version}.${lib-@{name}-release}${lib-@{name}-suffix-maven}">
             <and>
                <isset property="lib-@{name}-release" />
                <isset property="lib-@{name}-suffix-maven" />
@@ -714,7 +715,7 @@
          <condition property="lib-pom-@{name}-version" value="${lib-@{name}-version}.${lib-@{name}-release}">
             <isset property="lib-@{name}-release" />
          </condition>
-         <condition property="lib-pom-@{name}-version" value="${lib-@{name}-version}-${lib-@{name}-suffix-maven}">
+         <condition property="lib-pom-@{name}-version" value="${lib-@{name}-version}${lib-@{name}-suffix-maven}">
             <isset property="lib-@{name}-suffix-maven" />
          </condition>
          <property name="lib-pom-@{name}-version" value="${lib-@{name}-version}" />
@@ -807,7 +808,7 @@
       <attribute name="name" />
       <sequential>
          <!-- sets the final pom version -->
-         <condition property="lib-pom-@{name}-version" value="${lib-@{name}-version}.${lib-@{name}-release}-${lib-@{name}-suffix-maven}">
+         <condition property="lib-pom-@{name}-version" value="${lib-@{name}-version}.${lib-@{name}-release}${lib-@{name}-suffix-maven}">
             <and>
                <isset property="lib-@{name}-release" />
                <isset property="lib-@{name}-suffix-maven" />
@@ -816,7 +817,7 @@
          <condition property="lib-pom-@{name}-version" value="${lib-@{name}-version}.${lib-@{name}-release}">
             <isset property="lib-@{name}-release" />
          </condition>
-         <condition property="lib-pom-@{name}-version" value="${lib-@{name}-version}-${lib-@{name}-suffix-maven}">
+         <condition property="lib-pom-@{name}-version" value="${lib-@{name}-version}${lib-@{name}-suffix-maven}">
             <isset property="lib-@{name}-suffix-maven" />
          </condition>
          <property name="lib-pom-@{name}-version" value="${lib-@{name}-version}" />
@@ -1315,6 +1316,7 @@
 
 <!-- Packages libraries -->
 <!-- disabled for now  <stageLibrary name="bouncycastle" /> -->
+<stageLibrary name="cli" />
 <stageLibrary name="codec" />
 <stageLibrary name="collections" />
 <stageLibrary name="db4o" />
@@ -1340,6 +1342,7 @@
 <!-- disabled for now  <stageLibrary name="mina" /> -->
 <stageLibrary name="oauth" />
 <stageLibrary name="pool" />
+<stageLibrary name="rhino" />
 <stageLibrary name="servlet" />
 <stageLibrary name="simple" />
 <stageLibrary name="spring" />
