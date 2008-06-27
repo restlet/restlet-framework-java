@@ -3,7 +3,10 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Java Script API
 Bundle-SymbolicName: javax.script
 Bundle-Version: 1.0
-Bundle-ClassPath: javax.script.jar
+Bundle-ClassPath: javax.script.jar,
+ com.sun.script.jar
 Bundle-Vendor: Sun Microsystems Inc.
-Export-Package: javax.script
+Export-Package: com.sun.script.javascript,
+ com.sun.script.util,
+ javax.script
 
