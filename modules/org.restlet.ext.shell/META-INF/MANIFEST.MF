@@ -4,18 +4,13 @@ Bundle-Name: Restlet - Extension - Shell
 Bundle-SymbolicName: org.restlet.ext.shell
 Bundle-Version: 1.1
 Bundle-Vendor: Noelios Consulting
-Export-Package: org.restlet.ext.shell;uses:="org.restlet,org.restlet.ext.shell.view",
- org.restlet.ext.shell.controller;uses:="org.restlet.ext.shell.view,org.restlet.ext.shell.model",
- org.restlet.ext.shell.controller.commands;uses:="org.restlet.ext.shell.controller",
- org.restlet.ext.shell.controller.commands.usage;uses:="org.antlr.runtime.tree,org.antlr.runtime",
- org.restlet.ext.shell.model;uses:="org.restlet,org.restlet.data",
- org.restlet.ext.shell.view,
- org.restlet.ext.shell.view.textual;uses:="org.restlet.ext.shell.view"
+Export-Package: org.restlet.ext.shell,
+ org.restlet.ext.shell.connectors,
+ org.restlet.ext.shell.helpers,
+ org.restlet.ext.shell.script
 Import-Package: jline,
- org.antlr.runtime,
- org.antlr.runtime.tree,
+ org.apache.commons.cli,
  org.restlet,
  org.restlet.data,
  org.restlet.resource,
  org.restlet.util
- 
