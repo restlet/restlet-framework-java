@@ -90,7 +90,15 @@ public class WadlResource extends Resource {
 	 * @see WadlResource#getResourceInfo()
 	 */
 	protected ApplicationInfo getApplicationInfo() {
-		ApplicationInfo result = new ApplicationInfo();
+		ApplicationInfo result = null;
+
+		Application application = getApplication();
+		if (application != null && application instanceof WadlApplication) {
+			result = ((WadlApplication) application).getApplicationInfo();
+		} else {
+			result = new ApplicationInfo();
+		}
+
 		ResourcesInfo resources = new ResourcesInfo();
 		resources.setBaseRef(getResourcesBase());
 		result.setResources(resources);
