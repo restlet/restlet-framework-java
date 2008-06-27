@@ -36,135 +36,165 @@ import org.xml.sax.helpers.AttributesImpl;
  * @author Jerome Louvel
  */
 public class DocumentationInfo {
-    /** Obtain a suitable logger. */
-    private static Logger logger = Logger.getLogger(DocumentationInfo.class
-            .getCanonicalName());
+	/** Obtain a suitable logger. */
+	private static Logger logger = Logger.getLogger(DocumentationInfo.class
+			.getCanonicalName());
 
-    /** The language of that documentation element. */
-    private Language language;
+	/** The language of that documentation element. */
+	private Language language;
 
-    /** The content of that element as text. */
-    private String textContent;
+	/** The content of that element as text. */
+	private String textContent;
 
-    /** The title of that documentation element. */
-    private String title;
+	/** The title of that documentation element. */
+	private String title;
 
-    /** The content of that element as XML element. */
-    private Element xmlContent;
+	/** The content of that element as XML element. */
+	private Element xmlContent;
 
-    /**
-     * Returns the language of that documentation element.
-     * 
-     * @return The language of this documentation element.
-     */
-    public Language getLanguage() {
-        return language;
-    }
+	/**
+	 * Constructor.
+	 */
+	public DocumentationInfo() {
+		super();
+	}
 
-    /**
-     * Returns the language of that documentation element.
-     * 
-     * @return The content of that element as text.
-     */
-    public String getTextContent() {
-        return textContent;
-    }
+	/**
+	 * Constructor with text content.
+	 * 
+	 * @param textContent
+	 *            The text content.
+	 */
+	public DocumentationInfo(Element xmlContent) {
+		super();
+		this.xmlContent = xmlContent;
+	}
 
-    /**
-     * Returns the title of that documentation element.
-     * 
-     * @return The title of that documentation element.
-     */
-    public String getTitle() {
-        return title;
-    }
+	/**
+	 * Constructor with text content.
+	 * 
+	 * @param textContent
+	 *            The text content.
+	 */
+	public DocumentationInfo(String textContent) {
+		super();
+		this.textContent = textContent;
+	}
 
-    /**
-     * Returns the content of that element as XML element.
-     * 
-     * @return The content of that element as XML element.
-     */
-    public Element getXmlContent() {
-        return xmlContent;
-    }
+	/**
+	 * Returns the language of that documentation element.
+	 * 
+	 * @return The language of this documentation element.
+	 */
+	public Language getLanguage() {
+		return language;
+	}
 
-    /**
-     * The language of that documentation element.
-     * 
-     * @param language
-     *                The language of that documentation element.
-     */
-    public void setLanguage(Language language) {
-        this.language = language;
-    }
+	/**
+	 * Returns the language of that documentation element.
+	 * 
+	 * @return The content of that element as text.
+	 */
+	public String getTextContent() {
+		return textContent;
+	}
 
-    /**
-     * Sets the content of that element as text.
-     * 
-     * @param textContent
-     *                The content of that element as text.
-     */
-    public void setTextContent(String textContent) {
-        this.textContent = textContent;
-    }
+	/**
+	 * Returns the title of that documentation element.
+	 * 
+	 * @return The title of that documentation element.
+	 */
+	public String getTitle() {
+		return title;
+	}
 
-    /**
-     * Sets the title of that documentation element.
-     * 
-     * @param title
-     *                The title of that documentation element.
-     */
-    public void setTitle(String title) {
-        this.title = title;
-    }
+	/**
+	 * Returns the content of that element as XML element.
+	 * 
+	 * @return The content of that element as XML element.
+	 */
+	public Element getXmlContent() {
+		return xmlContent;
+	}
 
-    /**
-     * Sets the content of that element as XML element.
-     * 
-     * @param xmlContent
-     *                The content of that element as XML element.
-     */
-    public void setXmlContent(Element xmlContent) {
-        this.xmlContent = xmlContent;
-    }
+	/**
+	 * The language of that documentation element.
+	 * 
+	 * @param language
+	 *            The language of that documentation element.
+	 */
+	public void setLanguage(Language language) {
+		this.language = language;
+	}
 
-    /**
-     * Writes the current object as an XML element using the given SAX writer.
-     * 
-     * @param writer
-     *                The SAX writer.
-     * @throws SAXException
-     */
-    public void writeElement(XmlWriter writer) throws SAXException {
-        AttributesImpl attributes = new AttributesImpl();
-        if (getTitle() != null && !getTitle().equals("")) {
-            attributes.addAttribute("", "title", null, "xs:string", getTitle());
-        }
-        if (getLanguage() != null && getLanguage().toString() != null) {
-            attributes.addAttribute("", "xml:lang", null, "xs:string",
-                    getLanguage().toString());
-        }
+	/**
+	 * Sets the content of that element as text.
+	 * 
+	 * @param textContent
+	 *            The content of that element as text.
+	 */
+	public void setTextContent(String textContent) {
+		this.textContent = textContent;
+	}
 
-        if ((getTextContent() == null || getTextContent().equals(""))
-                && getXmlContent() == null) {
-            writer.emptyElement(APP_NAMESPACE, "doc", null, attributes);
-        } else {
+	/**
+	 * Sets the title of that documentation element.
+	 * 
+	 * @param title
+	 *            The title of that documentation element.
+	 */
+	public void setTitle(String title) {
+		this.title = title;
+	}
 
-            if (getXmlContent() != null) {
-                // TODO what do we do?
-            } else {
-                writer.startElement(APP_NAMESPACE, "doc", null, attributes);
-                try {
-                    writer.getWriter().write(getTextContent());
-                } catch (IOException e) {
-                    logger
-                            .log(
-                                    Level.SEVERE,
-                                    "Error when writing the text content of the current \"doc\" tag.",
-                                    e);
-                }
-                writer.endElement(APP_NAMESPACE, "doc");
-            }
-        }
-    }
+	/**
+	 * Sets the content of that element as XML element.
+	 * 
+	 * @param xmlContent
+	 *            The content of that element as XML element.
+	 */
+	public void setXmlContent(Element xmlContent) {
+		this.xmlContent = xmlContent;
+	}
+
+	/**
+	 * Writes the current object as an XML element using the given SAX writer.
+	 * 
+	 * @param writer
+	 *            The SAX writer.
+	 * @throws SAXException
+	 */
+	public void writeElement(XmlWriter writer) throws SAXException {
+		AttributesImpl attributes = new AttributesImpl();
+		if (getTitle() != null && !getTitle().equals("")) {
+			attributes.addAttribute("", "title", null, "xs:string", getTitle());
+		}
+		if (getLanguage() != null && getLanguage().toString() != null) {
+			attributes.addAttribute("", "xml:lang", null, "xs:string",
+					getLanguage().toString());
+		}
+
+		if ((getTextContent() == null || getTextContent().equals(""))
+				&& getXmlContent() == null) {
+			writer.emptyElement(APP_NAMESPACE, "doc", null, attributes);
+		} else {
+
+			if (getXmlContent() != null) {
+				// TODO what do we do?
+			} else {
+				writer.startElement(APP_NAMESPACE, "doc", null, attributes);
+				try {
+					writer.getWriter().write(getTextContent());
+				} catch (IOException e) {
+					logger
+							.log(
+									Level.SEVERE,
+									"Error when writing the text content of the current \"doc\" tag.",
+									e);
+				}
+				writer.endElement(APP_NAMESPACE, "doc");
+			}
+		}
+	}
+
 }
