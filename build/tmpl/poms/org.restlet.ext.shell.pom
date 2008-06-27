@@ -22,13 +22,13 @@
       <dependency>
          <groupId>javax.script</groupId>
          <artifactId>api</artifactId>
-         <version>1.0</version>
+         <version>@lib-script-version@</version>
          <scope>compile</scope>
       </dependency>
       <dependency>
          <groupId>javax.script</groupId>
          <artifactId>js</artifactId>
-         <version>1.0</version>
+         <version>@lib-script-version@</version>
          <scope>runtime</scope>
       </dependency>
       <dependency>

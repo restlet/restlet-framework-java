@@ -932,7 +932,7 @@
       <pomModule name="net" />
       <pomModule name="oauth" />
       <pomModule name="servlet" />
-      <!-- disabled for now  <pomModule name="shell" ext1="jline" /> -->
+      <!-- disabled for now  <pomModule name="shell" ext1="jline" ext2="rhino" ext3="script" /> -->
       <pomModule name="simple" />
       <pomModule name="spring-api" ext1="spring" />
       <pomModule name="spring-nre" ext1="spring" />
