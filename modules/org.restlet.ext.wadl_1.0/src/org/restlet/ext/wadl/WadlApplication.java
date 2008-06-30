@@ -450,7 +450,9 @@ public class WadlApplication extends Application {
     }
 
     /**
-     * Returns a WADL description of the current application.
+     * Returns a WADL description of the current application. By default, this
+     * method discovers all the resources attached to this application. It can
+     * be overriden to add documentation, list of representations, etc.
      * 
      * @return An application description.
      */
