@@ -270,9 +270,11 @@ public class Component extends Restlet {
                 }
 
                 if (server != null) {
-                    String address = addressNode.getNodeValue();
-                    if (address != null) {
-                        server.setAddress(address);
+                    if (addressNode != null) {
+                        String address = addressNode.getNodeValue();
+                        if (address != null) {
+                            server.setAddress(address);
+                        }
                     }
 
                     this.getServers().add(server);
