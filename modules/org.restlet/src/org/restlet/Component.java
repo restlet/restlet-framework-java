@@ -100,6 +100,32 @@ import org.w3c.dom.NodeList;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Component extends Restlet {
+    /**
+     * Used as bootstrap for configuring and running a component in command
+     * line. Just provide as first and unique parameter the path to the XML
+     * file.
+     * 
+     * @param args
+     *                The list of in-line parameters.
+     */
+    public static void main(String[] args) throws Exception {
+        try {
+            if ((args == null) || (args.length != 1)) {
+                // Display program arguments
+                System.err
+                        .println("Can't launch the component. Requires the path to an XML configuration file.\n");
+            } else {
+                // Create and start the component
+                new Component(LocalReference.createFileReference(args[0]))
+                        .start();
+            }
+        } catch (Exception e) {
+            System.err
+                    .println("Can't launch the component.\nAn unexpected exception occurred:");
+            e.printStackTrace(System.err);
+        }
+    }
+
     /** The modifiable list of client connectors. */
     private final ClientList clients;
 
@@ -207,15 +233,17 @@ public class Component extends Restlet {
 
             for (int i = 0; i < serverNodes.getLength(); i++) {
                 Node serverNode = serverNodes.item(i);
-                Node node = serverNode.getAttributes().getNamedItem("protocol");
+                Node item = serverNode.getAttributes().getNamedItem("protocol");
                 Node portNode = serverNode.getAttributes().getNamedItem("port");
+                Node addressNode = serverNode.getAttributes().getNamedItem(
+                        "address");
                 Server server = null;
 
-                if (node == null) {
-                    node = serverNode.getAttributes().getNamedItem("protocols");
+                if (item == null) {
+                    item = serverNode.getAttributes().getNamedItem("protocols");
 
-                    if (node != null) {
-                        String[] protocols = node.getNodeValue().split(" ");
+                    if (item != null) {
+                        String[] protocols = item.getNodeValue().split(" ");
                         List<Protocol> protocolsList = new ArrayList<Protocol>();
 
                         for (int j = 0; j < protocols.length; j++) {
@@ -235,13 +263,18 @@ public class Component extends Restlet {
                         }
                     }
                 } else {
-                    Protocol protocol = getProtocol(node.getNodeValue());
+                    Protocol protocol = getProtocol(item.getNodeValue());
                     server = new Server(getContext(), protocol, getInt(
                             portNode, protocol.getDefaultPort()), this
                             .getServers().getTarget());
                 }
 
                 if (server != null) {
+                    String address = addressNode.getNodeValue();
+                    if (address != null) {
+                        server.setAddress(address);
+                    }
+
                     this.getServers().add(server);
                 }
 
@@ -268,45 +301,7 @@ public class Component extends Restlet {
                     .getElementsByTagName("internalRouter");
 
             if (internalRouterNodes.getLength() > 0) {
-                Node node = internalRouterNodes.item(0);
-                Node item = node.getAttributes().getNamedItem(
-                        "defaultMatchingMode");
-                if (item != null) {
-                    this.getInternalRouter().setDefaultMatchingMode(
-                            getInt(item, getInternalRouter()
-                                    .getDefaultMatchingMode()));
-                }
-
-                item = node.getAttributes().getNamedItem("maxAttempts");
-                if (item != null) {
-                    this.getInternalRouter().setMaxAttempts(
-                            getInt(item, this.getInternalRouter()
-                                    .getMaxAttempts()));
-                }
-
-                item = node.getAttributes().getNamedItem("routingMode");
-                if (item != null) {
-                    this.getInternalRouter().setRoutingMode(
-                            getInt(item, this.getInternalRouter()
-                                    .getRoutingMode()));
-                }
-
-                item = node.getAttributes().getNamedItem("requiredScore");
-                if (item != null) {
-                    this.getInternalRouter().setRequiredScore(
-                            getFloat(item, this.getInternalRouter()
-                                    .getRequiredScore()));
-                }
-
-                item = node.getAttributes().getNamedItem("retryDelay");
-                if (item != null) {
-                    this.getInternalRouter().setRetryDelay(
-                            getLong(item, this.getInternalRouter()
-                                    .getRetryDelay()));
-                }
-
-                // Loops the list of "attach" instructions
-                setAttach(getInternalRouter(), node);
+                parseRouter(getInternalRouter(), internalRouterNodes.item(0));
             }
 
             // Look for logService
@@ -377,58 +372,6 @@ public class Component extends Restlet {
         } catch (Exception e) {
             getLogger().log(Level.WARNING,
                     "Unable to parse the Component XML configuration.", e);
-        }
-    }
-
-    private void setAttach(Router router, Node node) {
-        NodeList childNodes = node.getChildNodes();
-        for (int i = 0; i < childNodes.getLength(); i++) {
-            Node childNode = childNodes.item(i);
-            if ("attach".equals(childNode.getNodeName())) {
-                String uriPattern = null;
-                Node item = childNode.getAttributes()
-                        .getNamedItem("uriPattern");
-                if (item != null) {
-                    uriPattern = item.getNodeValue();
-                } else {
-                    uriPattern = "";
-                }
-
-                item = childNode.getAttributes().getNamedItem("default");
-                boolean bDefault = getBoolean(item, false);
-
-                // Attaches a new route.
-                Route route = null;
-                item = childNode.getAttributes().getNamedItem("targetClass");
-                if (item != null) {
-                    route = attach(router, item.getNodeValue(), uriPattern,
-                            bDefault);
-                } else {
-                    item = childNode.getAttributes().getNamedItem(
-                            "targetDescriptor");
-                    if (item != null) {
-                        route = attachWithDescriptor(router, item
-                                .getNodeValue(), uriPattern, bDefault);
-                    } else {
-                        getLogger()
-                                .log(
-                                        Level.WARNING,
-                                        "Both targetClass name and targetDescriptor are missing. Couldn't attach a new route.");
-                    }
-                }
-
-                if (route != null) {
-                    Template template = route.getTemplate();
-                    item = childNode.getAttributes().getNamedItem(
-                            "matchingMode");
-                    template.setMatchingMode(getInt(item,
-                            Template.MODE_STARTS_WITH));
-                    item = childNode.getAttributes().getNamedItem(
-                            "defaultVariableType");
-                    template.getDefaultVariable().setType(
-                            getInt(item, Variable.TYPE_URI_SEGMENT));
-                }
-            }
         }
     }
 
@@ -829,6 +772,9 @@ public class Component extends Restlet {
      *                the DOM node.
      */
     private void parseHost(VirtualHost host, Node hostNode) {
+        // Update the "Router" attributes.
+        parseRouter(host, hostNode);
+
         Node item = hostNode.getAttributes().getNamedItem("hostDomain");
         if (item != null && item.getNodeValue() != null) {
             host.setHostDomain(item.getNodeValue());
@@ -867,6 +813,112 @@ public class Component extends Restlet {
         }
         // Loops the list of "attach" instructions
         setAttach(host, hostNode);
+    }
+
+    /**
+     * Parse the attributes of a DOM node and update the given router.
+     * 
+     * @param router
+     *                the router to update.
+     * @param hostNode
+     *                the DOM node.
+     */
+    private void parseRouter(Router router, Node routerNode) {
+        Node item = routerNode.getAttributes().getNamedItem(
+                "defaultMatchingMode");
+        if (item != null) {
+            this.getInternalRouter().setDefaultMatchingMode(
+                    getInt(item, getInternalRouter().getDefaultMatchingMode()));
+        }
+
+        item = routerNode.getAttributes().getNamedItem("defaultMatchingQuery");
+        if (item != null) {
+            this.getInternalRouter()
+                    .setDefaultMatchQuery(
+                            getBoolean(item, getInternalRouter()
+                                    .getDefaultMatchQuery()));
+        }
+
+        item = routerNode.getAttributes().getNamedItem("maxAttempts");
+        if (item != null) {
+            this.getInternalRouter().setMaxAttempts(
+                    getInt(item, this.getInternalRouter().getMaxAttempts()));
+        }
+
+        item = routerNode.getAttributes().getNamedItem("routingMode");
+        if (item != null) {
+            this.getInternalRouter().setRoutingMode(
+                    getInt(item, this.getInternalRouter().getRoutingMode()));
+        }
+
+        item = routerNode.getAttributes().getNamedItem("requiredScore");
+        if (item != null) {
+            this.getInternalRouter()
+                    .setRequiredScore(
+                            getFloat(item, this.getInternalRouter()
+                                    .getRequiredScore()));
+        }
+
+        item = routerNode.getAttributes().getNamedItem("retryDelay");
+        if (item != null) {
+            this.getInternalRouter().setRetryDelay(
+                    getLong(item, this.getInternalRouter().getRetryDelay()));
+        }
+
+        // Loops the list of "attach" instructions
+        setAttach(getInternalRouter(), routerNode);
+    }
+
+    private void setAttach(Router router, Node node) {
+        NodeList childNodes = node.getChildNodes();
+        for (int i = 0; i < childNodes.getLength(); i++) {
+            Node childNode = childNodes.item(i);
+            if ("attach".equals(childNode.getNodeName())) {
+                String uriPattern = null;
+                Node item = childNode.getAttributes()
+                        .getNamedItem("uriPattern");
+                if (item != null) {
+                    uriPattern = item.getNodeValue();
+                } else {
+                    uriPattern = "";
+                }
+
+                item = childNode.getAttributes().getNamedItem("default");
+                boolean bDefault = getBoolean(item, false);
+
+                // Attaches a new route.
+                Route route = null;
+                item = childNode.getAttributes().getNamedItem("targetClass");
+                if (item != null) {
+                    route = attach(router, item.getNodeValue(), uriPattern,
+                            bDefault);
+                } else {
+                    item = childNode.getAttributes().getNamedItem(
+                            "targetDescriptor");
+                    if (item != null) {
+                        route = attachWithDescriptor(router, item
+                                .getNodeValue(), uriPattern, bDefault);
+                    } else {
+                        getLogger()
+                                .log(
+                                        Level.WARNING,
+                                        "Both targetClass name and targetDescriptor are missing. Couldn't attach a new route.");
+                    }
+                }
+
+                if (route != null) {
+                    Template template = route.getTemplate();
+                    item = childNode.getAttributes().getNamedItem(
+                            "matchingMode");
+                    template.setMatchingMode(getInt(item,
+                            Template.MODE_STARTS_WITH));
+                    item = childNode.getAttributes().getNamedItem(
+                            "defaultVariableType");
+                    template.getDefaultVariable().setType(
+                            getInt(item, Variable.TYPE_URI_SEGMENT));
+                }
+            }
+        }
     }
 
     /**
@@ -1072,31 +1124,5 @@ public class Component extends Restlet {
      */
     public synchronized void updateHosts() throws Exception {
         getHelper().update();
-    }
-
-    /**
-     * Used as bootstrap for configuring and running a component in command
-     * line. Just provide as first and unique parameter the path to the XML
-     * file.
-     * 
-     * @param args
-     *                The list of in-line parameters.
-     */
-    public static void main(String[] args) throws Exception {
-        try {
-            if ((args == null) || (args.length != 1)) {
-                // Display program arguments
-                System.err
-                        .println("Can't launch the component. Requires the path to an XML configuration file.\n");
-            } else {
-                // Create and start the component
-                new Component(LocalReference.createFileReference(args[0]))
-                        .start();
-            }
-        } catch (Exception e) {
-            System.err
-                    .println("Can't launch the component.\nAn unexpected exception occurred:");
-            e.printStackTrace(System.err);
-        }
     }
 }

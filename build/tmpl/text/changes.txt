@@ -35,6 +35,8 @@ Changes log
        	- Allow the routing of URIs with or without taking into 
        	  account the query part. Suggested by Jim Alateras and 
        	  contributed by Bruno Dumon.
+       	- Completed the Component's XML config with the default query 
+       	  match setting defined on routers. Suggested by Bruno Dumon.
     - NRE and Extension Enhancements
         - Added a static HttpServletRequest getRequest(Request) method
           to the Servlet extension.
