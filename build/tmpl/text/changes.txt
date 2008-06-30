@@ -17,6 +17,8 @@ Changes log
         - Fixed potential NPE when using Velocity with template 
           representations having no modification date. Reported by 
           Evan Worley.
+        - Moved generation of entries at the the end of Atom feeds. 
+          Reported by Bruno Harbulot.
     - API Enhancements
         - Added a "Request.originalRef" property containing the URI 
           reference originally requested by the client. Clarified the

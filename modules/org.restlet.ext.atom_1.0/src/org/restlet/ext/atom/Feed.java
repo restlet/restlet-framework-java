@@ -806,12 +806,6 @@ public class Feed extends SaxRepresentation {
             }
         }
 
-        if (getEntries() != null) {
-            for (Entry entry : getEntries()) {
-                entry.writeElement(writer);
-            }
-        }
-
         if (getGenerator() != null) {
             getGenerator().writeElement(writer);
         }
@@ -849,6 +843,12 @@ public class Feed extends SaxRepresentation {
 
         if (getUpdated() != null) {
             Text.writeElement(writer, getUpdated(), ATOM_NAMESPACE, "updated");
+        }
+
+        if (getEntries() != null) {
+            for (Entry entry : getEntries()) {
+                entry.writeElement(writer);
+            }
         }
 
         writer.endElement(ATOM_NAMESPACE, "feed");
