@@ -14,6 +14,9 @@ Changes log
           headers. Reported by Stephan Koops.
         - Fixed potential concurrency issues in Response and
           WrapperList/Series/Form. Reported by Stephan Koops.
+        - Fixed potential NPE when using Velocity with template 
+          representations having no modification date. Reported by 
+          Evan Worley.
     - API Enhancements
         - Added a "Request.originalRef" property containing the URI 
           reference originally requested by the client. Clarified the

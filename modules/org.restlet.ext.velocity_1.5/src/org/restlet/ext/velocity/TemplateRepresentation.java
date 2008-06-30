@@ -24,6 +24,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
+import java.util.Date;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
@@ -162,8 +163,9 @@ public class TemplateRepresentation extends OutputRepresentation {
                 .setEncoding((templateRepresentation.getCharacterSet() == null) ? Charset
                         .defaultCharset().name()
                         : templateRepresentation.getCharacterSet().getName());
-        this.template.setLastModified(templateRepresentation
-                .getModificationDate().getTime());
+        this.template.setLastModified((templateRepresentation
+                .getModificationDate() == null) ? new Date().getTime()
+                : templateRepresentation.getModificationDate().getTime());
         this.template.setName("org.restlet.resource.representation");
         this.template.setRuntimeServices(RuntimeSingleton.getRuntimeServices());
         this.template.setResourceLoader(new RepresentationResourceLoader(
