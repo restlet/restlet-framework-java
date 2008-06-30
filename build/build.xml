@@ -91,22 +91,42 @@
 
    <!-- Set the property that will enable the FindBugs target -->
    <condition property="do-findbugs">
-      <istrue value="${findbugs}" />
+      <and>
+         <istrue value="${findbugs}" />
+         <istrue value="${verify}" />
+      </and>
    </condition>
 
    <!-- Set the property that will enable the CheckStyle target -->
    <condition property="do-checkstyle">
-      <istrue value="${checkstyle}" />
+      <and>
+         <istrue value="${checkstyle}" />
+         <istrue value="${verify}" />
+      </and>
    </condition>
 
    <!-- Set the property that will enable the Nsis target -->
    <condition property="do-nsis">
-      <istrue value="${nsis}" />
+      <and>
+         <istrue value="${nsis}" />
+         <istrue value="${package}" />
+      </and>
+
    </condition>
 
    <!-- Set the property that will enable the stage-maven target -->
    <condition property="do-maven">
       <istrue value="${maven}" />
+   </condition>
+
+   <!-- Set the property that will enable the verify target -->
+   <condition property="do-verify">
+      <istrue value="${verify}" />
+   </condition>
+
+   <!-- Set the property that will enable the package target -->
+   <condition property="do-package">
+      <istrue value="${package}" />
    </condition>
 
    <!-- Set the property that will enable the generation of the Javadoc of implementation classes -->
@@ -1163,7 +1183,7 @@
 </target>
 
 <!-- VERIFY target -->
-<target name="verify" depends="verify-ant, verify-tests, verify-findbugs, verify-checkstyle" description="Verify build." />
+<target name="verify" if="do-verify" depends="verify-ant, verify-tests, verify-findbugs, verify-checkstyle" description="Verify build." />
 
 <target name="verify-ant" if="ant-old" description="Check the Ant version for potential issues with JUnit.">
 <echo message="For easier integration with JUnit, we recommand usage of Ant 1.7." />
@@ -1171,7 +1191,7 @@
 <echo message="Current version: ${ant.version}" />
 </target>
 
-<target name="verify-tests" depends="verify-ant" description="Execute the tests suites.">
+<target name="verify-tests" if="do-verify" depends="verify-ant" description="Execute the tests suites.">
 <mkdir dir="${temp}/test" />
 <property name="server.testkeystore.location" location="${mod}/${mod-ri-test-id}/dummy.jks" />
 <property name="server.testkeystore.password" value="testtest" />
@@ -1434,12 +1454,12 @@
 </target>
 
 <!-- PACKAGE target -->
-<target name="package" depends="package-classic" description="Generate the distribution." />
+<target name="package" if="do-package" depends="package-classic" description="Generate the distribution." />
 
-<target name="package-classic" depends="package-classic-zip, package-classic-nsis" description="Generate the classic distributions." />
+<target name="package-classic" if="do-package" depends="package-classic-zip, package-classic-nsis" description="Generate the classic distributions." />
 
 <!-- PACKAGE-ZIP target (generation of final Zip file) -->
-<target name="package-classic-zip" description="Generate the final zip file for the classic distribution.">
+<target name="package-classic-zip" if="do-package" description="Generate the final zip file for the classic distribution.">
 <zip destfile="${dist-base}/restlet-${version-compact}.zip" basedir="${dist-base}/classic" includes="restlet-${version-compact}/**/*" />
 </target>
 
