@@ -112,6 +112,12 @@ public class Route extends Filter {
     /** The list of request entity parameters to extract. */
     private volatile List<ExtractInfo> entityExtracts;
 
+    /**
+     * Indicates whether the query part should be taken into account when
+     * matching a reference with the template.
+     */
+    private volatile boolean matchQuery = true;
+
     /** The list of query parameters to extract. */
     private volatile List<ExtractInfo> queryExtracts;
 
@@ -186,7 +192,8 @@ public class Route extends Filter {
     protected int beforeHandle(Request request, Response response) {
         // 1 - Parse the template variables and adjust the base reference
         if (getTemplate() != null) {
-            String remainingPart = request.getResourceRef().getRemainingPart();
+            String remainingPart = request.getResourceRef().getRemainingPart(
+                    false, getMatchQuery());
             int matchedLength = getTemplate().parse(remainingPart, request);
 
             if (getLogger().isLoggable(Level.FINER)) {
@@ -217,7 +224,8 @@ public class Route extends Filter {
                     getLogger().fine(
                             "New remaining part: "
                                     + request.getResourceRef()
-                                            .getRemainingPart());
+                                            .getRemainingPart(false,
+                                                    getMatchQuery()));
                 }
 
                 if (getLogger().isLoggable(Level.FINE)) {
@@ -392,6 +400,17 @@ public class Route extends Filter {
     }
 
     /**
+     * Indicates whether the query part should be taken into account when
+     * matching a reference with the template.
+     * 
+     * @return True if the query part of the reference should be taken into
+     *         account, false otherwise.
+     */
+    public boolean getMatchQuery() {
+        return this.matchQuery;
+    }
+
+    /**
      * Returns the list of query extracts.
      * 
      * @return The list of query extracts.
@@ -459,7 +478,8 @@ public class Route extends Filter {
 
         if ((getRouter() != null) && (request.getResourceRef() != null)
                 && (getTemplate() != null)) {
-            String remainingPart = request.getResourceRef().getRemainingPart();
+            String remainingPart = request.getResourceRef().getRemainingPart(
+                    false, getMatchQuery());
             if (remainingPart != null) {
                 int matchedLength = getTemplate().match(remainingPart);
 
@@ -484,6 +504,18 @@ public class Route extends Filter {
         }
 
         return result;
+    }
+
+    /**
+     * Sets whether the matching should be done on the URI with or without query
+     * string.
+     * 
+     * @param matchQuery
+     *                True if the matching should be done with the query string,
+     *                false otherwise.
+     */
+    public void setMatchQuery(boolean matchQuery) {
+        this.matchQuery = matchQuery;
     }
 
     /**

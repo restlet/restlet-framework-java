@@ -1546,20 +1546,7 @@ public class Reference {
      * @see #getRemainingPart(boolean)
      */
     public String getRemainingPart() {
-        String result = null;
-        String all = toString(true, false);
-
-        if (getBaseRef() != null) {
-            String base = getBaseRef().toString(true, false);
-
-            if ((base != null) && all.startsWith(base)) {
-                result = all.substring(base.length());
-            }
-        } else {
-            result = all;
-        }
-
-        return result;
+        return getRemainingPart(false, true);
     }
 
     /**
@@ -1572,7 +1559,37 @@ public class Reference {
      * @see #getRemainingPart()
      */
     public String getRemainingPart(boolean decode) {
-        return decode ? decode(getRemainingPart()) : getRemainingPart();
+        return getRemainingPart(true, true);
+    }
+
+    /**
+     * Returns the optionally decoded remaining part with or without the query
+     * part of the reference.
+     * 
+     * @param decode
+     *                Indicates if the result should be decoded using the
+     *                {@link #decode(String)} method.
+     * @param query
+     *                True if the query part should be returned, false
+     *                otherwise.
+     * @return The optionally decoded remaining part.
+     * @see #getRemainingPart()
+     */
+    public String getRemainingPart(boolean decode, boolean query) {
+        String result = null;
+        String all = toString(query, false);
+
+        if (getBaseRef() != null) {
+            String base = getBaseRef().toString(query, false);
+
+            if ((base != null) && all.startsWith(base)) {
+                result = all.substring(base.length());
+            }
+        } else {
+            result = all;
+        }
+
+        return decode ? decode(result) : result;
     }
 
     /**

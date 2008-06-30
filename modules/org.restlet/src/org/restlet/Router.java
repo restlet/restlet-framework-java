@@ -107,6 +107,12 @@ public class Router extends Restlet {
     /** The default matching mode to use when selecting routes based on URIs. */
     private volatile int defaultMatchingMode;
 
+    /**
+     * The default setting for whether the routing should be done on URIs with
+     * or without taking into account query string.
+     */
+    private volatile boolean defaultMatchQuery;
+
     /** The default route tested if no other one was available. */
     private volatile Route defaultRoute;
 
@@ -151,6 +157,7 @@ public class Router extends Restlet {
         super(context);
         this.routes = new RouteList();
         this.defaultMatchingMode = Template.MODE_STARTS_WITH;
+        this.defaultMatchQuery = true;
         this.defaultRoute = null;
         this.finderClass = Finder.class;
         this.routingMode = BEST;
@@ -273,6 +280,7 @@ public class Router extends Restlet {
     protected Route createRoute(String uriPattern, Restlet target) {
         Route result = new Route(this, uriPattern, target);
         result.getTemplate().setMatchingMode(getDefaultMatchingMode());
+        result.setMatchQuery(defaultMatchQuery);
         return result;
     }
 
@@ -314,6 +322,17 @@ public class Router extends Restlet {
      */
     public int getDefaultMatchingMode() {
         return defaultMatchingMode;
+    }
+
+    /**
+     * Returns the default setting for whether the routing should be done on
+     * URIs with or without taking into account query string.
+     * 
+     * @return the default setting for whether the routing should be done on
+     *         URIs with or without taking into account query string.
+     */
+    public boolean getDefaultMatchQuery() {
+        return defaultMatchQuery;
     }
 
     /**
@@ -487,6 +506,18 @@ public class Router extends Restlet {
      */
     public void setDefaultMatchingMode(int defaultMatchingMode) {
         this.defaultMatchingMode = defaultMatchingMode;
+    }
+
+    /**
+     * Sets the default setting for whether the routing should be done on URIs
+     * with or without taking into account query string.
+     * 
+     * @param defaultMatchQuery
+     *                The default setting for whether the routing should be done
+     *                on URIs with or without taking into account query string.
+     */
+    public void setDefaultMatchQuery(boolean defaultMatchQuery) {
+        this.defaultMatchQuery = defaultMatchQuery;
     }
 
     /**
