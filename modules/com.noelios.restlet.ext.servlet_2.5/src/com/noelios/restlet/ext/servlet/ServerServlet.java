@@ -119,8 +119,8 @@ public class ServerServlet extends HttpServlet {
     private static final String COMPONENT_KEY = "org.restlet.component";
 
     /**
-     * Name of the attribute key containing a reference to a list of supported
-     * client protocols.
+     * Name of the attribute key containing a list of supported client
+     * protocols.
      */
     private static final String CLIENTS_KEY = "org.restlet.clients";
 
