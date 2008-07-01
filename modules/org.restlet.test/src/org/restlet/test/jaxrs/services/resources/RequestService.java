@@ -52,8 +52,7 @@ public class RequestService {
     @GET
     @Path("date")
     @ProduceMime("text/plain")
-    public Response get(@Context
-    Request request) {
+    public Response get(@Context Request request) {
         Date modificDate = getLastModificationDateFromDatastore();
         EntityTag entityTag = getEntityTagFromDatastore();
         ResponseBuilder resp = request.evaluatePreconditions(modificDate, entityTag);
@@ -69,8 +68,7 @@ public class RequestService {
 
     @PUT
     @Path("date")
-    public Response put(@Context
-    Request request) {
+    public Response put(@Context Request request) {
         Date modificDate = getLastModificationDateFromDatastore();
         EntityTag entityTag = getEntityTagFromDatastore();
         ResponseBuilder resp = request.evaluatePreconditions(modificDate, entityTag);
@@ -97,9 +95,8 @@ public class RequestService {
     
     @GET
     @Path("selectVariants")
-    public Response getSelectVariants(@Context
-    Request request)
-    {
+    public Response getSelectVariants(@Context Request request) {
+        // TESTEN test VariantListBuilder
         List<Variant> variants = new ArrayList<Variant>();
         variants.add(new Variant(MediaType.TEXT_HTML_TYPE, "en", null));
         variants.add(new Variant(MediaType.TEXT_PLAIN_TYPE, "en", null));

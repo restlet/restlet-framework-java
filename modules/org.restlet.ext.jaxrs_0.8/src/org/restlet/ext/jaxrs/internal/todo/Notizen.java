@@ -24,6 +24,9 @@ package org.restlet.ext.jaxrs.internal.todo;
  */
 public class Notizen {
 
+    // REQUEST javadoc of attribute setters of CacheControl does not ease it to
+    // use the class
+
     // LATER @Path(limited=false)  effects only trailing values; implement when
     // @Path template matching is ready
     
