@@ -79,6 +79,20 @@ import com.noelios.restlet.http.HttpServerHelper;
  * additional initialization parameters to your Restlet application, and share
  * them with existing Servlets.<br>
  * <br>
+ * You can also add an optionnal "org.restlet.clients" context parameter that
+ * contains a space separated list of client protocols supported by the
+ * underlying component. For each one, a new client connector is added to the
+ * Component instance. Here is sample value of such parameter:
+ * 
+ * <pre>
+ *         &lt;!-- List of supported client protocols --&gt;
+ *         &lt;context-param&gt;
+ *                 &lt;param-name&gt;org.restlet.clients&lt;/param-name&gt;
+ *                 &lt;param-value&gt;HTTP HTTPS FILE&lt;/param-value&gt;
+ *         &lt;/context-param&gt;
+ * </pre>
+ * 
+ * <br>
  * It is also possible to specify a component class to be instantiated instead
  * of a default component. You just need to add a "org.restlet.component"
  * context parameter to your ServerServlet, with the qualified class name to
@@ -103,6 +117,12 @@ public class ServerServlet extends HttpServlet {
      * component.
      */
     private static final String COMPONENT_KEY = "org.restlet.component";
+
+    /**
+     * Name of the attribute key containing a reference to a list of supported
+     * client protocols.
+     */
+    private static final String CLIENTS_KEY = "org.restlet.clients";
 
     /**
      * The Servlet context initialization parameter's name containing the name
@@ -284,7 +304,7 @@ public class ServerServlet extends HttpServlet {
     /**
      * Creates the single Component used by this Servlet.
      * 
-     * @return The newly created Component or null if unable to create
+     * @return The newly created Component or null if unable to create.
      */
     @SuppressWarnings("unchecked")
     protected Component createComponent() {
@@ -359,6 +379,15 @@ public class ServerServlet extends HttpServlet {
                                     getServletConfig()));
         }
 
+        // Define the list of supported client protocols.
+        String clientProtocolsString = getInitParameter(CLIENTS_KEY, null);
+        if (component != null && clientProtocolsString != null) {
+            String[] clientProtocols = clientProtocolsString.split(" ");
+            for (String clientProtocol : clientProtocols) {
+                component.getClients().add(Protocol.valueOf(clientProtocol));
+            }
+        }
+
         return component;
     }
 
@@ -415,22 +444,24 @@ public class ServerServlet extends HttpServlet {
 
         if (result == null) {
             synchronized (ServerServlet.class) {
-                // Find the attribute name to use to store the application
-                String applicationAttributeName = getInitParameter(
-                        NAME_APPLICATION_ATTRIBUTE,
-                        NAME_APPLICATION_ATTRIBUTE_DEFAULT);
-
-                // Look up the attribute for a target
-                result = (Application) getServletContext().getAttribute(
-                        applicationAttributeName);
-
                 if (result == null) {
-                    result = createApplication(getComponent().getContext());
-                    getServletContext().setAttribute(applicationAttributeName,
-                            result);
-                }
+                    // Find the attribute name to use to store the application
+                    String applicationAttributeName = getInitParameter(
+                            NAME_APPLICATION_ATTRIBUTE,
+                            NAME_APPLICATION_ATTRIBUTE_DEFAULT);
 
-                this.application = result;
+                    // Look up the attribute for a target
+                    result = (Application) getServletContext().getAttribute(
+                            applicationAttributeName);
+
+                    if (result == null) {
+                        result = createApplication(getComponent().getContext());
+                        getServletContext().setAttribute(
+                                applicationAttributeName, result);
+                    }
+
+                    this.application = result;
+                }
             }
         }
 
@@ -459,22 +490,24 @@ public class ServerServlet extends HttpServlet {
 
         if (result == null) {
             synchronized (ServerServlet.class) {
-                // Find the attribute name to use to store the component
-                String componentAttributeName = getInitParameter(
-                        NAME_COMPONENT_ATTRIBUTE,
-                        NAME_COMPONENT_ATTRIBUTE_DEFAULT);
-
-                // Look up the attribute for a target
-                result = (Component) getServletContext().getAttribute(
-                        componentAttributeName);
-
                 if (result == null) {
-                    result = createComponent();
-                    getServletContext().setAttribute(componentAttributeName,
-                            result);
-                }
+                    // Find the attribute name to use to store the component
+                    String componentAttributeName = getInitParameter(
+                            NAME_COMPONENT_ATTRIBUTE,
+                            NAME_COMPONENT_ATTRIBUTE_DEFAULT);
 
-                this.component = result;
+                    // Look up the attribute for a target
+                    result = (Component) getServletContext().getAttribute(
+                            componentAttributeName);
+
+                    if (result == null) {
+                        result = createComponent();
+                        getServletContext().setAttribute(
+                                componentAttributeName, result);
+                    }
+
+                    this.component = result;
+                }
             }
         }
 
@@ -519,21 +552,25 @@ public class ServerServlet extends HttpServlet {
 
         if (result == null) {
             synchronized (ServerServlet.class) {
-                // Find the attribute name to use to store the server reference
-                String serverAttributeName = getInitParameter(
-                        NAME_SERVER_ATTRIBUTE, NAME_SERVER_ATTRIBUTE_DEFAULT);
-
-                // Look up the attribute for a target
-                result = (HttpServerHelper) getServletContext().getAttribute(
-                        serverAttributeName);
-
                 if (result == null) {
-                    result = createServer(request);
-                    getServletContext().setAttribute(serverAttributeName,
-                            result);
-                }
+                    // Find the attribute name to use to store the server
+                    // reference
+                    String serverAttributeName = getInitParameter(
+                            NAME_SERVER_ATTRIBUTE,
+                            NAME_SERVER_ATTRIBUTE_DEFAULT);
 
-                this.helper = result;
+                    // Look up the attribute for a target
+                    result = (HttpServerHelper) getServletContext()
+                            .getAttribute(serverAttributeName);
+
+                    if (result == null) {
+                        result = createServer(request);
+                        getServletContext().setAttribute(serverAttributeName,
+                                result);
+                    }
+
+                    this.helper = result;
+                }
             }
         }
 
