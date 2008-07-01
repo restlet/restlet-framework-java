@@ -43,6 +43,7 @@ import org.restlet.service.TunnelService;
  * should be especially careful when storing state in member variables.
  * 
  * @author Jerome Louvel (contact@noelios.com)
+ * @author Stephan Koops
  */
 public class TunnelFilter extends Filter {
 
@@ -109,7 +110,7 @@ public class TunnelFilter extends Filter {
 
         // Tunnel the client preferences for all methods
         if (tunnelService.isPreferencesTunnel()) {
-            // in JAX-RS this is not only for GET; it is also useful for
+            // in JAX-RS this is not only for GET; it is also required for
             // responses to other methods.
             Reference resourceRef = request.getResourceRef();
 
@@ -194,5 +195,4 @@ public class TunnelFilter extends Filter {
             }
         }
     }
-
 }
