@@ -742,7 +742,7 @@ public class WadlRepresentation extends SaxRepresentation {
     public Representation getHtmlRepresentation() {
         Representation representation = null;
         URL wadlHtmlXsltUrl = Engine.getClassLoader().getResource(
-                "org/restlet/ext/wadl/wadl_documentation.xsl");
+                "org/restlet/ext/wadl/htmlConvert.xsl");
         if (wadlHtmlXsltUrl != null) {
             try {
                 InputRepresentation xslRep = new InputRepresentation(
