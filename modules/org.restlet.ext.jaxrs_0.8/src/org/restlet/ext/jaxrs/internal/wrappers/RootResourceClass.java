@@ -173,7 +173,7 @@ public class RootResourceClass extends ResourceClass {
         }
         ResourceObject rootResourceObject = new ResourceObject(instance, this);
         try {
-            this.injectHelper.injectInto(instance, !this.singelton);
+            this.injectHelper.injectInto(instance, true);
         } catch (InjectException e) {
             throw new InstantiateException(e);
         }
