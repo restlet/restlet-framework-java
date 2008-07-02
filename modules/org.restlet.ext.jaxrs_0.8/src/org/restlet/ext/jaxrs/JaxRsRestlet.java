@@ -833,6 +833,7 @@ public class JaxRsRestlet extends Restlet {
             // ensures that a supported character set is set
             repr.setCharacterSet(getSupportedCharSet(repr.getCharacterSet()));
             return repr;
+            // LATER der MediaType muss hier noch rein
         }
         Class<? extends Object> entityClass = entity.getClass();
         Type genericReturnType = null;

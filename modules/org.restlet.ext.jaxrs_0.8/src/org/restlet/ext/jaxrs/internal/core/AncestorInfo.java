@@ -19,6 +19,7 @@ package org.restlet.ext.jaxrs.internal.core;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.restlet.ext.jaxrs.internal.util.EncodeOrCheck;
@@ -80,7 +81,7 @@ class AncestorInfo {
                     // works for now. Test it with %-encoding for "/"
                     urisDecoded.add(EncodeOrCheck.all(uriEncoded, true));
                 }
-                this.urisDecoded = urisDecoded;
+                this.urisDecoded = Collections.unmodifiableList(urisDecoded);
             }
             return this.urisDecoded;
         } else {

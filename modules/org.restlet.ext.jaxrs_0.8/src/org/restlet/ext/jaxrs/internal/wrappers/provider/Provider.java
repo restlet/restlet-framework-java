@@ -431,6 +431,9 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
         iph.injectInto(this.jaxRsProvider, !this.singelton);
     }
 
+    // TODO before a call of a message body reader or writer the current state
+    // of the matched resources and URIs must be stored fpr the current thread.
+    
     /**
      * Returns true, if this Provider is also a
      * {@link javax.ws.rs.ext.ContextResolver}, otherwise false.
