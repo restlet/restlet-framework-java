@@ -24,11 +24,14 @@ import java.util.logging.Logger;
 
 import javax.ws.rs.Encoded;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.ext.ContextResolver;
 
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalMethodParamTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnMethodException;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.util.PathRegExp;
 import org.restlet.ext.jaxrs.internal.util.Util;
@@ -53,10 +56,28 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
      */
     final Method executeMethod;
 
-    final ResourceClass resourceClass;
-
     final ParameterList parameters;
 
+    final ResourceClass resourceClass;
+
+    /**
+     * 
+     * @param executeMethod
+     * @param annotatedMethod
+     * @param resourceClass
+     * @param tlContext
+     * @param entityProviders
+     * @param allCtxResolvers
+     * @param extensionBackwardMapping
+     * @param entityAllowed
+     * @param logger
+     * @throws IllegalPathOnMethodException
+     * @throws IllegalArgumentException if the annotated method is null
+     * @throws MissingAnnotationException
+     * @throws IllegalMethodParamTypeException
+     *                 if one of the parameters annotated with &#64;{@link Context}
+     *                 has a type that must not be annotated with &#64;{@link Context}.
+     */
     AbstractMethodWrapper(Method executeMethod, Method annotatedMethod,
             ResourceClass resourceClass, ThreadLocalizedContext tlContext,
             EntityProviders entityProviders,
@@ -64,7 +85,7 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
             ExtensionBackwardMapping extensionBackwardMapping,
             boolean entityAllowed, Logger logger)
             throws IllegalPathOnMethodException, IllegalArgumentException,
-            MissingAnnotationException {
+            MissingAnnotationException, IllegalMethodParamTypeException {
         super(PathRegExp.createForMethod(annotatedMethod));
         this.executeMethod = executeMethod;
         this.executeMethod.setAccessible(true);
@@ -72,9 +93,13 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
         this.resourceClass = resourceClass;
         boolean leaveEncoded = resourceClass.isLeaveEncoded()
                 || annotatedMethod.isAnnotationPresent(Encoded.class);
-        this.parameters = new ParameterList(executeMethod, annotatedMethod,
-                tlContext, leaveEncoded, entityProviders, allCtxResolvers,
-                extensionBackwardMapping, entityAllowed, logger);
+        try {
+            this.parameters = new ParameterList(executeMethod, annotatedMethod,
+                    tlContext, leaveEncoded, entityProviders, allCtxResolvers,
+                    extensionBackwardMapping, entityAllowed, logger);
+        } catch (IllegalTypeException e) {
+            throw new IllegalMethodParamTypeException(e);
+        }
     }
 
     /**

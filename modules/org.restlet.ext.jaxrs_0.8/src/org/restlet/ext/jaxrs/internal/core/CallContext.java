@@ -17,6 +17,8 @@
  */
 package org.restlet.ext.jaxrs.internal.core;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,13 +26,18 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.ApplicationConfig;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.EntityTag;
@@ -40,6 +47,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
+import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Variant;
 import javax.ws.rs.core.Response.ResponseBuilder;
@@ -49,8 +57,10 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Conditions;
 import org.restlet.data.Dimension;
+import org.restlet.data.Form;
 import org.restlet.data.Language;
 import org.restlet.data.Method;
+import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
@@ -71,8 +81,8 @@ import org.restlet.resource.Representation;
  * 
  * @author Stephan Koops
  */
-public class CallContext extends JaxRsUriInfo implements UriInfo,
-        javax.ws.rs.core.Request, HttpHeaders, SecurityContext {
+public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
+        SecurityContext {
 
     /**
      * Iterator to return the values for a matrix parameter.
@@ -84,13 +94,13 @@ public class CallContext extends JaxRsUriInfo implements UriInfo,
         /** Iterates over the matrix parameters of one path segment */
         private Iterator<Map.Entry<String, List<String>>> matrixParamIter;
 
-        private String mpName;
+        private final String mpName;
 
         private Iterator<String> mpValueIter;
 
         private String nextMpValue;
 
-        private Iterator<PathSegment> pathSegmentIter;
+        private final Iterator<PathSegment> pathSegmentIter;
 
         MatrixParamEncIter(String mpName, List<PathSegment> pathSegmentsEnc) {
             this.pathSegmentIter = pathSegmentsEnc.iterator();
@@ -144,13 +154,8 @@ public class CallContext extends JaxRsUriInfo implements UriInfo,
     private static final int STATUS_PREC_FAILED = Status.CLIENT_ERROR_PRECONDITION_FAILED
             .getCode();
 
-    /**
-     * the unmodifiable List of accepted {@link MediaType}s. Lazy
-     * initialization by getter.
-     * 
-     * @see #getAcceptableMediaTypes()
-     */
-    private List<MediaType> acceptedMediaTypes;
+    private static final Logger unexpectedLogger = Logger
+            .getLogger("JaxRsUriInfo.unexpected");
 
     /**
      * the unmodifiable List of accepted labuages. Lazy initialization by
@@ -160,21 +165,60 @@ public class CallContext extends JaxRsUriInfo implements UriInfo,
      */
     private List<String> acceptedLanguages;
 
-    private SortedMetadata<org.restlet.data.MediaType> accMediaTypes;
+    /**
+     * the unmodifiable List of accepted {@link MediaType}s. Lazy
+     * initialization by getter.
+     * 
+     * @see #getAcceptableMediaTypes()
+     */
+    private List<MediaType> acceptedMediaTypes;
+
+    private final SortedMetadata<org.restlet.data.MediaType> accMediaTypes;
+
+    /** contains the current value of the ancestor resources */
+    private LinkedList<Object> ancestorResources = new LinkedList<Object>();
+
+    /** contains the current value of the ancestor resource URIs */
+    private LinkedList<String> ancestorResourceURIs = new LinkedList<String>();
+
+    private String baseUri;
 
     private Map<String, Cookie> cookies;
 
     private String language;
 
+    private Object lastAncestorResource;
+
+    private String lastAncestorResourceURI;
+
     private MediaType mediaType;
 
-    private Request request;
+    private MultivaluedMap<String, String> pathParametersDecoded;
+
+    /** is null, if no templateParameters given on creation */
+    private MultivaluedMap<String, String> pathParametersEncoded;
+
+    private List<PathSegment> pathSegmentsDecoded = null;
+
+    private List<PathSegment> pathSegmentsEncoded = null;
+
+    private MultivaluedMap<String, String> queryParametersDecoded;
+
+    private MultivaluedMap<String, String> queryParametersEncoded;
+
+    private boolean readOnly = false;
+
+    private final Reference referenceCut;
+
+    private final Reference referenceOriginal;
+
+    private final Request request;
 
     private UnmodifiableMultivaluedMap<String, String> requestHeaders;
 
-    private org.restlet.data.Response response;
+    private final org.restlet.data.Response response;
 
-    private RoleChecker roleChecker;
+    private final RoleChecker roleChecker;
 
     /**
      * 
@@ -194,19 +238,73 @@ public class CallContext extends JaxRsUriInfo implements UriInfo,
      */
     public CallContext(Request request, org.restlet.data.Response response,
             RoleChecker roleChecker) {
-        super(request.getOriginalRef(), request.getResourceRef(), false);
-        // (request == null) already catched by earlier NPE
+        if (request == null)
+            throw new IllegalArgumentException(
+                    "The Restlet Request must not be null");
         if (response == null)
             throw new IllegalArgumentException(
                     "The Restlet Response must not be null");
         if (roleChecker == null)
             throw new IllegalArgumentException(
                     "The RoleChecker must not be null.");
+        Reference referenceCut = request.getResourceRef();
+        if (referenceCut == null)
+            throw new IllegalArgumentException(
+                    "The request reference must not be null");
+        if (referenceCut.getBaseRef() == null)
+            throw new IllegalArgumentException(
+                    "The request reference must contains a baseRef");
+        Reference referenceOriginal = request.getOriginalRef();
+        if (referenceOriginal == null)
+            throw new IllegalArgumentException(
+                    "The request.originalRef must not be null");
+        this.referenceCut = referenceCut;
+        this.referenceOriginal = referenceOriginal;
+        this.readOnly = false;
         this.request = request;
         this.response = response;
-        this.roleChecker = roleChecker;
+        if (roleChecker != null)
+            this.roleChecker = roleChecker;
+        else
+            this.roleChecker = RoleChecker.REJECT_WITH_ERROR;
         this.accMediaTypes = SortedMetadata.getForMediaTypes(request
                 .getClientInfo().getAcceptedMediaTypes());
+    }
+
+    /**
+     * also useable after {@link #setReadOnly()}
+     * 
+     * @param resourceObject
+     * @param newUriPart
+     * @throws URISyntaxException
+     * @see UriInfo#getAncestorResources()
+     * @see UriInfo#getAncestorResourceURIs()
+     */
+    public void addForAncestor(Object resourceObject, String newUriPart) {
+        if (resourceObject == null)
+            throw new IllegalArgumentException(
+                    "The resource object must not be null");
+        if (newUriPart == null)
+            throw new IllegalArgumentException(
+                    "The new URI part must not be null");
+
+        StringBuilder newUri = new StringBuilder();
+
+        if (lastAncestorResourceURI != null) {
+            if (newUriPart.length() == 0)
+                throw new IllegalArgumentException(
+                        "The new URI part must not be empty");
+            ancestorResources.addFirst(lastAncestorResource);
+            ancestorResourceURIs.addFirst(lastAncestorResourceURI);
+            newUri.append(lastAncestorResourceURI);
+        }
+
+        if (newUriPart.length() == 0 || newUriPart.charAt(0) != '/')
+            newUri.append('/');
+        newUri.append(newUriPart);
+
+        this.lastAncestorResource = resourceObject;
+        this.lastAncestorResourceURI = newUri.toString();
     }
 
     /**
@@ -218,6 +316,18 @@ public class CallContext extends JaxRsUriInfo implements UriInfo,
         interalGetPathParamsEncoded().add(varName, varValue);
     }
 
+    /**
+     * Checks, if this object is changeable. If not, a
+     * {@link IllegalStateException} is thrown.
+     * 
+     * @throws IllegalStateException
+     */
+    protected void checkChangeable() throws IllegalStateException {
+        if (!isChangeable())
+            throw new IllegalStateException(
+                    "The CallContext is no longer changeable");
+    }
+
     private boolean checkIfOneMatch(List<Tag> requestETags, Tag entityTag) {
         if (entityTag.isWeak())
             return false;
@@ -226,6 +336,61 @@ public class CallContext extends JaxRsUriInfo implements UriInfo,
                 return true;
         }
         return false;
+    }
+
+    /**
+     * Creates an unmodifiable List of {@link PathSegment}s.
+     * 
+     * @param decode
+     *                indicates, if the values should be decoded or not
+     * @return
+     */
+    private List<PathSegment> createPathSegments(boolean decode) {
+        List<String> segmentsEnc;
+        segmentsEnc = this.referenceOriginal.getRelativeRef().getSegments();
+        int l = segmentsEnc.size();
+        List<PathSegment> pathSegments = new ArrayList<PathSegment>(l);
+        for (int i = 0; i < l; i++) {
+            String segmentEnc = segmentsEnc.get(i);
+            pathSegments.add(new JaxRsPathSegment(segmentEnc, decode, i));
+        }
+        return Collections.unmodifiableList(pathSegments);
+    }
+
+    /**
+     * @param ref
+     * @return
+     * @throws IllegalArgumentException
+     */
+    private UriBuilder createUriBuilder(Reference ref) {
+        // NICE what happens, if the Reference is invalid for the UriBuilder?
+        UriBuilder b = new JaxRsUriBuilder();
+        b.encode(false);
+        b.scheme(ref.getScheme(false));
+        b.userInfo(ref.getUserInfo(false));
+        b.host(ref.getHostDomain(false));
+        b.port(ref.getHostPort());
+        b.path(ref.getPath(false));
+        b.replaceQueryParams(ref.getQuery(false));
+        b.fragment(ref.getFragment(false));
+        b.encode(true);
+        return b;
+    }
+
+    @Override
+    public boolean equals(Object anotherObject) {
+        if (this == anotherObject)
+            return true;
+        if (!(anotherObject instanceof UriInfo))
+            return false;
+        UriInfo other = (UriInfo) anotherObject;
+        if (!this.getBaseUri().equals(other.getBaseUri()))
+            return false;
+        if (!this.getPathSegments().equals(other.getPathSegments()))
+            return false;
+        if (!Util.equals(this.getPathParameters(), other.getPathParameters()))
+            return false;
+        return true;
     }
 
     /**
@@ -367,6 +532,35 @@ public class CallContext extends JaxRsUriInfo implements UriInfo,
     }
 
     /**
+     * Get the absolute path of the request. This includes everything preceding
+     * the path (host, port etc) but excludes query parameters and fragment.
+     * This is a shortcut for
+     * <code>uriInfo.getBase().resolve(uriInfo.getPath()).</code>
+     * 
+     * @return the absolute path of the request
+     * @see UriInfo#getAbsolutePath()
+     */
+    public URI getAbsolutePath() {
+        try {
+            return new URI(referenceOriginal.toString(false, false));
+        } catch (URISyntaxException e) {
+            throw wrapUriSyntaxExc(e, unexpectedLogger, "Could not create URI");
+        }
+    }
+
+    /**
+     * Get the absolute path of the request in the form of a UriBuilder. This
+     * includes everything preceding the path (host, port etc) but excludes
+     * query parameters and fragment.
+     * 
+     * @return a UriBuilder initialized with the absolute path of the request.
+     * @see UriInfo#getAbsolutePathBuilder()
+     */
+    public UriBuilder getAbsolutePathBuilder() {
+        return createUriBuilder(referenceOriginal);
+    }
+
+    /**
      * @see javax.ws.rs.core.HttpHeaders#getAcceptableLanguages()
      */
     public List<String> getAcceptableLanguages() {
@@ -409,6 +603,24 @@ public class CallContext extends JaxRsUriInfo implements UriInfo,
     }
 
     /**
+     * current state of the ancestorResources
+     * 
+     * @see javax.ws.rs.core.UriInfo#getAncestorResources()
+     */
+    List<Object> getAncestorResources() {
+        return ancestorResources;
+    }
+
+    /**
+     * current state of the ancestorResourceURIs
+     * 
+     * @see javax.ws.rs.core.UriInfo#getAncestorResourceURIs()
+     */
+    List<String> getAncestorResourceURIs() {
+        return ancestorResourceURIs;
+    }
+
+    /**
      * Returns the string value of the authentication scheme used to protect the
      * resource. If the resource is not authenticated, null is returned.
      * 
@@ -440,6 +652,43 @@ public class CallContext extends JaxRsUriInfo implements UriInfo,
         // if (authScheme.equals(ChallengeScheme.HTTP_SERVLET_FORM))
         // return SecurityContext.FORM_AUTH;
         return authScheme.getName();
+    }
+
+    /**
+     * Get the base URI of the application. URIs of resource beans are all
+     * relative to this base URI.
+     * 
+     * @return the base URI of the application
+     * @see UriInfo#getBaseUri()
+     */
+    public URI getBaseUri() {
+        try {
+            return new URI(getBaseUriStr());
+        } catch (URISyntaxException e) {
+            throw wrapUriSyntaxExc(e, unexpectedLogger, "Could not create URI");
+        }
+    }
+
+    /**
+     * Get the absolute path of the request in the form of a UriBuilder. This
+     * includes everything preceding the path (host, port etc) but excludes
+     * query parameters and fragment.
+     * 
+     * @return a UriBuilder initialized with the absolute path of the request.
+     * @see UriInfo#getAbsolutePathBuilder()
+     * @see UriInfo#getBaseUriBuilder()
+     */
+    public UriBuilder getBaseUriBuilder() {
+        return UriBuilder.fromUri(getBaseUriStr());
+    }
+
+    private String getBaseUriStr() {
+        if (this.baseUri == null) {
+            Reference baseRef = this.referenceCut.getBaseRef();
+            if (baseRef != null)
+                this.baseUri = baseRef.toString(false, false);
+        }
+        return baseUri;
     }
 
     /**
@@ -531,6 +780,220 @@ public class CallContext extends JaxRsUriInfo implements UriInfo,
     }
 
     /**
+     * Get the path of the current request relative to the base URI as a string.
+     * All sequences of escaped octets are decoded, equivalent to
+     * <code>getPath(true)</code>.
+     * 
+     * @return the relative URI path.
+     * @see UriInfo#getPath()
+     */
+    public String getPath() {
+        return getPath(true);
+    }
+
+    /**
+     * Get the path of the current request relative to the base URI as a string.
+     * 
+     * @param decode
+     *                controls whether sequences of escaped octets are decoded
+     *                (true) or not (false).
+     * @return the relative URI path.
+     * @see UriInfo#getPath(boolean)
+     */
+    public String getPath(boolean decode) {
+        String path = this.referenceOriginal.getRelativeRef().toString(true,
+                true);
+        if (!decode)
+            return path;
+        return Reference.decode(path);
+    }
+
+    /**
+     * Get the request URI extension. The returned string includes any
+     * extensions remove during request pre-processing for the purposes of
+     * URI-based content negotiation. E.g. if the request URI was:
+     * 
+     * <pre>
+     * http://example.com/resource.xml.en
+     * </pre>
+     * 
+     * this method would return "xml.en" even if an applications implementation
+     * of {@link ApplicationConfig#getMediaTypeMappings()} returned a map that
+     * included "xml" as a key
+     * 
+     * @return the request URI extension
+     * @see javax.ws.rs.core.UriInfo#getPathExtension()
+     */
+    public String getPathExtension() {
+        return referenceOriginal.getExtensions();
+    }
+
+    /**
+     * Get the values of any embedded URI template parameters. All sequences of
+     * escaped octets are decoded, equivalent to
+     * <code>getTemplateParameters(true)</code>.
+     * 
+     * @return an unmodifiable map of parameter names and values
+     * @throws java.lang.IllegalStateException
+     *                 if called outside the scope of a request
+     * @see javax.ws.rs.Path
+     * @see UriInfo#getPathParameters()
+     */
+    public MultivaluedMap<String, String> getPathParameters() {
+        if (this.pathParametersDecoded == null) {
+            MultivaluedMapImpl<String, String> pathParamsDec = new MultivaluedMapImpl<String, String>();
+            for (Map.Entry<String, List<String>> entryEnc : this
+                    .interalGetPathParamsEncoded().entrySet()) {
+                String keyDec = Reference.decode(entryEnc.getKey());
+                List<String> valuesEnc = entryEnc.getValue();
+                List<String> valuesDec = new ArrayList<String>(valuesEnc.size());
+                for (String valueEnc : valuesEnc)
+                    valuesDec.add(Reference.decode(valueEnc));
+                pathParamsDec.put(keyDec, valuesDec);
+            }
+            UnmodifiableMultivaluedMap<String, String> ppd;
+            ppd = UnmodifiableMultivaluedMap.get(pathParamsDec, false);
+            if (isChangeable())
+                return ppd;
+            this.pathParametersDecoded = ppd;
+        }
+        return this.pathParametersDecoded;
+    }
+
+    /**
+     * Get the values of any embedded URI template parameters.
+     * 
+     * @param decode
+     *                controls whether sequences of escaped octets are decoded
+     *                (true) or not (false).
+     * @return an unmodifiable map of parameter names and values
+     * @throws java.lang.IllegalStateException
+     *                 if called outside the scope of a request
+     * @see javax.ws.rs.Path
+     * @see UriInfo#getPathParameters(boolean)
+     */
+    public MultivaluedMap<String, String> getPathParameters(boolean decode) {
+        if (decode) {
+            return getPathParameters();
+        } else {
+            return UnmodifiableMultivaluedMap
+                    .get(interalGetPathParamsEncoded());
+        }
+    }
+
+    /**
+     * Get the path of the current request relative to the base URI as a list of
+     * {@link PathSegment}. This method is useful when the path needs to be
+     * parsed, particularly when matrix parameters may be present in the path.
+     * All sequences of escaped octets are decoded, equivalent to
+     * <code>getPathSegments(true)</code>.
+     * 
+     * @return an unmodifiable list of {@link PathSegment}. The matrix
+     *         parameter map of each path segment is also unmodifiable.
+     * @throws java.lang.IllegalStateException
+     *                 if called outside the scope of a request
+     * @see PathSegment
+     * @see UriInfo#getPathSegments()
+     */
+    public List<PathSegment> getPathSegments() {
+        return getPathSegments(true);
+    }
+
+    /**
+     * Get the path of the current request relative to the base URI as a list of
+     * {@link PathSegment}. This method is useful when the path needs to be
+     * parsed, particularly when matrix parameters may be present in the path.
+     * 
+     * @param decode
+     *                controls whether sequences of escaped octets are decoded
+     *                (true) or not (false).
+     * @return an unmodifiable list of {@link PathSegment}. The matrix
+     *         parameter map of each path segment is also unmodifiable.
+     * @throws java.lang.IllegalStateException
+     *                 if called outside the scope of a request
+     * @see PathSegment
+     * @see UriInfo#getPathSegments(boolean)
+     */
+    public List<PathSegment> getPathSegments(boolean decode) {
+        if (decode) {
+            if (this.pathSegmentsDecoded == null)
+                this.pathSegmentsDecoded = createPathSegments(true);
+            return pathSegmentsDecoded;
+        } else {
+            if (this.pathSegmentsEncoded == null)
+                this.pathSegmentsEncoded = createPathSegments(false);
+            return pathSegmentsEncoded;
+        }
+    }
+
+    /**
+     * Get the absolute platonic request URI in the form of a UriBuilder. The
+     * platonic request URI is the request URI minus any extensions that were
+     * removed during request pre-processing for the purposes of URI-based
+     * content negotiation. E.g. if the request URI was:
+     * 
+     * <pre>
+     * http://example.com/resource.xml
+     * </pre>
+     * 
+     * and an applications implementation of
+     * {@link ApplicationConfig#getMediaTypeMappings} returned a map that
+     * included "xml" as a key then the platonic request URI would be:
+     * 
+     * <pre>
+     * http://example.com/resource
+     * </pre>
+     * 
+     * @return a UriBuilder initialized with the absolute platonic request URI
+     * @throws java.lang.IllegalStateException
+     *                 if called outside the scope of a request
+     * @see javax.ws.rs.core.UriInfo#getPlatonicRequestUriBuilder()
+     */
+    public UriBuilder getPlatonicRequestUriBuilder() {
+        return createUriBuilder(this.referenceCut);
+    }
+
+    /**
+     * Get the URI query parameters of the current request. All sequences of
+     * escaped octets are decoded, equivalent to
+     * <code>getQueryParameters(true)</code>.
+     * 
+     * @return an unmodifiable map of query parameter names and values
+     * @throws java.lang.IllegalStateException
+     *                 if called outside the scope of a request
+     * @see UriInfo#getQueryParameters()
+     */
+    public MultivaluedMap<String, String> getQueryParameters() {
+        if (queryParametersDecoded == null)
+            queryParametersDecoded = UnmodifiableMultivaluedMap.getFromForm(
+                    referenceOriginal.getQueryAsForm(), false);
+        return queryParametersDecoded;
+    }
+
+    /**
+     * Get the URI query parameters of the current request.
+     * 
+     * @param decode
+     *                controls whether sequences of escaped octets in parameter
+     *                names and values are decoded (true) or not (false).
+     * @return an unmodifiable map of query parameter names and values
+     * @throws java.lang.IllegalStateException
+     *                 if called outside the scope of a request
+     * @see UriInfo#getQueryParameters(boolean)
+     */
+    public MultivaluedMap<String, String> getQueryParameters(boolean decode) {
+        if (decode)
+            return getQueryParameters();
+        if (queryParametersEncoded == null) {
+            Form queryForm = Converter.toFormEncoded(referenceOriginal
+                    .getQuery(), unexpectedLogger);
+            queryParametersEncoded = UnmodifiableMultivaluedMap.getFromForm(
+                    queryForm, false);
+        }
+        return queryParametersEncoded;
+    }
+
+    /**
      * Returns the Restlet {@link org.restlet.data.Request}
      * 
      * @return the Restlet {@link org.restlet.data.Request}
@@ -560,6 +1023,28 @@ public class CallContext extends JaxRsUriInfo implements UriInfo,
     }
 
     /**
+     * @return the absolute request URI
+     * @see UriInfo#getRequestUri()
+     */
+    public URI getRequestUri() {
+        try {
+            return new URI(referenceOriginal.toString(true, true));
+        } catch (URISyntaxException e) {
+            throw wrapUriSyntaxExc(e, unexpectedLogger, "Could not create URI");
+        }
+    }
+
+    /**
+     * Get the absolute request URI in the form of a UriBuilder.
+     * 
+     * @return a UriBuilder initialized with the absolute request URI.
+     * @see UriInfo#getRequestUriBuilder()
+     */
+    public UriBuilder getRequestUriBuilder() {
+        return UriBuilder.fromUri(getRequestUri());
+    }
+
+    /**
      * Returns the Restlet {@link org.restlet.data.Response}
      * 
      * @return the Restlet {@link org.restlet.data.Response}
@@ -582,6 +1067,26 @@ public class CallContext extends JaxRsUriInfo implements UriInfo,
         if (request.getChallengeResponse() != null)
             return request.getChallengeResponse().getPrincipal();
         return SecurityUtil.getSslClientCertPrincipal(request);
+    }
+
+    @Override
+    public int hashCode() {
+        return this.getBaseUriStr().hashCode()
+                ^ this.getPathSegments().hashCode()
+                ^ this.getPathParameters().hashCode();
+    }
+
+    /**
+     * @return the pathParametersEncoded
+     */
+    protected MultivaluedMap<String, String> interalGetPathParamsEncoded() {
+        if (pathParametersEncoded == null)
+            this.pathParametersEncoded = new MultivaluedMapImpl<String, String>();
+        return pathParametersEncoded;
+    }
+
+    protected boolean isChangeable() {
+        return !this.readOnly;
     }
 
     /**
@@ -612,8 +1117,6 @@ public class CallContext extends JaxRsUriInfo implements UriInfo,
         // LATER here ServletRequest.isUserInRole(role)
         Principal principal = (request.getChallengeResponse() == null) ? null
                 : request.getChallengeResponse().getPrincipal();
-        if (this.roleChecker == null)
-            this.roleChecker = RoleChecker.REJECT_WITH_ERROR;
         return roleChecker.isInRole(principal, role);
     }
 
@@ -698,9 +1201,40 @@ public class CallContext extends JaxRsUriInfo implements UriInfo,
 
     /**
      * Sets the Context to be read only. As from now changes are not allowed.
+     * This method is intended to be used by {@link CallContext#setReadOnly()}.
+     * Ignored by {@link #addForAncestor(Object, String)}.
      */
-    @Override
     public void setReadOnly() {
-        super.setReadOnly();
+        this.readOnly = true;
+    }
+
+    @Override
+    public String toString() {
+        return this.referenceOriginal.toString(true, false);
+    }
+
+    /**
+     * This method throws an {@link WebApplicationException} for Exceptions
+     * where is no planned handling. Logs the exception (warn {@link Level}).
+     * 
+     * @param exc
+     *                the catched URISyntaxException
+     * @param unexpectedLogger
+     *                the unexpectedLogger to log the messade
+     * @param logMessage
+     *                the message to log.
+     * @return Will never return anything, because the generated
+     *         WebApplicationException will be thrown. You an formally throw the
+     *         returned exception (e.g. in a catch block). So the compiler is
+     *         sure, that the method will be left here.
+     * @throws WebApplicationException
+     *                 contains the given {@link Exception}
+     */
+    private WebApplicationException wrapUriSyntaxExc(URISyntaxException exc,
+            Logger logger, String logMessage) throws WebApplicationException {
+        logger.log(Level.WARNING, logMessage, exc);
+        exc.printStackTrace();
+        throw new WebApplicationException(exc,
+                javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR);
     }
 }

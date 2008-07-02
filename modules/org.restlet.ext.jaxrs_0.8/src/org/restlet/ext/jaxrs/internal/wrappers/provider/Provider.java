@@ -49,6 +49,8 @@ import org.restlet.ext.jaxrs.internal.exceptions.ConvertMatrixParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertPathParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertQueryParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalConstrParamTypeException;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.InjectException;
 import org.restlet.ext.jaxrs.internal.exceptions.InstantiateException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
@@ -93,6 +95,8 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      */
     private final javax.ws.rs.ext.MessageBodyReader<T> reader;
 
+    private final boolean singelton = true;
+
     private final javax.ws.rs.ext.MessageBodyWriter<T> writer;
 
     /**
@@ -125,6 +129,7 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * @throws InstantiateException
      * @throws WebApplicationException
      * @throws MissingAnnotationException
+     * @throws IllegalConstrParamTypeException 
      * @see javax.ws.rs.ext.MessageBodyReader
      * @see javax.ws.rs.ext.MessageBodyWriter
      * @see javax.ws.rs.ext.ContextResolver
@@ -136,7 +141,8 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
             ExtensionBackwardMapping extensionBackwardMapping, Logger logger)
             throws IllegalArgumentException, InvocationTargetException,
             MissingConstructorException, InstantiateException,
-            MissingAnnotationException, WebApplicationException {
+            MissingAnnotationException, WebApplicationException,
+            IllegalConstrParamTypeException {
         if (jaxRsProviderClass == null)
             throw new IllegalArgumentException(
                     "The JAX-RS provider class must not be null");
@@ -220,6 +226,9 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * @throws InstantiateException
      * @throws MissingAnnotationException
      * @throws WebApplicationException
+     * @throws IllegalConstrParamTypeException
+     *                 if one of the fields or bean setters annotated with &#64;{@link Context}
+     *                 has a type that must not be annotated with &#64;{@link Context}.
      */
     private Object createInstance(Constructor<?> providerConstructor,
             Class<?> jaxRsProviderClass, ThreadLocalizedContext tlContext,
@@ -228,10 +237,15 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
             ExtensionBackwardMapping extensionBackwardMapping, Logger logger)
             throws IllegalArgumentException, InvocationTargetException,
             InstantiateException, MissingAnnotationException,
-            WebApplicationException {
-        ParameterList parameters = new ParameterList(providerConstructor,
-                tlContext, false, mbWorkers, allResolvers,
-                extensionBackwardMapping, false, logger);
+            WebApplicationException, IllegalConstrParamTypeException {
+        ParameterList parameters;
+        try {
+            parameters = new ParameterList(providerConstructor, tlContext,
+                    false, mbWorkers, allResolvers, extensionBackwardMapping,
+                    false, logger, !singelton);
+        } catch (IllegalTypeException ite) {
+            throw new IllegalConstrParamTypeException(ite);
+        }
         try {
             Object[] args = parameters.get();
             return WrapperUtil.createInstance(providerConstructor, args);
@@ -372,12 +386,16 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * @throws InjectException
      * @throws InvocationTargetException
      *                 if a bean setter throws an exception
+     * @throws IllegalTypeException
+     *                 if the given class is not valid to be annotated with
+     *                 &#64;{@link Context}.
      */
     public void init(ThreadLocalizedContext tlContext,
             MessageBodyWorkers mbWorkers,
             Collection<ContextResolver<?>> allResolvers,
             ExtensionBackwardMapping extensionBackwardMapping)
-            throws InjectException, InvocationTargetException {
+            throws InjectException, InvocationTargetException,
+            IllegalTypeException {
         injectContexts(tlContext, mbWorkers, allResolvers,
                 extensionBackwardMapping);
     }
@@ -396,16 +414,21 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * @throws InjectException
      * @throws InvocationTargetException
      *                 if a bean setter throws an exception
+     * @throws IllegalTypeException
+     * @throws IllegalTypeException
+     *                 if the given class is not valid to be annotated with
+     *                 &#64;{@link Context}.
      */
     private void injectContexts(ThreadLocalizedContext tlContext,
             MessageBodyWorkers mbWorkers,
             Collection<ContextResolver<?>> allResolvers,
             ExtensionBackwardMapping extensionBackwardMapping)
-            throws InjectException, InvocationTargetException {
+            throws InjectException, InvocationTargetException,
+            IllegalTypeException {
         Class<? extends Object> providerClass = this.jaxRsProvider.getClass();
         ContextInjector iph = new ContextInjector(providerClass, tlContext,
                 mbWorkers, allResolvers, extensionBackwardMapping);
-        iph.injectInto(this.jaxRsProvider);
+        iph.injectInto(this.jaxRsProvider, !this.singelton);
     }
 
     /**

@@ -40,7 +40,7 @@ import javax.ws.rs.core.Response.Status;
 public class AncestorTestService {
 
     /**
-     * @param subUriInfo
+     * @param uriInfo
      * @param attribute
      * @throws NoSuchMethodException
      * @throws SecurityException
@@ -48,19 +48,19 @@ public class AncestorTestService {
      * @throws IllegalArgumentException
      * @throws InvocationTargetException
      */
-    private static Object getAttribute(UriInfo subUriInfo, String attribute) {
+    private static Object getAttribute(UriInfo uriInfo, String attribute) {
         String getterName = "get" + attribute.substring(0, 1).toUpperCase()
                 + attribute.substring(1);
         Method subMethod;
         try {
-            subMethod = subUriInfo.getClass().getMethod(getterName);
+            subMethod = uriInfo.getClass().getMethod(getterName);
         } catch (SecurityException e) {
             throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
         } catch (NoSuchMethodException e) {
             throw new WebApplicationException(Status.NOT_FOUND);
         }
         try {
-            return subMethod.invoke(subUriInfo);
+            return subMethod.invoke(uriInfo);
         } catch (IllegalArgumentException e) {
             throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
         } catch (IllegalAccessException e) {
@@ -102,7 +102,9 @@ public class AncestorTestService {
 
     @Path("sub")
     public AncestorTestService getSub() {
-        return new AncestorTestService();
+        AncestorTestService sub = new AncestorTestService();
+        sub.mainUriInfo = this.mainUriInfo;
+        return sub;
     }
 
     @GET

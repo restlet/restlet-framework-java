@@ -55,20 +55,40 @@ public class AncestorTest extends JaxRsTestCase {
                 response.getEntity().getText());
     }
 
+    /**
+     * @see AncestorTestService#getUriInfoAttribute(javax.ws.rs.core.UriInfo,
+     *      String)
+     */
     public void testUriInfos() throws Exception {
         Response response404 = get("uriInfo/abc");
         assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response404.getStatus());
 
-        if(true) // LATER not yet ready implemented
-            return;
         Response response = get("uriInfo/ancestorResourceURIs");
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         String entity = response.getEntity().getText();
-        System.out.println(entity);
-        assertEquals("[/ancestorTest]\n[/ancestorTest, ancestorTest/uriInfo]", entity);
+        String expected = "[]\n[/ancestorTest]";
+        System.out.println("expected:\n"+expected+"\ngot:\n"+entity);
+        assertEquals(expected, entity);
     }
-    
+
+    /**
+     * @see AncestorTestService#getUriInfoAttribute(javax.ws.rs.core.UriInfo,
+     *      String)
+     */
+    public void testUriInfosSub() throws Exception {
+        Response response404 = get("sub/uriInfo/abc");
+        assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response404.getStatus());
+
+        Response response = get("sub/uriInfo/ancestorResourceURIs");
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        String entity = response.getEntity().getText();
+        String expected = "[]\n[/ancestorTest/sub, /ancestorTest]";
+        System.out.println("expected:\n"+expected+"\ngot:\n"+entity);
+        assertEquals(expected, entity);
+    }
+
     public void testGetSub() throws Exception {
         Response response = get("sub");
         sysOutEntityIfError(response);

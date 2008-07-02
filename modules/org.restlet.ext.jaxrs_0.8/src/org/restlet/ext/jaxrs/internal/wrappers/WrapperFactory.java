@@ -25,6 +25,9 @@ import java.util.logging.Logger;
 import javax.ws.rs.ext.ContextResolver;
 
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalBeanSetterTypeException;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalConstrParamTypeException;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalFieldTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingConstructorException;
@@ -38,17 +41,17 @@ import org.restlet.ext.jaxrs.internal.wrappers.provider.ExtensionBackwardMapping
  */
 public class WrapperFactory {
 
-    private final Logger logger;
+    private final Collection<ContextResolver<?>> allCtxResolvers;
 
     private final EntityProviders entityProviders;
 
-    private final Collection<ContextResolver<?>> allCtxResolvers;
-
-    private final ThreadLocalizedContext tlContext;
-
     private final ExtensionBackwardMapping extensionBackwardMapping;
 
+    private final Logger logger;
+
     private final Map<Class<?>, ResourceClass> resourceClasses = new HashMap<Class<?>, ResourceClass>();
+
+    private final ThreadLocalizedContext tlContext;
 
     /**
      * @param tlContext
@@ -110,11 +113,14 @@ public class WrapperFactory {
      * @throws IllegalPathOnClassException
      * @throws MissingConstructorException
      *                 if no valid constructor could be found.
+     * @throws IllegalBeanSetterTypeException 
+     * @throws IllegalFieldTypeException 
+     * @throws IllegalConstrParamTypeException 
      */
     public RootResourceClass getRootResourceClass(
             Class<?> jaxRsRootResourceClass) throws IllegalArgumentException,
             MissingAnnotationException, IllegalPathOnClassException,
-            MissingConstructorException {
+            MissingConstructorException, IllegalConstrParamTypeException, IllegalFieldTypeException, IllegalBeanSetterTypeException {
         return new RootResourceClass(jaxRsRootResourceClass, tlContext,
                 entityProviders, allCtxResolvers, extensionBackwardMapping,
                 logger);

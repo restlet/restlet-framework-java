@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.logging.Logger;
 
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.ext.ContextResolver;
 
@@ -33,7 +34,9 @@ import org.restlet.ext.jaxrs.internal.exceptions.ConvertMatrixParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertPathParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertQueryParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalMethodParamTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnMethodException;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.InstantiateException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
@@ -70,7 +73,10 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
      * @param logger
      * @throws IllegalPathOnMethodException
      * @throws MissingAnnotationException
-     * @throws IllegalArgumentException
+     * @throws IllegalArgumentException if the annotated method is null
+     * @throws IllegalTypeException
+     *                 if one of the parameters annotated with &#64;{@link Context}
+     *                 has a type that must not be annotated with &#64;{@link Context}.
      */
     SubResourceLocator(Method javaMethod, Method annotatedMethod,
             ResourceClass resourceClass, ThreadLocalizedContext tlContext,
@@ -78,7 +84,7 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
             Collection<ContextResolver<?>> allCtxResolvers,
             ExtensionBackwardMapping extensionBackwardMapping, Logger logger)
             throws IllegalPathOnMethodException, IllegalArgumentException,
-            MissingAnnotationException {
+            MissingAnnotationException, IllegalMethodParamTypeException {
         super(javaMethod, annotatedMethod, resourceClass, tlContext,
                 entityProviders, allCtxResolvers, extensionBackwardMapping,
                 false, logger);

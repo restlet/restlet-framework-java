@@ -56,6 +56,9 @@ import org.restlet.data.Status;
 import org.restlet.ext.jaxrs.internal.core.CallContext;
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalBeanSetterTypeException;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalConstrParamTypeException;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalFieldTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
 import org.restlet.ext.jaxrs.internal.exceptions.ImplementationException;
 import org.restlet.ext.jaxrs.internal.exceptions.InstantiateException;
@@ -297,6 +300,24 @@ public class JaxRsRestlet extends Restlet {
                     "The root resource class " + rootResourceClass.getName()
                             + " has no valid constructor");
             return false;
+        } catch (IllegalConstrParamTypeException e) {
+            getLogger().warning(
+                    "The root resource class " + rootResourceClass.getName()
+                            + " has no valid constructor");
+            // LATER better warning
+            return false;
+        } catch (IllegalBeanSetterTypeException e) {
+            getLogger().warning(
+                    "The root resource class " + rootResourceClass.getName()
+                            + " has no valid constructor");
+            // LATER better warning
+            return false;
+        } catch (IllegalFieldTypeException e) {
+            getLogger().warning(
+                    "The root resource class " + rootResourceClass.getName()
+                            + " has no valid constructor");
+            // LATER better warning
+            return false;
         }
         PathRegExp uriTempl = newRrc.getPathRegExp();
         for (RootResourceClass rrc : this.rootResourceClasses) {
@@ -380,6 +401,12 @@ public class JaxRsRestlet extends Restlet {
         } catch (MissingConstructorException mce) {
             String msg = "Ignore provider " + jaxRsProviderClass.getName()
                     + ", because no valid constructor was found";
+            getLogger().warning(msg);
+            return false;
+        } catch (IllegalConstrParamTypeException e) {
+            String msg = "Ignore provider " + jaxRsProviderClass.getName()
+                    + ", because no valid constructor was found";
+            // LATER better warning
             getLogger().warning(msg);
             return false;
         }

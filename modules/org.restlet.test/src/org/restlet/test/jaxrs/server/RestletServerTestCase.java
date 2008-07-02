@@ -49,6 +49,7 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.util.ByteUtils;
 import org.restlet.util.WrapperRepresentation;
@@ -213,17 +214,34 @@ public abstract class RestletServerTestCase extends TestCase {
      */
     public static void sysOutEntityIfError(Response response) {
         if (response.getStatus().isError()) {
-            Representation entity = response.getEntity();
-            try {
-                if (entity != null)
-                    System.out.println(entity.getText());
-                else
-                    System.out.println("[no Entity available]");
-            } catch (IOException e) {
-                System.out.println("Entity not readable: ");
-                e.printStackTrace(System.out);
-            }
+            sysOutEntity(response);
         }
+    }
+
+    /**
+     * @param response
+     */
+    private static void sysOutEntity(Response response) {
+        Representation entity = response.getEntity();
+        try {
+            if (entity != null)
+                System.out.println(entity.getText());
+            else
+                System.out.println("[no Entity available]");
+        } catch (IOException e) {
+            System.out.println("Entity not readable: ");
+            e.printStackTrace(System.out);
+        }
+    }
+
+    /**
+     * @param status
+     * @param response
+     */
+    public static void sysOutEntityIfNotStatus(Status status,
+            Response response) {
+        if(!response.getStatus().equals(status))
+            sysOutEntity(response);
     }
 
     /**
@@ -380,7 +398,7 @@ public abstract class RestletServerTestCase extends TestCase {
     /**
      * @return
      */
-    public Restlet getClientConnector() {
+    private Restlet getClientConnector() {
         return getServerWrapper().getClientConnector();
     }
 

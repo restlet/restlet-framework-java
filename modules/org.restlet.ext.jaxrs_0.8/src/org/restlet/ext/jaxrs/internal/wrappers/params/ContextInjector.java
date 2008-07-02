@@ -31,12 +31,20 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.PathSegment;
+import javax.ws.rs.core.Request;
+import javax.ws.rs.core.SecurityContext;
+import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.MessageBodyWorkers;
 
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
+import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedUriInfo;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalBeanSetterTypeException;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalFieldTypeException;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.ImplementationException;
 import org.restlet.ext.jaxrs.internal.exceptions.InjectException;
 import org.restlet.ext.jaxrs.internal.util.Util;
@@ -64,11 +72,11 @@ public class ContextInjector {
          * @throws InvocationTargetException
          * @throws InjectException
          * @throws IllegalArgumentException
-         * @see InjectionAim#injectInto(Object, Object)
+         * @see InjectionAim#injectInto(Object, Object, boolean)
          */
-        public void injectInto(Object resource, Object toInject)
-                throws IllegalArgumentException, InjectException,
-                InvocationTargetException {
+        public void injectInto(Object resource, Object toInject,
+                boolean allMustBeAvailable) throws IllegalArgumentException,
+                InjectException, InvocationTargetException {
             Util.inject(resource, beanSetter, toInject);
         }
 
@@ -90,12 +98,12 @@ public class ContextInjector {
         }
 
         /**
-         * @see Injector#injectInto(java.lang.Object)
+         * @see Injector#injectInto(java.lang.Object, boolean)
          */
-        public void injectInto(Object resource)
+        public void injectInto(Object resource, boolean allMustBeAvailable)
                 throws IllegalArgumentException, InjectException,
                 InvocationTargetException {
-            injectionAim.injectInto(resource, injectable);
+            injectionAim.injectInto(resource, injectable, allMustBeAvailable);
         }
     }
 
@@ -112,11 +120,11 @@ public class ContextInjector {
          * @throws InvocationTargetException
          * @throws InjectException
          * @throws IllegalArgumentException
-         * @see InjectionAim#injectInto(Object, Object)
+         * @see InjectionAim#injectInto(Object, Object, boolean)
          */
-        public void injectInto(Object resource, Object toInject)
-                throws IllegalArgumentException, InjectException,
-                InvocationTargetException {
+        public void injectInto(Object resource, Object toInject,
+                boolean allMustBeAvailable) throws IllegalArgumentException,
+                InjectException, InvocationTargetException {
             Util.inject(resource, field, toInject);
         }
     }
@@ -161,29 +169,31 @@ public class ContextInjector {
          * 
          * @param resource
          * @param toInject
+         * @param allMustBeAvailable
          * @throws IllegalArgumentException
          * @throws InjectException
          * @throws InvocationTargetException
          * @see FieldWrapper#set(Object, Object)
          * @see Method#invoke(Object, Object...)
          */
-        void injectInto(Object resource, Object toInject)
-                throws IllegalArgumentException, InjectException,
-                InvocationTargetException;
+        void injectInto(Object resource, Object toInject,
+                boolean allMustBeAvailable) throws IllegalArgumentException,
+                InjectException, InvocationTargetException;
     }
 
     static interface Injector {
 
         /**
          * @param resource
+         * @param allMustBeAvailable
          * @throws InvocationTargetException
          * @throws InjectException
          * @throws IllegalArgumentException
-         * @see InjectionAim#injectInto(Object, Object)
+         * @see InjectionAim#injectInto(Object, Object, boolean)
          */
-        public abstract void injectInto(Object resource)
-                throws IllegalArgumentException, InjectException,
-                InvocationTargetException;
+        public abstract void injectInto(Object resource,
+                boolean allMustBeAvailable) throws IllegalArgumentException,
+                InjectException, InvocationTargetException;
 
     }
 
@@ -201,12 +211,36 @@ public class ContextInjector {
         }
 
         /**
-         * @see org.restlet.ext.jaxrs.internal.wrappers.params.ContextInjector.Injector#injectInto(java.lang.Object)
+         * @see org.restlet.ext.jaxrs.internal.wrappers.params.ContextInjector.Injector#injectInto(java.lang.Object,
+         *      boolean)
          */
-        public void injectInto(Object resource)
+        public void injectInto(Object resource, boolean allMustBeAvailable)
                 throws IllegalArgumentException, InjectException,
                 InvocationTargetException {
             Util.inject(resource, fieldOrBeanSetter, iog.getParamValue());
+        }
+    }
+
+    /**
+     * @author Stephan
+     * 
+     */
+    private static final class UriInfoInjector implements Injector {
+
+        private final InjectionAim aim;
+
+        private final ThreadLocalizedUriInfo uriInfo;
+
+        UriInfoInjector(InjectionAim aim, ThreadLocalizedContext tlContext) {
+            this.aim = aim;
+            this.uriInfo = new ThreadLocalizedUriInfo(tlContext);
+        }
+
+        public void injectInto(Object resource, boolean allMustBeAvailable)
+                throws IllegalArgumentException, InjectException,
+                InvocationTargetException {
+            uriInfo.saveStateForCurrentThread(allMustBeAvailable);
+            aim.injectInto(resource, uriInfo, allMustBeAvailable);
         }
     }
 
@@ -214,6 +248,8 @@ public class ContextInjector {
 
     /**
      * @param declaringClass
+     *                the class / interface to injecto into; must not be
+     *                {@link UriInfo}
      * @param genericType
      * @param tlContext
      * @param mbWorkers
@@ -221,11 +257,17 @@ public class ContextInjector {
      * @param extensionBackwardMapping
      * @param aim
      * @return
+     * @throws IllegalTypeException
+     *                 if the given class is not valid to be annotated with
+     *                 &#64;{@link Context}.
+     * @throws ImplementationException
+     *                 the declaringClass must not be {@link UriInfo}
      */
     static Object getInjectObject(Class<?> declaringClass, Type genericType,
             ThreadLocalizedContext tlContext, MessageBodyWorkers mbWorkers,
             Collection<ContextResolver<?>> allCtxResolvers,
-            ExtensionBackwardMapping extensionBackwardMapping) {
+            ExtensionBackwardMapping extensionBackwardMapping)
+            throws IllegalTypeException, ImplementationException {
         if (declaringClass.equals(MessageBodyWorkers.class))
             return mbWorkers;
         if (declaringClass.equals(ContextResolver.class))
@@ -237,19 +279,46 @@ public class ContextInjector {
             logger.config(msg);
             return new GetLastPathSegment(tlContext);
         }
+        if (declaringClass.equals(SecurityContext.class)
+                || declaringClass.equals(HttpHeaders.class)
+                || declaringClass.equals(Request.class))
+            return tlContext;
+        if (declaringClass.equals(UriInfo.class))
+            throw new ImplementationException(
+                    "You must not call the method ContextInjector.getInjectObject(.......) with class UriInfo");
         // NICE also allow for ClientInfo und Conditions. Proxies needed for
         // fields and bean setters.
-        return tlContext;
+        throw new IllegalTypeException(declaringClass
+                + " must not be annotated with @Context");
     }
 
-    static EverSameInjector getInjector(Class<?> declaringClass,
-            Type genericType, InjectionAim aim,
-            ThreadLocalizedContext tlContext, MessageBodyWorkers mbWorkers,
+    /**
+     * 
+     * @param declaringClass
+     * @param genericType
+     * @param aim
+     * @param tlContext
+     * @param mbWorkers
+     * @param allResolvers
+     * @param extensionBackwardMapping
+     * @return
+     * @throws IllegalTypeException
+     *                 if the given class is not valid to be annotated with
+     *                 &#64;{@link Context}.
+     */
+    static Injector getInjector(Class<?> declaringClass, Type genericType,
+            InjectionAim aim, ThreadLocalizedContext tlContext,
+            MessageBodyWorkers mbWorkers,
             Collection<ContextResolver<?>> allResolvers,
-            ExtensionBackwardMapping extensionBackwardMapping) {
-        return new EverSameInjector(aim, getInjectObject(declaringClass,
-                genericType, tlContext, mbWorkers, allResolvers,
-                extensionBackwardMapping));
+            ExtensionBackwardMapping extensionBackwardMapping)
+            throws IllegalTypeException {
+        if (declaringClass.equals(UriInfo.class)) {
+            return new UriInfoInjector(aim, tlContext);
+        } else {
+            return new EverSameInjector(aim, getInjectObject(declaringClass,
+                    genericType, tlContext, mbWorkers, allResolvers,
+                    extensionBackwardMapping));
+        }
     }
 
     /**
@@ -270,12 +339,19 @@ public class ContextInjector {
      *                all available {@link ContextResolver}s.
      * @param extensionBackwardMapping
      *                the extension backward mapping
+     * @throws IllegalBeanSetterTypeException
+     *                 if one of the bean setters annotated with &#64;{@link Context}
+     *                 has a type that must not be annotated with &#64;{@link Context}.
+     * @throws IllegalFieldTypeException
+     *                 if one of the fields annotated with &#64;{@link Context}
+     *                 has a type that must not be annotated with &#64;{@link Context}.
      * @throws ImplementationException
      */
     public ContextInjector(Class<?> jaxRsClass,
             ThreadLocalizedContext tlContext, MessageBodyWorkers mbWorkers,
             Collection<ContextResolver<?>> allResolvers,
-            ExtensionBackwardMapping extensionBackwardMapping) {
+            ExtensionBackwardMapping extensionBackwardMapping)
+            throws IllegalFieldTypeException, IllegalBeanSetterTypeException {
         this.init(jaxRsClass, tlContext, mbWorkers, allResolvers,
                 extensionBackwardMapping);
     }
@@ -298,33 +374,54 @@ public class ContextInjector {
      *                all available {@link ContextResolver}s.
      * @param extensionBackwardMapping
      *                the extension backward mapping
+     * @throws IllegalFieldTypeException
+     *                 if one of the fields annotated with &#64;{@link Context}
+     *                 has a type that must not be annotated with &#64;{@link Context}.
+     * @throws IllegalBeanSetterTypeException
+     *                 if one of the bean setters annotated with &#64;{@link Context}
+     *                 has a type that must not be annotated with &#64;{@link Context}.
      */
     private void init(Class<?> jaxRsClass, ThreadLocalizedContext tlContext,
             MessageBodyWorkers mbWorkers,
             Collection<ContextResolver<?>> allResolvers,
-            ExtensionBackwardMapping extensionBackwardMapping) {
+            ExtensionBackwardMapping extensionBackwardMapping)
+            throws IllegalFieldTypeException, IllegalBeanSetterTypeException {
         do {
-            for (Field field : jaxRsClass.getDeclaredFields()) {
-                if (field.isAnnotationPresent(Context.class)) {
-                    InjectionAim aim = new FieldWrapper(field);
-                    Class<?> declaringClass = field.getType();
-                    Type genericType = field.getGenericType();
-                    EverSameInjector injector = getInjector(declaringClass,
-                            genericType, aim, tlContext, mbWorkers,
-                            allResolvers, extensionBackwardMapping);
-                    injEverSameAims.add(injector);
+            try {
+                for (Field field : jaxRsClass.getDeclaredFields()) {
+                    if (field.isAnnotationPresent(Context.class)) {
+                        InjectionAim aim = new FieldWrapper(field);
+                        Class<?> declaringClass = field.getType();
+                        Type genericType = field.getGenericType();
+                        Injector injector = getInjector(declaringClass,
+                                genericType, aim, tlContext, mbWorkers,
+                                allResolvers, extensionBackwardMapping);
+                        injEverSameAims.add(injector);
+                    }
                 }
+            } catch (SecurityException e) {
+                // LATER handle Exception
+                throw e;
+            } catch (IllegalTypeException e) {
+                throw new IllegalFieldTypeException(e);
             }
-            for (Method method : jaxRsClass.getDeclaredMethods()) {
-                if (isBeanSetter(method, Context.class)) {
-                    BeanSetter aim = new BeanSetter(method);
-                    Class<?> paramClass = method.getParameterTypes()[0];
-                    Type genericType = method.getGenericParameterTypes()[0];
-                    EverSameInjector injector = getInjector(paramClass,
-                            genericType, aim, tlContext, mbWorkers,
-                            allResolvers, extensionBackwardMapping);
-                    injEverSameAims.add(injector);
+            try {
+                for (Method method : jaxRsClass.getDeclaredMethods()) {
+                    if (isBeanSetter(method, Context.class)) {
+                        BeanSetter aim = new BeanSetter(method);
+                        Class<?> paramClass = method.getParameterTypes()[0];
+                        Type genericType = method.getGenericParameterTypes()[0];
+                        Injector injector = getInjector(paramClass,
+                                genericType, aim, tlContext, mbWorkers,
+                                allResolvers, extensionBackwardMapping);
+                        injEverSameAims.add(injector);
+                    }
                 }
+            } catch (SecurityException e) {
+                // LATER handle Exception
+                throw e;
+            } catch (IllegalTypeException e) {
+                throw new IllegalBeanSetterTypeException(e);
             }
             jaxRsClass = jaxRsClass.getSuperclass();
         } while (jaxRsClass != null);
@@ -335,16 +432,20 @@ public class ContextInjector {
      * of this class.
      * 
      * @param jaxRsResObj
+     * @param allMustBeAvailable
+     *                if true, all information in &#64;{@link Context}
+     *                annotated objects must be available, especially the
+     *                ancestor resource info (false for singelton lifecycle)
      * @throws InjectException
      *                 if the injection was not possible. See
      *                 {@link InjectException#getCause()} for the reason.
      * @throws InvocationTargetException
      *                 if a setter throws an exception
      */
-    public void injectInto(Object jaxRsResObj) throws InjectException,
-            InvocationTargetException {
+    public void injectInto(Object jaxRsResObj, boolean allMustBeAvailable)
+            throws InjectException, InvocationTargetException {
         for (Injector contextResolverAim : this.injEverSameAims) {
-            contextResolverAim.injectInto(jaxRsResObj);
+            contextResolverAim.injectInto(jaxRsResObj, allMustBeAvailable);
         }
     }
 }

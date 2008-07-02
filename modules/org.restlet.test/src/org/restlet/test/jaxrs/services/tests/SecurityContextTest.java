@@ -80,6 +80,7 @@ public class SecurityContextTest extends JaxRsTestCase {
         if (!startServer(RoleChecker.FORBID_ALL))
             return;
         Response response = getAuth(null, "admin", "adminPW");
+        sysOutEntityIfNotStatus(Status.CLIENT_ERROR_FORBIDDEN, response);
         assertEquals(Status.CLIENT_ERROR_FORBIDDEN, response.getStatus());
     }
 
@@ -89,7 +90,7 @@ public class SecurityContextTest extends JaxRsTestCase {
         Response response = post(null, new Form().getWebRepresentation(),
                 new ChallengeResponse(ChallengeScheme.HTTP_BASIC, "alice",
                         "alicesSecret"));
-        sysOutEntityIfError(response);
+        sysOutEntityIfNotStatus(Status.CLIENT_ERROR_FORBIDDEN, response);
         assertEquals(Status.CLIENT_ERROR_FORBIDDEN, response.getStatus());
     }
 
@@ -100,7 +101,7 @@ public class SecurityContextTest extends JaxRsTestCase {
         ChallengeResponse cr = new ChallengeResponse(
                 ChallengeScheme.HTTP_BASIC, "bob", "bobsSecret");
         Response response = post(null, postEntity, cr);
-        sysOutEntityIfError(response);
+        sysOutEntityIfNotStatus(Status.CLIENT_ERROR_FORBIDDEN, response);
         assertEquals(Status.CLIENT_ERROR_FORBIDDEN, response.getStatus());
     }
 
@@ -189,6 +190,7 @@ public class SecurityContextTest extends JaxRsTestCase {
         assertEquals(Status.CLIENT_ERROR_UNAUTHORIZED, response.getStatus());
 
         response = getAuth(null, "alice", "alicesSecret");
+        sysOutEntityIfNotStatus(Status.CLIENT_ERROR_FORBIDDEN, response);
         assertEquals(Status.CLIENT_ERROR_FORBIDDEN, response.getStatus());
 
         response = getAuth(null, "bob", "bobsSecret");

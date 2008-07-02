@@ -50,7 +50,7 @@ import javax.ws.rs.ext.MessageBodyWorkers;
  * @see ContextResolver
  * @see CallContext
  */
-public class ThreadLocalizedContext implements UriInfo, Request, HttpHeaders,
+public class ThreadLocalizedContext implements Request, HttpHeaders,
         SecurityContext {
 
     /**
@@ -143,34 +143,6 @@ public class ThreadLocalizedContext implements UriInfo, Request, HttpHeaders,
     @SuppressWarnings("deprecation")
     public List<MediaType> getAcceptableMediaTypes() {
         return get().getAcceptableMediaTypes();
-    }
-
-    /**
-     * @return
-     * @see JaxRsUriInfo#getAncestorResources()
-     * @see UriInfo#getAncestorResources()
-     */
-    public List<Object> getAncestorResources() {
-        return get().getAncestorResources();
-    }
-
-    /**
-     * @return
-     * @see JaxRsUriInfo#getAncestorResourceURIs()
-     * @see UriInfo#getAncestorResourceURIs()
-     */
-    public List<String> getAncestorResourceURIs() {
-        return get().getAncestorResourceURIs();
-    }
-
-    /**
-     * @param decode
-     * @return
-     * @see JaxRsUriInfo#getAncestorResourceURIs(boolean)
-     * @see UriInfo#getAncestorResourceURIs(boolean)
-     */
-    public List<String> getAncestorResourceURIs(boolean decode) {
-        return get().getAncestorResourceURIs(decode);
     }
 
     /**
@@ -397,6 +369,15 @@ public class ThreadLocalizedContext implements UriInfo, Request, HttpHeaders,
     }
 
     /**
+     * Removes the CallContext for the current thread.
+     * 
+     * @see #set(Object)
+     */
+    public void reset() {
+        getRequestAttributes().remove(CALLCONTEXT_KEY);
+    }
+
+    /**
      * @param variants
      * @return
      * @throws IllegalArgumentException
@@ -413,7 +394,8 @@ public class ThreadLocalizedContext implements UriInfo, Request, HttpHeaders,
      * here before you can get it by {@link #get()}.
      * 
      * @param callContext
-     *                The CallContext for the current request. must not be null.
+     *                The CallContext for the current request; must not be null.
+     * @see #reset()
      * @see #get()
      * @throws IllegalArgumentException
      *                 if null was given.

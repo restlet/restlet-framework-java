@@ -30,7 +30,11 @@ import javax.ws.rs.ext.ContextResolver;
 import org.restlet.ext.jaxrs.ObjectFactory;
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalBeanSetterTypeException;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalConstrParamTypeException;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalFieldTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.ImplementationException;
 import org.restlet.ext.jaxrs.internal.exceptions.InjectException;
 import org.restlet.ext.jaxrs.internal.exceptions.InstantiateException;
@@ -77,7 +81,12 @@ public class RootResourceClass extends ResourceClass {
 
     private final ParameterList constructorParameters;
 
+    /**
+     * Injects the necessary values directly into the root resource class.
+     */
     private final IntoRrcInjector injectHelper;
+
+    private final boolean singelton = false;
 
     /**
      * Creates a wrapper for the given JAX-RS root resource class.
@@ -103,13 +112,18 @@ public class RootResourceClass extends ResourceClass {
      * @throws IllegalPathOnClassException
      * @throws MissingConstructorException
      *                 if no valid constructor could be found
+     * @throws IllegalConstrParamTypeException
+     * @throws IllegalBeanSetterTypeException
+     * @throws IllegalFieldTypeException
      */
     RootResourceClass(Class<?> jaxRsClass, ThreadLocalizedContext tlContext,
             EntityProviders entityProviders,
             Collection<ContextResolver<?>> allCtxResolvers,
             ExtensionBackwardMapping extensionBackwardMapping, Logger logger)
             throws IllegalArgumentException, MissingAnnotationException,
-            IllegalPathOnClassException, MissingConstructorException {
+            IllegalPathOnClassException, MissingConstructorException,
+            IllegalConstrParamTypeException, IllegalFieldTypeException,
+            IllegalBeanSetterTypeException {
         super(jaxRsClass, tlContext, entityProviders, allCtxResolvers,
                 extensionBackwardMapping, logger, logger);
         Util.checkClassConcrete(getJaxRsClass(), "root resource class");
@@ -121,9 +135,14 @@ public class RootResourceClass extends ResourceClass {
                 "root resource class");
         boolean constructorLeaveEncoded = this.isLeaveEncoded()
                 || constructor.isAnnotationPresent(Encoded.class);
-        this.constructorParameters = new ParameterList(this.constructor,
-                tlContext, constructorLeaveEncoded, entityProviders,
-                allCtxResolvers, extensionBackwardMapping, true, logger);
+        try {
+            this.constructorParameters = new ParameterList(this.constructor,
+                    tlContext, constructorLeaveEncoded, entityProviders,
+                    allCtxResolvers, extensionBackwardMapping, true, logger,
+                    !this.singelton);
+        } catch (IllegalTypeException e) {
+            throw new IllegalConstrParamTypeException(e);
+        }
     }
 
     /**
@@ -154,7 +173,7 @@ public class RootResourceClass extends ResourceClass {
         }
         ResourceObject rootResourceObject = new ResourceObject(instance, this);
         try {
-            this.injectHelper.injectInto(instance);
+            this.injectHelper.injectInto(instance, !this.singelton);
         } catch (InjectException e) {
             throw new InstantiateException(e);
         }

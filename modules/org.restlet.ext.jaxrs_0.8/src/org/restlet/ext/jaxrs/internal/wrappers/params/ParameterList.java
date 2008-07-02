@@ -46,6 +46,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.PathSegment;
+import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.ext.ContextResolver;
 
@@ -54,6 +55,7 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.ext.jaxrs.internal.core.CallContext;
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
+import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedUriInfo;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertCookieParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertHeaderParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertMatrixParamException;
@@ -61,6 +63,7 @@ import org.restlet.ext.jaxrs.internal.exceptions.ConvertParameterException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertPathParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertQueryParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.todo.NotYetImplementedException;
 import org.restlet.ext.jaxrs.internal.util.Converter;
@@ -597,8 +600,7 @@ public class ParameterList {
         QueryParamGetter(QueryParam queryParam, DefaultValue defaultValue,
                 Class<?> convToCl, Type convToGen,
                 ThreadLocalizedContext tlContext, boolean leaveEncoded) {
-            super(defaultValue, convToCl, convToGen, tlContext,
-                    leaveEncoded);
+            super(defaultValue, convToCl, convToGen, tlContext, leaveEncoded);
             this.queryParam = queryParam;
         }
 
@@ -624,6 +626,29 @@ public class ParameterList {
             } catch (ConvertParameterException e) {
                 throw new ConvertQueryParamException(e);
             }
+        }
+    }
+
+    /**
+     * @author Stephan
+     * 
+     */
+    private static class UriInfoGetter implements ParamGetter {
+
+        private final boolean allMustBeAvailable;
+
+        private final ThreadLocalizedUriInfo uriInfo;
+
+        private UriInfoGetter(ThreadLocalizedContext tlContext,
+                boolean allMustBeAvailable) {
+            this.uriInfo = new ThreadLocalizedUriInfo(tlContext);
+            this.allMustBeAvailable = allMustBeAvailable;
+        }
+
+        public Object getValue() throws InvocationTargetException,
+                ConvertRepresentationException, WebApplicationException {
+            this.uriInfo.saveStateForCurrentThread(allMustBeAvailable);
+            return this.uriInfo;
         }
     }
 
@@ -727,15 +752,22 @@ public class ParameterList {
      *                true, if the entity is allowed as parameter, otherwise
      *                false.
      * @param logger
+     * @param allMustBeAvailable
+     *                if true, all values must be available (for singeltons
+     *                creation it must be false)
      * @throws MissingAnnotationException
+     * @throws IllegalTypeException
+     *                 if the given class is not valid to be annotated with
+     *                 &#64;{@link Context}.
      */
     private ParameterList(Class<?>[] parameterTypes, Type[] genParamTypes,
             Annotation[][] paramAnnoss, ThreadLocalizedContext tlContext,
             boolean leaveAllEncoded, EntityProviders entityProviders,
             Collection<ContextResolver<?>> allCtxResolvers,
             ExtensionBackwardMapping extensionBackwardMapping,
-            boolean paramsAllowed, boolean entityAllowed, Logger logger)
-            throws MissingAnnotationException {
+            boolean paramsAllowed, boolean entityAllowed, Logger logger,
+            boolean allMustBeAvailable) throws MissingAnnotationException,
+            IllegalTypeException {
         this.paramCount = parameterTypes.length;
         this.parameters = new ParamGetter[paramCount];
         boolean entityAlreadyRead = false;
@@ -745,10 +777,15 @@ public class ParameterList {
             Annotation[] paramAnnos = paramAnnoss[i];
             Context conntextAnno = getAnno(paramAnnos, Context.class);
             if (conntextAnno != null) {
-                parameters[i] = new ContextHolder(ContextInjector
-                        .getInjectObject(parameterType, genParamType,
-                                tlContext, entityProviders, allCtxResolvers,
-                                extensionBackwardMapping));
+                if (parameterType.equals(UriInfo.class)) {
+                    parameters[i] = new UriInfoGetter(tlContext,
+                            allMustBeAvailable);
+                } else {
+                    parameters[i] = new ContextHolder(ContextInjector
+                            .getInjectObject(parameterType, genParamType,
+                                    tlContext, entityProviders,
+                                    allCtxResolvers, extensionBackwardMapping));
+                }
                 continue;
             }
             if (paramsAllowed) {
@@ -819,19 +856,23 @@ public class ParameterList {
      * @param extensionBackwardMapping
      * @param paramsAllowed
      * @param logger
+     * @param allMustBeAvailable
      * @throws MissingAnnotationException
+     * @throws IllegalTypeException
+     *                 if one of the parameters contains a &#64;{@link Context}
+     *                 on an type that must not be annotated with &#64;{@link Context}.
      */
     public ParameterList(Constructor<?> constr,
             ThreadLocalizedContext tlContext, boolean leaveEncoded,
             EntityProviders entityProviders,
             Collection<ContextResolver<?>> allCtxResolvers,
             ExtensionBackwardMapping extensionBackwardMapping,
-            boolean paramsAllowed, Logger logger)
-            throws MissingAnnotationException {
+            boolean paramsAllowed, Logger logger, boolean allMustBeAvailable)
+            throws MissingAnnotationException, IllegalTypeException {
         this(constr.getParameterTypes(), constr.getGenericParameterTypes(),
                 constr.getParameterAnnotations(), tlContext, leaveEncoded,
                 entityProviders, allCtxResolvers, extensionBackwardMapping,
-                paramsAllowed, false, logger);
+                paramsAllowed, false, logger, allMustBeAvailable);
     }
 
     /**
@@ -845,6 +886,9 @@ public class ParameterList {
      * @param entityAllowed
      * @param logger
      * @throws MissingAnnotationException
+     * @throws IllegalTypeException
+     *                 if one of the parameters contains a &#64;{@link Context}
+     *                 on an type that must not be annotated with &#64;{@link Context}.
      */
     public ParameterList(Method executeMethod, Method annotatedMethod,
             ThreadLocalizedContext tlContext, boolean leaveEncoded,
@@ -852,12 +896,12 @@ public class ParameterList {
             Collection<ContextResolver<?>> allCtxResolvers,
             ExtensionBackwardMapping extensionBackwardMapping,
             boolean entityAllowed, Logger logger)
-            throws MissingAnnotationException {
+            throws MissingAnnotationException, IllegalTypeException {
         this(executeMethod.getParameterTypes(), executeMethod
                 .getGenericParameterTypes(), annotatedMethod
                 .getParameterAnnotations(), tlContext, leaveEncoded,
                 entityProviders, allCtxResolvers, extensionBackwardMapping,
-                true, entityAllowed, logger);
+                true, entityAllowed, logger, true);
     }
 
     /**

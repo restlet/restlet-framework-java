@@ -30,6 +30,7 @@ import java.util.logging.Logger;
 import javax.ws.rs.ConsumeMime;
 import javax.ws.rs.ProduceMime;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Variant;
 import javax.ws.rs.ext.ContextResolver;
 
@@ -41,6 +42,7 @@ import org.restlet.ext.jaxrs.internal.exceptions.ConvertMatrixParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertPathParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertQueryParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalMethodParamTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnMethodException;
 import org.restlet.ext.jaxrs.internal.exceptions.MethodInvokeException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
@@ -63,6 +65,15 @@ public class ResourceMethod extends AbstractMethodWrapper implements
     // NICE check, which subset of MessageBodyWriters could be cached here.
     // . . (the media type is available via @ProduceMime on the entity provider)
 
+    /**
+     * the Java method that should be referenced for annotations. This method
+     * could be different from the method is called for executing, see section
+     * 3.6 "Annotation Inheritance" of JSR-311-spec.
+     * 
+     * @see AbstractMethodWrapper#executeMethod
+     */
+    private final Method annotatedMethod;
+
     /** @see ConsumeMime */
     private final List<MediaType> consumedMimes;
 
@@ -76,15 +87,6 @@ public class ResourceMethod extends AbstractMethodWrapper implements
      * {@link #getSupportedVariants()}.
      */
     private final Collection<Variant> supportedVariants;
-
-    /**
-     * the Java method that should be referenced for annotations. This method
-     * could be different from the method is called for executing, see section
-     * 3.6 "Annotation Inheritance" of JSR-311-spec.
-     * 
-     * @see AbstractMethodWrapper#executeMethod
-     */
-    private final Method annotatedMethod;
 
     /**
      * Creates a wrapper for a resource method.
@@ -114,6 +116,10 @@ public class ResourceMethod extends AbstractMethodWrapper implements
      * @throws IllegalPathOnMethodException
      * @throws MissingAnnotationException
      * @throws IllegalArgumentException
+     *                 if the annotated method is null
+     * @throws IllegalMethodParamTypeException
+     *                 if one of the method parameters annotated with &#64;{@link Context}
+     *                 has a type that must not be annotated with &#64;{@link Context}.
      */
     ResourceMethod(Method executeMethod, Method annotatedMethod,
             ResourceClass resourceClass, org.restlet.data.Method httpMethod,
@@ -121,7 +127,7 @@ public class ResourceMethod extends AbstractMethodWrapper implements
             Collection<ContextResolver<?>> allCtxResolvers,
             ExtensionBackwardMapping extensionBackwardMapping, Logger logger)
             throws IllegalPathOnMethodException, IllegalArgumentException,
-            MissingAnnotationException {
+            MissingAnnotationException, IllegalMethodParamTypeException {
         super(executeMethod, annotatedMethod, resourceClass, tlContext,
                 entityProviders, allCtxResolvers, extensionBackwardMapping,
                 true, logger);

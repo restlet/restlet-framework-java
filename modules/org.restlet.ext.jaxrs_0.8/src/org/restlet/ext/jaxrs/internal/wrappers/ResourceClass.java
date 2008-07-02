@@ -17,7 +17,10 @@
  */
 package org.restlet.ext.jaxrs.internal.wrappers;
 
-import static org.restlet.ext.jaxrs.internal.wrappers.WrapperUtil.*;
+import static org.restlet.ext.jaxrs.internal.wrappers.WrapperUtil.checkForJaxRsAnnotations;
+import static org.restlet.ext.jaxrs.internal.wrappers.WrapperUtil.getHttpMethod;
+import static org.restlet.ext.jaxrs.internal.wrappers.WrapperUtil.isVolatile;
+
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,6 +30,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ws.rs.Encoded;
@@ -34,6 +38,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.ext.ContextResolver;
 
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalMethodParamTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnMethodException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
@@ -66,13 +71,6 @@ public class ResourceClass extends AbstractJaxRsWrapper {
     private final boolean leaveEncoded;
 
     /**
-     * The sub resource locators of this resource class. (It is initialized in
-     * method.)
-     * {@link #initResourceMethodsAndLocators(ThreadLocalizedContext, EntityProviders, Collection, ExtensionBackwardMapping, Logger)}
-     */
-    private final Collection<SubResourceLocator> subResourceLocators = new ArrayList<SubResourceLocator>();
-
-    /**
      * The resource methods of this resource class. (It is initialized in
      * method.)
      * {@link #initResourceMethodsAndLocators(ThreadLocalizedContext, EntityProviders, Collection, ExtensionBackwardMapping, Logger)}
@@ -85,6 +83,13 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * {@link #initResourceMethodsAndLocators(ThreadLocalizedContext, EntityProviders, Collection, ExtensionBackwardMapping, Logger)}
      */
     private final Collection<ResourceMethodOrLocator> resourceMethodsAndLocators = new ArrayList<ResourceMethodOrLocator>();
+
+    /**
+     * The sub resource locators of this resource class. (It is initialized in
+     * method.)
+     * {@link #initResourceMethodsAndLocators(ThreadLocalizedContext, EntityProviders, Collection, ExtensionBackwardMapping, Logger)}
+     */
+    private final Collection<SubResourceLocator> subResourceLocators = new ArrayList<SubResourceLocator>();
 
     /**
      * Creates a new root resource class wrapper. Will not set the path, because
@@ -311,13 +316,6 @@ public class ResourceClass extends AbstractJaxRsWrapper {
     }
 
     /**
-     * @return Returns the sub resource locators of the given class.
-     */
-    public final Iterable<SubResourceLocator> getSubResourceLocators() {
-        return subResourceLocators;
-    }
-
-    /**
      * @return Return the sub resource methods of the given class.
      */
     public final Iterable<ResourceMethod> getResourceMethods() {
@@ -329,6 +327,13 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      */
     public final Collection<ResourceMethodOrLocator> getResourceMethodsAndLocators() {
         return this.resourceMethodsAndLocators;
+    }
+
+    /**
+     * @return Returns the sub resource locators of the given class.
+     */
+    public final Iterable<SubResourceLocator> getSubResourceLocators() {
+        return subResourceLocators;
     }
 
     @Override
@@ -360,10 +365,20 @@ public class ResourceClass extends AbstractJaxRsWrapper {
                 if (httpMethod != null) {
                     if (isVolatile(execMethod))
                         continue;
-                    ResourceMethod subResMeth = new ResourceMethod(execMethod,
-                            annotatedMethod, this, httpMethod, tlContext,
-                            entityProviders, allCtxResolvers,
-                            extensionBackwardMapping, logger);
+                    ResourceMethod subResMeth;
+                    try {
+                        subResMeth = new ResourceMethod(execMethod,
+                                annotatedMethod, this, httpMethod, tlContext,
+                                entityProviders, allCtxResolvers,
+                                extensionBackwardMapping, logger);
+                    } catch (IllegalMethodParamTypeException e) {
+                        Logger.getAnonymousLogger().log(
+                                Level.WARNING,
+                                "An annotated parameter of the resource method "
+                                        + annotatedMethod
+                                        + " is has an illegal type", e);
+                        continue;
+                    }
                     this.resourceMethods.add(subResMeth);
                     this.resourceMethodsAndLocators.add(subResMeth);
                     checkForPrimitiveParameters(execMethod, logger);
@@ -371,10 +386,20 @@ public class ResourceClass extends AbstractJaxRsWrapper {
                     if (path != null) {
                         if (isVolatile(execMethod))
                             continue;
-                        SubResourceLocator subResLoc = new SubResourceLocator(
-                                execMethod, annotatedMethod, this, tlContext,
-                                entityProviders, allCtxResolvers,
-                                extensionBackwardMapping, logger);
+                        SubResourceLocator subResLoc;
+                        try {
+                            subResLoc = new SubResourceLocator(
+                                    execMethod, annotatedMethod, this, tlContext,
+                                    entityProviders, allCtxResolvers,
+                                    extensionBackwardMapping, logger);
+                        } catch (IllegalMethodParamTypeException e) {
+                            Logger.getAnonymousLogger().log(
+                                    Level.WARNING,
+                                    "An annotated parameter of the resource method "
+                                            + annotatedMethod
+                                            + " is has an illegal type", e);
+                            continue;
+                        }
                         this.subResourceLocators.add(subResLoc);
                         this.resourceMethodsAndLocators.add(subResLoc);
                         checkForPrimitiveParameters(execMethod, logger);

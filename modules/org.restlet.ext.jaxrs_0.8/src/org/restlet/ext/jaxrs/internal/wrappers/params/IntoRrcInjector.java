@@ -36,6 +36,8 @@ import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.MessageBodyWorkers;
 
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalBeanSetterTypeException;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalFieldTypeException;
 import org.restlet.ext.jaxrs.internal.wrappers.params.ParameterList.CookieParamGetter;
 import org.restlet.ext.jaxrs.internal.wrappers.params.ParameterList.HeaderParamGetter;
 import org.restlet.ext.jaxrs.internal.wrappers.params.ParameterList.MatrixParamGetter;
@@ -60,12 +62,14 @@ public class IntoRrcInjector extends ContextInjector {
      * @param allResolvers
      *                all available {@link ContextResolver}s.
      * @param extensionBackwardMapping
+     * @throws IllegalBeanSetterTypeException 
+     * @throws IllegalFieldTypeException 
      */
     public IntoRrcInjector(Class<?> jaxRsClass,
             ThreadLocalizedContext tlContext, boolean leaveClassEncoded,
             MessageBodyWorkers mbWorkers,
             Collection<ContextResolver<?>> allResolvers,
-            ExtensionBackwardMapping extensionBackwardMapping) {
+            ExtensionBackwardMapping extensionBackwardMapping) throws IllegalFieldTypeException, IllegalBeanSetterTypeException {
         super(jaxRsClass, tlContext, mbWorkers, allResolvers,
                 extensionBackwardMapping);
         this.init(jaxRsClass, tlContext, leaveClassEncoded);
