@@ -29,3 +29,4 @@ Export-Package: org.osgi.framework,
  org.osgi.util.position,
  org.osgi.util.tracker,
  org.osgi.util.xml
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

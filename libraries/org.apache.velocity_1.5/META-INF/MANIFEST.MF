@@ -92,3 +92,4 @@ Export-Package: org.apache.velocity;uses:="org.apache.velocity.context,org.apach
    org.apache.velocity.runtime,
    org.apache.velocity.util,
    org.apache.velocity.runtime.log"
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

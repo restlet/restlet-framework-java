@@ -25,3 +25,4 @@ Export-Package:
  org.mozilla.javascript.xml,
  org.mozilla.javascript.xml.impl.xmlbeans,
  org.mozilla.javascript.xmlimpl
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

@@ -153,3 +153,4 @@ Export-Package: com.db4o;
    org.apache.tools.ant.util.regexp",
  com.db4o.typehandlers;uses:="com.db4o.reflect",
  com.db4o.types
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

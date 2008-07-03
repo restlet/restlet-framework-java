@@ -24,3 +24,4 @@ Export-Package: .,
    javax.naming.spi,
    javax.sql",
  org.apache.commons.jocl;uses:="org.xml.sax,org.xml.sax.helpers"
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

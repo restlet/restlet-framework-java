@@ -27,3 +27,4 @@ Export-Package: org.apache.mina.common;uses:="org.apache.mina.util",
  org.apache.mina.transport.vmpipe;uses:="org.apache.mina.common.support,org.apache.mina.common",
  org.apache.mina.transport.vmpipe.support;uses:="org.apache.mina.transport.vmpipe,org.apache.mina.common.support,org.apache.mina.common",
  org.apache.mina.util;uses:="org.apache.mina.common"
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

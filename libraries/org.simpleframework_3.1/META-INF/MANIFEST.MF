@@ -31,3 +31,4 @@ Export-Package: simple.http;
  simple.util.process;uses:="simple.util",
  simple.util.schedule,
  simple.util.xml
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

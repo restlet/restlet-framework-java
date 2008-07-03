@@ -51,3 +51,4 @@ Export-Package:
    EDU.purdue.cs.bloat.ssa",
  EDU.purdue.cs.bloat.tree;uses:="EDU.purdue.cs.bloat.editor,EDU.purdue.cs.bloat.cfg",
  EDU.purdue.cs.bloat.util;uses:="new EDU.purdue.cs.bloat.util"
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

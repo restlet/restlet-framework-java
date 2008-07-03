@@ -34,3 +34,4 @@ Export-Package: org.apache.commons.collections;uses:="new org.apache.commons.col
    org.apache.commons.collections.iterators,
    new org.apache.commons.collections.set,
    org.apache.commons.collections"
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

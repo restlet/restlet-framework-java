@@ -23,3 +23,4 @@ Export-Package:
    org.springframework.transaction.support,
    com.db4o.io",
  org.springmodules.db4o.support;uses:="org.springmodules.db4o,com.db4o,org.springframework.dao.support"
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

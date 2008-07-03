@@ -8,3 +8,4 @@ Bundle-Vendor: Sun Microsystems Inc.
 Export-Package: javax.ws.rs;uses:="javax.ws.rs.core",
  javax.ws.rs.core,
  javax.ws.rs.ext;uses:="javax.ws.rs.core"
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

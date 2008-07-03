@@ -96,3 +96,4 @@ Export-Package: org.bouncycastle,
    org.bouncycastle.jce",
  org.bouncycastle.x509.examples;uses:="org.bouncycastle.x509",
  org.bouncycastle.x509.extension;uses:="org.bouncycastle.asn1,org.bouncycastle.asn1.x509"
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

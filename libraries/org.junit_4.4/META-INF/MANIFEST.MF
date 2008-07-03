@@ -19,3 +19,4 @@ Export-Package: junit.extensions;uses:="junit.framework",
  org.junit.runner.manipulation;uses:="org.junit.runner",
  org.junit.runner.notification;uses:="org.junit.runner",
  org.junit.runners;uses:="org.junit.internal.runners,junit.framework,org.junit.runner.notification"
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

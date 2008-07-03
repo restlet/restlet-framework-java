@@ -33,3 +33,4 @@ Export-Package: javax.xml.bind;version="2.1.0";
    javax.xml.transform,
    javax.xml.stream",
  javax.xml.bind.util;version="2.1.0";uses:="javax.xml.transform.sax,org.xml.sax,javax.xml.bind"
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

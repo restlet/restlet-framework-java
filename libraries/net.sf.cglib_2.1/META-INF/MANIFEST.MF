@@ -19,3 +19,4 @@ Export-Package: net.sf.cglib.asm,
  net.sf.cglib.transform.hook;uses:="net.sf.cglib.asm,net.sf.cglib.transform,org.codehaus.aspectwerkz.hook",
  net.sf.cglib.transform.impl;uses:="net.sf.cglib.core,net.sf.cglib.transform,net.sf.cglib.asm",
  net.sf.cglib.util;uses:="net.sf.cglib.core,net.sf.cglib.asm"
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

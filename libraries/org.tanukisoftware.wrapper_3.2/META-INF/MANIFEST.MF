@@ -10,3 +10,4 @@ Export-Package: org.tanukisoftware.wrapper;uses:="new org.tanukisoftware.wrapper
  org.tanukisoftware.wrapper.jmx,
  org.tanukisoftware.wrapper.resources,
  org.tanukisoftware.wrapper.security
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

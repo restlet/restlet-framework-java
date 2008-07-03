@@ -30,3 +30,4 @@ Export-Package:
    org.mortbay.http",
  org.mortbay.util;uses:="new org.mortbay.util",
  org.mortbay.xml;uses:="org.mortbay.util,org.xml.sax"
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

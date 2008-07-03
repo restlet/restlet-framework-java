@@ -7,3 +7,4 @@ Bundle-ClassPath: jsslutils.jar
 Bundle-Vendor: http://code.google.com/p/jsslutils/
 Export-Package: jsslutils.sslcontext;uses:="javax.net.ssl",
  jsslutils.sslcontext.trustmanagers;uses:="jsslutils.sslcontext,javax.net.ssl"
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

@@ -526,3 +526,4 @@ Export-Package: net.jxta,
    net.jxta.impl.util.pipe.reliable",
  net.jxta.util.documentSerializable;uses:="net.jxta.document,net.jxta.exception"
 Bundle-Vendor: Sun Microsystems Inc.
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
