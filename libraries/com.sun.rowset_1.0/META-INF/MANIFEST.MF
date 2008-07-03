@@ -1,0 +1,24 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: JDBC Rowset 1.0.1 Implementation
+Bundle-SymbolicName: com.sun.rowset
+Bundle-Version: 1.0.1
+Bundle-ClassPath: com.sun.rowset.jar
+Bundle-Vendor: Sun Microsystems Inc.
+Export-Package: com.sun.rowset;
+  uses:="com.sun.rowset.internal,
+   javax.sql,
+   javax.sql.rowset.spi,
+   javax.sql.rowset",
+ com.sun.rowset.internal;
+  uses:="com.sun.rowset,
+   org.xml.sax,
+   javax.sql,
+   javax.sql.rowset.spi,
+   javax.sql.rowset,
+   org.xml.sax.helpers",
+ com.sun.rowset.providers;uses:="javax.sql,javax.sql.rowset.spi",
+ javax.sql.rowset;uses:="javax.sql,javax.sql.rowset.spi",
+ javax.sql.rowset.serial,
+ javax.sql.rowset.spi;uses:="javax.naming,javax.sql,javax.sql.rowset"
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
