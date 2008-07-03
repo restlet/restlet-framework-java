@@ -171,10 +171,10 @@ public class ServerServlet extends HttpServlet {
      * value. "true" indicates that all applications will be attached to the
      * Component's virtual hosts with the Servlet Context path value.
      */
-    private static final String AUTO_WIRE_ATTRIBUTE = "org.restlet.autoWire";
+    private static final String AUTO_WIRE_KEY = "org.restlet.autoWire";
 
-    /** The default value for the AUTO_WIRE_ATTRIBUTE parameter. */
-    private static final String AUTO_WIRE_ATTRIBUTE_DEFAULT = "true";
+    /** The default value for the AUTO_WIRE_KEY parameter. */
+    private static final String AUTO_WIRE_KEY_DEFAULT = "true";
 
     /**
      * Name of the attribute key containing a list of supported client
@@ -484,9 +484,9 @@ public class ServerServlet extends HttpServlet {
                 }
             } else {
                 // According to the mode, configure correctly the component.
-                String autoWire = getInitParameter(AUTO_WIRE_ATTRIBUTE,
-                        AUTO_WIRE_ATTRIBUTE_DEFAULT);
-                if (AUTO_WIRE_ATTRIBUTE_DEFAULT.equalsIgnoreCase(autoWire)) {
+                String autoWire = getInitParameter(AUTO_WIRE_KEY,
+                        AUTO_WIRE_KEY_DEFAULT);
+                if (AUTO_WIRE_KEY_DEFAULT.equalsIgnoreCase(autoWire)) {
                     // Translate all defined routes according to the context
                     // path.
                     for (Route route : component.getDefaultHost().getRoutes()) {
