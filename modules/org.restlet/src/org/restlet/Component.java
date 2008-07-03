@@ -492,7 +492,6 @@ public class Component extends Restlet {
      *                Is this route the default one?
      * @return the created route, or null.
      */
-    @SuppressWarnings("unchecked")
     private Route attachWithDescriptor(Router router, String targetDescriptor,
             String uriPattern, boolean defaultRoute) {
         Route route = null;

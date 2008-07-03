@@ -141,7 +141,6 @@ public abstract class AuthenticationHelper {
      *                The current request HTTP headers.
      * @return The authorization header value.
      */
-    @SuppressWarnings("deprecation")
     public String format(ChallengeResponse challenge, Request request,
             Series<Parameter> httpHeaders) {
         StringBuilder sb = new StringBuilder();

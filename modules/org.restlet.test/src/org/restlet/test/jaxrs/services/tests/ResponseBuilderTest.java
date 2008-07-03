@@ -33,7 +33,6 @@ import org.restlet.test.jaxrs.services.resources.ResponseBuilderService;
 public class ResponseBuilderTest extends JaxRsTestCase {
 
     @Override
-    @SuppressWarnings("unchecked")
     protected Class<?> getRootResourceClass() {
         return ResponseBuilderService.class;
     }

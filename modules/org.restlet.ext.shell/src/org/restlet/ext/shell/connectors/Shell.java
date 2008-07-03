@@ -28,7 +28,7 @@ class Shell {
     public void loop() {
         for (;;) {
             // update completor
-            console.setCandidates(new TreeSet(scriptEngine.getBindings(ScriptContext.ENGINE_SCOPE).keySet()));
+            console.setCandidates(new TreeSet<String>(scriptEngine.getBindings(ScriptContext.ENGINE_SCOPE).keySet()));
 
             String line = console.readLine(prompt);
 

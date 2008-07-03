@@ -215,7 +215,6 @@ public class Guard extends Filter {
      *                The request to authorize.
      * @return True if the request is authorized.
      */
-    @SuppressWarnings("unused")
     public boolean authorize(Request request) {
         // Authorize everything by default
         return true;
@@ -261,7 +260,6 @@ public class Guard extends Filter {
      *                the identifier's secret
      * @return true if the secret is valid for the given identifier
      */
-    @SuppressWarnings("unused")
     public boolean checkSecret(Request request, String identifier, char[] secret) {
         return checkSecret(identifier, secret);
     }

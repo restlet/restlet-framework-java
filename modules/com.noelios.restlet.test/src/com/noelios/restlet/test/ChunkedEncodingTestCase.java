@@ -75,7 +75,6 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
         }
 
         @Override
-        @SuppressWarnings("unchecked")
         public void storeRepresentation(Representation entity) {
             checkForChunkedHeader(getRequest());
 

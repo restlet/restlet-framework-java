@@ -263,10 +263,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
         this.readOnly = false;
         this.request = request;
         this.response = response;
-        if (roleChecker != null)
-            this.roleChecker = roleChecker;
-        else
-            this.roleChecker = RoleChecker.REJECT_WITH_ERROR;
+        this.roleChecker = roleChecker;
         this.accMediaTypes = SortedMetadata.getForMediaTypes(request
                 .getClientInfo().getAcceptedMediaTypes());
     }

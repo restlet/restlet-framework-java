@@ -69,13 +69,11 @@ public class UnmodifiableMultivaluedMap<K, V> implements MultivaluedMap<K, V> {
     }
 
     @Deprecated
-    @SuppressWarnings("unused")
     public void add(K key, V value) {
         throw throwUnmodifiable();
     }
 
     @Deprecated
-    @SuppressWarnings("unused")
     public void clear() throws UnsupportedOperationException {
         throw throwUnmodifiable();
     }
@@ -158,27 +156,23 @@ public class UnmodifiableMultivaluedMap<K, V> implements MultivaluedMap<K, V> {
     }
 
     @Deprecated
-    @SuppressWarnings("unused")
     public List<V> put(K key, List<V> value)
             throws UnsupportedOperationException {
         throw throwUnmodifiable();
     }
 
     @Deprecated
-    @SuppressWarnings("unused")
     public void putAll(Map<? extends K, ? extends List<V>> t)
             throws UnsupportedOperationException {
         throw throwUnmodifiable();
     }
 
     @Deprecated
-    @SuppressWarnings("unused")
     public void putSingle(K key, V value) throws UnsupportedOperationException {
         throw throwUnmodifiable();
     }
 
     @Deprecated
-    @SuppressWarnings("unused")
     public List<V> remove(Object key) throws UnsupportedOperationException {
         throw throwUnmodifiable();
     }

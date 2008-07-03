@@ -182,7 +182,6 @@ public class RequestTest extends JaxRsTestCase {
                                 .contains("The entity does not match Entity Tag"));
     }
 
-    @SuppressWarnings("deprecation")
     public void testGetDateNotModified() throws Exception {
         Conditions conditions = new Conditions();
         conditions.setModifiedSince(AFTER);

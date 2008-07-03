@@ -42,7 +42,6 @@ public class InjectionTest extends JaxRsTestCase {
     protected ApplicationConfig getAppConfig() {
         ApplicationConfig appConfig = new ApplicationConfig() {
             @Override
-            @SuppressWarnings("unchecked")
             public Set<Class<?>> getResourceClasses() {
                 Set<Class<?>> rrcs = new HashSet<Class<?>>();
                 rrcs.add(getRootResourceClass());

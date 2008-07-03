@@ -63,7 +63,6 @@ public class BeanNameRouterTest extends TestCase {
                 .contains(FISH_URI));
     }
 
-    @SuppressWarnings("null")
     public void testRoutesPointToFindersForBeans() throws Exception {
         router.postProcessBeanFactory(factory);
 

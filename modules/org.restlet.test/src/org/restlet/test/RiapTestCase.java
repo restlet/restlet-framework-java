@@ -57,7 +57,6 @@ public class RiapTestCase extends TestCase {
             @Override
             public Restlet createRoot() {
                 return new Restlet(getContext()) {
-                    @SuppressWarnings("unchecked")
                     @Override
                     public void handle(Request request, Response response) {
                         final String selfBase = "riap://application";

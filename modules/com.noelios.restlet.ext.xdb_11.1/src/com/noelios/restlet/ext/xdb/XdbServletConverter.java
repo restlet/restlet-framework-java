@@ -117,7 +117,6 @@ public class XdbServletConverter extends HttpServerConverter {
         CallableStatement preparedstatement = null;
         try {
             conn = XdbServerServlet.getConnection();
-            @SuppressWarnings("unused")
             int endPoint = 1;
             preparedstatement = conn
                     .prepareCall("{ call dbms_xdb.getListenerEndPoint(1,?,?,?) }");
@@ -152,7 +151,6 @@ public class XdbServletConverter extends HttpServerConverter {
      * @throws ServletException
      * @throws IOException
      */
-    @SuppressWarnings("unused")
     public void service(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         if (getTarget() != null) {

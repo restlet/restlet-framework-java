@@ -104,7 +104,6 @@ public class XdbServletWarClientHelper extends ServletWarClientHelper {
         return this.config;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void handle(Request request, Response response) {
         PreparedStatement stmt = null;

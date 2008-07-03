@@ -42,7 +42,6 @@ public final class ChallengeResponse {
         /**
          * Constructor for deserialization.
          */
-        @SuppressWarnings("unused")
         private PrincipalImpl() {
         }
 

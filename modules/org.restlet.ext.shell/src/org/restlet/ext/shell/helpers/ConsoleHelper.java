@@ -9,13 +9,18 @@ import jline.SimpleCompletor;
 
 public class ConsoleHelper {
 
-    private static final File historyFile = new File(System.getProperty("user.home") + File.separator + ".RESTSHell_history");
+    private static final File historyFile = new File(System
+            .getProperty("user.home")
+            + File.separator + ".RESTSHell_history");
+
     private ConsoleReader consoleReader;
+
     private History history;
+
     private SimpleCompletor completor;
 
     public ConsoleHelper() {
-        /// ConsoleHelper
+        // / ConsoleHelper
         try {
             consoleReader = new ConsoleReader();
         } catch (IOException e) {
@@ -26,14 +31,15 @@ public class ConsoleHelper {
         try {
             history = new History(historyFile);
         } catch (IOException e) {
-            throw new RuntimeException(String.format("cannot initialize history file %s", historyFile), e);
+            throw new RuntimeException(String.format(
+                    "cannot initialize history file %s", historyFile), e);
         }
 
         consoleReader.setHistory(history);
         consoleReader.setUseHistory(true);
 
         // Completition
-        completor = new SimpleCompletor(new String[]{"help", "version"});
+        completor = new SimpleCompletor(new String[] { "help", "version" });
         consoleReader.addCompletor(completor);
     }
 
@@ -44,9 +50,9 @@ public class ConsoleHelper {
             line = consoleReader.readLine(aPrompt);
         } catch (IOException e) {
             // do nothing
-        } finally {
-            return line;
         }
+
+        return line;
     }
 
     public String readPassword(String aPrompt) {
@@ -56,9 +62,9 @@ public class ConsoleHelper {
             password = consoleReader.readLine(aPrompt);
         } catch (IOException e) {
             // do nothing
-        } finally {
-            return password;
         }
+
+        return password;
     }
 
     public void writeLine(String line) {

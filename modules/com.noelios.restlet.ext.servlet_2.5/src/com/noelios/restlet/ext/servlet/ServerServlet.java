@@ -381,7 +381,7 @@ public class ServerServlet extends HttpServlet {
 
         // Define the list of supported client protocols.
         String clientProtocolsString = getInitParameter(CLIENTS_KEY, null);
-        if (component != null && clientProtocolsString != null) {
+        if (clientProtocolsString != null) {
             String[] clientProtocols = clientProtocolsString.split(" ");
             for (String clientProtocol : clientProtocols) {
                 component.getClients().add(Protocol.valueOf(clientProtocol));
@@ -439,6 +439,7 @@ public class ServerServlet extends HttpServlet {
      * 
      * @return The application.
      */
+    @SuppressWarnings("null")
     public Application getApplication() {
         Application result = this.application;
 
@@ -485,6 +486,7 @@ public class ServerServlet extends HttpServlet {
      * 
      * @return The component.
      */
+    @SuppressWarnings("null")
     public Component getComponent() {
         Component result = this.component;
 
@@ -547,6 +549,7 @@ public class ServerServlet extends HttpServlet {
      *                The HTTP Servlet request.
      * @return The HTTP server handling calls.
      */
+    @SuppressWarnings("null")
     public HttpServerHelper getServer(HttpServletRequest request) {
         HttpServerHelper result = this.helper;
 

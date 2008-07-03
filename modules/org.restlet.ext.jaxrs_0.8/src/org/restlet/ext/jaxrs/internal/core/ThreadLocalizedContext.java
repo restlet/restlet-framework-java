@@ -140,7 +140,6 @@ public class ThreadLocalizedContext implements Request, HttpHeaders,
      * @see CallContext#getAcceptableMediaTypes()
      * @see HttpHeaders#getAcceptableMediaTypes()
      */
-    @SuppressWarnings("deprecation")
     public List<MediaType> getAcceptableMediaTypes() {
         return get().getAcceptableMediaTypes();
     }

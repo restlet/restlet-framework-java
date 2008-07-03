@@ -274,7 +274,6 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
         return accessServer(request);
     }
 
-    @SuppressWarnings("unchecked")
     public Response accessServer(Method httpMethod, Class<?> klasse,
             String subPath, MediaType accMediaType) {
         Collection<MediaType> mediaTypes = null;

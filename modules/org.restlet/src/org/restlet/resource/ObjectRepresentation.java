@@ -84,7 +84,6 @@ public class ObjectRepresentation<T extends Serializable> extends
      * @return The represented object.
      * @throws IOException
      */
-    @SuppressWarnings("unused")
     public T getObject() throws IOException {
         return this.object;
     }

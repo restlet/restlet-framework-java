@@ -175,7 +175,6 @@ public class AuthenticationUtils {
      *                The current request HTTP headers.
      * @return The authorization header value.
      */
-    @SuppressWarnings("deprecation")
     public static String format(ChallengeResponse challenge, Request request,
             Series<Parameter> httpHeaders) {
         String result = null;

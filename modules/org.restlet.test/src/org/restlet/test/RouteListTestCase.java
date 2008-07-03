@@ -67,7 +67,6 @@ public class RouteListTestCase extends TestCase {
         assertSame(first, list.getNext(null, null, 1f));
     }
 
-    @SuppressWarnings("null")
     public void testGetRandom() {
         RouteList list = new RouteList();
 

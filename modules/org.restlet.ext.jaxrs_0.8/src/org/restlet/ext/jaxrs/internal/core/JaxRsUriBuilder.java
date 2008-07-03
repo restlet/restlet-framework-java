@@ -203,7 +203,6 @@ public class JaxRsUriBuilder extends UriBuilder {
      * @see javax.ws.rs.core.UriBuilder#build(java.util.Map)
      */
     @Override
-    @SuppressWarnings("unchecked")
     public URI build(final Map<String, Object> values)
             throws IllegalArgumentException, UriBuilderException {
         Template template = new Template(toStringWithCheck(false));

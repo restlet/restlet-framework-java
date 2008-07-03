@@ -360,7 +360,6 @@ public class JaxbRepresentation<T> extends XmlRepresentation {
      * @throws IOException
      *                 If unmarshalling XML fails.
      */
-    @SuppressWarnings("unchecked")
     public JaxbRepresentation(Representation xmlRepresentation, Class<T> type) {
         this(xmlRepresentation, type.getPackage().getName(), null);
     }
@@ -381,7 +380,6 @@ public class JaxbRepresentation<T> extends XmlRepresentation {
      * @throws IOException
      *                 If unmarshalling XML fails.
      */
-    @SuppressWarnings("unchecked")
     public JaxbRepresentation(Representation xmlRepresentation, Class<T> type,
             ValidationEventHandler validationHandler) {
         this(xmlRepresentation, type.getPackage().getName(), validationHandler);
@@ -401,7 +399,6 @@ public class JaxbRepresentation<T> extends XmlRepresentation {
      * @throws IOException
      *                 If unmarshalling XML fails.
      */
-    @SuppressWarnings("unchecked")
     public JaxbRepresentation(Representation xmlRepresentation,
             String contextPath) {
         this(xmlRepresentation, contextPath, null);
@@ -423,7 +420,6 @@ public class JaxbRepresentation<T> extends XmlRepresentation {
      * @throws IOException
      *                 If unmarshalling XML fails.
      */
-    @SuppressWarnings("unchecked")
     public JaxbRepresentation(Representation xmlRepresentation,
             String contextPath, ValidationEventHandler validationHandler) {
         super(xmlRepresentation.getMediaType());

@@ -554,7 +554,6 @@ public abstract class HttpServerCall extends HttpCall {
      *                The response.
      * @throws IOException
      */
-    @SuppressWarnings("unused")
     public void writeResponseHead(Response response) throws IOException {
         // Do nothing by default
     }

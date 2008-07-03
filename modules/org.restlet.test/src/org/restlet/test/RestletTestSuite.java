@@ -31,7 +31,6 @@ import org.restlet.test.spring.AllSpringTests;
  */
 public class RestletTestSuite extends TestSuite {
     /** Constructor. */
-    @SuppressWarnings("deprecation")
     public RestletTestSuite() {
         addTestSuite(AtomTestCase.class);
         addTestSuite(ByteUtilsTestCase.class);

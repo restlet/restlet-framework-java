@@ -85,7 +85,6 @@ public class ProviderTest extends JaxRsTestCase {
         return response;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     protected Class<?> getRootResourceClass() {
         return ProviderTestService.class;
@@ -95,7 +94,6 @@ public class ProviderTest extends JaxRsTestCase {
      * @param subPath
      * @throws IOException
      */
-    @SuppressWarnings("unused")
     private void postAndCheckXml(String subPath) throws Exception {
         Representation send = new DomRepresentation(
                 new StringRepresentation(

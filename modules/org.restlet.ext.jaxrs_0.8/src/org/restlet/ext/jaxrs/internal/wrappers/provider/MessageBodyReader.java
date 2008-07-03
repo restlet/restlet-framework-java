@@ -28,7 +28,6 @@ import org.restlet.data.MediaType;
  * @param <T>
  *                the java type to convert to.
  */
-@SuppressWarnings("unchecked")
 public interface MessageBodyReader<T> extends javax.ws.rs.ext.MessageBodyReader<T> {
 
     /**

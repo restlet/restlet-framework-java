@@ -223,8 +223,7 @@ public class TunnelService {
 	 *            The client to test.
 	 * @return True if the request from a given client can be tunnelled.
 	 */
-	public boolean allowClient(@SuppressWarnings("unused")
-	ClientInfo client) {
+	public boolean allowClient(ClientInfo client) {
 		return true;
 	}
 

@@ -50,7 +50,6 @@ import org.restlet.test.jaxrs.services.resources.JsonTestService;
  */
 public class JsonTest extends JaxRsTestCase {
 
-    @SuppressWarnings("unchecked")
     @Override
     protected Class<?> getRootResourceClass() {
         return JsonTestService.class;

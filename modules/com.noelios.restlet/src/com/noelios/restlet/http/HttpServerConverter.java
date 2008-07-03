@@ -213,7 +213,6 @@ public class HttpServerConverter extends HttpConverter {
      * @param response
      *                The response returned.
      */
-    @SuppressWarnings("unchecked")
     protected void addEntityHeaders(HttpResponse response) {
         Series<Parameter> responseHeaders = response.getHttpCall()
                 .getResponseHeaders();

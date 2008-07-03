@@ -51,7 +51,6 @@ public class CarTest extends JaxRsTestCase {
                 .getStatus());
     }
 
-    @SuppressWarnings("null")
     public void testGetCar() throws Exception {
         String carNumber = "57";
 
@@ -69,7 +68,6 @@ public class CarTest extends JaxRsTestCase {
         assertEquals(Status.CLIENT_ERROR_NOT_ACCEPTABLE, response.getStatus());
     }
 
-    @SuppressWarnings("null")
     public void testGetOffers() throws Exception {
         Response response = get("offers");
         Representation representation = response.getEntity();

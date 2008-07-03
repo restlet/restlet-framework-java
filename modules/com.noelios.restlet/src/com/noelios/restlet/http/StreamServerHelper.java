@@ -156,7 +156,6 @@ public class StreamServerHelper extends HttpServerHelper {
      * @return The created socket address.
      * @throws IOException
      */
-    @SuppressWarnings("unused")
     protected SocketAddress createSocketAddress() throws IOException {
         if (getHelped().getAddress() == null) {
             return new InetSocketAddress(getHelped().getPort());

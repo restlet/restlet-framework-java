@@ -40,7 +40,6 @@ public class ContextResolverCollection implements ContextResolver<Object> {
     /**
      * @see javax.ws.rs.ext.ContextResolver#getContext(java.lang.Class)
      */
-    @SuppressWarnings("unchecked")
     public Object getContext(Class<?> type) {
         for (ContextResolver<?> cr : resolvers) {
             Object context = cr.getContext(type);

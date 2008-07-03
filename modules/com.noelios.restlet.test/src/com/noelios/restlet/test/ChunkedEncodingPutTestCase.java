@@ -54,7 +54,6 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
         }
 
         @Override
-        @SuppressWarnings("unchecked")
         public void storeRepresentation(Representation entity) {
             getResponse().setEntity(entity);
         }

@@ -150,7 +150,6 @@ public class ResourceClass extends AbstractJaxRsWrapper {
             ThreadLocalizedContext tlContext, EntityProviders entityProviders,
             Collection<ContextResolver<?>> allCtxResolvers,
             ExtensionBackwardMapping extensionBackwardMapping, Logger logger,
-            @SuppressWarnings("unused")
             Logger sameLogger) throws IllegalArgumentException,
             IllegalPathOnClassException, MissingAnnotationException {
         super(PathRegExp.createForClass(jaxRsClass));

@@ -173,7 +173,6 @@ public class JaxRsRestlet extends Restlet {
     /**
      * Contains the thread localized {@link CallContext}s.
      */
-    @SuppressWarnings("unchecked")
     private final ThreadLocalizedContext tlContext = new ThreadLocalizedContext();
 
     private volatile ObjectFactory objectFactory;
@@ -420,7 +419,6 @@ public class JaxRsRestlet extends Restlet {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void start() throws Exception {
         for (Provider<?> provider : allProviders)
             provider.init(tlContext, entityProviders, contextResolvers,

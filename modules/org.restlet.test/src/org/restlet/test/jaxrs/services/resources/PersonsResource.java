@@ -63,7 +63,6 @@ public class PersonsResource {
      * @param person
      * @return
      */
-    @SuppressWarnings("unused")
     private int createPerson(Person person) {
         return 5;
     }

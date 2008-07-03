@@ -492,7 +492,6 @@ public final class ByteUtils {
      *                The input stream to convert.
      * @return A readable byte channel.
      */
-    @SuppressWarnings("unused")
     public static ReadableByteChannel getChannel(InputStream inputStream) {
         return (inputStream != null) ? Channels.newChannel(inputStream) : null;
     }
@@ -504,7 +503,6 @@ public final class ByteUtils {
      *                The output stream.
      * @return A writable byte channel.
      */
-    @SuppressWarnings("unused")
     public static WritableByteChannel getChannel(OutputStream outputStream) {
         return (outputStream != null) ? Channels.newChannel(outputStream)
                 : null;
@@ -608,7 +606,6 @@ public final class ByteUtils {
      *                The readable byte channel.
      * @return An input stream based on a given readable byte channel.
      */
-    @SuppressWarnings("unused")
     public static InputStream getStream(ReadableByteChannel readableChannel) {
         InputStream result = null;
 
@@ -641,7 +638,6 @@ public final class ByteUtils {
      *                the representation to get the {@link OutputStream} from.
      * @return A stream with the representation's content.
      */
-    @SuppressWarnings("unused")
     public static InputStream getStream(final Representation representation) {
         if (representation == null) {
             return null;
@@ -708,7 +704,6 @@ public final class ByteUtils {
      *                The writer.
      * @return the output stream of the writer
      */
-    @SuppressWarnings("unused")
     public static OutputStream getStream(Writer writer) {
         return new WriterOutputStream(writer);
     }

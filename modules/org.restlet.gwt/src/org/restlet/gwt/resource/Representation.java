@@ -71,7 +71,6 @@ public abstract class Representation extends Variant {
     /**
      * Indicates that the size of the representation can't be known in advance.
      */
-    @SuppressWarnings("hiding")
     public static final long UNKNOWN_SIZE = -1L;
 
     /**

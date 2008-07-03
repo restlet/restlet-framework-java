@@ -271,7 +271,6 @@ public class EncodeOrCheck {
      * @throws IllegalArgumentException
      *                 if encode is false and at least one character is invalid.
      */
-    @SuppressWarnings("unused")
     public static CharSequence fullMatrix(CharSequence matrix, boolean encode)
             throws IllegalArgumentException {
         return fullQueryOrMatrix(matrix, ';', "%20", encode);
@@ -286,7 +285,6 @@ public class EncodeOrCheck {
      * @param encode
      * @return
      */
-    @SuppressWarnings("unused")
     public static CharSequence fullQuery(CharSequence query, boolean encode) {
         return fullQueryOrMatrix(query, '&', "+", encode);
     }

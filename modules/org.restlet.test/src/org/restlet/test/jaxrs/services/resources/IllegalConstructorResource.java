@@ -29,7 +29,6 @@ import org.restlet.test.jaxrs.services.tests.IllegalConstructorTest;
  * @author Stephan Koops
  * @see IllegalConstructorTest
  */
-@SuppressWarnings("unused")
 @Path("IllegalConstructorResource")
 public class IllegalConstructorResource {
 
