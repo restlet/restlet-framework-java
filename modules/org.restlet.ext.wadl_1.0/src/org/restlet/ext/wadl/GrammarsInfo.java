@@ -81,7 +81,7 @@ public class GrammarsInfo {
      * Sets the list of documentation elements.
      * 
      * @param doc
-     *                The list of documentation elements.
+     *            The list of documentation elements.
      */
     public void setDocumentations(List<DocumentationInfo> doc) {
         this.documentations = doc;
@@ -91,7 +91,7 @@ public class GrammarsInfo {
      * Sets the list of include elements.
      * 
      * @param includes
-     *                The list of include elements.
+     *            The list of include elements.
      */
     public void setIncludes(List<IncludeInfo> includes) {
         this.includes = includes;
@@ -101,7 +101,7 @@ public class GrammarsInfo {
      * Writes the current object as an XML element using the given SAX writer.
      * 
      * @param writer
-     *                The SAX writer.
+     *            The SAX writer.
      * @throws SAXException
      */
     public void writeElement(XmlWriter writer) throws SAXException {

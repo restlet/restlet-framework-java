@@ -113,7 +113,7 @@ public class ResourceTypeInfo {
      * Sets the list of documentation elements.
      * 
      * @param doc
-     *                The list of documentation elements.
+     *            The list of documentation elements.
      */
     public void setDocumentations(List<DocumentationInfo> doc) {
         this.documentations = doc;
@@ -123,7 +123,7 @@ public class ResourceTypeInfo {
      * Sets the identifier for that element.
      * 
      * @param identifier
-     *                The identifier for that element.
+     *            The identifier for that element.
      */
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
@@ -133,7 +133,7 @@ public class ResourceTypeInfo {
      * Sets the list of supported methods.
      * 
      * @param methods
-     *                The list of supported methods.
+     *            The list of supported methods.
      */
     public void setMethods(List<MethodInfo> methods) {
         this.methods = methods;
@@ -143,7 +143,7 @@ public class ResourceTypeInfo {
      * Sets the list of parameters.
      * 
      * @param parameters
-     *                The list of parameters.
+     *            The list of parameters.
      */
     public void setParameters(List<ParameterInfo> parameters) {
         this.parameters = parameters;
@@ -153,7 +153,7 @@ public class ResourceTypeInfo {
      * Writes the current object as an XML element using the given SAX writer.
      * 
      * @param writer
-     *                The SAX writer.
+     *            The SAX writer.
      * @throws SAXException
      */
     public void writeElement(XmlWriter writer) throws SAXException {

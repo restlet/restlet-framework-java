@@ -181,7 +181,7 @@ public class ResourceInfo {
      * Sets the list of child resources.
      * 
      * @param resources
-     *                The list of child resources.
+     *            The list of child resources.
      */
     public void setChildResources(List<ResourceInfo> resources) {
         this.childResources = resources;
@@ -191,7 +191,7 @@ public class ResourceInfo {
      * Sets the list of documentation elements.
      * 
      * @param doc
-     *                The list of documentation elements.
+     *            The list of documentation elements.
      */
     public void setDocumentations(List<DocumentationInfo> doc) {
         this.documentations = doc;
@@ -201,7 +201,7 @@ public class ResourceInfo {
      * Sets the identifier for that element.
      * 
      * @param identifier
-     *                The identifier for that element.
+     *            The identifier for that element.
      */
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
@@ -211,7 +211,7 @@ public class ResourceInfo {
      * Sets the list of supported methods.
      * 
      * @param methods
-     *                The list of supported methods.
+     *            The list of supported methods.
      */
     public void setMethods(List<MethodInfo> methods) {
         this.methods = methods;
@@ -221,7 +221,7 @@ public class ResourceInfo {
      * Sets the list of parameters.
      * 
      * @param parameters
-     *                The list of parameters.
+     *            The list of parameters.
      */
     public void setParameters(List<ParameterInfo> parameters) {
         this.parameters = parameters;
@@ -231,7 +231,7 @@ public class ResourceInfo {
      * Sets the URI template for the identifier of the resource.
      * 
      * @param path
-     *                The URI template for the identifier of the resource.
+     *            The URI template for the identifier of the resource.
      */
     public void setPath(String path) {
         this.path = path;
@@ -241,8 +241,7 @@ public class ResourceInfo {
      * Sets the media type for the query component of the resource URI.
      * 
      * @param queryType
-     *                The media type for the query component of the resource
-     *                URI.
+     *            The media type for the query component of the resource URI.
      */
     public void setQueryType(MediaType queryType) {
         this.queryType = queryType;
@@ -252,7 +251,7 @@ public class ResourceInfo {
      * Sets the list of references to resource type elements.
      * 
      * @param type
-     *                The list of references to resource type elements.
+     *            The list of references to resource type elements.
      */
     public void setType(List<Reference> type) {
         this.type = type;
@@ -262,7 +261,7 @@ public class ResourceInfo {
      * Writes the current object as an XML element using the given SAX writer.
      * 
      * @param writer
-     *                The SAX writer.
+     *            The SAX writer.
      * @throws SAXException
      */
     public void writeElement(XmlWriter writer) throws SAXException {

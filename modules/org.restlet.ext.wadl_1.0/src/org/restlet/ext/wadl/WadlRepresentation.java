@@ -122,8 +122,8 @@ public class WadlRepresentation extends SaxRepresentation {
          * Constructor
          * 
          * @param wadlRepresentation
-         *                The WadlRepresentation instance that represents the
-         *                parsed document.
+         *            The WadlRepresentation instance that represents the parsed
+         *            document.
          */
         public ContentReader(WadlRepresentation wadlRepresentation) {
             this.states = new ArrayList<State>();
@@ -150,11 +150,11 @@ public class WadlRepresentation extends SaxRepresentation {
          * Receive notification of character data.
          * 
          * @param ch
-         *                The characters from the XML document.
+         *            The characters from the XML document.
          * @param start
-         *                The start position in the array.
+         *            The start position in the array.
          * @param length
-         *                The number of characters to read from the array.
+         *            The number of characters to read from the array.
          */
         @Override
         public void characters(char[] ch, int start, int length)
@@ -189,15 +189,15 @@ public class WadlRepresentation extends SaxRepresentation {
          * Receive notification of the end of an element.
          * 
          * @param uri
-         *                The Namespace URI, or the empty string if the element
-         *                has no Namespace URI or if Namespace processing is not
-         *                being performed.
+         *            The Namespace URI, or the empty string if the element has
+         *            no Namespace URI or if Namespace processing is not being
+         *            performed.
          * @param localName
-         *                The local name (without prefix), or the empty string
-         *                if Namespace processing is not being performed.
+         *            The local name (without prefix), or the empty string if
+         *            Namespace processing is not being performed.
          * @param qName
-         *                The qualified XML name (with prefix), or the empty
-         *                string if qualified names are not available.
+         *            The qualified XML name (with prefix), or the empty string
+         *            if qualified names are not available.
          */
         @Override
         public void endElement(String uri, String localName, String qName)
@@ -248,7 +248,7 @@ public class WadlRepresentation extends SaxRepresentation {
          * Returns a parameterStyle value according to the given string or null.
          * 
          * @param parameterStyle
-         *                The given string.
+         *            The given string.
          * @return
          */
         public ParameterStyle getParameterStyle(String parameterStyle) {
@@ -318,20 +318,20 @@ public class WadlRepresentation extends SaxRepresentation {
          * Receive notification of the beginning of an element.
          * 
          * @param uri
-         *                The Namespace URI, or the empty string if the element
-         *                has no Namespace URI or if Namespace processing is not
-         *                being performed.
+         *            The Namespace URI, or the empty string if the element has
+         *            no Namespace URI or if Namespace processing is not being
+         *            performed.
          * @param localName
-         *                The local name (without prefix), or the empty string
-         *                if Namespace processing is not being performed.
+         *            The local name (without prefix), or the empty string if
+         *            Namespace processing is not being performed.
          * @param qName
-         *                The qualified name (with prefix), or the empty string
-         *                if qualified names are not available.
+         *            The qualified name (with prefix), or the empty string if
+         *            qualified names are not available.
          * @param attrs
-         *                The attributes attached to the element. If there are
-         *                no attributes, it shall be an empty Attributes object.
-         *                The value of this object after startElement returns is
-         *                undefined.
+         *            The attributes attached to the element. If there are no
+         *            attributes, it shall be an empty Attributes object. The
+         *            value of this object after startElement returns is
+         *            undefined.
          */
         @Override
         public void startElement(String uri, String localName, String qName,
@@ -695,7 +695,7 @@ public class WadlRepresentation extends SaxRepresentation {
      * Constructor.
      * 
      * @param application
-     *                The root element of the WADL document.
+     *            The root element of the WADL document.
      */
     public WadlRepresentation(ApplicationInfo application) {
         super(MediaType.APPLICATION_WADL_XML);
@@ -706,7 +706,7 @@ public class WadlRepresentation extends SaxRepresentation {
      * Constructor.
      * 
      * @param xmlRepresentation
-     *                The XML WADL document.
+     *            The XML WADL document.
      * @throws IOException
      */
     public WadlRepresentation(Representation xmlRepresentation)
@@ -761,7 +761,7 @@ public class WadlRepresentation extends SaxRepresentation {
      * Sets the root element of the WADL document.
      * 
      * @param application
-     *                The root element of the WADL document.
+     *            The root element of the WADL document.
      */
     public void setApplication(ApplicationInfo application) {
         this.application = application;

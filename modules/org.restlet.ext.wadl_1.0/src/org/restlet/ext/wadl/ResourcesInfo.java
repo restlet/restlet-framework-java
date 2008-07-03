@@ -92,7 +92,7 @@ public class ResourcesInfo {
      * Sets the base URI for each child resource identifier.
      * 
      * @param baseRef
-     *                The base URI for each child resource identifier.
+     *            The base URI for each child resource identifier.
      */
     public void setBaseRef(Reference baseRef) {
         this.baseRef = baseRef;
@@ -102,7 +102,7 @@ public class ResourcesInfo {
      * Sets the list of documentation elements.
      * 
      * @param doc
-     *                The list of documentation elements.
+     *            The list of documentation elements.
      */
     public void setDocumentations(List<DocumentationInfo> doc) {
         this.documentations = doc;
@@ -112,7 +112,7 @@ public class ResourcesInfo {
      * Sets the list of child resources.
      * 
      * @param resources
-     *                The list of child resources.
+     *            The list of child resources.
      */
     public void setResources(List<ResourceInfo> resources) {
         this.resources = resources;
@@ -122,7 +122,7 @@ public class ResourcesInfo {
      * Writes the current object as an XML element using the given SAX writer.
      * 
      * @param writer
-     *                The SAX writer.
+     *            The SAX writer.
      * @throws SAXException
      */
     public void writeElement(XmlWriter writer) throws SAXException {

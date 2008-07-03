@@ -104,7 +104,7 @@ public class LinkInfo {
      * Sets the list of documentation elements.
      * 
      * @param doc
-     *                The list of documentation elements.
+     *            The list of documentation elements.
      */
     public void setDocumentations(List<DocumentationInfo> doc) {
         this.documentations = doc;
@@ -114,7 +114,7 @@ public class LinkInfo {
      * Sets the relationship attribute value.
      * 
      * @param relationship
-     *                The relationship attribute value.
+     *            The relationship attribute value.
      */
     public void setRelationship(String relationship) {
         this.relationship = relationship;
@@ -124,7 +124,7 @@ public class LinkInfo {
      * The reference to the resource type of the linked resource.
      * 
      * @param resourceType
-     *                The reference to the resource type of the linked resource.
+     *            The reference to the resource type of the linked resource.
      */
     public void setResourceType(Reference resourceType) {
         this.resourceType = resourceType;
@@ -134,7 +134,7 @@ public class LinkInfo {
      * Sets the reverse relationship attribute value.
      * 
      * @param reverseRelationship
-     *                The reverse relationship attribute value.
+     *            The reverse relationship attribute value.
      */
     public void setReverseRelationship(String reverseRelationship) {
         this.reverseRelationship = reverseRelationship;
@@ -144,7 +144,7 @@ public class LinkInfo {
      * Writes the current object as an XML element using the given SAX writer.
      * 
      * @param writer
-     *                The SAX writer.
+     *            The SAX writer.
      * @throws SAXException
      */
     public void writeElement(XmlWriter writer) throws SAXException {

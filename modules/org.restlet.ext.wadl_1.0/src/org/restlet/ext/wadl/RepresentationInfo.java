@@ -168,7 +168,7 @@ public class RepresentationInfo {
      * Sets the list of documentation elements.
      * 
      * @param doc
-     *                The list of documentation elements.
+     *            The list of documentation elements.
      */
     public void setDocumentations(List<DocumentationInfo> doc) {
         this.documentations = doc;
@@ -178,7 +178,7 @@ public class RepresentationInfo {
      * Sets the identifier for that element.
      * 
      * @param identifier
-     *                The identifier for that element.
+     *            The identifier for that element.
      */
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
@@ -188,7 +188,7 @@ public class RepresentationInfo {
      * Sets the media type of that element.
      * 
      * @param mediaType
-     *                The media type of that element.
+     *            The media type of that element.
      */
     public void setMediaType(MediaType mediaType) {
         this.mediaType = mediaType;
@@ -198,7 +198,7 @@ public class RepresentationInfo {
      * Sets the list of parameters.
      * 
      * @param parameters
-     *                The list of parameters.
+     *            The list of parameters.
      */
     public void setParameters(List<ParameterInfo> parameters) {
         this.parameters = parameters;
@@ -208,7 +208,7 @@ public class RepresentationInfo {
      * Sets the list of locations of one or more meta data profiles.
      * 
      * @param profiles
-     *                The list of locations of one or more meta data profiles.
+     *            The list of locations of one or more meta data profiles.
      */
     public void setProfiles(List<Reference> profiles) {
         this.profiles = profiles;
@@ -218,8 +218,8 @@ public class RepresentationInfo {
      * Sets the list of statuses associated with this response representation.
      * 
      * @param statuses
-     *                The list of statuses associated with this response
-     *                representation.
+     *            The list of statuses associated with this response
+     *            representation.
      */
     public void setStatuses(List<Status> statuses) {
         this.statuses = statuses;
@@ -230,8 +230,8 @@ public class RepresentationInfo {
      * representation.
      * 
      * @param xmlElement
-     *                The qualified name of the root element for this XML-based
-     *                representation.
+     *            The qualified name of the root element for this XML-based
+     *            representation.
      */
     public void setXmlElement(String xmlElement) {
         this.xmlElement = xmlElement;
@@ -241,7 +241,7 @@ public class RepresentationInfo {
      * Writes the current object as an XML element using the given SAX writer.
      * 
      * @param writer
-     *                The SAX writer.
+     *            The SAX writer.
      * @throws SAXException
      */
     public void writeElement(XmlWriter writer) throws SAXException {

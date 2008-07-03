@@ -37,8 +37,8 @@ import org.restlet.resource.Variant;
 
 /**
  * Resource that is able to automatically describe itself with WADL. This
- * description can be customized by overriding the {@link #getApplicationInfo()},
- * {@link #getResourceInfo()} and {@link #getMethodInfo(Method)} methods.
+ * description can be customized by overriding the {@link #getApplicationInfo()}
+ * , {@link #getResourceInfo()} and {@link #getMethodInfo(Method)} methods.
  * 
  * When used to describe a class of resources in the context of a parent
  * application, a special instance will be created using the default constructor
@@ -50,311 +50,311 @@ import org.restlet.resource.Variant;
  */
 public class WadlResource extends Resource {
 
-	/**
-	 * Constructor.
-	 */
-	public WadlResource() {
-		super();
-	}
+    /**
+     * Constructor.
+     */
+    public WadlResource() {
+        super();
+    }
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param context
-	 *            The parent context.
-	 * @param request
-	 *            The request to handle.
-	 * @param response
-	 *            The response to return.
-	 */
-	public WadlResource(Context context, Request request, Response response) {
-		super(context, request, response);
-	}
+    /**
+     * Constructor.
+     * 
+     * @param context
+     *            The parent context.
+     * @param request
+     *            The request to handle.
+     * @param response
+     *            The response to return.
+     */
+    public WadlResource(Context context, Request request, Response response) {
+        super(context, request, response);
+    }
 
-	/**
-	 * Indicates if OPTIONS calls are allowed by checking the "readable"
-	 * property.
-	 * 
-	 * @return True if the method is allowed.
-	 */
-	@Override
-	public boolean allowOptions() {
-		return isReadable();
-	}
+    /**
+     * Indicates if OPTIONS calls are allowed by checking the "readable"
+     * property.
+     * 
+     * @return True if the method is allowed.
+     */
+    @Override
+    public boolean allowOptions() {
+        return isReadable();
+    }
 
-	/**
-	 * Returns a WADL description of an application containing the current
-	 * resource as its only resource.
-	 * 
-	 * @return An application description.
-	 * @see WadlResource#getResourceInfo()
-	 */
-	protected ApplicationInfo getApplicationInfo() {
-		ApplicationInfo result = null;
+    /**
+     * Returns a WADL description of an application containing the current
+     * resource as its only resource.
+     * 
+     * @return An application description.
+     * @see WadlResource#getResourceInfo()
+     */
+    protected ApplicationInfo getApplicationInfo() {
+        ApplicationInfo result = null;
 
-		Application application = getApplication();
-		if (application != null && application instanceof WadlApplication) {
-			result = ((WadlApplication) application).getApplicationInfo();
-		} else {
-			result = new ApplicationInfo();
-		}
+        Application application = getApplication();
+        if (application != null && application instanceof WadlApplication) {
+            result = ((WadlApplication) application).getApplicationInfo();
+        } else {
+            result = new ApplicationInfo();
+        }
 
-		ResourcesInfo resources = new ResourcesInfo();
-		resources.setBaseRef(getResourcesBase());
-		result.setResources(resources);
-		resources.getResources().add(getResourceInfo());
-		return result;
-	}
+        ResourcesInfo resources = new ResourcesInfo();
+        resources.setBaseRef(getResourcesBase());
+        result.setResources(resources);
+        resources.getResources().add(getResourceInfo());
+        return result;
+    }
 
-	/**
-	 * Returns a WADL description of the given method.
-	 * 
-	 * @param method
-	 *            The method to describe.
-	 * @return A method description.
-	 */
-	protected MethodInfo getMethodInfo(Method method) {
-		MethodInfo methodInfo = new MethodInfo();
-		if (isDescribable(method)) {
-			methodInfo.setName(method);
-			methodInfo.setRequest(getRequestInfo(method));
-			methodInfo.setResponse(getResponseInfo(method));
-		}
-		return methodInfo;
-	}
+    /**
+     * Returns a WADL description of the given method.
+     * 
+     * @param method
+     *            The method to describe.
+     * @return A method description.
+     */
+    protected MethodInfo getMethodInfo(Method method) {
+        MethodInfo methodInfo = new MethodInfo();
+        if (isDescribable(method)) {
+            methodInfo.setName(method);
+            methodInfo.setRequest(getRequestInfo(method));
+            methodInfo.setResponse(getResponseInfo(method));
+        }
+        return methodInfo;
+    }
 
-	/**
-	 * Returns the description of the parameters of this resource. Returns null
-	 * by default.
-	 * 
-	 * @return The description of the parameters.
-	 */
-	protected List<ParameterInfo> getParametersInfo() {
-		List<ParameterInfo> result = null;
-		return result;
-	}
+    /**
+     * Returns the description of the parameters of this resource. Returns null
+     * by default.
+     * 
+     * @return The description of the parameters.
+     */
+    protected List<ParameterInfo> getParametersInfo() {
+        List<ParameterInfo> result = null;
+        return result;
+    }
 
-	/**
-	 * Returns the description of the parameters of the given representation.
-	 * Returns null by default.
-	 * 
-	 * @param representation
-	 *            The parent representation.
-	 * @return The description of the parameters.
-	 */
-	protected List<ParameterInfo> getParametersInfo(
-			RepresentationInfo representation) {
-		List<ParameterInfo> result = null;
-		return result;
-	}
+    /**
+     * Returns the description of the parameters of the given representation.
+     * Returns null by default.
+     * 
+     * @param representation
+     *            The parent representation.
+     * @return The description of the parameters.
+     */
+    protected List<ParameterInfo> getParametersInfo(
+            RepresentationInfo representation) {
+        List<ParameterInfo> result = null;
+        return result;
+    }
 
-	/**
-	 * Returns the description of the parameters of the given request. Returns
-	 * null by default.
-	 * 
-	 * @param request
-	 *            The parent request.
-	 * @return The description of the parameters.
-	 */
-	protected List<ParameterInfo> getParametersInfo(RequestInfo request) {
-		List<ParameterInfo> result = null;
-		return result;
-	}
+    /**
+     * Returns the description of the parameters of the given request. Returns
+     * null by default.
+     * 
+     * @param request
+     *            The parent request.
+     * @return The description of the parameters.
+     */
+    protected List<ParameterInfo> getParametersInfo(RequestInfo request) {
+        List<ParameterInfo> result = null;
+        return result;
+    }
 
-	/**
-	 * Returns the description of the parameters of the given response. Returns
-	 * null by default.
-	 * 
-	 * @param response
-	 *            The parent response.
-	 * @return The description of the parameters.
-	 */
-	protected List<ParameterInfo> getParametersInfo(ResponseInfo response) {
-		List<ParameterInfo> result = null;
-		return result;
-	}
+    /**
+     * Returns the description of the parameters of the given response. Returns
+     * null by default.
+     * 
+     * @param response
+     *            The parent response.
+     * @return The description of the parameters.
+     */
+    protected List<ParameterInfo> getParametersInfo(ResponseInfo response) {
+        List<ParameterInfo> result = null;
+        return result;
+    }
 
-	/**
-	 * Returns the preferred WADL variant according to the client preferences
-	 * specified in the request.
-	 * 
-	 * @return The preferred WADL variant.
-	 */
-	protected Variant getPreferredWadlVariant() {
-		Variant result = null;
+    /**
+     * Returns the preferred WADL variant according to the client preferences
+     * specified in the request.
+     * 
+     * @return The preferred WADL variant.
+     */
+    protected Variant getPreferredWadlVariant() {
+        Variant result = null;
 
-		// Compute the preferred variant. Get the default language
-		// preference from the Application (if any).
-		Application app = Application.getCurrent();
-		Language language = null;
+        // Compute the preferred variant. Get the default language
+        // preference from the Application (if any).
+        Application app = Application.getCurrent();
+        Language language = null;
 
-		if (app != null) {
-			language = app.getMetadataService().getDefaultLanguage();
-		}
+        if (app != null) {
+            language = app.getMetadataService().getDefaultLanguage();
+        }
 
-		result = getRequest().getClientInfo().getPreferredVariant(
-				getWadlVariants(), language);
+        result = getRequest().getClientInfo().getPreferredVariant(
+                getWadlVariants(), language);
 
-		return result;
-	}
+        return result;
+    }
 
-	protected RepresentationInfo getRepresentationInfo(Variant variant) {
-		RepresentationInfo result = new RepresentationInfo();
-		result.setMediaType(variant.getMediaType());
-		result.setParameters(getParametersInfo(result));
-		return result;
-	}
+    protected RepresentationInfo getRepresentationInfo(Variant variant) {
+        RepresentationInfo result = new RepresentationInfo();
+        result.setMediaType(variant.getMediaType());
+        result.setParameters(getParametersInfo(result));
+        return result;
+    }
 
-	/**
-	 * Returns a WADL description of the request to the given method. Returns
-	 * null by default.
-	 * 
-	 * @param method
-	 *            The method to describe.
-	 * @return A request description.
-	 */
-	protected RequestInfo getRequestInfo(Method method) {
-		return null;
-	}
+    /**
+     * Returns a WADL description of the request to the given method. Returns
+     * null by default.
+     * 
+     * @param method
+     *            The method to describe.
+     * @return A request description.
+     */
+    protected RequestInfo getRequestInfo(Method method) {
+        return null;
+    }
 
-	/**
-	 * Returns a WADL description of the current resource.
-	 * 
-	 * @return A WADL description of the current resource.
-	 */
-	public ResourceInfo getResourceInfo() {
-		ResourceInfo result = new ResourceInfo();
-		result.setPath(getResourcePath());
+    /**
+     * Returns a WADL description of the current resource.
+     * 
+     * @return A WADL description of the current resource.
+     */
+    public ResourceInfo getResourceInfo() {
+        ResourceInfo result = new ResourceInfo();
+        result.setPath(getResourcePath());
 
-		// Introspect the current resource to detect the allowed methods
-		List<MethodInfo> methods = result.getMethods();
-		// The set of allowed methods
-		List<Method> methodsList = new ArrayList<Method>();
-		methodsList.addAll(getAllowedMethods());
+        // Introspect the current resource to detect the allowed methods
+        List<MethodInfo> methods = result.getMethods();
+        // The set of allowed methods
+        List<Method> methodsList = new ArrayList<Method>();
+        methodsList.addAll(getAllowedMethods());
 
-		Collections.sort(methodsList, new Comparator<Method>() {
-			public int compare(Method m1, Method m2) {
-				return m1.getName().compareTo(m2.getName());
-			}
-		});
+        Collections.sort(methodsList, new Comparator<Method>() {
+            public int compare(Method m1, Method m2) {
+                return m1.getName().compareTo(m2.getName());
+            }
+        });
 
-		for (Method name : methodsList) {
-			methods.add(getMethodInfo(name));
-		}
+        for (Method name : methodsList) {
+            methods.add(getMethodInfo(name));
+        }
 
-		result.setParameters(getParametersInfo());
-		return result;
-	}
+        result.setParameters(getParametersInfo());
+        return result;
+    }
 
-	/**
-	 * Returns the resource's relative path.
-	 * 
-	 * @return The resource's relative path.
-	 */
-	protected String getResourcePath() {
-		Reference ref = new Reference(getRequest().getRootRef(), getRequest()
-				.getResourceRef());
-		return ref.getRemainingPart();
-	}
+    /**
+     * Returns the resource's relative path.
+     * 
+     * @return The resource's relative path.
+     */
+    protected String getResourcePath() {
+        Reference ref = new Reference(getRequest().getRootRef(), getRequest()
+                .getResourceRef());
+        return ref.getRemainingPart();
+    }
 
-	/**
-	 * Returns the application resources base URI.
-	 * 
-	 * @return The application resources base URI.
-	 */
-	protected Reference getResourcesBase() {
-		return getRequest().getRootRef();
-	}
+    /**
+     * Returns the application resources base URI.
+     * 
+     * @return The application resources base URI.
+     */
+    protected Reference getResourcesBase() {
+        return getRequest().getRootRef();
+    }
 
-	/**
-	 * Returns a WADL description of the response to the given method. By
-	 * default it will describe the available variants for the GET and the
-	 * OPTIONS methods based on the {@link #getVariants()} and
-	 * {@link #getWadlVariants()} methods.
-	 * 
-	 * @param method
-	 *            The method to describe.
-	 * @return A response description.
-	 */
-	protected ResponseInfo getResponseInfo(Method method) {
-		ResponseInfo result = null;
+    /**
+     * Returns a WADL description of the response to the given method. By
+     * default it will describe the available variants for the GET and the
+     * OPTIONS methods based on the {@link #getVariants()} and
+     * {@link #getWadlVariants()} methods.
+     * 
+     * @param method
+     *            The method to describe.
+     * @return A response description.
+     */
+    protected ResponseInfo getResponseInfo(Method method) {
+        ResponseInfo result = null;
 
-		if (Method.GET.equals(method)) {
-			result = new ResponseInfo();
+        if (Method.GET.equals(method)) {
+            result = new ResponseInfo();
 
-			// Describe each variant
-			for (Variant variant : getVariants()) {
-				result.getRepresentations().add(getRepresentationInfo(variant));
-			}
-		} else if (Method.OPTIONS.equals(method)) {
-			result = new ResponseInfo();
+            // Describe each variant
+            for (Variant variant : getVariants()) {
+                result.getRepresentations().add(getRepresentationInfo(variant));
+            }
+        } else if (Method.OPTIONS.equals(method)) {
+            result = new ResponseInfo();
 
-			// Describe each variant
-			for (Variant variant : getWadlVariants()) {
-				result.getRepresentations().add(getRepresentationInfo(variant));
-			}
-		}
+            // Describe each variant
+            for (Variant variant : getWadlVariants()) {
+                result.getRepresentations().add(getRepresentationInfo(variant));
+            }
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	/**
-	 * Returns the available WADL variants.
-	 * 
-	 * @return The available WADL variants.
-	 */
-	protected List<Variant> getWadlVariants() {
-		List<Variant> result = new ArrayList<Variant>();
-		result.add(new Variant(MediaType.APPLICATION_WADL_XML));
-		result.add(new Variant(MediaType.TEXT_HTML));
-		return result;
-	}
+    /**
+     * Returns the available WADL variants.
+     * 
+     * @return The available WADL variants.
+     */
+    protected List<Variant> getWadlVariants() {
+        List<Variant> result = new ArrayList<Variant>();
+        result.add(new Variant(MediaType.APPLICATION_WADL_XML));
+        result.add(new Variant(MediaType.TEXT_HTML));
+        return result;
+    }
 
-	@Override
-	public void handleOptions() {
-		getResponse().setEntity(wadlRepresent());
-	}
+    @Override
+    public void handleOptions() {
+        getResponse().setEntity(wadlRepresent());
+    }
 
-	/**
-	 * Represents the resource as a WADL description.
-	 * 
-	 * @return The WADL description.
-	 */
-	protected Representation wadlRepresent() {
-		return wadlRepresent(getPreferredWadlVariant());
-	}
+    /**
+     * Represents the resource as a WADL description.
+     * 
+     * @return The WADL description.
+     */
+    protected Representation wadlRepresent() {
+        return wadlRepresent(getPreferredWadlVariant());
+    }
 
-	/**
-	 * Represents the resource as a WADL description for the given variant.
-	 * 
-	 * @param variant
-	 *            The WADL variant.
-	 * @return The WADL description.
-	 */
-	protected Representation wadlRepresent(Variant variant) {
-		Representation result = null;
+    /**
+     * Represents the resource as a WADL description for the given variant.
+     * 
+     * @param variant
+     *            The WADL variant.
+     * @return The WADL description.
+     */
+    protected Representation wadlRepresent(Variant variant) {
+        Representation result = null;
 
-		if (MediaType.APPLICATION_WADL_XML.equals(variant.getMediaType())) {
-			result = new WadlRepresentation(getApplicationInfo());
-		} else if (MediaType.APPLICATION_WADL_XML
-				.equals(variant.getMediaType())) {
-			result = new WadlRepresentation(getApplicationInfo())
-					.getHtmlRepresentation();
-		}
+        if (MediaType.APPLICATION_WADL_XML.equals(variant.getMediaType())) {
+            result = new WadlRepresentation(getApplicationInfo());
+        } else if (MediaType.APPLICATION_WADL_XML
+                .equals(variant.getMediaType())) {
+            result = new WadlRepresentation(getApplicationInfo())
+                    .getHtmlRepresentation();
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	/**
-	 * Indicates if the given method exposes its WADL description. By default,
-	 * HEAD and OPTIONS are not exposed.
-	 * 
-	 * @param method
-	 *            The method
-	 * @return True if the method exposes its description, false otherwise.
-	 */
-	public boolean isDescribable(Method method) {
-		return !(Method.HEAD.equals(method) || Method.OPTIONS.equals(method));
-	}
+    /**
+     * Indicates if the given method exposes its WADL description. By default,
+     * HEAD and OPTIONS are not exposed.
+     * 
+     * @param method
+     *            The method
+     * @return True if the method exposes its description, false otherwise.
+     */
+    public boolean isDescribable(Method method) {
+        return !(Method.HEAD.equals(method) || Method.OPTIONS.equals(method));
+    }
 
 }

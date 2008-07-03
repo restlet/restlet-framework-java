@@ -53,7 +53,7 @@ public class WadlComponent extends Component {
      * The necessary client connectors are automatically created.
      * 
      * @param args
-     *                List of local WADL document URIs.
+     *            List of local WADL document URIs.
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {
@@ -81,7 +81,7 @@ public class WadlComponent extends Component {
      * The necessary client connectors are automatically created.
      * 
      * @param wadlRef
-     *                The URI reference to the WADL description document.
+     *            The URI reference to the WADL description document.
      */
     public WadlComponent(Reference wadlRef) {
         attach(wadlRef);
@@ -91,7 +91,7 @@ public class WadlComponent extends Component {
      * Constructor based on a given WADL description document.
      * 
      * @param wadl
-     *                The WADL description document.
+     *            The WADL description document.
      */
     public WadlComponent(Representation wadl) {
         attach(wadl);
@@ -103,7 +103,7 @@ public class WadlComponent extends Component {
      * The necessary client connectors are automatically created.
      * 
      * @param wadlUri
-     *                The URI to the WADL description document.
+     *            The URI to the WADL description document.
      */
     public WadlComponent(String wadlUri) {
         attach(wadlUri);
@@ -114,7 +114,7 @@ public class WadlComponent extends Component {
      * available at a given URI reference.
      * 
      * @param wadlRef
-     *                The URI reference to the WADL description document.
+     *            The URI reference to the WADL description document.
      * @return The created WADL application.
      */
     public WadlApplication attach(Reference wadlRef) {
@@ -140,7 +140,7 @@ public class WadlComponent extends Component {
      * component.
      * 
      * @param wadl
-     *                The WADL description document.
+     *            The WADL description document.
      * @return The created WADL application.
      */
     public WadlApplication attach(Representation wadl) {
@@ -154,7 +154,7 @@ public class WadlComponent extends Component {
      * available at a given URI.
      * 
      * @param wadlUri
-     *                The URI to the WADL description document.
+     *            The URI to the WADL description document.
      * @return The created WADL application.
      */
     public WadlApplication attach(String wadlUri) {

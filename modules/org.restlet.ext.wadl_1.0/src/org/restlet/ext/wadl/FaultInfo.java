@@ -39,7 +39,7 @@ public class FaultInfo extends RepresentationInfo {
      * Writes the current object as an XML element using the given SAX writer.
      * 
      * @param writer
-     *                The SAX writer.
+     *            The SAX writer.
      * @throws SAXException
      */
     @Override

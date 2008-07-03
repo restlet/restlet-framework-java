@@ -123,7 +123,7 @@ public class ResponseInfo {
      * Sets the list of documentation elements.
      * 
      * @param doc
-     *                The list of documentation elements.
+     *            The list of documentation elements.
      */
     public void setDocumentations(List<DocumentationInfo> doc) {
         this.documentations = doc;
@@ -133,8 +133,8 @@ public class ResponseInfo {
      * Sets the list of faults (representations that denote an error condition).
      * 
      * @param faults
-     *                The list of faults (representations that denote an error
-     *                condition).
+     *            The list of faults (representations that denote an error
+     *            condition).
      */
     public void setFaults(List<FaultInfo> faults) {
         this.faults = faults;
@@ -144,7 +144,7 @@ public class ResponseInfo {
      * Sets the list of parameters.
      * 
      * @param parameters
-     *                The list of parameters.
+     *            The list of parameters.
      */
     public void setParameters(List<ParameterInfo> parameters) {
         this.parameters = parameters;
@@ -154,7 +154,7 @@ public class ResponseInfo {
      * Sets the list of representations
      * 
      * @param representations
-     *                The list of representations
+     *            The list of representations
      */
     public void setRepresentations(List<RepresentationInfo> representations) {
         this.representations = representations;
@@ -164,7 +164,7 @@ public class ResponseInfo {
      * Writes the current object as an XML element using the given SAX writer.
      * 
      * @param writer
-     *                The SAX writer.
+     *            The SAX writer.
      * @throws SAXException
      */
     public void writeElement(XmlWriter writer) throws SAXException {

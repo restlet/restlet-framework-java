@@ -59,11 +59,18 @@ import org.restlet.resource.Variant;
  * Also, it has an {@link #attachToComponent(Component)} to attach the
  * application to an existing component and a {@link #attachToHost(VirtualHost)}
  * to attach it to an existing virtual host using the "base" attribute of the
- * WADL "resources" element.
+ * WADL "resources" element.<br>
+ * Such application is also able to generate a description of itself under two
+ * formats: WADL or HTML (the latter is actually a transformation of the
+ * former). You can obtain this representation with an OPTIONS request addressed
+ * to the "*" URI (e.g. "http://host:port/path/to/application/*"). By default,
+ * the returned representation gleans the list of all attached Resources. This
+ * default behaviour can be customized by overriding the getApplicationInfo()
+ * method.<br>
  * 
  * Concurrency note: instances of this class or its subclasses can be invoked by
  * several threads at the same time and therefore must be thread-safe. You
- * should be especially careful when storing state in member variables.
+ * should be especially careful when storing state in member variables. <br>
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
@@ -80,9 +87,9 @@ public class WadlApplication extends Application {
      * where Resource classes are attached and set it as the root Restlet.
      * 
      * @param parentContext
-     *                The parent component context.
+     *            The parent component context.
      * @param wadl
-     *                The WADL description document.
+     *            The WADL description document.
      */
     public WadlApplication(Context parentContext, Representation wadl) {
         super(parentContext);
@@ -120,7 +127,7 @@ public class WadlApplication extends Application {
      * Adds the necessary server connectors to the component.
      * 
      * @param component
-     *                The parent component to update.
+     *            The parent component to update.
      */
     private void addConnectors(Component component) {
         // Create the server connector
@@ -158,17 +165,15 @@ public class WadlApplication extends Application {
      * router, then recursively attaches its child resources.
      * 
      * @param currentResource
-     *                The resource to attach.
+     *            The resource to attach.
      * @param parentResource
-     *                The parent resource. Needed to correctly resolve the
-     *                "path" of the resource. Should be null if the resource is
-     *                root-level.
+     *            The parent resource. Needed to correctly resolve the "path" of
+     *            the resource. Should be null if the resource is root-level.
      * @param router
-     *                The router to which to attach the resource and its
-     *                children.
+     *            The router to which to attach the resource and its children.
      * @throws ClassNotFoundException
-     *                 If the class name specified in the "id" attribute of the
-     *                 resource does not exist, this exception will be thrown.
+     *             If the class name specified in the "id" attribute of the
+     *             resource does not exist, this exception will be thrown.
      */
     @SuppressWarnings("unchecked")
     private void attachResource(ResourceInfo currentResource,
@@ -219,7 +224,7 @@ public class WadlApplication extends Application {
      * virtual host if possible, otherwise a new one will be created.
      * 
      * @param component
-     *                The parent component to update.
+     *            The parent component to update.
      */
     public VirtualHost attachToComponent(Component component) {
         VirtualHost result = null;
@@ -246,7 +251,7 @@ public class WadlApplication extends Application {
      * Attaches the application to the given host using the WADL base reference.
      * 
      * @param host
-     *                The virtual host to attach to.
+     *            The virtual host to attach to.
      */
     public void attachToHost(VirtualHost host) {
         if (getBaseRef() != null) {
@@ -278,9 +283,9 @@ public class WadlApplication extends Application {
      * Completes the data available about a given Filter instance.
      * 
      * @param resourceInfo
-     *                The ResourceInfo object to complete.
+     *            The ResourceInfo object to complete.
      * @param filter
-     *                The Filter instance to document.
+     *            The Filter instance to document.
      */
 
     private void getResourceInfo(ResourceInfo resourceInfo, Filter filter) {
@@ -291,9 +296,9 @@ public class WadlApplication extends Application {
      * Completes the data available about a given Finder instance.
      * 
      * @param resourceInfo
-     *                The ResourceInfo object to complete.
+     *            The ResourceInfo object to complete.
      * @param finder
-     *                The Finder instance to document.
+     *            The Finder instance to document.
      */
     private void getResourceInfo(ResourceInfo resourceInfo, Finder finder) {
         // The handler instance targeted by this finder.
@@ -349,9 +354,9 @@ public class WadlApplication extends Application {
      * Completes the data available about a given Restlet instance.
      * 
      * @param resourceInfo
-     *                The ResourceInfo object to complete.
+     *            The ResourceInfo object to complete.
      * @param restlet
-     *                The Restlet instance to document.
+     *            The Restlet instance to document.
      */
     private void getResourceInfo(ResourceInfo resourceInfo, Restlet restlet) {
         if (restlet instanceof Finder) {
@@ -367,7 +372,7 @@ public class WadlApplication extends Application {
      * Returns the WADL data about the given Route instance.
      * 
      * @param route
-     *                The Route instance to document.
+     *            The Route instance to document.
      * @return The WADL data about the given Route instance.
      */
     private ResourceInfo getResourceInfo(Route route) {
@@ -382,9 +387,9 @@ public class WadlApplication extends Application {
      * instance.
      * 
      * @param router
-     *                The router to document.
+     *            The router to document.
      * @param list
-     *                The list of ResourceInfo instances to complete.
+     *            The list of ResourceInfo instances to complete.
      */
     private void getResourceInfos(Router router, List<ResourceInfo> list) {
         for (Route route : getRouter().getRoutes()) {
@@ -407,7 +412,7 @@ public class WadlApplication extends Application {
      * Creates a new one and attaches it to the component if necessary.
      * 
      * @param component
-     *                The parent component.
+     *            The parent component.
      * @return The related virtual host.
      */
     private VirtualHost getVirtualHost(Component component) {
@@ -469,7 +474,7 @@ public class WadlApplication extends Application {
      * Sets the WADL base reference.
      * 
      * @param baseRef
-     *                The WADL base reference.
+     *            The WADL base reference.
      */
     public void setBaseRef(Reference baseRef) {
         this.baseRef = baseRef;

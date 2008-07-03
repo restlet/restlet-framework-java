@@ -72,7 +72,7 @@ public class IncludeInfo {
      * Sets the list of documentation elements.
      * 
      * @param doc
-     *                The list of documentation elements.
+     *            The list of documentation elements.
      */
     public void setDocumentations(List<DocumentationInfo> doc) {
         this.documentations = doc;
@@ -82,7 +82,7 @@ public class IncludeInfo {
      * Sets the URI of the referenced definition.
      * 
      * @param href
-     *                The URI of the referenced definition.
+     *            The URI of the referenced definition.
      */
     public void setTargetRef(Reference href) {
         this.targetRef = href;
@@ -92,7 +92,7 @@ public class IncludeInfo {
      * Writes the current object as an XML element using the given SAX writer.
      * 
      * @param writer
-     *                The SAX writer.
+     *            The SAX writer.
      * @throws SAXException
      */
     public void writeElement(XmlWriter writer) throws SAXException {

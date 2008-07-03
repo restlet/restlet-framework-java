@@ -122,7 +122,7 @@ public class MethodInfo {
      * Sets the list of documentation elements.
      * 
      * @param doc
-     *                The list of documentation elements.
+     *            The list of documentation elements.
      */
     public void setDocumentations(List<DocumentationInfo> doc) {
         this.documentations = doc;
@@ -132,7 +132,7 @@ public class MethodInfo {
      * Sets the identifier for the method.
      * 
      * @param identifier
-     *                The identifier for the method.
+     *            The identifier for the method.
      */
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
@@ -142,7 +142,7 @@ public class MethodInfo {
      * Sets the name of the method.
      * 
      * @param name
-     *                The name of the method.
+     *            The name of the method.
      */
     public void setName(Method name) {
         this.name = name;
@@ -152,7 +152,7 @@ public class MethodInfo {
      * Sets the input to the method.
      * 
      * @param request
-     *                The input to the method.
+     *            The input to the method.
      */
     public void setRequest(RequestInfo request) {
         this.request = request;
@@ -162,7 +162,7 @@ public class MethodInfo {
      * Setst the output of the method.
      * 
      * @param response
-     *                The output of the method.
+     *            The output of the method.
      */
     public void setResponse(ResponseInfo response) {
         this.response = response;
@@ -172,7 +172,7 @@ public class MethodInfo {
      * Sets the reference to a method definition element.
      * 
      * @param targetRef
-     *                The reference to a method definition element.
+     *            The reference to a method definition element.
      */
     public void setTargetRef(Reference targetRef) {
         this.targetRef = targetRef;
@@ -182,7 +182,7 @@ public class MethodInfo {
      * Writes the current object as an XML element using the given SAX writer.
      * 
      * @param writer
-     *                The SAX writer.
+     *            The SAX writer.
      * @throws SAXException
      */
     public void writeElement(XmlWriter writer) throws SAXException {

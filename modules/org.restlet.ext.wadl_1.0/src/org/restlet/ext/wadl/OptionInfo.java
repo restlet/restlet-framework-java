@@ -71,7 +71,7 @@ public class OptionInfo {
      * Sets the list of documentation elements.
      * 
      * @param doc
-     *                The list of documentation elements.
+     *            The list of documentation elements.
      */
     public void setDocumentations(List<DocumentationInfo> doc) {
         this.documentations = doc;
@@ -81,7 +81,7 @@ public class OptionInfo {
      * Sets the value of this option element.
      * 
      * @param value
-     *                The value of this option element.
+     *            The value of this option element.
      */
     public void setValue(String value) {
         this.value = value;
@@ -91,7 +91,7 @@ public class OptionInfo {
      * Writes the current object as an XML element using the given SAX writer.
      * 
      * @param writer
-     *                The SAX writer.
+     *            The SAX writer.
      * @throws SAXException
      */
     public void writeElement(XmlWriter writer) throws SAXException {

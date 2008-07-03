@@ -177,7 +177,7 @@ public class ApplicationInfo {
      * Sets the list of documentation elements.
      * 
      * @param doc
-     *                The list of documentation elements.
+     *            The list of documentation elements.
      */
     public void setDocumentations(List<DocumentationInfo> doc) {
         this.documentations = doc;
@@ -187,7 +187,7 @@ public class ApplicationInfo {
      * Sets the list of fault elements.
      * 
      * @param faults
-     *                The list of documentation elements.
+     *            The list of documentation elements.
      */
     public void setFaults(List<FaultInfo> faults) {
         this.faults = faults;
@@ -197,7 +197,7 @@ public class ApplicationInfo {
      * Sets the grammars element.
      * 
      * @param grammars
-     *                The grammars element.
+     *            The grammars element.
      */
     public void setGrammars(GrammarsInfo grammars) {
         this.grammars = grammars;
@@ -207,7 +207,7 @@ public class ApplicationInfo {
      * Sets the list of documentation elements.
      * 
      * @param methods
-     *                The list of method elements.
+     *            The list of method elements.
      */
     public void setMethods(List<MethodInfo> methods) {
         this.methods = methods;
@@ -217,7 +217,7 @@ public class ApplicationInfo {
      * sets the list of representation elements.
      * 
      * @param representations
-     *                The list of representation elements.
+     *            The list of representation elements.
      */
     public void setRepresentations(List<RepresentationInfo> representations) {
         this.representations = representations;
@@ -227,7 +227,7 @@ public class ApplicationInfo {
      * Sets the list of resource elements.
      * 
      * @param resources
-     *                The list of resource elements.
+     *            The list of resource elements.
      */
     public void setResources(ResourcesInfo resources) {
         this.resources = resources;
@@ -237,7 +237,7 @@ public class ApplicationInfo {
      * sets the list of resource type elements.
      * 
      * @param resourceTypes
-     *                The list of resource type elements.
+     *            The list of resource type elements.
      */
     public void setResourceTypes(List<ResourceTypeInfo> resourceTypes) {
         this.resourceTypes = resourceTypes;
@@ -247,7 +247,7 @@ public class ApplicationInfo {
      * Writes the current object as an XML element using the given SAX writer.
      * 
      * @param writer
-     *                The SAX writer.
+     *            The SAX writer.
      * @throws SAXException
      */
     public void writeElement(XmlWriter writer) throws SAXException {

@@ -219,7 +219,7 @@ public class ParameterInfo {
      * Sets the default value of this parameter.
      * 
      * @param defaultValue
-     *                The default value of this parameter.
+     *            The default value of this parameter.
      */
     public void setDefaultValue(String defaultValue) {
         this.defaultValue = defaultValue;
@@ -229,7 +229,7 @@ public class ParameterInfo {
      * Sets the list of documentation elements.
      * 
      * @param doc
-     *                The list of documentation elements.
+     *            The list of documentation elements.
      */
     public void setDocumentations(List<DocumentationInfo> doc) {
         this.documentations = doc;
@@ -239,7 +239,7 @@ public class ParameterInfo {
      * Sets the fixed value for the parameter.
      * 
      * @param fixed
-     *                The fixed value for the parameter.
+     *            The fixed value for the parameter.
      */
     public void setFixed(String fixed) {
         this.fixed = fixed;
@@ -249,7 +249,7 @@ public class ParameterInfo {
      * Sets the identifier of this parameter element.
      * 
      * @param identifier
-     *                The identifier of this parameter element.
+     *            The identifier of this parameter element.
      */
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
@@ -259,7 +259,7 @@ public class ParameterInfo {
      * Sets the link element.
      * 
      * @param link
-     *                The link element.
+     *            The link element.
      */
     public void setLink(LinkInfo link) {
         this.link = link;
@@ -269,7 +269,7 @@ public class ParameterInfo {
      * Sets the name of this element.
      * 
      * @param name
-     *                The name of this element.
+     *            The name of this element.
      */
     public void setName(String name) {
         this.name = name;
@@ -279,7 +279,7 @@ public class ParameterInfo {
      * Sets the list of option elements for that element.
      * 
      * @param options
-     *                The list of option elements for that element.
+     *            The list of option elements for that element.
      */
     public void setOptions(List<OptionInfo> options) {
         this.options = options;
@@ -290,8 +290,8 @@ public class ParameterInfo {
      * representation).
      * 
      * @param path
-     *                The path to the value of this parameter (within a parent
-     *                representation).
+     *            The path to the value of this parameter (within a parent
+     *            representation).
      */
     public void setPath(String path) {
         this.path = path;
@@ -302,8 +302,8 @@ public class ParameterInfo {
      * values.
      * 
      * @param repeating
-     *                True if the parameter is single valued or may have
-     *                multiple values, false otherwise.
+     *            True if the parameter is single valued or may have multiple
+     *            values, false otherwise.
      */
     public void setRepeating(boolean repeating) {
         this.repeating = repeating;
@@ -313,7 +313,7 @@ public class ParameterInfo {
      * Indicates whether the parameter is required.
      * 
      * @param required
-     *                True if the parameter is required, false otherwise.
+     *            True if the parameter is required, false otherwise.
      */
     public void setRequired(boolean required) {
         this.required = required;
@@ -323,7 +323,7 @@ public class ParameterInfo {
      * Sets the parameter style.
      * 
      * @param style
-     *                The parameter style.
+     *            The parameter style.
      */
     public void setStyle(ParameterStyle style) {
         this.style = style;
@@ -333,7 +333,7 @@ public class ParameterInfo {
      * Sets the parameter type.
      * 
      * @param type
-     *                The parameter type.
+     *            The parameter type.
      */
     public void setType(String type) {
         this.type = type;
@@ -343,7 +343,7 @@ public class ParameterInfo {
      * Writes the current object as an XML element using the given SAX writer.
      * 
      * @param writer
-     *                The SAX writer.
+     *            The SAX writer.
      * @throws SAXException
      */
     public void writeElement(XmlWriter writer) throws SAXException {
