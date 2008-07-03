@@ -7,7 +7,8 @@ Changes log
 [Bugs fixed]
  - Fixed potential bug with the "userinfo" deprecated format "login:password". 
    Reported by Eben.
-   
+ - Fixed potential bug when putting representation to a file when another one 
+   starts with the same name. Reported by Rémi Dewitte.
 [Enhancements]
  - Updated Jetty to version 6.1.11
  
