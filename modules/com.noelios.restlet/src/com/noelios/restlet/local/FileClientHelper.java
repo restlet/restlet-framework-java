@@ -63,7 +63,7 @@ public class FileClientHelper extends LocalClientHelper {
      * Constructor.
      * 
      * @param client
-     *                The client to help.
+     *            The client to help.
      */
     public FileClientHelper(Client client) {
         super(client);
@@ -74,9 +74,9 @@ public class FileClientHelper extends LocalClientHelper {
      * Handles a call.
      * 
      * @param request
-     *                The request to handle.
+     *            The request to handle.
      * @param response
-     *                The response to update.
+     *            The response to update.
      */
     @Override
     public void handle(Request request, Response response) {
@@ -100,11 +100,11 @@ public class FileClientHelper extends LocalClientHelper {
      * Handles a call for the FILE protocol.
      * 
      * @param request
-     *                The request to handle.
+     *            The request to handle.
      * @param response
-     *                The response to update.
+     *            The response to update.
      * @param path
-     *                The file or directory path.
+     *            The file or directory path.
      */
     protected void handleFile(Request request, Response response, String path) {
         // As the path may be percent-encoded, it has to be percent-decoded.
@@ -197,7 +197,8 @@ public class FileClientHelper extends LocalClientHelper {
 
                     if (files != null) {
                         for (File entry : files) {
-                            if (entry.getName().startsWith(baseName)) {
+                            if (baseName.equals(getBaseName(entry,
+                                    metadataService))) {
                                 Set<String> entryExtensions = getExtensions(
                                         entry, metadataService);
                                 if (entryExtensions.containsAll(extensions)
@@ -277,7 +278,8 @@ public class FileClientHelper extends LocalClientHelper {
                     List<File> variantsList = new ArrayList<File>();
                     if (files != null) {
                         for (File entry : files) {
-                            if (entry.getName().startsWith(baseName)) {
+                            if (baseName.equals(getBaseName(entry,
+                                    metadataService))) {
                                 Set<String> entryExtensions = getExtensions(
                                         entry, metadataService);
                                 if (entryExtensions.containsAll(extensions)) {
@@ -603,11 +605,11 @@ public class FileClientHelper extends LocalClientHelper {
      * the URI
      * 
      * @param fileName
-     *                The name of the resource
+     *            The name of the resource
      * @param metadataService
-     *                metadata helper
+     *            metadata helper
      * @param representation
-     *                the provided representation
+     *            the provided representation
      * @return true if the metadata of the representation are compatible with
      *         the metadata extracted from the filename
      */
@@ -664,10 +666,10 @@ public class FileClientHelper extends LocalClientHelper {
      * part of both encoded file name and decoded variant name.
      * 
      * @param encodedFileName
-     *                the percent-encoded name of the initial resource
+     *            the percent-encoded name of the initial resource
      * @param decodedVariantFileName
-     *                the percent-decoded file name of a variant of the initial
-     *                resource.
+     *            the percent-decoded file name of a variant of the initial
+     *            resource.
      * @return the variant percent-encoded file name.
      */
     private String getReencodedVariantFileName(String encodedFileName,
