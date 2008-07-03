@@ -25,3 +25,4 @@ Import-Package: org.restlet,
  org.springframework.context.support,
  org.springframework.core.io,
  org.springframework.web.servlet.handler
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

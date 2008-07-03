@@ -28,3 +28,4 @@ Import-Package: com.noelios.restlet,
  org.restlet.service,
  org.restlet.util
 Bundle-Activator: com.noelios.restlet.ext.jdbc.internal.Activator
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

@@ -2,20 +2,12 @@
 <web-app>
 
 	<servlet>
-		<servlet-name>adapter</servlet-name>
-		<servlet-class>com.noelios.restlet.ext.gwt.GwtShellServletWrapper</servlet-class>
-		<init-param>
-		  <param-name>org.restlet.application</param-name>
-		  <param-value>com.noelios.restlet.ext.gwt.server.test.TestApplication</param-value>
-		</init-param>
-		<init-param>
-		  <param-name>module</param-name>
-		  <param-value>com.noelios.restlet.ext.gwt.Restlet</param-value>
-		</init-param>
+		<servlet-name>shell</servlet-name>
+		<servlet-class>com.google.gwt.dev.shell.GWTShellServlet</servlet-class>
 	</servlet>
 	
 	<servlet-mapping>
-		<servlet-name>adapter</servlet-name>
+		<servlet-name>shell</servlet-name>
 		<url-pattern>/*</url-pattern>
 	</servlet-mapping>
 

@@ -41,3 +41,4 @@ Export-Package: com.noelios.restlet.ext.jxta;
    net.jxta.protocol,
    org.restlet.data"
 Bundle-Activator: com.noelios.restlet.ext.jxta.internal.Activator
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

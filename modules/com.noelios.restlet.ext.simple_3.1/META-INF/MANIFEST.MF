@@ -27,3 +27,4 @@ Import-Package: com.noelios.restlet,
  simple.http,
  simple.http.connect
 Bundle-Activator: com.noelios.restlet.ext.simple.internal.Activator
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

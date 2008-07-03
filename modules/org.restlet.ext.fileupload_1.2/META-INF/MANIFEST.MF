@@ -13,3 +13,4 @@ Import-Package: javax.servlet;resolution:=optional,
  org.restlet.resource,
  org.restlet.service,
  org.restlet.util
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

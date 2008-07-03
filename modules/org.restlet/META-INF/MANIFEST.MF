@@ -42,3 +42,4 @@ Import-Package: javax.xml.namespace,
    org.w3c.dom,
    org.xml.sax,
    org.xml.sax.helpers
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

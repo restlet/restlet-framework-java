@@ -19,3 +19,4 @@ Import-Package: com.noelios.restlet,
  org.restlet.resource,
  org.restlet.service,
  org.restlet.util
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

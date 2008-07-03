@@ -1,6 +1,10 @@
-#Wed Jan 02 13:55:25 CET 2008
+#Thu Jul 03 11:08:25 CEST 2008
 eclipse.preferences.version=1
+org.eclipse.jdt.core.compiler.codegen.targetPlatform=1.5
+org.eclipse.jdt.core.compiler.compliance=1.5
 org.eclipse.jdt.core.compiler.doc.comment.support=enabled
+org.eclipse.jdt.core.compiler.problem.assertIdentifier=error
+org.eclipse.jdt.core.compiler.problem.enumIdentifier=error
 org.eclipse.jdt.core.compiler.problem.invalidJavadoc=ignore
 org.eclipse.jdt.core.compiler.problem.invalidJavadocTags=disabled
 org.eclipse.jdt.core.compiler.problem.invalidJavadocTagsDeprecatedRef=disabled
@@ -12,3 +16,4 @@ org.eclipse.jdt.core.compiler.problem.missingJavadocCommentsVisibility=public
 org.eclipse.jdt.core.compiler.problem.missingJavadocTags=ignore
 org.eclipse.jdt.core.compiler.problem.missingJavadocTagsOverriding=disabled
 org.eclipse.jdt.core.compiler.problem.missingJavadocTagsVisibility=public
+org.eclipse.jdt.core.compiler.source=1.5

@@ -82,3 +82,4 @@ Import-Package: com.db4o,
  org.springframework.context,
  org.springframework.context.support,
  org.springmodules.db4o
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

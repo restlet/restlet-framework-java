@@ -62,3 +62,4 @@ Import-Package: com.noelios.restlet,
  org.springframework.beans.factory.xml,
  org.springframework.core,
  org.springframework.core.io
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
