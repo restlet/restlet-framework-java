@@ -525,7 +525,7 @@ public final class ByteUtils {
 
         // Get a thread that will handle the task of continuously
         // writing the representation into the input side of the pipe
-        Thread writer = context.getThread(new Runnable() {
+        context.getExecutorService().execute(new Runnable() {
             public void run() {
                 try {
                     WritableByteChannel wbc = pipe.sink();
@@ -538,10 +538,7 @@ public final class ByteUtils {
                 }
             }
         });
-        writer.setDaemon(false);
 
-        // Starts the writer thread
-        writer.start();
         return pipe.source();
     }
 
@@ -581,7 +578,7 @@ public final class ByteUtils {
 
         // Gets a thread that will handle the task of continuously
         // writing the representation into the input side of the pipe
-        Thread writer = context.getThread(new Runnable() {
+        context.getExecutorService().execute(new Runnable() {
             public void run() {
                 try {
                     representation.write(pipedWriter);
@@ -592,10 +589,7 @@ public final class ByteUtils {
                 }
             }
         });
-        writer.setDaemon(false);
 
-        // Starts the writer thread
-        writer.start();
         return pipedReader;
     }
 
@@ -648,7 +642,7 @@ public final class ByteUtils {
 
         // Creates a thread that will handle the task of continuously
         // writing the representation into the input side of the pipe
-        Thread writer = context.getThread(new Runnable() {
+        context.getExecutorService().execute(new Runnable() {
             public void run() {
                 try {
                     OutputStream os = pipe.getOutputStream();
@@ -663,10 +657,7 @@ public final class ByteUtils {
                 }
             }
         });
-        writer.setDaemon(false);
 
-        // Starts the writer thread
-        writer.start();
         return pipe.getInputStream();
     }
 

@@ -54,7 +54,7 @@ public class Request extends Message {
          * Constructor.
          * 
          * @param delegate
-         *                The delegate list.
+         *            The delegate list.
          */
         public CookieSeries(List<Cookie> delegate) {
             super(delegate);
@@ -77,6 +77,10 @@ public class Request extends Message {
     /**
      * Returns the request associated to the current thread. This is reusing the
      * {@link Response#getCurrent()} method.
+     * 
+     * Warning: this method should only be used under duress. You should by
+     * default prefer obtaining the current context using methods such as
+     * {@link org.restlet.resource.Resource#getRequest()}.
      * 
      * @return The thread's request.
      */
@@ -129,9 +133,9 @@ public class Request extends Message {
      * Constructor.
      * 
      * @param method
-     *                The call's method.
+     *            The call's method.
      * @param resourceRef
-     *                The resource reference.
+     *            The resource reference.
      */
     public Request(Method method, Reference resourceRef) {
         this(method, resourceRef, null);
@@ -141,11 +145,11 @@ public class Request extends Message {
      * Constructor.
      * 
      * @param method
-     *                The call's method.
+     *            The call's method.
      * @param resourceRef
-     *                The resource reference.
+     *            The resource reference.
      * @param entity
-     *                The entity.
+     *            The entity.
      */
     public Request(Method method, Reference resourceRef, Representation entity) {
         super(entity);
@@ -157,9 +161,9 @@ public class Request extends Message {
      * Constructor.
      * 
      * @param method
-     *                The call's method.
+     *            The call's method.
      * @param resourceUri
-     *                The resource URI.
+     *            The resource URI.
      */
     public Request(Method method, String resourceUri) {
         this(method, new Reference(resourceUri));
@@ -169,11 +173,11 @@ public class Request extends Message {
      * Constructor.
      * 
      * @param method
-     *                The call's method.
+     *            The call's method.
      * @param resourceUri
-     *                The resource URI.
+     *            The resource URI.
      * @param entity
-     *                The entity.
+     *            The entity.
      */
     public Request(Method method, String resourceUri, Representation entity) {
         this(method, new Reference(resourceUri), entity);
@@ -377,8 +381,8 @@ public class Request extends Message {
      * Sets the authentication response sent by a client to an origin server.
      * 
      * @param challengeResponse
-     *                The authentication response sent by a client to an origin
-     *                server.
+     *            The authentication response sent by a client to an origin
+     *            server.
      */
     public void setChallengeResponse(ChallengeResponse challengeResponse) {
         this.challengeResponse = challengeResponse;
@@ -388,7 +392,7 @@ public class Request extends Message {
      * Sets the client-specific information.
      * 
      * @param clientInfo
-     *                The client-specific information.
+     *            The client-specific information.
      */
     public void setClientInfo(ClientInfo clientInfo) {
         this.clientInfo = clientInfo;
@@ -398,7 +402,7 @@ public class Request extends Message {
      * Sets the conditions applying to this request.
      * 
      * @param conditions
-     *                The conditions applying to this request.
+     *            The conditions applying to this request.
      */
     public void setConditions(Conditions conditions) {
         this.conditions = conditions;
@@ -409,7 +413,7 @@ public class Request extends Message {
      * SSL-secured connection.
      * 
      * @param confidential
-     *                True if the call came over a confidential channel.
+     *            True if the call came over a confidential channel.
      */
     public void setConfidential(boolean confidential) {
         this.confidential = confidential;
@@ -419,7 +423,7 @@ public class Request extends Message {
      * Sets the cookies provided by the client.
      * 
      * @param cookies
-     *                The cookies provided by the client.
+     *            The cookies provided by the client.
      */
     public void setCookies(Series<Cookie> cookies) {
         this.cookies = cookies;
@@ -429,7 +433,7 @@ public class Request extends Message {
      * Sets the host reference.
      * 
      * @param hostRef
-     *                The host reference.
+     *            The host reference.
      */
     public void setHostRef(Reference hostRef) {
         this.hostRef = hostRef;
@@ -439,7 +443,7 @@ public class Request extends Message {
      * Sets the host reference using an URI string.
      * 
      * @param hostUri
-     *                The host URI.
+     *            The host URI.
      */
     public void setHostRef(String hostUri) {
         setHostRef(new Reference(hostUri));
@@ -449,7 +453,7 @@ public class Request extends Message {
      * Sets the method called.
      * 
      * @param method
-     *                The method called.
+     *            The method called.
      */
     public void setMethod(Method method) {
         this.method = method;
@@ -459,7 +463,7 @@ public class Request extends Message {
      * Sets the original reference requested by the client.
      * 
      * @param originalRef
-     *                The original reference.
+     *            The original reference.
      * @see #getOriginalRef()
      */
     public void setOriginalRef(Reference originalRef) {
@@ -470,7 +474,7 @@ public class Request extends Message {
      * Sets the referrer reference if available.
      * 
      * @param referrerRef
-     *                The referrer reference.
+     *            The referrer reference.
      */
     public void setReferrerRef(Reference referrerRef) {
         this.referrerRef = referrerRef;
@@ -485,7 +489,7 @@ public class Request extends Message {
      * Sets the referrer reference if available using an URI string.
      * 
      * @param referrerUri
-     *                The referrer URI.
+     *            The referrer URI.
      */
     public void setReferrerRef(String referrerUri) {
         setReferrerRef(new Reference(referrerUri));
@@ -498,7 +502,7 @@ public class Request extends Message {
      * consistent handling of the call.
      * 
      * @param resourceRef
-     *                The resource reference.
+     *            The resource reference.
      * @see #getResourceRef()
      */
     public void setResourceRef(Reference resourceRef) {
@@ -510,7 +514,7 @@ public class Request extends Message {
      * can be either absolute or relative to the context's base reference.
      * 
      * @param resourceUri
-     *                The resource URI.
+     *            The resource URI.
      * @see #setResourceRef(Reference)
      */
     public void setResourceRef(String resourceUri) {
@@ -527,7 +531,7 @@ public class Request extends Message {
      * Sets the application root reference.
      * 
      * @param rootRef
-     *                The application root reference.
+     *            The application root reference.
      */
     public void setRootRef(Reference rootRef) {
         this.rootRef = rootRef;

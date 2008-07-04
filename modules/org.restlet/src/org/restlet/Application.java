@@ -60,6 +60,11 @@ public class Application extends Restlet {
      * This variable is stored internally as a thread local variable and updated
      * each time a call enters an application.
      * 
+     * Warning: this method should only be used under duress. You should by
+     * default prefer obtaining the current application using methods such as
+     * {@link org.restlet.resource.Resource#getApplication()} or
+     * {@link Context#getApplication()}.
+     * 
      * @return The current context.
      */
     public static Application getCurrent() {
@@ -70,7 +75,7 @@ public class Application extends Restlet {
      * Sets the context to associated with the current thread.
      * 
      * @param application
-     *                The thread's context.
+     *            The thread's context.
      */
     public static void setCurrent(Application application) {
         CURRENT.set(application);
@@ -133,7 +138,7 @@ public class Application extends Restlet {
      * Constructor.
      * 
      * @param parentContext
-     *                The parent context. Typically the component's context.
+     *            The parent context. Typically the component's context.
      */
     @SuppressWarnings("deprecation")
     public Application(Context parentContext) {
@@ -313,7 +318,7 @@ public class Application extends Restlet {
      * Sets the author(s).
      * 
      * @param author
-     *                The author(s).
+     *            The author(s).
      */
     public void setAuthor(String author) {
         this.author = author;
@@ -323,7 +328,7 @@ public class Application extends Restlet {
      * Sets the connector service.
      * 
      * @param connectorService
-     *                The connector service.
+     *            The connector service.
      */
     public void setConnectorService(ConnectorService connectorService) {
         this.connectorService = connectorService;
@@ -333,7 +338,7 @@ public class Application extends Restlet {
      * Sets the converter service.
      * 
      * @param converterService
-     *                The converter service.
+     *            The converter service.
      * @deprecated Since 1.1 with no replacement as it doesn't fit well with
      *             content negotiation. Most users prefer to handle those
      *             conversion in Resource subclasses.
@@ -348,7 +353,7 @@ public class Application extends Restlet {
      * Sets the decoder service.
      * 
      * @param decoderService
-     *                The decoder service.
+     *            The decoder service.
      */
     public void setDecoderService(DecoderService decoderService) {
         this.decoderService = decoderService;
@@ -358,7 +363,7 @@ public class Application extends Restlet {
      * Sets the description.
      * 
      * @param description
-     *                The description.
+     *            The description.
      */
     public void setDescription(String description) {
         this.description = description;
@@ -368,7 +373,7 @@ public class Application extends Restlet {
      * Sets the metadata service.
      * 
      * @param metadataService
-     *                The metadata service.
+     *            The metadata service.
      */
     public void setMetadataService(MetadataService metadataService) {
         this.metadataService = metadataService;
@@ -378,7 +383,7 @@ public class Application extends Restlet {
      * Sets the display name.
      * 
      * @param name
-     *                The display name.
+     *            The display name.
      */
     public void setName(String name) {
         this.name = name;
@@ -388,7 +393,7 @@ public class Application extends Restlet {
      * Sets the owner(s).
      * 
      * @param owner
-     *                The owner(s).
+     *            The owner(s).
      */
     public void setOwner(String owner) {
         this.owner = owner;
@@ -398,7 +403,7 @@ public class Application extends Restlet {
      * Sets the root Restlet.
      * 
      * @param root
-     *                The root Restlet.
+     *            The root Restlet.
      */
     public synchronized void setRoot(Restlet root) {
         this.root = root;
@@ -408,7 +413,7 @@ public class Application extends Restlet {
      * Sets the status service.
      * 
      * @param statusService
-     *                The status service.
+     *            The status service.
      */
     public void setStatusService(StatusService statusService) {
         this.statusService = statusService;
@@ -418,7 +423,7 @@ public class Application extends Restlet {
      * Sets the tunnel service.
      * 
      * @param tunnelService
-     *                The tunnel service.
+     *            The tunnel service.
      */
     public void setTunnelService(TunnelService tunnelService) {
         this.tunnelService = tunnelService;

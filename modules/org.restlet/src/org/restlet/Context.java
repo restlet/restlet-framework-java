@@ -22,6 +22,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.logging.Logger;
 
 import org.restlet.data.Form;
@@ -51,6 +54,11 @@ public class Context {
      * the one of a Component, an Application, a Filter or any other Restlet
      * subclass.
      * 
+     * Warning: this method should only be used under duress. You should by
+     * default prefer obtaining the current context using methods such as
+     * {@link org.restlet.Restlet#getContext()} or
+     * {@link org.restlet.resource.Resource#getContext()}.
+     * 
      * This variable is stored internally as a thread local variable and updated
      * each time a request is handled by a Restlet via the
      * {@link Restlet#handle(org.restlet.data.Request, org.restlet.data.Response)}
@@ -66,7 +74,7 @@ public class Context {
      * Sets the context to associated with the current thread.
      * 
      * @param context
-     *                The thread's context.
+     *            The thread's context.
      */
     public static void setCurrent(Context context) {
         CURRENT.set(context);
@@ -74,6 +82,9 @@ public class Context {
 
     /** The modifiable attributes map. */
     private volatile ConcurrentMap<String, Object> attributes;
+
+    /** The executor service. */
+    private final ExecutorService executorService = createExecutorService();
 
     /** The logger instance to use. */
     private volatile Logger logger;
@@ -92,7 +103,7 @@ public class Context {
      * Constructor.
      * 
      * @param logger
-     *                The logger instance of use.
+     *            The logger instance of use.
      */
     public Context(Logger logger) {
         this.attributes = new ConcurrentHashMap<String, Object>();
@@ -104,10 +115,48 @@ public class Context {
      * Constructor.
      * 
      * @param loggerName
-     *                The name of the logger to use.
+     *            The name of the logger to use.
      */
     public Context(String loggerName) {
         this(Logger.getLogger(loggerName));
+    }
+
+    /**
+     * Creates a new executor service.
+     * 
+     * @return A new executor service.
+     */
+    private ExecutorService createExecutorService() {
+        return Executors.newCachedThreadPool(new ThreadFactory() {
+            public Thread newThread(final Runnable runnable) {
+                // Save the thread local variables
+                final Application currentApplication = Application.getCurrent();
+                final Context currentContext = Context.getCurrent();
+                final Integer currentVirtualHost = VirtualHost.getCurrent();
+                final Response currentResponse = Response.getCurrent();
+
+                Thread result = new Thread(new Runnable() {
+                    public void run() {
+                        // Copy the thread local variables
+                        Response.setCurrent(currentResponse);
+                        Context.setCurrent(currentContext);
+                        VirtualHost.setCurrent(currentVirtualHost);
+                        Application.setCurrent(currentApplication);
+
+                        // Run the user task
+                        runnable.run();
+
+                        // Reset the thread local variables
+                        Response.setCurrent(null);
+                        Context.setCurrent(null);
+                        VirtualHost.setCurrent(-1);
+                        Application.setCurrent(null);
+                    }
+                });
+
+                return result;
+            }
+        });
     }
 
     /**
@@ -132,7 +181,8 @@ public class Context {
      * In addition, this map is a shared space between the developer and the
      * Restlet implementation. For this purpose, all attribute names starting
      * with "org.restlet" are reserved. Currently the following attributes are
-     * used: <table>
+     * used:
+     * <table>
      * <tr>
      * <th>Attribute name</th>
      * <th>Class name</th>
@@ -141,9 +191,10 @@ public class Context {
      * <tr>
      * <td>org.restlet.application</td>
      * <td>org.restlet.Application</td>
-     * <td>The parent application providing this context, if any. </td>
+     * <td>The parent application providing this context, if any.</td>
      * </tr>
-     * </table></td>
+     * </table>
+     * </td>
      * 
      * @return The modifiable attributes map.
      */
@@ -177,6 +228,22 @@ public class Context {
     @Deprecated
     public Uniform getDispatcher() {
         return getClientDispatcher();
+    }
+
+    /**
+     * Returns an executor service to run asynchronous tasks. The service
+     * instance returned will not invoke the runnable task in the current
+     * thread.
+     * 
+     * In addition to allowing pooling, this method will ensure that the threads
+     * executing the tasks will have the thread local variables copied from the
+     * calling thread. This will ensure that call to static methods like
+     * {@link Application#getCurrent()} still work.
+     * 
+     * @return An executor service.
+     */
+    public ExecutorService getExecutorService() {
+        return this.executorService;
     }
 
     /**
@@ -218,45 +285,10 @@ public class Context {
     }
 
     /**
-     * Returns a thread to run the given task. The thread returned can either be
-     * a new one or an existing one that is part of a thread pool depending on
-     * the implementation.
-     * 
-     * In addition to allowing pooling, this method will ensure that the
-     * returned thread has the thread local variable properly copied from the
-     * calling thread.
-     * 
-     * @param task
-     *                The runnable task.
-     * @return A thread to run the given task.
-     */
-    public Thread getThread(final Runnable task) {
-        final Application currentApplication = Application.getCurrent();
-        final Context currentContext = Context.getCurrent();
-        final Integer currentVirtualHost = VirtualHost.getCurrent();
-        final Response currentResponse = Response.getCurrent();
-
-        Thread result = new Thread(new Runnable() {
-            public void run() {
-                // Copy the thread local variables
-                Response.setCurrent(currentResponse);
-                Context.setCurrent(currentContext);
-                VirtualHost.setCurrent(currentVirtualHost);
-                Application.setCurrent(currentApplication);
-
-                // Run the user task
-                task.run();
-            }
-        });
-
-        return result;
-    }
-
-    /**
      * Sets the modifiable map of attributes.
      * 
      * @param attributes
-     *                The modifiable map of attributes.
+     *            The modifiable map of attributes.
      */
     public void setAttributes(Map<String, Object> attributes) {
         if (attributes instanceof ConcurrentMap) {
@@ -270,7 +302,7 @@ public class Context {
      * Sets the logger.
      * 
      * @param logger
-     *                The logger.
+     *            The logger.
      */
     public void setLogger(Logger logger) {
         this.logger = logger;
@@ -280,7 +312,7 @@ public class Context {
      * Sets the modifiable series of parameters.
      * 
      * @param parameters
-     *                The modifiable series of parameters.
+     *            The modifiable series of parameters.
      */
     public void setParameters(Series<Parameter> parameters) {
         this.parameters = parameters;
