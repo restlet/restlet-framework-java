@@ -39,10 +39,10 @@ Changes log
        	- Completed the Component's XML config with the default query 
        	  match setting defined on routers. Suggested by Bruno Dumon.
        	- Replaced the Context#getThread(Runnable) method with a more
-       	  flexible getExecutorService() method. Suggested by Tim Peirls.
+       	  flexible getExecutorService() method. 
+       	  Suggested by Tim Peierls.
        	- Clarified Javadocs for static getCurrent() methods. Suggested
        	  by Patrick Logan.
-       	
     - NRE and Extension Enhancements
         - Added a static HttpServletRequest getRequest(Request) method
           to the Servlet extension.
@@ -54,7 +54,11 @@ Changes log
           description of Resources as WADL documents. 
           Sponsored by NetDev Ltd (http://www.netdev.co.uk).
         - The Apache HTTP Client extension can now have a retry handler
-          parameter set. Suggested by Sanjay Acharya.        
+          parameter set. Suggested by Sanjay Acharya.
+        - Added a "sslContextFactory" parameter to HTTPS connector to 
+          improve the flexibility of SSL configuration. If this parameter
+          isn't set, the previous parameters are used instead. 
+          Contributed by Bruno Harbulot.
     - Misc
         - Refactored WAR client to remove remaining class in NRE core.
         - Updated GWT JAR to 1.5 RC1

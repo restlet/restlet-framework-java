@@ -22,6 +22,7 @@ import junit.framework.TestCase;
 
 import org.restlet.Application;
 import org.restlet.Component;
+import org.restlet.Context;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 
@@ -34,7 +35,7 @@ import com.noelios.restlet.ServerHelper;
  * connectors configurations. (Modified for SSL support.)
  * 
  * @author Kevin Conaway
- * @author Bruno Harbulot <Bruno.Harbulot@manchester.ac.uk>
+ * @author Bruno Harbulot (Bruno.Harbulot@manchester.ac.uk)
  */
 public abstract class SslBaseConnectorsTestCase extends TestCase {
 
@@ -74,6 +75,8 @@ public abstract class SslBaseConnectorsTestCase extends TestCase {
     public void setUp() {
     }
 
+    protected abstract void configureSslParameters(Context context);
+
     private String start() throws Exception {
         System.setProperty("javax.net.ssl.keyStorePassword", System
                 .getProperty("javax.net.ssl.keyStorePassword", "testtest"));
@@ -85,12 +88,7 @@ public abstract class SslBaseConnectorsTestCase extends TestCase {
                 "javax.net.ssl.trustStore", "dummy.jks"));
 
         component = new Component();
-        component.getContext().getParameters().add("keyPassword",
-                System.getProperty("javax.net.ssl.keyStorePassword"));
-        component.getContext().getParameters().add("keystorePassword",
-                System.getProperty("javax.net.ssl.keyStorePassword"));
-        component.getContext().getParameters().add("keystorePath",
-                System.getProperty("javax.net.ssl.keyStore"));
+        configureSslParameters(component.getContext());
 
         Server server = component.getServers().add(Protocol.HTTPS, 0);
         Application application = createApplication(component);

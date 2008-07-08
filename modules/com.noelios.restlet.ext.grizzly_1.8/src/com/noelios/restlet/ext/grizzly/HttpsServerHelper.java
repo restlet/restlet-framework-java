@@ -29,6 +29,7 @@ import javax.net.ssl.SSLContext;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 
+import com.noelios.restlet.util.SslContextFactory;
 import com.sun.grizzly.Controller;
 import com.sun.grizzly.DefaultProtocolChain;
 import com.sun.grizzly.DefaultProtocolChainInstanceHandler;
@@ -38,12 +39,21 @@ import com.sun.grizzly.filter.SSLReadFilter;
 
 /**
  * HTTPS connector based on Grizzly. Here is the list of additional parameters
- * that are supported: <table>
+ * that are supported:
+ * <table>
  * <tr>
  * <th>Parameter name</th>
  * <th>Value type</th>
  * <th>Default value</th>
  * <th>Description</th>
+ * </tr>
+ * <tr>
+ * <td>sslContextFactory</td>
+ * <td>String</td>
+ * <td>null</td>
+ * <td>Let you specify a {@link SslContextFactory} instance for a more complete
+ * and flexible SSL context setting. If this parameter is set, it takes
+ * precedance over the other SSL parameters below.</td>
  * </tr>
  * <tr>
  * <td>keystorePath</td>
@@ -104,7 +114,7 @@ public class HttpsServerHelper extends GrizzlyServerHelper {
      * Constructor.
      * 
      * @param server
-     *                The helped server.
+     *            The helped server.
      */
     public HttpsServerHelper(Server server) {
         super(server);
@@ -114,14 +124,25 @@ public class HttpsServerHelper extends GrizzlyServerHelper {
     @Override
     protected void configure(Controller controller) throws Exception {
         // Initialize the SSL context
-        KeyStore keyStore = KeyStore.getInstance(getKeystoreType());
-        FileInputStream fis = new FileInputStream(getKeystorePath());
-        keyStore.load(fis, getKeystorePassword().toCharArray());
-        KeyManagerFactory keyManagerFactory = KeyManagerFactory
-                .getInstance(getCertAlgorithm());
-        keyManagerFactory.init(keyStore, getKeyPassword().toCharArray());
-        SSLContext sslContext = SSLContext.getInstance(getSslProtocol());
-        sslContext.init(keyManagerFactory.getKeyManagers(), null, null);
+        final SslContextFactory sslContextFactory = getSslContextFactory();
+        SSLContext sslContext;
+        /*
+         * If an SslContextFactory has been set up, its settings take priority
+         * over the other parameters (which are otherwise used to build and
+         * initialise an SSLContext).
+         */
+        if (sslContextFactory == null) {
+            KeyStore keyStore = KeyStore.getInstance(getKeystoreType());
+            FileInputStream fis = new FileInputStream(getKeystorePath());
+            keyStore.load(fis, getKeystorePassword().toCharArray());
+            KeyManagerFactory keyManagerFactory = KeyManagerFactory
+                    .getInstance(getCertAlgorithm());
+            keyManagerFactory.init(keyStore, getKeyPassword().toCharArray());
+            sslContext = SSLContext.getInstance(getSslProtocol());
+            sslContext.init(keyManagerFactory.getKeyManagers(), null, null);
+        } else {
+            sslContext = sslContextFactory.createSslContext();
+        }
 
         // Create and configure a select handler
         TCPSelectorHandler selectorHandler = new TCPSelectorHandler();
@@ -213,6 +234,16 @@ public class HttpsServerHelper extends GrizzlyServerHelper {
      */
     public String getSslProtocol() {
         return getParameters().getFirstValue("sslProtocol", "TLS");
+    }
+
+    /**
+     * Returns the SSL context factory.
+     * 
+     * @return The SSL context factory.
+     */
+    public SslContextFactory getSslContextFactory() {
+        return (SslContextFactory) getContext().getAttributes().get(
+                "sslContextFactory");
     }
 
     /**

@@ -90,8 +90,8 @@ public class DefaultSslContextFactory implements SslContextFactory {
     /**
      * KeyStore type of the keystore.
      */
-    private String keyStoreType = System
-            .getProperty("javax.net.ssl.keyStoreType");
+    private String keyStoreType = System.getProperty(
+            "javax.net.ssl.keyStoreType", "JKS");
 
     /**
      * Name of the SecureRandom algorithm.
@@ -132,8 +132,8 @@ public class DefaultSslContextFactory implements SslContextFactory {
     /**
      * KeyStore type of the trust store.
      */
-    private String trustStoreType = System
-            .getProperty("javax.net.ssl.trustStoreType");
+    private String trustStoreType = System.getProperty(
+            "javax.net.ssl.trustStoreType", "JKS");
 
     /**
      * Creates a configured and initialised SSLContext from the values set via

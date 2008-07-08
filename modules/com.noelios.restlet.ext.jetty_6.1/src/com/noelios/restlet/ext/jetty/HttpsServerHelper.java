@@ -20,11 +20,16 @@ package com.noelios.restlet.ext.jetty;
 
 import java.io.File;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLServerSocketFactory;
+
 import org.mortbay.jetty.AbstractConnector;
 import org.mortbay.jetty.security.SslSelectChannelConnector;
 import org.mortbay.jetty.security.SslSocketConnector;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
+
+import com.noelios.restlet.util.SslContextFactory;
 
 /**
  * Jetty HTTPS server connector. Here is the list of additional parameters that
@@ -34,6 +39,14 @@ import org.restlet.data.Protocol;
  * <th>Value type</th>
  * <th>Default value</th>
  * <th>Description</th>
+ * </tr>
+ * <tr>
+ * <td>sslContextFactory</td>
+ * <td>String</td>
+ * <td>null</td>
+ * <td>Let you specify a {@link SslContextFactory} instance for a more complete
+ * and flexible SSL context setting. If this parameter is set, it takes
+ * precedance over the other SSL parameters below.</td>
  * </tr>
  * <tr>
  * <td>keystorePath</td>
@@ -131,22 +144,42 @@ public class HttpsServerHelper extends JettyServerHelper {
     @Override
     protected AbstractConnector createConnector() {
         AbstractConnector result = null;
+        final SslContextFactory sslContextFactory = getSslContextFactory();
 
         // Create and configure the Jetty HTTP connector
         switch (getType()) {
         case 1:
             // Selecting NIO connector
-            SslSelectChannelConnector nioResult = new SslSelectChannelConnector();
-            nioResult.setKeyPassword(getKeyPassword());
-            nioResult.setKeystore(getKeystorePath());
-            nioResult.setKeystoreType(getKeystoreType());
-            nioResult.setPassword(getKeystorePassword());
-            nioResult.setProtocol(getSslProtocol());
-            nioResult.setProvider(getSecurityProvider());
-            nioResult.setSecureRandomAlgorithm(getSecureRandomAlgorithm());
-            nioResult.setSslKeyManagerFactoryAlgorithm(getCertAlgorithm());
-            nioResult.setSslTrustManagerFactoryAlgorithm(getCertAlgorithm());
-            nioResult.setTrustPassword(getKeystorePassword());
+            /*
+             * If an SslContextFactory has been set up, its settings take
+             * priority over the other parameters (which would otherwise be used
+             * to build and initialise an SSLContext internally). Jetty's
+             * SslSelectChannelConnector does not have a setSslContext method
+             * yet, so we override its createSSLContext() method for this
+             * purpose.
+             */
+            SslSelectChannelConnector nioResult;
+            if (sslContextFactory == null) {
+                nioResult = new SslSelectChannelConnector();
+                nioResult.setKeyPassword(getKeyPassword());
+                nioResult.setKeystore(getKeystorePath());
+                nioResult.setKeystoreType(getKeystoreType());
+                nioResult.setPassword(getKeystorePassword());
+                nioResult.setProtocol(getSslProtocol());
+                nioResult.setProvider(getSecurityProvider());
+                nioResult.setSecureRandomAlgorithm(getSecureRandomAlgorithm());
+                nioResult.setSslKeyManagerFactoryAlgorithm(getCertAlgorithm());
+                nioResult
+                        .setSslTrustManagerFactoryAlgorithm(getCertAlgorithm());
+                nioResult.setTrustPassword(getKeystorePassword());
+            } else {
+                nioResult = new SslSelectChannelConnector() {
+                    @Override
+                    protected SSLContext createSSLContext() throws Exception {
+                        return sslContextFactory.createSslContext();
+                    }
+                };
+            }
 
             if (isNeedClientAuthentication()) {
                 nioResult.setNeedClientAuth(true);
@@ -158,17 +191,39 @@ public class HttpsServerHelper extends JettyServerHelper {
             break;
         case 2:
             // Blocking BIO connector
-            SslSocketConnector bioResult = new SslSocketConnector();
-            bioResult.setKeyPassword(getKeyPassword());
-            bioResult.setKeystore(getKeystorePath());
-            bioResult.setKeystoreType(getKeystoreType());
-            bioResult.setPassword(getKeystorePassword());
-            bioResult.setProtocol(getSslProtocol());
-            bioResult.setProvider(getSecurityProvider());
-            bioResult.setSecureRandomAlgorithm(getSecureRandomAlgorithm());
-            bioResult.setSslKeyManagerFactoryAlgorithm(getCertAlgorithm());
-            bioResult.setSslTrustManagerFactoryAlgorithm(getCertAlgorithm());
-            bioResult.setTrustPassword(getKeystorePassword());
+            /*
+             * If an SslContextFactory has been set up, its settings take
+             * priority over the other parameters (which would otherwise be used
+             * to build and initialise an SSLContext internally). Jetty's
+             * SslSocketConnector does not have a setSslContext method yet, so
+             * we override its createFactory() method for this purpose.
+             */
+            SslSocketConnector bioResult;
+            if (sslContextFactory == null) {
+                bioResult = new SslSocketConnector();
+                bioResult.setKeyPassword(getKeyPassword());
+                bioResult.setKeystore(getKeystorePath());
+                bioResult.setKeystoreType(getKeystoreType());
+                bioResult.setPassword(getKeystorePassword());
+                bioResult.setProtocol(getSslProtocol());
+                bioResult.setProvider(getSecurityProvider());
+                bioResult.setSecureRandomAlgorithm(getSecureRandomAlgorithm());
+                bioResult.setSslKeyManagerFactoryAlgorithm(getCertAlgorithm());
+                bioResult
+                        .setSslTrustManagerFactoryAlgorithm(getCertAlgorithm());
+                bioResult.setTrustPassword(getKeystorePassword());
+            } else {
+                bioResult = new SslSocketConnector() {
+                    @Override
+                    protected SSLServerSocketFactory createFactory()
+                            throws Exception {
+                        SSLContext sslContext = sslContextFactory
+                                .createSslContext();
+                        return sslContext.getServerSocketFactory();
+                    }
+
+                };
+            }
 
             if (isNeedClientAuthentication()) {
                 bioResult.setNeedClientAuth(true);
@@ -254,6 +309,16 @@ public class HttpsServerHelper extends JettyServerHelper {
      */
     public String getSecurityProvider() {
         return getParameters().getFirstValue("securityProvider", null);
+    }
+
+    /**
+     * Returns the SSL context factory.
+     * 
+     * @return The SSL context factory.
+     */
+    public SslContextFactory getSslContextFactory() {
+        return (SslContextFactory) getContext().getAttributes().get(
+                "sslContextFactory");
     }
 
     /**

@@ -36,11 +36,21 @@ import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
 
 /**
- * Test that a simple get works for all the connectors.
+ * Test that a simple get using SSL works for all the connectors.
  * 
  * @author Kevin Conaway
+ * @author Bruno Harbulot (Bruno.Harbulot@manchester.ac.uk)
  */
 public class SslGetTestCase extends SslBaseConnectorsTestCase {
+    @Override
+    protected void configureSslParameters(Context context) {
+        context.getParameters().add("keyPassword",
+                System.getProperty("javax.net.ssl.keyStorePassword"));
+        context.getParameters().add("keystorePassword",
+                System.getProperty("javax.net.ssl.keyStorePassword"));
+        context.getParameters().add("keystorePath",
+                System.getProperty("javax.net.ssl.keyStore"));
+    }
 
     @Override
     protected Application createApplication(Component component) {

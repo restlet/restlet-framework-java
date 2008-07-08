@@ -407,7 +407,7 @@ public class ServerServlet extends HttpServlet {
                 // Define the list of supported client protocols.
                 String clientProtocolsString = getInitParameter(CLIENTS_KEY,
                         null);
-                if (component != null && clientProtocolsString != null) {
+                if (clientProtocolsString != null) {
                     String[] clientProtocols = clientProtocolsString.split(" ");
                     for (String clientProtocol : clientProtocols) {
                         component.getClients().add(
@@ -419,35 +419,32 @@ public class ServerServlet extends HttpServlet {
         }
 
         // Complete the configuration of the Component
-        if (component != null) {
-            // Add the WAR client
-            component.getClients()
-                    .add(
-                            createWarClient(component.getContext(),
-                                    getServletConfig()));
+        // Add the WAR client
+        component.getClients().add(
+                createWarClient(component.getContext(), getServletConfig()));
 
-            // Copy all the servlet parameters into the context
-            ComponentContext componentContext = (ComponentContext) component
-                    .getContext();
-            String initParam;
+        // Copy all the servlet parameters into the context
+        ComponentContext componentContext = (ComponentContext) component
+                .getContext();
+        String initParam;
 
-            // Copy all the Servlet container initialization parameters
-            javax.servlet.ServletConfig servletConfig = getServletConfig();
-            for (Enumeration<String> enum1 = servletConfig
-                    .getInitParameterNames(); enum1.hasMoreElements();) {
-                initParam = enum1.nextElement();
-                componentContext.getParameters().add(initParam,
-                        servletConfig.getInitParameter(initParam));
-            }
-
-            // Copy all the Servlet application initialization parameters
-            for (Enumeration<String> enum1 = getServletContext()
-                    .getInitParameterNames(); enum1.hasMoreElements();) {
-                initParam = enum1.nextElement();
-                componentContext.getParameters().add(initParam,
-                        getServletContext().getInitParameter(initParam));
-            }
+        // Copy all the Servlet container initialization parameters
+        javax.servlet.ServletConfig servletConfig = getServletConfig();
+        for (Enumeration<String> enum1 = servletConfig.getInitParameterNames(); enum1
+                .hasMoreElements();) {
+            initParam = enum1.nextElement();
+            componentContext.getParameters().add(initParam,
+                    servletConfig.getInitParameter(initParam));
         }
+
+        // Copy all the Servlet application initialization parameters
+        for (Enumeration<String> enum1 = getServletContext()
+                .getInitParameterNames(); enum1.hasMoreElements();) {
+            initParam = enum1.nextElement();
+            componentContext.getParameters().add(initParam,
+                    getServletContext().getInitParameter(initParam));
+        }
+
         return component;
     }
 
@@ -558,6 +555,7 @@ public class ServerServlet extends HttpServlet {
      * 
      * @return The application.
      */
+    @SuppressWarnings("null")
     public Application getApplication() {
         Application result = this.application;
 
@@ -610,6 +608,7 @@ public class ServerServlet extends HttpServlet {
      * 
      * @return The component.
      */
+    @SuppressWarnings("null")
     public Component getComponent() {
         Component result = this.component;
 
@@ -672,6 +671,7 @@ public class ServerServlet extends HttpServlet {
      *            The HTTP Servlet request.
      * @return The HTTP server handling calls.
      */
+    @SuppressWarnings("null")
     public HttpServerHelper getServer(HttpServletRequest request) {
         HttpServerHelper result = this.helper;
 

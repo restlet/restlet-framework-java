@@ -31,18 +31,37 @@ import javax.net.ssl.TrustManagerFactory;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 
+import com.noelios.restlet.util.SslContextFactory;
+
 import simple.http.PipelineHandlerFactory;
 import simple.http.connect.ConnectionFactory;
 
 /**
  * Simple HTTP server connector. Here is the list of additional parameters that
- * are supported: <table>
+ * are supported:
+ * <table>
  * <tr>
  * <th>Parameter name</th>
  * <th>Value type</th>
  * <th>Default value</th>
  * <th>Description</th>
  * </tr>
+ * <tr>
+ * <td>sslContextFactory</td>
+ * <td>String</td>
+ * <td>null</td>
+ * <td>Let you specify a {@link SslContextFactory} instance for a more complete
+ * and flexible SSL context setting. If this parameter is set, it takes
+ * precedance over the other SSL parameters below.</td>
+ * </tr>
+ * <tr>
+ * <td>sslContextFactory</td>
+ * <td>String</td>
+ * <td>null</td>
+ * <td>Let you specify a {@link SslContextFactory} instance for a more complete
+ * and flexible SSL context setting.</td>
+ * </tr>
+ * <tr>
  * <tr>
  * <td>keystorePath</td>
  * <td>String</td>
@@ -102,7 +121,7 @@ public class HttpsServerHelper extends SimpleServerHelper {
      * Constructor.
      * 
      * @param server
-     *                The server to help.
+     *            The server to help.
      */
     public HttpsServerHelper(Server server) {
         super(server);
@@ -113,24 +132,38 @@ public class HttpsServerHelper extends SimpleServerHelper {
     @Override
     public void start() throws Exception {
         // Initialize the SSL context
-        KeyStore keyStore = KeyStore.getInstance(getKeystoreType());
-        FileInputStream fis = getKeystorePath() == null ? null
-                : new FileInputStream(getKeystorePath());
-        char[] password = getKeystorePassword() == null ? null
-                : getKeystorePassword().toCharArray();
-        keyStore.load(fis, password);
+        final SslContextFactory sslContextFactory = getSslContextFactory();
+        SSLContext sslContext;
+        /*
+         * If an SslContextFactory has been set up, its settings take priority
+         * over the other parameters (which are otherwise used to build and
+         * initialise an SSLContext).
+         */
+        if (sslContextFactory == null) {
+            KeyStore keyStore = KeyStore.getInstance(getKeystoreType());
+            FileInputStream fis = getKeystorePath() == null ? null
+                    : new FileInputStream(getKeystorePath());
+            char[] password = getKeystorePassword() == null ? null
+                    : getKeystorePassword().toCharArray();
+            keyStore.load(fis, password);
+            if (fis != null) {
+                fis.close();
+            }
 
-        KeyManagerFactory keyManagerFactory = KeyManagerFactory
-                .getInstance(getCertAlgorithm());
-        keyManagerFactory.init(keyStore, getKeyPassword().toCharArray());
+            KeyManagerFactory keyManagerFactory = KeyManagerFactory
+                    .getInstance(getCertAlgorithm());
+            keyManagerFactory.init(keyStore, getKeyPassword().toCharArray());
 
-        TrustManagerFactory trustManagerFactory = TrustManagerFactory
-                .getInstance(getCertAlgorithm());
-        trustManagerFactory.init(keyStore);
+            TrustManagerFactory trustManagerFactory = TrustManagerFactory
+                    .getInstance(getCertAlgorithm());
+            trustManagerFactory.init(keyStore);
 
-        SSLContext sslContext = SSLContext.getInstance(getSslProtocol());
-        sslContext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory
-                .getTrustManagers(), null);
+            sslContext = SSLContext.getInstance(getSslProtocol());
+            sslContext.init(keyManagerFactory.getKeyManagers(),
+                    trustManagerFactory.getTrustManagers(), null);
+        } else {
+            sslContext = sslContextFactory.createSslContext();
+        }
 
         // Initialize the socket
         SSLServerSocket serverSocket = null;
@@ -158,7 +191,6 @@ public class HttpsServerHelper extends SimpleServerHelper {
 
         serverSocket.setSoTimeout(60000);
         setSocket(serverSocket);
-        fis.close();
 
         // Complete initialization
         setConfidential(true);
@@ -224,6 +256,16 @@ public class HttpsServerHelper extends SimpleServerHelper {
      */
     public String getSslProtocol() {
         return getParameters().getFirstValue("sslProtocol", "TLS");
+    }
+
+    /**
+     * Returns the SSL context factory.
+     * 
+     * @return The SSL context factory.
+     */
+    public SslContextFactory getSslContextFactory() {
+        return (SslContextFactory) getContext().getAttributes().get(
+                "sslContextFactory");
     }
 
     /**
