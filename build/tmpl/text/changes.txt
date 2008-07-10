@@ -38,9 +38,9 @@ Changes log
        	  contributed by Bruno Dumon.
        	- Completed the Component's XML config with the default query 
        	  match setting defined on routers. Suggested by Bruno Dumon.
-       	- Replaced the Context#getThread(Runnable) method with a more
-       	  flexible getExecutorService() method. 
-       	  Suggested by Tim Peierls.
+       	- Replaced the Context#getThread(Runnable) method with more
+       	  flexible getExecutorService() and wrapExecutorService() 
+       	  methods. Suggested by Tim Peierls.
        	- Clarified Javadocs for static getCurrent() methods. Suggested
        	  by Patrick Logan.
     - NRE and Extension Enhancements
