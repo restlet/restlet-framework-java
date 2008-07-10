@@ -43,6 +43,8 @@ Changes log
        	  methods. Suggested by Tim Peierls.
        	- Clarified Javadocs for static getCurrent() methods. Suggested
        	  by Patrick Logan.
+       	- Replaced Map<String, Object> parameters by Map<String, ?>
+       	  in Template and Resolver classed. Suggested by Leigh Klotz.
     - NRE and Extension Enhancements
         - Added a static HttpServletRequest getRequest(Request) method
           to the Servlet extension.

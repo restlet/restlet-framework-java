@@ -318,7 +318,7 @@ public abstract class Resolver<T> {
      */
     private static class MapResolver extends Resolver<String> {
         /** The variables to use when formatting. */
-        private Map<String, Object> map;
+        private Map<String, ?> map;
 
         /**
          * Constructor.
@@ -326,7 +326,7 @@ public abstract class Resolver<T> {
          * @param map
          *                The variables to use when formatting.
          */
-        public MapResolver(Map<String, Object> map) {
+        public MapResolver(Map<String, ?> map) {
             this.map = map;
         }
 
@@ -344,7 +344,7 @@ public abstract class Resolver<T> {
      *                Map between names and values.
      * @return The map resolver.
      */
-    public static Resolver<String> createResolver(Map<String, Object> map) {
+    public static Resolver<String> createResolver(Map<String, ?> map) {
         return new MapResolver(map);
     }
 

@@ -390,7 +390,7 @@ public class Template {
      * @return The formatted string.
      * @see Resolver#createResolver(Map)
      */
-    public String format(Map<String, Object> values) {
+    public String format(Map<String, ?> values) {
         return format(Resolver.createResolver(values));
     }
 
