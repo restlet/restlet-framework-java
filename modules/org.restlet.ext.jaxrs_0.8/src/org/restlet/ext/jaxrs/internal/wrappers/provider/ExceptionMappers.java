@@ -51,6 +51,8 @@ public class ExceptionMappers {
          * @see javax.ws.rs.ext.ExceptionMapper#toResponse(java.lang.Object)
          */
         public Response toResponse(Throwable exception) {
+            // LATER re-throw errors and unchecked exceptions
+            // check, if some other handling is t do before.
             String msg = "A JAX-RS class throws an unhandled "
                     + exception.getClass().getName();
             localLogger.log(Level.WARNING, msg, exception);

@@ -442,6 +442,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      */
     public ResponseBuilder evaluatePreconditions(Date lastModified,
             EntityTag entityTag) {
+        // NICE Vorbed. werden mit Conditions.getStatus() unterstützt.
         if (lastModified == null && entityTag == null)
             return null;
         ResponseBuilder rb = null;
