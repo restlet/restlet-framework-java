@@ -231,6 +231,7 @@ public class EntityProviders implements javax.ws.rs.ext.Providers,
      */
     public <T> ContextResolver<T> getContextResolver(Class<T> contextType,
             Class<?> objectType, javax.ws.rs.core.MediaType mediaType) {
+        // TODO Providers.getContextResolver()
         throw new NotYetImplementedException();
     }
 
@@ -238,6 +239,7 @@ public class EntityProviders implements javax.ws.rs.ext.Providers,
      * @see javax.ws.rs.ext.Providers#getExceptionMapper(java.lang.Class)
      */
     public <T> ExceptionMapper<T> getExceptionMapper(Class<T> type) {
+        // TODO Providers.getExceptionMapper()
         throw new NotYetImplementedException();
     }
 }
