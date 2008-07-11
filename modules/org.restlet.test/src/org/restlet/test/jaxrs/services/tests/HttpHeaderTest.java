@@ -128,6 +128,9 @@ public class HttpHeaderTest extends JaxRsTestCase {
         assertEquals("cookieName=cookie-value", response.getEntity().getText());
     }
 
+    /**
+     * @see HttpHeaderTestService#getLanguage(javax.ws.rs.core.HttpHeaders)
+     */
     public void testLanguage() throws IOException {
         List<Preference<Language>> acceptedLanguages = new ArrayList<Preference<Language>>();
         acceptedLanguages.add(new Preference<Language>(Language.ENGLISH));

@@ -19,7 +19,7 @@ package org.restlet.test.jaxrs.services.resources;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 
 import org.restlet.test.jaxrs.services.tests.MethodAheadLocatorTest;
 
@@ -36,7 +36,7 @@ public class MethodAheadLocatorTestService {
 
     @GET
     @Path("p1")
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     public String get1() {
         return "method";
         // do nothing
@@ -54,7 +54,7 @@ public class MethodAheadLocatorTestService {
 
     @GET
     @Path("p2")
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     public String get2() {
         return "method";
         // do nothing
@@ -62,7 +62,7 @@ public class MethodAheadLocatorTestService {
 
     class SubResource {
         @GET
-        @ProduceMime("text/plain")
+        @Produces("text/plain")
         public String get() {
             return "locator";
         }

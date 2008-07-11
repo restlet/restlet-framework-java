@@ -19,7 +19,7 @@ package org.restlet.test.jaxrs.services.resources;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 
 /**
  * Interface to test the inheritaion and non inheritation of annotations.
@@ -30,7 +30,7 @@ import javax.ws.rs.ProduceMime;
  */
 public interface InheritAnnotationTestServiceInterface {
     @GET
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     @Path("getText")
     public Object getText();
 }

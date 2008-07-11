@@ -20,7 +20,7 @@ package org.restlet.test.jaxrs.services.resources;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
@@ -61,7 +61,7 @@ public class InjectionTestService {
     }
 
     @GET
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     public Response get() {
         String msg = "";
         if(securityContext == null)

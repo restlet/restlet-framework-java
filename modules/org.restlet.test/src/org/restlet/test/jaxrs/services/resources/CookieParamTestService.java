@@ -25,7 +25,7 @@ import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Encoded;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MediaType;
 
@@ -40,7 +40,7 @@ import org.restlet.test.jaxrs.services.tests.CookieParamTest;
 public class CookieParamTestService {
 
     @GET
-    @ProduceMime(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.TEXT_PLAIN)
     @Path("array")
     public String array(@CookieParam("c") Cookie[] cc) {
         String result = "[";
@@ -50,13 +50,13 @@ public class CookieParamTestService {
     }
 
     @GET
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     public String get(@CookieParam("c") String cookieValue) {
         return cookieValue;
     }
    
     @GET
-    @ProduceMime(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.TEXT_PLAIN)
     @Path("Set")
     public String set(@CookieParam("c") Set<Cookie> cc) {
         String result = "{";
@@ -66,14 +66,14 @@ public class CookieParamTestService {
     }
    
     @GET
-    @ProduceMime(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.TEXT_PLAIN)
     @Path("SortedSet")
     public String sortedSet(@CookieParam("c") SortedSet<String> cc) {
         return cc.toString();
     }
     
     @GET
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     @Path("withDefault")
     @Encoded
     public String withDefault(@CookieParam("c") @DefaultValue("default")

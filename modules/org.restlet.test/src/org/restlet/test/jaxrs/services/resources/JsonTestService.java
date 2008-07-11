@@ -22,11 +22,11 @@ import static javax.ws.rs.core.MediaType.APPLICATION_XML;
 import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 import static javax.ws.rs.core.MediaType.TEXT_XML;
 
-import javax.ws.rs.ConsumeMime;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 
 import org.json.JSONObject;
@@ -42,7 +42,7 @@ public class JsonTestService {
 
     @GET
     @Path("JSONObject")
-    @ProduceMime(APPLICATION_JSON)
+    @Produces(APPLICATION_JSON)
     public JSONObject getJsonObject() throws Exception {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("name1", "value1");
@@ -52,7 +52,7 @@ public class JsonTestService {
 
     @GET
     @Path("person")
-    @ProduceMime( { TEXT_XML, APPLICATION_XML, APPLICATION_JSON })
+    @Produces( { TEXT_XML, APPLICATION_XML, APPLICATION_JSON })
     public Person getPerson(@QueryParam("firstname")
     String firstname, @QueryParam("lastname")
     String lastname) {
@@ -61,15 +61,15 @@ public class JsonTestService {
 
     @GET
     @Path("String")
-    @ProduceMime(APPLICATION_JSON)
+    @Produces(APPLICATION_JSON)
     public String getString() {
         return "{name:value}";
     }
 
     @POST
     @Path("JSONObject")
-    @ConsumeMime(APPLICATION_JSON)
-    @ProduceMime(TEXT_PLAIN)
+    @Consumes(APPLICATION_JSON)
+    @Produces(TEXT_PLAIN)
     public String post(JSONObject jsonObject) throws Exception {
         return jsonObject.getString("name");
     }

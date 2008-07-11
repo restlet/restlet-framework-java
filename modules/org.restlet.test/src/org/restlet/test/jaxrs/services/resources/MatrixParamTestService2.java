@@ -24,7 +24,7 @@ import javax.ws.rs.Encoded;
 import javax.ws.rs.GET;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Path;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -47,7 +47,7 @@ import org.restlet.test.jaxrs.services.tests.MatrixParamTest2;
 public class MatrixParamTestService2 {
 
     @GET
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     public String get(@MatrixParam("firstname") String firstname,
             @MatrixParam("lastname") String lastname, @Context UriInfo uriInfo) {
         List<PathSegment> pathSegents = uriInfo.getPathSegments();
@@ -62,7 +62,7 @@ public class MatrixParamTestService2 {
     }
 
     @GET
-    @ProduceMime(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.TEXT_PLAIN)
     @Path("encodedWithDefault")
     public String encodedList(
             @Encoded @DefaultValue("default") @MatrixParam("m") List<String> cc) {

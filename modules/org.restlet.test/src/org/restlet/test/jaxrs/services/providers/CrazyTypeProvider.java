@@ -22,7 +22,7 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
@@ -36,7 +36,7 @@ import org.restlet.test.jaxrs.services.resources.OwnProviderTestService;
  * @see OwnProviderTestService
  */
 @Provider
-@ProduceMime("application/crazyType")
+@Produces("application/crazyType")
 public class CrazyTypeProvider implements MessageBodyWriter<Person> {
 
     /**

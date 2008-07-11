@@ -60,7 +60,7 @@ public class EncodeOrCheckTests extends TestCase {
                     CharSequence.class, Boolean.TYPE);
             HOST = EncodeOrCheck.class.getMethod("host", String.class);
             NAME_OR_VALUE = EncodeOrCheck.class.getMethod("nameOrValue",
-                    CharSequence.class, Boolean.TYPE, String.class);
+                    Object.class, Boolean.TYPE, String.class);
             PATH_SEGMENT_WITH_MATRIX = EncodeOrCheck.class.getMethod(
                     "pathSegmentWithMatrix", CharSequence.class, Boolean.TYPE);
             PATH_WITHOUT_MATRIX = EncodeOrCheck.class.getMethod(

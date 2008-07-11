@@ -19,7 +19,7 @@ package org.restlet.test.jaxrs.services.resources;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 
 import org.restlet.test.jaxrs.services.tests.SimpleHouseTest;
 
@@ -39,7 +39,7 @@ public class SimpleHouse {
      * @return
      */
     @GET
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     public String getPlainText() {
         return RERP_PLAIN_TEXT;
     }
@@ -52,7 +52,7 @@ public class SimpleHouse {
     
     @GET
     @Path("nullWithMediaType")
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     public Object getNullWithMediaType() {
         return null;
     }

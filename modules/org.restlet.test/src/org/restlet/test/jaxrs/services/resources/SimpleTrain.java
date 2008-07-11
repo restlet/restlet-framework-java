@@ -20,7 +20,7 @@ package org.restlet.test.jaxrs.services.resources;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 
@@ -79,7 +79,7 @@ public class SimpleTrain {
      * @return
      */
     @GET
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     public String getPlainText() {
         return RERP_PLAIN_TEXT;
     }
@@ -89,14 +89,14 @@ public class SimpleTrain {
      * @return
      */
     @GET
-    @ProduceMime("text/html")
+    @Produces("text/html")
     public String getHtmlText() {
         return RERP_HTML_TEXT;
     }
 
     @GET
     @Path("decode/{string}")
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     public String getTemplParamDecoded(@Context UriInfo uriInfo) {
         try {
             uriInfo.getPathParameters(true).add("jkghjk", "khlokh");
@@ -109,7 +109,7 @@ public class SimpleTrain {
 
     @GET
     @Path("encode/{string}")
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     public String getTemplParamEncoded(@Context UriInfo uriInfo) {
         try {
             uriInfo.getPathParameters(false).add("jkghjk", "khlokh");

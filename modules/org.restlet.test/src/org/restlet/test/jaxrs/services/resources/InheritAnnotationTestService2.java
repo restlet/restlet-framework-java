@@ -19,7 +19,7 @@ package org.restlet.test.jaxrs.services.resources;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 
 import org.restlet.test.jaxrs.services.tests.InheritAnnotationTest;
 
@@ -50,7 +50,7 @@ public class InheritAnnotationTestService2 implements
 
     public class GetTextResource {
         @GET
-        @ProduceMime("text/plain")
+        @Produces("text/plain")
         public String get() {
             return RETURN_STRING;
         }
@@ -70,7 +70,7 @@ public class InheritAnnotationTestService2 implements
 
     public class SubClassResource2 {
         @GET
-        @ProduceMime("text/plain")
+        @Produces("text/plain")
         public String get() {
             return RETURN_STRING_SUB2;
         }

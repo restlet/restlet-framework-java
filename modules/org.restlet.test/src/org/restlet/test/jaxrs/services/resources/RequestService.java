@@ -20,11 +20,12 @@ package org.restlet.test.jaxrs.services.resources;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -51,7 +52,7 @@ public class RequestService {
 
     @GET
     @Path("date")
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     public Response get(@Context Request request) {
         Date modificDate = getLastModificationDateFromDatastore();
         EntityTag entityTag = getEntityTagFromDatastore();
@@ -98,10 +99,10 @@ public class RequestService {
     public Response getSelectVariants(@Context Request request) {
         // TESTEN test VariantListBuilder
         List<Variant> variants = new ArrayList<Variant>();
-        variants.add(new Variant(MediaType.TEXT_HTML_TYPE, "en", null));
-        variants.add(new Variant(MediaType.TEXT_PLAIN_TYPE, "en", null));
-        variants.add(new Variant(MediaType.TEXT_HTML_TYPE, "de", null));
-        variants.add(new Variant(MediaType.TEXT_PLAIN_TYPE, "de", null));
+        variants.add(new Variant(MediaType.TEXT_HTML_TYPE, Locale.ENGLISH, null));
+        variants.add(new Variant(MediaType.TEXT_PLAIN_TYPE, Locale.ENGLISH, null));
+        variants.add(new Variant(MediaType.TEXT_HTML_TYPE, Locale.GERMAN, null));
+        variants.add(new Variant(MediaType.TEXT_PLAIN_TYPE, Locale.GERMAN, null));
         Variant variant = request.selectVariant(variants);
         if(variant == null)
             return Response.notAcceptable(variants).build();

@@ -19,7 +19,7 @@ package org.restlet.test.jaxrs.services.car;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 
 /**
  * This class will be returned of {@link CarListResource#findCar(int)}.
@@ -44,7 +44,7 @@ public class CarResource {
      * @return
      */
     @GET
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     public String getText() {
         return createTextRepr(id);
     }

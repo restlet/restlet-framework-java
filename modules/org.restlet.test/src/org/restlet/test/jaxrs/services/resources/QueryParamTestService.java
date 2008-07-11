@@ -24,7 +24,7 @@ import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Encoded;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -48,7 +48,7 @@ public class QueryParamTestService {
     private String encoded;
 
     @GET
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     @Path("encodedA")
     @Encoded
     public String encodedA(@QueryParam("firstname") String firstname,
@@ -57,7 +57,7 @@ public class QueryParamTestService {
     }
     
     @GET
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     @Path("a")
     public String getA(@QueryParam("firstname") String firstname,
             @QueryParam("lastname") String lastname) {
@@ -65,14 +65,14 @@ public class QueryParamTestService {
     }
     
     @GET
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     @Path("array")
     public String getArrayQp(@QueryParam("qp") String[] qp) {
         return Arrays.toString(qp);
     }
 
     @GET
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     @Path("arrayWithDefault")
     public String getArrayQpDef(
             @QueryParam("qp") @DefaultValue("qv") String[] qp) {
@@ -80,21 +80,21 @@ public class QueryParamTestService {
     }
 
     @GET
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     @Path("decoded")
     public String getFieldDecoded() {
         return decoded;
     }
 
     @GET
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     @Path("encoded")
     public String getFieldEncoded() {
         return encoded;
     }
 
     @GET
-    @ProduceMime(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.TEXT_PLAIN)
     @Path("int")
     public String getInt(@QueryParam("n1") int n1,
             @QueryParam("n2") @DefaultValue("xx") int n2,
@@ -103,7 +103,7 @@ public class QueryParamTestService {
     }
     
     @GET
-    @ProduceMime(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.TEXT_PLAIN)
     @Path("Integer")
     public String getInteger(@QueryParam("n1") Integer n1,
             @QueryParam("n2") @DefaultValue("xx") Integer n2,
@@ -112,14 +112,14 @@ public class QueryParamTestService {
     }
     
     @GET
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     @Path("list")
     public String getListQp(@QueryParam("qp") List<String> qp) {
         return qp.toString();
     }
 
     @GET
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     @Path("listWithDefault")
     public String getListQpDef(
             @QueryParam("qp") @DefaultValue("qv") List<String> qp) {
@@ -127,7 +127,7 @@ public class QueryParamTestService {
     }
 
     @GET
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     @Path("one")
     public String getOne(@QueryParam("name") String name) {
         if(name == null)
@@ -138,7 +138,7 @@ public class QueryParamTestService {
     }
 
     @GET
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     @Path("qpDecoded")
     public String getQueryParamsDecoded(@Context UriInfo uriInfo) {
         String firstname = uriInfo.getQueryParameters().getFirst("firstname");
@@ -147,7 +147,7 @@ public class QueryParamTestService {
     }
 
     @GET
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     @Path("qpEncoded")
     public String getQueryParamsEncoded(@Context UriInfo uriInfo) {
         String firstn = uriInfo.getQueryParameters(false).getFirst("firstname");

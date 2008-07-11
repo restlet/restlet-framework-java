@@ -20,7 +20,7 @@ package org.restlet.test.jaxrs.services.resources;
 import static javax.ws.rs.core.MediaType.*;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 
 import org.restlet.test.jaxrs.services.others.Person;
 
@@ -30,7 +30,7 @@ import org.restlet.test.jaxrs.services.others.Person;
 @Path("appPlusXml")
 public class AppPlusXmlResource {
     @GET
-    @ProduceMime( { "application/Person+xml", APPLICATION_XML, TEXT_XML })
+    @Produces( { "application/Person+xml", APPLICATION_XML, TEXT_XML })
     public Person getPerson() {
         return new Person("Angela", "Merkel");
     }

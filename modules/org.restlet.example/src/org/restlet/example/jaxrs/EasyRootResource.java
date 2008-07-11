@@ -19,7 +19,7 @@ package org.restlet.example.jaxrs;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 
 /**
  * This demonstrates an very easy JAX-RS resource. It is available on relative
@@ -39,7 +39,7 @@ public class EasyRootResource {
      * @return a HTML representation of this resource.
      */
     @GET
-    @ProduceMime("text/html")
+    @Produces("text/html")
     public String getHtml() {
         return "<html><head></head><body>\n"
                 + "This is an easy resource (as html text).\n"
@@ -52,7 +52,7 @@ public class EasyRootResource {
      * @return a plain text representation of this resource.
      */
     @GET
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     public String getPlain() {
         return "This is an easy resource (as plain text)";
     }

@@ -20,7 +20,7 @@ package org.restlet.test.jaxrs.services.resources;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.restlet.test.jaxrs.services.tests.PathParamTest;
@@ -34,14 +34,14 @@ import org.restlet.test.jaxrs.services.tests.PathParamTest;
 public class PathParamTestService {
 
     @GET
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     public String get(@PathParam("var1") String var1) {
         return var1;
     }
 
     @GET
     @Path("abc/{var2}/def")
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     public String get(@PathParam("var1") String var1,
             @PathParam("var2") String var2) {
         return var1 + "\n" + var2;
@@ -49,7 +49,7 @@ public class PathParamTestService {
 
     @GET
     @Path("array/{var1}")
-    @ProduceMime(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.TEXT_PLAIN)
     public String getVar1(@PathParam("var1") String[] vars) {
         String result = "var1=";
         for (String var : vars)
@@ -59,7 +59,7 @@ public class PathParamTestService {
 
     @GET
     @Path("st/{var1}")
-    @ProduceMime(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.TEXT_PLAIN)
     public String getVar1(@PathParam("var1") String var1) {
         return var1;
     }

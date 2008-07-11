@@ -19,7 +19,7 @@ package org.restlet.test.jaxrs.services.resources;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 import org.restlet.test.jaxrs.services.others.Person;
@@ -33,8 +33,10 @@ import org.restlet.test.jaxrs.services.providers.MessageBodyWorkersTestProvider;
 @Path("mbw")
 public class MessageBodyWorkersTestResource {
 
+    // LATER rename to ProvidersTestResource or somethig like this
+
     @GET
-    @ProduceMime("text/crazy-person")
+    @Produces("text/crazy-person")
     public Response get() {
         Person person = new Person("Angela", "Merkel");
         return Response.ok(person).header("h1", "h1v").build();

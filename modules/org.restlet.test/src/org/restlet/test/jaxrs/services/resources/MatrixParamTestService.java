@@ -24,7 +24,7 @@ import javax.ws.rs.Encoded;
 import javax.ws.rs.GET;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Path;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.Response;
@@ -57,14 +57,14 @@ public class MatrixParamTestService {
     }
 
     @GET
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     public String get(@MatrixParam("firstname") String firstname,
             @MatrixParam("lastname") String lastname) {
         return firstname + " " + lastname;
     }
     
     @GET
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     @Path("a")
     public String getA(@MatrixParam("firstname") String firstname,
             @MatrixParam("lastname") String lastname) {
@@ -72,7 +72,7 @@ public class MatrixParamTestService {
     }
 
     @GET
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     @Path("b")
     public String getB(@Context UriInfo uriInfo) {
         PathSegment pSeg = TestUtils.getLastElement(uriInfo.getPathSegments());
@@ -82,21 +82,21 @@ public class MatrixParamTestService {
     }
 
     @GET
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     @Path("setterDecoded")
     public String getSetterDecoded() {
         return decoded;
     }
 
     @GET
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     @Path("setterEncoded")
     public String getSetterEncoded() {
         return encoded;
     }
 
     @GET
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     @Path("encoded")
     @Encoded
     public String encoded(@MatrixParam("firstname") String firstname,
@@ -105,7 +105,7 @@ public class MatrixParamTestService {
     }
 
     @GET
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     @Path("withDefault")
     @Encoded
     public String withDefault(@MatrixParam("mp") @DefaultValue("default") String mp) {
@@ -113,7 +113,7 @@ public class MatrixParamTestService {
     }
 
     @GET
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     @Path("withoutDefault")
     @Encoded
     public String withoutDefault(@MatrixParam("mp") String mp) {
@@ -125,7 +125,7 @@ public class MatrixParamTestService {
     }
 
     @GET
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     @Path("semicolon;mpA=")
     public Response withSemicolon(@MatrixParam("mpA") String mpA,
             @MatrixParam("mpB") String mpB) {
@@ -135,7 +135,7 @@ public class MatrixParamTestService {
     }
 
     @GET
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     @Path("one")
     public String getOne(@MatrixParam("name") String name) {
         if(name == null)
@@ -146,7 +146,7 @@ public class MatrixParamTestService {
     }
 
     @GET
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     @Path("allNames")
     public String getAllNames(@MatrixParam("name") List<String> name) {
         return name.toString();

@@ -24,7 +24,7 @@ import java.util.List;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
@@ -74,7 +74,7 @@ public class AncestorTestService {
     private UriInfo mainUriInfo;
 
     @GET
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     public String get(@Context UriInfo uriInfo) {
         int uriSize = uriInfo.getAncestorResourceURIs().size();
         int resourcesSize = uriInfo.getAncestorResources().size();
@@ -82,7 +82,7 @@ public class AncestorTestService {
     }
 
     @GET
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     @Path("resourceClassNames")
     public String getResources(@Context UriInfo uriInfo) {
         StringBuilder stb = new StringBuilder();
@@ -108,7 +108,7 @@ public class AncestorTestService {
     }
 
     @GET
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     @Path("uriInfo/{attribute}")
     public String getUriInfoAttribute(@Context UriInfo subUriInfo,
             @PathParam("attribute") String attribute) {
@@ -118,7 +118,7 @@ public class AncestorTestService {
     }
 
     @GET
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     @Path("uris")
     public String getUris(@Context UriInfo uriInfo) {
         StringBuilder stb = new StringBuilder();

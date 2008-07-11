@@ -19,7 +19,7 @@ package org.restlet.test.jaxrs.services.resources;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 import org.restlet.test.jaxrs.services.others.Person;
@@ -35,7 +35,7 @@ import org.restlet.test.jaxrs.services.tests.OwnProviderTest;
 public class OwnProviderTestService {
 
     @GET
-    @ProduceMime("application/crazyType")
+    @Produces("application/crazyType")
     public Response get() {
         Person person = new Person("abc", "def");
         return Response.ok(person).header("h1", "h1v").build();

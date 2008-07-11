@@ -19,7 +19,7 @@ package org.restlet.test.jaxrs.services.path;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 
 /**
  * This class contains only an invalid path, so the Runtime must have a problem
@@ -36,7 +36,7 @@ public class IllegalPathService2 {
      * @return
      */
     @GET
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     public String getPlainText() {
         return "";
     }

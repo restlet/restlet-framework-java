@@ -22,7 +22,7 @@ import java.net.URI;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -41,7 +41,7 @@ public class PersonsResource {
     UriInfo uris;
 
     @GET
-    @ProduceMime( { "application/xml", "text/xml" })
+    @Produces( { "application/xml", "text/xml" })
     public PersonList getPersons() {
         PersonList list = new PersonList();
         list.add(new Person("Angela", "Merkel"));
@@ -51,7 +51,7 @@ public class PersonsResource {
     }
 
     @POST
-    @ProduceMime( { "application/xml", "text/xml" })
+    @Produces( { "application/xml", "text/xml" })
     public Response addPerson(Person person) {
         int id = createPerson(person);
         URI location = uris.getBaseUriBuilder().path(PersonResource.class)
@@ -63,7 +63,7 @@ public class PersonsResource {
      * @param person
      * @return
      */
-    private int createPerson(Person person) {
+    private int createPerson(@SuppressWarnings("unused") Person person) {
         return 5;
     }
 }

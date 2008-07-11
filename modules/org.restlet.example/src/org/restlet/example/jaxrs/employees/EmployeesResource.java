@@ -40,13 +40,13 @@ public class EmployeesResource {
     private UriInfo uriInfo;
 
     @GET
-    @ProduceMime( { "application/xml", "text/xml", "application/json" })
+    @Produces( { "application/xml", "text/xml", "application/json" })
     public EmployeeList getEmployees() {
         EmployeeList employees = employeeMgr.getAll();
         // set detail URIs
-        UriBuilder uriBuilder = uriInfo.getPlatonicRequestUriBuilder();
+        UriBuilder uriBuilder = uriInfo.getRequestUriBuilder();
         uriBuilder.path("{staffNo}");
-        uriBuilder.extension(uriInfo.getPathExtension());
+        // LATER uriBuilder.extension(uriInfo.getPathExtension());
         for (SmallEmployee employee : employees)
             employee.setDetails(uriBuilder.build(employee.getStaffNo()));
         return employees;
@@ -54,10 +54,10 @@ public class EmployeesResource {
 
     /** Creates a new employee from XML or JSON */
     @POST
-    @ConsumeMime( { "application/xml", "text/xml", "application/json" })
+    @Consumes( { "application/xml", "text/xml", "application/json" })
     public Response createEmployee(Employee employee) {
         int staffNo = employeeMgr.createEmployee(employee);
-        String uriExts = uriInfo.getPathExtension();
+        String uriExts = uriInfo.getConnegExtension();
         URI location = createdLocation(staffNo, uriExts);
         return Response.created(location).build();
     }
@@ -70,13 +70,13 @@ public class EmployeesResource {
      * @return the URI for the location of an created employee.
      */
     private URI createdLocation(int staffNo, String extension) {
-        UriBuilder locBuilder = uriInfo.getPlatonicRequestUriBuilder();
+        UriBuilder locBuilder = uriInfo.getRequestUriBuilder();
         locBuilder.path("{staffNo}").extension(extension);
         return locBuilder.build(staffNo);
     }
 
     @POST
-    @ConsumeMime("application/x-www-form-urlencoded")
+    @Consumes("application/x-www-form-urlencoded")
     public Response createEmployee(MultivaluedMap<String, String> employeeData) {
         Employee employee = new Employee();
         employee.setFirstname(employeeData.getFirst("firstname"));
@@ -97,7 +97,7 @@ public class EmployeesResource {
     }
 
     @GET
-    @ProduceMime("text/html")
+    @Produces("text/html")
     public StreamingOutput getListAsHtml() {
         final EmployeeList employees = getEmployees();
         return new StreamingOutput() {

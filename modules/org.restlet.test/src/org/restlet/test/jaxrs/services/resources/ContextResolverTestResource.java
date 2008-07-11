@@ -19,7 +19,7 @@ package org.restlet.test.jaxrs.services.resources;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 
 import org.restlet.test.jaxrs.services.others.Person;
 import org.restlet.test.jaxrs.services.tests.ContextResolverTest;
@@ -35,7 +35,7 @@ public class ContextResolverTestResource {
 
     /** @see ContextResolverTest#test1() */
     @GET
-    @ProduceMime("text/html")
+    @Produces("text/html")
     public Person getHomeUri() {
         return new Person("Helmut", "Kohl");
     }

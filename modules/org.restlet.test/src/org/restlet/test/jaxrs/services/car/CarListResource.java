@@ -26,7 +26,7 @@ import javax.ws.rs.HeaderParam;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
@@ -91,7 +91,7 @@ public class CarListResource {
      */
     @GET
     @Path(OFFERS_PATH)
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     public String getOffers() throws WebApplicationException {
         return OFFERS;
     }
@@ -124,7 +124,7 @@ public class CarListResource {
      * @return
      */
     @GET
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     public String getCarList() {
         // NICE test: use URIs in response entity.
         return DUMMY_CAR_LIST;

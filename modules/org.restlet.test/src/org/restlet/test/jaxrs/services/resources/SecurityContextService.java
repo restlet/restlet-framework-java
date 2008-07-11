@@ -23,7 +23,7 @@ import java.security.Principal;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
@@ -47,7 +47,7 @@ public class SecurityContextService {
     @Context private SecurityContext securityContext;
     
     @GET
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     public String get() {
         if (!securityContext.isUserInRole("bad"))
             throw new WebApplicationException(403);
@@ -68,14 +68,14 @@ public class SecurityContextService {
 
     @GET
     @Path("authenticationScheme")
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     public String getAuthenticationScheme() {
         return securityContext.getAuthenticationScheme();
     }
 
     @GET
     @Path("userPrincipal")
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     public String getUserPrincipal() {
         Principal principal = securityContext.getUserPrincipal();
         if (principal == null)
@@ -85,7 +85,7 @@ public class SecurityContextService {
 
     @GET
     @Path("secure")
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     public String isSecure(@Context UriInfo uriInfo) {
         if (!securityContext.isSecure()) {
             ResponseBuilder rb = Response.status(Status.MOVED_PERMANENTLY);

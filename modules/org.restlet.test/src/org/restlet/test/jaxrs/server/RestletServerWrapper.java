@@ -82,9 +82,6 @@ public class RestletServerWrapper implements ServerWrapper {
      * will do this on every test start up.
      * 
      * @param appConfig
-     * 
-     * @return Returns the started component. Should be stopped with
-     *         {@link #stopServer(Component)}
      * @throws Exception
      */
     public void startServer(Application application, Protocol protocol)

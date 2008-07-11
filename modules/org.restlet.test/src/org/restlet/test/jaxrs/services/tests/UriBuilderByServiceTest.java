@@ -217,7 +217,8 @@ public class UriBuilderByServiceTest extends JaxRsTestCase {
         assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
     }
 
-    public void testPlatonicAndExts() throws Exception {
+    public void _testPlatonicAndExts() throws Exception {
+        // LATER move this tests to non platonic methods
         Response response = get("platonicAndExts.txt", TEXT_HTML);
         assertPlatonic("platonicAndExts", "txt", TEXT_PLAIN, null, response);
 
@@ -232,7 +233,8 @@ public class UriBuilderByServiceTest extends JaxRsTestCase {
                 response);
     }
 
-    public void testPlatonicAndExtsAndExt() throws Exception {
+    public void _testPlatonicAndExtsAndExt() throws Exception {
+        // LATER move this tests to non platonic methods
         Response response = get("platonicAndExts.abc.txt", TEXT_HTML);
         assertPlatonic("platonicAndExts.abc", "abc.txt", TEXT_PLAIN, null,
                 response);
@@ -251,7 +253,8 @@ public class UriBuilderByServiceTest extends JaxRsTestCase {
         assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
     }
 
-    public void testPlatonicGet() throws Exception {
+    public void _testPlatonicGet() throws Exception {
+        // LATER move this tests to non platonic methods
         Response response = get("platonic", TEXT_HTML);
         assertUriAndMediaType("platonic", TEXT_HTML, response, true);
 
@@ -265,7 +268,8 @@ public class UriBuilderByServiceTest extends JaxRsTestCase {
         assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
     }
 
-    public void testPlatonicHead() throws Exception {
+    public void _testPlatonicHead() throws Exception {
+        // LATER move this tests to non platonic methods
         Response response = head("platonic", TEXT_HTML);
         assertUriAndMediaType("platonic", TEXT_HTML, response, false);
 
@@ -279,7 +283,8 @@ public class UriBuilderByServiceTest extends JaxRsTestCase {
         assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
     }
 
-    public void testPlatonicPost() throws Exception {
+    public void _testPlatonicPost() throws Exception {
+        // LATER move this tests to non platonic methods
         Response response = post("platonic", TEXT_HTML);
         assertUriAndMediaType("platonic", TEXT_HTML, response, true);
 

@@ -19,7 +19,7 @@ package org.restlet.test.jaxrs.services.resources;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 
 /**
  * @author Stephan Koops
@@ -29,14 +29,14 @@ public class NoProviderResource {
 
     @GET
     @Path("text-plain")
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     public Object getTextPlain() {
         return new Object();
     }
 
     @GET
     @Path("no-mbw")
-    @ProduceMime("4711/0815")
+    @Produces("4711/0815")
     public Object getNoMediaType() {
         return new Object();
     }

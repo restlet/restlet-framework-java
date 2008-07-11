@@ -19,7 +19,7 @@ package org.restlet.test.jaxrs.services.resources;
 
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 
 import org.restlet.test.jaxrs.services.tests.PrimitiveWrapperEntityTest;
 
@@ -31,7 +31,7 @@ import org.restlet.test.jaxrs.services.tests.PrimitiveWrapperEntityTest;
  * @see PrimitiveWrapperEntityTest
  */
 @Path("PrimitiveWrapperEntity")
-@ProduceMime("text/plain")
+@Produces("text/plain")
 public class PrimitiveWrapperEntityResource {
 
     @PUT

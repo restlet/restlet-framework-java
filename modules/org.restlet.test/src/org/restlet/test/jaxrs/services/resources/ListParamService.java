@@ -28,7 +28,7 @@ import javax.ws.rs.HeaderParam;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 
 /**
@@ -40,7 +40,7 @@ public class ListParamService {
 
     @GET
     @Path("cookie")
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     public String getCookie(@CookieParam("c") String c, 
             @CookieParam("cc") List<String> cc) {
         return "c=" + c + "\ncc="+cc;
@@ -48,7 +48,7 @@ public class ListParamService {
 
     @GET
     @Path("header")
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     public String getHeader(@HeaderParam("h") String h, 
             @HeaderParam("hh") Set<String> hh) {
         return "h=" + h + "\nhh="+hh;
@@ -56,7 +56,7 @@ public class ListParamService {
 
     @GET
     @Path("matrix")
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     public String getMatrix(@MatrixParam("m") String m, 
             @MatrixParam("mm") Collection<String> mm) {
         return "m=" + m + "\nmm="+mm;
@@ -64,7 +64,7 @@ public class ListParamService {
 
     @GET
     @Path("path/{p}/{p}/{pp}/{pp}")
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     public String getPath(@PathParam("p") String p, 
             @PathParam("pp") SortedSet<String> pp) {
         return "p=" + p + "\npp="+pp;
@@ -72,7 +72,7 @@ public class ListParamService {
 
     @GET
     @Path("query")
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     public String getQuery(@QueryParam("q") String q, 
             @QueryParam("qq") List<String> qq) {
         return "q=" + q + "\nqq="+qq;
@@ -84,7 +84,7 @@ public class ListParamService {
     }
     
     @GET
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     public String getZ(@PathParam("other") String other, 
             @PathParam("other") List<String> others) {
         return "other="+other+"\nothers="+others;

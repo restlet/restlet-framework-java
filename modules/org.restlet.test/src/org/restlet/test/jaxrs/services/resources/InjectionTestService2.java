@@ -21,7 +21,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.Request;
@@ -58,7 +58,7 @@ public class InjectionTestService2 {
     private String hostHost;
 
     @GET
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     public Response get() {
         String msg = "";
         if (securityContext == null)

@@ -19,7 +19,7 @@ package org.restlet.test.jaxrs.services.resources;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 
 import org.restlet.test.jaxrs.services.tests.DeterminingMediaTypeTest;
 
@@ -32,14 +32,14 @@ public class DeterminingMediaTypeTestService {
 
     @GET
     @Path("textStar")
-    @ProduceMime("text/*")
+    @Produces("text/*")
     public String getTextStar() {
         return "isfhl";
     }
 
     @GET
     @Path("htmlPlainGif")
-    @ProduceMime({"text/html", "text/plain", "image/gif"})
+    @Produces({"text/html", "text/plain", "image/gif"})
     public byte[] getHtmlPlainGif() {
         return "gkjlgk".getBytes();
     }

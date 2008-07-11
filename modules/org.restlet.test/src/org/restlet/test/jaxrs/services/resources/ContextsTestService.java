@@ -24,12 +24,12 @@ import java.util.Map.Entry;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.MessageBodyWorkers;
+import javax.ws.rs.ext.Providers;
 
 import org.restlet.test.jaxrs.services.tests.ContextsTest;
 
@@ -40,14 +40,14 @@ import org.restlet.test.jaxrs.services.tests.ContextsTest;
 @Path("anchestorTest")
 public class ContextsTestService {
     
-    @Context MessageBodyWorkers messageBodyWorkers;
+    @Context Providers messageBodyWorkers;
     
     @Context ContextResolver<Integer> contextResolver;
     
     @Context UriInfo uriInfo;
 
     @GET
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     @Path("fields")
     public String fieldsAvailable() {
         StringBuilder stb = new StringBuilder();
@@ -61,10 +61,10 @@ public class ContextsTestService {
     }
 
     @GET
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     @Path("params")
     public String getResources(@Context UriInfo uriInfo,
-            @Context MessageBodyWorkers messageBodyWorkers,
+            @Context Providers messageBodyWorkers,
             @Context ContextResolver<Integer> contextResolver) {
         StringBuilder stb = new StringBuilder();
         if(messageBodyWorkers != null)
@@ -77,7 +77,7 @@ public class ContextsTestService {
     }
     
     @GET
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     @Path("lastPathSegm")
     public String getPathSegm(@Context PathSegment lastPathSegment) {
         Set<Entry<String, List<String>>> entries;

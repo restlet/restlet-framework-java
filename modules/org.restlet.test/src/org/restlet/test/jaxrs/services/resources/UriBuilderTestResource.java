@@ -20,14 +20,11 @@ package org.restlet.test.jaxrs.services.resources;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.test.jaxrs.services.tests.UriBuilderByServiceTest;
 
 /**
@@ -42,63 +39,30 @@ public class UriBuilderTestResource {
 
     @GET
     @Path("absolute")
-    @ProduceMime( { MediaType.TEXT_PLAIN, MediaType.TEXT_HTML })
+    @Produces( { MediaType.TEXT_PLAIN, MediaType.TEXT_HTML })
     public String getAbsoluteUriBuilder() {
         return uriInfo.getAbsolutePathBuilder().build().toString();
     }
 
     @GET
     @Path("base")
-    @ProduceMime( { MediaType.TEXT_PLAIN, MediaType.TEXT_HTML })
+    @Produces( { MediaType.TEXT_PLAIN, MediaType.TEXT_HTML })
     public String getBaseUriBuilder() {
         return uriInfo.getBaseUriBuilder().build().toString();
     }
 
-    @GET
-    @Path("platonic")
-    @ProduceMime( { MediaType.TEXT_PLAIN, MediaType.TEXT_HTML })
-    public String getPlatonicUriBuilder() {
-        return uriInfo.getPlatonicRequestUriBuilder().build().toString();
-    }
-
-    @GET
-    @Path("platonicAndExts")
-    @ProduceMime( { MediaType.TEXT_PLAIN, MediaType.TEXT_HTML })
-    public Response getPlatonixAndExts(@Context HttpHeaders httpHeaders) {
-        String language = Util.getFirstElementOrNull(httpHeaders
-                .getAcceptableLanguages());
-        if(language != null && language.equals("*"))
-            language = null;
-        String entity = uriInfo.getPlatonicRequestUriBuilder() + "\n"
-                + uriInfo.getPathExtension();
-        return Response.ok(entity).language(language).build();
-    }
-
-    @GET
-    @Path("platonicAndExts.abc")
-    @ProduceMime( { MediaType.TEXT_PLAIN, MediaType.TEXT_HTML })
-    public Response getPlatonixAndExtsAndExt(@Context HttpHeaders httpHeaders) {
-        return getPlatonixAndExts(httpHeaders);
-    }
-
     @POST
     @Path("absolute")
-    @ProduceMime( { MediaType.TEXT_PLAIN, MediaType.TEXT_HTML })
+    @Produces( { MediaType.TEXT_PLAIN, MediaType.TEXT_HTML })
     public String postAbsoluteUriBuilder() {
+        // LATER test also with uri of sub resource
         return uriInfo.getAbsolutePathBuilder().build().toString();
     }
 
     @POST
     @Path("base")
-    @ProduceMime( { MediaType.TEXT_PLAIN, MediaType.TEXT_HTML })
+    @Produces( { MediaType.TEXT_PLAIN, MediaType.TEXT_HTML })
     public String postBaseUriBuilder() {
         return uriInfo.getBaseUriBuilder().build().toString();
-    }
-
-    @POST
-    @Path("platonic")
-    @ProduceMime( { MediaType.TEXT_PLAIN, MediaType.TEXT_HTML })
-    public String postPlatonicUriBuilder() {
-        return uriInfo.getPlatonicRequestUriBuilder().build().toString();
     }
 }

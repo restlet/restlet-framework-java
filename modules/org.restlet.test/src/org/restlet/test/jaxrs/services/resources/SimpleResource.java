@@ -24,7 +24,7 @@ package org.restlet.test.jaxrs.services.resources;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 
 import org.restlet.test.jaxrs.services.tests.ThrowWebAppExcProviderTest;
 
@@ -36,13 +36,13 @@ import org.restlet.test.jaxrs.services.tests.ThrowWebAppExcProviderTest;
 public class SimpleResource {
     
     @GET
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     public String get() {
         return "fxgsgdg";
     }
     
     @POST
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     public String post(String entity) {
         return entity;
     }

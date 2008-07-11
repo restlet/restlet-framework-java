@@ -23,7 +23,7 @@ import java.io.OutputStreamWriter;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -36,7 +36,7 @@ import org.restlet.test.jaxrs.services.others.Person;
 /**
  * @author Stephan Koops
  */
-@ProduceMime("text/html")
+@Produces("text/html")
 @Provider
 public class ContextResolverTestWriter implements MessageBodyWriter<Person> {
 

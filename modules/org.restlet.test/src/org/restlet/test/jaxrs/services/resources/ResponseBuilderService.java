@@ -19,6 +19,7 @@ package org.restlet.test.jaxrs.services.resources;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -43,10 +44,10 @@ public class ResponseBuilderService {
     @Path("1")
     public Response get1() {
         List<Variant> variants = new ArrayList<Variant>();
-        variants.add(new Variant(TestUtils.createMediaType("text", "sjk"), "en", "encoding"));
-        variants.add(new Variant(TestUtils.createMediaType("text", "sfgs"), "en", "encoding2"));
-        variants.add(new Variant(TestUtils.createMediaType("text", "ydgdsfg"), "en", "encoding"));
-        variants.add(new Variant(TestUtils.createMediaType("text", "sjk"), "en", "encoding2"));
+        variants.add(new Variant(TestUtils.createMediaType("text", "sjk"), Locale.ENGLISH, "encoding"));
+        variants.add(new Variant(TestUtils.createMediaType("text", "sfgs"), Locale.ENGLISH, "encoding2"));
+        variants.add(new Variant(TestUtils.createMediaType("text", "ydgdsfg"), Locale.ENGLISH, "encoding"));
+        variants.add(new Variant(TestUtils.createMediaType("text", "sjk"), Locale.ENGLISH, "encoding2"));
         return Response.notAcceptable(variants).build();
     }
 
@@ -54,10 +55,10 @@ public class ResponseBuilderService {
     @Path("2")
     public Response get2() {
         List<Variant> variants = new ArrayList<Variant>();
-        variants.add(new Variant(TestUtils.createMediaType("text", "sjk"), "en", "encoding"));
-        variants.add(new Variant(TestUtils.createMediaType("text", "sjk", "charset", "enc"), "en", "encoding"));
-        variants.add(new Variant(TestUtils.createMediaType("text", "sjk", "charset", "skl"), "en", "encoding"));
-        variants.add(new Variant(TestUtils.createMediaType("text", "sjk"), "de", "encoding"));
+        variants.add(new Variant(TestUtils.createMediaType("text", "sjk"), Locale.ENGLISH, "encoding"));
+        variants.add(new Variant(TestUtils.createMediaType("text", "sjk", "charset", "enc"), Locale.ENGLISH, "encoding"));
+        variants.add(new Variant(TestUtils.createMediaType("text", "sjk", "charset", "skl"), Locale.ENGLISH, "encoding"));
+        variants.add(new Variant(TestUtils.createMediaType("text", "sjk"), Locale.GERMAN, "encoding"));
         return Response.notAcceptable(variants).build();
     }
     

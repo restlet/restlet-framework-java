@@ -18,7 +18,6 @@
 package org.restlet.test.jaxrs.server;
 
 import org.restlet.Application;
-import org.restlet.Component;
 import org.restlet.Restlet;
 import org.restlet.data.Protocol;
 
@@ -27,7 +26,7 @@ import org.restlet.data.Protocol;
  * the {@link RestletServerWrapper}, but there are other implementations
  * possible, for example for the JSR-311 reference implementation Jersey.
  * 
- * @see JaxRsTestCase#setServerWrapper(ServerWrapper)
+ * @see org.restlet.test.jaxrs.services.tests.JaxRsTestCase#setServerWrapper(ServerWrapper)
  * @see ServerWrapperFactory
  * 
  * @author Stephan Koops
@@ -54,9 +53,6 @@ public interface ServerWrapper {
      * @param protocol
      *                the protocol to use
      * @param appConfig
-     * 
-     * @return Returns the started component. Should be stopped with
-     *         {@link #stopServer(Component)}
      * @throws Exception
      */
     public void startServer(Application application, Protocol protocol)

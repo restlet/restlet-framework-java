@@ -27,7 +27,7 @@ import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Cookie;
@@ -50,20 +50,20 @@ public class HttpHeaderTestService {
     public static final String TEST_HEADER_NAME = "testHeader";
 
     @GET
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     public String getPlain() {
         return "media type text/plain is supported\n";
     }
 
     @GET
-    @ProduceMime({"text/xml", MediaType.APPLICATION_XML})
+    @Produces({"text/xml", MediaType.APPLICATION_XML})
     public String getXML() {
         return "<text>the media types text/xml and application/xml are supported</text>\n";
     }
 
     @GET
     @Path("HeaderParam")
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     public String getHeaderParam(
             @HeaderParam(TEST_HEADER_NAME) String testHeaderValue) {
         return testHeaderValue;
@@ -71,7 +71,7 @@ public class HttpHeaderTestService {
 
     @GET
     @Path("accMediaTypes")
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     public String getAccMediaTypes(@Context HttpHeaders headers) {
         List<MediaType> mediaTypes = headers.getAcceptableMediaTypes();
         return mediaTypes.toString();
@@ -79,7 +79,7 @@ public class HttpHeaderTestService {
 
     @GET
     @Path("cookies/{cookieName}")
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     public String getCookies(@Context HttpHeaders headers,
             @PathParam("cookieName") String cookieName) {
         Map<String, Cookie> cookies = headers.getCookies();
@@ -105,14 +105,14 @@ public class HttpHeaderTestService {
 
     @POST
     @Path("language")
-    @ProduceMime({"text/plain", "text/html"})
+    @Produces({"text/plain", "text/html"})
     public String getLanguage(@Context HttpHeaders headers) {
-        return headers.getLanguage();
+        return headers.getLanguage().toString();
     }
 
     @GET
     @Path("header/{headername}")
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     public String getHeader(@Context HttpHeaders headers,
             @PathParam("headername") String headername) {
         MultivaluedMap<String, String> requestHeaders = headers
@@ -130,7 +130,7 @@ public class HttpHeaderTestService {
      */
     @GET
     @Path("header2")
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     public Object getHeader2(@HeaderParam("host") String hostLower,
             @HeaderParam("HOST") String hostUpper, 
             @HeaderParam("Host") String hostMixed) {
@@ -143,7 +143,7 @@ public class HttpHeaderTestService {
 
     @GET
     @Path("headerWithDefault")
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     public String getHeaderWithDefault(
             @HeaderParam(TEST_HEADER_NAME) @DefaultValue("default") String testHeader) {
         return testHeader;

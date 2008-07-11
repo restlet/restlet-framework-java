@@ -18,7 +18,7 @@
 package org.restlet.test.jaxrs.services.car;
 
 import javax.ws.rs.GET;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 
 /**
  * @author Stephan Koops
@@ -33,7 +33,7 @@ public class EngineResource {
     private CarResource car;
 
     @GET
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     public String getText() {
         int carId = car.getId();
         return getPlainRepr(carId);

@@ -40,7 +40,7 @@ public class EmployeeResource {
     }
 
     @GET
-    @ProduceMime( { "application/xml", "text/xml", "application/json" })
+    @Consumes( { "application/xml", "text/xml", "application/json" })
     public Employee get(@Context UriInfo uriInfo) {
         // load employee with requested id
         Employee employee = employeeMgr.getFull(staffNo);
@@ -48,7 +48,7 @@ public class EmployeeResource {
         // set department uri
         UriBuilder departmentUB = uriInfo.getBaseUriBuilder();
         departmentUB.path("departments", "{depId}");
-        departmentUB.extension(uriInfo.getPathExtension());
+        // LATER departmentUB.extension(uriInfo.getPathExtension());
         String department = employee.getDepartment();
         employee.setDepartmentUri(departmentUB.build(department));
 
@@ -56,7 +56,7 @@ public class EmployeeResource {
     }
 
     @PUT
-    @ConsumeMime( { "application/xml", "text/xml", "application/json" })
+    @Consumes( { "application/xml", "text/xml", "application/json" })
     public void update(Employee employee) {
         employeeMgr.update(staffNo, employee);
     }
@@ -80,13 +80,13 @@ public class EmployeeResource {
     private static URI createEmployeesUri(final UriInfo uriInfo) {
         UriBuilder employeesUri = uriInfo.getBaseUriBuilder();
         employeesUri.path(uriInfo.getAncestorResourceURIs().get(0));
-        employeesUri.extension(uriInfo.getPathExtension());
+        employeesUri.extension(uriInfo.getConnegExtension());
         URI build = employeesUri.build();
         return build;
     }
 
     @GET
-    @ProduceMime("text/html")
+    @Produces("text/html")
     public StreamingOutput getHtml(@Context final UriInfo uriInfo) {
         final Employee employee = get(uriInfo);
         final URI employeesUri = createEmployeesUri(uriInfo);

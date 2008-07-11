@@ -22,28 +22,28 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.MessageBodyWorkers;
 import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.Providers;
 
 import org.restlet.test.jaxrs.services.others.Person;
 
 /**
  * This provider writes a Persons as XML (by JAXB) and with the
  * {@link CrazyTypeProvider}.<br>
- * (I've got no better idea for MessageBodyWorkers)
+ * (I've got no better idea for Providers)
  * 
  * @author Stephan Koops
  */
-@ProduceMime("text/crazy-person")
+@Produces("text/crazy-person")
 public class MessageBodyWorkersTestProvider implements
         MessageBodyWriter<Person> {
 
     @Context
-    MessageBodyWorkers messageBodyWorkers;
+    Providers messageBodyWorkers;
 
     /**
      * @see javax.ws.rs.ext.MessageBodyWriter#getSize(java.lang.Object)
@@ -69,15 +69,14 @@ public class MessageBodyWorkersTestProvider implements
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
         MessageBodyWriter<Person> mbw;
-        mbw = messageBodyWorkers.getMessageBodyWriter(
-                Person.class, Person.class, annotations,
-                MediaType.APPLICATION_XML_TYPE);
+        mbw = messageBodyWorkers.getMessageBodyWriter(Person.class,
+                Person.class, annotations, MediaType.APPLICATION_XML_TYPE);
         mbw.writeTo(t, Person.class, Person.class, annotations,
                 MediaType.APPLICATION_XML_TYPE, httpHeaders, entityStream);
 
         MediaType mediaType2 = new MediaType("application", "crazyType");
-        mbw = messageBodyWorkers.getMessageBodyWriter(Person.class, Person.class,
-                annotations, mediaType2);
+        mbw = messageBodyWorkers.getMessageBodyWriter(Person.class,
+                Person.class, annotations, mediaType2);
         mbw.writeTo(t, Person.class, Person.class, annotations, mediaType2,
                 httpHeaders, entityStream);
     }

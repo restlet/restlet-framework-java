@@ -22,7 +22,7 @@ import java.io.IOException;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 import org.restlet.test.jaxrs.services.others.Person;
@@ -46,14 +46,14 @@ public class RepresentationTestService {
 
     @GET
     @Path("repr")
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     public Representation get() {
         return getString();
     }
 
     @GET
     @Path("reprString")
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     public StringRepresentation getString() {
         return new StringRepresentation("jgkghkg");
     }

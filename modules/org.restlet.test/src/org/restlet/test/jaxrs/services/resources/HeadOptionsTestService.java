@@ -21,7 +21,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.HEAD;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.ProduceMime;
+import javax.ws.rs.Produces;
 
 import org.restlet.test.jaxrs.services.others.OPTIONS;
 import org.restlet.test.jaxrs.services.tests.HeadOptionsTest;
@@ -44,21 +44,21 @@ public class HeadOptionsTestService {
 
     @HEAD
     @Path("headTest1")
-    @ProduceMime("text/html")
+    @Produces("text/html")
     public String headTest1() {
         return null;
     }
 
     @GET
     @Path("headTest1")
-    @ProduceMime("text/html")
+    @Produces("text/html")
     public String getTest1() {
         return "4711";
     }
 
     @GET
     @Path("headTest1")
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     public String getTest1a() {
         return "4711";
     }
@@ -71,21 +71,21 @@ public class HeadOptionsTestService {
 
     @HEAD
     @Path("headTest2")
-    @ProduceMime("text/html")
+    @Produces("text/html")
     public String headTest2() {
         return "4711";
     }
 
     @GET
     @Path("headTest2")
-    @ProduceMime("text/html")
+    @Produces("text/html")
     public String getTest2() {
         return "4711";
     }
 
     @GET
     @Path("headTest2")
-    @ProduceMime("text/plain")
+    @Produces("text/plain")
     public String getTest2plain() {
         return "4711";
     }
