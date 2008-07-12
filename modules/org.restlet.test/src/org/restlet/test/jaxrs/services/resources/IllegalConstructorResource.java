@@ -37,7 +37,7 @@ public class IllegalConstructorResource {
      * 
      * @param entity
      */
-    public IllegalConstructorResource(@SuppressWarnings("unused") String entity) {
+    public IllegalConstructorResource(String entity) {
     }
 
     /**
@@ -46,8 +46,6 @@ public class IllegalConstructorResource {
      * @param c1
      * @param c2
      */
-    IllegalConstructorResource(
-            @SuppressWarnings("unused") @CookieParam("c1") String c1, 
-            @SuppressWarnings("unused") @CookieParam("c2") String c2) {
+    IllegalConstructorResource(@CookieParam("c1") String c1, @CookieParam("c2") String c2) {
     }
 }

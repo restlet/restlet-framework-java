@@ -97,16 +97,16 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * 
      * @param jaxRsClass
      * @param tlContext
-     *                the {@link ThreadLocalizedContext} of the
-     *                {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
+     *            the {@link ThreadLocalizedContext} of the
+     *            {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
      * @param entityProviders
-     *                all entity providers
+     *            all entity providers
      * @param allCtxResolvers
-     *                all ContextResolvers
+     *            all ContextResolvers
      * @param extensionBackwardMapping
-     *                the extension backward mapping
+     *            the extension backward mapping
      * @param logger
-     *                The logger to log warnings, if the class is not valid.
+     *            The logger to log warnings, if the class is not valid.
      * @throws MissingAnnotationException
      * @throws IllegalArgumentException
      * @see WrapperFactory#getResourceClass(Class)
@@ -128,29 +128,29 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * 
      * @param jaxRsClass
      * @param tlContext
-     *                the {@link ThreadLocalizedContext} of the
-     *                {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
+     *            the {@link ThreadLocalizedContext} of the
+     *            {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
      * @param entityProviders
-     *                all entity providers
+     *            all entity providers
      * @param allCtxResolvers
-     *                all ContextResolvers
+     *            all ContextResolvers
      * @param extensionBackwardMapping
-     *                the extension backward mapping
+     *            the extension backward mapping
      * @param logger
      * @param sameLogger
-     *                the subclass RootResourceClass must call this constructor.
-     *                This Object is ignored.
+     *            the subclass RootResourceClass must call this constructor.
+     *            This Object is ignored.
      * @throws IllegalArgumentException
      * @throws IllegalPathOnClassException
      * @throws MissingAnnotationException
-     *                 if &#64;{@link Path} is missing on the jaxRsClass
+     *             if &#64;{@link Path} is missing on the jaxRsClass
      * @see WrapperFactory#getResourceClass(Class)
      */
     protected ResourceClass(Class<?> jaxRsClass,
             ThreadLocalizedContext tlContext, EntityProviders entityProviders,
             Collection<ContextResolver<?>> allCtxResolvers,
             ExtensionBackwardMapping extensionBackwardMapping, Logger logger,
-            @SuppressWarnings("unused") Logger sameLogger) throws IllegalArgumentException,
+            Logger sameLogger) throws IllegalArgumentException,
             IllegalPathOnClassException, MissingAnnotationException {
         super(PathRegExp.createForClass(jaxRsClass));
         this.leaveEncoded = jaxRsClass.isAnnotationPresent(Encoded.class);
@@ -222,7 +222,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * found one. This would be returned.
      * 
      * @param javaMethod
-     *                The java method to look for annotations
+     *            The java method to look for annotations
      * @return the founded method, or null, if no method with annotations was
      *         found. Returns also null, if null was given.
      */
@@ -260,9 +260,9 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * given class.
      * 
      * @param clazz
-     *                The Class to look for the method.
+     *            The Class to look for the method.
      * @param subClassMethod
-     *                the Method to look for it's signature in the given class.
+     *            the Method to look for it's signature in the given class.
      * @return the method in the given class, with the same signature as given
      *         method, or null if such method is not available. Returns also
      *         null, if the given class is null.
@@ -284,9 +284,9 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * consumed or produced mimes and so on.
      * 
      * @param resourceObject
-     *                The resource object
+     *            The resource object
      * @param remainingPath
-     *                the path
+     *            the path
      * @return The ist of ResourceMethods
      */
     public Collection<ResourceMethod> getMethodsForPath(
@@ -387,8 +387,8 @@ public class ResourceClass extends AbstractJaxRsWrapper {
                             continue;
                         SubResourceLocator subResLoc;
                         try {
-                            subResLoc = new SubResourceLocator(
-                                    execMethod, annotatedMethod, this, tlContext,
+                            subResLoc = new SubResourceLocator(execMethod,
+                                    annotatedMethod, this, tlContext,
                                     entityProviders, allCtxResolvers,
                                     extensionBackwardMapping, logger);
                         } catch (IllegalMethodParamTypeException e) {
