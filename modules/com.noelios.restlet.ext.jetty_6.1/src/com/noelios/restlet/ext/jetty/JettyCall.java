@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import org.mortbay.jetty.HttpConnection;
+import org.mortbay.jetty.EofException;
 import org.restlet.Server;
 import org.restlet.data.Parameter;
 import org.restlet.data.Response;
@@ -63,6 +64,18 @@ public class JettyCall extends HttpServerCall {
         super(server);
         this.connection = connection;
         this.requestHeadersAdded = false;
+    }
+
+    @Override
+    public void complete() {
+        try {
+            // Fully complete and commit the response
+            this.connection.flushResponse();
+            this.connection.completeResponse();
+        } catch (IOException ex) {
+            getLogger().log(Level.WARNING,
+                    "Unable to complete or commit the response", ex);
+        }
     }
 
     @Override
@@ -201,14 +214,10 @@ public class JettyCall extends HttpServerCall {
         return getConnection().getRequest().getLocalAddr();
     }
 
-    /**
-     * Indicates if the request was made using a confidential mean.<br>
-     * 
-     * @return True if the request was made using a confidential mean.<br>
-     */
     @Override
-    public boolean isConfidential() {
-        return getConnection().getRequest().isSecure();
+    public String getSslCipherSuite() {
+        return (String) getConnection().getRequest().getAttribute(
+                "javax.servlet.request.cipher_suite");
     }
 
     @Override
@@ -224,12 +233,6 @@ public class JettyCall extends HttpServerCall {
     }
 
     @Override
-    public String getSslCipherSuite() {
-        return (String) getConnection().getRequest().getAttribute(
-                "javax.servlet.request.cipher_suite");
-    }
-
-    @Override
     public Integer getSslKeySize() {
         Integer keySize = (Integer) getConnection().getRequest().getAttribute(
                 "javax.servlet.request.key_size");
@@ -237,6 +240,21 @@ public class JettyCall extends HttpServerCall {
             keySize = super.getSslKeySize();
         }
         return keySize;
+    }
+
+    /**
+     * Indicates if the request was made using a confidential mean.<br>
+     * 
+     * @return True if the request was made using a confidential mean.<br>
+     */
+    @Override
+    public boolean isConfidential() {
+        return getConnection().getRequest().isSecure();
+    }
+
+    @Override
+    public boolean isConnectionBroken(Exception exception) {
+        return exception instanceof EofException || super.isConnectionBroken(exception);
     }
 
     @Override
@@ -268,17 +286,4 @@ public class JettyCall extends HttpServerCall {
         }
 
     }
-
-    @Override
-    public void complete() {
-        try {
-            // Fully complete and commit the response
-            this.connection.flushResponse();
-            this.connection.completeResponse();
-        } catch (IOException ex) {
-            getLogger().log(Level.WARNING,
-                    "Unable to complete or commit the response", ex);
-        }
-    }
-
 }

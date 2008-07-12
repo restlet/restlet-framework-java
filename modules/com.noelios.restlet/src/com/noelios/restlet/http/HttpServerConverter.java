@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
+import java.io.IOException;
 
 import org.restlet.Context;
 import org.restlet.data.ChallengeRequest;
@@ -50,9 +51,9 @@ public class HttpServerConverter extends HttpConverter {
      * {@link Series}.
      * 
      * @param entity
-     *                The {@link Representation} to copy the headers from.
+     *            The {@link Representation} to copy the headers from.
      * @param responseHeaders
-     *                The {@link Series} to copie the headers to.
+     *            The {@link Series} to copie the headers to.
      */
     public static void addEntityHeaders(Representation entity,
             Series<Parameter> responseHeaders) {
@@ -201,7 +202,7 @@ public class HttpServerConverter extends HttpConverter {
      * Constructor.
      * 
      * @param context
-     *                The client context.
+     *            The client context.
      */
     public HttpServerConverter(Context context) {
         super(context);
@@ -211,7 +212,7 @@ public class HttpServerConverter extends HttpConverter {
      * Adds the entity headers for the handled uniform call.
      * 
      * @param response
-     *                The response returned.
+     *            The response returned.
      */
     protected void addEntityHeaders(HttpResponse response) {
         Series<Parameter> responseHeaders = response.getHttpCall()
@@ -224,7 +225,7 @@ public class HttpServerConverter extends HttpConverter {
      * Adds the response headers for the handled uniform call.
      * 
      * @param response
-     *                The response returned.
+     *            The response returned.
      */
     @SuppressWarnings("unchecked")
     protected void addResponseHeaders(HttpResponse response) {
@@ -268,7 +269,7 @@ public class HttpServerConverter extends HttpConverter {
      * then asks the "htppCall" to send the response back to the client.
      * 
      * @param response
-     *                The high-level response.
+     *            The high-level response.
      */
     public void commit(HttpResponse response) {
         try {
@@ -348,11 +349,29 @@ public class HttpServerConverter extends HttpConverter {
             response.getHttpCall().sendResponse(response);
             response.getHttpCall().complete();
         } catch (Exception e) {
-            getLogger().log(Level.INFO, "Exception intercepted", e);
-            response.getHttpCall().setStatusCode(
-                    Status.SERVER_ERROR_INTERNAL.getCode());
-            response.getHttpCall().setReasonPhrase(
-                    "An unexpected exception occured");
+            if (response.getHttpCall().isConnectionBroken(e)) {
+                getLogger()
+                        .log(
+                                Level.INFO,
+                                "The connection was broken. It was probably closed by the client.",
+                                e);
+            } else {
+                getLogger().log(Level.SEVERE,
+                        "An exception occured writing the response entity", e);
+                response.getHttpCall().setStatusCode(
+                        Status.SERVER_ERROR_INTERNAL.getCode());
+                response.getHttpCall().setReasonPhrase(
+                        "An exception occured writing the response entity");
+                response.setEntity(null);
+
+                try {
+                    response.getHttpCall().sendResponse(response);
+                } catch (IOException ioe) {
+                    getLogger().log(Level.WARNING,
+                            "Unable to send error response", ioe);
+                }
+                response.getHttpCall().complete();
+            }
         }
     }
 
@@ -360,7 +379,7 @@ public class HttpServerConverter extends HttpConverter {
      * Converts a low-level HTTP call into a high-level uniform request.
      * 
      * @param httpCall
-     *                The low-level HTTP call.
+     *            The low-level HTTP call.
      * @return A new high-level uniform request.
      */
     public HttpRequest toRequest(HttpServerCall httpCall) {

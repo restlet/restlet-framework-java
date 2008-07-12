@@ -7,7 +7,7 @@ Changes log
     - Bugs fixed
         - Allowed subclasses of StatusService to get the throwable 
           that generate the error in getRepresentation() method. 
-          Reported by Lo�c Mathieu.
+          Reported by Loic Mathieu.
         - The Servlet adapter now stops the whole Component instead
           of just the Application.
         - Fixed Apache HttpClient extension bug regarding multiple 
@@ -61,6 +61,10 @@ Changes log
           improve the flexibility of SSL configuration. If this parameter
           isn't set, the previous parameters are used instead. 
           Contributed by Bruno Harbulot.
+        - Exceptions occuring while writing the response entities are 
+          now reported as severe errors instead of just info messages.
+          Broken connections are still reported as info messages to 
+          reduce log size. Contributed by Bruno Dumon.
     - Misc
         - Refactored WAR client to remove remaining class in NRE core.
         - Updated GWT JAR to 1.5 RC1
