@@ -52,7 +52,7 @@ public class ThreadLocalContextTest extends JaxRsTestCase {
      * @see TestContextResolver
      */
     public void test1() throws Exception {
-        // LATER this test sometimes blocks
+        // TODO this test sometimes blocks
         final List<Response> c = new ArrayList<Response>();
         new Thread() {
             @Override

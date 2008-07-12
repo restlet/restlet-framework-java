@@ -185,8 +185,7 @@ public class ThreadLocalizedContext implements Request, HttpHeaders,
      * @see javax.ws.rs.core.Request#getFormParameters()
      */
     public MultivaluedMap<String, String> getFormParameters() {
-        // TODO Auto-generated method stub
-        return null;
+        return get().getFormParameters();
     }
 
     /**

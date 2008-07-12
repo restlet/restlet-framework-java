@@ -300,7 +300,7 @@ public class Converter {
      * @see Locale
      */
     public static Locale toLocale(String language) {
-        // LATER test this method
+        // TODO test this method
         if (language == null || language.length() == 0)
             return null;
         StringTokenizer stt = new StringTokenizer(language, "_", true);

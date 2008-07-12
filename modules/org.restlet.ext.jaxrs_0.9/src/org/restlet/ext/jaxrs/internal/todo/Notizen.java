@@ -37,7 +37,7 @@ public class Notizen {
 
     // REQUESTED rename @DefaultValue to @Default? it's shorter
 
-    // LATER test again Jersey Implementation.
+    // TODO test again Jersey Implementation.
 
     // TESTEN *ExceptionWriter, see JSR311-dev-mail 1225
     // https://jsr311.dev.java.net/servlets/ReadMsg?list=dev&msgNo=1225

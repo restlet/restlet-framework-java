@@ -17,28 +17,33 @@
  */
 package org.restlet.test.jaxrs.services.resources;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.Response;
 
-import org.restlet.test.jaxrs.services.others.Person;
-import org.restlet.test.jaxrs.services.providers.MessageBodyWorkersTestProvider;
+import org.restlet.test.jaxrs.services.providers.GenericTypeMBW;
+import org.restlet.test.jaxrs.services.tests.GenericTypeTestCase;
 
 /**
  * @author Stephan Koops
- * @see MessageBodyWorkersTest
- * @see MessageBodyWorkersTestProvider
+ * @see GenericTypeMBW
+ * @see GenericTypeTestCase
  */
-@Path("mbw")
-public class MessageBodyWorkersTestResource {
-
-    // TODO rename to ProvidersTestResource or somethig like this
+@Path("GenericType")
+public class GenericTypeResource {
 
     @GET
-    @Produces("text/crazy-person")
-    public Response get() {
-        Person person = new Person("Angela", "Merkel");
-        return Response.ok(person).header("h1", "h1v").build();
+    @Produces("text/plain")
+    public Response getStrings() {
+        List<String> strings = new ArrayList<String>();
+        strings.add("abc");
+        strings.add("def");
+        GenericEntity<List<String>> entity = new GenericEntity<List<String>>(strings) {};
+        return Response.ok(entity).build();
     }
 }

@@ -41,6 +41,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Level;
 
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.Response.ResponseBuilder;
@@ -83,6 +84,7 @@ import org.restlet.ext.jaxrs.internal.provider.StringProvider;
 import org.restlet.ext.jaxrs.internal.provider.WebAppExcMapper;
 import org.restlet.ext.jaxrs.internal.provider.WwwFormFormProvider;
 import org.restlet.ext.jaxrs.internal.provider.WwwFormMmapProvider;
+import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.ext.jaxrs.internal.util.ExceptionHandler;
 import org.restlet.ext.jaxrs.internal.util.JaxRsOutputRepresentation;
 import org.restlet.ext.jaxrs.internal.util.MatchingResult;
@@ -129,6 +131,11 @@ import org.restlet.service.MetadataService;
  * @author Stephan Koops
  */
 public class JaxRsRestlet extends Restlet {
+
+    /**
+     * 
+     */
+    private static final Annotation[] EMPTY_ANNOTATION_ARRAY = new Annotation[0];
 
     /**
      * This set must only changed by adding a root resource class to this
@@ -302,19 +309,19 @@ public class JaxRsRestlet extends Restlet {
         } catch (IllegalConstrParamTypeException e) {
             getLogger().warning(
                     "The root resource class " + rootResourceClass.getName()
-                            + " has no valid constructor");
+                            + " has no valid constructor: "+e.getMessage());
             // LATER better warning
             return false;
         } catch (IllegalBeanSetterTypeException e) {
             getLogger().warning(
                     "The root resource class " + rootResourceClass.getName()
-                            + " has no valid constructor");
+                            + " has no valid constructor: "+e.getMessage());
             // LATER better warning
             return false;
         } catch (IllegalFieldTypeException e) {
             getLogger().warning(
                     "The root resource class " + rootResourceClass.getName()
-                            + " has no valid constructor");
+                            + " has no valid constructor: "+e.getMessage());
             // LATER better warning
             return false;
         }
@@ -399,13 +406,12 @@ public class JaxRsRestlet extends Restlet {
             return false;
         } catch (MissingConstructorException mce) {
             String msg = "Ignore provider " + jaxRsProviderClass.getName()
-                    + ", because no valid constructor was found";
+                    + ", because no valid constructor was found: "+mce.getMessage();
             getLogger().warning(msg);
             return false;
         } catch (IllegalConstrParamTypeException e) {
             String msg = "Ignore provider " + jaxRsProviderClass.getName()
-                    + ", because no valid constructor was found";
-            // LATER better warning
+                    + ", because no valid constructor was found: "+e.getMessage();
             getLogger().warning(msg);
             return false;
         }
@@ -737,12 +743,6 @@ public class JaxRsRestlet extends Restlet {
      */
     private void handleResult(Object result, ResourceMethod resourceMethod) {
         Response restletResponse = tlContext.get().getResponse();
-        if (result == null) { // no representation
-            restletResponse.setStatus(Status.SUCCESS_NO_CONTENT);
-            restletResponse.setEntity(null);
-            return;
-        }
-        // method returned an object
         if (result instanceof javax.ws.rs.core.Response) {
             jaxRsRespToRestletResp((javax.ws.rs.core.Response) result,
                     resourceMethod);
@@ -754,7 +754,10 @@ public class JaxRsRestlet extends Restlet {
             jaxRsRespToRestletResp(((ResponseBuilder) result).build(),
                     resourceMethod);
         } else {
-            restletResponse.setStatus(Status.SUCCESS_OK);
+            if (result == null) // no representation
+                restletResponse.setStatus(Status.SUCCESS_NO_CONTENT);
+            else
+                restletResponse.setStatus(Status.SUCCESS_OK);
             SortedMetadata<MediaType> accMediaTypes;
             accMediaTypes = tlContext.get().getAccMediaTypes();
             restletResponse.setEntity(convertToRepresentation(result,
@@ -803,7 +806,7 @@ public class JaxRsRestlet extends Restlet {
      *                The resource method created the entity. Could be null, if
      *                an exception is handled, e.g. a
      *                {@link WebApplicationException}.
-     * @param givenResponseMediaType
+     * @param jaxRsResponseMediaType
      *                The MediaType of the JAX-RS
      *                {@link javax.ws.rs.core.Response}. May be null.
      * @param jaxRsRespHeaders
@@ -820,53 +823,79 @@ public class JaxRsRestlet extends Restlet {
      */
     @SuppressWarnings("unchecked")
     private Representation convertToRepresentation(Object entity,
-            ResourceMethod resourceMethod, MediaType givenResponseMediaType,
+            ResourceMethod resourceMethod, MediaType jaxRsResponseMediaType,
             MultivaluedMap<String, Object> jaxRsRespHeaders,
             SortedMetadata<MediaType> accMediaTypes)
             throws ImplementationException {
-        if (entity == null)
-            return null;
         if (entity instanceof Representation) {
             Representation repr = (Representation) entity;
             // ensures that a supported character set is set
             repr.setCharacterSet(getSupportedCharSet(repr.getCharacterSet()));
+            if (jaxRsResponseMediaType != null) {
+                repr.setMediaType(Converter
+                        .getMediaTypeWithoutParams(jaxRsResponseMediaType));
+            }
             return repr;
-            // LATER der MediaType muss hier noch rein
         }
-        Class<? extends Object> entityClass = entity.getClass();
-        Type genericReturnType = null;
-        Annotation[] methodAnnotations = null;
-        if (resourceMethod != null) { // is default
-            genericReturnType = resourceMethod.getGenericReturnType();
+        Type genericReturnType;
+        Class<? extends Object> entityClass;
+        Annotation[] methodAnnotations;
+        if (resourceMethod != null) // is default
             methodAnnotations = resourceMethod.getAnnotations();
+        else
+            methodAnnotations = EMPTY_ANNOTATION_ARRAY;
+
+        if (entity instanceof GenericEntity) {
+            GenericEntity<?> genericEntity = (GenericEntity) entity;
+            genericReturnType = genericEntity.getType();
+            entityClass = genericEntity.getRawType();
+            entity = genericEntity.getEntity();
+        } else {
+            entityClass = (entity != null) ? entity.getClass() : null;
+            if (resourceMethod != null) // is default
+                genericReturnType = resourceMethod.getGenericReturnType();
+            else
+                genericReturnType = null;
+            if (genericReturnType instanceof Class
+                    && ((Class) genericReturnType)
+                            .isAssignableFrom(javax.ws.rs.core.Response.class)) {
+                genericReturnType = entityClass;
+            }
         }
-        if (genericReturnType instanceof Class
-                && ((Class) genericReturnType)
-                        .isAssignableFrom(javax.ws.rs.core.Response.class)) {
-            // LATER >= 0.81: use generic type from GenericEntity
-            genericReturnType = entityClass;
+
+        MessageBodyWriterSubSet mbws;
+        if (entity != null) {
+            mbws = entityProviders.writerSubSet(entityClass, genericReturnType,
+                    methodAnnotations);
+            if (mbws.isEmpty())
+                throw excHandler.noMessageBodyWriter(entityClass,
+                        genericReturnType, methodAnnotations);
+        } else {
+            mbws = MessageBodyWriterSubSet.empty();
         }
-        MessageBodyWriterSubSet mbws = entityProviders.writerSubSet(
-                entityClass, genericReturnType, methodAnnotations);
-        if (mbws.isEmpty())
-            throw excHandler.noMessageBodyWriter();
         MediaType respMediaType;
-        if (givenResponseMediaType != null)
-            respMediaType = givenResponseMediaType;
+        if (jaxRsResponseMediaType != null)
+            respMediaType = jaxRsResponseMediaType;
         else if (resourceMethod != null)
             respMediaType = determineMediaType(resourceMethod, mbws);
         else
             respMediaType = MediaType.TEXT_PLAIN;
-        MessageBodyWriter<?> mbw = mbws.getBestWriter(respMediaType,
-                accMediaTypes);
-        if (mbw == null)
-            throw excHandler.noMessageBodyWriter();
         Response response = tlContext.get().getResponse();
         MultivaluedMap<String, Object> httpResponseHeaders = new WrappedRequestForHttpHeaders(
                 response, jaxRsRespHeaders, getLogger());
-        Representation repr = new JaxRsOutputRepresentation(entity,
-                genericReturnType, respMediaType, methodAnnotations, mbw,
-                httpResponseHeaders);
+        Representation repr;
+        if (entity == null) {
+            repr = Representation.createEmpty();
+            repr.setMediaType(respMediaType);
+        } else {
+            MessageBodyWriter<?> mbw;
+            mbw = mbws.getBestWriter(respMediaType, accMediaTypes);
+            if (mbw == null)
+                throw excHandler.noMessageBodyWriter(entityClass,
+                        genericReturnType, methodAnnotations);
+            repr = new JaxRsOutputRepresentation(entity, genericReturnType,
+                    respMediaType, methodAnnotations, mbw, httpResponseHeaders);
+        }
         repr.setCharacterSet(getSupportedCharSet(httpResponseHeaders));
         return repr;
     }

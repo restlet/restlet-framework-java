@@ -80,7 +80,7 @@ public class ListParamTest extends JaxRsTestCase {
         String m = entity[0];
         String mm = entity[1];
         try {
-            // LATER test: get in given direction -> Resources.Parameters
+            // TODO test: get in given direction -> Resources.Parameters
             assertEquals("m=m1", m);
         } catch (AssertionFailedError afe) {
             assertEquals("m=m2", m);

@@ -36,5 +36,5 @@ import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.MessageBodyReader;
 
 // NICE JSON Provider for JAXB and all providers supporting XML.
-// LATER do an entity provider must ensure, that it only reads the number of
+// REQUEST do an entity provider must ensure, that it only reads the number of
 // bytes given by the Content-Length?

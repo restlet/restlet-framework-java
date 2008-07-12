@@ -31,6 +31,16 @@ import org.restlet.ext.jaxrs.internal.util.SortedMetadata;
  */
 public class MessageBodyWriterSubSet {
 
+    private static final MessageBodyWriterSubSet EMPTY = new MessageBodyWriterSubSet(
+            new ArrayList<MessageBodyWriter<?>>());
+
+    /**
+     * @return
+     */
+    public static MessageBodyWriterSubSet empty() {
+        return EMPTY;
+    }
+
     private final List<MessageBodyWriter<?>> mbws;
 
     MessageBodyWriterSubSet(List<MessageBodyWriter<?>> mbws) {

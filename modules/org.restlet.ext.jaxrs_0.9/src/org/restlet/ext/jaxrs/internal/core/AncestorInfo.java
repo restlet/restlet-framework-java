@@ -77,7 +77,7 @@ class AncestorInfo {
                 List<String> urisDecoded;
                 urisDecoded = new ArrayList<String>(urisEncoded.size());
                 for (String uriEncoded : urisEncoded) {
-                    // LATER EncodeOrCheck.all() is not the best solution, but
+                    // TODO EncodeOrCheck.all() is not the best solution, but
                     // works for now. Test it with %-encoding for "/"
                     urisDecoded.add(EncodeOrCheck.all(uriEncoded, true));
                 }

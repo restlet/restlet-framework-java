@@ -50,7 +50,7 @@ public class CacheControlHeaderDelegate implements HeaderDelegate<CacheControl> 
      */
     public CacheControl fromString(String value)
             throws IllegalArgumentException {
-        // LATER CacheControlHeaderDelegate.fromString(String)
+        // TODO CacheControlHeaderDelegate.fromString(String)
         // illegalargexc
         throw new NotYetImplementedException();
     }
@@ -66,7 +66,7 @@ public class CacheControlHeaderDelegate implements HeaderDelegate<CacheControl> 
      * @see javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate#toString(java.lang.Object)
      */
     public String toString(CacheControl cacheControl) {
-        // LATER CacheControlHeaderDelegate.toString(CacheControl)
+        // TODO CacheControlHeaderDelegate.toString(CacheControl)
         // illegalargexc
         throw new NotYetImplementedException();
     }

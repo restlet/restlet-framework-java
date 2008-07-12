@@ -400,7 +400,7 @@ public class ContextInjector {
                     }
                 }
             } catch (SecurityException e) {
-                // LATER handle Exception
+                // NICE handle SecurityException
                 throw e;
             } catch (IllegalTypeException e) {
                 throw new IllegalFieldTypeException(e);
@@ -418,7 +418,7 @@ public class ContextInjector {
                     }
                 }
             } catch (SecurityException e) {
-                // LATER handle Exception
+                // NICE handle SecurityException
                 throw e;
             } catch (IllegalTypeException e) {
                 throw new IllegalBeanSetterTypeException(e);

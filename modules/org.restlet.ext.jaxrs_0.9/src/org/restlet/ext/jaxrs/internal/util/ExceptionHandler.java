@@ -19,6 +19,8 @@ package org.restlet.ext.jaxrs.internal.util;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -207,7 +209,11 @@ public class ExceptionHandler {
      * 
      * @return staticly to throw, if needed by compiler.
      */
-    public WebApplicationException noMessageBodyWriter() {
+    public WebApplicationException noMessageBodyWriter(Class<?> entityClass,
+            Type genericType, Annotation[] annotations) {
+        logger.warning("No message body writer found for class " + entityClass
+                + ", genericType " + genericType);
+        // LATER log also annotations
         // NICE get as parameters the accMediaTypes and the entityClass.
         // and return supported MediaTypes as entity
         throw new WebApplicationException(Status.NOT_ACCEPTABLE);
