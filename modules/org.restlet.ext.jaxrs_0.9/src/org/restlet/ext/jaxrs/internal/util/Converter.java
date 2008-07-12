@@ -287,7 +287,6 @@ public class Converter {
      * @see Locale
      */
     public static Locale toLocale(Language language) {
-        // TODO test the methods toLocale(Language) and toLanguage(Locale)
         return toLocale(language.getName());
     }
 
@@ -300,7 +299,6 @@ public class Converter {
      * @see Locale
      */
     public static Locale toLocale(String language) {
-        // TODO test this method
         if (language == null || language.length() == 0)
             return null;
         StringTokenizer stt = new StringTokenizer(language, "_", true);
@@ -310,7 +308,9 @@ public class Converter {
         if (!stt.hasMoreTokens())
             return new Locale(lang);
         String country = stt.nextToken();
-        if (stt.hasMoreTokens())
+        if(country.equals("_"))
+            country = "";
+        else if (stt.hasMoreTokens())
             stt.nextToken(); // skip "_"
         if (!stt.hasMoreTokens())
             return new Locale(lang, country);

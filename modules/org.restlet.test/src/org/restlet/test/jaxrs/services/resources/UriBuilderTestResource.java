@@ -55,7 +55,7 @@ public class UriBuilderTestResource {
     @Path("absolute")
     @Produces( { MediaType.TEXT_PLAIN, MediaType.TEXT_HTML })
     public String postAbsoluteUriBuilder() {
-        // TODO test also with uri of sub resource
+        // LATER test also with uri of sub resource
         return uriInfo.getAbsolutePathBuilder().build().toString();
     }
 

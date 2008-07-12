@@ -342,7 +342,7 @@ public class EncodeOrCheck {
         if (host.length() == 0)
             throw new IllegalArgumentException("The host must not be empty");
         int length = host.length();
-        // TODO de/encode: host
+        // LATER de/encode: host
         for (int i = 0; i < length; i++) {
             char ch = host.charAt(i);
             if (ch <= ' ' || ch >= 127) {

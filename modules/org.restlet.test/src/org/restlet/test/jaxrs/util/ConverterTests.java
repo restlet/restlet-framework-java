@@ -18,6 +18,9 @@
 package org.restlet.test.jaxrs.util;
 
 import static org.restlet.ext.jaxrs.internal.util.Converter.*;
+
+import java.util.Locale;
+
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
@@ -54,5 +57,39 @@ public class ConverterTests extends TestCase {
         MediaType mt = new MediaType("a/b");
         mt.getParameters().add("abc", "def");
         assertEquals("a/b", getMediaTypeWithoutParams(mt).toString());
+    }
+
+    private void checkToLanguageToLocale(Locale locale) {
+        assertEquals(locale, toLocale(toLanguage(locale)));
+    }
+
+    public void testToLanguageToLocale() {
+        checkToLanguageToLocale(Locale.CANADA);
+        checkToLanguageToLocale(Locale.CANADA_FRENCH);
+        checkToLanguageToLocale(Locale.CHINA);
+        checkToLanguageToLocale(Locale.CHINESE);
+        checkToLanguageToLocale(Locale.ENGLISH);
+        checkToLanguageToLocale(Locale.FRANCE);
+        checkToLanguageToLocale(Locale.FRENCH);
+        checkToLanguageToLocale(Locale.GERMAN);
+        checkToLanguageToLocale(Locale.GERMANY);
+        checkToLanguageToLocale(Locale.ITALIAN);
+        checkToLanguageToLocale(Locale.ITALY);
+        checkToLanguageToLocale(Locale.JAPAN);
+        checkToLanguageToLocale(Locale.JAPANESE);
+        checkToLanguageToLocale(Locale.KOREA);
+        checkToLanguageToLocale(Locale.KOREAN);
+        checkToLanguageToLocale(Locale.PRC);
+        checkToLanguageToLocale(Locale.SIMPLIFIED_CHINESE);
+        checkToLanguageToLocale(Locale.TAIWAN);
+        checkToLanguageToLocale(Locale.TRADITIONAL_CHINESE);
+        checkToLanguageToLocale(Locale.UK);
+        checkToLanguageToLocale(Locale.US);
+    }
+
+    public void testToLocale() {
+        assertEquals(new Locale("abc"), toLocale("abc"));
+        assertEquals(new Locale("abc", "", "def"), toLocale("abc__def"));
+        assertEquals(new Locale("abc", "def"), toLocale("abc_def"));
     }
 }
