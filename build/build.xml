@@ -1353,7 +1353,7 @@
 <stageLibrary name="jibx" />
 <!-- disabled for now  <stageLibrary name="jline" /> -->
 <stageLibrary name="json" />
-<stageLibrary name="jssl" />
+<stageLibrary name="jsslutils" />
 <!-- disabled for now  <stageLibrary name="jxta" /> -->
 <stageLibrary name="lang" />
 <stageLibrary name="logging" />
