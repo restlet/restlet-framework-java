@@ -27,6 +27,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.xml.namespace.QName;
+import javax.xml.transform.sax.SAXSource;
 
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
@@ -40,6 +41,7 @@ import org.restlet.resource.TransformRepresentation;
 import org.restlet.util.Engine;
 import org.restlet.util.XmlWriter;
 import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.ext.LexicalHandler;
 import org.xml.sax.helpers.DefaultHandler;
@@ -745,6 +747,7 @@ public class WadlRepresentation extends SaxRepresentation {
                 "org/restlet/ext/wadl/htmlConvert.xsl");
         if (wadlHtmlXsltUrl != null) {
             try {
+                setSaxSource(new SAXSource(new InputSource(this.getStream())));
                 InputRepresentation xslRep = new InputRepresentation(
                         wadlHtmlXsltUrl.openStream(),
                         MediaType.APPLICATION_W3C_XSLT);

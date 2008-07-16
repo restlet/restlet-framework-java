@@ -37,8 +37,8 @@ import org.restlet.resource.Variant;
 
 /**
  * Resource that is able to automatically describe itself with WADL. This
- * description can be customized by overriding the {@link #getApplicationInfo()}
- * , {@link #getResourceInfo()} and {@link #getMethodInfo(Method)} methods.
+ * description can be customized by overriding the {@link #getResourceInfo()}
+ * and {@link #getMethodInfo(Method)} methods.
  * 
  * When used to describe a class of resources in the context of a parent
  * application, a special instance will be created using the default constructor
@@ -89,15 +89,8 @@ public class WadlResource extends Resource {
      * @return An application description.
      * @see WadlResource#getResourceInfo()
      */
-    protected ApplicationInfo getApplicationInfo() {
-        ApplicationInfo result = null;
-
-        Application application = getApplication();
-        if (application != null && application instanceof WadlApplication) {
-            result = ((WadlApplication) application).getApplicationInfo();
-        } else {
-            result = new ApplicationInfo();
-        }
+    private ApplicationInfo getApplicationInfo() {
+        ApplicationInfo result = new ApplicationInfo();
 
         ResourcesInfo resources = new ResourcesInfo();
         resources.setBaseRef(getResourcesBase());
@@ -316,6 +309,18 @@ public class WadlResource extends Resource {
     }
 
     /**
+     * Indicates if the given method exposes its WADL description. By default,
+     * HEAD and OPTIONS are not exposed.
+     * 
+     * @param method
+     *            The method
+     * @return True if the method exposes its description, false otherwise.
+     */
+    public boolean isDescribable(Method method) {
+        return !(Method.HEAD.equals(method) || Method.OPTIONS.equals(method));
+    }
+
+    /**
      * Represents the resource as a WADL description.
      * 
      * @return The WADL description.
@@ -343,18 +348,6 @@ public class WadlResource extends Resource {
         }
 
         return result;
-    }
-
-    /**
-     * Indicates if the given method exposes its WADL description. By default,
-     * HEAD and OPTIONS are not exposed.
-     * 
-     * @param method
-     *            The method
-     * @return True if the method exposes its description, false otherwise.
-     */
-    public boolean isDescribable(Method method) {
-        return !(Method.HEAD.equals(method) || Method.OPTIONS.equals(method));
     }
 
 }
