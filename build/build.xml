@@ -238,12 +238,11 @@
       <pathelement path="${classes}/${mod-spring-nre-id}" />
       <pathelement path="${mod}/${mod-spring-nre-id}/src" />
 
-      <!-- disabled for now
       <path refid="mod-ssl-path" />
       <pathelement path="${classes}/${mod-ssl-id}" />
       <pathelement path="${mod}/${mod-ssl-id}/src" />
--->
-      <path refid="mod-velocity-path" />
+
+   	  <path refid="mod-velocity-path" />
       <pathelement path="${classes}/${mod-velocity-id}" />
       <pathelement path="${mod}/${mod-velocity-id}/src" />
 
@@ -956,7 +955,7 @@
       <pomModule name="simple" />
       <pomModule name="spring-api" ext1="spring" />
       <pomModule name="spring-nre" ext1="spring" />
-      <!-- disabled for now  <pomModule name="ssl" ext1="jsslutils" /> -->
+      <pomModule name="ssl" ext1="jsslutils" />
       <pomModule name="velocity" />
       <pomModule name="wadl" />
       <pomModule name="xdb" />
@@ -965,7 +964,7 @@
       <pomLibrary name="simple" />
       <pomLibrary name="jaxrs" />
       <pomLibrary name="json" />
-      <!-- disabled for now        <pomLibrary name="jsslutils"/> -->
+      <pomLibrary name="jsslutils"/>
       <pomLibrary name="db4o" depend1="example" type1="mod" />
       <pomLibrary name="db4o-nativequery" />
       <pomLibrary name="bloat" depend1="db4o" type1="lib" depend2="db4o-nativequery" type2="lib" />
@@ -1031,7 +1030,6 @@
       <compileModule name="simple" />
       <compileModule name="spring-api" />
       <compileModule name="spring-nre" />
-      <!-- disabled for now      <compileModule name="velocity" /> -->
       <compileModule name="velocity" />
       <compileModule name="wadl" />
       <compileModule name="xdb" />
@@ -1067,7 +1065,7 @@
       <backportModule name="simple" failonwarning="@{backport-failonwarning}" />
       <backportModule name="spring-api" failonwarning="@{backport-failonwarning}" />
       <backportModule name="spring-nre" failonwarning="@{backport-failonwarning}" />
-      <!--      <backportModule name="ssl" failonwarning="@{backport-failonwarning}"/> -->
+      <backportModule name="ssl" failonwarning="@{backport-failonwarning}"/>
       <backportModule name="velocity" failonwarning="@{backport-failonwarning}" />
       <backportModule name="wadl" failonwarning="@{backport-failonwarning}" />
       <backportModule name="xdb" failonwarning="@{backport-failonwarning}" />
@@ -1146,7 +1144,7 @@
       <pathelement path="${mod}/${mod-simple-id}/src/" />
       <pathelement path="${mod}/${mod-spring-api-id}/src/" />
       <pathelement path="${mod}/${mod-spring-nre-id}/src/" />
-      <!-- disabled for now <pathelement path="${mod}/${mod-ssl-id}/src/" /> -->
+      <pathelement path="${mod}/${mod-ssl-id}/src/" />
       <pathelement path="${mod}/${mod-velocity-id}/src/" />
       <pathelement path="${mod}/${mod-wadl-id}/src/" />
       <pathelement path="${mod}/${mod-xdb-id}/src/" />
@@ -1237,7 +1235,7 @@
 <findbugsModule name="simple" />
 <findbugsModule name="spring-api" />
 <findbugsModule name="spring-nre" />
-<!-- disabled for now  <findbugsModule name="ssl" /> -->
+<findbugsModule name="ssl" />
 <findbugsModule name="velocity" />
 <findbugsModule name="wadl" />
 <findbugsModule name="xdb" />
@@ -1271,7 +1269,7 @@
 <checkstyleModule name="simple" />
 <checkstyleModule name="spring-api" />
 <checkstyleModule name="spring-nre" />
-<!--      <checkstyleModule name="ssl" />-->
+<checkstyleModule name="ssl" />
 <checkstyleModule name="velocity" />
 <checkstyleModule name="wadl" />
 <checkstyleModule name="xdb" />
@@ -1355,7 +1353,7 @@
 <stageLibrary name="jibx" />
 <!-- disabled for now  <stageLibrary name="jline" /> -->
 <stageLibrary name="json" />
-<!-- disabled for now  <stageLibrary name="jssl" /> -->
+<stageLibrary name="jssl" />
 <!-- disabled for now  <stageLibrary name="jxta" /> -->
 <stageLibrary name="lang" />
 <stageLibrary name="logging" />
@@ -1398,7 +1396,7 @@
 <stageModule name="simple" />
 <stageModule name="spring-api" />
 <stageModule name="spring-nre" />
-<!-- disabled for now <stageModule name="ssl" /> -->
+<stageModule name="ssl" />
 <stageModule name="velocity" />
 <stageModule name="wadl" />
 <stageModule name="xdb" />
@@ -1440,12 +1438,12 @@
 <maven2Module name="simple" />
 <maven2Module name="spring-api" />
 <maven2Module name="spring-nre" />
-<!-- disabled for now <maven2Module name="ssl" /> -->
+<maven2Module name="ssl" />
 <maven2Module name="velocity" />
 <maven2Module name="xdb" />
 <maven2Module name="wadl" />
 <maven2Library name="simple" />
-<!-- disabled for now <maven2Library name="jsslutils" /> -->
+<maven2Library name="jsslutils" />
 <maven2Library name="jaxrs" />
 <maven2Library name="json" />
 <maven2Library name="db4o" />

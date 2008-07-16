@@ -73,6 +73,9 @@ Changes log
           now reported as severe errors instead of just info messages.
           Broken connections are still reported as info messages to 
           reduce log size. Contributed by Bruno Dumon.
+        - Made the com.noelios.ext.ssl extension public to provide more 
+          flexibility in configuring SSL certificates. Depends on 
+          jSSLutils library 0.3. Contributed by Bruno Harbulot.
     - Misc
         - Refactored WAR client to remove remaining class in NRE core.
         - Updated GWT JAR to 1.5 RC1
