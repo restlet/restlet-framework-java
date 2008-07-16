@@ -83,23 +83,6 @@ public class WadlResource extends Resource {
     }
 
     /**
-     * Returns a WADL description of an application containing the current
-     * resource as its only resource.
-     * 
-     * @return An application description.
-     * @see WadlResource#getResourceInfo()
-     */
-    private ApplicationInfo getApplicationInfo() {
-        ApplicationInfo result = new ApplicationInfo();
-
-        ResourcesInfo resources = new ResourcesInfo();
-        resources.setBaseRef(getResourcesBase());
-        result.setResources(resources);
-        resources.getResources().add(getResourceInfo());
-        return result;
-    }
-
-    /**
      * Returns a WADL description of the given method.
      * 
      * @param method
@@ -340,10 +323,10 @@ public class WadlResource extends Resource {
         Representation result = null;
 
         if (MediaType.APPLICATION_WADL_XML.equals(variant.getMediaType())) {
-            result = new WadlRepresentation(getApplicationInfo());
+            result = new WadlRepresentation(getResourceInfo());
         } else if (MediaType.APPLICATION_WADL_XML
                 .equals(variant.getMediaType())) {
-            result = new WadlRepresentation(getApplicationInfo())
+            result = new WadlRepresentation(getResourceInfo())
                     .getHtmlRepresentation();
         }
 

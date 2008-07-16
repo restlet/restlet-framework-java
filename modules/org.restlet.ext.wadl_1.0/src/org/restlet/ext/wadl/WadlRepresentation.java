@@ -707,6 +707,22 @@ public class WadlRepresentation extends SaxRepresentation {
     /**
      * Constructor.
      * 
+     * @param resource
+     *            The root element of the WADL document.
+     */
+    public WadlRepresentation(ResourceInfo resource) {
+        super(MediaType.APPLICATION_WADL_XML);
+
+        this.application = new ApplicationInfo();
+
+        ResourcesInfo resources = new ResourcesInfo();
+        this.application.setResources(resources);
+        resources.getResources().add(resource);
+    }
+
+    /**
+     * Constructor.
+     * 
      * @param xmlRepresentation
      *            The XML WADL document.
      * @throws IOException
