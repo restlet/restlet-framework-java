@@ -42,9 +42,8 @@ import org.restlet.util.Series;
  * <br>
  * Note that attributes and parameters of a context are stored in concurrent
  * collections that guarantee thread safe access and modification. If several
- * threads concurrently access objects from these collections, they should be
- * either immutable, thread-safe themselves or guarded by a commonly agreed
- * lock.
+ * threads concurrently access objects and modify these collections, they should
+ * synchronize on the lock of the Context instance.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
@@ -83,7 +82,7 @@ public class Context {
     }
 
     /** The modifiable attributes map. */
-    private volatile ConcurrentMap<String, Object> attributes;
+    private final ConcurrentMap<String, Object> attributes;
 
     /** The executor service. */
     private final ExecutorService executorService = createExecutorService();
@@ -92,7 +91,7 @@ public class Context {
     private volatile Logger logger;
 
     /** The modifiable series of parameters. */
-    private volatile Series<Parameter> parameters;
+    private final Series<Parameter> parameters;
 
     /**
      * Constructor. Writes log messages to "org.restlet".
@@ -269,12 +268,9 @@ public class Context {
      * @param attributes
      *            The modifiable map of attributes.
      */
-    public void setAttributes(Map<String, Object> attributes) {
-        if (attributes instanceof ConcurrentMap) {
-            this.attributes = (ConcurrentMap<String, Object>) attributes;
-        } else {
-            this.attributes = new ConcurrentHashMap<String, Object>(attributes);
-        }
+    public synchronized void setAttributes(Map<String, Object> attributes) {
+        this.attributes.clear();
+        this.attributes.putAll(attributes);
     }
 
     /**
@@ -282,7 +278,9 @@ public class Context {
      * 
      * @param logger
      *            The logger.
+     * @deprecated No compelling need for this.
      */
+    @Deprecated
     public void setLogger(Logger logger) {
         this.logger = logger;
     }
@@ -293,8 +291,9 @@ public class Context {
      * @param parameters
      *            The modifiable series of parameters.
      */
-    public void setParameters(Series<Parameter> parameters) {
-        this.parameters = parameters;
+    public synchronized void setParameters(Series<Parameter> parameters) {
+        this.parameters.clear();
+        this.parameters.addAll(parameters);
     }
 
     /**
