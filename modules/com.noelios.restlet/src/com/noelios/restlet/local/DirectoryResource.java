@@ -583,7 +583,7 @@ public class DirectoryResource extends Resource {
 
     @Override
     public void handleGet() {
-        if (directoryRedirection && !indexTarget) {
+        if (directoryRedirection) {
             // If this request targets a directory and if the target URI does
             // not end with a trailing "/", the client is told to redirect to a
             // correct URI.
@@ -621,7 +621,7 @@ public class DirectoryResource extends Resource {
 
     @Override
     public void removeRepresentations() throws ResourceException {
-        if (directoryRedirection && !indexTarget) {
+        if (directoryRedirection) {
             if (originalRef != null) {
                 getResponse().redirectSeeOther(
                         originalRef.getIdentifier() + "/");
@@ -675,7 +675,7 @@ public class DirectoryResource extends Resource {
     @Override
     public void storeRepresentation(Representation entity)
             throws ResourceException {
-        if (directoryRedirection && !indexTarget) {
+        if (directoryRedirection) {
             if (originalRef != null) {
                 getResponse().redirectSeeOther(
                         originalRef.getIdentifier() + "/");
