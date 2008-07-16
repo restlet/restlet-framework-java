@@ -64,11 +64,11 @@ public class Route extends Filter {
          * Constructor.
          * 
          * @param attribute
-         *                Target attribute name.
+         *            Target attribute name.
          * @param parameter
-         *                Name of the parameter to look for.
+         *            Name of the parameter to look for.
          * @param first
-         *                Indicates how to handle repeating values.
+         *            Indicates how to handle repeating values.
          */
         public ExtractInfo(String attribute, String parameter, boolean first) {
             this.attribute = attribute;
@@ -92,12 +92,11 @@ public class Route extends Filter {
          * Constructor.
          * 
          * @param attribute
-         *                Name of the attribute to look for.
+         *            Name of the attribute to look for.
          * @param required
-         *                Indicates if the attribute presence is required.
+         *            Indicates if the attribute presence is required.
          * @param format
-         *                Format of the attribute value, using Regex pattern
-         *                syntax.
+         *            Format of the attribute value, using Regex pattern syntax.
          */
         public ValidateInfo(String attribute, boolean required, String format) {
             this.attribute = attribute;
@@ -134,7 +133,7 @@ public class Route extends Filter {
      * Constructor behaving as a simple extractor filter.
      * 
      * @param next
-     *                The next Restlet.
+     *            The next Restlet.
      */
     public Route(Restlet next) {
         this(null, (Template) null, next);
@@ -147,11 +146,11 @@ public class Route extends Filter {
      * with {@link Template#MODE_EQUALS} for exact matching.
      * 
      * @param router
-     *                The parent router.
+     *            The parent router.
      * @param uriTemplate
-     *                The URI template.
+     *            The URI template.
      * @param next
-     *                The next Restlet.
+     *            The next Restlet.
      */
     public Route(Router router, String uriTemplate, Restlet next) {
         this(router, new Template(router.getLogger(), uriTemplate,
@@ -163,11 +162,11 @@ public class Route extends Filter {
      * Constructor.
      * 
      * @param router
-     *                The parent router.
+     *            The parent router.
      * @param template
-     *                The URI template.
+     *            The URI template.
      * @param next
-     *                The next Restlet.
+     *            The next Restlet.
      */
     public Route(Router router, Template template, Restlet next) {
         super(router == null ? null : router.getContext(), next);
@@ -183,9 +182,9 @@ public class Route extends Filter {
      * {@link #validate(String, boolean, String)} method.
      * 
      * @param request
-     *                The request to filter.
+     *            The request to filter.
      * @param response
-     *                The response to filter.
+     *            The response to filter.
      * @return The continuation status.
      */
     @Override
@@ -251,9 +250,9 @@ public class Route extends Filter {
      * Extracts the attributes value from the request.
      * 
      * @param request
-     *                The request to process.
+     *            The request to process.
      * @param response
-     *                The response to process.
+     *            The response to process.
      */
     private void extractAttributes(Request request, Response response) {
         // Extract the query parameters
@@ -312,13 +311,12 @@ public class Route extends Filter {
      * Extracts an attribute from the request cookies.
      * 
      * @param attribute
-     *                The name of the request attribute to set.
+     *            The name of the request attribute to set.
      * @param cookieName
-     *                The name of the cookies to extract.
+     *            The name of the cookies to extract.
      * @param first
-     *                Indicates if only the first cookie should be set.
-     *                Otherwise as a List instance might be set in the attribute
-     *                value.
+     *            Indicates if only the first cookie should be set. Otherwise as
+     *            a List instance might be set in the attribute value.
      * @return The current Filter.
      */
     public Route extractCookie(String attribute, String cookieName,
@@ -331,13 +329,12 @@ public class Route extends Filter {
      * Extracts an attribute from the request entity form.
      * 
      * @param attribute
-     *                The name of the request attribute to set.
+     *            The name of the request attribute to set.
      * @param parameter
-     *                The name of the entity form parameter to extract.
+     *            The name of the entity form parameter to extract.
      * @param first
-     *                Indicates if only the first cookie should be set.
-     *                Otherwise as a List instance might be set in the attribute
-     *                value.
+     *            Indicates if only the first cookie should be set. Otherwise as
+     *            a List instance might be set in the attribute value.
      * @return The current Filter.
      */
     public Route extractEntity(String attribute, String parameter, boolean first) {
@@ -349,13 +346,12 @@ public class Route extends Filter {
      * Extracts an attribute from the query string of the resource reference.
      * 
      * @param attribute
-     *                The name of the request attribute to set.
+     *            The name of the request attribute to set.
      * @param parameter
-     *                The name of the query string parameter to extract.
+     *            The name of the query string parameter to extract.
      * @param first
-     *                Indicates if only the first cookie should be set.
-     *                Otherwise as a List instance might be set in the attribute
-     *                value.
+     *            Indicates if only the first cookie should be set. Otherwise as
+     *            a List instance might be set in the attribute value.
      * @return The current Filter.
      */
     public Route extractQuery(String attribute, String parameter, boolean first) {
@@ -397,6 +393,16 @@ public class Route extends Filter {
             }
         }
         return ee;
+    }
+
+    /**
+     * Returns the matching mode to use on the template when parsing a formatted
+     * reference.
+     * 
+     * @return The matching mode to use.
+     */
+    public int getMatchingMode() {
+        return getTemplate().getMatchingMode();
     }
 
     /**
@@ -468,9 +474,9 @@ public class Route extends Filter {
      * Returns the score for a given call (between 0 and 1.0).
      * 
      * @param request
-     *                The request to score.
+     *            The request to score.
      * @param response
-     *                The response to score.
+     *            The response to score.
      * @return The score for a given call (between 0 and 1.0).
      */
     public float score(Request request, Response response) {
@@ -507,12 +513,23 @@ public class Route extends Filter {
     }
 
     /**
+     * Sets the matching mode to use on the template when parsing a formatted
+     * reference.
+     * 
+     * @param matchingMode
+     *            The matching mode to use.
+     */
+    public void setMatchingMode(int matchingMode) {
+        getTemplate().setMatchingMode(matchingMode);
+    }
+
+    /**
      * Sets whether the matching should be done on the URI with or without query
      * string.
      * 
      * @param matchQuery
-     *                True if the matching should be done with the query string,
-     *                false otherwise.
+     *            True if the matching should be done with the query string,
+     *            false otherwise.
      */
     public void setMatchQuery(boolean matchQuery) {
         this.matchQuery = matchQuery;
@@ -522,7 +539,7 @@ public class Route extends Filter {
      * Sets the parent router.
      * 
      * @param router
-     *                The parent router.
+     *            The parent router.
      */
     public void setRouter(Router router) {
         this.router = router;
@@ -532,7 +549,7 @@ public class Route extends Filter {
      * Sets the reference template to match.
      * 
      * @param template
-     *                The reference template to match.
+     *            The reference template to match.
      */
     public void setTemplate(Template template) {
         this.template = template;
@@ -544,11 +561,11 @@ public class Route extends Filter {
      * the proper status description.
      * 
      * @param attribute
-     *                Name of the attribute to look for.
+     *            Name of the attribute to look for.
      * @param required
-     *                Indicates if the attribute presence is required.
+     *            Indicates if the attribute presence is required.
      * @param format
-     *                Format of the attribute value, using Regex pattern syntax.
+     *            Format of the attribute value, using Regex pattern syntax.
      */
     public void validate(String attribute, boolean required, String format) {
         getValidations().add(new ValidateInfo(attribute, required, format));
@@ -558,9 +575,9 @@ public class Route extends Filter {
      * Validates the attributes from the request.
      * 
      * @param request
-     *                The request to process.
+     *            The request to process.
      * @param response
-     *                The response to process.
+     *            The response to process.
      */
     private void validateAttributes(Request request, Response response) {
         if (this.validations != null) {

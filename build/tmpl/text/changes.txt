@@ -45,6 +45,9 @@ Changes log
        	  by Patrick Logan.
        	- Replaced Map<String, Object> parameters by Map<String, ?>
        	  in Template and Resolver classed. Suggested by Leigh Klotz.
+       	- Added shortcut Route#getMatchingMode() and setMatchingMode()
+       	  methods that redirect calls to the "template" property.
+       	- Documented the default matching mode on Router.
     - NRE and Extension Enhancements
         - Added a static HttpServletRequest getRequest(Request) method
           to the Servlet extension.
