@@ -1030,6 +1030,7 @@
       <compileModule name="simple" />
       <compileModule name="spring-api" />
       <compileModule name="spring-nre" />
+      <compileModule name="ssl" />
       <compileModule name="velocity" />
       <compileModule name="wadl" />
       <compileModule name="xdb" />
