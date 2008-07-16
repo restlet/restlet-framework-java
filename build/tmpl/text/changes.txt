@@ -48,6 +48,11 @@ Changes log
        	- Added shortcut Route#getMatchingMode() and setMatchingMode()
        	  methods that redirect calls to the "template" property.
        	- Documented the default matching mode on Router.
+       	- Deprecated Context#setLogger() as there is no compelling use
+       	  for it and synchronized setParameters() and setAttributes()
+       	  methods. Updated Javadocs of Context related to concurrent
+       	  access and modifications of those collections. Suggested by
+       	  Tim Peierls.
     - NRE and Extension Enhancements
         - Added a static HttpServletRequest getRequest(Request) method
           to the Servlet extension.
