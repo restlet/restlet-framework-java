@@ -90,7 +90,8 @@ public class HttpServerConverter extends HttpConverter {
             response.getHttpCall().sendResponse(response);
         } catch (Exception e) {
             getLogger().log(Level.INFO, "Exception intercepted", e);
-            response.getHttpCall().setStatusCode(Status.SERVER_ERROR_INTERNAL.getCode());
+            response.getHttpCall().setStatusCode(
+                    Status.SERVER_ERROR_INTERNAL.getCode());
             response.getHttpCall().setReasonPhrase(
                     "An unexpected exception occured");
         }
@@ -208,6 +209,12 @@ public class HttpServerConverter extends HttpConverter {
                         // Specify the character set parameter
                         contentType.append("; charset=").append(
                                 entity.getCharacterSet().getName());
+                    }
+
+                    for (Parameter parameter : entity.getMediaType()
+                            .getParameters()) {
+                        contentType.append("; ").append(parameter.getName())
+                                .append("=").append(parameter.getValue());
                     }
 
                     responseHeaders.add(HttpConstants.HEADER_CONTENT_TYPE,
