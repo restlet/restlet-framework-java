@@ -33,8 +33,8 @@ import com.noelios.restlet.ext.servlet.ServletConverter;
 /**
  * A Servlet which provides an automatic Restlet integration with an existing
  * {@link org.springframework.web.context.WebApplicationContext}. The usage is
- * similar to Spring's {@link org.springframework.web.servlet.DispatcherServlet}.
- * In the web.xml file, declare the Servlet and map its root URL like this:
+ * similar to Spring's {@link org.springframework.web.servlet.DispatcherServlet}
+ * . In the web.xml file, declare the Servlet and map its root URL like this:
  * 
  * <pre>
  * &lt;servlet&gt;
@@ -108,8 +108,8 @@ public class RestletFrameworkServlet extends FrameworkServlet {
      * @return The bean name.
      */
     public String getTargetRestletBeanName() {
-        return (targetRestletBeanName == null) ? DEFAULT_TARGET_RESTLET_BEAN_NAME
-                : targetRestletBeanName;
+        return (this.targetRestletBeanName == null) ? DEFAULT_TARGET_RESTLET_BEAN_NAME
+                : this.targetRestletBeanName;
     }
 
     @Override
@@ -124,7 +124,7 @@ public class RestletFrameworkServlet extends FrameworkServlet {
      * Sets the bean name of the target Restlet.
      * 
      * @param targetRestletBeanName
-     *                The bean name.
+     *            The bean name.
      */
     public void setTargetRestletBeanName(String targetRestletBeanName) {
         this.targetRestletBeanName = targetRestletBeanName;

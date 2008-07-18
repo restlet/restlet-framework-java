@@ -55,12 +55,12 @@ public class FeedsResource extends BaseResource {
             setModifiable(true);
             // Get the parent mailbox thanks to its ID taken from the resource's
             // URI.
-            String mailboxId = Reference.decode((String) request
+            final String mailboxId = Reference.decode((String) request
                     .getAttributes().get("mailboxId"));
-            mailbox = getObjectsFacade().getMailboxById(mailboxId);
+            this.mailbox = getObjectsFacade().getMailboxById(mailboxId);
 
-            if (mailbox != null) {
-                feeds = mailbox.getFeeds();
+            if (this.mailbox != null) {
+                this.feeds = this.mailbox.getFeeds();
                 getVariants().add(new Variant(MediaType.TEXT_HTML));
             }
         } else {
@@ -75,11 +75,11 @@ public class FeedsResource extends BaseResource {
     @Override
     public void acceptRepresentation(Representation entity)
             throws ResourceException {
-        Form form = new Form(entity);
+        final Form form = new Form(entity);
         Feed feed = new Feed();
         feed.setNickname(form.getFirstValue("nickname"));
         feed.setTags(Arrays.asList(form.getFirstValue("tags").split(" ")));
-        feed = getObjectsFacade().createFeed(mailbox, feed);
+        feed = getObjectsFacade().createFeed(this.mailbox, feed);
 
         getResponse().redirectSeeOther(
                 getChildReference(getRequest().getResourceRef(), feed.getId()));
@@ -95,10 +95,10 @@ public class FeedsResource extends BaseResource {
      */
     @Override
     public Representation represent(Variant variant) throws ResourceException {
-        Map<String, Object> dataModel = new TreeMap<String, Object>();
+        final Map<String, Object> dataModel = new TreeMap<String, Object>();
         dataModel.put("currentUser", getCurrentUser());
-        dataModel.put("mailbox", mailbox);
-        dataModel.put("feeds", feeds);
+        dataModel.put("mailbox", this.mailbox);
+        dataModel.put("feeds", this.feeds);
         dataModel.put("resourceRef", getRequest().getResourceRef());
         dataModel.put("rootRef", getRequest().getRootRef());
 

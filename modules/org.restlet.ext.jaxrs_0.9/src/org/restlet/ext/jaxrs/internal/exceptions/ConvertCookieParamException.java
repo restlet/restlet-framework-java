@@ -31,7 +31,7 @@ import javax.ws.rs.core.Response.Status;
 public class ConvertCookieParamException extends WebApplicationException {
 
     private static final long serialVersionUID = 9098614715395362234L;
-    
+
     // REQUESTED allow subclass of WebAppExc in algorithms for special handling?
 
     /**
@@ -39,6 +39,6 @@ public class ConvertCookieParamException extends WebApplicationException {
      */
     public ConvertCookieParamException(ConvertParameterException cpe) {
         super(cpe.getCause(), Status.BAD_REQUEST);
-        this.setStackTrace(cpe.getStackTrace());
+        setStackTrace(cpe.getStackTrace());
     }
 }

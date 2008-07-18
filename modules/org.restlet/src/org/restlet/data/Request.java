@@ -67,8 +67,9 @@ public class Request extends Message {
 
         @Override
         public Series<Cookie> createSeries(List<Cookie> delegate) {
-            if (delegate != null)
+            if (delegate != null) {
                 return new CookieSeries(delegate);
+            }
 
             return new CookieSeries();
         }
@@ -204,8 +205,9 @@ public class Request extends Message {
         if (c == null) {
             synchronized (this) {
                 c = this.clientInfo;
-                if (c == null)
+                if (c == null) {
                     this.clientInfo = c = new ClientInfo();
+                }
             }
         }
         return c;
@@ -223,8 +225,9 @@ public class Request extends Message {
         if (c == null) {
             synchronized (this) {
                 c = this.conditions;
-                if (c == null)
+                if (c == null) {
                     this.conditions = c = new Conditions();
+                }
             }
         }
         return c;
@@ -242,8 +245,9 @@ public class Request extends Message {
         if (c == null) {
             synchronized (this) {
                 c = this.cookies;
-                if (c == null)
+                if (c == null) {
                     this.cookies = c = new CookieSeries();
+                }
             }
         }
         return c;
@@ -481,8 +485,9 @@ public class Request extends Message {
 
         // A referrer reference must not include a fragment.
         if ((this.referrerRef != null)
-                && (this.referrerRef.getFragment() != null))
+                && (this.referrerRef.getFragment() != null)) {
             this.referrerRef.setFragment(null);
+        }
     }
 
     /**

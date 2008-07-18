@@ -51,9 +51,9 @@ public class MetadataService {
          * Constructor.
          * 
          * @param name
-         *                The extension name.
+         *            The extension name.
          * @param metadata
-         *                The metadata.
+         *            The metadata.
          */
         public MetadataExtension(String name, Metadata metadata) {
             this.name = name;
@@ -66,7 +66,7 @@ public class MetadataService {
          * @return the metadata.
          */
         public Metadata getMetadata() {
-            return metadata;
+            return this.metadata;
         }
 
         /**
@@ -75,7 +75,7 @@ public class MetadataService {
          * @return The extension name.
          */
         public String getName() {
-            return name;
+            return this.name;
         }
 
     }
@@ -95,8 +95,8 @@ public class MetadataService {
     /**
      * Constructor. Sets the default language to {@link Language#ENGLISH_US},
      * the default encoding to {@link Encoding#IDENTITY} (no encoding) and the
-     * default media type to {@link MediaType#APPLICATION_OCTET_STREAM}. It
-     * also calls the {@link #addCommonExtensions()} method.
+     * default media type to {@link MediaType#APPLICATION_OCTET_STREAM}. It also
+     * calls the {@link #addCommonExtensions()} method.
      */
     public MetadataService() {
         this.defaultEncoding = Encoding.IDENTITY;
@@ -106,7 +106,7 @@ public class MetadataService {
         addCommonExtensions();
     }
 
-    /**
+/**
      * Adds a common list of associations from extensions to metadata. The list
      * of languages extensions:<br>
      * <ul>
@@ -275,9 +275,9 @@ public class MetadataService {
      * set) to an extension.
      * 
      * @param extension
-     *                The extension name.
+     *            The extension name.
      * @param metadata
-     *                The metadata to map.
+     *            The metadata to map.
      */
     public void addExtension(String extension, Metadata metadata) {
         addExtension(extension, metadata, false);
@@ -288,11 +288,11 @@ public class MetadataService {
      * set) to an extension.
      * 
      * @param extension
-     *                The extension name.
+     *            The extension name.
      * @param metadata
-     *                The metadata to map.
+     *            The metadata to map.
      * @param preferred
-     *                indicates if this mapping is the preferred one.
+     *            indicates if this mapping is the preferred one.
      */
     public void addExtension(String extension, Metadata metadata,
             boolean preferred) {
@@ -343,13 +343,13 @@ public class MetadataService {
      * Returns the first extension mapping to this metadata.
      * 
      * @param metadata
-     *                The metadata to find.
+     *            The metadata to find.
      * @return The first extension mapping to this metadata.
      */
     public String getExtension(Metadata metadata) {
         if (metadata != null) {
             // Look for the first registered convenient mapping.
-            for (MetadataExtension metadataExtension : mappings) {
+            for (final MetadataExtension metadataExtension : this.mappings) {
                 if (metadata.equals(metadataExtension.getMetadata())) {
                     return metadataExtension.getName();
                 }
@@ -368,9 +368,9 @@ public class MetadataService {
      */
     @Deprecated
     public Map<String, Metadata> getMappings() {
-        Map<String, Metadata> result = new TreeMap<String, Metadata>();
+        final Map<String, Metadata> result = new TreeMap<String, Metadata>();
 
-        for (MetadataExtension metadataExtension : mappings) {
+        for (final MetadataExtension metadataExtension : this.mappings) {
             result.put(metadataExtension.getName(), metadataExtension
                     .getMetadata());
         }
@@ -383,13 +383,13 @@ public class MetadataService {
      * extension was not declared.
      * 
      * @param extension
-     *                The extension name without any delimiter.
+     *            The extension name without any delimiter.
      * @return The metadata associated to this extension.
      */
     public Metadata getMetadata(String extension) {
         if (extension != null) {
             // Look for the first registered convenient mapping.
-            for (MetadataExtension metadataExtension : mappings) {
+            for (final MetadataExtension metadataExtension : this.mappings) {
                 if (extension.equals(metadataExtension.getName())) {
                     return metadataExtension.getMetadata();
                 }
@@ -403,7 +403,7 @@ public class MetadataService {
      * Sets the default encoding for local representations.
      * 
      * @param defaultEncoding
-     *                The default encoding for local representations.
+     *            The default encoding for local representations.
      */
     public void setDefaultEncoding(Encoding defaultEncoding) {
         this.defaultEncoding = defaultEncoding;
@@ -413,7 +413,7 @@ public class MetadataService {
      * Sets the default language for local representations.
      * 
      * @param defaultLanguage
-     *                The default language for local representations.
+     *            The default language for local representations.
      */
     public void setDefaultLanguage(Language defaultLanguage) {
         this.defaultLanguage = defaultLanguage;
@@ -423,7 +423,7 @@ public class MetadataService {
      * Sets the default media type for local representations.
      * 
      * @param defaultMediaType
-     *                The default media type for local representations.
+     *            The default media type for local representations.
      */
     public void setDefaultMediaType(MediaType defaultMediaType) {
         this.defaultMediaType = defaultMediaType;
@@ -433,14 +433,14 @@ public class MetadataService {
      * Sets the mappings from extension names to metadata.
      * 
      * @param mappings
-     *                The mappings from extension names to metadata.
+     *            The mappings from extension names to metadata.
      * @deprecated
      */
     @Deprecated
     public void setMappings(Map<String, Metadata> mappings) {
         this.mappings.clear();
 
-        for (String extension : mappings.keySet()) {
+        for (final String extension : mappings.keySet()) {
             addExtension(extension, mappings.get(extension), false);
         }
     }

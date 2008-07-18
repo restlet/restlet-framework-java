@@ -22,8 +22,8 @@ import org.restlet.Application;
 import org.restlet.Context;
 
 public class TestApplication extends Application {
-    
-    public TestApplication(Context context){
+
+    public TestApplication(Context context) {
         super(context);
     }
 

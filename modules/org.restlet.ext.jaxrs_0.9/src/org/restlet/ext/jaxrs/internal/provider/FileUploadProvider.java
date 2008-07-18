@@ -39,10 +39,10 @@ import org.apache.commons.fileupload.FileUploadException;
 import org.restlet.ext.jaxrs.internal.util.Util;
 
 /**
- * Entity Provider, that reads "multipart/form-data" to a {@link List}&lt{@link FileItem}&gt;.
- * It is using the Apache Commons FileUpload (developed with version 1.2), which
- * must be available in the classpath, if you want to use this provider. For
- * more information see the <a
+ * Entity Provider, that reads "multipart/form-data" to a {@link List}&lt
+ * {@link FileItem}&gt;. It is using the Apache Commons FileUpload (developed
+ * with version 1.2), which must be available in the classpath, if you want to
+ * use this provider. For more information see the <a
  * href="http://commons.apache.org/fileupload/">Apache FileUpload website</a>.<br>
  * This provider is not tested yet.
  * 
@@ -69,14 +69,14 @@ public class FileUploadProvider implements MessageBodyReader<List<FileItem>> {
          * @param entityStream
          * @param respHeaders
          * @throws NumberFormatException
-         *                 if the content length is not an int
+         *             if the content length is not an int
          */
         private RequestContext(InputStream entityStream,
                 MultivaluedMap<String, String> respHeaders)
                 throws NumberFormatException {
             this.entityStream = entityStream;
             this.contentEncoding = respHeaders.getFirst(CONTENT_ENCODING);
-            String contentLength = respHeaders.getFirst(CONTENT_LENGTH);
+            final String contentLength = respHeaders.getFirst(CONTENT_LENGTH);
             this.contentLength = Integer.parseInt(contentLength);
             this.contentType = respHeaders.getFirst(CONTENT_TYPE);
         }
@@ -103,11 +103,13 @@ public class FileUploadProvider implements MessageBodyReader<List<FileItem>> {
      */
     public boolean isReadable(Class<?> type, Type genericType,
             Annotation[] annotations) {
-        if (!type.equals(List.class))
+        if (!type.equals(List.class)) {
             return false;
-        Class<?> genericClass = Util.getGenericClass(genericType);
-        if (genericClass == null)
+        }
+        final Class<?> genericClass = Util.getGenericClass(genericType);
+        if (genericClass == null) {
             return false;
+        }
         return FileItem.class.isAssignableFrom(genericClass);
     }
 
@@ -120,14 +122,16 @@ public class FileUploadProvider implements MessageBodyReader<List<FileItem>> {
             Type genericType, Annotation[] annotations, MediaType mediaType,
             final MultivaluedMap<String, String> respHeaders,
             final InputStream entityStream) throws IOException {
-        FileUpload rfu = new FileUpload();
-        RequestContext requCtx = new RequestContext(entityStream, respHeaders);
+        final FileUpload rfu = new FileUpload();
+        final RequestContext requCtx = new RequestContext(entityStream,
+                respHeaders);
         try {
             return rfu.parseRequest(requCtx);
-        } catch (FileUploadException e) {
-            if (e.getCause() instanceof IOException)
+        } catch (final FileUploadException e) {
+            if (e.getCause() instanceof IOException) {
                 throw (IOException) e.getCause();
-            IOException ioExc = new IOException(
+            }
+            final IOException ioExc = new IOException(
                     "Could not read the multipart/form-data");
             ioExc.initCause(e);
             throw ioExc;

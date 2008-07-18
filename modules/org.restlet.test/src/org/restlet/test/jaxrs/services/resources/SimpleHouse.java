@@ -34,6 +34,19 @@ public class SimpleHouse {
     /** Text of the Plain-Text-Representation. */
     public static final String RERP_PLAIN_TEXT = "  /\\ \n /  \\ \n |  | \n +--+ \n \n This is a simple text house";
 
+    @GET
+    @Path("null")
+    public Object getNull() {
+        return null;
+    }
+
+    @GET
+    @Path("nullWithMediaType")
+    @Produces("text/plain")
+    public Object getNullWithMediaType() {
+        return null;
+    }
+
     /**
      * 
      * @return
@@ -42,18 +55,5 @@ public class SimpleHouse {
     @Produces("text/plain")
     public String getPlainText() {
         return RERP_PLAIN_TEXT;
-    }
-    
-    @GET
-    @Path("null")
-    public Object getNull() {
-        return null;
-    }
-    
-    @GET
-    @Path("nullWithMediaType")
-    @Produces("text/plain")
-    public Object getNullWithMediaType() {
-        return null;
     }
 }

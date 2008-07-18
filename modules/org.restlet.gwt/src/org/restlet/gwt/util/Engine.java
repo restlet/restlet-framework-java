@@ -78,7 +78,7 @@ public abstract class Engine {
      * specified in List.hasCode().
      * 
      * @param objects
-     *                the objects to compute the hashCode
+     *            the objects to compute the hashCode
      * 
      * @return The hash code of a set of objects.
      */
@@ -86,7 +86,7 @@ public abstract class Engine {
         int result = 1;
 
         if (objects != null) {
-            for (Object obj : objects) {
+            for (final Object obj : objects) {
                 result = 31 * result + (obj == null ? 0 : obj.hashCode());
             }
         }
@@ -98,7 +98,7 @@ public abstract class Engine {
      * Sets the registered Restlet engine.
      * 
      * @param engine
-     *                The registered Restlet engine.
+     *            The registered Restlet engine.
      */
     public static void setInstance(Engine engine) {
         instance = engine;
@@ -108,11 +108,10 @@ public abstract class Engine {
      * Copies the given header parameters into the given {@link Response}.
      * 
      * @param headers
-     *                The headers to copy.
+     *            The headers to copy.
      * @param response
-     *                The response to update. Must contain a
-     *                {@link Representation} to copy the representation headers
-     *                in it.
+     *            The response to update. Must contain a {@link Representation}
+     *            to copy the representation headers in it.
      */
     public abstract void copyResponseHeaders(Iterable<Parameter> headers,
             Response response);
@@ -121,7 +120,7 @@ public abstract class Engine {
      * Creates a new helper for a given client connector.
      * 
      * @param client
-     *                The client to help.
+     *            The client to help.
      * @return The new helper.
      */
     public abstract Helper<Client> createHelper(Client client);
@@ -132,7 +131,7 @@ public abstract class Engine {
      * @param cookie
      * @return the Cookie as String
      * @throws IllegalArgumentException
-     *                 Thrown if the Cookie contains illegal values
+     *             Thrown if the Cookie contains illegal values
      */
     public abstract String formatCookie(Cookie cookie)
             throws IllegalArgumentException;
@@ -143,7 +142,7 @@ public abstract class Engine {
      * @param cookieSetting
      * @return the CookieSetting as String
      * @throws IllegalArgumentException
-     *                 Thrown if the CookieSetting contains illegal values
+     *             Thrown if the CookieSetting contains illegal values
      */
     public abstract String formatCookieSetting(CookieSetting cookieSetting)
             throws IllegalArgumentException;
@@ -152,7 +151,7 @@ public abstract class Engine {
      * Formats the given Set of Dimensions to a String for the HTTP Vary header.
      * 
      * @param dimensions
-     *                the dimensions to format.
+     *            the dimensions to format.
      * @return the Vary header or null, if dimensions is null or empty.
      */
     public abstract String formatDimensions(Collection<Dimension> dimensions);
@@ -161,10 +160,10 @@ public abstract class Engine {
      * Formats the given List of Products to a String.
      * 
      * @param products
-     *                The list of products to format.
+     *            The list of products to format.
      * @return the List of Products as String.
      * @throws IllegalArgumentException
-     *                 Thrown if the List of Products contains illegal values
+     *             Thrown if the List of Products contains illegal values
      */
     public abstract String formatUserAgent(List<Product> products)
             throws IllegalArgumentException;
@@ -176,15 +175,15 @@ public abstract class Engine {
      * client preferences.
      * 
      * @param client
-     *                The client preferences.
+     *            The client preferences.
      * @param variants
-     *                The list of variants to compare.
+     *            The list of variants to compare.
      * @param defaultLanguage
-     *                The default language.
+     *            The default language.
      * @return The preferred variant.
-     * @see <a
-     *      href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache
-     *      content negotiation algorithm</a>
+     * @see <a * href=
+     *      "http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm"
+     *      >Apache * content negotiation algorithm< /a>
      */
     public abstract Variant getPreferredVariant(ClientInfo client,
             List<Variant> variants, Language defaultLanguage);
@@ -193,9 +192,9 @@ public abstract class Engine {
      * Parses a representation into a form.
      * 
      * @param form
-     *                The target form.
+     *            The target form.
      * @param representation
-     *                The representation to parse.
+     *            The representation to parse.
      */
     public abstract void parse(Form form, Representation representation);
 
@@ -203,16 +202,16 @@ public abstract class Engine {
      * Parses a parameters string to parse into a given form.
      * 
      * @param form
-     *                The target form.
+     *            The target form.
      * @param parametersString
-     *                The parameters string to parse.
+     *            The parameters string to parse.
      * @param characterSet
-     *                The supported character encoding.
+     *            The supported character encoding.
      * @param decode
-     *                Indicates if the parameters should be decoded using the
-     *                given character set.
+     *            Indicates if the parameters should be decoded using the given
+     *            character set.
      * @param separator
-     *                The separator character to append between parameters.
+     *            The separator character to append between parameters.
      */
     public abstract void parse(Form form, String parametersString,
             CharacterSet characterSet, boolean decode, char separator);
@@ -221,10 +220,10 @@ public abstract class Engine {
      * Parses the given Content Type.
      * 
      * @param contentType
-     *                the Content Type as String
+     *            the Content Type as String
      * @return the ContentType as MediaType; charset etc. are parameters.
      * @throws IllegalArgumentException
-     *                 if the String can not be parsed.
+     *             if the String can not be parsed.
      */
     public abstract MediaType parseContentType(String contentType)
             throws IllegalArgumentException;
@@ -235,7 +234,7 @@ public abstract class Engine {
      * @param cookie
      * @return the Cookie parsed from the String
      * @throws IllegalArgumentException
-     *                 Thrown if the String can not be parsed as Cookie.
+     *             Thrown if the String can not be parsed as Cookie.
      */
     public abstract Cookie parseCookie(String cookie)
             throws IllegalArgumentException;
@@ -246,7 +245,7 @@ public abstract class Engine {
      * @param cookieSetting
      * @return the CookieSetting parsed from the String
      * @throws IllegalArgumentException
-     *                 Thrown if the String can not be parsed as CookieSetting.
+     *             Thrown if the String can not be parsed as CookieSetting.
      */
     public abstract CookieSetting parseCookieSetting(String cookieSetting)
             throws IllegalArgumentException;
@@ -257,8 +256,8 @@ public abstract class Engine {
      * @param userAgent
      * @return the List of Product objects parsed from the String
      * @throws IllegalArgumentException
-     *                 Thrown if the String can not be parsed as a list of
-     *                 Product instances.
+     *             Thrown if the String can not be parsed as a list of Product
+     *             instances.
      */
     public abstract List<Product> parseUserAgent(String userAgent)
             throws IllegalArgumentException;

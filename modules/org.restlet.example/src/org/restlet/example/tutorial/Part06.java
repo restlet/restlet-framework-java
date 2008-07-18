@@ -18,12 +18,13 @@
 
 package org.restlet.example.tutorial;
 
+import static org.restlet.example.tutorial.Constants.ROOT_URI;
+
 import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Directory;
 import org.restlet.Restlet;
 import org.restlet.data.Protocol;
-import static org.restlet.example.tutorial.Constants.*;
 
 /**
  * Server static files using an application.
@@ -33,12 +34,12 @@ import static org.restlet.example.tutorial.Constants.*;
 public class Part06 {
     public static void main(String[] args) throws Exception {
         // Create a component
-        Component component = new Component();
+        final Component component = new Component();
         component.getServers().add(Protocol.HTTP, 8182);
         component.getClients().add(Protocol.FILE);
 
         // Create an application
-        Application application = new Application(component.getContext()) {
+        final Application application = new Application(component.getContext()) {
             @Override
             public Restlet createRoot() {
                 return new Directory(getContext(), ROOT_URI);

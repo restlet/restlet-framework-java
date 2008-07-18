@@ -36,15 +36,25 @@ import com.noelios.restlet.http.PreferenceUtils;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class HeaderTestCase extends TestCase {
+    public void testInvalidDate() {
+        final String headerValue = "-1";
+        final Date date = DateUtils.parse(headerValue,
+                DateUtils.FORMAT_RFC_1123);
+        assertNull(date);
+
+        final Date unmodifiableDate = DateUtils.unmodifiable(date);
+        assertNull(unmodifiableDate);
+    }
+
     /**
      * Tests the parsing.
      */
     public void testParsing() {
         String header1 = "Accept-Encoding,User-Agent";
         String header2 = "Accept-Encoding , User-Agent";
-        String header3 = "Accept-Encoding,\r\tUser-Agent";
-        String header4 = "Accept-Encoding,\r User-Agent";
-        String header5 = "Accept-Encoding, \r \t User-Agent";
+        final String header3 = "Accept-Encoding,\r\tUser-Agent";
+        final String header4 = "Accept-Encoding,\r User-Agent";
+        final String header5 = "Accept-Encoding, \r \t User-Agent";
         String[] values = new String[] { "Accept-Encoding", "User-Agent" };
         testValues(header1, values);
         testValues(header2, values);
@@ -115,12 +125,12 @@ public class HeaderTestCase extends TestCase {
      * Test that the parsing of a header returns the given array of values.
      * 
      * @param header
-     *                The header value to parse.
+     *            The header value to parse.
      * @param values
-     *                The parsed values.
+     *            The parsed values.
      */
     public void testValues(String header, String[] values) {
-        HeaderReader hr = new HeaderReader(header);
+        final HeaderReader hr = new HeaderReader(header);
         String value = hr.readValue();
         int index = 0;
         while (value != null) {
@@ -128,15 +138,6 @@ public class HeaderTestCase extends TestCase {
             index++;
             value = hr.readValue();
         }
-    }
-
-    public void testInvalidDate() {
-        String headerValue = "-1";
-        Date date = DateUtils.parse(headerValue, DateUtils.FORMAT_RFC_1123);
-        assertNull(date);
-
-        Date unmodifiableDate = DateUtils.unmodifiable(date);
-        assertNull(unmodifiableDate);
     }
 
 }

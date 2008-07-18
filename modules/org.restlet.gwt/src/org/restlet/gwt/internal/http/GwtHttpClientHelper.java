@@ -24,7 +24,8 @@ import org.restlet.gwt.data.Request;
 
 /**
  * HTTP client connector using the GWT's HTTP module. Here is the list of
- * parameters that are supported: <table>
+ * parameters that are supported:
+ * <table>
  * <tr>
  * <th>Parameter name</th>
  * <th>Value type</th>
@@ -47,7 +48,7 @@ public class GwtHttpClientHelper extends HttpClientHelper {
      * Constructor.
      * 
      * @param client
-     *                The client to help.
+     *            The client to help.
      */
     public GwtHttpClientHelper(Client client) {
         super(client);
@@ -59,7 +60,7 @@ public class GwtHttpClientHelper extends HttpClientHelper {
      * Creates a low-level HTTP client call from a high-level uniform call.
      * 
      * @param request
-     *                The high-level request.
+     *            The high-level request.
      * @return A low-level HTTP client call.
      */
     @Override
@@ -70,7 +71,7 @@ public class GwtHttpClientHelper extends HttpClientHelper {
             result = new GwtHttpClientCall(this,
                     request.getMethod().toString(), request.getResourceRef()
                             .toString(), request.isEntityAvailable());
-        } catch (Exception ioe) {
+        } catch (final Exception ioe) {
             System.err.println("Unable to create the HTTP client call");
         }
 

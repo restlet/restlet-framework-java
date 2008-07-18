@@ -12,16 +12,17 @@ import org.restlet.data.Response;
 public class BasicHttpsServer {
     public static void main(String[] args) {
         // Creates a Restlet whose response to each request is "hello, world".
-        Restlet restlet = new Restlet() {
+        final Restlet restlet = new Restlet() {
             @Override
             public void handle(Request request, Response response) {
                 response.setEntity("hello, world", MediaType.TEXT_PLAIN);
             }
         };
 
-        File keystoreFile = new File("d:\\temp\\certificats", "myServerKeystore");
+        final File keystoreFile = new File("d:\\temp\\certificats",
+                "myServerKeystore");
         // Component declaring only one HTTPS server connector.
-        Component component = new Component();
+        final Component component = new Component();
         component.getServers().add(Protocol.HTTPS, 8182);
         component.getDefaultHost().attach("/helloWorld", restlet);
 
@@ -34,7 +35,7 @@ public class BasicHttpsServer {
 
         try {
             component.start();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
     }

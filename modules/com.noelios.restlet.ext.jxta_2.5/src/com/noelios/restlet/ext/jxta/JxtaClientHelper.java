@@ -46,7 +46,7 @@ public abstract class JxtaClientHelper extends StreamClientHelper {
      * Constructor.
      * 
      * @param client
-     *                The parent client connector.
+     *            The parent client connector.
      */
     public JxtaClientHelper(Client client) {
         super(client);

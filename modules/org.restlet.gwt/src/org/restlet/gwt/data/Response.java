@@ -52,7 +52,7 @@ public class Response extends Message {
          * Constructor.
          * 
          * @param delegate
-         *                The delegate list.
+         *            The delegate list.
          */
         public CookieSettingSeries(List<CookieSetting> delegate) {
             super(delegate);
@@ -65,8 +65,9 @@ public class Response extends Message {
 
         @Override
         public Series<CookieSetting> createSeries(List<CookieSetting> delegate) {
-            if (delegate != null)
+            if (delegate != null) {
                 return new CookieSettingSeries(delegate);
+            }
 
             return new CookieSettingSeries();
         }
@@ -97,7 +98,7 @@ public class Response extends Message {
      * Constructor.
      * 
      * @param request
-     *                The request associated to this response.
+     *            The request associated to this response.
      */
     public Response(Request request) {
         this.allowedMethods = null;
@@ -123,8 +124,9 @@ public class Response extends Message {
         if (a == null) {
             synchronized (this) {
                 a = this.allowedMethods;
-                if (a == null)
+                if (a == null) {
                     this.allowedMethods = a = new HashSet<Method>();
+                }
             }
         }
         return a;
@@ -142,8 +144,9 @@ public class Response extends Message {
         if (c == null) {
             synchronized (this) {
                 c = this.cookieSettings;
-                if (c == null)
+                if (c == null) {
                     this.cookieSettings = c = new CookieSettingSeries();
+                }
             }
         }
         return c;
@@ -158,8 +161,9 @@ public class Response extends Message {
      * @return The set of dimensions on which the response entity may vary.
      */
     public Set<Dimension> getDimensions() {
-        if (this.dimensions == null)
+        if (this.dimensions == null) {
             this.dimensions = EnumSet.noneOf(Dimension.class);
+        }
         return this.dimensions;
     }
 
@@ -191,7 +195,7 @@ public class Response extends Message {
      * @return The associated request
      */
     public Request getRequest() {
-        return request;
+        return this.request;
     }
 
     /**
@@ -206,8 +210,9 @@ public class Response extends Message {
         if (s == null) {
             synchronized (this) {
                 s = this.serverInfo;
-                if (s == null)
+                if (s == null) {
                     this.serverInfo = s = new ServerInfo();
+                }
             }
         }
         return s;
@@ -227,7 +232,7 @@ public class Response extends Message {
      * to reuse the same method for the new request.
      * 
      * @param targetRef
-     *                The target URI reference.
+     *            The target URI reference.
      */
     public void redirectPermanent(Reference targetRef) {
         setLocationRef(targetRef);
@@ -243,7 +248,7 @@ public class Response extends Message {
      * {@link Request#getResourceRef()} and {@link Reference#getBaseRef()}.
      * 
      * @param targetUri
-     *                The target URI.
+     *            The target URI.
      */
     public void redirectPermanent(String targetUri) {
         setLocationRef(targetUri);
@@ -258,7 +263,7 @@ public class Response extends Message {
      * originally requested resource.
      * 
      * @param targetRef
-     *                The target reference.
+     *            The target reference.
      */
     public void redirectSeeOther(Reference targetRef) {
         setLocationRef(targetRef);
@@ -277,7 +282,7 @@ public class Response extends Message {
      * {@link Request#getResourceRef()} and {@link Reference#getBaseRef()}.
      * 
      * @param targetUri
-     *                The target URI.
+     *            The target URI.
      */
     public void redirectSeeOther(String targetUri) {
         setLocationRef(targetUri);
@@ -289,7 +294,7 @@ public class Response extends Message {
      * to reuse the same method for the new request.
      * 
      * @param targetRef
-     *                The target reference.
+     *            The target reference.
      */
     public void redirectTemporary(Reference targetRef) {
         setLocationRef(targetRef);
@@ -305,7 +310,7 @@ public class Response extends Message {
      * {@link Request#getResourceRef()} and {@link Reference#getBaseRef()}.
      * 
      * @param targetUri
-     *                The target URI.
+     *            The target URI.
      */
     public void redirectTemporary(String targetUri) {
         setLocationRef(targetUri);
@@ -316,7 +321,7 @@ public class Response extends Message {
      * Sets the set of methods allowed on the requested resource.
      * 
      * @param allowedMethods
-     *                The set of methods allowed on the requested resource.
+     *            The set of methods allowed on the requested resource.
      */
     public void setAllowedMethods(Set<Method> allowedMethods) {
         this.allowedMethods = allowedMethods;
@@ -326,7 +331,7 @@ public class Response extends Message {
      * Sets the cookie settings provided by the server.
      * 
      * @param cookieSettings
-     *                The cookie settings provided by the server.
+     *            The cookie settings provided by the server.
      */
     public void setCookieSettings(Series<CookieSetting> cookieSettings) {
         this.cookieSettings = cookieSettings;
@@ -336,8 +341,7 @@ public class Response extends Message {
      * Sets the set of dimensions on which the response entity may vary.
      * 
      * @param dimensions
-     *                The set of dimensions on which the response entity may
-     *                vary.
+     *            The set of dimensions on which the response entity may vary.
      */
     public void setDimensions(Set<Dimension> dimensions) {
         this.dimensions = dimensions;
@@ -348,7 +352,7 @@ public class Response extends Message {
      * resource creations.
      * 
      * @param locationRef
-     *                The reference to set.
+     *            The reference to set.
      */
     public void setLocationRef(Reference locationRef) {
         this.locationRef = locationRef;
@@ -362,7 +366,7 @@ public class Response extends Message {
      * {@link Reference#getBaseRef()}.
      * 
      * @param locationUri
-     *                The URI to set.
+     *            The URI to set.
      */
     public void setLocationRef(String locationUri) {
         Reference baseRef = null;
@@ -383,7 +387,7 @@ public class Response extends Message {
      * resource creations.
      * 
      * @param locationRef
-     *                The reference to set.
+     *            The reference to set.
      * @deprecated Use the setLocationRef() method instead.
      */
     @Deprecated
@@ -396,7 +400,7 @@ public class Response extends Message {
      * resource creations.
      * 
      * @param locationUri
-     *                The URI to set.
+     *            The URI to set.
      * @deprecated Use the setLocationRef() method instead.
      */
     @Deprecated
@@ -408,7 +412,7 @@ public class Response extends Message {
      * Sets the associated request.
      * 
      * @param request
-     *                The associated request
+     *            The associated request
      */
     public void setRequest(Request request) {
         this.request = request;
@@ -418,7 +422,7 @@ public class Response extends Message {
      * Sets the server-specific information.
      * 
      * @param serverInfo
-     *                The server-specific information.
+     *            The server-specific information.
      */
     public void setServerInfo(ServerInfo serverInfo) {
         this.serverInfo = serverInfo;
@@ -428,7 +432,7 @@ public class Response extends Message {
      * Sets the status.
      * 
      * @param status
-     *                The status to set.
+     *            The status to set.
      */
     public void setStatus(Status status) {
         this.status = status;
@@ -438,9 +442,9 @@ public class Response extends Message {
      * Sets the status.
      * 
      * @param status
-     *                The status to set.
+     *            The status to set.
      * @param message
-     *                The status message.
+     *            The status message.
      */
     public void setStatus(Status status, String message) {
         setStatus(new Status(status, message));
@@ -450,9 +454,9 @@ public class Response extends Message {
      * Sets the status.
      * 
      * @param status
-     *                The status to set.
+     *            The status to set.
      * @param throwable
-     *                The related error or exception.
+     *            The related error or exception.
      */
     public void setStatus(Status status, Throwable throwable) {
         setStatus(new Status(status, throwable));
@@ -462,11 +466,11 @@ public class Response extends Message {
      * Sets the status.
      * 
      * @param status
-     *                The status to set.
+     *            The status to set.
      * @param throwable
-     *                The related error or exception.
+     *            The related error or exception.
      * @param message
-     *                The status message.
+     *            The status message.
      */
     public void setStatus(Status status, Throwable throwable, String message) {
         setStatus(new Status(status, throwable, message));

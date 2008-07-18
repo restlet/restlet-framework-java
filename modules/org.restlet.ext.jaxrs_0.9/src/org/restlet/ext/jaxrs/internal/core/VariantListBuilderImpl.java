@@ -36,6 +36,21 @@ import org.restlet.ext.jaxrs.internal.util.Util;
  */
 public class VariantListBuilderImpl extends VariantListBuilder {
 
+    /**
+     * Creates an Iterator over the elements of the list. If the list is null or
+     * empty, an Iterator with exact one element is returned: null.
+     * 
+     * @param <T>
+     * @param list
+     * @return
+     */
+    private static <T> Iterator<T> createIterator(List<T> list) {
+        if ((list == null) || list.isEmpty()) {
+            return new OneElementIterator<T>(null);
+        }
+        return list.iterator();
+    }
+
     private List<MediaType> mediaTypes;
 
     private List<Locale> languages;
@@ -74,42 +89,6 @@ public class VariantListBuilderImpl extends VariantListBuilder {
         return this;
     }
 
-    private void buildVariants() {
-        Iterator<MediaType> mediaTypeIter = createIterator(this.mediaTypes);
-        Iterator<Locale> languageIter = createIterator(this.languages);
-        Iterator<String> encodingIter = createIterator(this.encodings);
-        if (this.variants == null)
-            this.variants = new ArrayList<Variant>();
-        while (mediaTypeIter.hasNext()) {
-            MediaType mediaType = mediaTypeIter.next();
-            while (languageIter.hasNext()) {
-                Locale language = languageIter.next();
-                while (encodingIter.hasNext()) {
-                    String encoding = encodingIter.next();
-                    Variant variant = new Variant(mediaType, language, encoding);
-                    this.variants.add(variant);
-                }
-            }
-        }
-        this.encodings.clear();
-        this.languages.clear();
-        this.mediaTypes.clear();
-    }
-
-    /**
-     * Creates an Iterator over the elements of the list. If the list is null or
-     * empty, an Iterator with exact one element is returned: null.
-     * 
-     * @param <T>
-     * @param list
-     * @return
-     */
-    private static <T> Iterator<T> createIterator(List<T> list) {
-        if (list == null || list.isEmpty())
-            return new OneElementIterator<T>(null);
-        return list.iterator();
-    }
-
     /**
      * Build a list of representation variants from the current state of the
      * builder. After this method is called the builder is reset to an empty
@@ -121,27 +100,54 @@ public class VariantListBuilderImpl extends VariantListBuilder {
     @Override
     public List<Variant> build() {
         if (Util.isNotEmpty(this.encodings) || Util.isNotEmpty(this.languages)
-                || Util.isNotEmpty(this.mediaTypes))
+                || Util.isNotEmpty(this.mediaTypes)) {
             buildVariants();
-        List<Variant> variants = this.variants;
+        }
+        final List<Variant> variants = this.variants;
         this.variants = null;
         return variants;
+    }
+
+    private void buildVariants() {
+        final Iterator<MediaType> mediaTypeIter = createIterator(this.mediaTypes);
+        final Iterator<Locale> languageIter = createIterator(this.languages);
+        final Iterator<String> encodingIter = createIterator(this.encodings);
+        if (this.variants == null) {
+            this.variants = new ArrayList<Variant>();
+        }
+        while (mediaTypeIter.hasNext()) {
+            final MediaType mediaType = mediaTypeIter.next();
+            while (languageIter.hasNext()) {
+                final Locale language = languageIter.next();
+                while (encodingIter.hasNext()) {
+                    final String encoding = encodingIter.next();
+                    final Variant variant = new Variant(mediaType, language,
+                            encoding);
+                    this.variants.add(variant);
+                }
+            }
+        }
+        this.encodings.clear();
+        this.languages.clear();
+        this.mediaTypes.clear();
     }
 
     /**
      * Set the encoding[s] for this variant.
      * 
      * @param encodings
-     *                the available encodings
+     *            the available encodings
      * @return the updated builder
      * @see javax.ws.rs.core.Variant.VariantListBuilder#encodings(java.lang.String[])
      */
     @Override
     public VariantListBuilder encodings(String... encodings) {
-        if (this.encodings == null)
+        if (this.encodings == null) {
             this.encodings = new ArrayList<String>();
-        for (String encoding : encodings)
+        }
+        for (final String encoding : encodings) {
             this.encodings.add(encoding);
+        }
         return this;
     }
 
@@ -149,16 +155,18 @@ public class VariantListBuilderImpl extends VariantListBuilder {
      * Set the language[s] for this variant.
      * 
      * @param languages
-     *                the available languages
+     *            the available languages
      * @return the updated builder
      * @see javax.ws.rs.core.Variant.VariantListBuilder#languages(java.lang.String[])
      */
     @Override
     public VariantListBuilder languages(Locale... languages) {
-        if (this.languages == null)
+        if (this.languages == null) {
             this.languages = new ArrayList<Locale>();
-        for (Locale language : languages)
+        }
+        for (final Locale language : languages) {
             this.languages.add(language);
+        }
         return this;
     }
 
@@ -166,18 +174,20 @@ public class VariantListBuilderImpl extends VariantListBuilder {
      * Set the media type[s] for this variant.
      * 
      * @param mediaTypes
-     *                the available mediaTypes. If specific charsets are
-     *                supported they should be included as parameters of the
-     *                respective media type.
+     *            the available mediaTypes. If specific charsets are supported
+     *            they should be included as parameters of the respective media
+     *            type.
      * @return the updated builder
      * @see javax.ws.rs.core.Variant.VariantListBuilder#mediaTypes(javax.ws.rs.core.MediaType[])
      */
     @Override
     public VariantListBuilder mediaTypes(MediaType... mediaTypes) {
-        if (this.mediaTypes == null)
+        if (this.mediaTypes == null) {
             this.mediaTypes = new ArrayList<MediaType>();
-        for (MediaType mediaType : mediaTypes)
+        }
+        for (final MediaType mediaType : mediaTypes) {
             this.mediaTypes.add(mediaType);
+        }
         return this;
     }
 }

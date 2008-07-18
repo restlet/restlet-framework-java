@@ -46,9 +46,9 @@ public class Parameter implements Comparable<Parameter> {
      * Preferred constructor.
      * 
      * @param name
-     *                The name.
+     *            The name.
      * @param value
-     *                The value.
+     *            The value.
      */
     public Parameter(String name, String value) {
         this.name = name;
@@ -59,12 +59,48 @@ public class Parameter implements Comparable<Parameter> {
      * Compares this object with the specified object for order.
      * 
      * @param o
-     *                The object to be compared.
+     *            The object to be compared.
      * @return A negative integer, zero, or a positive integer as this object is
      *         less than, equal to, or greater than the specified object.
      */
     public int compareTo(Parameter o) {
         return getName().compareTo(o.getName());
+    }
+
+    /**
+     * Encodes the parameter and appends the result to the given buffer. Uses
+     * the standard URI encoding mechanism.
+     * 
+     * @param buffer
+     *            The buffer to append.
+     * @param characterSet
+     *            The supported character encoding
+     * @throws IOException
+     */
+    public void encode(Appendable buffer, CharacterSet characterSet)
+            throws IOException {
+        if (getName() != null) {
+            buffer.append(Reference.encode(getName(), characterSet));
+
+            if (getValue() != null) {
+                buffer.append('=');
+                buffer.append(Reference.encode(getValue(), characterSet));
+            }
+        }
+    }
+
+    /**
+     * Encodes the parameter using the standard URI encoding mechanism.
+     * 
+     * @param characterSet
+     *            The supported character encoding.
+     * @return The encoded string.
+     * @throws IOException
+     */
+    public String encode(CharacterSet characterSet) throws IOException {
+        final StringBuilder sb = new StringBuilder();
+        encode(sb, characterSet);
+        return sb.toString();
     }
 
     /** {@inheritDoc} */
@@ -76,7 +112,7 @@ public class Parameter implements Comparable<Parameter> {
         if (!result) {
             // if obj isn't a parameter or is null don't evaluate further
             if (obj instanceof Parameter) {
-                Parameter that = (Parameter) obj;
+                final Parameter that = (Parameter) obj;
 
                 if (this.name != null) {
                     // compare names taking care of nulls
@@ -128,7 +164,7 @@ public class Parameter implements Comparable<Parameter> {
      * Sets the name.
      * 
      * @param name
-     *                The name.
+     *            The name.
      */
     public void setName(String name) {
         this.name = name;
@@ -138,7 +174,7 @@ public class Parameter implements Comparable<Parameter> {
      * Sets the value.
      * 
      * @param value
-     *                The value.
+     *            The value.
      */
     public void setValue(String value) {
         this.value = value;
@@ -152,41 +188,5 @@ public class Parameter implements Comparable<Parameter> {
     @Override
     public String toString() {
         return getName() + ": " + getValue();
-    }
-
-    /**
-     * Encodes the parameter using the standard URI encoding mechanism.
-     * 
-     * @param characterSet
-     *                The supported character encoding.
-     * @return The encoded string.
-     * @throws IOException
-     */
-    public String encode(CharacterSet characterSet) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        encode(sb, characterSet);
-        return sb.toString();
-    }
-
-    /**
-     * Encodes the parameter and appends the result to the given buffer. Uses
-     * the standard URI encoding mechanism.
-     * 
-     * @param buffer
-     *                The buffer to append.
-     * @param characterSet
-     *                The supported character encoding
-     * @throws IOException
-     */
-    public void encode(Appendable buffer, CharacterSet characterSet)
-            throws IOException {
-        if (getName() != null) {
-            buffer.append(Reference.encode(getName(), characterSet));
-
-            if (getValue() != null) {
-                buffer.append('=');
-                buffer.append(Reference.encode(getValue(), characterSet));
-            }
-        }
     }
 }

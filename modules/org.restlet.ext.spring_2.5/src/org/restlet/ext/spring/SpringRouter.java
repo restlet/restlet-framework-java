@@ -47,10 +47,55 @@ import org.restlet.resource.Resource;
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
  * 
- * @see <a href="http://www.springframework.org/">Spring home page</a>
+ * @see <a href="http://www.springframework.org/">Spring home page< /a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class SpringRouter extends Router {
+
+    /**
+     * Sets the map of routes to attach.
+     * 
+     * @param router
+     *            The router to attach to.
+     * @param routes
+     *            The map of routes to attach
+     */
+    @SuppressWarnings("unchecked")
+    public static void setAttachments(Router router, Map<String, Object> routes) {
+        Object value;
+        Class resourceClass;
+
+        try {
+            for (final String key : routes.keySet()) {
+                value = routes.get(key);
+
+                if (value instanceof Restlet) {
+                    router.attach(key, (Restlet) value);
+                } else if (value instanceof Class) {
+                    router.attach(key, (Class<? extends Resource>) value);
+                } else if (value instanceof String) {
+                    resourceClass = Class.forName((String) value);
+
+                    if (Resource.class.isAssignableFrom(resourceClass)) {
+                        router.attach(key, resourceClass);
+                    } else {
+                        router
+                                .getLogger()
+                                .warning(
+                                        "Unknown class found in the mappings. Only subclasses of org.restlet.resource.Resource are allowed.");
+                    }
+                } else {
+                    router
+                            .getLogger()
+                            .warning(
+                                    "Unknown object found in the mappings. Only instances of Restlet and subclasses of org.restlet.resource.Resource are allowed.");
+                }
+            }
+        } catch (final ClassNotFoundException e) {
+            router.getLogger().log(Level.WARNING,
+                    "Unable to set the router mappings", e);
+        }
+    }
 
     /**
      * Constructor.
@@ -79,55 +124,10 @@ public class SpringRouter extends Router {
      * instances or as qualified class names).
      * 
      * @param routes
-     *                The map of routes to attach.
+     *            The map of routes to attach.
      */
     public void setAttachments(Map<String, Object> routes) {
         setAttachments(this, routes);
-    }
-
-    /**
-     * Sets the map of routes to attach.
-     * 
-     * @param router
-     *                The router to attach to.
-     * @param routes
-     *                The map of routes to attach
-     */
-    @SuppressWarnings("unchecked")
-    public static void setAttachments(Router router, Map<String, Object> routes) {
-        Object value;
-        Class resourceClass;
-
-        try {
-            for (String key : routes.keySet()) {
-                value = routes.get(key);
-
-                if (value instanceof Restlet) {
-                    router.attach(key, (Restlet) value);
-                } else if (value instanceof Class) {
-                    router.attach(key, (Class<? extends Resource>) value);
-                } else if (value instanceof String) {
-                    resourceClass = Class.forName((String) value);
-
-                    if (Resource.class.isAssignableFrom(resourceClass)) {
-                        router.attach(key, resourceClass);
-                    } else {
-                        router
-                                .getLogger()
-                                .warning(
-                                        "Unknown class found in the mappings. Only subclasses of org.restlet.resource.Resource are allowed.");
-                    }
-                } else {
-                    router
-                            .getLogger()
-                            .warning(
-                                    "Unknown object found in the mappings. Only instances of Restlet and subclasses of org.restlet.resource.Resource are allowed.");
-                }
-            }
-        } catch (ClassNotFoundException e) {
-            router.getLogger().log(Level.WARNING,
-                    "Unable to set the router mappings", e);
-        }
     }
 
 }

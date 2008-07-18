@@ -35,9 +35,9 @@ import org.restlet.util.Template;
  * should be especially careful when storing state in member variables.
  * 
  * @see org.restlet.util.Template
- * @see <a
- *      href="http://www.restlet.org/documentation/1.1/tutorial#part10">Tutorial:
- *      URI rewriting and redirection</a>
+ * @see <a *
+ *      href="http://www.restlet.org/documentation/1.1/tutorial#part10">Tutorial
+ *      : * URI rewriting and redirection< /a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Redirector extends Restlet {
@@ -95,9 +95,9 @@ public class Redirector extends Restlet {
      * Constructor for the dispatcher mode.
      * 
      * @param context
-     *                The context.
+     *            The context.
      * @param targetTemplate
-     *                The template to build the target URI.
+     *            The template to build the target URI.
      * @see org.restlet.util.Template
      */
     public Redirector(Context context, String targetTemplate) {
@@ -108,12 +108,12 @@ public class Redirector extends Restlet {
      * Constructor.
      * 
      * @param context
-     *                The context.
+     *            The context.
      * @param targetPattern
-     *                The pattern to build the target URI (using StringTemplate
-     *                syntax and the CallModel for variables).
+     *            The pattern to build the target URI (using StringTemplate
+     *            syntax and the CallModel for variables).
      * @param mode
-     *                The redirection mode.
+     *            The redirection mode.
      */
     public Redirector(Context context, String targetPattern, int mode) {
         super(context);
@@ -127,21 +127,21 @@ public class Redirector extends Restlet {
      * @return The redirection mode.
      */
     public int getMode() {
-        return mode;
+        return this.mode;
     }
 
     /**
      * Returns the target reference to redirect to.
      * 
      * @param request
-     *                The request to handle.
+     *            The request to handle.
      * @param response
-     *                The response to update.
+     *            The response to update.
      * @return The target reference to redirect to.
      */
     protected Reference getTargetRef(Request request, Response response) {
         // Create the template
-        Template rt = new Template(getLogger(), this.targetTemplate);
+        final Template rt = new Template(getLogger(), this.targetTemplate);
 
         // Return the formatted target URI
         return new Reference(rt.format(request, response));
@@ -160,14 +160,14 @@ public class Redirector extends Restlet {
      * Handles a call by redirecting using the selected redirection mode.
      * 
      * @param request
-     *                The request to handle.
+     *            The request to handle.
      * @param response
-     *                The response to update.
+     *            The response to update.
      */
     @Override
     public void handle(Request request, Response response) {
         // Generate the target reference
-        Reference targetRef = getTargetRef(request, response);
+        final Reference targetRef = getTargetRef(request, response);
 
         switch (this.mode) {
         case MODE_CLIENT_PERMANENT:
@@ -212,16 +212,16 @@ public class Redirector extends Restlet {
      * call.
      * 
      * @param targetRef
-     *                The target reference with URI variables resolved.
+     *            The target reference with URI variables resolved.
      * @param request
-     *                The request to handle.
+     *            The request to handle.
      * @param response
-     *                The response to update.
+     *            The response to update.
      */
     protected void redirectDispatcher(Reference targetRef, Request request,
             Response response) {
         // Save the base URI if it exists as we might need it for redirections
-        Reference baseRef = request.getResourceRef().getBaseRef();
+        final Reference baseRef = request.getResourceRef().getBaseRef();
 
         // Update the request to cleanly go to the target URI
         request.setResourceRef(targetRef);
@@ -234,13 +234,13 @@ public class Redirector extends Restlet {
 
         // In case of redirection, we may have to rewrite the redirect URI
         if (response.getLocationRef() != null) {
-            Template rt = new Template(getLogger(), this.targetTemplate);
-            int matched = rt.parse(response.getLocationRef().toString(),
+            final Template rt = new Template(getLogger(), this.targetTemplate);
+            final int matched = rt.parse(response.getLocationRef().toString(),
                     request);
 
             if (matched > 0) {
-                String remainingPart = (String) request.getAttributes().get(
-                        "rr");
+                final String remainingPart = (String) request.getAttributes()
+                        .get("rr");
 
                 if (remainingPart != null) {
                     response.setLocationRef(baseRef.toString() + remainingPart);
@@ -255,7 +255,7 @@ public class Redirector extends Restlet {
      * modification.
      * 
      * @param initialEntity
-     *                The initial entity returned.
+     *            The initial entity returned.
      * @return The rewritten entity.
      */
     protected Representation rewrite(Representation initialEntity) {
@@ -266,7 +266,7 @@ public class Redirector extends Restlet {
      * Sets the redirection mode.
      * 
      * @param mode
-     *                The redirection mode.
+     *            The redirection mode.
      */
     public void setMode(int mode) {
         this.mode = mode;
@@ -276,7 +276,7 @@ public class Redirector extends Restlet {
      * Sets the target URI pattern.
      * 
      * @param targetTemplate
-     *                The target URI pattern.
+     *            The target URI pattern.
      */
     public void setTargetTemplate(String targetTemplate) {
         this.targetTemplate = targetTemplate;

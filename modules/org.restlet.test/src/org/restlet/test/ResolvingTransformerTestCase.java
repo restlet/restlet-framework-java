@@ -78,27 +78,28 @@ public class ResolvingTransformerTestCase extends TestCase {
                     this.baseUri);
             assertNotNull("resolved source for " + testUri
                     + " should not be null", resolvedSource);
-            StringBuilder data = new StringBuilder();
+            final StringBuilder data = new StringBuilder();
             if (resolvedSource instanceof StreamSource) {
                 final StreamSource streamSource = (StreamSource) resolvedSource;
                 Reader dataReader = (streamSource).getReader();
                 if (dataReader == null) {
-                    InputStream in = (streamSource.getInputStream());
+                    final InputStream in = (streamSource.getInputStream());
                     assertNotNull("no reader or inputstream available", in);
                     dataReader = new InputStreamReader(in);
                 }
 
                 assertNotNull("no reader to data in source.", dataReader);
-                char[] buf = new char[1024];
+                final char[] buf = new char[1024];
                 int len = 0;
                 while ((len = dataReader.read(buf)) != -1) {
                     data.append(buf, 0, len);
                 }
                 dataReader.close();
-            } else
+            } else {
                 // TODO support other source implementations (namely sax-source
                 // impls)
                 fail("test implementation currently doesn't handle other source (e.g. sax) implementations");
+            }
             assertEquals(message, testData, data.toString());
         }
     }
@@ -127,9 +128,10 @@ public class ResolvingTransformerTestCase extends TestCase {
             return new Restlet() {
                 @Override
                 public void handle(Request request, Response response) {
-                    String remainder = request.getResourceRef()
+                    final String remainder = request.getResourceRef()
                             .getRemainingPart();
-                    Representation answer = uriMap.get(remainder);
+                    final Representation answer = SimpleUriMapApplication.this.uriMap
+                            .get(remainder);
                     if (answer != null) {
                         response.setEntity(answer);
                     }
@@ -155,21 +157,21 @@ public class ResolvingTransformerTestCase extends TestCase {
     // testing purely the resolver, no active transforming context (ie xslt
     // engine) in this test
     public void testResolving() throws Exception {
-        Component comp = new Component();
+        final Component comp = new Component();
 
         // create an xml input representation
-        Representation xml = new StringRepresentation(
+        final Representation xml = new StringRepresentation(
                 "<?xml version='1.0'><simpleroot/>", MediaType.TEXT_XML);
 
         // create an xsl template representation
-        Representation xslt = new StringRepresentation(
+        final Representation xslt = new StringRepresentation(
                 "<?xml version=\"1.0\"?>"
                         + "<xsl:transform xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='1.0'>"
                         + "<xsl:template match ='/'><newroot/></xsl:template></xsl:transform>",
                 MediaType.TEXT_XML);
 
-        TransformRepresentation transRep = new TransformRepresentation(comp
-                .getContext(), xml, xslt);
+        final TransformRepresentation transRep = new TransformRepresentation(
+                comp.getContext(), xml, xslt);
 
         // create a test-stream representation to be returned when the correct
         // code is presented
@@ -188,7 +190,7 @@ public class ResolvingTransformerTestCase extends TestCase {
         assertNotNull("no resolver present!", uriResolver);
         final String baseUri = testBase + "/dummy";
 
-        AssertResolvingHelper test = new AssertResolvingHelper(baseUri,
+        final AssertResolvingHelper test = new AssertResolvingHelper(baseUri,
                 uriResolver);
 
         final String absoluteUri = testBase + "/" + testCode;
@@ -210,7 +212,7 @@ public class ResolvingTransformerTestCase extends TestCase {
     // functional test in the actual xslt engine context
     public void testTransform() throws Exception {
 
-        Component comp = new Component();
+        final Component comp = new Component();
         comp.getClients().add(Protocol.CLAP);
 
         // here is the plan / setup
@@ -248,20 +250,20 @@ public class ResolvingTransformerTestCase extends TestCase {
                         + "    <xsl:copy-of select='$external/data3' />"
                         + "  </xsl:template>" + "</xsl:transform>",
                 MediaType.TEXT_XML);
-        SimpleUriMapApplication thirdLevel = new SimpleUriMapApplication();
+        final SimpleUriMapApplication thirdLevel = new SimpleUriMapApplication();
         thirdLevel.add("3rd.xsl", xslt3);
         thirdLevel.add("3rd.xml", xml3);
         comp.getInternalRouter().attach("/three/", thirdLevel);
 
         // xml In
-        Representation xmlIn = new StringRepresentation(
+        final Representation xmlIn = new StringRepresentation(
                 "<?xml version='1.0' ?><input><one/><any attTwo='2'/><el3>drie</el3></input>");
         // xslOne
-        Reference xsltOneRef = new LocalReference("clap://thread/"
+        final Reference xsltOneRef = new LocalReference("clap://thread/"
                 + MY_BASEPATH + "/xslt/one/1st.xsl");
-        Representation xsltOne = comp.getContext().getClientDispatcher().get(
-                xsltOneRef).getEntity();
-        TransformRepresentation tr = new TransformRepresentation(comp
+        final Representation xsltOne = comp.getContext().getClientDispatcher()
+                .get(xsltOneRef).getEntity();
+        final TransformRepresentation tr = new TransformRepresentation(comp
                 .getContext(), xmlIn, xsltOne);
 
         // TODO transformer output should go to SAX! The sax-event-stream should
@@ -270,9 +272,9 @@ public class ResolvingTransformerTestCase extends TestCase {
         // (NOTE: current string-compare assertion might fail on lexical aspects
         // as
         // ignorable whitespace, encoding settings etc etc)
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
         tr.write(out);
-        String xmlOut = out.toString();
+        final String xmlOut = out.toString();
 
         final String expectedResult = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><output><data1>1st</data1><data2>2nd</data2>"
                 + thirdDocData + "</output>";

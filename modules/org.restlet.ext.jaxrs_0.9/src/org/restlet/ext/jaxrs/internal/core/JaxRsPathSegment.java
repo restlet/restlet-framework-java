@@ -37,28 +37,27 @@ public class JaxRsPathSegment implements PathSegment {
 
     /**
      * @param matrParamString
-     *                The string to parse the matrix parameters
+     *            The string to parse the matrix parameters
      * @param decode
-     *                if true, than the keys and values are decoded, if false,
-     *                than not.
+     *            if true, than the keys and values are decoded, if false, than
+     *            not.
      * @param encodeAndCheckWhenNotDecode
-     *                If decode is false and encodeAndCheckWhenNotDecode is
-     *                true, than an IllegalArgumentException is thrown, when a
-     *                parameter contains illegal characters, if false nothing
-     *                will checked. If decode is true, this value is ignored.
-     * @return
-     * 
-     * Method is public for testing, otherwise it would be package visible.
+     *            If decode is false and encodeAndCheckWhenNotDecode is true,
+     *            than an IllegalArgumentException is thrown, when a parameter
+     *            contains illegal characters, if false nothing will checked. If
+     *            decode is true, this value is ignored.
+     * @return Method is public for testing, otherwise it would be package
+     *         visible.
      */
     public static MultivaluedMapImpl<String, String> parseMatrixParams(
             String matrParamString, boolean decode) {
-        MultivaluedMapImpl<String, String> matrixParameters = new MultivaluedMapImpl<String, String>();
-        if (matrParamString == null)
+        final MultivaluedMapImpl<String, String> matrixParameters = new MultivaluedMapImpl<String, String>();
+        if (matrParamString == null) {
             return matrixParameters;
-        String[] paramsEncSpl = matrParamString.split(";");
-        for (int i = 0; i < paramsEncSpl.length; i++) {
-            String matrParamEnc = paramsEncSpl[i];
-            int posEquSign = matrParamEnc.indexOf('=');
+        }
+        final String[] paramsEncSpl = matrParamString.split(";");
+        for (final String matrParamEnc : paramsEncSpl) {
+            final int posEquSign = matrParamEnc.indexOf('=');
             String nameEnc;
             String valueEnc;
             if (posEquSign <= 0) {
@@ -68,8 +67,9 @@ public class JaxRsPathSegment implements PathSegment {
                 nameEnc = matrParamEnc.substring(0, posEquSign);
                 valueEnc = matrParamEnc.substring(posEquSign + 1);
             }
-            if (nameEnc.length() == 0 && valueEnc == null)
-                continue;	
+            if ((nameEnc.length() == 0) && (valueEnc == null)) {
+                continue;
+            }
             String name;
             String value;
             if (decode) {
@@ -101,30 +101,30 @@ public class JaxRsPathSegment implements PathSegment {
 
     /**
      * @param segmentEnc
-     *                Segment with matrix parameter. The segment is encoded.
+     *            Segment with matrix parameter. The segment is encoded.
      * @param decode
-     *                true, if the path and the marix parameters should be
-     *                decoded.
+     *            true, if the path and the marix parameters should be decoded.
      * @param indexForErrMess
-     *                If the user adds more than one path segment with one call,
-     *                you can give the index for an error message here. Set -1,
-     *                if none. See
-     *                {@link EncodeOrCheck#checkForInvalidUriChars(String, int, String)}
+     *            If the user adds more than one path segment with one call, you
+     *            can give the index for an error message here. Set -1, if none.
+     *            See
+     *            {@link EncodeOrCheck#checkForInvalidUriChars(String, int, String)}
      * @throws IllegalArgumentException
-     *                 the segment is null, if decode and encode is both true
+     *             the segment is null, if decode and encode is both true
      */
     public JaxRsPathSegment(String segmentEnc, boolean decode,
             int indexForErrMess) throws IllegalArgumentException {
         if (segmentEnc == null) {
-            if (indexForErrMess >= 0)
+            if (indexForErrMess >= 0) {
                 throw new IllegalArgumentException("The " + indexForErrMess
                         + ". segment must not be null");
-            else
+            } else {
                 throw new IllegalArgumentException(
                         "The segment must not be null");
+            }
         }
         this.decode = decode;
-        int indexOfSemic = segmentEnc.indexOf(';');
+        final int indexOfSemic = segmentEnc.indexOf(';');
         String path;
         if (indexOfSemic >= 0) {
             path = segmentEnc.substring(0, indexOfSemic);
@@ -138,15 +138,19 @@ public class JaxRsPathSegment implements PathSegment {
 
     @Override
     public boolean equals(Object object) {
-        if (this == object)
+        if (this == object) {
             return true;
-        if (!(object instanceof JaxRsPathSegment))
+        }
+        if (!(object instanceof JaxRsPathSegment)) {
             return false;
-        PathSegment other = (PathSegment) object;
-        if (!this.getPath().equals(other.getPath()))
+        }
+        final PathSegment other = (PathSegment) object;
+        if (!getPath().equals(other.getPath())) {
             return false;
-        if (!this.getMatrixParameters().equals(other.getMatrixParameters()))
+        }
+        if (!getMatrixParameters().equals(other.getMatrixParameters())) {
             return false;
+        }
         return true;
     }
 
@@ -158,9 +162,10 @@ public class JaxRsPathSegment implements PathSegment {
      */
     public MultivaluedMap<String, String> getMatrixParameters() {
         if (this.matrixParameters == null) {
-            this.matrixParameters = parseMatrixParams(matrParamEncoded, decode);
+            this.matrixParameters = parseMatrixParams(this.matrParamEncoded,
+                    this.decode);
         }
-        return matrixParameters;
+        return this.matrixParameters;
     }
 
     /**
@@ -168,32 +173,32 @@ public class JaxRsPathSegment implements PathSegment {
      * @see PathSegment#getPath()
      */
     public String getPath() {
-        return path;
+        return this.path;
     }
 
     @Override
     public int hashCode() {
-        return this.path.hashCode() ^ this.getMatrixParameters().hashCode();
+        return this.path.hashCode() ^ getMatrixParameters().hashCode();
     }
 
     /**
      * Appends this PathSegment to the given Appendable
      * 
      * @param stb
-     *                StringBuilder or other Appendable to append this
-     *                PathSegment.
+     *            StringBuilder or other Appendable to append this PathSegment.
      * @param convertBraces
-     *                if true, all braces are converted, if false then not, see
-     *                {@link Util#append(Appendable, CharSequence, boolean)}.
+     *            if true, all braces are converted, if false then not, see
+     *            {@link Util#append(Appendable, CharSequence, boolean)}.
      * @throws IOException
-     *                 if the Appendable has a problem.
+     *             if the Appendable has a problem.
      */
     public void toAppendable(Appendable stb, boolean convertBraces)
             throws IOException {
         Util.append(stb, this.path, convertBraces);
-        MultivaluedMap<String, String> matrixParams = getMatrixParameters();
-        for (Map.Entry<String, List<String>> mpe : matrixParams.entrySet()) {
-            for (String value : mpe.getValue()) {
+        final MultivaluedMap<String, String> matrixParams = getMatrixParameters();
+        for (final Map.Entry<String, List<String>> mpe : matrixParams
+                .entrySet()) {
+            for (final String value : mpe.getValue()) {
                 stb.append(';');
                 Util.append(stb, mpe.getKey(), convertBraces);
                 stb.append('=');
@@ -204,7 +209,7 @@ public class JaxRsPathSegment implements PathSegment {
 
     @Override
     public String toString() {
-        StringBuilder stb = new StringBuilder();
+        final StringBuilder stb = new StringBuilder();
         toStringBuilder(stb, false);
         return stb.toString();
     }
@@ -213,15 +218,15 @@ public class JaxRsPathSegment implements PathSegment {
      * Appends this PathSegment to the given StringBuilder
      * 
      * @param stb
-     *                the StrinBuilder to append
+     *            the StrinBuilder to append
      * @param convertBraces
-     *                if true, than conatined braces will be encoded, see
-     *                {@link Util#append(Appendable, CharSequence, boolean)}.
+     *            if true, than conatined braces will be encoded, see
+     *            {@link Util#append(Appendable, CharSequence, boolean)}.
      */
     public void toStringBuilder(StringBuilder stb, boolean convertBraces) {
         try {
             toAppendable(stb, convertBraces);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new RuntimeException(
                     "IOException in StringBuilder; that is normally not possible");
         }

@@ -42,7 +42,7 @@ public class MemoryOAuthProvider implements OAuthProvider {
     // TODO: LRU collections.
     private final Map<String, OAuthConsumer> consumers = new HashMap<String, OAuthConsumer>();
 
-    private Logger logger;
+    private final Logger logger;
 
     private final Set<OAuthAccessor> tokens = new HashSet<OAuthAccessor>();
 
@@ -51,58 +51,60 @@ public class MemoryOAuthProvider implements OAuthProvider {
     }
 
     public void addConsumer(String key, OAuthConsumer consumer) {
-        logger.fine("Adding consumer " + consumer);
-        consumers.put(key, consumer);
+        this.logger.fine("Adding consumer " + consumer);
+        this.consumers.put(key, consumer);
     }
 
     public void generateAccessToken(OAuthAccessor accessor) {
         // generate oauth_token and oauth_secret
-        String consumer_key = (String) accessor.consumer.getProperty("name");
+        final String consumer_key = (String) accessor.consumer
+                .getProperty("name");
 
         // generate token and secret based on consumer_key
         // for now use md5 of name + current time as token
-        String token_data = consumer_key + System.nanoTime();
-        String token = DigestUtils.md5Hex(token_data);
+        final String token_data = consumer_key + System.nanoTime();
+        final String token = DigestUtils.md5Hex(token_data);
 
         // first remove the accessor from cache
-        tokens.remove(accessor);
+        this.tokens.remove(accessor);
 
         accessor.requestToken = null;
         accessor.accessToken = token;
 
-        logger.fine("Adding access token " + accessor);
+        this.logger.fine("Adding access token " + accessor);
 
         // update token in local cache
-        tokens.add(accessor);
+        this.tokens.add(accessor);
     }
 
     public void generateRequestToken(OAuthAccessor accessor) {
         // generate oauth_token and oauth_secret
-        String consumer_key = (String) accessor.consumer.getProperty("name");
+        final String consumer_key = (String) accessor.consumer
+                .getProperty("name");
         // generate token and secret based on consumer_key
 
         // for now use md5 of name + current time as token
-        String token_data = consumer_key + System.nanoTime();
-        String token = DigestUtils.md5Hex(token_data);
+        final String token_data = consumer_key + System.nanoTime();
+        final String token = DigestUtils.md5Hex(token_data);
         // for now use md5 of name + current time + token as secret
-        String secret_data = consumer_key + System.nanoTime() + token;
-        String secret = DigestUtils.md5Hex(secret_data);
+        final String secret_data = consumer_key + System.nanoTime() + token;
+        final String secret = DigestUtils.md5Hex(secret_data);
 
         accessor.requestToken = token;
         accessor.tokenSecret = secret;
         accessor.accessToken = null;
 
-        logger.fine("Adding request token " + accessor);
+        this.logger.fine("Adding request token " + accessor);
 
         // add to the local cache
-        tokens.add(accessor);
+        this.tokens.add(accessor);
     }
 
     public OAuthAccessor getAccessor(OAuthMessage requestMessage) {
         String consumer_token = null;
         try {
             consumer_token = requestMessage.getToken();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             return null;
         }
 
@@ -113,7 +115,7 @@ public class MemoryOAuthProvider implements OAuthProvider {
         OAuthAccessor accessor = null;
 
         // TODO: This is slow.
-        for (OAuthAccessor a : tokens) {
+        for (final OAuthAccessor a : this.tokens) {
             if (a.requestToken != null) {
                 if (a.requestToken.equals(consumer_token)) {
                     accessor = a;
@@ -132,25 +134,25 @@ public class MemoryOAuthProvider implements OAuthProvider {
 
     public OAuthConsumer getConsumer(OAuthMessage requestMessage) {
         try {
-            String consumer_key = requestMessage.getConsumerKey();
-            return consumers.get(consumer_key);
-        } catch (IOException e) {
+            final String consumer_key = requestMessage.getConsumerKey();
+            return this.consumers.get(consumer_key);
+        } catch (final IOException e) {
             return null;
         }
     }
 
     public void markAsAuthorized(OAuthAccessor accessor, String userId) {
         // first remove the accessor from cache
-        tokens.remove(accessor);
+        this.tokens.remove(accessor);
 
         accessor.setProperty("user", userId);
         accessor.setProperty("authorized", Boolean.TRUE);
 
-        logger.fine("Authorizing request token " + accessor + " for userId "
-                + userId);
+        this.logger.fine("Authorizing request token " + accessor
+                + " for userId " + userId);
 
         // update token in local cache
-        tokens.add(accessor);
+        this.tokens.add(accessor);
     }
 
 }

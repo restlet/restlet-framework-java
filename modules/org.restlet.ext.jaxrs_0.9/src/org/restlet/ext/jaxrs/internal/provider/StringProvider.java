@@ -46,6 +46,32 @@ import org.restlet.ext.jaxrs.internal.util.Util;
 public class StringProvider extends AbstractProvider<CharSequence> {
 
     /**
+     * Returns an {@link InputStream}, that returns the right encoded data
+     * according to the given {@link CharacterSet}.
+     * 
+     * @param charSequ
+     * @param charsetName
+     *            see {@link String#getBytes(String)}
+     * @return
+     */
+    private ByteArrayInputStream getInputStream(CharSequence charSequ,
+            String charsetName) {
+        byte[] bytes;
+        final String string = charSequ.toString();
+        try {
+            bytes = string.getBytes(charsetName);
+        } catch (final UnsupportedEncodingException e) {
+            try {
+                bytes = string.getBytes(Util.JAX_RS_DEFAULT_CHARACTER_SET
+                        .toString());
+            } catch (final UnsupportedEncodingException e1) {
+                bytes = string.getBytes();
+            }
+        }
+        return new ByteArrayInputStream(bytes);
+    }
+
+    /**
      * @see javax.ws.rs.ext.MessageBodyWriter#getSize(java.lang.Object)
      */
     @Override
@@ -82,34 +108,10 @@ public class StringProvider extends AbstractProvider<CharSequence> {
             Type genericType, Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
-        CharacterSet cs = Response.getCurrent().getEntity().getCharacterSet();
-        InputStream inputStream = getInputStream(charSequence, cs.toString());
+        final CharacterSet cs = Response.getCurrent().getEntity()
+                .getCharacterSet();
+        final InputStream inputStream = getInputStream(charSequence, cs
+                .toString());
         Util.copyStream(inputStream, entityStream);
-    }
-
-    /**
-     * Returns an {@link InputStream}, that returns the right encoded data
-     * according to the given {@link CharacterSet}.
-     * 
-     * @param charSequ
-     * @param charsetName
-     *                see {@link String#getBytes(String)}
-     * @return
-     */
-    private ByteArrayInputStream getInputStream(CharSequence charSequ,
-            String charsetName) {
-        byte[] bytes;
-        String string = charSequ.toString();
-        try {
-            bytes = string.getBytes(charsetName);
-        } catch (UnsupportedEncodingException e) {
-            try {
-                bytes = string.getBytes(Util.JAX_RS_DEFAULT_CHARACTER_SET
-                        .toString());
-            } catch (UnsupportedEncodingException e1) {
-                bytes = string.getBytes();
-            }
-        }
-        return new ByteArrayInputStream(bytes);
     }
 }

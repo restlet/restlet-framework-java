@@ -46,7 +46,8 @@ public class IntegerEntityProvider implements MessageBodyReader<Integer>,
     }
 
     /**
-     * @see javax.ws.rs.ext.MessageBodyReader#isReadable(java.lang.Class, java.lang.reflect.Type, java.lang.annotation.Annotation[])
+     * @see javax.ws.rs.ext.MessageBodyReader#isReadable(java.lang.Class,
+     *      java.lang.reflect.Type, java.lang.annotation.Annotation[])
      */
     public boolean isReadable(Class<?> type, Type genericType,
             Annotation[] annotations) {
@@ -54,7 +55,8 @@ public class IntegerEntityProvider implements MessageBodyReader<Integer>,
     }
 
     /**
-     * @see javax.ws.rs.ext.MessageBodyWriter#isWriteable(java.lang.Class, java.lang.reflect.Type, java.lang.annotation.Annotation[])
+     * @see javax.ws.rs.ext.MessageBodyWriter#isWriteable(java.lang.Class,
+     *      java.lang.reflect.Type, java.lang.annotation.Annotation[])
      */
     public boolean isWriteable(Class<?> type, Type genericType,
             Annotation[] annotations) {
@@ -62,20 +64,27 @@ public class IntegerEntityProvider implements MessageBodyReader<Integer>,
     }
 
     /**
-     * @see javax.ws.rs.ext.MessageBodyReader#readFrom(java.lang.Class, java.lang.reflect.Type, java.lang.annotation.Annotation[], javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap, java.io.InputStream)
+     * @see javax.ws.rs.ext.MessageBodyReader#readFrom(java.lang.Class,
+     *      java.lang.reflect.Type, java.lang.annotation.Annotation[],
+     *      javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap,
+     *      java.io.InputStream)
      */
     public Integer readFrom(Class<Integer> type, Type genericType,
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
-        String str = Util.copyToStringBuilder(entityStream).toString();
-        if (str.length() == 0)
+        final String str = Util.copyToStringBuilder(entityStream).toString();
+        if (str.length() == 0) {
             return null;
+        }
         return new Integer(str);
     }
 
     /**
-     * @see javax.ws.rs.ext.MessageBodyWriter#writeTo(java.lang.Object, java.lang.Class, java.lang.reflect.Type, java.lang.annotation.Annotation[], javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap, java.io.OutputStream)
+     * @see javax.ws.rs.ext.MessageBodyWriter#writeTo(java.lang.Object,
+     *      java.lang.Class, java.lang.reflect.Type,
+     *      java.lang.annotation.Annotation[], javax.ws.rs.core.MediaType,
+     *      javax.ws.rs.core.MultivaluedMap, java.io.OutputStream)
      */
     public void writeTo(Integer integer, Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType,

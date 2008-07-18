@@ -60,17 +60,17 @@ public class ContactResource extends BaseResource {
             setModifiable(true);
             // Get the contact and its parent mailbox thanks to their IDs taken
             // from the resource's URI.
-            String mailboxId = Reference.decode((String) request
+            final String mailboxId = Reference.decode((String) request
                     .getAttributes().get("mailboxId"));
-            mailbox = getObjectsFacade().getMailboxById(mailboxId);
+            this.mailbox = getObjectsFacade().getMailboxById(mailboxId);
 
-            if (mailbox != null) {
-                String contactId = (String) request.getAttributes().get(
+            if (this.mailbox != null) {
+                final String contactId = (String) request.getAttributes().get(
                         "contactId");
-                contact = getObjectsFacade().getContactById(contactId);
+                this.contact = getObjectsFacade().getContactById(contactId);
 
-                if (contact != null) {
-                    hostedMailboxes = getObjectsFacade().getMailboxes();
+                if (this.contact != null) {
+                    this.hostedMailboxes = getObjectsFacade().getMailboxes();
                     getVariants().add(new Variant(MediaType.TEXT_HTML));
                 }
             }
@@ -95,7 +95,7 @@ public class ContactResource extends BaseResource {
      */
     @Override
     public void removeRepresentations() throws ResourceException {
-        getObjectsFacade().deleteContact(mailbox, contact);
+        getObjectsFacade().deleteContact(this.mailbox, this.contact);
         getResponse().redirectSeeOther(
                 getRequest().getResourceRef().getParentRef());
     }
@@ -105,13 +105,13 @@ public class ContactResource extends BaseResource {
      */
     @Override
     public Representation represent(Variant variant) throws ResourceException {
-        Map<String, Object> dataModel = new TreeMap<String, Object>();
+        final Map<String, Object> dataModel = new TreeMap<String, Object>();
         dataModel.put("currentUser", getCurrentUser());
-        dataModel.put("mailbox", mailbox);
-        dataModel.put("contact", contact);
+        dataModel.put("mailbox", this.mailbox);
+        dataModel.put("contact", this.contact);
         dataModel.put("resourceRef", getRequest().getResourceRef());
         dataModel.put("rootRef", getRequest().getRootRef());
-        dataModel.put("hostedMailboxes", hostedMailboxes);
+        dataModel.put("hostedMailboxes", this.hostedMailboxes);
 
         return getHTMLTemplateRepresentation("contact.html", dataModel);
     }
@@ -122,11 +122,11 @@ public class ContactResource extends BaseResource {
     @Override
     public void storeRepresentation(Representation entity)
             throws ResourceException {
-        Form form = new Form(entity);
-        contact.setMailAddress(form.getFirstValue("mailAddress"));
-        contact.setName(form.getFirstValue("name"));
+        final Form form = new Form(entity);
+        this.contact.setMailAddress(form.getFirstValue("mailAddress"));
+        this.contact.setName(form.getFirstValue("name"));
 
-        getObjectsFacade().updateContact(mailbox, contact);
+        getObjectsFacade().updateContact(this.mailbox, this.contact);
         getResponse().redirectSeeOther(getRequest().getResourceRef());
     }
 

@@ -53,8 +53,9 @@ public class RequestInfo {
         if (d == null) {
             synchronized (this) {
                 d = this.documentations;
-                if (d == null)
+                if (d == null) {
                     this.documentations = d = new ArrayList<DocumentationInfo>();
+                }
             }
         }
         return d;
@@ -71,8 +72,9 @@ public class RequestInfo {
         if (p == null) {
             synchronized (this) {
                 p = this.parameters;
-                if (p == null)
+                if (p == null) {
                     this.parameters = p = new ArrayList<ParameterInfo>();
+                }
             }
         }
         return p;
@@ -89,8 +91,9 @@ public class RequestInfo {
         if (r == null) {
             synchronized (this) {
                 r = this.representations;
-                if (r == null)
+                if (r == null) {
                     this.representations = r = new ArrayList<RepresentationInfo>();
+                }
             }
         }
         return r;
@@ -140,15 +143,15 @@ public class RequestInfo {
         } else {
             writer.startElement(APP_NAMESPACE, "request");
 
-            for (DocumentationInfo documentationInfo : getDocumentations()) {
+            for (final DocumentationInfo documentationInfo : getDocumentations()) {
                 documentationInfo.writeElement(writer);
             }
 
-            for (ParameterInfo parameterInfo : getParameters()) {
+            for (final ParameterInfo parameterInfo : getParameters()) {
                 parameterInfo.writeElement(writer);
             }
 
-            for (RepresentationInfo representationInfo : getRepresentations()) {
+            for (final RepresentationInfo representationInfo : getRepresentations()) {
                 representationInfo.writeElement(writer);
             }
 

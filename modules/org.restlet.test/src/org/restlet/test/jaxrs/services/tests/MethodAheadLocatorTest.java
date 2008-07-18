@@ -35,14 +35,14 @@ public class MethodAheadLocatorTest extends JaxRsTestCase {
     }
 
     public void test1() throws IOException {
-        Response response = get("p1");
+        final Response response = get("p1");
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("method", response.getEntity().getText());
     }
 
     public void test2() throws IOException {
-        Response response = get("p2");
+        final Response response = get("p2");
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("method", response.getEntity().getText());

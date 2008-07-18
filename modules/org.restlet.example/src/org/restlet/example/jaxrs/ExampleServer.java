@@ -41,12 +41,13 @@ public class ExampleServer {
 
     public static void main(String[] args) throws Exception {
         // create Component (as ever for Restlet)
-        Component comp = new Component();
-        Server server = comp.getServers().add(Protocol.HTTP, 80);
+        final Component comp = new Component();
+        final Server server = comp.getServers().add(Protocol.HTTP, 80);
 
         // create JAX-RS runtime environment
-        JaxRsApplication application = new JaxRsApplication(comp.getContext());
-        
+        final JaxRsApplication application = new JaxRsApplication(comp
+                .getContext());
+
         // attach ApplicationConfig
         application.add(new ExampleAppConfig());
 

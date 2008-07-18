@@ -13,7 +13,7 @@ public class SimpleHttpServerWithFilter {
     public static void main(String[] args) {
 
         // Creates a Restlet whose response to each request is "Hello, world".
-        Restlet restlet = new Restlet() {
+        final Restlet restlet = new Restlet() {
             @Override
             public void handle(Request request, Response response) {
                 // response.setEntity("hello, world", MediaType.TEXT_PLAIN);
@@ -21,7 +21,7 @@ public class SimpleHttpServerWithFilter {
             }
         };
 
-        StatusFilter statusFilter = new StatusFilter(null, true,
+        final StatusFilter statusFilter = new StatusFilter(null, true,
                 "admin@example.com", "http://www.example.com");
         statusFilter.setNext(restlet);
 
@@ -29,7 +29,7 @@ public class SimpleHttpServerWithFilter {
         // requests to the router.
         try {
             new Server(Protocol.HTTP, statusFilter).start();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
     }

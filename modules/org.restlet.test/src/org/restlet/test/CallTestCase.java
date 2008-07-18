@@ -38,26 +38,6 @@ import com.noelios.restlet.http.HttpCall;
  */
 public class CallTestCase extends RestletTestCase {
     /**
-     * Returns a request.
-     * 
-     * @return Request instance.
-     */
-    protected Request getRequest() {
-        return new Request();
-    }
-
-    /**
-     * Returns a response.
-     * 
-     * @param request
-     *                The associated request.
-     * @return Response instance.
-     */
-    protected Response getResponse(Request request) {
-        return new Response(request);
-    }
-
-    /**
      * Returns a connector call.
      * 
      * @return A connector call instance.
@@ -82,7 +62,7 @@ public class CallTestCase extends RestletTestCase {
      * Returns a reference with the specified URI.
      * 
      * @param uri
-     *                The URI.
+     *            The URI.
      * @return Reference instance.
      */
     protected Reference getReference(String uri) {
@@ -90,22 +70,51 @@ public class CallTestCase extends RestletTestCase {
     }
 
     /**
-     * Tests status getting/setting.
+     * Returns a request.
+     * 
+     * @return Request instance.
      */
-    public void testStatus() throws Exception {
-        Request request = getRequest();
-        Response response = getResponse(request);
-        response.setStatus(Status.SUCCESS_OK);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
-        response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-        assertEquals(Status.CLIENT_ERROR_BAD_REQUEST, response.getStatus());
+    protected Request getRequest() {
+        return new Request();
+    }
+
+    /**
+     * Returns a response.
+     * 
+     * @param request
+     *            The associated request.
+     * @return Response instance.
+     */
+    protected Response getResponse(Request request) {
+        return new Response(request);
+    }
+
+    /**
+     * Tests context's base reference getting/setting.
+     */
+    public void testBaseRef() throws Exception {
+        final Request request = getRequest();
+        final String resourceRefURI = "http://www.restlet.org/path/to/resource";
+        final Reference resourceRef = getReference(resourceRefURI);
+        request.setResourceRef(resourceRefURI);
+        assertEquals(resourceRef, request.getResourceRef());
+        String uri = "http://www.restlet.org/path";
+        Reference reference = getReference(uri);
+        request.getResourceRef().setBaseRef(uri);
+        assertEquals(uri, request.getResourceRef().getBaseRef().toString());
+        assertEquals(reference, request.getResourceRef().getBaseRef());
+        uri = "http://www.restlet.org/path/to";
+        reference = getReference(uri);
+        request.getResourceRef().setBaseRef(uri);
+        assertEquals(uri, request.getResourceRef().getBaseRef().toString());
+        assertEquals(reference, request.getResourceRef().getBaseRef());
     }
 
     /**
      * Tests client address getting/setting.
      */
     public void testClientAddress() throws Exception {
-        ClientInfo client = getRequest().getClientInfo();
+        final ClientInfo client = getRequest().getClientInfo();
         String address = "127.0.0.1";
         client.setAddress(address);
         assertEquals(address, client.getAddress());
@@ -122,9 +131,9 @@ public class CallTestCase extends RestletTestCase {
      * Tests client addresses getting/setting.
      */
     public void testClientAddresses() throws Exception {
-        ClientInfo client = getRequest().getClientInfo();
+        final ClientInfo client = getRequest().getClientInfo();
         String firstAddress = "127.0.0.1";
-        String secondAddress = "192.168.99.10";
+        final String secondAddress = "192.168.99.10";
         List<String> addresses = Arrays.asList(new String[] { firstAddress,
                 secondAddress });
         client.getAddresses().addAll(addresses);
@@ -147,7 +156,7 @@ public class CallTestCase extends RestletTestCase {
      * Tests client agent getting/setting.
      */
     public void testClientAgent() throws Exception {
-        ClientInfo client = getRequest().getClientInfo();
+        final ClientInfo client = getRequest().getClientInfo();
         String name = "Restlet";
         client.setAgent(name);
         assertEquals(name, client.getAgent());
@@ -157,38 +166,10 @@ public class CallTestCase extends RestletTestCase {
     }
 
     /**
-     * Tests server address getting/setting.
-     */
-    public void testServerAddress() throws Exception {
-        Request request = getRequest();
-        Response response = getResponse(request);
-        String address = "127.0.0.1";
-        response.getServerInfo().setAddress(address);
-        assertEquals(address, response.getServerInfo().getAddress());
-        address = "192.168.99.10";
-        response.getServerInfo().setAddress(address);
-        assertEquals(address, response.getServerInfo().getAddress());
-    }
-
-    /**
-     * Tests server agent getting/setting.
-     */
-    public void testServerAgent() throws Exception {
-        Request request = getRequest();
-        Response response = getResponse(request);
-        String name = "Restlet";
-        response.getServerInfo().setAgent(name);
-        assertEquals(name, response.getServerInfo().getAgent());
-        name = "Restlet Server";
-        response.getServerInfo().setAgent(name);
-        assertEquals(name, response.getServerInfo().getAgent());
-    }
-
-    /**
      * Tests method getting/setting.
      */
     public void testMethod() throws Exception {
-        Request request = getRequest();
+        final Request request = getRequest();
         request.setMethod(Method.GET);
         assertEquals(Method.GET, request.getMethod());
         request.setMethod(Method.POST);
@@ -199,8 +180,8 @@ public class CallTestCase extends RestletTestCase {
      * Tests redirection reference getting/setting.
      */
     public void testRedirectionRef() throws Exception {
-        Request request = getRequest();
-        Response response = getResponse(request);
+        final Request request = getRequest();
+        final Response response = getResponse(request);
         String uri = "http://www.restlet.org/";
         Reference reference = getReference(uri);
         response.setLocationRef(uri);
@@ -215,7 +196,7 @@ public class CallTestCase extends RestletTestCase {
      * Tests referrer reference getting/setting.
      */
     public void testReferrerRef() throws Exception {
-        Request request = getRequest();
+        final Request request = getRequest();
         String uri = "http://www.restlet.org/";
         Reference reference = getReference(uri);
         request.setReferrerRef(uri);
@@ -230,7 +211,7 @@ public class CallTestCase extends RestletTestCase {
      * Tests resource reference getting/setting.
      */
     public void testResourceRef() throws Exception {
-        Request request = getRequest();
+        final Request request = getRequest();
         String uri = "http://www.restlet.org/";
         Reference reference = getReference(uri);
         request.setResourceRef(uri);
@@ -242,24 +223,43 @@ public class CallTestCase extends RestletTestCase {
     }
 
     /**
-     * Tests context's base reference getting/setting.
+     * Tests server address getting/setting.
      */
-    public void testBaseRef() throws Exception {
-        Request request = getRequest();
-        String resourceRefURI = "http://www.restlet.org/path/to/resource";
-        Reference resourceRef = getReference(resourceRefURI);
-        request.setResourceRef(resourceRefURI);
-        assertEquals(resourceRef, request.getResourceRef());
-        String uri = "http://www.restlet.org/path";
-        Reference reference = getReference(uri);
-        request.getResourceRef().setBaseRef(uri);
-        assertEquals(uri, request.getResourceRef().getBaseRef().toString());
-        assertEquals(reference, request.getResourceRef().getBaseRef());
-        uri = "http://www.restlet.org/path/to";
-        reference = getReference(uri);
-        request.getResourceRef().setBaseRef(uri);
-        assertEquals(uri, request.getResourceRef().getBaseRef().toString());
-        assertEquals(reference, request.getResourceRef().getBaseRef());
+    public void testServerAddress() throws Exception {
+        final Request request = getRequest();
+        final Response response = getResponse(request);
+        String address = "127.0.0.1";
+        response.getServerInfo().setAddress(address);
+        assertEquals(address, response.getServerInfo().getAddress());
+        address = "192.168.99.10";
+        response.getServerInfo().setAddress(address);
+        assertEquals(address, response.getServerInfo().getAddress());
+    }
+
+    /**
+     * Tests server agent getting/setting.
+     */
+    public void testServerAgent() throws Exception {
+        final Request request = getRequest();
+        final Response response = getResponse(request);
+        String name = "Restlet";
+        response.getServerInfo().setAgent(name);
+        assertEquals(name, response.getServerInfo().getAgent());
+        name = "Restlet Server";
+        response.getServerInfo().setAgent(name);
+        assertEquals(name, response.getServerInfo().getAgent());
+    }
+
+    /**
+     * Tests status getting/setting.
+     */
+    public void testStatus() throws Exception {
+        final Request request = getRequest();
+        final Response response = getResponse(request);
+        response.setStatus(Status.SUCCESS_OK);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
+        assertEquals(Status.CLIENT_ERROR_BAD_REQUEST, response.getStatus());
     }
 
 }

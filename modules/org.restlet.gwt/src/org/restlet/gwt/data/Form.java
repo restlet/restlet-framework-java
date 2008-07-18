@@ -18,6 +18,7 @@
 
 package org.restlet.gwt.data;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.restlet.gwt.resource.Representation;
@@ -42,7 +43,7 @@ public class Form extends Series<Parameter> {
      * Constructor.
      * 
      * @param initialCapacity
-     *                The initial list capacity.
+     *            The initial list capacity.
      */
     public Form(int initialCapacity) {
         super(initialCapacity);
@@ -52,7 +53,7 @@ public class Form extends Series<Parameter> {
      * Constructor.
      * 
      * @param delegate
-     *                The delegate list.
+     *            The delegate list.
      */
     public Form(List<Parameter> delegate) {
         super(delegate);
@@ -62,8 +63,7 @@ public class Form extends Series<Parameter> {
      * Constructor.
      * 
      * @param representation
-     *                The representation to parse (URL encoded Web form
-     *                supported).
+     *            The representation to parse (URL encoded Web form supported).
      * @throws IOException
      */
     public Form(Representation representation) {
@@ -71,41 +71,11 @@ public class Form extends Series<Parameter> {
     }
 
     /**
-     * Constructor.
-     * 
-     * @param queryString
-     *                The Web form parameters as a string.
-     * @param characterSet
-     *                The supported character encoding.
-     * @throws IOException
-     */
-    public Form(String queryString, CharacterSet characterSet) {
-        this(queryString, characterSet, '&');
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param parametersString
-     *                The parameters string to parse.
-     * @param characterSet
-     *                The supported character encoding.
-     * @param separator
-     *                The separator character to append between parameters.
-     * @throws IOException
-     */
-    public Form(String parametersString, CharacterSet characterSet,
-            char separator) {
-        Engine.getInstance().parse(this, parametersString, characterSet, true,
-                separator);
-    }
-
-    /**
      * Constructor. Uses UTF-8 as the character set for encoding non-ASCII
      * characters.
      * 
      * @param queryString
-     *                The Web form parameters as a string.
+     *            The Web form parameters as a string.
      * @throws IOException
      */
     public Form(String queryString) {
@@ -117,13 +87,43 @@ public class Form extends Series<Parameter> {
      * characters.
      * 
      * @param parametersString
-     *                The parameters string to parse.
+     *            The parameters string to parse.
      * @param separator
-     *                The separator character to append between parameters.
+     *            The separator character to append between parameters.
      * @throws IOException
      */
     public Form(String parametersString, char separator) {
         this(parametersString, CharacterSet.UTF_8, separator);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param queryString
+     *            The Web form parameters as a string.
+     * @param characterSet
+     *            The supported character encoding.
+     * @throws IOException
+     */
+    public Form(String queryString, CharacterSet characterSet) {
+        this(queryString, characterSet, '&');
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param parametersString
+     *            The parameters string to parse.
+     * @param characterSet
+     *            The supported character encoding.
+     * @param separator
+     *            The separator character to append between parameters.
+     * @throws IOException
+     */
+    public Form(String parametersString, CharacterSet characterSet,
+            char separator) {
+        Engine.getInstance().parse(this, parametersString, characterSet, true,
+                separator);
     }
 
     @Override
@@ -155,7 +155,7 @@ public class Form extends Series<Parameter> {
      * URL encodes the form. The '&' character is used as a separator.
      * 
      * @param characterSet
-     *                The supported character encoding.
+     *            The supported character encoding.
      * @return The encoded form.
      * @throws IOException
      */
@@ -167,18 +167,19 @@ public class Form extends Series<Parameter> {
      * URL encodes the form.
      * 
      * @param characterSet
-     *                The supported character encoding.
+     *            The supported character encoding.
      * @param separator
-     *                The separator character to append between parameters.
+     *            The separator character to append between parameters.
      * @return The encoded form.
      * @throws IOException
      */
     public String encode(CharacterSet characterSet, char separator)
             throws Exception {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         for (int i = 0; i < size(); i++) {
-            if (i > 0)
+            if (i > 0) {
                 sb.append(separator);
+            }
             get(i).encode(sb, characterSet);
         }
 
@@ -191,7 +192,7 @@ public class Form extends Series<Parameter> {
      * 
      * @return The form as a matrix string.
      * @see <a href="http://www.w3.org/DesignIssues/MatrixURIs.html">Matrix URIs
-     *      by Tim Berners Lee</a>
+     *      * by Tim Berners Lee< /a>
      */
     public String getMatrixString() {
         return getMatrixString(CharacterSet.UTF_8);
@@ -201,15 +202,15 @@ public class Form extends Series<Parameter> {
      * Formats the form as a query string.
      * 
      * @param characterSet
-     *                The supported character encoding.
+     *            The supported character encoding.
      * @return The form as a matrix string.
      * @see <a href="http://www.w3.org/DesignIssues/MatrixURIs.html">Matrix URIs
-     *      by Tim Berners Lee</a>
+     *      * by Tim Berners Lee< /a>
      */
     public String getMatrixString(CharacterSet characterSet) {
         try {
             return encode(characterSet, ';');
-        } catch (Exception ioe) {
+        } catch (final Exception ioe) {
             return null;
         }
     }
@@ -228,13 +229,13 @@ public class Form extends Series<Parameter> {
      * Formats the form as a query string.
      * 
      * @param characterSet
-     *                The supported character encoding.
+     *            The supported character encoding.
      * @return The form as a query string.
      */
     public String getQueryString(CharacterSet characterSet) {
         try {
             return encode(characterSet);
-        } catch (Exception ioe) {
+        } catch (final Exception ioe) {
             return null;
         }
     }
@@ -255,7 +256,7 @@ public class Form extends Series<Parameter> {
      * (MediaType.APPLICATION_WWW_FORM).
      * 
      * @param characterSet
-     *                The supported character encoding.
+     *            The supported character encoding.
      * @return The form as a Web representation.
      */
     public Representation getWebRepresentation(CharacterSet characterSet) {

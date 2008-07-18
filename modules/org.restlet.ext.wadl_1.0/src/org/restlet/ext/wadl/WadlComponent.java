@@ -58,10 +58,10 @@ public class WadlComponent extends Component {
      */
     public static void main(String[] args) throws Exception {
         // Create a new WADL-aware component
-        WadlComponent component = new WadlComponent();
+        final WadlComponent component = new WadlComponent();
 
         // For each WADL document URI attach a matching Application
-        for (String arg : args) {
+        for (final String arg : args) {
             component.attach(arg);
         }
 
@@ -126,7 +126,8 @@ public class WadlComponent extends Component {
         }
 
         // Get the WADL document
-        Response response = getContext().getClientDispatcher().get(wadlRef);
+        final Response response = getContext().getClientDispatcher().get(
+                wadlRef);
 
         if (response.getStatus().isSuccess() && response.isEntityAvailable()) {
             result = attach(response.getEntity());
@@ -144,7 +145,7 @@ public class WadlComponent extends Component {
      * @return The created WADL application.
      */
     public WadlApplication attach(Representation wadl) {
-        WadlApplication result = new WadlApplication(getContext(), wadl);
+        final WadlApplication result = new WadlApplication(getContext(), wadl);
         result.attachToComponent(this);
         return result;
     }

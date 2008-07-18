@@ -36,7 +36,7 @@ import org.restlet.gwt.data.Parameter;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  * @param <E>
- *                The contained type
+ *            The contained type
  * @see org.restlet.data.Parameter
  * @see java.util.Collections
  * @see java.util.List
@@ -60,7 +60,7 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      * Constructor.
      * 
      * @param initialCapacity
-     *                The initial list capacity.
+     *            The initial list capacity.
      */
     public Series(int initialCapacity) {
         super(initialCapacity);
@@ -70,7 +70,7 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      * Constructor.
      * 
      * @param delegate
-     *                The delegate list.
+     *            The delegate list.
      */
     public Series(List<E> delegate) {
         super(delegate);
@@ -80,9 +80,9 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      * Creates then adds a parameter at the end of the list.
      * 
      * @param name
-     *                The parameter name.
+     *            The parameter name.
      * @param value
-     *                The parameter value.
+     *            The parameter value.
      * @return True (as per the general contract of the Collection.add method).
      */
     public boolean add(String name, String value) {
@@ -95,13 +95,13 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      * If multiple values are found, a list is created and set in the map.
      * 
      * @param params
-     *                The map controlling the copy.
+     *            The map controlling the copy.
      */
     @SuppressWarnings("unchecked")
     public void copyTo(Map<String, Object> params) {
         Parameter param;
         Object currentValue = null;
-        for (Iterator<E> iter = iterator(); iter.hasNext();) {
+        for (final Iterator<E> iter = iterator(); iter.hasNext();) {
             param = iter.next();
 
             if (params.containsKey(param.getName())) {
@@ -141,9 +141,9 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      * Creates a new entry.
      * 
      * @param name
-     *                The name of the entry.
+     *            The name of the entry.
      * @param value
-     *                The value of the entry.
+     *            The value of the entry.
      * @return A new entry.
      */
     public abstract E createEntry(String name, String value);
@@ -152,7 +152,7 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      * Creates a new series.
      * 
      * @param delegate
-     *                Optional delegate series.
+     *            Optional delegate series.
      * @return A new series.
      */
     public abstract Series<E> createSeries(List<E> delegate);
@@ -162,11 +162,11 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      * sensitivity flag.
      * 
      * @param value1
-     *                The first value.
+     *            The first value.
      * @param value2
-     *                The second value.
+     *            The second value.
      * @param ignoreCase
-     *                Indicates if the test should be case insensitive.
+     *            Indicates if the test should be case insensitive.
      * @return True if both values are equal.
      */
     private boolean equals(String value1, String value2, boolean ignoreCase) {
@@ -189,7 +189,7 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      * Returns the first parameter found with the given name.
      * 
      * @param name
-     *                The parameter name (case sensitive).
+     *            The parameter name (case sensitive).
      * @return The first parameter found with the given name.
      */
     public E getFirst(String name) {
@@ -200,13 +200,13 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      * Returns the first parameter found with the given name.
      * 
      * @param name
-     *                The parameter name.
+     *            The parameter name.
      * @param ignoreCase
-     *                Indicates if the name comparison is case sensitive.
+     *            Indicates if the name comparison is case sensitive.
      * @return The first parameter found with the given name.
      */
     public E getFirst(String name, boolean ignoreCase) {
-        for (E param : this) {
+        for (final E param : this) {
             if (equals(param.getName(), name, ignoreCase)) {
                 return param;
             }
@@ -219,7 +219,7 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      * Returns the value of the first parameter found with the given name.
      * 
      * @param name
-     *                The parameter name (case sensitive).
+     *            The parameter name (case sensitive).
      * @return The value of the first parameter found with the given name.
      */
     public String getFirstValue(String name) {
@@ -230,9 +230,9 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      * Returns the value of the first parameter found with the given name.
      * 
      * @param name
-     *                The parameter name.
+     *            The parameter name.
      * @param ignoreCase
-     *                Indicates if the name comparison is case sensitive.
+     *            Indicates if the name comparison is case sensitive.
      * @return The value of the first parameter found with the given name.
      */
     public String getFirstValue(String name, boolean ignoreCase) {
@@ -243,19 +243,18 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      * Returns the value of the first parameter found with the given name.
      * 
      * @param name
-     *                The parameter name.
+     *            The parameter name.
      * @param ignoreCase
-     *                Indicates if the name comparison is case sensitive.
+     *            Indicates if the name comparison is case sensitive.
      * @param defaultValue
-     *                The default value to return if no matching parameter
-     *                found.
+     *            The default value to return if no matching parameter found.
      * @return The value of the first parameter found with the given name or the
      *         default value.
      */
     public String getFirstValue(String name, boolean ignoreCase,
             String defaultValue) {
         String result = defaultValue;
-        Parameter param = getFirst(name, ignoreCase);
+        final Parameter param = getFirst(name, ignoreCase);
 
         if (param != null) {
             result = param.getValue();
@@ -268,10 +267,9 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      * Returns the value of the first parameter found with the given name.
      * 
      * @param name
-     *                The parameter name (case sensitive).
+     *            The parameter name (case sensitive).
      * @param defaultValue
-     *                The default value to return if no matching parameter
-     *                found.
+     *            The default value to return if no matching parameter found.
      * @return The value of the first parameter found with the given name or the
      *         default value.
      */
@@ -285,9 +283,9 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      * @return The set of parameter names.
      */
     public Set<String> getNames() {
-        Set<String> result = new HashSet<String>();
+        final Set<String> result = new HashSet<String>();
 
-        for (Parameter param : this) {
+        for (final Parameter param : this) {
             result.add(param.getName());
         }
 
@@ -300,7 +298,7 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      * separated by a comma (like for HTTP message headers).
      * 
      * @param name
-     *                The parameter name (case insensitive).
+     *            The parameter name (case insensitive).
      * @return The values of the parameters with a given name.
      */
     public String getValues(String name) {
@@ -313,18 +311,18 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      * by the given separator.
      * 
      * @param name
-     *                The parameter name.
+     *            The parameter name.
      * @param separator
-     *                The separator character.
+     *            The separator character.
      * @param ignoreCase
-     *                Indicates if the name comparison is case sensitive.
+     *            Indicates if the name comparison is case sensitive.
      * @return The sequence of values.
      */
     public String getValues(String name, String separator, boolean ignoreCase) {
         String result = null;
         StringBuilder sb = null;
 
-        for (E param : this) {
+        for (final E param : this) {
             if ((ignoreCase && param.getName().equalsIgnoreCase(name))
                     || param.getName().equals(name)) {
                 if (sb == null) {
@@ -353,12 +351,12 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      * name.
      * 
      * @param name
-     *                The parameter name to match.
+     *            The parameter name to match.
      * @return The array of values.
      */
     public String[] getValuesArray(String name) {
-        List<E> params = subList(name);
-        String[] result = new String[params.size()];
+        final List<E> params = subList(name);
+        final String[] result = new String[params.size()];
 
         for (int i = 0; i < params.size(); i++) {
             result[i] = params.get(i).getValue();
@@ -375,9 +373,9 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      * @return The map of name, value pairs.
      */
     public Map<String, String> getValuesMap() {
-        Map<String, String> result = new LinkedHashMap<String, String>();
+        final Map<String, String> result = new LinkedHashMap<String, String>();
 
-        for (Parameter param : this) {
+        for (final Parameter param : this) {
             if (!result.containsKey(param.getName())) {
                 result.put(param.getName(), param.getValue());
             }
@@ -390,7 +388,7 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      * Removes all the parameters with a given name.
      * 
      * @param name
-     *                The parameter name (case sensitive).
+     *            The parameter name (case sensitive).
      * @return True if the list changed.
      */
     public boolean removeAll(String name) {
@@ -401,16 +399,16 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      * Removes all the parameters with a given name.
      * 
      * @param name
-     *                The parameter name.
+     *            The parameter name.
      * @param ignoreCase
-     *                Indicates if the name comparison is case sensitive.
+     *            Indicates if the name comparison is case sensitive.
      * @return True if the list changed.
      */
     public boolean removeAll(String name, boolean ignoreCase) {
         boolean changed = false;
         Parameter param = null;
 
-        for (Iterator<E> iter = iterator(); iter.hasNext();) {
+        for (final Iterator<E> iter = iterator(); iter.hasNext();) {
             param = iter.next();
             if (equals(param.getName(), name, ignoreCase)) {
                 iter.remove();
@@ -426,7 +424,7 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      * name ignoring the case.
      * 
      * @param name
-     *                The name of the entries to be removed (case sensitive).
+     *            The name of the entries to be removed (case sensitive).
      * @return false if no entry has been removed, true otherwise.
      */
     public boolean removeFirst(String name) {
@@ -438,16 +436,16 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      * name ignoring the case or not.
      * 
      * @param name
-     *                The name of the entries to be removed.
+     *            The name of the entries to be removed.
      * @param ignoreCase
-     *                true if the comparison ignores the case, false otherwise.
+     *            true if the comparison ignores the case, false otherwise.
      * @return false if no entry has been removed, true otherwise.
      */
     public boolean removeFirst(String name, boolean ignoreCase) {
         boolean changed = false;
         Parameter param = null;
 
-        for (Iterator<E> iter = iterator(); iter.hasNext() && !changed;) {
+        for (final Iterator<E> iter = iterator(); iter.hasNext() && !changed;) {
             param = iter.next();
             if (equals(param.getName(), name, ignoreCase)) {
                 iter.remove();
@@ -463,11 +461,11 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      * all other parameters with the same name.
      * 
      * @param name
-     *                The parameter name.
+     *            The parameter name.
      * @param value
-     *                The value to set.
+     *            The value to set.
      * @param ignoreCase
-     *                Indicates if the name comparison is case sensitive.
+     *            Indicates if the name comparison is case sensitive.
      * @return The parameter set or added.
      */
     public E set(String name, String value, boolean ignoreCase) {
@@ -475,7 +473,7 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
         E param = null;
         boolean found = false;
 
-        for (Iterator<E> iter = iterator(); iter.hasNext();) {
+        for (final Iterator<E> iter = iterator(); iter.hasNext();) {
             param = iter.next();
 
             if (equals(param.getName(), name, ignoreCase)) {
@@ -503,9 +501,9 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      * fromIndex, inclusive, and toIndex, exclusive.
      * 
      * @param fromIndex
-     *                The start position.
+     *            The start position.
      * @param toIndex
-     *                The end position (exclusive).
+     *            The end position (exclusive).
      * @return The sub-list.
      */
     @Override
@@ -517,7 +515,7 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      * Returns a list of all the values associated to the parameter name.
      * 
      * @param name
-     *                The parameter name (case sensitive).
+     *            The parameter name (case sensitive).
      * @return The list of values.
      */
     public Series<E> subList(String name) {
@@ -528,15 +526,15 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      * Returns a list of all the values associated to the parameter name.
      * 
      * @param name
-     *                The parameter name.
+     *            The parameter name.
      * @param ignoreCase
-     *                Indicates if the name comparison is case sensitive.
+     *            Indicates if the name comparison is case sensitive.
      * @return The list of values.
      */
     public Series<E> subList(String name, boolean ignoreCase) {
-        Series<E> result = createSeries(null);
+        final Series<E> result = createSeries(null);
 
-        for (E param : this) {
+        for (final E param : this) {
             if (equals(param.getName(), name, ignoreCase)) {
                 result.add(param);
             }

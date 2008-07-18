@@ -55,11 +55,11 @@ public class AuthenticationUtils {
      * Indicates if any of the objects is null.
      * 
      * @param objects
-     *                The objects to test.
+     *            The objects to test.
      * @return True if any of the objects is null.
      */
     public static boolean anyNull(Object... objects) {
-        for (Object o : objects) {
+        for (final Object o : objects) {
             if (o == null) {
                 return true;
             }
@@ -72,9 +72,9 @@ public class AuthenticationUtils {
      * delegates credential checking to checkSecret().
      * 
      * @param request
-     *                The request to authenticate.
+     *            The request to authenticate.
      * @param guard
-     *                The associated guard to callback.
+     *            The associated guard to callback.
      * @return -1 if the given credentials were invalid, 0 if no credentials
      *         were found and 1 otherwise.
      * @see Guard#checkSecret(Request, String, char[])
@@ -85,11 +85,11 @@ public class AuthenticationUtils {
         if (guard.getScheme() != null) {
             // An authentication scheme has been defined,
             // the request must be authenticated
-            ChallengeResponse cr = request.getChallengeResponse();
+            final ChallengeResponse cr = request.getChallengeResponse();
 
             if (cr != null) {
                 if (guard.getScheme().equals(cr.getScheme())) {
-                    AuthenticationHelper helper = Engine.getInstance()
+                    final AuthenticationHelper helper = Engine.getInstance()
                             .findHelper(cr.getScheme(), false, true);
 
                     if (helper != null) {
@@ -122,14 +122,14 @@ public class AuthenticationUtils {
      * by setting the status to CLIENT_ERROR_UNAUTHORIZED.
      * 
      * @param response
-     *                The response to update.
+     *            The response to update.
      * @param stale
-     *                Indicates if the new challenge is due to a stale response.
+     *            Indicates if the new challenge is due to a stale response.
      * @param guard
-     *                The associated guard to callback.
+     *            The associated guard to callback.
      */
     public static void challenge(Response response, boolean stale, Guard guard) {
-        AuthenticationHelper helper = Engine.getInstance().findHelper(
+        final AuthenticationHelper helper = Engine.getInstance().findHelper(
                 guard.getScheme(), false, true);
 
         if (helper != null) {
@@ -145,12 +145,12 @@ public class AuthenticationUtils {
      * Formats a challenge request as a HTTP header value.
      * 
      * @param request
-     *                The challenge request to format.
+     *            The challenge request to format.
      * @return The authenticate header value.
      */
     public static String format(ChallengeRequest request) {
         String result = null;
-        AuthenticationHelper helper = Engine.getInstance().findHelper(
+        final AuthenticationHelper helper = Engine.getInstance().findHelper(
                 request.getScheme(), false, true);
 
         if (helper != null) {
@@ -168,17 +168,17 @@ public class AuthenticationUtils {
      * Formats a challenge response as raw credentials.
      * 
      * @param challenge
-     *                The challenge response to format.
+     *            The challenge response to format.
      * @param request
-     *                The parent request.
+     *            The parent request.
      * @param httpHeaders
-     *                The current request HTTP headers.
+     *            The current request HTTP headers.
      * @return The authorization header value.
      */
     public static String format(ChallengeResponse challenge, Request request,
             Series<Parameter> httpHeaders) {
         String result = null;
-        AuthenticationHelper helper = Engine.getInstance().findHelper(
+        final AuthenticationHelper helper = Engine.getInstance().findHelper(
                 challenge.getScheme(), true, false);
 
         if (helper != null) {
@@ -196,21 +196,21 @@ public class AuthenticationUtils {
      * Parses an authenticate header into a challenge request.
      * 
      * @param header
-     *                The HTTP header value to parse.
+     *            The HTTP header value to parse.
      * @return The parsed challenge request.
      */
     public static ChallengeRequest parseAuthenticateHeader(String header) {
         ChallengeRequest result = null;
 
         if (header != null) {
-            int space = header.indexOf(' ');
+            final int space = header.indexOf(' ');
 
             if (space != -1) {
-                String scheme = header.substring(0, space);
+                final String scheme = header.substring(0, space);
                 result = new ChallengeRequest(new ChallengeScheme("HTTP_"
                         + scheme, scheme), null);
 
-                String rest = header.substring(space + 1);
+                final String rest = header.substring(space + 1);
                 parseParameters(rest, result.getParameters());
 
                 result.setRealm(result.getParameters().getFirstValue("realm"));
@@ -218,7 +218,7 @@ public class AuthenticationUtils {
         }
 
         // Give a chance to the authentication helper to do further parsing
-        AuthenticationHelper helper = Engine.getInstance().findHelper(
+        final AuthenticationHelper helper = Engine.getInstance().findHelper(
                 result.getScheme(), true, false);
 
         if (helper != null) {
@@ -236,11 +236,11 @@ public class AuthenticationUtils {
      * Parses an authorization header into a challenge response.
      * 
      * @param request
-     *                The request.
+     *            The request.
      * @param logger
-     *                The logger to use.
+     *            The logger to use.
      * @param header
-     *                The header value to parse.
+     *            The header value to parse.
      * @return The parsed challenge response.
      */
     public static ChallengeResponse parseAuthorizationHeader(Request request,
@@ -248,18 +248,18 @@ public class AuthenticationUtils {
         ChallengeResponse result = null;
 
         if (header != null) {
-            int space = header.indexOf(' ');
+            final int space = header.indexOf(' ');
 
             if (space != -1) {
-                String scheme = header.substring(0, space);
-                String credentials = header.substring(space + 1);
+                final String scheme = header.substring(0, space);
+                final String credentials = header.substring(space + 1);
                 result = new ChallengeResponse(new ChallengeScheme("HTTP_"
                         + scheme, scheme), credentials);
 
                 // Give a chance to the authentication helper to do further
                 // parsing
-                AuthenticationHelper helper = Engine.getInstance().findHelper(
-                        result.getScheme(), true, false);
+                final AuthenticationHelper helper = Engine.getInstance()
+                        .findHelper(result.getScheme(), true, false);
 
                 if (helper != null) {
                     helper.parseResponse(result, request, logger);
@@ -279,15 +279,15 @@ public class AuthenticationUtils {
      * parameters.
      * 
      * @param paramString
-     *                The parameters string to parse.
+     *            The parameters string to parse.
      * @param parameters
-     *                The series to update.
+     *            The series to update.
      */
     public static void parseParameters(String paramString,
             Series<Parameter> parameters) {
-        Matcher matcher = PATTERN_RFC_2617.matcher(paramString);
+        final Matcher matcher = PATTERN_RFC_2617.matcher(paramString);
 
-        while (matcher.find() && matcher.groupCount() == 2) {
+        while (matcher.find() && (matcher.groupCount() == 2)) {
             parameters.add(matcher.group(1), matcher.group(2));
         }
     }

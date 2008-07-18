@@ -33,7 +33,8 @@ import com.noelios.restlet.util.SslContextFactory;
 
 /**
  * Jetty HTTPS server connector. Here is the list of additional parameters that
- * are supported: <table>
+ * are supported:
+ * <table>
  * <tr>
  * <th>Parameter name</th>
  * <th>Value type</th>
@@ -119,9 +120,9 @@ import com.noelios.restlet.util.SslContextFactory;
  * </tr>
  * </table>
  * 
- * @see <a
- *      href="http://docs.codehaus.org/display/JETTY/How+to+configure+SSL">How
- *      to configure SSL for Jetty</a>
+ * @see <a *
+ *      href="http://docs.codehaus.org/display/JETTY/How+to+configure+SSL">How *
+ *      to configure SSL for Jetty< /a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class HttpsServerHelper extends JettyServerHelper {
@@ -129,7 +130,7 @@ public class HttpsServerHelper extends JettyServerHelper {
      * Constructor.
      * 
      * @param server
-     *                The server to help.
+     *            The server to help.
      */
     public HttpsServerHelper(Server server) {
         super(server);
@@ -217,7 +218,7 @@ public class HttpsServerHelper extends JettyServerHelper {
                     @Override
                     protected SSLServerSocketFactory createFactory()
                             throws Exception {
-                        SSLContext sslContext = sslContextFactory
+                        final SSLContext sslContext = sslContextFactory
                                 .createSslContext();
                         return sslContext.getServerSocketFactory();
                     }
@@ -239,31 +240,12 @@ public class HttpsServerHelper extends JettyServerHelper {
     }
 
     /**
-     * Returns the SSL keystore path.
+     * Returns the SSL certificate algorithm.
      * 
-     * @return The SSL keystore path.
+     * @return The SSL certificate algorithm.
      */
-    public String getKeystorePath() {
-        return getParameters().getFirstValue("keystorePath",
-                System.getProperty("user.home") + File.separator + ".keystore");
-    }
-
-    /**
-     * Returns the SSL keystore password.
-     * 
-     * @return The SSL keystore password.
-     */
-    public String getKeystorePassword() {
-        return getParameters().getFirstValue("keystorePassword", "");
-    }
-
-    /**
-     * Returns the SSL keystore type.
-     * 
-     * @return The SSL keystore type.
-     */
-    public String getKeystoreType() {
-        return getParameters().getFirstValue("keystoreType", "JKS");
+    public String getCertAlgorithm() {
+        return getParameters().getFirstValue("certAlgorithm", "SunX509");
     }
 
     /**
@@ -276,12 +258,22 @@ public class HttpsServerHelper extends JettyServerHelper {
     }
 
     /**
-     * Returns the SSL certificate algorithm.
+     * Returns the SSL keystore password.
      * 
-     * @return The SSL certificate algorithm.
+     * @return The SSL keystore password.
      */
-    public String getCertAlgorithm() {
-        return getParameters().getFirstValue("certAlgorithm", "SunX509");
+    public String getKeystorePassword() {
+        return getParameters().getFirstValue("keystorePassword", "");
+    }
+
+    /**
+     * Returns the SSL keystore path.
+     * 
+     * @return The SSL keystore path.
+     */
+    public String getKeystorePath() {
+        return getParameters().getFirstValue("keystorePath",
+                System.getProperty("user.home") + File.separator + ".keystore");
     }
 
     /**
@@ -289,8 +281,8 @@ public class HttpsServerHelper extends JettyServerHelper {
      * 
      * @return The SSL keystore type.
      */
-    public String getSslProtocol() {
-        return getParameters().getFirstValue("sslProtocol", "TLS");
+    public String getKeystoreType() {
+        return getParameters().getFirstValue("keystoreType", "JKS");
     }
 
     /**
@@ -322,6 +314,24 @@ public class HttpsServerHelper extends JettyServerHelper {
     }
 
     /**
+     * Returns the SSL keystore type.
+     * 
+     * @return The SSL keystore type.
+     */
+    public String getSslProtocol() {
+        return getParameters().getFirstValue("sslProtocol", "TLS");
+    }
+
+    /**
+     * Returns the type of Jetty connector to use.
+     * 
+     * @return The type of Jetty connector to use.
+     */
+    public int getType() {
+        return Integer.parseInt(getParameters().getFirstValue("type", "2"));
+    }
+
+    /**
      * Indicates if we require client certificate authentication.
      * 
      * @return True if we require client certificate authentication.
@@ -329,16 +339,6 @@ public class HttpsServerHelper extends JettyServerHelper {
     public boolean isNeedClientAuthentication() {
         return Boolean.parseBoolean(getParameters().getFirstValue(
                 "needClientAuthentication", "false"));
-    }
-
-    /**
-     * Indicates if we would like client certificate authentication.
-     * 
-     * @return True if we would like client certificate authentication.
-     */
-    public boolean isWantClientAuthentication() {
-        return Boolean.parseBoolean(getParameters().getFirstValue(
-                "wantClientAuthentication", "false"));
     }
 
     /**
@@ -353,12 +353,13 @@ public class HttpsServerHelper extends JettyServerHelper {
     }
 
     /**
-     * Returns the type of Jetty connector to use.
+     * Indicates if we would like client certificate authentication.
      * 
-     * @return The type of Jetty connector to use.
+     * @return True if we would like client certificate authentication.
      */
-    public int getType() {
-        return Integer.parseInt(getParameters().getFirstValue("type", "2"));
+    public boolean isWantClientAuthentication() {
+        return Boolean.parseBoolean(getParameters().getFirstValue(
+                "wantClientAuthentication", "false"));
     }
 
 }

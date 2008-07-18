@@ -35,7 +35,7 @@ public class ServerHelper extends ConnectorHelper<Server> {
      * Constructor.
      * 
      * @param server
-     *                The client to help.
+     *            The client to help.
      */
     public ServerHelper(Server server) {
         super(server);
@@ -49,9 +49,9 @@ public class ServerHelper extends ConnectorHelper<Server> {
      * {@link Server#handle(Request, Response)} method.
      * 
      * @param request
-     *                The request to handle.
+     *            The request to handle.
      * @param response
-     *                The response to update.
+     *            The response to update.
      */
     @Override
     public void handle(Request request, Response response) {
@@ -63,7 +63,7 @@ public class ServerHelper extends ConnectorHelper<Server> {
      * Sets the ephemeral port in the attributes map if necessary.
      * 
      * @param localPort
-     *                The ephemeral local port.
+     *            The ephemeral local port.
      */
     public void setEphemeralPort(int localPort) {
         // If an ephemeral port is used, make sure we update the attribute for
@@ -77,7 +77,7 @@ public class ServerHelper extends ConnectorHelper<Server> {
      * Sets the ephemeral port in the attributes map if necessary.
      * 
      * @param socket
-     *                The bound server socket.
+     *            The bound server socket.
      */
     public void setEphemeralPort(ServerSocket socket) {
         setEphemeralPort(socket.getLocalPort());

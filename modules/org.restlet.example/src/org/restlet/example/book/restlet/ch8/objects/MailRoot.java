@@ -26,7 +26,7 @@ import java.util.List;
  * 
  */
 public class MailRoot extends BaseObject {
-    
+
     /** Mail boxes managed by the application. */
     private List<Mailbox> mailboxes;
 
@@ -40,11 +40,11 @@ public class MailRoot extends BaseObject {
     }
 
     public List<Mailbox> getMailboxes() {
-        return mailboxes;
+        return this.mailboxes;
     }
 
     public List<User> getUsers() {
-        return users;
+        return this.users;
     }
 
     public void setMailboxes(List<Mailbox> mailboxes) {

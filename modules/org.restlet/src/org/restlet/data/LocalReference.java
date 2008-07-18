@@ -77,9 +77,9 @@ public final class LocalReference extends Reference {
      * Constructor.
      * 
      * @param authorityType
-     *                The authority type for the resource path.
+     *            The authority type for the resource path.
      * @param path
-     *                The resource path.
+     *            The resource path.
      */
     public static LocalReference createClapReference(int authorityType,
             String path) {
@@ -91,7 +91,7 @@ public final class LocalReference extends Reference {
      * Constructor.
      * 
      * @param file
-     *                The file whose path must be used.
+     *            The file whose path must be used.
      * 
      */
     public static LocalReference createFileReference(File file) {
@@ -102,7 +102,7 @@ public final class LocalReference extends Reference {
      * Constructor.
      * 
      * @param filePath
-     *                The local file path.
+     *            The local file path.
      */
     public static LocalReference createFileReference(String filePath) {
         return createFileReference("", filePath);
@@ -112,10 +112,10 @@ public final class LocalReference extends Reference {
      * Constructor.
      * 
      * @param hostName
-     *                The authority (can be a host name or the special
-     *                "localhost" or an empty value).
+     *            The authority (can be a host name or the special "localhost"
+     *            or an empty value).
      * @param filePath
-     *                The file path.
+     *            The file path.
      */
     public static LocalReference createFileReference(String hostName,
             String filePath) {
@@ -127,9 +127,9 @@ public final class LocalReference extends Reference {
      * Constructor.
      * 
      * @param jarFile
-     *                The JAR file reference.
+     *            The JAR file reference.
      * @param entryPath
-     *                The entry path inside the JAR file.
+     *            The entry path inside the JAR file.
      */
     public static LocalReference createJarReference(Reference jarFile,
             String entryPath) {
@@ -141,9 +141,9 @@ public final class LocalReference extends Reference {
      * Constructor.
      * 
      * @param authorityType
-     *                The authority type for the resource path.
+     *            The authority type for the resource path.
      * @param path
-     *                The resource path.
+     *            The resource path.
      */
     public static LocalReference createRiapReference(int authorityType,
             String path) {
@@ -155,7 +155,7 @@ public final class LocalReference extends Reference {
      * Returns an authority name.
      * 
      * @param authority
-     *                The authority.
+     *            The authority.
      * @return The name.
      */
     public static String getAuthorityName(int authority) {
@@ -190,11 +190,11 @@ public final class LocalReference extends Reference {
      * system-dependant separator character.
      * 
      * @param path
-     *                The path to localize.
+     *            The path to localize.
      * @return The localized path.
      */
     public static String localizePath(String path) {
-        StringBuilder result = new StringBuilder();
+        final StringBuilder result = new StringBuilder();
         char nextChar;
         for (int i = 0; i < path.length(); i++) {
             nextChar = path.charAt(i);
@@ -215,11 +215,11 @@ public final class LocalReference extends Reference {
      * characters to the standard '/' separator character.
      * 
      * @param path
-     *                The path to normalize.
+     *            The path to normalize.
      * @return The normalize path.
      */
     public static String normalizePath(String path) {
-        StringBuilder result = new StringBuilder();
+        final StringBuilder result = new StringBuilder();
         char nextChar;
         for (int i = 0; i < path.length(); i++) {
             nextChar = path.charAt(i);
@@ -241,7 +241,7 @@ public final class LocalReference extends Reference {
      * Constructor.
      * 
      * @param localRef
-     *                The local reference.
+     *            The local reference.
      */
     public LocalReference(Reference localRef) {
         super(localRef.toString());
@@ -251,7 +251,7 @@ public final class LocalReference extends Reference {
      * Constructor.
      * 
      * @param localUri
-     *                The local URI.
+     *            The local URI.
      */
     public LocalReference(String localUri) {
         super(localUri);
@@ -266,7 +266,7 @@ public final class LocalReference extends Reference {
         int result = 0;
 
         if (getSchemeProtocol().equals(Protocol.CLAP)) {
-            String authority = getAuthority();
+            final String authority = getAuthority();
 
             if (authority != null) {
                 if (authority.equalsIgnoreCase(getAuthorityName(CLAP_CLASS))) {
@@ -294,11 +294,11 @@ public final class LocalReference extends Reference {
         File result = null;
 
         if (getSchemeProtocol().equals(Protocol.FILE)) {
-            String hostName = getAuthority();
+            final String hostName = getAuthority();
 
             if ((hostName == null) || hostName.equals("")
                     || hostName.equalsIgnoreCase("localhost")) {
-                String filePath = Reference.decode(getPath());
+                final String filePath = Reference.decode(getPath());
                 result = new File(filePath);
             } else {
                 throw new RuntimeException(
@@ -318,10 +318,10 @@ public final class LocalReference extends Reference {
         String result = null;
 
         if (getSchemeProtocol().equals(Protocol.JAR)) {
-            String ssp = getSchemeSpecificPart();
+            final String ssp = getSchemeSpecificPart();
 
             if (ssp != null) {
-                int separatorIndex = ssp.indexOf("!/");
+                final int separatorIndex = ssp.indexOf("!/");
 
                 if (separatorIndex != -1) {
                     result = ssp.substring(separatorIndex + 2);
@@ -341,10 +341,10 @@ public final class LocalReference extends Reference {
         Reference result = null;
 
         if (getSchemeProtocol().equals(Protocol.JAR)) {
-            String ssp = getSchemeSpecificPart();
+            final String ssp = getSchemeSpecificPart();
 
             if (ssp != null) {
-                int separatorIndex = ssp.indexOf("!/");
+                final int separatorIndex = ssp.indexOf("!/");
 
                 if (separatorIndex != -1) {
                     result = new Reference(ssp.substring(0, separatorIndex));
@@ -364,7 +364,7 @@ public final class LocalReference extends Reference {
         int result = 0;
 
         if (getSchemeProtocol().equals(Protocol.RIAP)) {
-            String authority = getAuthority();
+            final String authority = getAuthority();
 
             if (authority != null) {
                 if (authority

@@ -33,26 +33,17 @@ public class JsslutilsSslContextFactory implements SslContextFactory {
     /**
      * The wrapped SSLContextFactory.
      */
-    private SSLContextFactory sslContextFactory;
+    private final SSLContextFactory sslContextFactory;
 
     /**
      * Builds JsslutilsSslContextFactory that wraps an instance of
      * jsslutils.sslcontext.SSLContextFactory.
      * 
      * @param sslContextFactory
-     *                SSLContextFactory (from jSSLutils) to wrap.
+     *            SSLContextFactory (from jSSLutils) to wrap.
      */
     public JsslutilsSslContextFactory(SSLContextFactory sslContextFactory) {
         this.sslContextFactory = sslContextFactory;
-    }
-
-    /**
-     * Returns the wrapped SSLContextFactory with which this instance was built.
-     * 
-     * @return the wrapped SSLContextFactory.
-     */
-    public SSLContextFactory getSslContextFactory() {
-        return this.sslContextFactory;
     }
 
     /**
@@ -65,5 +56,14 @@ public class JsslutilsSslContextFactory implements SslContextFactory {
      */
     public SSLContext createSslContext() throws Exception {
         return this.sslContextFactory.buildSSLContext();
+    }
+
+    /**
+     * Returns the wrapped SSLContextFactory with which this instance was built.
+     * 
+     * @return the wrapped SSLContextFactory.
+     */
+    public SSLContextFactory getSslContextFactory() {
+        return this.sslContextFactory;
     }
 }

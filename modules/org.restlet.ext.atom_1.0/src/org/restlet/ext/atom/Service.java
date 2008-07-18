@@ -76,17 +76,17 @@ public class Service extends SaxRepresentation {
          * Receive notification of character data.
          * 
          * @param ch
-         *                The characters from the XML document.
+         *            The characters from the XML document.
          * @param start
-         *                The start position in the array.
+         *            The start position in the array.
          * @param length
-         *                The number of characters to read from the array.
+         *            The number of characters to read from the array.
          */
         @Override
         public void characters(char[] ch, int start, int length)
                 throws SAXException {
-            if (state == IN_MEMBER_TYPE) {
-                contentBuffer.append(ch, start, length);
+            if (this.state == IN_MEMBER_TYPE) {
+                this.contentBuffer.append(ch, start, length);
             }
         }
 
@@ -105,44 +105,45 @@ public class Service extends SaxRepresentation {
          * Receive notification of the end of an element.
          * 
          * @param uri
-         *                The Namespace URI, or the empty string if the element
-         *                has no Namespace URI or if Namespace processing is not
-         *                being performed.
+         *            The Namespace URI, or the empty string if the element has
+         *            no Namespace URI or if Namespace processing is not being
+         *            performed.
          * @param localName
-         *                The local name (without prefix), or the empty string
-         *                if Namespace processing is not being performed.
+         *            The local name (without prefix), or the empty string if
+         *            Namespace processing is not being performed.
          * @param qName
-         *                The qualified XML name (with prefix), or the empty
-         *                string if qualified names are not available.
+         *            The qualified XML name (with prefix), or the empty string
+         *            if qualified names are not available.
          */
         @Override
         public void endElement(String uri, String localName, String qName)
                 throws SAXException {
             if (localName.equalsIgnoreCase("service")) {
-                state = IN_NONE;
+                this.state = IN_NONE;
             } else if (localName.equalsIgnoreCase("workspace")) {
-                if (state == IN_WORKSPACE) {
-                    getWorkspaces().add(currentWorkspace);
-                    currentWorkspace = null;
-                    state = IN_SERVICE;
+                if (this.state == IN_WORKSPACE) {
+                    getWorkspaces().add(this.currentWorkspace);
+                    this.currentWorkspace = null;
+                    this.state = IN_SERVICE;
                 }
             } else if (localName.equalsIgnoreCase("collection")) {
-                if (state == IN_COLLECTION) {
-                    currentWorkspace.getCollections().add(currentCollection);
-                    currentCollection = null;
-                    state = IN_WORKSPACE;
+                if (this.state == IN_COLLECTION) {
+                    this.currentWorkspace.getCollections().add(
+                            this.currentCollection);
+                    this.currentCollection = null;
+                    this.state = IN_WORKSPACE;
                 }
             } else if (localName.equalsIgnoreCase("member-type")) {
-                if (state == IN_MEMBER_TYPE) {
-                    String memberType = contentBuffer.toString();
+                if (this.state == IN_MEMBER_TYPE) {
+                    final String memberType = this.contentBuffer.toString();
 
                     if (memberType.equalsIgnoreCase("entry")) {
-                        currentCollection.setMemberType(MemberType.ENTRY);
+                        this.currentCollection.setMemberType(MemberType.ENTRY);
                     } else if (memberType.equalsIgnoreCase("media")) {
-                        currentCollection.setMemberType(MemberType.MEDIA);
+                        this.currentCollection.setMemberType(MemberType.MEDIA);
                     }
 
-                    state = IN_COLLECTION;
+                    this.state = IN_COLLECTION;
                 }
             }
         }
@@ -162,43 +163,44 @@ public class Service extends SaxRepresentation {
          * Receive notification of the beginning of an element.
          * 
          * @param uri
-         *                The Namespace URI, or the empty string if the element
-         *                has no Namespace URI or if Namespace processing is not
-         *                being performed.
+         *            The Namespace URI, or the empty string if the element has
+         *            no Namespace URI or if Namespace processing is not being
+         *            performed.
          * @param localName
-         *                The local name (without prefix), or the empty string
-         *                if Namespace processing is not being performed.
+         *            The local name (without prefix), or the empty string if
+         *            Namespace processing is not being performed.
          * @param qName
-         *                The qualified name (with prefix), or the empty string
-         *                if qualified names are not available.
+         *            The qualified name (with prefix), or the empty string if
+         *            qualified names are not available.
          * @param attrs
-         *                The attributes attached to the element. If there are
-         *                no attributes, it shall be an empty Attributes object.
-         *                The value of this object after startElement returns is
-         *                undefined.
+         *            The attributes attached to the element. If there are no
+         *            attributes, it shall be an empty Attributes object. The
+         *            value of this object after startElement returns is
+         *            undefined.
          */
         @Override
         public void startElement(String uri, String localName, String qName,
                 Attributes attrs) throws SAXException {
             if (uri.equalsIgnoreCase(APP_NAMESPACE)) {
                 if (localName.equalsIgnoreCase("service")) {
-                    state = IN_SERVICE;
+                    this.state = IN_SERVICE;
                 } else if (localName.equalsIgnoreCase("workspace")) {
-                    if (state == IN_SERVICE) {
-                        currentWorkspace = new Workspace(this.currentService,
-                                attrs.getValue("title"));
-                        state = IN_WORKSPACE;
+                    if (this.state == IN_SERVICE) {
+                        this.currentWorkspace = new Workspace(
+                                this.currentService, attrs.getValue("title"));
+                        this.state = IN_WORKSPACE;
                     }
                 } else if (localName.equalsIgnoreCase("collection")) {
-                    if (state == IN_WORKSPACE) {
-                        currentCollection = new Collection(currentWorkspace,
-                                attrs.getValue("title"), attrs.getValue("href"));
-                        state = IN_COLLECTION;
+                    if (this.state == IN_WORKSPACE) {
+                        this.currentCollection = new Collection(
+                                this.currentWorkspace, attrs.getValue("title"),
+                                attrs.getValue("href"));
+                        this.state = IN_COLLECTION;
                     }
                 } else if (localName.equalsIgnoreCase("member-type")) {
-                    if (state == IN_COLLECTION) {
-                        contentBuffer = new StringBuilder();
-                        state = IN_MEMBER_TYPE;
+                    if (this.state == IN_COLLECTION) {
+                        this.contentBuffer = new StringBuilder();
+                        this.state = IN_MEMBER_TYPE;
                     }
                 }
             }
@@ -227,10 +229,10 @@ public class Service extends SaxRepresentation {
      * Constructor.
      * 
      * @param context
-     *                The context from which the client dispatcher will be
-     *                retrieved.
+     *            The context from which the client dispatcher will be
+     *            retrieved.
      * @param serviceUri
-     *                The service URI.
+     *            The service URI.
      * @throws IOException
      */
     public Service(Context context, String serviceUri) throws IOException {
@@ -242,7 +244,7 @@ public class Service extends SaxRepresentation {
      * Constructor.
      * 
      * @param serviceUri
-     *                The service URI.
+     *            The service URI.
      * @throws IOException
      */
     public Service(String serviceUri) throws IOException {
@@ -253,9 +255,9 @@ public class Service extends SaxRepresentation {
      * Constructor.
      * 
      * @param serviceUri
-     *                The service URI.
+     *            The service URI.
      * @param xmlService
-     *                The XML introspection document.
+     *            The XML introspection document.
      * @throws IOException
      */
     public Service(String serviceUri, Representation xmlService)
@@ -267,7 +269,7 @@ public class Service extends SaxRepresentation {
      * Constructor.
      * 
      * @param clientDispatcher
-     *                The client HTTP dispatcher.
+     *            The client HTTP dispatcher.
      */
     public Service(Uniform clientDispatcher) {
         super(new MediaType("***"));
@@ -278,9 +280,9 @@ public class Service extends SaxRepresentation {
      * Constructor.
      * 
      * @param clientDispatcher
-     *                The client HTTP dispatcher.
+     *            The client HTTP dispatcher.
      * @param serviceUri
-     *                The service URI.
+     *            The service URI.
      * @throws IOException
      */
     public Service(Uniform clientDispatcher, String serviceUri)
@@ -293,11 +295,11 @@ public class Service extends SaxRepresentation {
      * Constructor.
      * 
      * @param clientDispatcher
-     *                The client HTTP dispatcher.
+     *            The client HTTP dispatcher.
      * @param serviceUri
-     *                The service URI.
+     *            The service URI.
      * @param xmlService
-     *                The XML introspection document.
+     *            The XML introspection document.
      * @throws IOException
      */
     public Service(Uniform clientDispatcher, String serviceUri,
@@ -312,7 +314,7 @@ public class Service extends SaxRepresentation {
      * Deletes a resource.
      * 
      * @param uri
-     *                The resource URI.
+     *            The resource URI.
      * @return The result status.
      */
     public Status deleteResource(String uri) {
@@ -341,7 +343,7 @@ public class Service extends SaxRepresentation {
      * Retrieves a resource representation.
      * 
      * @param uri
-     *                The resource URI.
+     *            The resource URI.
      * @return The resource representation.
      */
     public Representation getResource(String uri) {
@@ -365,7 +367,7 @@ public class Service extends SaxRepresentation {
      * Sets the client HTTP dispatcher.
      * 
      * @param clientDispatcher
-     *                The client HTTP dispatcher.
+     *            The client HTTP dispatcher.
      */
     public void setClientDispatcher(Uniform clientDispatcher) {
         this.clientDispatcher = clientDispatcher;
@@ -375,7 +377,7 @@ public class Service extends SaxRepresentation {
      * Sets the hypertext reference.
      * 
      * @param ref
-     *                The hypertext reference.
+     *            The hypertext reference.
      */
     public void setReference(Reference ref) {
         this.reference = ref;
@@ -385,7 +387,7 @@ public class Service extends SaxRepresentation {
      * Updates a resource representation.
      * 
      * @param uri
-     *                The resource URI.
+     *            The resource URI.
      * @return The resource representation.
      */
     public Status updateResource(String uri,
@@ -398,7 +400,7 @@ public class Service extends SaxRepresentation {
      * Writes the representation to a XML writer.
      * 
      * @param writer
-     *                The XML writer to write to.
+     *            The XML writer to write to.
      * @throws IOException
      */
     @Override
@@ -411,13 +413,13 @@ public class Service extends SaxRepresentation {
             writer.startDocument();
             writer.startElement(APP_NAMESPACE, "service");
 
-            for (Workspace workspace : getWorkspaces()) {
+            for (final Workspace workspace : getWorkspaces()) {
                 workspace.writeElement(writer);
             }
 
             writer.endElement(APP_NAMESPACE, "service");
             writer.endDocument();
-        } catch (SAXException se) {
+        } catch (final SAXException se) {
             throw new IOException("Couldn't write the service representation: "
                     + se.getMessage());
         }

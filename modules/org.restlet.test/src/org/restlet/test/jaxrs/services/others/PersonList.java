@@ -37,16 +37,16 @@ public class PersonList {
 
     private List<Person> persons = new ArrayList<Person>();
 
+    public void add(Person person) {
+        this.persons.add(person);
+    }
+
     @XmlElement(name = "persons")
     public List<Person> getPersons() {
-        return persons;
+        return this.persons;
     }
 
     public void setPersons(List<Person> persons) {
         this.persons = persons;
-    }
-
-    public void add(Person person) {
-        this.persons.add(person);
     }
 }

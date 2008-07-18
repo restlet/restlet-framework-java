@@ -33,18 +33,18 @@ import org.restlet.data.Protocol;
 public class ClapTest {
     public static void main(String[] args) throws Exception {
 
-        Component component = new Component();
+        final Component component = new Component();
         component.getServers().add(Protocol.HTTP, 8182);
         component.getClients().add(Protocol.CLAP);
 
-        Application application = new Application(component.getContext()) {
+        final Application application = new Application(component.getContext()) {
 
             @Override
             public Restlet createRoot() {
                 getConnectorService().getClientProtocols().add(Protocol.CLAP);
                 getConnectorService().getServerProtocols().add(Protocol.HTTP);
 
-                Directory directory = new Directory(getContext(),
+                final Directory directory = new Directory(getContext(),
                         "clap://class");
                 directory.setListingAllowed(true);
                 directory.setDeeplyAccessible(true);

@@ -41,18 +41,17 @@ import net.jxta.protocol.PipeAdvertisement;
  */
 public class PipeUtility {
 
-    public enum Protocol {
-        P2PP("p2pp"), P2PSP("p2psp"), P2MP("p2mp"), HTTP2PP("http2pp"), HTTP2MP(
-                "http2mp"), HTTP("http");
+    public enum Http {
+        HTTP_V1_0("HTTP/1.0"), CHARSET("US-ASCII");
 
-        private String protocol;
+        private final String http;
 
-        Protocol(final String protocol) {
-            this.protocol = protocol;
+        Http(final String http) {
+            this.http = http;
         }
 
-        public String getProtocol() {
-            return protocol;
+        public String getHttp() {
+            return this.http;
         }
     }
 
@@ -63,39 +62,40 @@ public class PipeUtility {
         public enum ATTRIBUTE {
             BUFFER_SIZE(65536);
 
-            private int attribute;
+            private final int attribute;
 
             ATTRIBUTE(final int attribute) {
                 this.attribute = attribute;
             }
 
             public int getAttribute() {
-                return attribute;
+                return this.attribute;
             }
         }
 
-        private String pipe;
+        private final String pipe;
 
         Pipe(final String pipe) {
             this.pipe = pipe;
         }
 
         public String getPipe() {
-            return pipe;
+            return this.pipe;
         }
     }
 
-    public enum Http {
-        HTTP_V1_0("HTTP/1.0"), CHARSET("US-ASCII");
+    public enum Protocol {
+        P2PP("p2pp"), P2PSP("p2psp"), P2MP("p2mp"), HTTP2PP("http2pp"), HTTP2MP(
+                "http2mp"), HTTP("http");
 
-        private String http;
+        private final String protocol;
 
-        Http(final String http) {
-            this.http = http;
+        Protocol(final String protocol) {
+            this.protocol = protocol;
         }
 
-        public String getHttp() {
-            return http;
+        public String getProtocol() {
+            return this.protocol;
         }
     }
 
@@ -109,7 +109,7 @@ public class PipeUtility {
             .getName());
 
     static {
-        Map<String, String> schemes = new HashMap<String, String>();
+        final Map<String, String> schemes = new HashMap<String, String>();
 
         schemes.put(PipeService.UnicastType, Protocol.P2PP.getProtocol());
         schemes
@@ -119,29 +119,12 @@ public class PipeUtility {
 
         SCHEMES = Collections.unmodifiableMap(schemes);
 
-        Map<String, String> pipes = new HashMap<String, String>();
+        final Map<String, String> pipes = new HashMap<String, String>();
 
         pipes.put(PipeService.UnicastType, Pipe.P2PP_NAME.getPipe());
         pipes.put(PipeService.PropagateType, Pipe.P2MP_NAME.getPipe());
 
         PIPES = Collections.unmodifiableMap(pipes);
-    }
-
-    public static URI getURI(PipeAdvertisement pipe) {
-        if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "pipe: " + pipe);
-        }
-
-        String pid = pipe.getPipeID().toString();
-        int i = pid.lastIndexOf(":") + 1;
-        URI u = URI.create(SCHEMES.get(pipe.getType()) + "://"
-                + pid.substring(i));
-
-        if (logger.isLoggable(Level.FINE)) {
-            logger.log(Level.FINE, "uri: " + u);
-        }
-
-        return u;
     }
 
     public static PipeAdvertisement createPipeAdvertisement(String name,
@@ -158,7 +141,7 @@ public class PipeUtility {
             logger.log(Level.FINE, "pipe: " + pipeId);
         }
 
-        PipeAdvertisement pa = (PipeAdvertisement) AdvertisementFactory
+        final PipeAdvertisement pa = (PipeAdvertisement) AdvertisementFactory
                 .newAdvertisement(PipeAdvertisement.getAdvertisementType());
 
         pa.setPipeID(createPipeID(group, pipeId));
@@ -185,29 +168,48 @@ public class PipeUtility {
         byte[] sb = null;
 
         if (pipeId != null) {
-            String s = pipeId.toString() + ":" + Http.HTTP_V1_0.getHttp();
+            final String s = pipeId.toString() + ":" + Http.HTTP_V1_0.getHttp();
 
             try {
-                MessageDigest a = MessageDigest.getInstance(MESSAGE_DIGEST);
+                final MessageDigest a = MessageDigest
+                        .getInstance(MESSAGE_DIGEST);
 
                 a.reset();
                 a.update(s.getBytes());
 
                 sb = a.digest();
-            } catch (NoSuchAlgorithmException nsae) {
+            } catch (final NoSuchAlgorithmException nsae) {
                 if (logger.isLoggable(Level.WARNING)) {
                     logger.log(Level.WARNING, "unable to digest");
                 }
             }
         }
 
-        PipeID pid = sb != null ? IDFactory.newPipeID(group.getPeerGroupID(),
-                sb) : IDFactory.newPipeID(group.getPeerGroupID());
+        final PipeID pid = sb != null ? IDFactory.newPipeID(group
+                .getPeerGroupID(), sb) : IDFactory.newPipeID(group
+                .getPeerGroupID());
 
         if (logger.isLoggable(Level.FINE)) {
             logger.log(Level.FINE, "pipe: " + pid);
         }
 
         return pid;
+    }
+
+    public static URI getURI(PipeAdvertisement pipe) {
+        if (logger.isLoggable(Level.FINE)) {
+            logger.log(Level.FINE, "pipe: " + pipe);
+        }
+
+        final String pid = pipe.getPipeID().toString();
+        final int i = pid.lastIndexOf(":") + 1;
+        final URI u = URI.create(SCHEMES.get(pipe.getType()) + "://"
+                + pid.substring(i));
+
+        if (logger.isLoggable(Level.FINE)) {
+            logger.log(Level.FINE, "uri: " + u);
+        }
+
+        return u;
     }
 }

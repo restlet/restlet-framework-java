@@ -50,9 +50,9 @@ import org.restlet.data.Tag;
  * less precise names for a representation include: document, file, and HTTP
  * message entity, instance, or variant." Roy T. Fielding
  * 
- * @see <a
- *      href="http://roy.gbiv.com/pubs/dissertation/rest_arch_style.htm#sec_5_2_1_2">Source
- *      dissertation</a>
+ * @see <a * href=
+ *      "http://roy.gbiv.com/pubs/dissertation/rest_arch_style.htm#sec_5_2_1_2"
+ *      >Source * dissertation< /a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public abstract class Representation extends Variant {
@@ -143,7 +143,7 @@ public abstract class Representation extends Variant {
      * Constructor.
      * 
      * @param mediaType
-     *                The media type.
+     *            The media type.
      */
     public Representation(MediaType mediaType) {
         super(mediaType);
@@ -253,7 +253,7 @@ public abstract class Representation extends Variant {
         String result = null;
 
         if (isAvailable()) {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
             write(baos);
 
             if (getCharacterSet() != null) {
@@ -286,7 +286,7 @@ public abstract class Representation extends Variant {
      * @return True if the representation's content is downloadable.
      */
     public boolean isDownloadable() {
-        return downloadable;
+        return this.downloadable;
     }
 
     /**
@@ -317,7 +317,7 @@ public abstract class Representation extends Variant {
      * Indicates if some fresh content is available.
      * 
      * @param available
-     *                True if some fresh content is available.
+     *            True if some fresh content is available.
      */
     public void setAvailable(boolean available) {
         this.available = available;
@@ -328,7 +328,7 @@ public abstract class Representation extends Variant {
      * be obtained via a download dialog box.
      * 
      * @param downloadable
-     *                True if the representation's content is downloadable.
+     *            True if the representation's content is downloadable.
      */
     public void setDownloadable(boolean downloadable) {
         this.downloadable = downloadable;
@@ -338,7 +338,7 @@ public abstract class Representation extends Variant {
      * Set the suggested download file name for this representation.
      * 
      * @param fileName
-     *                The suggested file name.
+     *            The suggested file name.
      */
     public void setDownloadName(String fileName) {
         this.downloadName = fileName;
@@ -349,7 +349,7 @@ public abstract class Representation extends Variant {
      * is not known, pass null.
      * 
      * @param expirationDate
-     *                The expiration date.
+     *            The expiration date.
      */
     @Override
     @SuppressWarnings("deprecation")
@@ -362,7 +362,7 @@ public abstract class Representation extends Variant {
      * information is not known, pass null.
      * 
      * @param modificationDate
-     *                The modification date.
+     *            The modification date.
      */
     @Override
     @SuppressWarnings("deprecation")
@@ -374,7 +374,7 @@ public abstract class Representation extends Variant {
      * Sets the expected size in bytes if known, -1 otherwise.
      * 
      * @param expectedSize
-     *                The expected size in bytes if known, -1 otherwise.
+     *            The expected size in bytes if known, -1 otherwise.
      */
     @Override
     @SuppressWarnings("deprecation")
@@ -386,7 +386,7 @@ public abstract class Representation extends Variant {
      * Sets the tag.
      * 
      * @param tag
-     *                The tag.
+     *            The tag.
      */
     @Override
     @SuppressWarnings("deprecation")
@@ -398,7 +398,7 @@ public abstract class Representation extends Variant {
      * Indicates if the representation's content is transient.
      * 
      * @param isTransient
-     *                True if the representation's content is transient.
+     *            True if the representation's content is transient.
      */
     public void setTransient(boolean isTransient) {
         this.isTransient = isTransient;
@@ -410,7 +410,7 @@ public abstract class Representation extends Variant {
      * representation, in which case an exception is thrown.
      * 
      * @param outputStream
-     *                The output stream.
+     *            The output stream.
      * @throws IOException
      */
     public abstract void write(OutputStream outputStream) throws IOException;
@@ -421,7 +421,7 @@ public abstract class Representation extends Variant {
      * representation, in which case an exception is thrown.
      * 
      * @param writableChannel
-     *                A writable byte channel.
+     *            A writable byte channel.
      * @throws IOException
      */
     public abstract void write(WritableByteChannel writableChannel)
@@ -433,7 +433,7 @@ public abstract class Representation extends Variant {
      * representation, in which case an exception is thrown.
      * 
      * @param writer
-     *                The characters writer.
+     *            The characters writer.
      * @throws IOException
      */
     public abstract void write(Writer writer) throws IOException;

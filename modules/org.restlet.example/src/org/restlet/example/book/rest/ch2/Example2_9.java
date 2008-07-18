@@ -39,15 +39,16 @@ public class Example2_9 {
             System.err.println("You need to pass a term to search");
         } else {
             // Fetch a resource: a JSON document full of search results
-            String term = Reference.encode(args[0]);
-            String uri = BASE_URI + "?appid=restbook&output=json&query=" + term;
-            Response response = new Client(Protocol.HTTP).get(uri);
-            JSONObject json = new JsonRepresentation(response.getEntity())
+            final String term = Reference.encode(args[0]);
+            final String uri = BASE_URI + "?appid=restbook&output=json&query="
+                    + term;
+            final Response response = new Client(Protocol.HTTP).get(uri);
+            final JSONObject json = new JsonRepresentation(response.getEntity())
                     .toJsonObject();
 
             // Navigate within the JSON document to display the titles
-            JSONObject resultSet = json.getJSONObject("ResultSet");
-            JSONArray results = resultSet.getJSONArray("Result");
+            final JSONObject resultSet = json.getJSONObject("ResultSet");
+            final JSONArray results = resultSet.getJSONArray("Result");
             for (int i = 0; i < results.length(); i++) {
                 System.out.println(results.getJSONObject(i).getString("Title"));
             }

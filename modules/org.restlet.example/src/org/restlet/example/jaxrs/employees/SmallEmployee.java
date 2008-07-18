@@ -18,6 +18,7 @@
 package org.restlet.example.jaxrs.employees;
 
 import java.net.URI;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**

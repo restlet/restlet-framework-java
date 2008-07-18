@@ -45,10 +45,10 @@ public class MailRootResource extends BaseResource {
      */
     @Override
     public Representation represent(Variant variant) throws ResourceException {
-        Map<String, Object> dataModel = new TreeMap<String, Object>();
+        final Map<String, Object> dataModel = new TreeMap<String, Object>();
         dataModel.put("currentUser", getCurrentUser());
         dataModel.put("rootRef", getRequest().getRootRef());
-        
+
         return getHTMLTemplateRepresentation("mailRoot.html", dataModel);
     }
 

@@ -41,9 +41,9 @@ public class HostRoute extends Route {
      * Constructor.
      * 
      * @param router
-     *                The parent router.
+     *            The parent router.
      * @param target
-     *                The target virtual host.
+     *            The target virtual host.
      */
     public HostRoute(Router router, VirtualHost target) {
         super(router, "", target);
@@ -54,9 +54,9 @@ public class HostRoute extends Route {
      * reference.
      * 
      * @param request
-     *                The request to handle.
+     *            The request to handle.
      * @param response
-     *                The response to update.
+     *            The response to update.
      * @return The continuation status.
      */
     @Override
@@ -86,9 +86,9 @@ public class HostRoute extends Route {
      * manner.
      * 
      * @param regex
-     *                The pattern to use.
+     *            The pattern to use.
      * @param formattedString
-     *                The formatted string to match.
+     *            The formatted string to match.
      * @return True if the formatted string matched the pattern.
      */
     private boolean matches(String regex, String formattedString) {
@@ -100,9 +100,9 @@ public class HostRoute extends Route {
      * Returns the score for a given call (between 0 and 1.0).
      * 
      * @param request
-     *                The request to score.
+     *            The request to score.
      * @param response
-     *                The response to score.
+     *            The response to score.
      * @return The score for a given call (between 0 and 1.0).
      */
     @Override
@@ -116,43 +116,51 @@ public class HostRoute extends Route {
 
         if (request.getHostRef() != null) {
             hostDomain = request.getHostRef().getHostDomain();
-            if (hostDomain == null)
+            if (hostDomain == null) {
                 hostDomain = "";
+            }
 
             int basePortValue = request.getHostRef().getHostPort();
-            if (basePortValue == -1)
+            if (basePortValue == -1) {
                 basePortValue = request.getHostRef().getSchemeProtocol()
                         .getDefaultPort();
+            }
             hostPort = Integer.toString(basePortValue);
 
             hostScheme = request.getHostRef().getScheme();
-            if (hostScheme == null)
+            if (hostScheme == null) {
                 hostScheme = "";
+            }
         }
 
         if (request.getResourceRef() != null) {
             String resourceDomain = request.getResourceRef().getHostDomain();
-            if (resourceDomain == null)
+            if (resourceDomain == null) {
                 resourceDomain = "";
+            }
 
             int resourcePortValue = request.getResourceRef().getHostPort();
-            if (resourcePortValue == -1)
+            if (resourcePortValue == -1) {
                 resourcePortValue = request.getResourceRef()
                         .getSchemeProtocol().getDefaultPort();
-            String resourcePort = Integer.toString(resourcePortValue);
+            }
+            final String resourcePort = Integer.toString(resourcePortValue);
 
             String resourceScheme = request.getResourceRef().getScheme();
-            if (resourceScheme == null)
+            if (resourceScheme == null) {
                 resourceScheme = "";
+            }
 
             String serverAddress = response.getServerInfo().getAddress();
-            if (serverAddress == null)
+            if (serverAddress == null) {
                 serverAddress = "";
+            }
 
             String serverPort = "";
-            if (response.getServerInfo().getPort() != -1)
+            if (response.getServerInfo().getPort() != -1) {
                 serverPort = Integer.toString(response.getServerInfo()
                         .getPort());
+            }
 
             // Check if all the criterias match
             if (matches(getVirtualHost().getHostDomain(), hostDomain)
@@ -184,7 +192,7 @@ public class HostRoute extends Route {
      * Sets the next virtual host.
      * 
      * @param next
-     *                The next virtual host.
+     *            The next virtual host.
      */
     public void setNext(VirtualHost next) {
         super.setNext(next);

@@ -31,9 +31,9 @@ import org.restlet.data.Protocol;
 public class RestartTestCase extends TestCase {
 
     public void testRestart() throws Exception {
-        int waitTime = 100;
+        final int waitTime = 100;
 
-        Server connector = new Server(Protocol.HTTP, 8182, null);
+        final Server connector = new Server(Protocol.HTTP, 8182, null);
 
         System.out.print("Starting connector... ");
         connector.start();

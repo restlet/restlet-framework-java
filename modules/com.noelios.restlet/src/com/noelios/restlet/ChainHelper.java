@@ -48,7 +48,7 @@ public abstract class ChainHelper<T extends Restlet> extends Helper<T> {
      * Constructor.
      * 
      * @param helped
-     *                The helped Restlet.
+     *            The helped Restlet.
      */
     public ChainHelper(T helped) {
         this(helped, null);
@@ -58,9 +58,9 @@ public abstract class ChainHelper<T extends Restlet> extends Helper<T> {
      * Constructor.
      * 
      * @param helpedRestlet
-     *                The helped Restlet.
+     *            The helped Restlet.
      * @param parentContext
-     *                The parent context, typically the component's context.
+     *            The parent context, typically the component's context.
      */
     public ChainHelper(T helpedRestlet, Context parentContext) {
         super(helpedRestlet);
@@ -72,7 +72,7 @@ public abstract class ChainHelper<T extends Restlet> extends Helper<T> {
      * Adds a new filter to the chain.
      * 
      * @param filter
-     *                The filter to add.
+     *            The filter to add.
      */
     protected synchronized void addFilter(Filter filter) {
         if (getLast() != null) {
@@ -96,9 +96,9 @@ public abstract class ChainHelper<T extends Restlet> extends Helper<T> {
      * Creates a new log filter. Allows overriding.
      * 
      * @param context
-     *                The context.
+     *            The context.
      * @param logService
-     *                The log service descriptor.
+     *            The log service descriptor.
      * @return The new log filter.
      */
     protected Filter createLogFilter(Context context, LogService logService) {
@@ -154,7 +154,7 @@ public abstract class ChainHelper<T extends Restlet> extends Helper<T> {
      * Sets the first Restlet.
      * 
      * @param first
-     *                The first Restlet.
+     *            The first Restlet.
      */
     protected void setFirst(Restlet first) {
         this.first = first;
@@ -164,7 +164,7 @@ public abstract class ChainHelper<T extends Restlet> extends Helper<T> {
      * Sets the last Filter.
      * 
      * @param last
-     *                The last Filter.
+     *            The last Filter.
      */
     protected void setLast(Filter last) {
         this.last = last;
@@ -174,7 +174,7 @@ public abstract class ChainHelper<T extends Restlet> extends Helper<T> {
      * Sets the next Restlet after the chain.
      * 
      * @param next
-     *                The Restlet to process after the chain.
+     *            The Restlet to process after the chain.
      */
     protected synchronized void setNext(Restlet next) {
         if (getFirst() == null) {

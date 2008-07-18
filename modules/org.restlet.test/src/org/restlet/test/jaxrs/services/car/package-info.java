@@ -30,4 +30,3 @@
  */
 package org.restlet.test.jaxrs.services.car;
 
-import org.restlet.test.jaxrs.services.tests.CarTest;

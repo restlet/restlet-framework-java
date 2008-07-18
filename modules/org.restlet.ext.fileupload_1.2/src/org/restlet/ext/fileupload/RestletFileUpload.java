@@ -40,8 +40,8 @@ import org.restlet.resource.Representation;
 public class RestletFileUpload extends FileUpload {
     /**
      * Constructs an uninitialised instance of this class. A factory must be
-     * configured, using <code>setFileItemFactory()</code>, before attempting
-     * to parse request entity.
+     * configured, using <code>setFileItemFactory()</code>, before attempting to
+     * parse request entity.
      * 
      * @see RestletFileUpload#RestletFileUpload(FileItemFactory)
      */
@@ -63,36 +63,36 @@ public class RestletFileUpload extends FileUpload {
      * Processes an <a href="http://www.ietf.org/rfc/rfc1867.txt">RFC 1867</a>
      * compliant <code>multipart/form-data</code> input representation.
      * 
-     * @param request
-     *                The request containing the entity to be parsed.
+     * @param multipartForm
+     *            The multipart representation to be parsed.
      * @return A list of <code>FileItem</code> instances parsed, in the order
      *         that they were transmitted.
      * @throws FileUploadException
-     *                 if there are problems reading/parsing the request or
-     *                 storing files.
+     *             if there are problems reading/parsing the request or storing
+     *             files.
      */
     @SuppressWarnings("unchecked")
-    public List<FileItem> parseRequest(Request request)
+    public List<FileItem> parseRepresentation(Representation multipartForm)
             throws FileUploadException {
-        return parseRequest(new RepresentationContext(request.getEntity()));
+        return parseRequest(new RepresentationContext(multipartForm));
     }
 
     /**
      * Processes an <a href="http://www.ietf.org/rfc/rfc1867.txt">RFC 1867</a>
      * compliant <code>multipart/form-data</code> input representation.
      * 
-     * @param multipartForm
-     *                The multipart representation to be parsed.
+     * @param request
+     *            The request containing the entity to be parsed.
      * @return A list of <code>FileItem</code> instances parsed, in the order
      *         that they were transmitted.
      * @throws FileUploadException
-     *                 if there are problems reading/parsing the request or
-     *                 storing files.
+     *             if there are problems reading/parsing the request or storing
+     *             files.
      */
     @SuppressWarnings("unchecked")
-    public List<FileItem> parseRepresentation(Representation multipartForm)
+    public List<FileItem> parseRequest(Request request)
             throws FileUploadException {
-        return parseRequest(new RepresentationContext(multipartForm));
+        return parseRequest(new RepresentationContext(request.getEntity()));
     }
 
 }

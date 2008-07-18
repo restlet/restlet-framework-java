@@ -66,22 +66,13 @@ public class SpringContext extends GenericApplicationContext {
      * Constructor.
      * 
      * @param restletContext
-     *                The parent Restlet context.
+     *            The parent Restlet context.
      */
     public SpringContext(Context restletContext) {
         this.restletContext = restletContext;
         this.propertyConfigRefs = null;
         this.xmlConfigRefs = null;
         this.loaded = false;
-    }
-
-    /**
-     * Returns the parent Restlet context.
-     * 
-     * @return The parent Restlet context.
-     */
-    public Context getRestletContext() {
-        return this.restletContext;
     }
 
     /**
@@ -96,11 +87,21 @@ public class SpringContext extends GenericApplicationContext {
         if (p == null) {
             synchronized (this) {
                 p = this.propertyConfigRefs;
-                if (p == null)
+                if (p == null) {
                     this.propertyConfigRefs = p = new ArrayList<String>();
+                }
             }
         }
         return p;
+    }
+
+    /**
+     * Returns the parent Restlet context.
+     * 
+     * @return The parent Restlet context.
+     */
+    public Context getRestletContext() {
+        return this.restletContext;
     }
 
     /**
@@ -115,8 +116,9 @@ public class SpringContext extends GenericApplicationContext {
         if (x == null) {
             synchronized (this) {
                 x = this.xmlConfigRefs;
-                if (x == null)
+                if (x == null) {
                     this.xmlConfigRefs = x = new ArrayList<String>();
+                }
             }
         }
         return x;
@@ -131,7 +133,7 @@ public class SpringContext extends GenericApplicationContext {
 
             // First, read the bean definitions from properties representations
             PropertiesBeanDefinitionReader propReader = null;
-            for (String ref : getPropertyConfigRefs()) {
+            for (final String ref : getPropertyConfigRefs()) {
                 config = getRestletContext().getClientDispatcher().get(ref)
                         .getEntity();
 
@@ -143,7 +145,7 @@ public class SpringContext extends GenericApplicationContext {
 
             // Then, read the bean definitions from XML representations
             XmlBeanDefinitionReader xmlReader = null;
-            for (String ref : getXmlConfigRefs()) {
+            for (final String ref : getXmlConfigRefs()) {
                 config = getRestletContext().getClientDispatcher().get(ref)
                         .getEntity();
 

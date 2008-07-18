@@ -39,48 +39,48 @@ public class ExtensionBackwardMapping {
      * Creates a new ExtensionBackwardMapping
      * 
      * @param metadataService
-     *                the metadata service of the {@link JaxRsApplication}.
+     *            the metadata service of the {@link JaxRsApplication}.
      */
     public ExtensionBackwardMapping(MetadataService metadataService) {
         this.metadataService = metadataService;
     }
 
     /**
-     * Returns the virtual extension for the given {@link MediaType}.
+     * Returns the virtual extension for the given encoding.
      * 
-     * @param mediaType
-     *                the JAX-RS media type to get the virtual file extension
-     *                for.
-     * @return the extension for the given {@link MediaType}. Returns null, if
-     *         no mapping could be found.
+     * @param encoding
+     *            the encoding to get the virtual file extension for.
+     * @return the extension for the given encoding. Returns null, if no mapping
+     *         could be found.
      */
-    public String getByMediaType(MediaType mediaType) {
-        org.restlet.data.MediaType restletMediaType;
-        restletMediaType = Converter.toRestletMediaType(mediaType);
-        return metadataService.getExtension(restletMediaType);
+    public String getByEncoding(String encoding) {
+        return this.metadataService.getExtension(Encoding.valueOf(encoding));
     }
 
     /**
      * Returns the virtual extension for the given language.
      * 
      * @param language
-     *                the language to get the virtual file extension for.
+     *            the language to get the virtual file extension for.
      * @return the extension for the given language. Returns null, if no mapping
      *         could be found.
      */
     public String getByLanguage(Locale language) {
-        return metadataService.getExtension(Converter.toLanguage(language));
+        return this.metadataService
+                .getExtension(Converter.toLanguage(language));
     }
 
     /**
-     * Returns the virtual extension for the given encoding.
+     * Returns the virtual extension for the given {@link MediaType}.
      * 
-     * @param encoding
-     *                the encoding to get the virtual file extension for.
-     * @return the extension for the given encoding. Returns null, if no mapping
-     *         could be found.
+     * @param mediaType
+     *            the JAX-RS media type to get the virtual file extension for.
+     * @return the extension for the given {@link MediaType}. Returns null, if
+     *         no mapping could be found.
      */
-    public String getByEncoding(String encoding) {
-        return metadataService.getExtension(Encoding.valueOf(encoding));
+    public String getByMediaType(MediaType mediaType) {
+        org.restlet.data.MediaType restletMediaType;
+        restletMediaType = Converter.toRestletMediaType(mediaType);
+        return this.metadataService.getExtension(restletMediaType);
     }
 }

@@ -30,10 +30,9 @@ import org.restlet.data.Response;
  * <br>
  * A virtual host is defined along three properties:
  * <ul>
- * <li>request's {@link Request#getHostRef()}: the URI of the host that
- * received the request. Note that the same IP address can correspond to
- * multiple domain names and therefore receive request with different "hostRef"
- * URIs.</li>
+ * <li>request's {@link Request#getHostRef()}: the URI of the host that received
+ * the request. Note that the same IP address can correspond to multiple domain
+ * names and therefore receive request with different "hostRef" URIs.</li>
  * <li>request's {@link Request#getResourceRef()}: the URI of the target
  * resource of the request. If this reference is relative, then it is based on
  * the "hostRef", otherwise it is maintained as received. This difference is
@@ -42,19 +41,20 @@ import org.restlet.data.Response;
  * server connector receiving the requests such as it IP address and port
  * number.</li>
  * </ul>
- * When creating a new instance, you can define Java regular expressions ({@link java.util.regex.Pattern})
- * that must match the domain name, port, scheme for references or IP address
- * and port number for server information. The default values match everything.
+ * When creating a new instance, you can define Java regular expressions (
+ * {@link java.util.regex.Pattern}) that must match the domain name, port,
+ * scheme for references or IP address and port number for server information.
+ * The default values match everything.
  * 
  * Concurrency note: instances of this class or its subclasses can be invoked by
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
  * 
  * @see java.util.regex.Pattern
- * @see <a href="http://en.wikipedia.org/wiki/Virtual_hosting">Wikipedia -
- *      Virtual Hosting</a>
- * @see <a href="http://httpd.apache.org/docs/2.2/vhosts/">Apache - Virtual
- *      Hosting</a>
+ * @see <a href="http://en.wikipedia.org/wiki/Virtual_hosting">Wikipedia - *
+ *      Virtual Hosting< /a>
+ * @see <a href="http://httpd.apache.org/docs/2.2/vhosts/">Apache - Virtual *
+ *      Hosting< /a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class VirtualHost extends Router {
@@ -76,7 +76,7 @@ public class VirtualHost extends Router {
      * Returns the IP address of a given domain name.
      * 
      * @param domain
-     *                The domain name.
+     *            The domain name.
      * @return The IP address.
      */
     public static String getIpAddress(String domain) {
@@ -84,7 +84,7 @@ public class VirtualHost extends Router {
 
         try {
             result = InetAddress.getByName(domain).getHostAddress();
-        } catch (UnknownHostException e) {
+        } catch (final UnknownHostException e) {
         }
 
         return result;
@@ -100,7 +100,7 @@ public class VirtualHost extends Router {
 
         try {
             result = InetAddress.getLocalHost().getHostAddress();
-        } catch (UnknownHostException e) {
+        } catch (final UnknownHostException e) {
         }
 
         return result;
@@ -116,7 +116,7 @@ public class VirtualHost extends Router {
 
         try {
             result = InetAddress.getLocalHost().getHostName();
-        } catch (UnknownHostException e) {
+        } catch (final UnknownHostException e) {
         }
 
         return result;
@@ -126,7 +126,7 @@ public class VirtualHost extends Router {
      * Sets the virtual host code associated with the current thread.
      * 
      * @param code
-     *                The thread's virtual host code.
+     *            The thread's virtual host code.
      */
     public static void setCurrent(Integer code) {
         CURRENT.set(code);
@@ -173,7 +173,7 @@ public class VirtualHost extends Router {
      * methods to restrict the matchable patterns.
      * 
      * @param context
-     *                The context.
+     *            The context.
      */
     public VirtualHost(Context context) {
         this(context, ".*", ".*", ".*", ".*", ".*", ".*", ".*", ".*");
@@ -183,23 +183,23 @@ public class VirtualHost extends Router {
      * Constructor.
      * 
      * @param context
-     *                The context.
+     *            The context.
      * @param hostDomain
-     *                The hostRef host domain pattern to match.
+     *            The hostRef host domain pattern to match.
      * @param hostPort
-     *                The hostRef host port pattern to match.
+     *            The hostRef host port pattern to match.
      * @param hostScheme
-     *                The hostRef scheme protocol pattern to match.
+     *            The hostRef scheme protocol pattern to match.
      * @param resourceDomain
-     *                The resourceRef host domain pattern to match.
+     *            The resourceRef host domain pattern to match.
      * @param resourcePort
-     *                The resourceRef host port pattern to match.
+     *            The resourceRef host port pattern to match.
      * @param resourceScheme
-     *                The resourceRef scheme protocol pattern to match.
+     *            The resourceRef scheme protocol pattern to match.
      * @param serverAddress
-     *                The listening server address pattern to match.
+     *            The listening server address pattern to match.
      * @param serverPort
-     *                The listening server port pattern to match.
+     *            The listening server port pattern to match.
      */
     public VirtualHost(Context context, String hostDomain, String hostPort,
             String hostScheme, String resourceDomain, String resourcePort,
@@ -222,7 +222,7 @@ public class VirtualHost extends Router {
         return new Route(this, uriPattern, target) {
             @Override
             protected int beforeHandle(Request request, Response response) {
-                int result = super.beforeHandle(request, response);
+                final int result = super.beforeHandle(request, response);
 
                 // Set the request's root reference
                 request.setRootRef(request.getResourceRef().getBaseRef());
@@ -269,7 +269,7 @@ public class VirtualHost extends Router {
      * @return The display name.
      */
     public String getName() {
-        return name;
+        return this.name;
     }
 
     /**
@@ -324,7 +324,7 @@ public class VirtualHost extends Router {
      * Sets the hostRef host domain to match. Uses patterns in java.util.regex.
      * 
      * @param hostDomain
-     *                The hostRef host domain to match.
+     *            The hostRef host domain to match.
      */
     public void setHostDomain(String hostDomain) {
         this.hostDomain = hostDomain;
@@ -334,7 +334,7 @@ public class VirtualHost extends Router {
      * Sets the hostRef host port to match. Uses patterns in java.util.regex.
      * 
      * @param hostPort
-     *                The hostRef host port to match.
+     *            The hostRef host port to match.
      */
     public void setHostPort(String hostPort) {
         this.hostPort = hostPort;
@@ -344,7 +344,7 @@ public class VirtualHost extends Router {
      * Sets the hostRef scheme to match. Uses patterns in java.util.regex.
      * 
      * @param hostScheme
-     *                The hostRef scheme to match.
+     *            The hostRef scheme to match.
      */
     public void setHostScheme(String hostScheme) {
         this.hostScheme = hostScheme;
@@ -354,7 +354,7 @@ public class VirtualHost extends Router {
      * Sets the display name.
      * 
      * @param name
-     *                The display name.
+     *            The display name.
      */
     public void setName(String name) {
         this.name = name;
@@ -365,7 +365,7 @@ public class VirtualHost extends Router {
      * java.util.regex.
      * 
      * @param resourceDomain
-     *                The resourceRef host domain to match.
+     *            The resourceRef host domain to match.
      */
     public void setResourceDomain(String resourceDomain) {
         this.resourceDomain = resourceDomain;
@@ -376,7 +376,7 @@ public class VirtualHost extends Router {
      * java.util.regex.
      * 
      * @param resourcePort
-     *                The resourceRef host port to match.
+     *            The resourceRef host port to match.
      */
     public void setResourcePort(String resourcePort) {
         this.resourcePort = resourcePort;
@@ -386,7 +386,7 @@ public class VirtualHost extends Router {
      * Sets the resourceRef scheme to match. Uses patterns in java.util.regex.
      * 
      * @param resourceScheme
-     *                The resourceRef scheme to match.
+     *            The resourceRef scheme to match.
      */
     public void setResourceScheme(String resourceScheme) {
         this.resourceScheme = resourceScheme;
@@ -396,7 +396,7 @@ public class VirtualHost extends Router {
      * Sets the listening server address. Uses patterns in java.util.regex.
      * 
      * @param serverAddress
-     *                The listening server address.
+     *            The listening server address.
      */
     public void setServerAddress(String serverAddress) {
         this.serverAddress = serverAddress;
@@ -406,7 +406,7 @@ public class VirtualHost extends Router {
      * Sets the listening server port. Uses patterns in java.util.regex.
      * 
      * @param serverPort
-     *                The listening server port.
+     *            The listening server port.
      */
     public void setServerPort(String serverPort) {
         this.serverPort = serverPort;

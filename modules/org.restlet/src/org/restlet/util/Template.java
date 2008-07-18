@@ -46,8 +46,8 @@ import org.restlet.data.Response;
  * {@link #parse(String, Request)}.
  * 
  * @see Resolver
- * @see <a href="http://bitworking.org/projects/URI-Templates/">URI Template
- *      specification</a>
+ * @see <a href="http://bitworking.org/projects/URI-Templates/">URI Template *
+ *      specification< /a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Template {
@@ -61,11 +61,11 @@ public class Template {
      * class of characters.
      * 
      * @param pattern
-     *                The pattern to append to.
+     *            The pattern to append to.
      * @param content
-     *                The content of the group.
+     *            The content of the group.
      * @param required
-     *                Indicates if the group is required.
+     *            Indicates if the group is required.
      */
     private static void appendClass(StringBuilder pattern, String content,
             boolean required) {
@@ -94,11 +94,11 @@ public class Template {
      * non-capturing group.
      * 
      * @param pattern
-     *                The pattern to append to.
+     *            The pattern to append to.
      * @param content
-     *                The content of the group.
+     *            The content of the group.
      * @param required
-     *                Indicates if the group is required.
+     *            Indicates if the group is required.
      */
     private static void appendGroup(StringBuilder pattern, String content,
             boolean required) {
@@ -117,7 +117,7 @@ public class Template {
      * Returns the Regex pattern string corresponding to a variable.
      * 
      * @param variable
-     *                The variable.
+     *            The variable.
      * @return The Regex pattern string corresponding to a variable.
      */
     private static String getVariableRegex(Variable variable) {
@@ -159,7 +159,7 @@ public class Template {
             final String URI_ALL = "[" + URI_RESERVED + URI_UNRESERVED
                     + "]|(?:" + PCT_ENCODED + ")";
 
-            StringBuilder coreRegex = new StringBuilder();
+            final StringBuilder coreRegex = new StringBuilder();
 
             switch (variable.getType()) {
             case Variable.TYPE_ALL:
@@ -243,9 +243,9 @@ public class Template {
      * if they don't exist in the model.
      * 
      * @param logger
-     *                The logger to use.
+     *            The logger to use.
      * @param pattern
-     *                The pattern to use for formatting or parsing.
+     *            The pattern to use for formatting or parsing.
      */
     public Template(Logger logger, String pattern) {
         this(logger, pattern, MODE_EQUALS, Variable.TYPE_ALL, "", true, false);
@@ -255,12 +255,11 @@ public class Template {
      * Constructor.
      * 
      * @param logger
-     *                The logger to use.
+     *            The logger to use.
      * @param pattern
-     *                The pattern to use for formatting or parsing.
+     *            The pattern to use for formatting or parsing.
      * @param matchingMode
-     *                The matching mode to use when parsing a formatted
-     *                reference.
+     *            The matching mode to use when parsing a formatted reference.
      */
     public Template(Logger logger, String pattern, int matchingMode) {
         this(logger, pattern, matchingMode, Variable.TYPE_ALL, "", true, false);
@@ -270,21 +269,19 @@ public class Template {
      * Constructor.
      * 
      * @param logger
-     *                The logger to use.
+     *            The logger to use.
      * @param pattern
-     *                The pattern to use for formatting or parsing.
+     *            The pattern to use for formatting or parsing.
      * @param matchingMode
-     *                The matching mode to use when parsing a formatted
-     *                reference.
+     *            The matching mode to use when parsing a formatted reference.
      * @param defaultType
-     *                The default type of variables with no descriptor.
+     *            The default type of variables with no descriptor.
      * @param defaultDefaultValue
-     *                The default value for null variables with no descriptor.
+     *            The default value for null variables with no descriptor.
      * @param defaultRequired
-     *                The default required flag for variables with no
-     *                descriptor.
+     *            The default required flag for variables with no descriptor.
      * @param defaultFixed
-     *                The default fixed value for variables with no descriptor.
+     *            The default fixed value for variables with no descriptor.
      */
     public Template(Logger logger, String pattern, int matchingMode,
             int defaultType, String defaultDefaultValue,
@@ -297,24 +294,22 @@ public class Template {
      * Constructor.
      * 
      * @param logger
-     *                The logger to use.
+     *            The logger to use.
      * @param pattern
-     *                The pattern to use for formatting or parsing.
+     *            The pattern to use for formatting or parsing.
      * @param matchingMode
-     *                The matching mode to use when parsing a formatted
-     *                reference.
+     *            The matching mode to use when parsing a formatted reference.
      * @param defaultType
-     *                The default type of variables with no descriptor.
+     *            The default type of variables with no descriptor.
      * @param defaultDefaultValue
-     *                The default value for null variables with no descriptor.
+     *            The default value for null variables with no descriptor.
      * @param defaultRequired
-     *                The default required flag for variables with no
-     *                descriptor.
+     *            The default required flag for variables with no descriptor.
      * @param defaultFixed
-     *                The default fixed value for variables with no descriptor.
+     *            The default fixed value for variables with no descriptor.
      * @param encodeVariables
-     *                True if the variables must be encoded when formatting the
-     *                template.
+     *            True if the variables must be encoded when formatting the
+     *            template.
      */
     public Template(Logger logger, String pattern, int matchingMode,
             int defaultType, String defaultDefaultValue,
@@ -338,7 +333,7 @@ public class Template {
      * if they don't exist in the model.
      * 
      * @param pattern
-     *                The pattern to use for formatting or parsing.
+     *            The pattern to use for formatting or parsing.
      */
     public Template(String pattern) {
         this(null, pattern);
@@ -348,10 +343,9 @@ public class Template {
      * Constructor.
      * 
      * @param pattern
-     *                The pattern to use for formatting or parsing.
+     *            The pattern to use for formatting or parsing.
      * @param matchingMode
-     *                The matching mode to use when parsing a formatted
-     *                reference.
+     *            The matching mode to use when parsing a formatted reference.
      */
     public Template(String pattern, int matchingMode) {
         this(null, pattern, matchingMode);
@@ -361,19 +355,17 @@ public class Template {
      * Constructor.
      * 
      * @param pattern
-     *                The pattern to use for formatting or parsing.
+     *            The pattern to use for formatting or parsing.
      * @param matchingMode
-     *                The matching mode to use when parsing a formatted
-     *                reference.
+     *            The matching mode to use when parsing a formatted reference.
      * @param defaultType
-     *                The default type of variables with no descriptor.
+     *            The default type of variables with no descriptor.
      * @param defaultDefaultValue
-     *                The default value for null variables with no descriptor.
+     *            The default value for null variables with no descriptor.
      * @param defaultRequired
-     *                The default required flag for variables with no
-     *                descriptor.
+     *            The default required flag for variables with no descriptor.
      * @param defaultFixed
-     *                The default fixed value for variables with no descriptor.
+     *            The default fixed value for variables with no descriptor.
      */
     public Template(String pattern, int matchingMode, int defaultType,
             String defaultDefaultValue, boolean defaultRequired,
@@ -386,7 +378,7 @@ public class Template {
      * Creates a formatted string based on the given map of values.
      * 
      * @param values
-     *                The values to use when formatting.
+     *            The values to use when formatting.
      * @return The formatted string.
      * @see Resolver#createResolver(Map)
      */
@@ -398,9 +390,9 @@ public class Template {
      * Creates a formatted string based on the given request and response.
      * 
      * @param request
-     *                The request to use as a model.
+     *            The request to use as a model.
      * @param response
-     *                The response to use as a model.
+     *            The response to use as a model.
      * @return The formatted string.
      * @see Resolver#createResolver(Request, Response)
      */
@@ -412,15 +404,15 @@ public class Template {
      * Creates a formatted string based on the given variable resolver.
      * 
      * @param resolver
-     *                The variable resolver to use.
+     *            The variable resolver to use.
      * @return The formatted string.
      */
     public String format(Resolver<String> resolver) {
-        StringBuilder result = new StringBuilder();
+        final StringBuilder result = new StringBuilder();
         StringBuilder varBuffer = null;
         char next;
         boolean inVariable = false;
-        int patternLength = getPattern().length();
+        final int patternLength = getPattern().length();
         for (int i = 0; i < patternLength; i++) {
             next = getPattern().charAt(i);
 
@@ -435,7 +427,7 @@ public class Template {
                                 "Empty pattern variables are not allowed : "
                                         + this.regexPattern);
                     } else {
-                        String varName = varBuffer.toString();
+                        final String varName = varBuffer.toString();
                         String varValue = resolver.resolve(varName);
 
                         Variable var = getVariables().get(varName);
@@ -450,7 +442,7 @@ public class Template {
                             }
                         }
 
-                        if (encodeVariables) {
+                        if (this.encodeVariables) {
                             // In case the values must be encoded.
                             if (var != null) {
                                 result.append(var.encode(varValue));
@@ -458,7 +450,7 @@ public class Template {
                                 result.append(Reference.encode(varValue));
                             }
                         } else {
-                            if (var != null && var.isEncodedOnFormat()) {
+                            if ((var != null) && var.isEncodedOnFormat()) {
                                 result.append(Reference.encode(varValue));
                             } else {
                                 result.append(varValue);
@@ -530,14 +522,14 @@ public class Template {
      * Compiles the URI pattern into a Regex pattern.
      * 
      * @param uriPattern
-     *                The URI pattern.
+     *            The URI pattern.
      * @return The Regex pattern.
      */
     private Pattern getRegexPattern() {
         if (this.regexPattern == null) {
             synchronized (this) {
                 if (this.regexPattern == null) {
-                    StringBuilder patternBuffer = new StringBuilder();
+                    final StringBuilder patternBuffer = new StringBuilder();
                     StringBuilder varBuffer = null;
                     char next;
                     boolean inVariable = false;
@@ -555,9 +547,9 @@ public class Template {
                                             "Empty pattern variables are not allowed : "
                                                     + this.regexPattern);
                                 } else {
-                                    String varName = varBuffer.toString();
-                                    int varIndex = getRegexVariables().indexOf(
-                                            varName);
+                                    final String varName = varBuffer.toString();
+                                    final int varIndex = getRegexVariables()
+                                            .indexOf(varName);
 
                                     if (varIndex != -1) {
                                         // The variable is used several times in
@@ -571,8 +563,9 @@ public class Template {
                                         getRegexVariables().add(varName);
                                         Variable var = getVariables().get(
                                                 varName);
-                                        if (var == null)
+                                        if (var == null) {
                                             var = getDefaultVariable();
+                                        }
                                         patternBuffer
                                                 .append(getVariableRegex(var));
                                     }
@@ -623,8 +616,9 @@ public class Template {
         if (rv == null) {
             synchronized (this) {
                 rv = this.regexVariables;
-                if (rv == null)
+                if (rv == null) {
                     this.regexVariables = rv = new CopyOnWriteArrayList<String>();
+                }
             }
         }
         return rv;
@@ -636,11 +630,11 @@ public class Template {
      * @return The list of variable names.
      */
     public List<String> getVariableNames() {
-        List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>();
         StringBuilder varBuffer = null;
         char next;
         boolean inVariable = false;
-        String pattern = getPattern();
+        final String pattern = getPattern();
 
         for (int i = 0; i < pattern.length(); i++) {
             next = pattern.charAt(i);
@@ -702,14 +696,14 @@ public class Template {
      *         template, false otherwise.
      */
     public boolean isEncodeVariables() {
-        return encodeVariables;
+        return this.encodeVariables;
     }
 
     /**
      * Indicates if the current pattern matches the given formatted string.
      * 
      * @param formattedString
-     *                The formatted string to match.
+     *            The formatted string to match.
      * @return The number of matched characters or -1 if the match failed.
      */
     public int match(String formattedString) {
@@ -717,7 +711,8 @@ public class Template {
 
         try {
             if (formattedString != null) {
-                Matcher matcher = getRegexPattern().matcher(formattedString);
+                final Matcher matcher = getRegexPattern().matcher(
+                        formattedString);
 
                 if ((getMatchingMode() == MODE_EQUALS) && matcher.matches()) {
                     result = matcher.end();
@@ -726,7 +721,7 @@ public class Template {
                     result = matcher.end();
                 }
             }
-        } catch (StackOverflowError soe) {
+        } catch (final StackOverflowError soe) {
             getLogger().warning(
                     "StackOverflowError exception encountered while matching this string : "
                             + formattedString);
@@ -744,46 +739,50 @@ public class Template {
      * @see Reference#decode(String)
      * 
      * @param formattedString
-     *                The string to parse.
+     *            The string to parse.
      * @param variables
-     *                The map of variables to update.
+     *            The map of variables to update.
      * @return The number of matched characters or -1 if no character matched.
      */
     public int parse(String formattedString, Map<String, Object> variables) {
         int result = -1;
-        try {
 
-            Matcher matcher = getRegexPattern().matcher(formattedString);
-            boolean matched = ((getMatchingMode() == MODE_EQUALS) && matcher
-                    .matches())
-                    || ((getMatchingMode() == MODE_STARTS_WITH) && matcher
-                            .lookingAt());
+        if (formattedString != null) {
+            try {
 
-            if (matched) {
-                // Update the number of matched characters
-                result = matcher.end();
+                final Matcher matcher = getRegexPattern().matcher(
+                        formattedString);
+                final boolean matched = ((getMatchingMode() == MODE_EQUALS) && matcher
+                        .matches())
+                        || ((getMatchingMode() == MODE_STARTS_WITH) && matcher
+                                .lookingAt());
 
-                // Update the attributes with the variables value
-                String attributeName = null;
-                String attributeValue = null;
-                for (int i = 0; i < getRegexVariables().size(); i++) {
-                    attributeName = getRegexVariables().get(i);
-                    attributeValue = matcher.group(i + 1);
+                if (matched) {
+                    // Update the number of matched characters
+                    result = matcher.end();
 
-                    Variable var = getVariables().get(attributeName);
-                    if (var != null && var.isDecodedOnParse()) {
-                        variables.put(attributeName, Reference
-                                .decode(attributeValue));
-                    } else {
-                        variables.put(attributeName, attributeValue);
+                    // Update the attributes with the variables value
+                    String attributeName = null;
+                    String attributeValue = null;
+                    for (int i = 0; i < getRegexVariables().size(); i++) {
+                        attributeName = getRegexVariables().get(i);
+                        attributeValue = matcher.group(i + 1);
+
+                        final Variable var = getVariables().get(attributeName);
+                        if ((var != null) && var.isDecodedOnParse()) {
+                            variables.put(attributeName, Reference
+                                    .decode(attributeValue));
+                        } else {
+                            variables.put(attributeName, attributeValue);
+                        }
+
                     }
-
                 }
+            } catch (final StackOverflowError soe) {
+                getLogger().warning(
+                        "StackOverflowError exception encountered while matching this string : "
+                                + formattedString);
             }
-        } catch (StackOverflowError soe) {
-            getLogger().warning(
-                    "StackOverflowError exception encountered while matching this string : "
-                            + formattedString);
         }
 
         return result;
@@ -798,9 +797,9 @@ public class Template {
      * @see Reference#decode(String)
      * 
      * @param formattedString
-     *                The string to parse.
+     *            The string to parse.
      * @param request
-     *                The request to update.
+     *            The request to update.
      * @return The number of matched characters or -1 if no character matched.
      */
     public int parse(String formattedString, Request request) {
@@ -812,7 +811,7 @@ public class Template {
      * characters.
      * 
      * @param character
-     *                The character to quote if necessary.
+     *            The character to quote if necessary.
      * @return The quoted character.
      */
     private String quote(char character) {
@@ -867,8 +866,8 @@ public class Template {
      * Indicates if the variables must be encoded when formatting the template.
      * 
      * @param encodeVariables
-     *                True if the variables must be encoded when formatting the
-     *                template.
+     *            True if the variables must be encoded when formatting the
+     *            template.
      */
     public void setEncodeVariables(boolean encodeVariables) {
         this.encodeVariables = encodeVariables;
@@ -878,7 +877,7 @@ public class Template {
      * Sets the logger to use.
      * 
      * @param logger
-     *                The logger to use.
+     *            The logger to use.
      */
     public void setLogger(Logger logger) {
         this.logger = logger;
@@ -888,8 +887,7 @@ public class Template {
      * Sets the matching mode to use when parsing a formatted reference.
      * 
      * @param matchingMode
-     *                The matching mode to use when parsing a formatted
-     *                reference.
+     *            The matching mode to use when parsing a formatted reference.
      */
     public void setMatchingMode(int matchingMode) {
         this.matchingMode = matchingMode;
@@ -899,7 +897,7 @@ public class Template {
      * Sets the pattern to use for formatting or parsing.
      * 
      * @param pattern
-     *                The pattern to use for formatting or parsing.
+     *            The pattern to use for formatting or parsing.
      */
     public void setPattern(String pattern) {
         this.pattern = pattern;
@@ -909,7 +907,7 @@ public class Template {
      * Sets the modifiable map of variables.
      * 
      * @param variables
-     *                The modifiable map of variables.
+     *            The modifiable map of variables.
      */
     public synchronized void setVariables(Map<String, Variable> variables) {
         this.variables.clear();

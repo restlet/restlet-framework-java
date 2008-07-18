@@ -44,7 +44,7 @@ public class TraceRestlet extends Restlet {
      */
     @Override
     public void handle(Request request, Response response) {
-        String message = "Hello World!" + "\nYour IP address is "
+        final String message = "Hello World!" + "\nYour IP address is "
                 + request.getClientInfo().getAddress()
                 + "\nYour request URI is: "
                 + request.getResourceRef().toString();

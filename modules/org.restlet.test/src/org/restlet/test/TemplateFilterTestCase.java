@@ -40,52 +40,172 @@ import org.restlet.data.Response;
  */
 public class TemplateFilterTestCase extends TestCase {
 
+    /**
+     * Internal class used for test purpose
+     * 
+     * @author Thierry Boileau
+     */
+    private static class MyFreemakerApplication extends Application {
+        File testDirectory;
+
+        Directory directory;
+
+        /**
+         * Constructor.
+         * 
+         * @param context
+         *            The parent context.
+         */
+        public MyFreemakerApplication(Context context, File testDirectory) {
+            super(context);
+
+            setTestDirectory(testDirectory);
+            // Create a Directory that manages a local directory
+            this.directory = new Directory(getContext(), LocalReference
+                    .createFileReference(getTestDirectory()));
+            this.directory.setNegotiateContent(true);
+        }
+
+        @Override
+        public Restlet createRoot() {
+            return new org.restlet.ext.freemarker.TemplateFilter(getContext(),
+                    this.directory);
+        }
+
+        public Directory getDirectory() {
+            return this.directory;
+        }
+
+        public File getTestDirectory() {
+            return this.testDirectory;
+        }
+
+        public void setDirectory(Directory directory) {
+            this.directory = directory;
+        }
+
+        public void setTestDirectory(File testDirectory) {
+            this.testDirectory = testDirectory;
+        }
+    }
+
+    /**
+     * Internal class used for test purpose
+     * 
+     * @author Thierry Boileau
+     */
+    private static class MyVelocityApplication extends Application {
+        File testDirectory;
+
+        Directory directory;
+
+        /**
+         * Constructor.
+         * 
+         * @param context
+         *            The parent context.
+         */
+        public MyVelocityApplication(Context context, File testDirectory) {
+            super(context);
+
+            setTestDirectory(testDirectory);
+            // Create a Directory that manages a local directory
+            this.directory = new Directory(getContext(), LocalReference
+                    .createFileReference(getTestDirectory()));
+            this.directory.setNegotiateContent(true);
+        }
+
+        @Override
+        public Restlet createRoot() {
+            return new org.restlet.ext.velocity.TemplateFilter(getContext(),
+                    this.directory);
+        }
+
+        public Directory getDirectory() {
+            return this.directory;
+        }
+
+        public File getTestDirectory() {
+            return this.testDirectory;
+        }
+
+        public void setDirectory(Directory directory) {
+            this.directory = directory;
+        }
+
+        public void setTestDirectory(File testDirectory) {
+            this.testDirectory = testDirectory;
+        }
+    }
+
     File testDir;
+
+    /**
+     * Recursively delete a directory.
+     * 
+     * @param dir
+     *            The directory to delete.
+     */
+    private void deleteDir(File dir) {
+        if (dir.exists()) {
+            final File[] entries = dir.listFiles();
+
+            for (final File entrie : entries) {
+                if (entrie.isDirectory()) {
+                    deleteDir(entrie);
+                }
+
+                entrie.delete();
+            }
+        }
+
+        dir.delete();
+    }
 
     public void testTemplateFilter() {
         try {
             // Create a temporary directory for the tests
-            testDir = new File(System.getProperty("java.io.tmpdir"),
+            this.testDir = new File(System.getProperty("java.io.tmpdir"),
                     "TemplateFilterTestCase");
-            deleteDir(testDir);
-            testDir.mkdir();
+            deleteDir(this.testDir);
+            this.testDir.mkdir();
 
             // Create temporary template files
             // Will be templated
-            File testFileFm1 = new File(testDir, "testFm1.txt.fmt");
+            final File testFileFm1 = new File(this.testDir, "testFm1.txt.fmt");
             FileWriter fw = new FileWriter(testFileFm1);
             fw.write("Method=${m}/Authority=${ra}");
             fw.close();
 
             // Will not be templated
-            File testFileFm2 = new File(testDir, "testFm2.txt");
+            final File testFileFm2 = new File(this.testDir, "testFm2.txt");
             fw = new FileWriter(testFileFm2);
             fw.write("Method=${m}/Authority=${ra}");
             fw.close();
 
             // Will be templated
-            File testFileVl1 = new File(testDir, "testVl1.txt.vm");
+            final File testFileVl1 = new File(this.testDir, "testVl1.txt.vm");
             fw = new FileWriter(testFileVl1);
             fw.write("Method=${m}/Path=${rp}");
             fw.close();
 
             // Will not be templated
-            File testFileVl2 = new File(testDir, "testVl2.txt");
+            final File testFileVl2 = new File(this.testDir, "testVl2.txt");
             fw = new FileWriter(testFileVl2);
             fw.write("Method=${m}/Path=${rp}");
             fw.close();
 
             // Create a new component
-            Component component = new Component();
+            final Component component = new Component();
             component.getServers().add(Protocol.HTTP, 8182);
             component.getClients().add(Protocol.FILE);
 
             // Create an application filtered with Freemarker
-            MyFreemakerApplication freemarkerApplication = new MyFreemakerApplication(
-                    component.getContext(), testDir);
+            final MyFreemakerApplication freemarkerApplication = new MyFreemakerApplication(
+                    component.getContext(), this.testDir);
             // Create an application filtered with Velocity
-            MyVelocityApplication velocityApplication = new MyVelocityApplication(
-                    component.getContext(), testDir);
+            final MyVelocityApplication velocityApplication = new MyVelocityApplication(
+                    component.getContext(), this.testDir);
 
             // Attach the applications to the component and start it
             component.getDefaultHost().attach("/freemarker",
@@ -98,7 +218,7 @@ public class TemplateFilterTestCase extends TestCase {
             // Allow extensions tunneling
             freemarkerApplication.getTunnelService().setExtensionsTunnel(true);
             velocityApplication.getTunnelService().setExtensionsTunnel(true);
-            Client client = new Client(Protocol.HTTP);
+            final Client client = new Client(Protocol.HTTP);
             Response response = client.get("http://localhost:8182/freemarker/"
                     + testFileFm1.getName());
             if (response.isEntityAvailable()) {
@@ -128,128 +248,8 @@ public class TemplateFilterTestCase extends TestCase {
             }
             // Now, let's stop the component!
             component.stop();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
-    }
-
-    /**
-     * Internal class used for test purpose
-     * 
-     * @author Thierry Boileau
-     */
-    private static class MyFreemakerApplication extends Application {
-        File testDirectory;
-
-        Directory directory;
-
-        public File getTestDirectory() {
-            return testDirectory;
-        }
-
-        public void setTestDirectory(File testDirectory) {
-            this.testDirectory = testDirectory;
-        }
-
-        /**
-         * Constructor.
-         * 
-         * @param context
-         *                The parent context.
-         */
-        public MyFreemakerApplication(Context context, File testDirectory) {
-            super(context);
-
-            this.setTestDirectory(testDirectory);
-            // Create a Directory that manages a local directory
-            this.directory = new Directory(getContext(), LocalReference
-                    .createFileReference(getTestDirectory()));
-            this.directory.setNegotiateContent(true);
-        }
-
-        @Override
-        public Restlet createRoot() {
-            return new org.restlet.ext.freemarker.TemplateFilter(getContext(),
-                    directory);
-        }
-
-        public Directory getDirectory() {
-            return directory;
-        }
-
-        public void setDirectory(Directory directory) {
-            this.directory = directory;
-        }
-    }
-
-    /**
-     * Internal class used for test purpose
-     * 
-     * @author Thierry Boileau
-     */
-    private static class MyVelocityApplication extends Application {
-        File testDirectory;
-
-        Directory directory;
-
-        public File getTestDirectory() {
-            return testDirectory;
-        }
-
-        public void setTestDirectory(File testDirectory) {
-            this.testDirectory = testDirectory;
-        }
-
-        /**
-         * Constructor.
-         * 
-         * @param context
-         *                The parent context.
-         */
-        public MyVelocityApplication(Context context, File testDirectory) {
-            super(context);
-
-            this.setTestDirectory(testDirectory);
-            // Create a Directory that manages a local directory
-            this.directory = new Directory(getContext(), LocalReference
-                    .createFileReference(getTestDirectory()));
-            this.directory.setNegotiateContent(true);
-        }
-
-        @Override
-        public Restlet createRoot() {
-            return new org.restlet.ext.velocity.TemplateFilter(getContext(),
-                    directory);
-        }
-
-        public Directory getDirectory() {
-            return directory;
-        }
-
-        public void setDirectory(Directory directory) {
-            this.directory = directory;
-        }
-    }
-
-    /**
-     * Recursively delete a directory.
-     * 
-     * @param dir
-     *                The directory to delete.
-     */
-    private void deleteDir(File dir) {
-        if (dir.exists()) {
-            File[] entries = dir.listFiles();
-
-            for (int i = 0; i < entries.length; i++) {
-                if (entries[i].isDirectory()) {
-                    deleteDir(entries[i]);
-                }
-
-                entries[i].delete();
-            }
-        }
-
-        dir.delete();
     }
 }

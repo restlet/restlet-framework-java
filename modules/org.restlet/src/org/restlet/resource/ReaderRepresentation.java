@@ -44,9 +44,9 @@ public class ReaderRepresentation extends CharacterRepresentation {
      * Constructor.
      * 
      * @param reader
-     *                The representation's stream.
+     *            The representation's stream.
      * @param mediaType
-     *                The representation's media type.
+     *            The representation's media type.
      */
     public ReaderRepresentation(Reader reader, MediaType mediaType) {
         this(reader, mediaType, UNKNOWN_SIZE);
@@ -56,11 +56,11 @@ public class ReaderRepresentation extends CharacterRepresentation {
      * Constructor.
      * 
      * @param reader
-     *                The representation's stream.
+     *            The representation's stream.
      * @param mediaType
-     *                The representation's media type.
+     *            The representation's media type.
      * @param expectedSize
-     *                The expected reader size in bytes.
+     *            The expected reader size in bytes.
      */
     public ReaderRepresentation(Reader reader, MediaType mediaType,
             long expectedSize) {
@@ -72,14 +72,14 @@ public class ReaderRepresentation extends CharacterRepresentation {
 
     @Override
     public Reader getReader() throws IOException {
-        Reader result = this.reader;
+        final Reader result = this.reader;
         setReader(null);
         return result;
     }
 
     @Override
     public String getText() throws IOException {
-        return ByteUtils.toString(getStream(), this.getCharacterSet());
+        return ByteUtils.toString(getStream(), getCharacterSet());
     }
 
     /**
@@ -90,7 +90,7 @@ public class ReaderRepresentation extends CharacterRepresentation {
         if (this.reader != null) {
             try {
                 this.reader.close();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 logger.log(Level.WARNING,
                         "Error while releasing the representation.", e);
             }
@@ -104,7 +104,7 @@ public class ReaderRepresentation extends CharacterRepresentation {
      * Sets the reader to use.
      * 
      * @param reader
-     *                The reader to use.
+     *            The reader to use.
      */
     public void setReader(Reader reader) {
         this.reader = reader;

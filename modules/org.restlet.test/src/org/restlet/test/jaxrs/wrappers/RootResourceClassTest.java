@@ -46,16 +46,16 @@ public class RootResourceClassTest extends TestCase {
     }
 
     public void testEncodePath() throws Exception {
-        WrapperFactory wrapperFactory = new WrapperFactory(
+        final WrapperFactory wrapperFactory = new WrapperFactory(
                 new ThreadLocalizedContext(), null, null, null, Logger
                         .getAnonymousLogger());
         try {
             wrapperFactory.getRootResourceClass(IllegalPathService1.class);
             fail("must not pass");
-        } catch (AssertionFailedError e) {
+        } catch (final AssertionFailedError e) {
             // wonderful
         }
-        RootResourceClass rrc = wrapperFactory
+        final RootResourceClass rrc = wrapperFactory
                 .getRootResourceClass(IllegalPathService2.class);
         assertEquals("/afsdf%3Ause", rrc.getPathRegExp().getPathPattern());
     }

@@ -33,6 +33,8 @@ import org.restlet.test.jaxrs.services.tests.RecursiveTest;
 @Produces("text/plain")
 public class RecursiveTestService {
 
+    private RecursiveTestService parent;
+
     /**
      * use from runtime only
      */
@@ -44,7 +46,12 @@ public class RecursiveTestService {
         this.parent = parent;
     }
 
-    private RecursiveTestService parent;
+    public int depth() {
+        if (this.parent == null) {
+            return 0;
+        }
+        return this.parent.depth() + 1;
+    }
 
     @GET
     public String get() {
@@ -54,11 +61,5 @@ public class RecursiveTestService {
     @Path("a")
     public RecursiveTestService getSubResource2() {
         return new RecursiveTestService(this);
-    }
-
-    public int depth() {
-        if (parent == null)
-            return 0;
-        return parent.depth() + 1;
     }
 }

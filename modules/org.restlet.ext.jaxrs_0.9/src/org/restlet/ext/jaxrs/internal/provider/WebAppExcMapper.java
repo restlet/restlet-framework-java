@@ -59,9 +59,9 @@ public class WebAppExcMapper implements
      * Adds the extensions for the given {@link Variant}.
      * 
      * @param uriBuilder
-     *                the UriBuilder to add the extensions.
+     *            the UriBuilder to add the extensions.
      * @param variant
-     *                the Variant to add the extensions for.
+     *            the Variant to add the extensions for.
      * @return true, if the extensions where added, or false, if the extension
      *         for the media type is not available.
      */
@@ -70,27 +70,35 @@ public class WebAppExcMapper implements
         String languageExt = null;
         String encodingExt = null;
         if (variant.getMediaType() != null) {
-            mediaTypeExt = extBackwMapping.getByMediaType(variant
+            mediaTypeExt = this.extBackwMapping.getByMediaType(variant
                     .getMediaType());
-            if (mediaTypeExt == null)
+            if (mediaTypeExt == null) {
                 return false;
+            }
         }
         if (variant.getLanguage() != null) {
-            languageExt = extBackwMapping.getByLanguage(variant.getLanguage());
-            if (languageExt == null)
+            languageExt = this.extBackwMapping.getByLanguage(variant
+                    .getLanguage());
+            if (languageExt == null) {
                 languageExt = Converter.toLanguageString(variant.getLanguage());
+            }
         }
         if (variant.getEncoding() != null) {
-            encodingExt = extBackwMapping.getByEncoding(variant.getEncoding());
-            if (encodingExt == null)
+            encodingExt = this.extBackwMapping.getByEncoding(variant
+                    .getEncoding());
+            if (encodingExt == null) {
                 encodingExt = variant.getEncoding();
+            }
         }
-        if (languageExt != null)
+        if (languageExt != null) {
             uriBuilder.extension(languageExt.toString());
-        if (mediaTypeExt != null)
+        }
+        if (mediaTypeExt != null) {
             uriBuilder.extension(mediaTypeExt);
-        if (encodingExt != null)
+        }
+        if (encodingExt != null) {
             uriBuilder.extension(encodingExt);
+        }
         return true;
     }
 
@@ -121,10 +129,11 @@ public class WebAppExcMapper implements
      */
     private Response giveOtherVariant(Collection<Variant> acceptedVariants,
             Response response) {
-        if (acceptedVariants != null && acceptedVariants.isEmpty())
+        if ((acceptedVariants != null) && acceptedVariants.isEmpty()) {
             acceptedVariants = null;
-        ResponseBuilder rb = Response.fromResponse(response);
-        StringBuilder stb = new StringBuilder();
+        }
+        final ResponseBuilder rb = Response.fromResponse(response);
+        final StringBuilder stb = new StringBuilder();
 
         // NICE speed optimization possible by using a Reader or InputStream,
         // which returns the values of String[] or better byte[][]
@@ -133,7 +142,7 @@ public class WebAppExcMapper implements
         if (acceptedVariants != null) {
             stb.append("Please use one of the following:\n");
             stb.append("\n");
-            for (Variant variant : acceptedVariants) {
+            for (final Variant variant : acceptedVariants) {
                 stb.append("* ");
                 stb.append(variant);
                 stb.append("\n");
@@ -148,27 +157,28 @@ public class WebAppExcMapper implements
      * Creates an entity with a list of links to the supported variants.
      * 
      * @param supportedVariants
-     *                the supported variants
+     *            the supported variants
      * @param response
-     *                the Response to add the entity to.
+     *            the Response to add the entity to.
      * @return a Response with a list of the given variants as entity. If the
      *         supportedVariants is null, the given {@link Response} is
      *         returned.
      */
     private Response requestOtherVariants(
             Collection<Variant> supportedVariants, Response response) {
-        if (supportedVariants != null && supportedVariants.isEmpty())
+        if ((supportedVariants != null) && supportedVariants.isEmpty()) {
             supportedVariants = null;
-        ResponseBuilder rb = Response.fromResponse(response);
+        }
+        final ResponseBuilder rb = Response.fromResponse(response);
         boolean xhtml = false;
-        boolean html = httpHeaders.getAcceptableMediaTypes().contains(
+        boolean html = this.httpHeaders.getAcceptableMediaTypes().contains(
                 MediaType.TEXT_HTML_TYPE);
         if (!html) {
-            xhtml = httpHeaders.getAcceptableMediaTypes().contains(
+            xhtml = this.httpHeaders.getAcceptableMediaTypes().contains(
                     MediaType.APPLICATION_XHTML_XML_TYPE);
             html = xhtml;
         }
-        StringBuilder stb = new StringBuilder();
+        final StringBuilder stb = new StringBuilder();
 
         // NICE speed optimization possible by using a Reader or InputStream,
         // which returns the values of String[] or better byte[][]
@@ -181,19 +191,23 @@ public class WebAppExcMapper implements
 
         if (supportedVariants != null) {
             stb.append(" Try one of the following:\n");
-            if (html)
+            if (html) {
                 stb.append("</p><ul>");
+            }
             stb.append("\n");
-            for (Variant variant : supportedVariants) {
-                UriBuilder uriBuilder = uriInfo.getRequestUriBuilder();
-                boolean added = addExtensions(uriBuilder, variant);
-                if (!added)
+            for (final Variant variant : supportedVariants) {
+                final UriBuilder uriBuilder = this.uriInfo
+                        .getRequestUriBuilder();
+                final boolean added = addExtensions(uriBuilder, variant);
+                if (!added) {
                     continue;
-                String uri = uriBuilder.build().toString();
-                if (html)
+                }
+                final String uri = uriBuilder.build().toString();
+                if (html) {
                     stb.append("<li><a href=\"");
-                else
+                } else {
                     stb.append("* ");
+                }
                 stb.append(uri);
                 if (html) {
                     stb.append("\">");
@@ -202,19 +216,22 @@ public class WebAppExcMapper implements
                 }
                 stb.append("\n");
             }
-            if (html)
+            if (html) {
                 stb.append("</ul>");
+            }
         }
 
-        if (html)
+        if (html) {
             stb.append("</body></html>");
+        }
         rb.entity(stb);
-        if (xhtml)
+        if (xhtml) {
             rb.type(MediaType.APPLICATION_XHTML_XML_TYPE);
-        else if (html)
+        } else if (html) {
             rb.type(MediaType.TEXT_HTML_TYPE);
-        else
+        } else {
             rb.type(MediaType.TEXT_PLAIN_TYPE);
+        }
         return rb.build();
     }
 
@@ -222,15 +239,19 @@ public class WebAppExcMapper implements
      * @see javax.ws.rs.ext.ExceptionMapper#toResponse(java.lang.Object)
      */
     public Response toResponse(WebApplicationException wae) {
-        Response response = wae.getResponse();
-        if (response == null)
+        final Response response = wae.getResponse();
+        if (response == null) {
             return null;
-        if (response.getEntity() != null)
+        }
+        if (response.getEntity() != null) {
             return response;
-        if (response.getStatus() == NOT_ACCEPTABLE.getStatusCode())
+        }
+        if (response.getStatus() == NOT_ACCEPTABLE.getStatusCode()) {
             return requestOtherVariants(getSupportedVariants(wae), response);
-        if (response.getStatus() == UNSUPPORTED_MEDIA_TYPE.getStatusCode())
+        }
+        if (response.getStatus() == UNSUPPORTED_MEDIA_TYPE.getStatusCode()) {
             return giveOtherVariant(getAcceptedVariants(wae), response);
+        }
         return response;
     }
 }

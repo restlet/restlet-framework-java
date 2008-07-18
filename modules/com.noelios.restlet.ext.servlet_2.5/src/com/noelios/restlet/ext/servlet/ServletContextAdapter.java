@@ -45,7 +45,7 @@ public class ServletContextAdapter extends Context {
      * Constructor.
      * 
      * @param servlet
-     *                The parent Servlet.
+     *            The parent Servlet.
      * @deprecated Use this constructor ServletContextAdapter(Servlet, Context)
      *             instead.
      */
@@ -59,9 +59,9 @@ public class ServletContextAdapter extends Context {
      * Constructor.
      * 
      * @param servlet
-     *                The parent Servlet.
+     *            The parent Servlet.
      * @param parentContext
-     *                The parent Context.
+     *            The parent Context.
      */
     public ServletContextAdapter(Servlet servlet, Context parentContext) {
         super(new ServletLogger(servlet.getServletConfig().getServletContext()));
@@ -72,15 +72,6 @@ public class ServletContextAdapter extends Context {
                 .getServerDispatcher() : null;
     }
 
-    /**
-     * Returns the Servlet context.
-     * 
-     * @return The Servlet context.
-     */
-    public ServletContext getServletContext() {
-        return this.servletContext;
-    }
-
     @Override
     public Uniform getClientDispatcher() {
         return this.clientDispatcher;
@@ -89,6 +80,15 @@ public class ServletContextAdapter extends Context {
     @Override
     public Uniform getServerDispatcher() {
         return this.serverDispatcher;
+    }
+
+    /**
+     * Returns the Servlet context.
+     * 
+     * @return The Servlet context.
+     */
+    public ServletContext getServletContext() {
+        return this.servletContext;
     }
 
 }

@@ -1,4 +1,5 @@
 package org.restlet.example.book.restlet.ch4;
+
 import org.restlet.Restlet;
 import org.restlet.Router;
 import org.restlet.Server;
@@ -11,21 +12,21 @@ public class SimpleHttpServerWithRouter {
     public static void main(String[] args) {
 
         // Creates a Restlet whose response to each request is "Hello, world".
-        Restlet restlet = new Restlet() {
+        final Restlet restlet = new Restlet() {
             @Override
             public void handle(Request request, Response response) {
                 response.setEntity("hello, world", MediaType.TEXT_PLAIN);
             }
         };
 
-        Router router = new Router();
+        final Router router = new Router();
         router.attach("/route01", restlet);
 
         // Instantiates a simple HTTP server that redirects all incoming
         // requests to the router.
         try {
             new Server(Protocol.HTTP, router).start();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
     }

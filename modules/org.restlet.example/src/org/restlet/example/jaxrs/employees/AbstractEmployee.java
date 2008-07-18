@@ -32,27 +32,27 @@ public abstract class AbstractEmployee {
 
     private String lastname;
 
-    public Integer getStaffNo() {
-        return this.staffNo;
-    }
-
-    public void setStaffNo(Integer staffNo) {
-        this.staffNo = staffNo;
-    }
-
     public String getFirstname() {
         return this.firstname;
-    }
-
-    public void setFirstname(String firstname) {
-        this.firstname = firstname;
     }
 
     public String getLastname() {
         return this.lastname;
     }
 
+    public Integer getStaffNo() {
+        return this.staffNo;
+    }
+
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
+    }
+
     public void setLastname(String lastname) {
         this.lastname = lastname;
+    }
+
+    public void setStaffNo(Integer staffNo) {
+        this.staffNo = staffNo;
     }
 }

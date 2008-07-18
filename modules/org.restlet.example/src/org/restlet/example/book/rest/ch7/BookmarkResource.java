@@ -46,11 +46,11 @@ public class BookmarkResource extends UserResource {
      * Constructor.
      * 
      * @param context
-     *                The parent context.
+     *            The parent context.
      * @param request
-     *                The request to handle.
+     *            The request to handle.
      * @param response
-     *                The response to return.
+     *            The response to return.
      */
     public BookmarkResource(Context context, Request request, Response response) {
         super(context, request, response);
@@ -97,7 +97,7 @@ public class BookmarkResource extends UserResource {
 
         if (variant.getMediaType().equals(MediaType.TEXT_PLAIN)) {
             // Creates a text representation
-            StringBuilder sb = new StringBuilder();
+            final StringBuilder sb = new StringBuilder();
             sb.append("----------------\n");
             sb.append("Bookmark details\n");
             sb.append("----------------\n\n");
@@ -125,7 +125,7 @@ public class BookmarkResource extends UserResource {
             if (entity.getMediaType().equals(MediaType.APPLICATION_WWW_FORM,
                     true)) {
                 // Parse the entity as a web form
-                Form form = new Form(entity);
+                final Form form = new Form(entity);
 
                 // If the bookmark doesn't exist, create it
                 if (this.bookmark == null) {

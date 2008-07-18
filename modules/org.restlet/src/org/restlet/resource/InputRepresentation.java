@@ -44,9 +44,9 @@ public class InputRepresentation extends StreamRepresentation {
      * Constructor.
      * 
      * @param inputStream
-     *                The representation's stream.
+     *            The representation's stream.
      * @param mediaType
-     *                The representation's media type.
+     *            The representation's media type.
      */
     public InputRepresentation(InputStream inputStream, MediaType mediaType) {
         this(inputStream, mediaType, UNKNOWN_SIZE);
@@ -56,11 +56,11 @@ public class InputRepresentation extends StreamRepresentation {
      * Constructor.
      * 
      * @param inputStream
-     *                The representation's stream.
+     *            The representation's stream.
      * @param mediaType
-     *                The representation's media type.
+     *            The representation's media type.
      * @param expectedSize
-     *                The expected input stream size.
+     *            The expected input stream size.
      */
     public InputRepresentation(InputStream inputStream, MediaType mediaType,
             long expectedSize) {
@@ -72,14 +72,14 @@ public class InputRepresentation extends StreamRepresentation {
 
     @Override
     public InputStream getStream() throws IOException {
-        InputStream result = this.stream;
+        final InputStream result = this.stream;
         setStream(null);
         return result;
     }
 
     @Override
     public String getText() throws IOException {
-        return ByteUtils.toString(getStream(), this.getCharacterSet());
+        return ByteUtils.toString(getStream(), getCharacterSet());
     }
 
     /**
@@ -90,7 +90,7 @@ public class InputRepresentation extends StreamRepresentation {
         if (this.stream != null) {
             try {
                 this.stream.close();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 logger.log(Level.WARNING,
                         "Error while releasing the representation.", e);
             }
@@ -103,7 +103,7 @@ public class InputRepresentation extends StreamRepresentation {
      * Sets the input stream to use.
      * 
      * @param stream
-     *                The input stream to use.
+     *            The input stream to use.
      */
     public void setStream(InputStream stream) {
         this.stream = stream;

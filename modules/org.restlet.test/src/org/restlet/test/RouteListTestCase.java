@@ -32,12 +32,26 @@ import org.restlet.util.RouteList;
  */
 public class RouteListTestCase extends TestCase {
 
+    static class MockScoringRoute extends Route {
+        int score;
+
+        public MockScoringRoute(int score) {
+            super(null);
+            this.score = score;
+        }
+
+        @Override
+        public float score(Request request, Response response) {
+            return this.score;
+        }
+    }
+
     public void testGetLast() {
-        RouteList list = new RouteList();
+        final RouteList list = new RouteList();
 
         assertNull(list.getLast(null, null, 1f));
 
-        Route last = new MockScoringRoute(5);
+        final Route last = new MockScoringRoute(5);
 
         list.add(new MockScoringRoute(5));
         list.add(new MockScoringRoute(5));
@@ -48,13 +62,13 @@ public class RouteListTestCase extends TestCase {
     }
 
     public void testGetNext() {
-        RouteList list = new RouteList();
+        final RouteList list = new RouteList();
 
         assertNull(list.getNext(null, null, 1f));
 
-        Route first = new MockScoringRoute(5);
-        Route second = new MockScoringRoute(5);
-        Route third = new MockScoringRoute(5);
+        final Route first = new MockScoringRoute(5);
+        final Route second = new MockScoringRoute(5);
+        final Route third = new MockScoringRoute(5);
 
         list.add(first);
         list.add(second);
@@ -68,7 +82,7 @@ public class RouteListTestCase extends TestCase {
     }
 
     public void testGetRandom() {
-        RouteList list = new RouteList();
+        final RouteList list = new RouteList();
 
         assertNull(list.getRandom(null, null, 1f));
 
@@ -82,26 +96,13 @@ public class RouteListTestCase extends TestCase {
         list.add(new MockScoringRoute(7));
         list.add(new MockScoringRoute(8));
 
-        MockScoringRoute r = (MockScoringRoute) list.getRandom(null, null, 5f);
+        final MockScoringRoute r = (MockScoringRoute) list.getRandom(null,
+                null, 5f);
 
         assertFalse(r == null);
         assertTrue(r.score > 5);
 
         assertNull(list.getRandom(null, null, 9f));
-    }
-
-    static class MockScoringRoute extends Route {
-        int score;
-
-        public MockScoringRoute(int score) {
-            super(null);
-            this.score = score;
-        }
-
-        @Override
-        public float score(Request request, Response response) {
-            return score;
-        }
     }
 
 }

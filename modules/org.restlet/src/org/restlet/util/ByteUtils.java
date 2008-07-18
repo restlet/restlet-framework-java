@@ -60,16 +60,16 @@ public final class ByteUtils {
      * Input stream connected to a non-blocking readable channel.
      */
     private final static class NbChannelInputStream extends InputStream {
-        private ByteBuffer bb;
+        private final ByteBuffer bb;
 
         /** The channel to read from. */
-        private ReadableByteChannel channel;
+        private final ReadableByteChannel channel;
 
         /** Indicates if further reads can be attempted. */
         private boolean endReached;
 
         /** The selectable channel to read from. */
-        private SelectableChannel selectableChannel;
+        private final SelectableChannel selectableChannel;
 
         /**
          * Constructor.
@@ -93,10 +93,10 @@ public final class ByteUtils {
 
             try {
                 // Are there available byte in the buffer?
-                if (bb.hasRemaining()) {
+                if (this.bb.hasRemaining()) {
                     // Yes, let's return the next one
-                    result = bb.get();
-                } else if (!endReached) {
+                    result = this.bb.get();
+                } else if (!this.endReached) {
                     // No, let's try to read more
                     int bytesRead = readChannel();
 
@@ -106,20 +106,20 @@ public final class ByteUtils {
                         selector = SelectorFactory.getSelector();
 
                         if (selector != null) {
-                            selectionKey = selectableChannel.register(selector,
-                                    SelectionKey.OP_READ);
+                            selectionKey = this.selectableChannel.register(
+                                    selector, SelectionKey.OP_READ);
                             selector.select(10000);
                         }
 
                         bytesRead = readChannel();
                     } else if (bytesRead == -1) {
-                        endReached = true;
+                        this.endReached = true;
                     }
 
-                    if (bb.remaining() == 0) {
+                    if (this.bb.remaining() == 0) {
                         result = -1;
                     } else {
-                        result = bb.get();
+                        result = this.bb.get();
                     }
                 } else {
                     result = -1;
@@ -150,9 +150,9 @@ public final class ByteUtils {
          */
         private int readChannel() throws IOException {
             int result = 0;
-            bb.clear();
-            result = channel.read(bb);
-            bb.flip();
+            this.bb.clear();
+            result = this.channel.read(this.bb);
+            this.bb.flip();
             return result;
         }
     }
@@ -161,10 +161,10 @@ public final class ByteUtils {
      * Output stream connected to a non-blocking writable channel.
      */
     private final static class NbChannelOutputStream extends OutputStream {
-        private ByteBuffer bb = ByteBuffer.allocate(8192);
+        private final ByteBuffer bb = ByteBuffer.allocate(8192);
 
         /** The channel to write to. */
-        private WritableByteChannel channel;
+        private final WritableByteChannel channel;
 
         private SelectionKey selectionKey;
 
@@ -174,7 +174,7 @@ public final class ByteUtils {
          * Constructor.
          * 
          * @param channel
-         *                The wrapped channel.
+         *            The wrapped channel.
          */
         public NbChannelOutputStream(WritableByteChannel channel) {
             this.channel = channel;
@@ -186,24 +186,25 @@ public final class ByteUtils {
                 this.selectionKey.cancel();
             }
 
-            if (this.selector != null)
+            if (this.selector != null) {
                 this.selector.close();
+            }
 
             super.close();
         }
 
         @Override
         public void write(byte b[], int off, int len) throws IOException {
-            bb.clear();
-            bb.put(b, off, len);
-            bb.flip();
+            this.bb.clear();
+            this.bb.put(b, off, len);
+            this.bb.flip();
 
-            if ((this.channel != null) && (bb != null)) {
+            if ((this.channel != null) && (this.bb != null)) {
                 try {
                     int bytesWritten;
 
-                    while (bb.hasRemaining()) {
-                        bytesWritten = this.channel.write(bb);
+                    while (this.bb.hasRemaining()) {
+                        bytesWritten = this.channel.write(this.bb);
 
                         if (bytesWritten < 0) {
                             throw new IOException(
@@ -215,12 +216,12 @@ public final class ByteUtils {
                             }
                         }
                     }
-                } catch (IOException ioe) {
+                } catch (final IOException ioe) {
                     throw new IOException(
                             "Unable to write to the non-blocking channel. "
                                     + ioe.getLocalizedMessage());
                 } finally {
-                    bb.clear();
+                    this.bb.clear();
                 }
             } else {
                 throw new IOException(
@@ -263,19 +264,20 @@ public final class ByteUtils {
                 @Override
                 public int read() throws IOException {
                     try {
-                        if (endReached)
+                        if (this.endReached) {
                             return -1;
+                        }
 
-                        Integer value = queue.poll(QUEUE_TIMEOUT,
-                                TimeUnit.SECONDS);
+                        final Integer value = PipeStream.this.queue.poll(
+                                QUEUE_TIMEOUT, TimeUnit.SECONDS);
                         if (value == null) {
                             throw new IOException(
                                     "Timeout while reading from the queue-based input stream");
                         }
 
-                        endReached = (value.intValue() == -1);
+                        this.endReached = (value.intValue() == -1);
                         return value;
-                    } catch (InterruptedException ie) {
+                    } catch (final InterruptedException ie) {
                         throw new IOException(
                                 "Interruption occurred while writing in the queue");
                     }
@@ -293,11 +295,12 @@ public final class ByteUtils {
                 @Override
                 public void write(int b) throws IOException {
                     try {
-                        if (!queue.offer(b, QUEUE_TIMEOUT, TimeUnit.SECONDS)) {
+                        if (!PipeStream.this.queue.offer(b, QUEUE_TIMEOUT,
+                                TimeUnit.SECONDS)) {
                             throw new IOException(
                                     "Timeout while writing to the queue-based output stream");
                         }
-                    } catch (InterruptedException ie) {
+                    } catch (final InterruptedException ie) {
                         throw new IOException(
                                 "Interruption occurred while writing in the queue");
                     }
@@ -313,11 +316,11 @@ public final class ByteUtils {
     private static class ReaderInputStream extends InputStream {
         private byte[] buffer;
 
-        private CharacterSet characterSet;
+        private final CharacterSet characterSet;
 
         private int index;
 
-        private BufferedReader localReader;
+        private final BufferedReader localReader;
 
         public ReaderInputStream(Reader reader, CharacterSet characterSet) {
             this.localReader = (reader instanceof BufferedReader) ? (BufferedReader) reader
@@ -333,7 +336,7 @@ public final class ByteUtils {
 
             // If the buffer is empty, read a new line
             if (this.buffer == null) {
-                String line = this.localReader.readLine();
+                final String line = this.localReader.readLine();
 
                 if (line != null) {
                     this.buffer = line.getBytes(this.characterSet.getName());
@@ -343,7 +346,7 @@ public final class ByteUtils {
 
             if (this.buffer != null) {
                 // Read the next byte and increment the index
-                result = this.buffer[index++];
+                result = this.buffer[this.index++];
 
                 // Check if the buffer has been fully read
                 if (this.index == this.buffer.length) {
@@ -381,9 +384,10 @@ public final class ByteUtils {
          */
         static {
             try {
-                for (int i = 0; i < maxSelectors; i++)
+                for (int i = 0; i < maxSelectors; i++) {
                     selectors.add(Selector.open());
-            } catch (IOException ex) {
+                }
+            } catch (final IOException ex) {
                 // do nothing.
             }
         }
@@ -397,24 +401,26 @@ public final class ByteUtils {
             synchronized (selectors) {
                 Selector selector = null;
                 try {
-                    if (selectors.size() != 0)
+                    if (selectors.size() != 0) {
                         selector = selectors.pop();
-                } catch (EmptyStackException ex) {
+                    }
+                } catch (final EmptyStackException ex) {
                 }
 
                 int attempts = 0;
                 try {
-                    while (selector == null && attempts < 2) {
+                    while ((selector == null) && (attempts < 2)) {
                         selectors.wait(timeout);
                         try {
-                            if (selectors.size() != 0)
+                            if (selectors.size() != 0) {
                                 selector = selectors.pop();
-                        } catch (EmptyStackException ex) {
+                            }
+                        } catch (final EmptyStackException ex) {
                             break;
                         }
                         attempts++;
                     }
-                } catch (InterruptedException ex) {
+                } catch (final InterruptedException ex) {
                 }
 
                 return selector;
@@ -425,13 +431,14 @@ public final class ByteUtils {
          * Return the <code>Selector</code> to the cache
          * 
          * @param s
-         *                <code>Selector</code>
+         *            <code>Selector</code>
          */
         public final static void returnSelector(Selector s) {
             synchronized (selectors) {
                 selectors.push(s);
-                if (selectors.size() == 1)
+                if (selectors.size() == 1) {
                     selectors.notify();
+                }
             }
         }
     }
@@ -451,18 +458,18 @@ public final class ByteUtils {
         @Override
         public void close() throws IOException {
             super.close();
-            writer.close();
+            this.writer.close();
         }
 
         @Override
         public void flush() throws IOException {
             super.flush();
-            writer.flush();
+            this.writer.flush();
         }
 
         @Override
         public void write(int b) throws IOException {
-            writer.write(b);
+            this.writer.write(b);
         }
     }
 
@@ -470,12 +477,12 @@ public final class ByteUtils {
      * Read and discard all the bytes from {@code input}
      * 
      * @param input
-     *                The input stream to exhaust.
+     *            The input stream to exhaust.
      * @throws IOException
      */
     public static void exhaust(InputStream input) throws IOException {
         if (input != null) {
-            byte[] buf = new byte[2048];
+            final byte[] buf = new byte[2048];
             int read = input.read(buf);
 
             while (read != -1) {
@@ -489,7 +496,7 @@ public final class ByteUtils {
      * supported by a file a read-only instance of FileChannel is returned.
      * 
      * @param inputStream
-     *                The input stream to convert.
+     *            The input stream to convert.
      * @return A readable byte channel.
      */
     public static ReadableByteChannel getChannel(InputStream inputStream) {
@@ -500,7 +507,7 @@ public final class ByteUtils {
      * Returns a writable byte channel based on a given output stream.
      * 
      * @param outputStream
-     *                The output stream.
+     *            The output stream.
      * @return A writable byte channel.
      */
     public static WritableByteChannel getChannel(OutputStream outputStream) {
@@ -514,7 +521,7 @@ public final class ByteUtils {
      * writer thread and a pipe channel.
      * 
      * @param representation
-     *                the representation to get the {@link OutputStream} from.
+     *            the representation to get the {@link OutputStream} from.
      * @return A readable byte channel.
      * @throws IOException
      */
@@ -528,10 +535,10 @@ public final class ByteUtils {
         context.getExecutorService().execute(new Runnable() {
             public void run() {
                 try {
-                    WritableByteChannel wbc = pipe.sink();
+                    final WritableByteChannel wbc = pipe.sink();
                     representation.write(wbc);
                     wbc.close();
-                } catch (IOException ioe) {
+                } catch (final IOException ioe) {
                     Logger.getLogger(ByteUtils.class.getCanonicalName()).log(
                             Level.FINE,
                             "Error while writing to the piped channel.", ioe);
@@ -546,12 +553,12 @@ public final class ByteUtils {
      * Returns a reader from an input stream and a character set.
      * 
      * @param stream
-     *                The input stream.
+     *            The input stream.
      * @param characterSet
-     *                The character set. May be null.
+     *            The character set. May be null.
      * @return The equivalent reader.
      * @throws UnsupportedEncodingException
-     *                 if a character set is given, but not supported
+     *             if a character set is given, but not supported
      */
     public static Reader getReader(InputStream stream, CharacterSet characterSet)
             throws UnsupportedEncodingException {
@@ -566,7 +573,7 @@ public final class ByteUtils {
      * writer thread and a pipe stream.
      * 
      * @param representation
-     *                The representation to read from.
+     *            The representation to read from.
      * @return The character reader.
      * @throws IOException
      */
@@ -582,7 +589,7 @@ public final class ByteUtils {
             public void run() {
                 try {
                     representation.write(pipedWriter);
-                } catch (IOException ioe) {
+                } catch (final IOException ioe) {
                     Logger.getLogger(ByteUtils.class.getCanonicalName()).log(
                             Level.FINE,
                             "Error while writing to the piped reader.", ioe);
@@ -597,7 +604,7 @@ public final class ByteUtils {
      * Returns an input stream based on a given readable byte channel.
      * 
      * @param readableChannel
-     *                The readable byte channel.
+     *            The readable byte channel.
      * @return An input stream based on a given readable byte channel.
      */
     public static InputStream getStream(ReadableByteChannel readableChannel) {
@@ -614,9 +621,9 @@ public final class ByteUtils {
      * Returns an input stream based on a given character reader.
      * 
      * @param reader
-     *                The character reader.
+     *            The character reader.
      * @param characterSet
-     *                The stream character set.
+     *            The stream character set.
      * @return An input stream based on a given character reader.
      */
     public static InputStream getStream(Reader reader, CharacterSet characterSet) {
@@ -629,7 +636,7 @@ public final class ByteUtils {
      * pipe stream.
      * 
      * @param representation
-     *                the representation to get the {@link OutputStream} from.
+     *            the representation to get the {@link OutputStream} from.
      * @return A stream with the representation's content.
      */
     public static InputStream getStream(final Representation representation) {
@@ -645,11 +652,11 @@ public final class ByteUtils {
         context.getExecutorService().execute(new Runnable() {
             public void run() {
                 try {
-                    OutputStream os = pipe.getOutputStream();
+                    final OutputStream os = pipe.getOutputStream();
                     representation.write(os);
                     os.write(-1);
                     os.close();
-                } catch (IOException ioe) {
+                } catch (final IOException ioe) {
                     Logger.getLogger(ByteUtils.class.getCanonicalName()).log(
                             Level.FINE,
                             "Error while writing to the piped input stream.",
@@ -665,14 +672,14 @@ public final class ByteUtils {
      * Returns an output stream based on a given writable byte channel.
      * 
      * @param writableChannel
-     *                The writable byte channel.
+     *            The writable byte channel.
      * @return An output stream based on a given writable byte channel.
      */
     public static OutputStream getStream(WritableByteChannel writableChannel) {
         OutputStream result = null;
 
         if (writableChannel instanceof SelectableChannel) {
-            SelectableChannel selectableChannel = (SelectableChannel) writableChannel;
+            final SelectableChannel selectableChannel = (SelectableChannel) writableChannel;
 
             synchronized (selectableChannel.blockingLock()) {
                 if (selectableChannel.isBlocking()) {
@@ -692,7 +699,7 @@ public final class ByteUtils {
      * Returns an output stream based on a given writer.
      * 
      * @param writer
-     *                The writer.
+     *            The writer.
      * @return the output stream of the writer
      */
     public static OutputStream getStream(Writer writer) {
@@ -704,12 +711,12 @@ public final class ByteUtils {
      * As this method uses the InputstreamReader class, the default character
      * set is used for decoding the input stream.
      * 
-     * @see <a
-     *      href="http://java.sun.com/j2se/1.5.0/docs/api/java/io/InputStreamReader.html">InputStreamReader
-     *      class</a>
+     * @see <a * href=
+     *      "http://java.sun.com/j2se/1.5.0/docs/api/java/io/InputStreamReader.html"
+     *      >InputStreamReader * class< /a>
      * @see #toString(InputStream, CharacterSet)
      * @param inputStream
-     *                The input stream.
+     *            The input stream.
      * @return The converted string.
      */
     public static String toString(InputStream inputStream) {
@@ -720,13 +727,13 @@ public final class ByteUtils {
      * Converts an input stream to a string using the specified character set
      * for decoding the input stream.
      * 
-     * @see <a
-     *      href="http://java.sun.com/j2se/1.5.0/docs/api/java/io/InputStreamReader.html">InputStreamReader
-     *      class</a>
+     * @see <a * href=
+     *      "http://java.sun.com/j2se/1.5.0/docs/api/java/io/InputStreamReader.html"
+     *      >InputStreamReader * class< /a>
      * @param inputStream
-     *                The input stream.
+     *            The input stream.
      * @param characterSet
-     *                The character set
+     *            The character set
      * @return The converted string.
      */
     public static String toString(InputStream inputStream,
@@ -741,7 +748,7 @@ public final class ByteUtils {
                 } else {
                     result = toString(new InputStreamReader(inputStream));
                 }
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 // Returns an empty string
             }
         }
@@ -752,11 +759,11 @@ public final class ByteUtils {
     /**
      * Converts a reader to a string.
      * 
-     * @see <a
-     *      href="http://java.sun.com/j2se/1.5.0/docs/api/java/io/InputStreamReader.html">InputStreamReader
-     *      class</a>
+     * @see <a * href=
+     *      "http://java.sun.com/j2se/1.5.0/docs/api/java/io/InputStreamReader.html"
+     *      >InputStreamReader * class< /a>
      * @param reader
-     *                The characters reader.
+     *            The characters reader.
      * @return The converted string.
      */
     public static String toString(Reader reader) {
@@ -764,8 +771,8 @@ public final class ByteUtils {
 
         if (reader != null) {
             try {
-                StringBuilder sb = new StringBuilder();
-                BufferedReader br = new BufferedReader(reader);
+                final StringBuilder sb = new StringBuilder();
+                final BufferedReader br = new BufferedReader(reader);
                 int nextChar = br.read();
                 while (nextChar != -1) {
                     sb.append((char) nextChar);
@@ -773,7 +780,7 @@ public final class ByteUtils {
                 }
                 br.close();
                 result = sb.toString();
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 // Returns an empty string
             }
         }
@@ -786,15 +793,15 @@ public final class ByteUtils {
      * input stream is closed.
      * 
      * @param inputStream
-     *                The input stream.
+     *            The input stream.
      * @param outputStream
-     *                The output stream.
+     *            The output stream.
      * @throws IOException
      */
     public static void write(InputStream inputStream, OutputStream outputStream)
             throws IOException {
         int bytesRead;
-        byte[] buffer = new byte[2048];
+        final byte[] buffer = new byte[2048];
         while ((bytesRead = inputStream.read(buffer)) > 0) {
             outputStream.write(buffer, 0, bytesRead);
         }
@@ -805,9 +812,9 @@ public final class ByteUtils {
      * Writes a readable channel to a writable channel.
      * 
      * @param readableChannel
-     *                The readable channel.
+     *            The readable channel.
      * @param writableChannel
-     *                The writable channel.
+     *            The writable channel.
      * @throws IOException
      */
     public static void write(ReadableByteChannel readableChannel,
@@ -823,14 +830,14 @@ public final class ByteUtils {
      * the reader is closed.
      * 
      * @param reader
-     *                The reader.
+     *            The reader.
      * @param writer
-     *                The writer.
+     *            The writer.
      * @throws IOException
      */
     public static void write(Reader reader, Writer writer) throws IOException {
         int charsRead;
-        char[] buffer = new char[2048];
+        final char[] buffer = new char[2048];
         while ((charsRead = reader.read(buffer)) > 0) {
             writer.write(buffer, 0, charsRead);
         }

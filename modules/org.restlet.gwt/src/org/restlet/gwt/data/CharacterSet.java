@@ -31,7 +31,8 @@ public final class CharacterSet extends Metadata {
     /**
      * The ISO/IEC 8859-1 or Latin 1 character set.
      * 
-     * @see <a href="http://en.wikipedia.org/wiki/ISO_8859-1">Wikipedia page</a>
+     * @see <a href="http://en.wikipedia.org/wiki/ISO_8859-1">Wikipedia page<
+     *      /a>
      */
     public static final CharacterSet ISO_8859_1 = new CharacterSet(
             "ISO-8859-1", "ISO/IEC 8859-1 or Latin 1 character set");
@@ -39,7 +40,7 @@ public final class CharacterSet extends Metadata {
     /**
      * The US-ASCII character set.
      * 
-     * @see <a href="http://en.wikipedia.org/wiki/US-ASCII">Wikipedia page</a>
+     * @see <a href="http://en.wikipedia.org/wiki/US-ASCII">Wikipedia page< /a>
      */
     public static final CharacterSet US_ASCII = new CharacterSet("US-ASCII",
             "US ASCII character set");
@@ -47,7 +48,7 @@ public final class CharacterSet extends Metadata {
     /**
      * The UTF-8 character set.
      * 
-     * @see <a href="http://en.wikipedia.org/wiki/UTF-8">Wikipedia page</a>
+     * @see <a href="http://en.wikipedia.org/wiki/UTF-8">Wikipedia page< /a>
      */
     public static final CharacterSet UTF_8 = new CharacterSet("UTF-8",
             "UTF 8 character set");
@@ -55,7 +56,7 @@ public final class CharacterSet extends Metadata {
     /**
      * The UTF-16 character set.
      * 
-     * @see <a href="http://en.wikipedia.org/wiki/UTF-16">Wikipedia page</a>
+     * @see <a href="http://en.wikipedia.org/wiki/UTF-16">Wikipedia page< /a>
      */
     public static final CharacterSet UTF_16 = new CharacterSet("UTF-16",
             "UTF 16 character set");
@@ -65,25 +66,26 @@ public final class CharacterSet extends Metadata {
      * exists then it is returned, otherwise a new instance is created.
      * 
      * @param name
-     *                The name.
+     *            The name.
      * @return The associated character set.
      */
     public static CharacterSet valueOf(final String name) {
         CharacterSet result = null;
 
         if ((name != null) && !name.equals("")) {
-            if (name.equalsIgnoreCase(ALL.getName()))
+            if (name.equalsIgnoreCase(ALL.getName())) {
                 result = ALL;
-            else if (name.equalsIgnoreCase(ISO_8859_1.getName()))
+            } else if (name.equalsIgnoreCase(ISO_8859_1.getName())) {
                 result = ISO_8859_1;
-            else if (name.equalsIgnoreCase(US_ASCII.getName()))
+            } else if (name.equalsIgnoreCase(US_ASCII.getName())) {
                 result = US_ASCII;
-            else if (name.equalsIgnoreCase(UTF_8.getName()))
+            } else if (name.equalsIgnoreCase(UTF_8.getName())) {
                 result = UTF_8;
-            else if (name.equalsIgnoreCase(UTF_16.getName()))
+            } else if (name.equalsIgnoreCase(UTF_16.getName())) {
                 result = UTF_16;
-            else
+            } else {
                 result = new CharacterSet(name);
+            }
         }
 
         return result;
@@ -93,7 +95,7 @@ public final class CharacterSet extends Metadata {
      * Constructor.
      * 
      * @param name
-     *                The name.
+     *            The name.
      */
     public CharacterSet(final String name) {
         this(name == null ? null : name.toUpperCase(),
@@ -104,9 +106,9 @@ public final class CharacterSet extends Metadata {
      * Constructor.
      * 
      * @param name
-     *                The name.
+     *            The name.
      * @param description
-     *                The description.
+     *            The description.
      */
     public CharacterSet(final String name, final String description) {
         super(name == null ? null : name.toUpperCase(), description);

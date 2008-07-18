@@ -39,24 +39,43 @@ import org.restlet.test.jaxrs.services.tests.ContextsTest;
  */
 @Path("anchestorTest")
 public class ContextsTestService {
-    
-    @Context Providers messageBodyWorkers;
-    
-    @Context ContextResolver<Integer> contextResolver;
-    
-    @Context UriInfo uriInfo;
+
+    @Context
+    Providers messageBodyWorkers;
+
+    @Context
+    ContextResolver<Integer> contextResolver;
+
+    @Context
+    UriInfo uriInfo;
 
     @GET
     @Produces("text/plain")
     @Path("fields")
     public String fieldsAvailable() {
-        StringBuilder stb = new StringBuilder();
-        if(messageBodyWorkers != null)
+        final StringBuilder stb = new StringBuilder();
+        if (this.messageBodyWorkers != null) {
             stb.append("messageBodyWorkers\n");
-        if(contextResolver != null)
+        }
+        if (this.contextResolver != null) {
             stb.append("contextResolver\n");
-        if(uriInfo != null)
+        }
+        if (this.uriInfo != null) {
             stb.append("uriInfo\n");
+        }
+        return stb.toString();
+    }
+
+    @GET
+    @Produces("text/plain")
+    @Path("lastPathSegm")
+    public String getPathSegm(@Context PathSegment lastPathSegment) {
+        Set<Entry<String, List<String>>> entries;
+        entries = lastPathSegment.getMatrixParameters().entrySet();
+        final StringBuilder stb = new StringBuilder();
+        for (final Map.Entry<String, List<String>> entry : entries) {
+            stb.append(entry.getKey() + " : " + entry.getValue() + "\n");
+        }
         return stb.toString();
     }
 
@@ -66,25 +85,16 @@ public class ContextsTestService {
     public String getResources(@Context UriInfo uriInfo,
             @Context Providers messageBodyWorkers,
             @Context ContextResolver<Integer> contextResolver) {
-        StringBuilder stb = new StringBuilder();
-        if(messageBodyWorkers != null)
+        final StringBuilder stb = new StringBuilder();
+        if (messageBodyWorkers != null) {
             stb.append("messageBodyWorkers\n");
-        if(contextResolver != null)
+        }
+        if (contextResolver != null) {
             stb.append("contextResolver\n");
-        if(uriInfo != null)
+        }
+        if (uriInfo != null) {
             stb.append("uriInfo\n");
-        return stb.toString();
-    }
-    
-    @GET
-    @Produces("text/plain")
-    @Path("lastPathSegm")
-    public String getPathSegm(@Context PathSegment lastPathSegment) {
-        Set<Entry<String, List<String>>> entries;
-        entries = lastPathSegment.getMatrixParameters().entrySet();
-        StringBuilder stb = new StringBuilder();
-        for(Map.Entry<String, List<String>> entry : entries)
-            stb.append(entry.getKey()+" : "+entry.getValue()+"\n");
+        }
         return stb.toString();
     }
 }

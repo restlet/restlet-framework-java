@@ -44,9 +44,9 @@ import org.restlet.resource.Variant;
  */
 public class RequestTokenResource extends Resource {
 
-    private OAuthProvider provider;
+    private final OAuthProvider provider;
 
-    private String realm;
+    private final String realm;
 
     /**
      * Constructor.
@@ -59,22 +59,11 @@ public class RequestTokenResource extends Resource {
             Response response) {
         super(context, request, response);
 
-        provider = (OAuthProvider) context.getAttributes()
-                .get("oauth_provider");
-        realm = (String) context.getAttributes().get("realm");
+        this.provider = (OAuthProvider) context.getAttributes().get(
+                "oauth_provider");
+        this.realm = (String) context.getAttributes().get("realm");
 
         getVariants().add(new Variant(MediaType.TEXT_PLAIN));
-    }
-
-    @Override
-    public Representation represent(Variant variant) {
-        handle();
-        return getResponse().getEntity();
-    }
-
-    @Override
-    public boolean allowPost() {
-        return true;
     }
 
     @Override
@@ -82,16 +71,22 @@ public class RequestTokenResource extends Resource {
         handle();
     }
 
+    @Override
+    public boolean allowPost() {
+        return true;
+    }
+
     private void handle() {
         /*
          * This is stolen and modified from RequestTokenServlet in the OAuth
          * Java source.
          */
-        OAuthMessage requestMessage = OAuthHelper.getMessage(getRequest(),
-                getLogger());
-        OAuthConsumer consumer = provider.getConsumer(requestMessage);
-        ChallengeRequest challengeRequest = new ChallengeRequest(
-                OAuthGuard.SCHEME, realm);
+        final OAuthMessage requestMessage = OAuthHelper.getMessage(
+                getRequest(), getLogger());
+        final OAuthConsumer consumer = this.provider
+                .getConsumer(requestMessage);
+        final ChallengeRequest challengeRequest = new ChallengeRequest(
+                OAuthGuard.SCHEME, this.realm);
 
         if (consumer == null) {
             getResponse().setChallengeRequest(challengeRequest);
@@ -102,34 +97,40 @@ public class RequestTokenResource extends Resource {
             return;
         }
 
-        OAuthAccessor accessor = new OAuthAccessor(consumer);
+        final OAuthAccessor accessor = new OAuthAccessor(consumer);
 
         // verify the signature
         try {
             requestMessage.validateSignature(accessor);
-        } catch (OAuthProblemException oape) {
+        } catch (final OAuthProblemException oape) {
             getResponse().setChallengeRequest(challengeRequest);
             // TODO: Use OAuthServlet mapping from problem to status.
             getResponse().setStatus(Status.CLIENT_ERROR_UNAUTHORIZED, oape);
             challengeRequest.getParameters().add("oauth_problem",
                     "signature_invalid");
             return;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             // TODO Auto-generated catch block
             throw new RuntimeException(e);
         }
 
         // generate request_token and secret
-        provider.generateRequestToken(accessor);
+        this.provider.generateRequestToken(accessor);
 
         try {
             getResponse().setEntity(
                     new StringRepresentation(OAuth.formEncode(OAuth.newList(
                             "oauth_token", accessor.requestToken,
                             "oauth_token_secret", accessor.tokenSecret))));
-        } catch (IOException e) {
+        } catch (final IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public Representation represent(Variant variant) {
+        handle();
+        return getResponse().getEntity();
     }
 }

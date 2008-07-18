@@ -72,14 +72,14 @@ public class HttpMethodCall extends HttpClientCall {
      * Constructor.
      * 
      * @param helper
-     *                The parent HTTP client helper.
+     *            The parent HTTP client helper.
      * @param method
-     *                The method name.
+     *            The method name.
      * @param requestUri
-     *                The request URI.
+     *            The request URI.
      * @param hasEntity
-     *                Indicates if the call will have an entity to send to the
-     *                server.
+     *            Indicates if the call will have an entity to send to the
+     *            server.
      * @throws IOException
      */
     public HttpMethodCall(HttpClientHelper helper, final String method,
@@ -99,7 +99,7 @@ public class HttpMethodCall extends HttpClientCall {
             } else if (method.equalsIgnoreCase(Method.DELETE.getName())) {
                 this.httpMethod = new DeleteMethod(requestUri);
             } else if (method.equalsIgnoreCase(Method.CONNECT.getName())) {
-                HostConfiguration host = new HostConfiguration();
+                final HostConfiguration host = new HostConfiguration();
                 host.setHost(new URI(requestUri, false));
                 this.httpMethod = new ConnectMethod(host);
             } else if (method.equalsIgnoreCase(Method.OPTIONS.getName())) {
@@ -125,7 +125,7 @@ public class HttpMethodCall extends HttpClientCall {
                             HttpMethodParams.RETRY_HANDLER,
                             Class.forName(this.clientHelper.getRetryHandler())
                                     .newInstance());
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     this.clientHelper
                             .getLogger()
                             .log(
@@ -190,7 +190,7 @@ public class HttpMethodCall extends HttpClientCall {
         try {
             // Return a wrapper filter that will release the connection when
             // needed
-            InputStream responseBodyAsStream = getHttpMethod()
+            final InputStream responseBodyAsStream = getHttpMethod()
                     .getResponseBodyAsStream();
             if (responseBodyAsStream != null) {
                 result = new FilterInputStream(responseBodyAsStream) {
@@ -201,7 +201,7 @@ public class HttpMethodCall extends HttpClientCall {
                     }
                 };
             }
-        } catch (IOException ioe) {
+        } catch (final IOException ioe) {
         }
 
         return result;
@@ -214,10 +214,10 @@ public class HttpMethodCall extends HttpClientCall {
      */
     @Override
     public Series<Parameter> getResponseHeaders() {
-        Series<Parameter> result = super.getResponseHeaders();
+        final Series<Parameter> result = super.getResponseHeaders();
 
         if (!this.responseHeadersAdded) {
-            for (Header header : getHttpMethod().getResponseHeaders()) {
+            for (final Header header : getHttpMethod().getResponseHeaders()) {
                 result.add(header.getName(), header.getValue());
             }
 
@@ -237,7 +237,7 @@ public class HttpMethodCall extends HttpClientCall {
     public String getServerAddress() {
         try {
             return getHttpMethod().getURI().getHost();
-        } catch (URIException e) {
+        } catch (final URIException e) {
             return null;
         }
     }
@@ -257,7 +257,7 @@ public class HttpMethodCall extends HttpClientCall {
      * optional entity and send them over the network.
      * 
      * @param request
-     *                The high-level request.
+     *            The high-level request.
      * @return The result status.
      */
     @Override
@@ -268,7 +268,7 @@ public class HttpMethodCall extends HttpClientCall {
             final Representation entity = request.getEntity();
 
             // Set the request headers
-            for (Parameter header : getRequestHeaders()) {
+            for (final Parameter header : getRequestHeaders()) {
                 getHttpMethod().addRequestHeader(header.getName(),
                         header.getValue());
             }
@@ -276,7 +276,7 @@ public class HttpMethodCall extends HttpClientCall {
             // For those method that accept enclosing entites, provide it
             if ((entity != null)
                     && (getHttpMethod() instanceof EntityEnclosingMethod)) {
-                EntityEnclosingMethod eem = (EntityEnclosingMethod) getHttpMethod();
+                final EntityEnclosingMethod eem = (EntityEnclosingMethod) getHttpMethod();
                 eem.setRequestEntity(new RequestEntity() {
                     public long getContentLength() {
                         return entity.getSize();
@@ -309,7 +309,7 @@ public class HttpMethodCall extends HttpClientCall {
             if (getHttpMethod().getResponseBodyAsStream() == null) {
                 getHttpMethod().releaseConnection();
             }
-        } catch (IOException ioe) {
+        } catch (final IOException ioe) {
             this.clientHelper
                     .getLogger()
                     .log(

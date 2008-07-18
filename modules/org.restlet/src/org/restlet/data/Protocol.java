@@ -141,45 +141,46 @@ public final class Protocol extends Metadata {
      * constant exists then it is returned, otherwise a new instance is created.
      * 
      * @param name
-     *                The scheme name.
+     *            The scheme name.
      * @return The associated protocol.
      */
     public static Protocol valueOf(final String name) {
         Protocol result = null;
 
         if ((name != null) && !name.equals("")) {
-            if (name.equalsIgnoreCase(AJP.getSchemeName()))
+            if (name.equalsIgnoreCase(AJP.getSchemeName())) {
                 result = AJP;
-            else if (name.equalsIgnoreCase(CLAP.getSchemeName()))
+            } else if (name.equalsIgnoreCase(CLAP.getSchemeName())) {
                 result = CLAP;
-            else if (name.equalsIgnoreCase(FILE.getSchemeName()))
+            } else if (name.equalsIgnoreCase(FILE.getSchemeName())) {
                 result = FILE;
-            else if (name.equalsIgnoreCase(FTP.getSchemeName()))
+            } else if (name.equalsIgnoreCase(FTP.getSchemeName())) {
                 result = FTP;
-            else if (name.equalsIgnoreCase(HTTP.getSchemeName()))
+            } else if (name.equalsIgnoreCase(HTTP.getSchemeName())) {
                 result = HTTP;
-            else if (name.equalsIgnoreCase(HTTPS.getSchemeName()))
+            } else if (name.equalsIgnoreCase(HTTPS.getSchemeName())) {
                 result = HTTPS;
-            else if (name.equalsIgnoreCase(JAR.getSchemeName()))
+            } else if (name.equalsIgnoreCase(JAR.getSchemeName())) {
                 result = JAR;
-            else if (name.equalsIgnoreCase(JDBC.getSchemeName()))
+            } else if (name.equalsIgnoreCase(JDBC.getSchemeName())) {
                 result = JDBC;
-            else if (name.equalsIgnoreCase(POP.getSchemeName()))
+            } else if (name.equalsIgnoreCase(POP.getSchemeName())) {
                 result = POP;
-            else if (name.equalsIgnoreCase(POPS.getSchemeName()))
+            } else if (name.equalsIgnoreCase(POPS.getSchemeName())) {
                 result = POPS;
-            else if (name.equalsIgnoreCase(RIAP.getSchemeName()))
+            } else if (name.equalsIgnoreCase(RIAP.getSchemeName())) {
                 result = RIAP;
-            else if (name.equalsIgnoreCase(SMTP.getSchemeName()))
+            } else if (name.equalsIgnoreCase(SMTP.getSchemeName())) {
                 result = SMTP;
-            else if (name.equalsIgnoreCase(SMTP_STARTTLS.getSchemeName()))
+            } else if (name.equalsIgnoreCase(SMTP_STARTTLS.getSchemeName())) {
                 result = SMTP_STARTTLS;
-            else if (name.equalsIgnoreCase(SMTPS.getSchemeName()))
+            } else if (name.equalsIgnoreCase(SMTPS.getSchemeName())) {
                 result = SMTPS;
-            else if (name.equalsIgnoreCase(WAR.getSchemeName()))
+            } else if (name.equalsIgnoreCase(WAR.getSchemeName())) {
                 result = WAR;
-            else
+            } else {
                 result = new Protocol(name);
+            }
         }
 
         return result;
@@ -195,7 +196,7 @@ public final class Protocol extends Metadata {
      * Constructor.
      * 
      * @param schemeName
-     *                The scheme name.
+     *            The scheme name.
      */
     public Protocol(final String schemeName) {
         this(schemeName, schemeName.toUpperCase(), schemeName.toUpperCase()
@@ -206,13 +207,13 @@ public final class Protocol extends Metadata {
      * Constructor.
      * 
      * @param schemeName
-     *                The scheme name.
+     *            The scheme name.
      * @param name
-     *                The unique name.
+     *            The unique name.
      * @param description
-     *                The description.
+     *            The description.
      * @param defaultPort
-     *                The default port.
+     *            The default port.
      */
     public Protocol(final String schemeName, final String name,
             final String description, int defaultPort) {

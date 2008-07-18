@@ -35,18 +35,18 @@ public class GenericTypeTestCase extends JaxRsTestCase {
     // LATER add to AllServicesTests
 
     @Override
-    protected Class<?> getRootResourceClass() {
-        return GenericTypeResource.class;
-    }
-
-    @Override
     @SuppressWarnings("unchecked")
     protected Set<Class<?>> getProvClasses() {
         return (Set) Collections.singleton(GenericTypeMBW.class);
     }
 
+    @Override
+    protected Class<?> getRootResourceClass() {
+        return GenericTypeResource.class;
+    }
+
     public void testGet() throws IOException {
-        Response response = get();
+        final Response response = get();
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("abc\ndef\n", response.getEntity().getText());

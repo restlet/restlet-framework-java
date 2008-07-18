@@ -31,6 +31,12 @@ import org.restlet.test.jaxrs.services.tests.IllegalThingsTest;
 @Path("/illegalThingsInternal")
 public class IllegalThingsTestService {
 
+    @GET
+    @Path("package")
+    String getPackageVisible() {
+        return "this method is package visible. Is there a warning?";
+    }
+
     /**
      * This sub resource locator returns null; that is not allowed
      * 
@@ -42,20 +48,14 @@ public class IllegalThingsTestService {
     }
 
     @GET
-    @Path("protected")
-    protected String getProtected() {
-        return "this method is protected. Is there a warning?";
-    }
-
-    @GET
-    @Path("package")
-    String getPackageVisible() {
-        return "this method is package visible. Is there a warning?";
-    }
-
-    @GET
     @Path("private")
     String getPrivateVisible() {
         return "this method is private visible. Is there a warning?";
+    }
+
+    @GET
+    @Path("protected")
+    protected String getProtected() {
+        return "this method is protected. Is there a warning?";
     }
 }

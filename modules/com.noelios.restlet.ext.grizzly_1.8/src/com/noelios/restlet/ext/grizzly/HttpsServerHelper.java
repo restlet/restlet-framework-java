@@ -132,10 +132,10 @@ public class HttpsServerHelper extends GrizzlyServerHelper {
          * initialise an SSLContext).
          */
         if (sslContextFactory == null) {
-            KeyStore keyStore = KeyStore.getInstance(getKeystoreType());
-            FileInputStream fis = new FileInputStream(getKeystorePath());
+            final KeyStore keyStore = KeyStore.getInstance(getKeystoreType());
+            final FileInputStream fis = new FileInputStream(getKeystorePath());
             keyStore.load(fis, getKeystorePassword().toCharArray());
-            KeyManagerFactory keyManagerFactory = KeyManagerFactory
+            final KeyManagerFactory keyManagerFactory = KeyManagerFactory
                     .getInstance(getCertAlgorithm());
             keyManagerFactory.init(keyStore, getKeyPassword().toCharArray());
             sslContext = SSLContext.getInstance(getSslProtocol());
@@ -145,7 +145,7 @@ public class HttpsServerHelper extends GrizzlyServerHelper {
         }
 
         // Create and configure a select handler
-        TCPSelectorHandler selectorHandler = new TCPSelectorHandler();
+        final TCPSelectorHandler selectorHandler = new TCPSelectorHandler();
 
         // Create the Grizzly filters
         final SSLReadFilter readFilter = new SSLReadFilter();
@@ -170,7 +170,8 @@ public class HttpsServerHelper extends GrizzlyServerHelper {
                 .setProtocolChainInstanceHandler(new DefaultProtocolChainInstanceHandler() {
                     @Override
                     public ProtocolChain poll() {
-                        ProtocolChain protocolChain = protocolChains.poll();
+                        ProtocolChain protocolChain = this.protocolChains
+                                .poll();
                         if (protocolChain == null) {
                             protocolChain = new DefaultProtocolChain();
                             protocolChain.addFilter(readFilter);
@@ -179,6 +180,33 @@ public class HttpsServerHelper extends GrizzlyServerHelper {
                         return protocolChain;
                     }
                 });
+    }
+
+    /**
+     * Returns the SSL certificate algorithm.
+     * 
+     * @return The SSL certificate algorithm.
+     */
+    public String getCertAlgorithm() {
+        return getParameters().getFirstValue("certAlgorithm", "SunX509");
+    }
+
+    /**
+     * Returns the SSL key password.
+     * 
+     * @return The SSL key password.
+     */
+    public String getKeyPassword() {
+        return getParameters().getFirstValue("keyPassword", "");
+    }
+
+    /**
+     * Returns the SSL keystore password.
+     * 
+     * @return The SSL keystore password.
+     */
+    public String getKeystorePassword() {
+        return getParameters().getFirstValue("keystorePassword", "");
     }
 
     /**
@@ -192,48 +220,12 @@ public class HttpsServerHelper extends GrizzlyServerHelper {
     }
 
     /**
-     * Returns the SSL keystore password.
-     * 
-     * @return The SSL keystore password.
-     */
-    public String getKeystorePassword() {
-        return getParameters().getFirstValue("keystorePassword", "");
-    }
-
-    /**
      * Returns the SSL keystore type.
      * 
      * @return The SSL keystore type.
      */
     public String getKeystoreType() {
         return getParameters().getFirstValue("keystoreType", "JKS");
-    }
-
-    /**
-     * Returns the SSL key password.
-     * 
-     * @return The SSL key password.
-     */
-    public String getKeyPassword() {
-        return getParameters().getFirstValue("keyPassword", "");
-    }
-
-    /**
-     * Returns the SSL certificate algorithm.
-     * 
-     * @return The SSL certificate algorithm.
-     */
-    public String getCertAlgorithm() {
-        return getParameters().getFirstValue("certAlgorithm", "SunX509");
-    }
-
-    /**
-     * Returns the SSL keystore type.
-     * 
-     * @return The SSL keystore type.
-     */
-    public String getSslProtocol() {
-        return getParameters().getFirstValue("sslProtocol", "TLS");
     }
 
     /**
@@ -244,6 +236,15 @@ public class HttpsServerHelper extends GrizzlyServerHelper {
     public SslContextFactory getSslContextFactory() {
         return (SslContextFactory) getContext().getAttributes().get(
                 "sslContextFactory");
+    }
+
+    /**
+     * Returns the SSL keystore type.
+     * 
+     * @return The SSL keystore type.
+     */
+    public String getSslProtocol() {
+        return getParameters().getFirstValue("sslProtocol", "TLS");
     }
 
     /**

@@ -74,23 +74,24 @@ public class FeedResource extends BaseResource {
             setModifiable(true);
             // Get the feed and its parent mailbox thanks to their IDs taken
             // from the resource's URI.
-            String mailboxId = Reference.decode((String) request
+            final String mailboxId = Reference.decode((String) request
                     .getAttributes().get("mailboxId"));
-            mailbox = getObjectsFacade().getMailboxById(mailboxId);
+            this.mailbox = getObjectsFacade().getMailboxById(mailboxId);
 
-            if (mailbox != null) {
-                String feedId = (String) request.getAttributes().get("feedId");
-                feed = getObjectsFacade().getFeedById(feedId);
+            if (this.mailbox != null) {
+                final String feedId = (String) request.getAttributes().get(
+                        "feedId");
+                this.feed = getObjectsFacade().getFeedById(feedId);
 
-                if (feed != null) {
+                if (this.feed != null) {
                     // Look for the list of tagged mails.
-                    mails = new ArrayList<Mail>();
-                    if (feed.getTags() != null) {
-                        for (Mail mail : mailbox.getMails()) {
-                            if (mail.getTags() != null
+                    this.mails = new ArrayList<Mail>();
+                    if (this.feed.getTags() != null) {
+                        for (final Mail mail : this.mailbox.getMails()) {
+                            if ((mail.getTags() != null)
                                     && mail.getTags().containsAll(
-                                            feed.getTags())) {
-                                mails.add(mail);
+                                            this.feed.getTags())) {
+                                this.mails.add(mail);
                             }
                         }
                     }
@@ -122,7 +123,7 @@ public class FeedResource extends BaseResource {
      */
     @Override
     public void removeRepresentations() throws ResourceException {
-        getObjectsFacade().deleteFeed(mailbox, feed);
+        getObjectsFacade().deleteFeed(this.mailbox, this.feed);
         getResponse().redirectSeeOther(
                 getRequest().getResourceRef().getParentRef());
     }
@@ -133,18 +134,18 @@ public class FeedResource extends BaseResource {
     @Override
     public Representation represent(Variant variant) throws ResourceException {
         Representation representation = null;
-        MediaType mediaType = variant.getMediaType();
+        final MediaType mediaType = variant.getMediaType();
 
         if (MediaType.TEXT_HTML.equals(mediaType)) {
-            Map<String, Object> dataModel = new TreeMap<String, Object>();
+            final Map<String, Object> dataModel = new TreeMap<String, Object>();
             dataModel.put("currentUser", getCurrentUser());
-            dataModel.put("mailbox", mailbox);
-            dataModel.put("feed", feed);
-            dataModel.put("mails", mails);
+            dataModel.put("mailbox", this.mailbox);
+            dataModel.put("feed", this.feed);
+            dataModel.put("mails", this.mails);
             dataModel.put("resourceRef", getRequest().getResourceRef());
             dataModel.put("rootRef", getRequest().getRootRef());
 
-            StringBuilder builder = new StringBuilder();
+            final StringBuilder builder = new StringBuilder();
             builder.append("<link ");
             builder.append("rel=\"alternate\" ");
             builder.append("type=\"application/atom+xml\" ");
@@ -159,21 +160,23 @@ public class FeedResource extends BaseResource {
             representation = getHTMLTemplateRepresentation("feed.html",
                     dataModel);
         } else if (MediaType.APPLICATION_ATOM_XML.equals(mediaType)) {
-            org.restlet.ext.atom.Feed atomFeed = new org.restlet.ext.atom.Feed();
+            final org.restlet.ext.atom.Feed atomFeed = new org.restlet.ext.atom.Feed();
 
             /** The author of the feed. */
-            Person currentAuthor = new Person();
+            final Person currentAuthor = new Person();
             // currentAuthor.setEmail(email); Use the Uri instead
-            currentAuthor.setName(mailbox.getSenderName());
+            currentAuthor.setName(this.mailbox.getSenderName());
             currentAuthor.setUri(new Reference(getRequest().getRootRef()
                     .toString()
-                    + "/mailboxes/" + Reference.encode(mailbox.getId(), CharacterSet.US_ASCII)));
+                    + "/mailboxes/"
+                    + Reference.encode(this.mailbox.getId(),
+                            CharacterSet.US_ASCII)));
             atomFeed.getAuthors().add(currentAuthor);
 
             /** The categories associated with the feed. */
-            StringBuilder titleBuilder = new StringBuilder("Feed");
-            for (String tag : feed.getTags()) {
-                Category category = new Category();
+            final StringBuilder titleBuilder = new StringBuilder("Feed");
+            for (final String tag : this.feed.getTags()) {
+                final Category category = new Category();
                 category.setLabel(tag);
                 category.setTerm(tag);
                 atomFeed.getCategories().add(category);
@@ -182,7 +185,7 @@ public class FeedResource extends BaseResource {
             }
 
             /** The agent used to generate a feed. */
-            Generator generator = new Generator();
+            final Generator generator = new Generator();
             generator.setName("Atom extension for Restlet.");
             generator.setUri(new Reference("http://restlet.org"));
             generator.setVersion(Engine.VERSION);
@@ -192,13 +195,13 @@ public class FeedResource extends BaseResource {
             // Reference icon;
             /** Permanent, universally unique identifier for the feed. */
             atomFeed.setId(getRequest().getRootRef().toString() + "/mailboxes/"
-                    + mailbox.getId() + "/feeds/" + feed.getId());
+                    + this.mailbox.getId() + "/feeds/" + this.feed.getId());
 
             /** The references from the feed to Web resources. */
             Link link = new Link();
             link.setHref(new Reference(getRequest().getRootRef().toString()
-                    + "/mailboxes/" + mailbox.getId() + "/feeds/"
-                    + feed.getId()));
+                    + "/mailboxes/" + this.mailbox.getId() + "/feeds/"
+                    + this.feed.getId()));
             link.setRel(Relation.ALTERNATE);
             link.setTitle(titleBuilder.toString());
             link.setType(MediaType.TEXT_HTML);
@@ -231,19 +234,20 @@ public class FeedResource extends BaseResource {
              * Individual entries, acting as a components for associated
              * metadata and data.
              */
-            for (Mail mail : mails) {
-                Entry entry = new Entry();
+            for (final Mail mail : this.mails) {
+                final Entry entry = new Entry();
 
-                Person author = new Person();
+                final Person author = new Person();
                 // author.setEmail(email); Use the Uri instead
                 author.setName(mail.getSender().getName());
                 author.setUri(new Reference(mail.getSender().getMailAddress()));
                 entry.getAuthors().add(author);
 
                 /** The categories associated with the entry. */
-                StringBuilder entryTitleBuilder = new StringBuilder("Feed");
-                for (String tag : mail.getTags()) {
-                    Category category = new Category();
+                final StringBuilder entryTitleBuilder = new StringBuilder(
+                        "Feed");
+                for (final String tag : mail.getTags()) {
+                    final Category category = new Category();
                     category.setLabel(tag);
                     category.setTerm(tag);
                     entry.getCategories().add(category);
@@ -252,14 +256,14 @@ public class FeedResource extends BaseResource {
                 }
 
                 /** Contains or links to the content of the entry. */
-                Content content = new Content();
+                final Content content = new Content();
                 content.setInlineContent(new StringRepresentation(mail
                         .getMessage(), MediaType.TEXT_PLAIN));
                 entry.setContent(content);
 
                 /** The contributors to the entry. */
-                for (Contact recipient : mail.getRecipients()) {
-                    Person contributor = new Person();
+                for (final Contact recipient : mail.getRecipients()) {
+                    final Person contributor = new Person();
                     // contributor.setEmail(email); Use the Uri instead
                     contributor.setName(recipient.getName());
                     contributor
@@ -269,7 +273,7 @@ public class FeedResource extends BaseResource {
 
                 /** Permanent, universally unique identifier for the entry. */
                 entry.setId(getRequest().getRootRef().toString()
-                        + "/mailboxes/" + mailbox.getId() + "/mails"
+                        + "/mailboxes/" + this.mailbox.getId() + "/mails"
                         + mail.getId());
 
                 /** The references from the entry to Web resources. */
@@ -277,7 +281,7 @@ public class FeedResource extends BaseResource {
                 entryLink.setHref(new Reference(getRequest().getRootRef()
                         .toString()
                         + "/mailboxes/"
-                        + mailbox.getId()
+                        + this.mailbox.getId()
                         + "/mails"
                         + mail.getId()));
                 entryLink.setRel(Relation.ALTERNATE);
@@ -289,7 +293,7 @@ public class FeedResource extends BaseResource {
                 entryLink.setHref(new Reference(getRequest().getRootRef()
                         .toString()
                         + "/mailboxes/"
-                        + mailbox.getId()
+                        + this.mailbox.getId()
                         + "/mails"
                         + mail.getId()));
                 entryLink.setRel(Relation.SELF);
@@ -341,16 +345,16 @@ public class FeedResource extends BaseResource {
     @Override
     public void storeRepresentation(Representation entity)
             throws ResourceException {
-        Form form = new Form(entity);
-        feed.setNickname(form.getFirstValue("nickname"));
+        final Form form = new Form(entity);
+        this.feed.setNickname(form.getFirstValue("nickname"));
         if (form.getFirstValue("tags") != null) {
-            feed.setTags(new ArrayList<String>(Arrays.asList(form
+            this.feed.setTags(new ArrayList<String>(Arrays.asList(form
                     .getFirstValue("tags").split(" "))));
         } else {
-            feed.setTags(null);
+            this.feed.setTags(null);
         }
 
-        getObjectsFacade().updateFeed(mailbox, feed);
+        getObjectsFacade().updateFeed(this.mailbox, this.feed);
         getResponse().redirectSeeOther(getRequest().getResourceRef());
     }
 

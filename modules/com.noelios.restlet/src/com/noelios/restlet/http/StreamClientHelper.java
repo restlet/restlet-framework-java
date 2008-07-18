@@ -34,7 +34,7 @@ public class StreamClientHelper extends HttpClientHelper {
      * Constructor.
      * 
      * @param client
-     *                The client to help.
+     *            The client to help.
      */
     public StreamClientHelper(Client client) {
         super(client);

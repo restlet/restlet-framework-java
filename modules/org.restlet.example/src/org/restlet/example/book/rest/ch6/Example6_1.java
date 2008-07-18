@@ -31,11 +31,12 @@ import org.restlet.data.Reference;
 public class Example6_1 {
     public void makeUser(String user, String password) {
         // Create the input form
-        Form input = new Form();
+        final Form input = new Form();
         input.add("password", password);
 
         // Create the target URI, encoding the user name
-        String uri = "https://maps.example.com/user/" + Reference.encode(user);
+        final String uri = "https://maps.example.com/user/"
+                + Reference.encode(user);
 
         // Invoke the web service
         new Client(Protocol.HTTP).put(uri, input.getWebRepresentation());

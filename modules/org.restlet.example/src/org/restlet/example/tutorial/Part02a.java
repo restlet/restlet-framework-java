@@ -29,7 +29,7 @@ import org.restlet.data.Protocol;
 public class Part02a {
     public static void main(String[] args) throws Exception {
         // Outputting the content of a Web page
-        Client client = new Client(Protocol.HTTP);
+        final Client client = new Client(Protocol.HTTP);
         client.get("http://www.restlet.org").getEntity().write(System.out);
     }
 

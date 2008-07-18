@@ -33,7 +33,7 @@ public class Main {
 
     public static void main(String... args) throws Exception {
         // Load the Spring application context
-        ApplicationContext springContext = new ClassPathXmlApplicationContext(
+        final ApplicationContext springContext = new ClassPathXmlApplicationContext(
                 new String[] {
                         "org/restlet/example/spring/book/rest/ch7/config/applicationContext-router.xml",
                         "org/restlet/example/spring/book/rest/ch7/config/applicationContext-server.xml" });

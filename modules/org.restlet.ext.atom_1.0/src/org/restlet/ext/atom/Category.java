@@ -51,12 +51,11 @@ public class Category {
      * Constructor.
      * 
      * @param label
-     *                The identifier term.
+     *            The identifier term.
      * @param scheme
-     *                The IRI that identifies a categorization scheme.
+     *            The IRI that identifies a categorization scheme.
      * @param term
-     *                The human-readable label for display in end-user
-     *                applications.
+     *            The human-readable label for display in end-user applications.
      */
     public Category(String label, Reference scheme, String term) {
         this.label = label;
@@ -95,7 +94,7 @@ public class Category {
      * Sets the label.
      * 
      * @param label
-     *                The label.
+     *            The label.
      */
     public void setLabel(String label) {
         this.label = label;
@@ -105,7 +104,7 @@ public class Category {
      * Sets the scheme.
      * 
      * @param scheme
-     *                The scheme.
+     *            The scheme.
      */
     public void setScheme(Reference scheme) {
         this.scheme = scheme;
@@ -115,7 +114,7 @@ public class Category {
      * Sets the term.
      * 
      * @param term
-     *                The term.
+     *            The term.
      */
     public void setTerm(String term) {
         this.term = term;
@@ -125,16 +124,16 @@ public class Category {
      * Writes the current object as an XML element using the given SAX writer.
      * 
      * @param writer
-     *                The SAX writer.
+     *            The SAX writer.
      * @throws SAXException
      */
     public void writeElement(XmlWriter writer) throws SAXException {
-        AttributesImpl attributes = new AttributesImpl();
+        final AttributesImpl attributes = new AttributesImpl();
         if (getLabel() != null) {
             attributes.addAttribute("", "label", null, "text", getLabel());
         }
 
-        if (getScheme() != null && getScheme().toString() != null) {
+        if ((getScheme() != null) && (getScheme().toString() != null)) {
             attributes.addAttribute("", "scheme", null, "atomURI", getScheme()
                     .toString());
         }

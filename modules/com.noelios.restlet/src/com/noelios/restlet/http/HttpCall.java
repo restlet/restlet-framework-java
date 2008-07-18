@@ -171,7 +171,7 @@ public abstract class HttpCall {
      */
     public ConnectorService getConnectorService(Request request) {
         ConnectorService result = null;
-        Application application = Application.getCurrent();
+        final Application application = Application.getCurrent();
 
         if (application != null) {
             result = application.getConnectorService();
@@ -192,12 +192,12 @@ public abstract class HttpCall {
         long contentLength = Representation.UNKNOWN_SIZE;
 
         // Extract the content length header
-        for (Parameter header : headers) {
+        for (final Parameter header : headers) {
             if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_CONTENT_LENGTH)) {
                 try {
                     contentLength = Long.parseLong(header.getValue());
-                } catch (NumberFormatException e) {
+                } catch (final NumberFormatException e) {
                     contentLength = Representation.UNKNOWN_SIZE;
                 }
             }
@@ -248,8 +248,9 @@ public abstract class HttpCall {
      * @return The exact protocol (HTTP or HTTPS).
      */
     public Protocol getProtocol() {
-        if (this.protocol == null)
+        if (this.protocol == null) {
             this.protocol = isConfidential() ? Protocol.HTTPS : Protocol.HTTP;
+        }
         return this.protocol;
     }
 
@@ -371,7 +372,7 @@ public abstract class HttpCall {
      * @return True if the request entity is chunked.
      */
     protected boolean isRequestChunked() {
-        String header = getRequestHeaders().getFirstValue(
+        final String header = getRequestHeaders().getFirstValue(
                 HttpConstants.HEADER_TRANSFER_ENCODING, true);
         return (header != null) && header.equalsIgnoreCase("chunked");
     }
@@ -382,7 +383,7 @@ public abstract class HttpCall {
      * @return True if the response entity is chunked.
      */
     protected boolean isResponseChunked() {
-        String header = getResponseHeaders().getFirstValue(
+        final String header = getResponseHeaders().getFirstValue(
                 HttpConstants.HEADER_TRANSFER_ENCODING, true);
         return (header != null) && header.equalsIgnoreCase("chunked");
     }

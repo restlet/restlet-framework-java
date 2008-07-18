@@ -30,7 +30,7 @@ import org.restlet.resource.Variant;
  */
 public class S3Object extends S3Authorized {
 
-    private S3Bucket bucket;
+    private final S3Bucket bucket;
 
     private Variant metadata;
 
@@ -42,14 +42,34 @@ public class S3Object extends S3Authorized {
     }
 
     /**
+     * Deletes this bucket.
+     */
+    public Status delete() {
+        return authorizedDelete(getUri()).getStatus();
+    }
+
+    public S3Bucket getBucket() {
+        return this.bucket;
+    }
+
+    /**
      * Retrieves the metadata hash for this object, possibly fetchingit from S3.
      * 
      * @return The metadata hash for this object, possibly fetchingit from S3.
      */
     public Variant getMetadata() {
-        if (this.metadata == null)
+        if (this.metadata == null) {
             this.metadata = authorizedHead(getUri()).getEntity();
+        }
         return this.metadata;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public String getUri() {
+        return getBucket().getUri() + "/" + Reference.encode(getName());
     }
 
     /**
@@ -71,25 +91,6 @@ public class S3Object extends S3Authorized {
     public Status save(Representation value) {
         this.metadata = value;
         return authorizedPut(getUri(), value).getStatus();
-    }
-
-    /**
-     * Deletes this bucket.
-     */
-    public Status delete() {
-        return authorizedDelete(getUri()).getStatus();
-    }
-
-    public String getUri() {
-        return getBucket().getUri() + "/" + Reference.encode(getName());
-    }
-
-    public S3Bucket getBucket() {
-        return this.bucket;
-    }
-
-    public String getName() {
-        return this.name;
     }
 
     public void setName(String name) {

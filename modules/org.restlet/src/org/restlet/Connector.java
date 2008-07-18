@@ -40,12 +40,12 @@ import org.restlet.data.Protocol;
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
  * 
- * @see <a
- *      href="http://roy.gbiv.com/pubs/dissertation/software_arch.htm#sec_1_2_2">Source
- *      dissertation</a>
- * @see <a
- *      href="http://roy.gbiv.com/pubs/dissertation/rest_arch_style.htm#sec_5_2_2">Source
- *      dissertation</a>
+ * @see <a *
+ *      href="http://roy.gbiv.com/pubs/dissertation/software_arch.htm#sec_1_2_2"
+ *      >Source * dissertation< /a>
+ * @see <a *
+ *      href="http://roy.gbiv.com/pubs/dissertation/rest_arch_style.htm#sec_5_2_2"
+ *      >Source * dissertation< /a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public abstract class Connector extends Restlet {
@@ -56,7 +56,7 @@ public abstract class Connector extends Restlet {
      * Constructor.
      * 
      * @param context
-     *                The context.
+     *            The context.
      */
     public Connector(Context context) {
         this(context, null);
@@ -66,9 +66,9 @@ public abstract class Connector extends Restlet {
      * Constructor.
      * 
      * @param context
-     *                The context.
+     *            The context.
      * @param protocols
-     *                The supported protocols.
+     *            The supported protocols.
      */
     public Connector(Context context, List<Protocol> protocols) {
         super(context);
@@ -96,7 +96,7 @@ public abstract class Connector extends Restlet {
      * compound action (clear, addAll) atomic, not for visibility.
      * 
      * @param protocols
-     *                The protocols simultaneously supported.
+     *            The protocols simultaneously supported.
      */
     public synchronized void setProtocols(List<Protocol> protocols) {
         this.protocols.clear();

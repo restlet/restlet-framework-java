@@ -50,7 +50,7 @@ public class ServletWarClient extends Client {
      * Constructor.
      * 
      * @param context
-     *                The context.
+     *            The context.
      */
     public ServletWarClient(Context context,
             javax.servlet.ServletContext servletContext) {
@@ -72,9 +72,9 @@ public class ServletWarClient extends Client {
      * Handles a call.
      * 
      * @param request
-     *                The request to handle.
+     *            The request to handle.
      * @param response
-     *                The response to update.
+     *            The response to update.
      */
     @Override
     public void handle(Request request, Response response) {

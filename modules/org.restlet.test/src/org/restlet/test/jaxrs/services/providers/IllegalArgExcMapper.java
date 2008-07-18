@@ -53,8 +53,9 @@ public class IllegalArgExcMapper implements
     public Response toResponse(IllegalArgumentException exception) {
         String entity = "Could not convert:\n" + exception.getClass().getName()
                 + ": " + exception.getMessage();
-        ResponseBuilder rb = Response.status(STATUS);
-        List<MediaType> accMediaTypes = httpHeaders.getAcceptableMediaTypes();
+        final ResponseBuilder rb = Response.status(STATUS);
+        final List<MediaType> accMediaTypes = this.httpHeaders
+                .getAcceptableMediaTypes();
         if (accMediaTypes.contains(MediaType.TEXT_HTML_TYPE)) {
             rb.type(MediaType.TEXT_HTML_TYPE);
             entity = "<html><head><title>invalid argument</title></head>"

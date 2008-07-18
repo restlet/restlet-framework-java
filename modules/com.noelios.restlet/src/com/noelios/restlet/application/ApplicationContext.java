@@ -36,13 +36,14 @@ public class ApplicationContext extends Context {
      * Returns a non-null logger name.
      * 
      * @param application
-     *                The application.
+     *            The application.
      * @return The logger name.
      */
     private static String getLoggerName(Application application) {
         String result = application.getClass().getCanonicalName();
-        if (result == null)
+        if (result == null) {
             result = "org.restlet.application";
+        }
         return result;
     }
 
@@ -62,11 +63,11 @@ public class ApplicationContext extends Context {
      * Constructor.
      * 
      * @param application
-     *                The application.
+     *            The application.
      * @param parentContext
-     *                The parent context.
+     *            The parent context.
      * @param logger
-     *                The logger instance of use.
+     *            The logger instance of use.
      */
     public ApplicationContext(Application application, Context parentContext,
             Logger logger) {

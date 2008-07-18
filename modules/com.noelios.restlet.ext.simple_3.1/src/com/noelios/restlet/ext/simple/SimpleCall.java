@@ -70,13 +70,13 @@ public class SimpleCall extends HttpServerCall {
      * {@link simple.http.Response}.
      * 
      * @param server
-     *                The parent server.
+     *            The parent server.
      * @param request
-     *                Request to wrap.
+     *            Request to wrap.
      * @param response
-     *                Response to wrap.
+     *            Response to wrap.
      * @param confidential
-     *                Indicates if this call is acting in HTTP or HTTPS mode.
+     *            Indicates if this call is acting in HTTP or HTTPS mode.
      */
     SimpleCall(Server server, Request request, Response response,
             boolean confidential) {
@@ -92,19 +92,19 @@ public class SimpleCall extends HttpServerCall {
         try {
             // Commit the response
             this.response.commit();
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             getLogger().log(Level.WARNING, "Unable to commit the response", ex);
         }
     }
 
     @Override
     public String getClientAddress() {
-        return request.getInetAddress().getHostAddress();
+        return this.request.getInetAddress().getHostAddress();
     }
 
     @Override
     public int getClientPort() {
-        Socket socket = getSocket();
+        final Socket socket = getSocket();
         return (socket != null) ? socket.getPort() : -1;
     }
 
@@ -115,7 +115,7 @@ public class SimpleCall extends HttpServerCall {
      */
     @Override
     public String getMethod() {
-        return request.getMethod();
+        return this.request.getMethod();
     }
 
     @Override
@@ -127,8 +127,8 @@ public class SimpleCall extends HttpServerCall {
     @Override
     public InputStream getRequestEntityStream(long size) {
         try {
-            return new KeepAliveInputStream(request.getInputStream());
-        } catch (IOException ex) {
+            return new KeepAliveInputStream(this.request.getInputStream());
+        } catch (final IOException ex) {
             return null;
         }
     }
@@ -146,12 +146,12 @@ public class SimpleCall extends HttpServerCall {
      */
     @Override
     public Series<Parameter> getRequestHeaders() {
-        Series<Parameter> result = super.getRequestHeaders();
+        final Series<Parameter> result = super.getRequestHeaders();
 
         if (!this.requestHeadersAdded) {
-            int headerCount = request.headerCount();
+            final int headerCount = this.request.headerCount();
             for (int i = 0; i < headerCount; i++) {
-                result.add(new Parameter(request.getName(i), request
+                result.add(new Parameter(this.request.getName(i), this.request
                         .getValue(i)));
             }
 
@@ -174,7 +174,7 @@ public class SimpleCall extends HttpServerCall {
      */
     @Override
     public String getRequestUri() {
-        return request.getURI();
+        return this.request.getURI();
     }
 
     /**
@@ -196,8 +196,8 @@ public class SimpleCall extends HttpServerCall {
     @Override
     public OutputStream getResponseEntityStream() {
         try {
-            return response.getOutputStream();
-        } catch (IOException ex) {
+            return this.response.getOutputStream();
+        } catch (final IOException ex) {
             return null;
         }
     }
@@ -214,10 +214,10 @@ public class SimpleCall extends HttpServerCall {
 
     @Override
     public String getSslCipherSuite() {
-        Socket socket = getSocket();
+        final Socket socket = getSocket();
         if (socket instanceof SSLSocket) {
-            SSLSocket sslSocket = (SSLSocket) socket;
-            SSLSession sslSession = sslSocket.getSession();
+            final SSLSocket sslSocket = (SSLSocket) socket;
+            final SSLSession sslSession = sslSocket.getSession();
             if (sslSession != null) {
                 return sslSession.getCipherSuite();
             }
@@ -227,17 +227,17 @@ public class SimpleCall extends HttpServerCall {
 
     @Override
     public List<Certificate> getSslClientCertificates() {
-        Socket socket = getSocket();
+        final Socket socket = getSocket();
         if (socket instanceof SSLSocket) {
-            SSLSocket sslSocket = (SSLSocket) socket;
-            SSLSession sslSession = sslSocket.getSession();
+            final SSLSocket sslSocket = (SSLSocket) socket;
+            final SSLSession sslSession = sslSocket.getSession();
             if (sslSession != null) {
                 try {
-                    List<Certificate> clientCertificates = Arrays
+                    final List<Certificate> clientCertificates = Arrays
                             .asList(sslSession.getPeerCertificates());
 
                     return clientCertificates;
-                } catch (SSLPeerUnverifiedException e) {
+                } catch (final SSLPeerUnverifiedException e) {
                     getLogger().log(Level.FINE,
                             "Can't get the client certificates.", e);
                 }
@@ -248,24 +248,24 @@ public class SimpleCall extends HttpServerCall {
 
     @Override
     public String getVersion() {
-        return request.getMajor() + "." + request.getMinor();
+        return this.request.getMajor() + "." + this.request.getMinor();
     }
 
     @Override
     public void writeResponseHead(org.restlet.data.Response restletResponse)
             throws IOException {
-        response.clear();
-        for (Parameter header : getResponseHeaders()) {
-            response.add(header.getName(), header.getValue());
+        this.response.clear();
+        for (final Parameter header : getResponseHeaders()) {
+            this.response.add(header.getName(), header.getValue());
         }
 
         // Set the status
-        response.setCode(getStatusCode());
-        response.setText(getReasonPhrase());
+        this.response.setCode(getStatusCode());
+        this.response.setText(getReasonPhrase());
 
         // To ensure that Simple doesn't switch to chunked encoding
         if (restletResponse.getEntity() == null) {
-            response.setContentLength(0);
+            this.response.setContentLength(0);
         }
     }
 }

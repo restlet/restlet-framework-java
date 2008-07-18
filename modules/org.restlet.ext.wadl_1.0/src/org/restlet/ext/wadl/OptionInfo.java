@@ -51,8 +51,9 @@ public class OptionInfo {
         if (d == null) {
             synchronized (this) {
                 d = this.documentations;
-                if (d == null)
+                if (d == null) {
                     this.documentations = d = new ArrayList<DocumentationInfo>();
+                }
             }
         }
         return d;
@@ -64,7 +65,7 @@ public class OptionInfo {
      * @return The value of this option element.
      */
     public String getValue() {
-        return value;
+        return this.value;
     }
 
     /**
@@ -95,8 +96,8 @@ public class OptionInfo {
      * @throws SAXException
      */
     public void writeElement(XmlWriter writer) throws SAXException {
-        AttributesImpl attributes = new AttributesImpl();
-        if (getValue() != null && !getValue().equals("")) {
+        final AttributesImpl attributes = new AttributesImpl();
+        if ((getValue() != null) && !getValue().equals("")) {
             attributes.addAttribute("", "id", null, "xs:string", getValue());
         }
 
@@ -105,7 +106,7 @@ public class OptionInfo {
         } else {
             writer.startElement(APP_NAMESPACE, "option", null, attributes);
 
-            for (DocumentationInfo documentationInfo : getDocumentations()) {
+            for (final DocumentationInfo documentationInfo : getDocumentations()) {
                 documentationInfo.writeElement(writer);
             }
 

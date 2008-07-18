@@ -32,6 +32,6 @@ public class IllegalConstrParamTypeException extends IllegalTypeException {
      */
     public IllegalConstrParamTypeException(IllegalTypeException ite) {
         super(ite.getMessage());
-        this.setStackTrace(ite.getStackTrace());
+        setStackTrace(ite.getStackTrace());
     }
 }

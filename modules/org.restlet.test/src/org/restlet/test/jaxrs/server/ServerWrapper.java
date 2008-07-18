@@ -51,7 +51,7 @@ public interface ServerWrapper {
      * will do this on every test start up.
      * 
      * @param protocol
-     *                the protocol to use
+     *            the protocol to use
      * @param appConfig
      * @throws Exception
      */

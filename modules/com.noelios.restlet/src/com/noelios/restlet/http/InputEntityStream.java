@@ -36,9 +36,9 @@ public class InputEntityStream extends InputStream {
      * Constructor.
      * 
      * @param source
-     *                The source stream.
+     *            The source stream.
      * @param size
-     *                The total size that should be read from the source stream.
+     *            The total size that should be read from the source stream.
      */
     public InputEntityStream(InputStream source, long size) {
         this.source = source;

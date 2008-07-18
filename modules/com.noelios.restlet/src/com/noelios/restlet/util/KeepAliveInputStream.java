@@ -17,7 +17,7 @@ public class KeepAliveInputStream extends FilterInputStream {
      * Constructor.
      * 
      * @param source
-     *                The source input stream.
+     *            The source input stream.
      */
     public KeepAliveInputStream(InputStream source) {
         super(source);

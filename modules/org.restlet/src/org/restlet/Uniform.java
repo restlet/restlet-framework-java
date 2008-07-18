@@ -37,9 +37,9 @@ import org.restlet.resource.Representation;
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
  * 
- * @see <a
- *      href="http://roy.gbiv.com/pubs/dissertation/rest_arch_style.htm#sec_5_1_5">Source
- *      dissertation</a>
+ * @see <a *
+ *      href="http://roy.gbiv.com/pubs/dissertation/rest_arch_style.htm#sec_5_1_5"
+ *      >Source * dissertation< /a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public abstract class Uniform {
@@ -47,7 +47,7 @@ public abstract class Uniform {
      * Deletes the identified resource.
      * 
      * @param resourceRef
-     *                The reference of the resource to delete.
+     *            The reference of the resource to delete.
      * @return The response.
      */
     public final Response delete(Reference resourceRef) {
@@ -58,7 +58,7 @@ public abstract class Uniform {
      * Deletes the identified resource.
      * 
      * @param resourceUri
-     *                The URI of the resource to delete.
+     *            The URI of the resource to delete.
      * @return The response.
      */
     public final Response delete(String resourceUri) {
@@ -69,7 +69,7 @@ public abstract class Uniform {
      * Gets the identified resource.
      * 
      * @param resourceRef
-     *                The reference of the resource to get.
+     *            The reference of the resource to get.
      * @return The response.
      */
     public final Response get(Reference resourceRef) {
@@ -80,7 +80,7 @@ public abstract class Uniform {
      * Gets the identified resource.
      * 
      * @param resourceUri
-     *                The URI of the resource to get.
+     *            The URI of the resource to get.
      * @return The response.
      */
     public final Response get(String resourceUri) {
@@ -91,11 +91,11 @@ public abstract class Uniform {
      * Handles a call.
      * 
      * @param request
-     *                The request to handle.
+     *            The request to handle.
      * @return The returned response.
      */
     public final Response handle(Request request) {
-        Response response = new Response(request);
+        final Response response = new Response(request);
         handle(request, response);
         return response;
     }
@@ -104,9 +104,9 @@ public abstract class Uniform {
      * Handles a call.
      * 
      * @param request
-     *                The request to handle.
+     *            The request to handle.
      * @param response
-     *                The response to update.
+     *            The response to update.
      */
     public abstract void handle(Request request, Response response);
 
@@ -114,7 +114,7 @@ public abstract class Uniform {
      * Gets the identified resource without its representation's content.
      * 
      * @param resourceRef
-     *                The reference of the resource to get.
+     *            The reference of the resource to get.
      * @return The response.
      */
     public final Response head(Reference resourceRef) {
@@ -125,7 +125,7 @@ public abstract class Uniform {
      * Gets the identified resource without its representation's content.
      * 
      * @param resourceUri
-     *                The URI of the resource to get.
+     *            The URI of the resource to get.
      * @return The response.
      */
     public final Response head(String resourceUri) {
@@ -136,7 +136,7 @@ public abstract class Uniform {
      * Gets the options for the identified resource.
      * 
      * @param resourceRef
-     *                The reference of the resource to get.
+     *            The reference of the resource to get.
      * @return The response.
      */
     public final Response options(Reference resourceRef) {
@@ -147,7 +147,7 @@ public abstract class Uniform {
      * Gets the options for the identified resource.
      * 
      * @param resourceUri
-     *                The URI of the resource to get.
+     *            The URI of the resource to get.
      * @return The response.
      */
     public final Response options(String resourceUri) {
@@ -158,9 +158,9 @@ public abstract class Uniform {
      * Posts a representation to the identified resource.
      * 
      * @param resourceRef
-     *                The reference of the resource to post to.
+     *            The reference of the resource to post to.
      * @param entity
-     *                The entity to post.
+     *            The entity to post.
      * @return The response.
      */
     public final Response post(Reference resourceRef, Representation entity) {
@@ -171,9 +171,9 @@ public abstract class Uniform {
      * Posts a representation to the identified resource.
      * 
      * @param resourceUri
-     *                The URI of the resource to post to.
+     *            The URI of the resource to post to.
      * @param entity
-     *                The entity to post.
+     *            The entity to post.
      * @return The response.
      */
     public final Response post(String resourceUri, Representation entity) {
@@ -184,9 +184,9 @@ public abstract class Uniform {
      * Puts a representation in the identified resource.
      * 
      * @param resourceRef
-     *                The reference of the resource to modify.
+     *            The reference of the resource to modify.
      * @param entity
-     *                The entity to put.
+     *            The entity to put.
      * @return The response.
      */
     public final Response put(Reference resourceRef, Representation entity) {
@@ -197,9 +197,9 @@ public abstract class Uniform {
      * Puts a representation in the identified resource.
      * 
      * @param resourceUri
-     *                The URI of the resource to modify.
+     *            The URI of the resource to modify.
      * @param entity
-     *                The entity to put.
+     *            The entity to put.
      * @return The response.
      */
     public final Response put(String resourceUri, Representation entity) {

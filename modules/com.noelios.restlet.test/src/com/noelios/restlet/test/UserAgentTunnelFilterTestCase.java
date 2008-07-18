@@ -47,7 +47,7 @@ public class UserAgentTunnelFilterTestCase extends TestCase {
      * @return A new Request object.
      */
     private Request createRequest() {
-        Request request = new Request();
+        final Request request = new Request();
         request.setMethod(Method.GET);
         request.getClientInfo().setAgent("msie/1.1");
         request.setResourceRef(URL);
@@ -64,7 +64,7 @@ public class UserAgentTunnelFilterTestCase extends TestCase {
         this.application = new Application(new Context()) {
             @Override
             public Restlet createRoot() {
-                Router router = new Router(getContext());
+                final Router router = new Router(getContext());
                 router.attachDefault(UserAgentTestResource.class);
                 return router;
             }
@@ -72,17 +72,17 @@ public class UserAgentTunnelFilterTestCase extends TestCase {
     }
 
     public void testTunnelOff() {
-        application.getTunnelService().setUserAgentTunnel(false);
-        
-        Response response = application.handle(createRequest());
+        this.application.getTunnelService().setUserAgentTunnel(false);
+
+        final Response response = this.application.handle(createRequest());
         assertEquals(response.getStatus(), Status.SUCCESS_OK);
         assertEquals(MediaType.TEXT_XML, response.getEntity().getMediaType());
     }
 
     public void testTunnelOn() {
-        application.getTunnelService().setUserAgentTunnel(true);
-        
-        Response response = application.handle(createRequest());
+        this.application.getTunnelService().setUserAgentTunnel(true);
+
+        final Response response = this.application.handle(createRequest());
         assertEquals(response.getStatus(), Status.SUCCESS_OK);
         assertEquals(MediaType.TEXT_HTML, response.getEntity().getMediaType());
     }

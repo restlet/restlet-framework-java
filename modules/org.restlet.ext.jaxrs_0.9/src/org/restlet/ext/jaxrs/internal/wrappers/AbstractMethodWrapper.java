@@ -72,11 +72,13 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
      * @param entityAllowed
      * @param logger
      * @throws IllegalPathOnMethodException
-     * @throws IllegalArgumentException if the annotated method is null
+     * @throws IllegalArgumentException
+     *             if the annotated method is null
      * @throws MissingAnnotationException
      * @throws IllegalMethodParamTypeException
-     *                 if one of the parameters annotated with &#64;{@link Context}
-     *                 has a type that must not be annotated with &#64;{@link Context}.
+     *             if one of the parameters annotated with &#64;{@link Context}
+     *             has a type that must not be annotated with &#64;
+     *             {@link Context}.
      */
     AbstractMethodWrapper(Method executeMethod, Method annotatedMethod,
             ResourceClass resourceClass, ThreadLocalizedContext tlContext,
@@ -91,13 +93,13 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
         this.executeMethod.setAccessible(true);
         // NICE log message, if an Exception with no exc mapper is declared.
         this.resourceClass = resourceClass;
-        boolean leaveEncoded = resourceClass.isLeaveEncoded()
+        final boolean leaveEncoded = resourceClass.isLeaveEncoded()
                 || annotatedMethod.isAnnotationPresent(Encoded.class);
         try {
             this.parameters = new ParameterList(executeMethod, annotatedMethod,
                     tlContext, leaveEncoded, entityProviders, allCtxResolvers,
                     extensionBackwardMapping, entityAllowed, logger);
-        } catch (IllegalTypeException e) {
+        } catch (final IllegalTypeException e) {
             throw new IllegalMethodParamTypeException(e);
         }
     }
@@ -108,8 +110,8 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
      * @return Returns the name of the method
      */
     public String getName() {
-        Class<?>[] paramTypes = this.executeMethod.getParameterTypes();
-        StringBuilder stb = new StringBuilder();
+        final Class<?>[] paramTypes = this.executeMethod.getParameterTypes();
+        final StringBuilder stb = new StringBuilder();
         stb.append(this.executeMethod.getName());
         stb.append('(');
         Util.append(stb, paramTypes);
@@ -149,9 +151,9 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
             throws IllegalArgumentException, IllegalAccessException,
             InvocationTargetException, ConvertRepresentationException,
             WebApplicationException {
-        Object[] args = this.parameters.get();
-        Object jaxRsResourceObj = resourceObject.getJaxRsResourceObject();
-        return executeMethod.invoke(jaxRsResourceObj, args);
+        final Object[] args = this.parameters.get();
+        final Object jaxRsResourceObj = resourceObject.getJaxRsResourceObject();
+        return this.executeMethod.invoke(jaxRsResourceObj, args);
     }
 
     @Override

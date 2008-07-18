@@ -40,7 +40,8 @@ import org.restlet.test.jaxrs.services.others.Person;
 @Provider
 public class ContextResolverTestWriter implements MessageBodyWriter<Person> {
 
-    @Context private ContextResolver<BaseUriContext> contextResolver;
+    @Context
+    private ContextResolver<BaseUriContext> contextResolver;
 
     /**
      * @see javax.ws.rs.ext.MessageBodyWriter#getSize(java.lang.Object)
@@ -54,7 +55,7 @@ public class ContextResolverTestWriter implements MessageBodyWriter<Person> {
      */
     public boolean isWriteable(Class<?> type, Type genericType,
             Annotation[] annotations) {
-        return contextResolver.getContext(type) != null;
+        return this.contextResolver.getContext(type) != null;
     }
 
     /**
@@ -65,8 +66,8 @@ public class ContextResolverTestWriter implements MessageBodyWriter<Person> {
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
-        BaseUriContext context = contextResolver.getContext(type);
-        OutputStreamWriter writer = new OutputStreamWriter(entityStream);
+        final BaseUriContext context = this.contextResolver.getContext(type);
+        final OutputStreamWriter writer = new OutputStreamWriter(entityStream);
         writer.write("<html><head></head><body>\n");
         writer.write("The virtual presence of <b>");
         writer.write(person.getFirstname() + " " + person.getLastname());

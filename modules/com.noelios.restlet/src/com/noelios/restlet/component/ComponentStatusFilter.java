@@ -43,7 +43,7 @@ public class ComponentStatusFilter extends StatusFilter {
      * Constructor.
      * 
      * @param component
-     *                The component.
+     *            The component.
      */
     public ComponentStatusFilter(Component component) {
         super(component.getContext(), component.getStatusService()
@@ -66,8 +66,9 @@ public class ComponentStatusFilter extends StatusFilter {
             Response response) {
         Representation result = getComponent().getStatusService()
                 .getRepresentation(status, request, response);
-        if (result == null)
+        if (result == null) {
             result = super.getRepresentation(status, request, response);
+        }
         return result;
     }
 
@@ -76,8 +77,9 @@ public class ComponentStatusFilter extends StatusFilter {
             Response response) {
         Status result = getComponent().getStatusService().getStatus(throwable,
                 request, response);
-        if (result == null)
+        if (result == null) {
             result = super.getStatus(throwable, request, response);
+        }
         return result;
     }
 }

@@ -25,17 +25,17 @@ import java.util.NoSuchElementException;
  * 
  * @author Stephan Koops
  * @param <T>
- *                The type of the contained object.
+ *            The type of the contained object.
  */
 public class OneElementIterator<T> implements Iterator<T> {
 
-    private T element;
+    private final T element;
 
     private boolean hasNext = true;
 
     /**
      * @param element
-     *                The element to iterate over. May be null.
+     *            The element to iterate over. May be null.
      */
     public OneElementIterator(T element) {
         this.element = element;
@@ -45,17 +45,18 @@ public class OneElementIterator<T> implements Iterator<T> {
      * @see java.util.Iterator#hasNext()
      */
     public boolean hasNext() {
-        return hasNext;
+        return this.hasNext;
     }
 
     /**
      * @see java.util.Iterator#next()
      */
     public T next() throws NoSuchElementException {
-        if (!hasNext)
+        if (!this.hasNext) {
             throw new NoSuchElementException("The element was already returned");
+        }
         this.hasNext = false;
-        return element;
+        return this.element;
     }
 
     /**

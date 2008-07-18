@@ -48,7 +48,7 @@ public class WrapperList<E> implements List<E> {
      * Constructor.
      * 
      * @param initialCapacity
-     *                The initial list capacity.
+     *            The initial list capacity.
      */
     public WrapperList(int initialCapacity) {
         this(new Vector<E>(initialCapacity));
@@ -58,7 +58,7 @@ public class WrapperList<E> implements List<E> {
      * Constructor.
      * 
      * @param delegate
-     *                The delegate list.
+     *            The delegate list.
      */
     public WrapperList(List<E> delegate) {
         this.delegate = delegate;
@@ -77,9 +77,9 @@ public class WrapperList<E> implements List<E> {
      * Inserts the specified element at the specified position in this list.
      * 
      * @param index
-     *                The insertion position.
+     *            The insertion position.
      * @param element
-     *                The element to insert.
+     *            The element to insert.
      */
     public void add(int index, E element) {
         getDelegate().add(index, element);
@@ -90,7 +90,7 @@ public class WrapperList<E> implements List<E> {
      * this list.
      * 
      * @param elements
-     *                The collection of elements to append.
+     *            The collection of elements to append.
      */
     public boolean addAll(Collection<? extends E> elements) {
         return getDelegate().addAll(elements);
@@ -101,9 +101,9 @@ public class WrapperList<E> implements List<E> {
      * the specified position.
      * 
      * @param index
-     *                The insertion position.
+     *            The insertion position.
      * @param elements
-     *                The collection of elements to insert.
+     *            The collection of elements to insert.
      */
     public boolean addAll(int index, Collection<? extends E> elements) {
         return getDelegate().addAll(index, elements);
@@ -120,7 +120,7 @@ public class WrapperList<E> implements List<E> {
      * Returns true if this list contains the specified element.
      * 
      * @param element
-     *                The element to find.
+     *            The element to find.
      * @return True if this list contains the specified element.
      */
     public boolean contains(Object element) {
@@ -132,7 +132,7 @@ public class WrapperList<E> implements List<E> {
      * collection.
      * 
      * @param elements
-     *                The collection of elements to find.
+     *            The collection of elements to find.
      * @return True if this list contains all of the elements of the specified
      *         collection.
      */
@@ -144,7 +144,7 @@ public class WrapperList<E> implements List<E> {
      * Compares the specified object with this list for equality.
      * 
      * @param o
-     *                The object to be compared for equality with this list.
+     *            The object to be compared for equality with this list.
      * @return True if the specified object is equal to this list.
      */
     @Override
@@ -156,7 +156,7 @@ public class WrapperList<E> implements List<E> {
      * Returns the element at the specified position in this list.
      * 
      * @param index
-     *                The element position.
+     *            The element position.
      * @return The element at the specified position in this list.
      */
     public E get(int index) {
@@ -187,7 +187,7 @@ public class WrapperList<E> implements List<E> {
      * element, or -1 if this list does not contain this element.
      * 
      * @param element
-     *                The element to find.
+     *            The element to find.
      * @return The index of the first occurrence.
      */
     public int indexOf(Object element) {
@@ -234,7 +234,7 @@ public class WrapperList<E> implements List<E> {
      * sequence), starting at the specified position in this list.
      * 
      * @param index
-     *                The starting position.
+     *            The starting position.
      */
     public ListIterator<E> listIterator(int index) {
         return getDelegate().listIterator(index);
@@ -263,7 +263,7 @@ public class WrapperList<E> implements List<E> {
      * specified collection.
      * 
      * @param elements
-     *                The collection of element to remove.
+     *            The collection of element to remove.
      * @return True if the list changed.
      */
     public boolean removeAll(Collection<?> elements) {
@@ -275,7 +275,7 @@ public class WrapperList<E> implements List<E> {
      * specified collection.
      * 
      * @param elements
-     *                The collection of element to retain.
+     *            The collection of element to retain.
      * @return True if the list changed.
      */
     public boolean retainAll(Collection<?> elements) {
@@ -287,9 +287,9 @@ public class WrapperList<E> implements List<E> {
      * specified element.
      * 
      * @param index
-     *                The position of the element to replace.
+     *            The position of the element to replace.
      * @param element
-     *                The new element.
+     *            The new element.
      */
     public E set(int index, E element) {
         return getDelegate().set(index, element);
@@ -309,9 +309,9 @@ public class WrapperList<E> implements List<E> {
      * fromIndex, inclusive, and toIndex, exclusive.
      * 
      * @param fromIndex
-     *                The start position.
+     *            The start position.
      * @param toIndex
-     *                The end position (exclusive).
+     *            The end position (exclusive).
      * @return The sub-list.
      */
     public List<E> subList(int fromIndex, int toIndex) {
@@ -335,7 +335,7 @@ public class WrapperList<E> implements List<E> {
      * array.
      * 
      * @param a
-     *                The sample array.
+     *            The sample array.
      */
     public <T> T[] toArray(T[] a) {
         return getDelegate().toArray(a);

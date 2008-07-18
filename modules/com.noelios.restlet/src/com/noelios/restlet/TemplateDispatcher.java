@@ -44,7 +44,7 @@ public class TemplateDispatcher extends Uniform {
      * Constructor.
      * 
      * @param context
-     *                The parent context.
+     *            The parent context.
      */
     public TemplateDispatcher(Context context) {
         this.context = context;
@@ -55,9 +55,9 @@ public class TemplateDispatcher extends Uniform {
      * request's target resource reference.
      * 
      * @param request
-     *                The request to handle.
+     *            The request to handle.
      * @param response
-     *                The response to update.
+     *            The response to update.
      */
     protected void doHandle(Request request, Response response) {
         request.setOriginalRef(request.getResourceRef().getTargetRef());
@@ -86,17 +86,17 @@ public class TemplateDispatcher extends Uniform {
         // Associate the response to the current thread
         Response.setCurrent(response);
 
-        Protocol protocol = request.getProtocol();
+        final Protocol protocol = request.getProtocol();
 
         if (protocol == null) {
             throw new UnsupportedOperationException(
                     "Unable to determine the protocol to use for this call.");
         }
-        String targetUri = request.getResourceRef().toString(true, false);
+        final String targetUri = request.getResourceRef().toString(true, false);
 
         if (targetUri.contains("{")) {
             // Template URI detected, create the template
-            Template template = new Template(getContext().getLogger(),
+            final Template template = new Template(getContext().getLogger(),
                     targetUri);
 
             // Set the formatted target URI

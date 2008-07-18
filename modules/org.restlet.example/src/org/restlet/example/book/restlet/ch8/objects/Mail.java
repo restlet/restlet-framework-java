@@ -66,31 +66,31 @@ public class Mail extends BaseObject {
     }
 
     public String getMessage() {
-        return message;
+        return this.message;
     }
 
     public List<Contact> getRecipients() {
-        return recipients;
+        return this.recipients;
     }
 
     public Contact getSender() {
-        return sender;
+        return this.sender;
     }
 
     public Date getSendingDate() {
-        return sendingDate;
+        return this.sendingDate;
     }
 
     public String getStatus() {
-        return status;
+        return this.status;
     }
 
     public String getSubject() {
-        return subject;
+        return this.subject;
     }
 
     public List<String> getTags() {
-        return tags;
+        return this.tags;
     }
 
     public void setMessage(String message) {

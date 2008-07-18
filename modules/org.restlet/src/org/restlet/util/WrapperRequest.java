@@ -38,8 +38,8 @@ import org.restlet.resource.SaxRepresentation;
  * Request wrapper. Useful for application developer who need to enrich the
  * request with application related properties and behavior.
  * 
- * @see <a href="http://c2.com/cgi/wiki?DecoratorPattern">The decorator (aka
- *      wrapper) pattern</a>
+ * @see <a href="http://c2.com/cgi/wiki?DecoratorPattern">The decorator (aka *
+ *      wrapper) pattern< /a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class WrapperRequest extends Request {
@@ -50,7 +50,7 @@ public class WrapperRequest extends Request {
      * Constructor.
      * 
      * @param wrappedRequest
-     *                The wrapped request.
+     *            The wrapped request.
      */
     public WrapperRequest(Request wrappedRequest) {
         this.wrappedRequest = wrappedRequest;
@@ -79,12 +79,13 @@ public class WrapperRequest extends Request {
      * <td>Server HTTP connectors must provide all request headers and client
      * HTTP connectors must provide all response headers, exactly as they were
      * received. In addition, developers can also use this attribute to specify
-     * <b>non-standard</b> headers that should be added to the request or to
-     * the response. </td>
+     * <b>non-standard</b> headers that should be added to the request or to the
+     * response.</td>
      * </tr>
-     * </table> Adding standard HTTP headers is forbidden because it could
-     * conflict with the connector's internal behavior, limit portability or
-     * prevent future optimizations.</td>
+     * </table>
+     * Adding standard HTTP headers is forbidden because it could conflict with
+     * the connector's internal behavior, limit portability or prevent future
+     * optimizations.</td>
      * 
      * @return The modifiable attributes map.
      */
@@ -298,8 +299,8 @@ public class WrapperRequest extends Request {
      * Sets the authentication response sent by a client to an origin server.
      * 
      * @param response
-     *                The authentication response sent by a client to an origin
-     *                server.
+     *            The authentication response sent by a client to an origin
+     *            server.
      */
     @Override
     public void setChallengeResponse(ChallengeResponse response) {
@@ -311,7 +312,7 @@ public class WrapperRequest extends Request {
      * SSL-secured connection.
      * 
      * @param confidential
-     *                True if the call came over a confidential channel.
+     *            True if the call came over a confidential channel.
      */
     @Override
     public void setConfidential(boolean confidential) {
@@ -326,7 +327,7 @@ public class WrapperRequest extends Request {
      * the toRepresentation(Object) method.
      * 
      * @param object
-     *                The higher-level object.
+     *            The higher-level object.
      * @deprecated Since 1.1, the ConverterService is deprecated, with no
      *             replacement as it doesn't fit well with content negotiation.
      *             Most users prefer to handle those conversion in Resource
@@ -342,7 +343,7 @@ public class WrapperRequest extends Request {
      * Sets the entity representation.
      * 
      * @param entity
-     *                The entity representation.
+     *            The entity representation.
      */
     @Override
     public void setEntity(Representation entity) {
@@ -353,9 +354,9 @@ public class WrapperRequest extends Request {
      * Sets a textual entity.
      * 
      * @param value
-     *                The represented string.
+     *            The represented string.
      * @param mediaType
-     *                The representation's media type.
+     *            The representation's media type.
      */
     @Override
     public void setEntity(String value, MediaType mediaType) {
@@ -366,7 +367,7 @@ public class WrapperRequest extends Request {
      * Sets the host reference.
      * 
      * @param hostRef
-     *                The host reference.
+     *            The host reference.
      */
     @Override
     public void setHostRef(Reference hostRef) {
@@ -377,7 +378,7 @@ public class WrapperRequest extends Request {
      * Sets the host reference using an URI string.
      * 
      * @param hostUri
-     *                The host URI.
+     *            The host URI.
      */
     @Override
     public void setHostRef(String hostUri) {
@@ -388,7 +389,7 @@ public class WrapperRequest extends Request {
      * Sets the method called.
      * 
      * @param method
-     *                The method called.
+     *            The method called.
      */
     @Override
     public void setMethod(Method method) {
@@ -399,7 +400,7 @@ public class WrapperRequest extends Request {
      * Sets the referrer reference if available.
      * 
      * @param referrerRef
-     *                The referrer reference.
+     *            The referrer reference.
      */
     @Override
     public void setReferrerRef(Reference referrerRef) {
@@ -410,7 +411,7 @@ public class WrapperRequest extends Request {
      * Sets the referrer reference if available using an URI string.
      * 
      * @param referrerUri
-     *                The referrer URI.
+     *            The referrer URI.
      */
     @Override
     public void setReferrerRef(String referrerUri) {
@@ -424,7 +425,7 @@ public class WrapperRequest extends Request {
      * consistent handling of the call.
      * 
      * @param resourceRef
-     *                The resource reference.
+     *            The resource reference.
      */
     @Override
     public void setResourceRef(Reference resourceRef) {
@@ -436,7 +437,7 @@ public class WrapperRequest extends Request {
      * can be either absolute or relative to the context's base reference.
      * 
      * @param resourceUri
-     *                The resource URI.
+     *            The resource URI.
      */
     @Override
     public void setResourceRef(String resourceUri) {
@@ -447,7 +448,7 @@ public class WrapperRequest extends Request {
      * Sets the application root reference.
      * 
      * @param rootRef
-     *                The application root reference.
+     *            The application root reference.
      */
     @Override
     public void setRootRef(Reference rootRef) {

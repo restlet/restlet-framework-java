@@ -90,7 +90,7 @@ public class WadlResource extends Resource {
      * @return A method description.
      */
     protected MethodInfo getMethodInfo(Method method) {
-        MethodInfo methodInfo = new MethodInfo();
+        final MethodInfo methodInfo = new MethodInfo();
         if (isDescribable(method)) {
             methodInfo.setName(method);
             methodInfo.setRequest(getRequestInfo(method));
@@ -106,7 +106,7 @@ public class WadlResource extends Resource {
      * @return The description of the parameters.
      */
     protected List<ParameterInfo> getParametersInfo() {
-        List<ParameterInfo> result = null;
+        final List<ParameterInfo> result = null;
         return result;
     }
 
@@ -120,7 +120,7 @@ public class WadlResource extends Resource {
      */
     protected List<ParameterInfo> getParametersInfo(
             RepresentationInfo representation) {
-        List<ParameterInfo> result = null;
+        final List<ParameterInfo> result = null;
         return result;
     }
 
@@ -133,7 +133,7 @@ public class WadlResource extends Resource {
      * @return The description of the parameters.
      */
     protected List<ParameterInfo> getParametersInfo(RequestInfo request) {
-        List<ParameterInfo> result = null;
+        final List<ParameterInfo> result = null;
         return result;
     }
 
@@ -146,7 +146,7 @@ public class WadlResource extends Resource {
      * @return The description of the parameters.
      */
     protected List<ParameterInfo> getParametersInfo(ResponseInfo response) {
-        List<ParameterInfo> result = null;
+        final List<ParameterInfo> result = null;
         return result;
     }
 
@@ -161,7 +161,7 @@ public class WadlResource extends Resource {
 
         // Compute the preferred variant. Get the default language
         // preference from the Application (if any).
-        Application app = Application.getCurrent();
+        final Application app = Application.getCurrent();
         Language language = null;
 
         if (app != null) {
@@ -175,7 +175,7 @@ public class WadlResource extends Resource {
     }
 
     protected RepresentationInfo getRepresentationInfo(Variant variant) {
-        RepresentationInfo result = new RepresentationInfo();
+        final RepresentationInfo result = new RepresentationInfo();
         result.setMediaType(variant.getMediaType());
         result.setParameters(getParametersInfo(result));
         return result;
@@ -199,13 +199,13 @@ public class WadlResource extends Resource {
      * @return A WADL description of the current resource.
      */
     public ResourceInfo getResourceInfo() {
-        ResourceInfo result = new ResourceInfo();
+        final ResourceInfo result = new ResourceInfo();
         result.setPath(getResourcePath());
 
         // Introspect the current resource to detect the allowed methods
-        List<MethodInfo> methods = result.getMethods();
+        final List<MethodInfo> methods = result.getMethods();
         // The set of allowed methods
-        List<Method> methodsList = new ArrayList<Method>();
+        final List<Method> methodsList = new ArrayList<Method>();
         methodsList.addAll(getAllowedMethods());
 
         Collections.sort(methodsList, new Comparator<Method>() {
@@ -214,7 +214,7 @@ public class WadlResource extends Resource {
             }
         });
 
-        for (Method name : methodsList) {
+        for (final Method name : methodsList) {
             methods.add(getMethodInfo(name));
         }
 
@@ -228,8 +228,8 @@ public class WadlResource extends Resource {
      * @return The resource's relative path.
      */
     protected String getResourcePath() {
-        Reference ref = new Reference(getRequest().getRootRef(), getRequest()
-                .getResourceRef());
+        final Reference ref = new Reference(getRequest().getRootRef(),
+                getRequest().getResourceRef());
         return ref.getRemainingPart();
     }
 
@@ -259,14 +259,14 @@ public class WadlResource extends Resource {
             result = new ResponseInfo();
 
             // Describe each variant
-            for (Variant variant : getVariants()) {
+            for (final Variant variant : getVariants()) {
                 result.getRepresentations().add(getRepresentationInfo(variant));
             }
         } else if (Method.OPTIONS.equals(method)) {
             result = new ResponseInfo();
 
             // Describe each variant
-            for (Variant variant : getWadlVariants()) {
+            for (final Variant variant : getWadlVariants()) {
                 result.getRepresentations().add(getRepresentationInfo(variant));
             }
         }
@@ -280,7 +280,7 @@ public class WadlResource extends Resource {
      * @return The available WADL variants.
      */
     protected List<Variant> getWadlVariants() {
-        List<Variant> result = new ArrayList<Variant>();
+        final List<Variant> result = new ArrayList<Variant>();
         result.add(new Variant(MediaType.APPLICATION_WADL_XML));
         result.add(new Variant(MediaType.TEXT_HTML));
         return result;

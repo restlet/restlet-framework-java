@@ -44,28 +44,16 @@ public class ThreadLocalContextTestExcMapper implements
     private final Object counterSync = new Object();
 
     /**
-     * @see javax.ws.rs.ext.ExceptionMapper#toResponse(java.lang.Object)
+     * @return
      */
-    public Response toResponse(SQLException exception) {
-        sysout("start accMediaType=" + getAccMediaType());
-        boolean counterAtStart;
-        synchronized (counterSync) {
-            counterAtStart = marker;
-            marker = !marker;
+    private MediaType getAccMediaType() {
+        final List<MediaType> accMediaTypes = this.httpHeaders
+                .getAcceptableMediaTypes();
+        if (accMediaTypes.contains(MediaType.TEXT_HTML_TYPE)) {
+            return MediaType.TEXT_HTML_TYPE;
+        } else {
+            return MediaType.TEXT_PLAIN_TYPE;
         }
-        do {
-            TestUtils.sleep();
-        } while (counterAtStart == marker);
-        MediaType accMediaType = getAccMediaType();
-        sysout("middle accMediaType=" + accMediaType);
-        synchronized (counterSync) {
-            marker = !marker;
-        }
-        ResponseBuilder rb = Response.serverError();
-        rb.type(accMediaType);
-        rb.entity("Database access error");
-        sysout("end accMediaType=" + accMediaType);
-        return rb.build();
     }
 
     /**
@@ -77,13 +65,27 @@ public class ThreadLocalContextTestExcMapper implements
     }
 
     /**
-     * @return
+     * @see javax.ws.rs.ext.ExceptionMapper#toResponse(java.lang.Object)
      */
-    private MediaType getAccMediaType() {
-        List<MediaType> accMediaTypes = httpHeaders.getAcceptableMediaTypes();
-        if (accMediaTypes.contains(MediaType.TEXT_HTML_TYPE))
-            return MediaType.TEXT_HTML_TYPE;
-        else
-            return MediaType.TEXT_PLAIN_TYPE;
+    public Response toResponse(SQLException exception) {
+        sysout("start accMediaType=" + getAccMediaType());
+        boolean counterAtStart;
+        synchronized (this.counterSync) {
+            counterAtStart = this.marker;
+            this.marker = !this.marker;
+        }
+        do {
+            TestUtils.sleep();
+        } while (counterAtStart == this.marker);
+        final MediaType accMediaType = getAccMediaType();
+        sysout("middle accMediaType=" + accMediaType);
+        synchronized (this.counterSync) {
+            this.marker = !this.marker;
+        }
+        final ResponseBuilder rb = Response.serverError();
+        rb.type(accMediaType);
+        rb.entity("Database access error");
+        sysout("end accMediaType=" + accMediaType);
+        return rb.build();
     }
 }

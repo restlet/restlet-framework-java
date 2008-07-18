@@ -46,7 +46,7 @@ public class ServerRouter extends Router {
      * Constructor.
      * 
      * @param component
-     *                The parent component.
+     *            The parent component.
      */
     public ServerRouter(Component component) {
         super((component == null) ? null : component.getContext());
@@ -54,11 +54,20 @@ public class ServerRouter extends Router {
         setRoutingMode(FIRST);
     }
 
+    /**
+     * Returns the parent component.
+     * 
+     * @return The parent component.
+     */
+    private Component getComponent() {
+        return this.component;
+    }
+
     /** Starts the Restlet. */
     @Override
     public synchronized void start() throws Exception {
         // Attach all virtual hosts
-        for (VirtualHost host : getComponent().getHosts()) {
+        for (final VirtualHost host : getComponent().getHosts()) {
             getRoutes().add(new HostRoute(this, host));
         }
 
@@ -69,7 +78,7 @@ public class ServerRouter extends Router {
         }
 
         // If no host matches, display and error page with a precise message
-        Restlet noHostMatched = new Restlet(getComponent().getContext()) {
+        final Restlet noHostMatched = new Restlet(getComponent().getContext()) {
             @Override
             public void handle(Request request, Response response) {
                 response.setStatus(Status.CLIENT_ERROR_NOT_FOUND,
@@ -87,14 +96,5 @@ public class ServerRouter extends Router {
     public synchronized void stop() throws Exception {
         getRoutes().clear();
         super.stop();
-    }
-
-    /**
-     * Returns the parent component.
-     * 
-     * @return The parent component.
-     */
-    private Component getComponent() {
-        return this.component;
     }
 }

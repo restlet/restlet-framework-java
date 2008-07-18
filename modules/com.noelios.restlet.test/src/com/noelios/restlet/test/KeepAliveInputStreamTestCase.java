@@ -36,19 +36,19 @@ public class KeepAliveInputStreamTestCase extends TestCase {
         boolean closed = false;
 
         @Override
-        public int read() throws IOException {
-            return -1;
+        public void close() throws IOException {
+            this.closed = true;
         }
 
         @Override
-        public void close() throws IOException {
-            closed = true;
+        public int read() throws IOException {
+            return -1;
         }
     }
 
     public void testClose() throws IOException {
-        MockInputStream mock = new MockInputStream();
-        InputStream keepalive = new KeepAliveInputStream(mock);
+        final MockInputStream mock = new MockInputStream();
+        final InputStream keepalive = new KeepAliveInputStream(mock);
 
         keepalive.close();
         assertFalse(mock.closed);

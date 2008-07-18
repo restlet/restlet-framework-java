@@ -39,9 +39,9 @@ import com.noelios.restlet.util.IdentClient;
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
  * 
- * @see <a
- *      href="http://www.restlet.org/documentation/1.1/tutorial#part07">Tutorial:
- *      Filters and call logging</a>
+ * @see <a *
+ *      href="http://www.restlet.org/documentation/1.1/tutorial#part07">Tutorial
+ *      : * Filters and call logging< /a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class LogFilter extends Filter {
@@ -58,9 +58,9 @@ public class LogFilter extends Filter {
      * Constructor.
      * 
      * @param context
-     *                The context.
+     *            The context.
      * @param logService
-     *                The log service descriptor.
+     *            The log service descriptor.
      */
     public LogFilter(Context context, LogService logService) {
         super(context);
@@ -77,15 +77,15 @@ public class LogFilter extends Filter {
      * Allows filtering after processing by the next Restlet. Log the call.
      * 
      * @param request
-     *                The request to handle.
+     *            The request to handle.
      * @param response
-     *                The response to update.
+     *            The response to update.
      */
     @Override
     protected void afterHandle(Request request, Response response) {
-        long startTime = (Long) request.getAttributes().get(
+        final long startTime = (Long) request.getAttributes().get(
                 "org.restlet.startTime");
-        int duration = (int) (System.currentTimeMillis() - startTime);
+        final int duration = (int) (System.currentTimeMillis() - startTime);
 
         // Format the call into a log entry
         if (this.logTemplate != null) {
@@ -101,9 +101,9 @@ public class LogFilter extends Filter {
      * time.
      * 
      * @param request
-     *                The request to handle.
+     *            The request to handle.
      * @param response
-     *                The response to update.
+     *            The response to update.
      * @return The continuation status.
      */
     @Override
@@ -118,9 +118,9 @@ public class LogFilter extends Filter {
      * Format a log entry.
      * 
      * @param request
-     *                The request to log.
+     *            The request to log.
      * @param response
-     *                The response to log.
+     *            The response to log.
      * @return The formatted log entry.
      */
     protected String format(Request request, Response response) {
@@ -131,17 +131,17 @@ public class LogFilter extends Filter {
      * Format a log entry using the default format.
      * 
      * @param request
-     *                The request to log.
+     *            The request to log.
      * @param response
-     *                The response to log.
+     *            The response to log.
      * @param duration
-     *                The call duration (in milliseconds).
+     *            The call duration (in milliseconds).
      * @return The formatted log entry.
      */
     protected String formatDefault(Request request, Response response,
             int duration) {
-        StringBuilder sb = new StringBuilder();
-        long currentTime = System.currentTimeMillis();
+        final StringBuilder sb = new StringBuilder();
+        final long currentTime = System.currentTimeMillis();
 
         // Append the date of the request
         sb.append(String.format("%tF", currentTime));
@@ -152,13 +152,13 @@ public class LogFilter extends Filter {
         sb.append('\t');
 
         // Append the client IP address
-        String clientAddress = request.getClientInfo().getAddress();
+        final String clientAddress = request.getClientInfo().getAddress();
         sb.append((clientAddress == null) ? "-" : clientAddress);
         sb.append('\t');
 
         // Append the user name (via IDENT protocol)
         if (this.logService.isIdentityCheck()) {
-            IdentClient ic = new IdentClient(getLogger(), request
+            final IdentClient ic = new IdentClient(getLogger(), request
                     .getClientInfo().getAddress(), request.getClientInfo()
                     .getPort(), response.getServerInfo().getPort());
             sb.append((ic.getUserIdentifier() == null) ? "-" : ic
@@ -169,29 +169,29 @@ public class LogFilter extends Filter {
         sb.append('\t');
 
         // Append the server IP address
-        String serverAddress = response.getServerInfo().getAddress();
+        final String serverAddress = response.getServerInfo().getAddress();
         sb.append((serverAddress == null) ? "-" : serverAddress);
         sb.append('\t');
 
         // Append the server port
-        Integer serverport = response.getServerInfo().getPort();
+        final Integer serverport = response.getServerInfo().getPort();
         sb.append((serverport == null) ? "-" : serverport.toString());
         sb.append('\t');
 
         // Append the method name
-        String methodName = (request.getMethod() == null) ? "-" : request
+        final String methodName = (request.getMethod() == null) ? "-" : request
                 .getMethod().getName();
         sb.append((methodName == null) ? "-" : methodName);
 
         // Append the resource path
         sb.append('\t');
-        String resourcePath = (request.getResourceRef() == null) ? "-"
+        final String resourcePath = (request.getResourceRef() == null) ? "-"
                 : request.getResourceRef().getPath();
         sb.append((resourcePath == null) ? "-" : resourcePath);
 
         // Append the resource query
         sb.append('\t');
-        String resourceQuery = (request.getResourceRef() == null) ? "-"
+        final String resourceQuery = (request.getResourceRef() == null) ? "-"
                 : request.getResourceRef().getQuery();
         sb.append((resourceQuery == null) ? "-" : resourceQuery);
 
@@ -229,7 +229,7 @@ public class LogFilter extends Filter {
 
         // Append the agent name
         sb.append('\t');
-        String agentName = request.getClientInfo().getAgent();
+        final String agentName = request.getClientInfo().getAgent();
         sb.append((agentName == null) ? "-" : agentName);
 
         // Append the referrer

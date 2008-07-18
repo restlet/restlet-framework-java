@@ -41,7 +41,7 @@ public abstract class WriterRepresentation extends CharacterRepresentation {
      * Constructor.
      * 
      * @param mediaType
-     *                The representation's mediaType.
+     *            The representation's mediaType.
      */
     public WriterRepresentation(MediaType mediaType) {
         super(mediaType);
@@ -51,9 +51,9 @@ public abstract class WriterRepresentation extends CharacterRepresentation {
      * Constructor.
      * 
      * @param mediaType
-     *                The representation's mediaType.
+     *            The representation's mediaType.
      * @param expectedSize
-     *                The expected writer size in bytes.
+     *            The expected writer size in bytes.
      */
     public WriterRepresentation(MediaType mediaType, long expectedSize) {
         super(mediaType);

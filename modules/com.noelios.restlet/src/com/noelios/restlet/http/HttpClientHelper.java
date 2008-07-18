@@ -30,7 +30,8 @@ import com.noelios.restlet.ClientHelper;
 
 /**
  * Base HTTP client connector. Here is the list of parameters that are
- * supported: <table>
+ * supported:
+ * <table>
  * <tr>
  * <th>Parameter name</th>
  * <th>Value type</th>
@@ -56,7 +57,7 @@ public abstract class HttpClientHelper extends ClientHelper {
      * Constructor.
      * 
      * @param client
-     *                The client to help.
+     *            The client to help.
      */
     public HttpClientHelper(Client client) {
         super(client);
@@ -67,22 +68,10 @@ public abstract class HttpClientHelper extends ClientHelper {
      * Creates a low-level HTTP client call from a high-level request.
      * 
      * @param request
-     *                The high-level request.
+     *            The high-level request.
      * @return A low-level HTTP client call.
      */
     public abstract HttpClientCall create(Request request);
-
-    @Override
-    public void handle(Request request, Response response) {
-        try {
-            HttpClientCall httpCall = getConverter().toSpecific(this, request);
-            getConverter().commit(httpCall, request, response);
-        } catch (Exception e) {
-            getLogger().log(Level.INFO,
-                    "Error while handling an HTTP client call", e);
-            response.setStatus(Status.CONNECTOR_ERROR_INTERNAL, e);
-        }
-    }
 
     /**
      * Returns the converter from uniform calls to HTTP calls.
@@ -91,8 +80,9 @@ public abstract class HttpClientHelper extends ClientHelper {
      */
     public HttpClientConverter getConverter() throws Exception {
         if (this.converter == null) {
-            String converterClass = getParameters().getFirstValue("converter",
-                    "com.noelios.restlet.http.HttpClientConverter");
+            final String converterClass = getParameters()
+                    .getFirstValue("converter",
+                            "com.noelios.restlet.http.HttpClientConverter");
             this.converter = (HttpClientConverter) Class
                     .forName(converterClass).getConstructor(Context.class)
                     .newInstance(getContext());
@@ -101,11 +91,24 @@ public abstract class HttpClientHelper extends ClientHelper {
         return this.converter;
     }
 
+    @Override
+    public void handle(Request request, Response response) {
+        try {
+            final HttpClientCall httpCall = getConverter().toSpecific(this,
+                    request);
+            getConverter().commit(httpCall, request, response);
+        } catch (final Exception e) {
+            getLogger().log(Level.INFO,
+                    "Error while handling an HTTP client call", e);
+            response.setStatus(Status.CONNECTOR_ERROR_INTERNAL, e);
+        }
+    }
+
     /**
      * Sets the converter from uniform calls to HTTP calls.
      * 
      * @param converter
-     *                The converter to set.
+     *            The converter to set.
      */
     public void setConverter(HttpClientConverter converter) {
         this.converter = converter;

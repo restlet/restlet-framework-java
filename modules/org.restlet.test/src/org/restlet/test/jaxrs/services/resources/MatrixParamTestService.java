@@ -45,56 +45,6 @@ public class MatrixParamTestService {
 
     private String decoded;
 
-    @Encoded
-    @MatrixParam("encoded")
-    public void setEncoded(String encoded) {
-        this.encoded = encoded;
-    }
-
-    @MatrixParam("decoded")
-    public void setDecoded(String decoded) {
-        this.decoded = decoded;
-    }
-
-    @GET
-    @Produces("text/plain")
-    public String get(@MatrixParam("firstname") String firstname,
-            @MatrixParam("lastname") String lastname) {
-        return firstname + " " + lastname;
-    }
-    
-    @GET
-    @Produces("text/plain")
-    @Path("a")
-    public String getA(@MatrixParam("firstname") String firstname,
-            @MatrixParam("lastname") String lastname) {
-        return firstname + " " + lastname;
-    }
-
-    @GET
-    @Produces("text/plain")
-    @Path("b")
-    public String getB(@Context UriInfo uriInfo) {
-        PathSegment pSeg = TestUtils.getLastElement(uriInfo.getPathSegments());
-        String vorname = pSeg.getMatrixParameters().getFirst("firstname");
-        String nachname = pSeg.getMatrixParameters().getFirst("lastname");
-        return vorname + " " + nachname;
-    }
-
-    @GET
-    @Produces("text/plain")
-    @Path("setterDecoded")
-    public String getSetterDecoded() {
-        return decoded;
-    }
-
-    @GET
-    @Produces("text/plain")
-    @Path("setterEncoded")
-    public String getSetterEncoded() {
-        return encoded;
-    }
-
     @GET
     @Produces("text/plain")
     @Path("encoded")
@@ -106,43 +56,17 @@ public class MatrixParamTestService {
 
     @GET
     @Produces("text/plain")
-    @Path("withDefault")
-    @Encoded
-    public String withDefault(@MatrixParam("mp") @DefaultValue("default") String mp) {
-        return withoutDefault(mp);
+    public String get(@MatrixParam("firstname") String firstname,
+            @MatrixParam("lastname") String lastname) {
+        return firstname + " " + lastname;
     }
 
     @GET
     @Produces("text/plain")
-    @Path("withoutDefault")
-    @Encoded
-    public String withoutDefault(@MatrixParam("mp") String mp) {
-        if (mp == null)
-            return "[null]";
-        if (mp.equals(""))
-            return "[empty]";
-        return mp;
-    }
-
-    @GET
-    @Produces("text/plain")
-    @Path("semicolon;mpA=")
-    public Response withSemicolon(@MatrixParam("mpA") String mpA,
-            @MatrixParam("mpB") String mpB) {
-        String entity = "this method must not be called\nmpA param is " + mpA
-                + "\nmpB param is " + mpB;
-        return Response.serverError().entity(entity).build();
-    }
-
-    @GET
-    @Produces("text/plain")
-    @Path("one")
-    public String getOne(@MatrixParam("name") String name) {
-        if(name == null)
-            return "[null]";
-        if (name.equals(""))
-            return "[empty]";
-        return name;
+    @Path("a")
+    public String getA(@MatrixParam("firstname") String firstname,
+            @MatrixParam("lastname") String lastname) {
+        return firstname + " " + lastname;
     }
 
     @GET
@@ -151,9 +75,91 @@ public class MatrixParamTestService {
     public String getAllNames(@MatrixParam("name") List<String> name) {
         return name.toString();
     }
-    
+
+    @GET
+    @Produces("text/plain")
+    @Path("b")
+    public String getB(@Context UriInfo uriInfo) {
+        final PathSegment pSeg = TestUtils.getLastElement(uriInfo
+                .getPathSegments());
+        final String vorname = pSeg.getMatrixParameters().getFirst("firstname");
+        final String nachname = pSeg.getMatrixParameters().getFirst("lastname");
+        return vorname + " " + nachname;
+    }
+
+    @GET
+    @Produces("text/plain")
+    @Path("one")
+    public String getOne(@MatrixParam("name") String name) {
+        if (name == null) {
+            return "[null]";
+        }
+        if (name.equals("")) {
+            return "[empty]";
+        }
+        return name;
+    }
+
+    @GET
+    @Produces("text/plain")
+    @Path("setterDecoded")
+    public String getSetterDecoded() {
+        return this.decoded;
+    }
+
+    @GET
+    @Produces("text/plain")
+    @Path("setterEncoded")
+    public String getSetterEncoded() {
+        return this.encoded;
+    }
+
     @Path("sub")
     public MatrixParamTestService getSub() {
         return new MatrixParamTestService();
+    }
+
+    @MatrixParam("decoded")
+    public void setDecoded(String decoded) {
+        this.decoded = decoded;
+    }
+
+    @Encoded
+    @MatrixParam("encoded")
+    public void setEncoded(String encoded) {
+        this.encoded = encoded;
+    }
+
+    @GET
+    @Produces("text/plain")
+    @Path("withDefault")
+    @Encoded
+    public String withDefault(
+            @MatrixParam("mp") @DefaultValue("default") String mp) {
+        return withoutDefault(mp);
+    }
+
+    @GET
+    @Produces("text/plain")
+    @Path("withoutDefault")
+    @Encoded
+    public String withoutDefault(@MatrixParam("mp") String mp) {
+        if (mp == null) {
+            return "[null]";
+        }
+        if (mp.equals("")) {
+            return "[empty]";
+        }
+        return mp;
+    }
+
+    @GET
+    @Produces("text/plain")
+    @Path("semicolon;mpA=")
+    public Response withSemicolon(@MatrixParam("mpA") String mpA,
+            @MatrixParam("mpB") String mpB) {
+        final String entity = "this method must not be called\nmpA param is "
+                + mpA + "\nmpB param is " + mpB;
+        return Response.serverError().entity(entity).build();
     }
 }

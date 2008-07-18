@@ -47,9 +47,9 @@ public class HttpDigestHelper extends AuthenticationHelper {
      * Return the hashed secret.
      * 
      * @param identifier
-     *                The user identifier to hash.
+     *            The user identifier to hash.
      * @param guard
-     *                The associated guard to callback.
+     *            The associated guard to callback.
      * 
      * @return a hash of the username, realm, and password, specified as A1 in
      *         section 3.2.2.2 of RFC2617
@@ -71,28 +71,28 @@ public class HttpDigestHelper extends AuthenticationHelper {
      * 
      * @param nonce
      * @param secretKey
-     *                the same secret value that was inserted into the nonce
-     *                when it was generated
+     *            the same secret value that was inserted into the nonce when it
+     *            was generated
      * @param lifespanMS
-     *                nonce lifespace in milliseconds
+     *            nonce lifespace in milliseconds
      * @return true if the nonce was generated less than lifespanMS milliseconds
      *         ago, false otherwise
      * @throws CredentialException
-     *                 if the nonce does not match the specified secretKey, or
-     *                 if it can't be parsed
+     *             if the nonce does not match the specified secretKey, or if it
+     *             can't be parsed
      */
     private static boolean isNonceValid(String nonce, String secretKey,
             long lifespanMS) throws CredentialException {
         try {
-            String decodedNonce = new String(Base64.decode(nonce));
-            long nonceTimeMS = Long.parseLong(decodedNonce.substring(0,
+            final String decodedNonce = new String(Base64.decode(nonce));
+            final long nonceTimeMS = Long.parseLong(decodedNonce.substring(0,
                     decodedNonce.indexOf(':')));
             if (decodedNonce.equals(nonceTimeMS + ":"
                     + SecurityUtils.toMd5(nonceTimeMS + ":" + secretKey))) {
                 // valid wrt secretKey, now check lifespan
                 return lifespanMS > (System.currentTimeMillis() - nonceTimeMS);
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new CredentialException("error parsing nonce: " + e);
         }
         throw new CredentialException("nonce does not match secretKey");
@@ -107,14 +107,14 @@ public class HttpDigestHelper extends AuthenticationHelper {
 
     @Override
     public int authenticate(ChallengeResponse cr, Request request, Guard guard) {
-        Series<Parameter> credentials = cr.getParameters();
-        String username = credentials.getFirstValue("username");
-        String nonce = credentials.getFirstValue("nonce");
-        String response = credentials.getFirstValue("response");
-        String uri = credentials.getFirstValue("uri");
-        String qop = credentials.getFirstValue("qop");
-        String nc = credentials.getFirstValue("nc");
-        String cnonce = credentials.getFirstValue("cnonce");
+        final Series<Parameter> credentials = cr.getParameters();
+        final String username = credentials.getFirstValue("username");
+        final String nonce = credentials.getFirstValue("nonce");
+        final String response = credentials.getFirstValue("response");
+        final String uri = credentials.getFirstValue("uri");
+        final String qop = credentials.getFirstValue("qop");
+        final String nc = credentials.getFirstValue("nc");
+        final String cnonce = credentials.getFirstValue("cnonce");
 
         try {
             if (!isNonceValid(nonce, guard.getServerKey(), guard
@@ -123,15 +123,15 @@ public class HttpDigestHelper extends AuthenticationHelper {
                 // stale=true
                 return Guard.AUTHENTICATION_STALE;
             }
-        } catch (CredentialException ce) {
+        } catch (final CredentialException ce) {
             // Invalid nonce, probably doesn't match serverKey
             return Guard.AUTHENTICATION_INVALID;
         }
 
         if (!AuthenticationUtils.anyNull(username, nonce, response, uri)) {
-            Reference resourceRef = request.getResourceRef();
+            final Reference resourceRef = request.getResourceRef();
             String requestUri = resourceRef.getPath();
-            if (resourceRef.getQuery() != null && uri.indexOf('?') > -1) {
+            if ((resourceRef.getQuery() != null) && (uri.indexOf('?') > -1)) {
                 // IE neglects to include the query string, so
                 // the workaround is to leave it off
                 // unless both the calculated uri and the
@@ -139,11 +139,11 @@ public class HttpDigestHelper extends AuthenticationHelper {
                 requestUri += "?" + resourceRef.getQuery();
             }
             if (uri.equals(requestUri)) {
-                String a1 = getHashedSecret(username, guard);
-                String a2 = Engine.getInstance().toMd5(
+                final String a1 = getHashedSecret(username, guard);
+                final String a2 = Engine.getInstance().toMd5(
                         request.getMethod() + ":" + requestUri);
 
-                StringBuffer expectedResponse = new StringBuffer(a1)
+                final StringBuffer expectedResponse = new StringBuffer(a1)
                         .append(':').append(nonce);
                 if (!AuthenticationUtils.anyNull(qop, cnonce, nc)) {
                     expectedResponse.append(':').append(nc).append(':').append(
@@ -172,20 +172,21 @@ public class HttpDigestHelper extends AuthenticationHelper {
             response.getAttributes().put("stale", "true");
         }
 
-        // This is temporary, pending Guard re-factoring. We still assume 
+        // This is temporary, pending Guard re-factoring. We still assume
         // there is only one challenge scheme, that of the Guard.
         ChallengeRequest mainChallengeRequest = null;
-        for (ChallengeRequest challengeRequest: response.getChallengeRequests()) {
+        for (final ChallengeRequest challengeRequest : response
+                .getChallengeRequests()) {
             if (challengeRequest.getScheme().equals(guard.getScheme())) {
                 mainChallengeRequest = challengeRequest;
                 break;
             }
         }
-        Series<Parameter> parameters = mainChallengeRequest
+        final Series<Parameter> parameters = mainChallengeRequest
                 .getParameters();
-        StringBuffer domain = new StringBuffer();
+        final StringBuffer domain = new StringBuffer();
 
-        for (String baseUri : guard.getDomainUris()) {
+        for (final String baseUri : guard.getDomainUris()) {
             domain.append(baseUri).append(' ');
         }
 
@@ -206,9 +207,9 @@ public class HttpDigestHelper extends AuthenticationHelper {
     public void formatCredentials(StringBuilder sb,
             ChallengeResponse challenge, Request request,
             Series<Parameter> httpHeaders) {
-        Series<Parameter> params = challenge.getParameters();
+        final Series<Parameter> params = challenge.getParameters();
 
-        for (Parameter param : params) {
+        for (final Parameter param : params) {
             sb.append(param.getName()).append('=');
 
             if (param.getName().equals("qop")

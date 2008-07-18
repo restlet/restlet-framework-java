@@ -41,7 +41,7 @@ public class Base64 {
     static {
         Arrays.fill(DECODER_RING, (byte) -1);
         int i = 0;
-        for (char c : BASE64_DIGITS) {
+        for (final char c : BASE64_DIGITS) {
             DECODER_RING[c] = (byte) i++;
         }
         DECODER_RING['='] = 0;
@@ -56,15 +56,15 @@ public class Base64 {
      * boundaries will be ignored.
      * 
      * @param encodedString
-     *                The string to decode.
+     *            The string to decode.
      * @return The decoded byte array.
      */
     public static byte[] decode(String encodedString) {
-        char[] chars = encodedString.toCharArray();
+        final char[] chars = encodedString.toCharArray();
 
         // prepare to ignore newline chars
         int newlineCount = 0;
-        for (char c : chars) {
+        for (final char c : chars) {
             switch (c) {
             case '\r':
             case '\n':
@@ -75,7 +75,7 @@ public class Base64 {
             }
         }
 
-        int len = chars.length - newlineCount;
+        final int len = chars.length - newlineCount;
         int numBytes = ((len + 3) / 4) * 3;
 
         // fix up length relative to padding
@@ -87,17 +87,17 @@ public class Base64 {
             }
         }
 
-        byte[] result = new byte[numBytes];
+        final byte[] result = new byte[numBytes];
         int newlineOffset = 0;
 
         // decode each block of 4 chars into 3 bytes
         for (int i = 0; i < (len + 3) / 4; ++i) {
             int charOffset = newlineOffset + (i * 4);
 
-            char c1 = chars[charOffset++];
-            char c2 = chars[charOffset++];
-            char c3 = chars[charOffset++];
-            char c4 = chars[charOffset++];
+            final char c1 = chars[charOffset++];
+            final char c2 = chars[charOffset++];
+            final char c3 = chars[charOffset++];
+            final char c4 = chars[charOffset++];
 
             if (!(validChar(c1) && validChar(c2) && validChar(c3) && validChar(c4))) {
                 throw new IllegalArgumentException(
@@ -106,7 +106,7 @@ public class Base64 {
             }
 
             // pack
-            int x = DECODER_RING[c1] << 18 | DECODER_RING[c2] << 12
+            final int x = DECODER_RING[c1] << 18 | DECODER_RING[c2] << 12
                     | (c3 == '=' ? 0 : DECODER_RING[c3] << 6)
                     | (c4 == '=' ? 0 : DECODER_RING[c4]);
 
@@ -141,9 +141,9 @@ public class Base64 {
      * after every 76 characters.
      * 
      * @param bytes
-     *                The byte array to encode.
+     *            The byte array to encode.
      * @param newlines
-     *                Indicates whether or not newlines are desired.
+     *            Indicates whether or not newlines are desired.
      * @return The encoded string.
      */
     public static String encode(byte[] bytes, boolean newlines) {
@@ -155,18 +155,18 @@ public class Base64 {
      * after every 76 characters.
      * 
      * @param bytes
-     *                The byte array to encode.
+     *            The byte array to encode.
      * @param off
-     *                The starting offset.
+     *            The starting offset.
      * @param len
-     *                The number of bytes to encode.
+     *            The number of bytes to encode.
      * @param newlines
-     *                Indicates whether or not newlines are desired.
+     *            Indicates whether or not newlines are desired.
      * 
      * @return The encoded string.
      */
     public static String encode(byte[] bytes, int off, int len, boolean newlines) {
-        char[] output = new char[(((len + 2) / 3) * 4)
+        final char[] output = new char[(((len + 2) / 3) * 4)
                 + (newlines ? len / 43 : 0)];
         int pos = 0;
 
@@ -183,7 +183,7 @@ public class Base64 {
             }
 
             // pack
-            int x = (byteAt(bytes, i, off) << 16)
+            final int x = (byteAt(bytes, i, off) << 16)
                     | (pad > 1 ? 0 : (byteAt(bytes, i, off + 1) << 8))
                     | (pad > 0 ? 0 : (byteAt(bytes, i, off + 2)));
 
@@ -205,6 +205,6 @@ public class Base64 {
     }
 
     private final static boolean validChar(char c) {
-        return c < 128 && DECODER_RING[c] != -1;
+        return (c < 128) && (DECODER_RING[c] != -1);
     }
 }

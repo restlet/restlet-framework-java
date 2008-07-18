@@ -51,45 +51,46 @@ public final class Language extends Metadata {
     public static final Language SPANISH = new Language("es",
             "Spanish language");
 
-    /** The metadata main list of subtags taken from the metadata name. */
-    private volatile List<String> subTags;
-
     /**
      * Returns the language associated to a name. If an existing constant exists
      * then it is returned, otherwise a new instance is created.
      * 
      * @param name
-     *                The name.
+     *            The name.
      * @return The associated language.
      */
     public static Language valueOf(final String name) {
         Language result = null;
 
         if ((name != null) && !name.equals("")) {
-            if (name.equalsIgnoreCase(ALL.getName()))
+            if (name.equalsIgnoreCase(ALL.getName())) {
                 result = ALL;
-            else if (name.equalsIgnoreCase(ENGLISH.getName()))
+            } else if (name.equalsIgnoreCase(ENGLISH.getName())) {
                 result = ENGLISH;
-            else if (name.equalsIgnoreCase(ENGLISH_US.getName()))
+            } else if (name.equalsIgnoreCase(ENGLISH_US.getName())) {
                 result = ENGLISH_US;
-            else if (name.equalsIgnoreCase(FRENCH.getName()))
+            } else if (name.equalsIgnoreCase(FRENCH.getName())) {
                 result = FRENCH;
-            else if (name.equalsIgnoreCase(FRENCH_FRANCE.getName()))
+            } else if (name.equalsIgnoreCase(FRENCH_FRANCE.getName())) {
                 result = FRENCH_FRANCE;
-            else if (name.equalsIgnoreCase(SPANISH.getName()))
+            } else if (name.equalsIgnoreCase(SPANISH.getName())) {
                 result = SPANISH;
-            else
+            } else {
                 result = new Language(name);
+            }
         }
 
         return result;
     }
 
+    /** The metadata main list of subtags taken from the metadata name. */
+    private volatile List<String> subTags;
+
     /**
      * Constructor.
      * 
      * @param name
-     *                The name.
+     *            The name.
      */
     public Language(final String name) {
         this(name, "Language or range of languages");
@@ -99,9 +100,9 @@ public final class Language extends Metadata {
      * Constructor.
      * 
      * @param name
-     *                The name.
+     *            The name.
      * @param description
-     *                The description.
+     *            The description.
      */
     public Language(final String name, final String description) {
         super(name, description);
@@ -121,7 +122,7 @@ public final class Language extends Metadata {
      * @return The primary tag.
      */
     public String getPrimaryTag() {
-        int separator = getName().indexOf('-');
+        final int separator = getName().indexOf('-');
 
         if (separator == -1) {
             return getName();
@@ -140,7 +141,7 @@ public final class Language extends Metadata {
             this.subTags = new ArrayList<String>();
 
             if (getName() != null) {
-                String[] tags = getName().split("-");
+                final String[] tags = getName().split("-");
                 if (tags.length > 0) {
                     for (int i = 1; i < tags.length; i++) {
                         this.subTags.add(tags[i]);

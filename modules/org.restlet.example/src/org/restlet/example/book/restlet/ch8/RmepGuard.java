@@ -30,7 +30,7 @@ public class RmepGuard extends Guard {
 
     @Override
     public boolean checkSecret(Request request, String identifier, char[] secret) {
-        User user = dataFacade.getUserByLoginPwd(identifier, secret);
+        final User user = this.dataFacade.getUserByLoginPwd(identifier, secret);
         if (user != null) {
             request.getAttributes().put(CURRENT_USER, user);
             return true;

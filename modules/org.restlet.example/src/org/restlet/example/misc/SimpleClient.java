@@ -33,7 +33,7 @@ import org.restlet.data.Response;
 public class SimpleClient {
     public static void main(String[] args) throws Exception {
         // Prepare the REST call.
-        Request request = new Request();
+        final Request request = new Request();
 
         // Identify ourselves.
         request.setReferrerRef("http://www.foo.com/");
@@ -44,17 +44,17 @@ public class SimpleClient {
         // Action: Update
         request.setMethod(Method.PUT);
 
-        Form form = new Form();
+        final Form form = new Form();
         form.add("name", "John D. Mitchell");
         form.add("email", "john@bob.net");
         form.add("email2", "joe@bob.net");
         request.setEntity(form.getWebRepresentation());
 
         // Prepare HTTP client connector.
-        Client client = new Client(Protocol.HTTP);
+        final Client client = new Client(Protocol.HTTP);
 
         // Make the call.
-        Response response = client.handle(request);
+        final Response response = client.handle(request);
 
         if (response.getStatus().isSuccess()) {
             // Output the response entity on the JVM console

@@ -122,7 +122,7 @@ public class Link {
      * Sets the link's IRI.
      * 
      * @param href
-     *                The link's IRI.
+     *            The link's IRI.
      */
     public void setHref(Reference href) {
         this.href = href;
@@ -132,8 +132,7 @@ public class Link {
      * Sets the language of the resource pointed to by the href attribute.
      * 
      * @param hrefLang
-     *                The language of the resource pointed to by the href
-     *                attribute.
+     *            The language of the resource pointed to by the href attribute.
      */
     public void setHrefLang(Language hrefLang) {
         this.hrefLang = hrefLang;
@@ -143,7 +142,7 @@ public class Link {
      * Sets the advisory length of the linked content in octets.
      * 
      * @param length
-     *                The advisory length of the linked content in octets.
+     *            The advisory length of the linked content in octets.
      */
     public void setLength(long length) {
         this.length = length;
@@ -153,7 +152,7 @@ public class Link {
      * Sets the link's relation type.
      * 
      * @param rel
-     *                The link's relation type.
+     *            The link's relation type.
      */
     public void setRel(Relation rel) {
         this.rel = rel;
@@ -163,7 +162,7 @@ public class Link {
      * Sets the human-readable information about the link.
      * 
      * @param title
-     *                The human-readable information about the link.
+     *            The human-readable information about the link.
      */
     public void setTitle(String title) {
         this.title = title;
@@ -173,7 +172,7 @@ public class Link {
      * Sets the advisoty media type.
      * 
      * @param type
-     *                The advisoty media type.
+     *            The advisoty media type.
      */
     public void setType(MediaType type) {
         this.type = type;
@@ -183,18 +182,18 @@ public class Link {
      * Writes the current object as an XML element using the given SAX writer.
      * 
      * @param writer
-     *                The SAX writer.
+     *            The SAX writer.
      * @throws SAXException
      */
     public void writeElement(XmlWriter writer) throws SAXException {
-        AttributesImpl attributes = new AttributesImpl();
+        final AttributesImpl attributes = new AttributesImpl();
 
-        if (getHref() != null && getHref().toString() != null) {
+        if ((getHref() != null) && (getHref().toString() != null)) {
             attributes.addAttribute("", "href", null, "atomURI", getHref()
                     .toString());
         }
 
-        if (getHrefLang() != null && getHrefLang().toString() != null) {
+        if ((getHrefLang() != null) && (getHrefLang().toString() != null)) {
             attributes.addAttribute("", "hreflang", null, "atomLanguageTag",
                     getHrefLang().toString());
         }

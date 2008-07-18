@@ -42,12 +42,20 @@ public abstract class GrizzlyServerHelper extends HttpServerHelper {
      * Constructor.
      * 
      * @param server
-     *                The server to help.
+     *            The server to help.
      */
     public GrizzlyServerHelper(Server server) {
         super(server);
         this.controller = null;
     }
+
+    /**
+     * Configures the Grizzly controller.
+     * 
+     * @param controller
+     *            The controller to configure.
+     */
+    protected abstract void configure(Controller controller) throws Exception;
 
     @Override
     public synchronized void start() throws Exception {
@@ -74,7 +82,7 @@ public abstract class GrizzlyServerHelper extends HttpServerHelper {
 
                         public void onReady() {
                             if (getHelped().getPort() == 0) {
-                                TCPSelectorHandler tsh = (TCPSelectorHandler) controller
+                                final TCPSelectorHandler tsh = (TCPSelectorHandler) controller
                                         .getSelectorHandler(Controller.Protocol.TCP);
                                 setEphemeralPort(tsh.getPortLowLevel());
                             }
@@ -91,7 +99,7 @@ public abstract class GrizzlyServerHelper extends HttpServerHelper {
                     });
 
                     controller.start();
-                } catch (IOException e) {
+                } catch (final IOException e) {
                     getLogger().log(Level.WARNING,
                             "Error while starting the Grizzly controller", e);
                 }
@@ -102,7 +110,7 @@ public abstract class GrizzlyServerHelper extends HttpServerHelper {
         // This blocks until the server is ready to receive connections
         try {
             latch.await();
-        } catch (InterruptedException ex) {
+        } catch (final InterruptedException ex) {
             getLogger()
                     .log(
                             Level.WARNING,
@@ -111,14 +119,6 @@ public abstract class GrizzlyServerHelper extends HttpServerHelper {
             stop();
         }
     }
-
-    /**
-     * Configures the Grizzly controller.
-     * 
-     * @param controller
-     *                The controller to configure.
-     */
-    protected abstract void configure(Controller controller) throws Exception;
 
     @Override
     public synchronized void stop() throws Exception {

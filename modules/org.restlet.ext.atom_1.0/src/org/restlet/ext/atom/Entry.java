@@ -102,8 +102,9 @@ public class Entry {
         if (a == null) {
             synchronized (this) {
                 a = this.authors;
-                if (a == null)
+                if (a == null) {
                     this.authors = a = new ArrayList<Person>();
+                }
             }
         }
         return a;
@@ -120,8 +121,9 @@ public class Entry {
         if (c == null) {
             synchronized (this) {
                 c = this.categories;
-                if (c == null)
+                if (c == null) {
                     this.categories = c = new ArrayList<Category>();
+                }
             }
         }
         return c;
@@ -147,8 +149,9 @@ public class Entry {
         if (c == null) {
             synchronized (this) {
                 c = this.contributors;
-                if (c == null)
+                if (c == null) {
                     this.contributors = c = new ArrayList<Person>();
+                }
             }
         }
         return c;
@@ -167,14 +170,14 @@ public class Entry {
      * Returns the first available link with a given relation type.
      * 
      * @param rel
-     *                The relation type to match.
+     *            The relation type to match.
      * @return The first available link with a given relation type.
      */
     public Link getLink(Relation rel) {
         Link result = null;
         Link current = null;
 
-        for (Iterator<Link> iter = getLinks().iterator(); (result == null)
+        for (final Iterator<Link> iter = getLinks().iterator(); (result == null)
                 && iter.hasNext();) {
             current = iter.next();
 
@@ -197,8 +200,9 @@ public class Entry {
         if (l == null) {
             synchronized (this) {
                 l = this.links;
-                if (l == null)
+                if (l == null) {
                     this.links = l = new ArrayList<Link>();
+                }
             }
         }
         return l;
@@ -268,7 +272,7 @@ public class Entry {
      * Sets the content of the entry or links to it.
      * 
      * @param content
-     *                The content of the entry or links to it.
+     *            The content of the entry or links to it.
      */
     public void setContent(Content content) {
         this.content = content;
@@ -278,8 +282,7 @@ public class Entry {
      * Sets the permanent, universally unique identifier for the entry.
      * 
      * @param id
-     *                The permanent, universally unique identifier for the
-     *                entry.
+     *            The permanent, universally unique identifier for the entry.
      */
     public void setId(String id) {
         this.id = id;
@@ -290,8 +293,8 @@ public class Entry {
      * entry.
      * 
      * @param published
-     *                The moment associated with an event early in the life
-     *                cycle of the entry.
+     *            The moment associated with an event early in the life cycle of
+     *            the entry.
      */
     public void setPublished(Date published) {
         this.published = DateUtils.unmodifiable(published);
@@ -301,7 +304,7 @@ public class Entry {
      * Sets the information about rights held in and over an entry.
      * 
      * @param rights
-     *                The information about rights held in and over an entry.
+     *            The information about rights held in and over an entry.
      */
     public void setRights(Text rights) {
         this.rights = rights;
@@ -312,8 +315,8 @@ public class Entry {
      * feed.
      * 
      * @param source
-     *                The source feed's metadata if the entry was copied from
-     *                another feed.
+     *            The source feed's metadata if the entry was copied from
+     *            another feed.
      */
     public void setSource(Source source) {
         this.source = source;
@@ -323,7 +326,7 @@ public class Entry {
      * Sets the short summary, abstract, or excerpt of the entry.
      * 
      * @param summary
-     *                The short summary, abstract, or excerpt of the entry.
+     *            The short summary, abstract, or excerpt of the entry.
      */
     public void setSummary(String summary) {
         this.summary = summary;
@@ -333,7 +336,7 @@ public class Entry {
      * Sets the human-readable title for the entry.
      * 
      * @param title
-     *                The human-readable title for the entry.
+     *            The human-readable title for the entry.
      */
     public void setTitle(Text title) {
         this.title = title;
@@ -344,8 +347,8 @@ public class Entry {
      * way.
      * 
      * @param updated
-     *                The most recent moment when the entry was modified in a
-     *                significant way.
+     *            The most recent moment when the entry was modified in a
+     *            significant way.
      */
     public void setUpdated(Date updated) {
         this.updated = DateUtils.unmodifiable(updated);
@@ -355,20 +358,20 @@ public class Entry {
      * Writes the current object as an XML element using the given SAX writer.
      * 
      * @param writer
-     *                The SAX writer.
+     *            The SAX writer.
      * @throws SAXException
      */
     public void writeElement(XmlWriter writer) throws SAXException {
         writer.startElement(ATOM_NAMESPACE, "entry");
 
         if (getAuthors() != null) {
-            for (Person person : getAuthors()) {
+            for (final Person person : getAuthors()) {
                 person.writeElement(writer, "author");
             }
         }
 
         if (getCategories() != null) {
-            for (Category category : getCategories()) {
+            for (final Category category : getCategories()) {
                 category.writeElement(writer);
             }
         }
@@ -378,7 +381,7 @@ public class Entry {
         }
 
         if (getContributors() != null) {
-            for (Person person : getContributors()) {
+            for (final Person person : getContributors()) {
                 person.writeElement(writer, "contributor");
             }
         }
@@ -388,7 +391,7 @@ public class Entry {
         }
 
         if (getLinks() != null) {
-            for (Link link : getLinks()) {
+            for (final Link link : getLinks()) {
                 link.writeElement(writer);
             }
         }

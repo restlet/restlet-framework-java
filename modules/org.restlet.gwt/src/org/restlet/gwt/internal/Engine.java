@@ -66,11 +66,11 @@ public class Engine extends org.restlet.gwt.util.Engine {
      * Registers a new Noelios Restlet Engine.
      * 
      * @param discoverConnectors
-     *                True if connectors should be automatically discovered.
+     *            True if connectors should be automatically discovered.
      * @return The registered engine.
      */
     public static Engine register(boolean discoverConnectors) {
-        Engine result = new Engine(discoverConnectors);
+        final Engine result = new Engine(discoverConnectors);
         org.restlet.gwt.util.Engine.setInstance(result);
         return result;
     }
@@ -89,7 +89,7 @@ public class Engine extends org.restlet.gwt.util.Engine {
      * Constructor.
      * 
      * @param discoverHelpers
-     *                True if helpers should be automatically discovered.
+     *            True if helpers should be automatically discovered.
      */
     public Engine(boolean discoverHelpers) {
         this.registeredClients = new ArrayList<ClientHelper>();
@@ -103,11 +103,10 @@ public class Engine extends org.restlet.gwt.util.Engine {
      * Copies the given header parameters into the given {@link Response}.
      * 
      * @param responseHeaders
-     *                The headers to copy.
+     *            The headers to copy.
      * @param response
-     *                The response to update. Must contain a
-     *                {@link Representation} to copy the representation headers
-     *                in it.
+     *            The response to update. Must contain a {@link Representation}
+     *            to copy the representation headers in it.
      * @see org.restlet.util.Engine#copyResponseHeaders(java.lang.Iterable,
      *      org.restlet.data.Response, java.util.logging.Logger)
      */
@@ -126,7 +125,7 @@ public class Engine extends org.restlet.gwt.util.Engine {
 
         if (client.getProtocols().size() > 0) {
             ClientHelper connector = null;
-            for (Iterator<ClientHelper> iter = getRegisteredClients()
+            for (final Iterator<ClientHelper> iter = getRegisteredClients()
                     .iterator(); (result == null) && iter.hasNext();) {
                 connector = iter.next();
 
@@ -139,11 +138,11 @@ public class Engine extends org.restlet.gwt.util.Engine {
 
             if (result == null) {
                 // Couldn't find a matching connector
-                StringBuilder sb = new StringBuilder();
+                final StringBuilder sb = new StringBuilder();
                 sb
                         .append("No available client connector supports the required protocols: ");
 
-                for (Protocol p : client.getProtocols()) {
+                for (final Protocol p : client.getProtocols()) {
                     sb.append("'").append(p.getName()).append("' ");
                 }
 
@@ -176,12 +175,13 @@ public class Engine extends org.restlet.gwt.util.Engine {
     @Override
     public String formatUserAgent(List<Product> products)
             throws IllegalArgumentException {
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
 
-        for (Iterator<Product> iterator = products.iterator(); iterator
+        for (final Iterator<Product> iterator = products.iterator(); iterator
                 .hasNext();) {
-            Product product = iterator.next();
-            if (product.getName() == null && product.getName().length() == 0) {
+            final Product product = iterator.next();
+            if ((product.getName() == null)
+                    && (product.getName().length() == 0)) {
                 throw new IllegalArgumentException(
                         "Product name cannot be null.");
             }
@@ -240,12 +240,12 @@ public class Engine extends org.restlet.gwt.util.Engine {
         // - all languages with quality 0.001
         List<Preference<Language>> languagePrefs = client
                 .getAcceptedLanguages();
-        List<Preference<Language>> primaryLanguagePrefs = new ArrayList<Preference<Language>>();
+        final List<Preference<Language>> primaryLanguagePrefs = new ArrayList<Preference<Language>>();
         // A default language preference is defined with a better weight
         // than the "All languages" preference
-        Preference<Language> defaultLanguagePref = ((defaultLanguage == null) ? null
+        final Preference<Language> defaultLanguagePref = ((defaultLanguage == null) ? null
                 : new Preference<Language>(defaultLanguage, 0.003f));
-        Preference<Language> allLanguagesPref = new Preference<Language>(
+        final Preference<Language> allLanguagesPref = new Preference<Language>(
                 Language.ALL, 0.001f);
 
         if (languagePrefs.isEmpty()) {
@@ -254,9 +254,9 @@ public class Engine extends org.restlet.gwt.util.Engine {
         } else {
             // Get the primary language preferences that are not currently
             // accepted by the client
-            List<String> list = new ArrayList<String>();
-            for (Preference<Language> preference : languagePrefs) {
-                Language language = preference.getMetadata();
+            final List<String> list = new ArrayList<String>();
+            for (final Preference<Language> preference : languagePrefs) {
+                final Language language = preference.getMetadata();
                 if (!language.getSubTags().isEmpty()) {
                     if (!list.contains(language.getPrimaryTag())) {
                         list.add(language.getPrimaryTag());
@@ -268,7 +268,7 @@ public class Engine extends org.restlet.gwt.util.Engine {
             }
             // If the default language is a "primary" language but is not
             // present in the list of all primary languages, add it.
-            if (defaultLanguage != null
+            if ((defaultLanguage != null)
                     && !defaultLanguage.getSubTags().isEmpty()) {
                 if (!list.contains(defaultLanguage.getPrimaryTag())) {
                     primaryLanguagePrefs.add(new Preference<Language>(
@@ -286,9 +286,9 @@ public class Engine extends org.restlet.gwt.util.Engine {
             // In this case, if the client adds the "all languages"
             // preference, the latter is removed, in order to support the
             // default preference defined by the server
-            List<Preference<Language>> list = new ArrayList<Preference<Language>>();
-            for (Preference<Language> preference : languagePrefs) {
-                Language language = preference.getMetadata();
+            final List<Preference<Language>> list = new ArrayList<Preference<Language>>();
+            for (final Preference<Language> preference : languagePrefs) {
+                final Language language = preference.getMetadata();
                 if (!language.equals(Language.ALL)) {
                     list.add(preference);
                 }
@@ -299,23 +299,24 @@ public class Engine extends org.restlet.gwt.util.Engine {
 
         // For each available variant, we will compute the negotiation score
         // which depends on both language and media type scores.
-        for (Iterator<Variant> iter1 = variants.iterator(); iter1.hasNext();) {
+        for (final Iterator<Variant> iter1 = variants.iterator(); iter1
+                .hasNext();) {
             currentVariant = iter1.next();
             variantLanguages = currentVariant.getLanguages();
             variantMediaType = currentVariant.getMediaType();
 
             // All languages of the current variant are scored.
-            for (Language variantLanguage : variantLanguages) {
+            for (final Language variantLanguage : variantLanguages) {
                 // For each language preference defined in the call
                 // Calculate the score and remember the best scoring
                 // preference
-                for (Iterator<Preference<Language>> iter2 = languagePrefs
+                for (final Iterator<Preference<Language>> iter2 = languagePrefs
                         .iterator(); (variantLanguage != null)
                         && iter2.hasNext();) {
                     currentLanguagePref = iter2.next();
-                    float currentScore = getScore(variantLanguage,
+                    final float currentScore = getScore(variantLanguage,
                             currentLanguagePref.getMetadata());
-                    boolean compatiblePref = (currentScore != -1.0f);
+                    final boolean compatiblePref = (currentScore != -1.0f);
                     // 3) Do we have a better preference?
                     // currentScore *= currentPref.getQuality();
                     if (compatiblePref
@@ -333,19 +334,20 @@ public class Engine extends org.restlet.gwt.util.Engine {
 
             // If no media type preference is defined, assume that all media
             // types are acceptable
-            List<Preference<MediaType>> mediaTypePrefs = client
+            final List<Preference<MediaType>> mediaTypePrefs = client
                     .getAcceptedMediaTypes();
-            if (mediaTypePrefs.size() == 0)
+            if (mediaTypePrefs.size() == 0) {
                 mediaTypePrefs.add(new Preference<MediaType>(MediaType.ALL));
+            }
 
             // For each media range preference defined in the call
             // Calculate the score and remember the best scoring preference
-            for (Iterator<Preference<MediaType>> iter2 = mediaTypePrefs
+            for (final Iterator<Preference<MediaType>> iter2 = mediaTypePrefs
                     .iterator(); compatibleLanguage && iter2.hasNext();) {
                 currentMediaTypePref = iter2.next();
-                float currentScore = getScore(variantMediaType,
+                final float currentScore = getScore(variantMediaType,
                         currentMediaTypePref.getMetadata());
-                boolean compatiblePref = (currentScore != -1.0f);
+                final boolean compatiblePref = (currentScore != -1.0f);
                 // 3) Do we have a better preference?
                 // currentScore *= currentPref.getQuality();
                 if (compatiblePref
@@ -441,9 +443,9 @@ public class Engine extends org.restlet.gwt.util.Engine {
                     // Don't change the score
                 }
             } else {
-                int maxSize = Math.min(preferenceLanguage.getSubTags().size(),
-                        variantLanguage.getSubTags().size());
-                for (int i = 0; i < maxSize && compatibleLang; i++) {
+                final int maxSize = Math.min(preferenceLanguage.getSubTags()
+                        .size(), variantLanguage.getSubTags().size());
+                for (int i = 0; (i < maxSize) && compatibleLang; i++) {
                     if (preferenceLanguage.getSubTags().get(i)
                             .equalsIgnoreCase(
                                     variantLanguage.getSubTags().get(i))) {
@@ -502,10 +504,8 @@ public class Engine extends org.restlet.gwt.util.Engine {
                 // If current media type is compatible with the
                 // current media range then the parameters need to
                 // be checked too
-                for (Iterator<Parameter> iter3 = variantMediaType
-                        .getParameters().iterator(); iter3.hasNext();) {
-                    Parameter currentParam = iter3.next();
-
+                for (final Parameter currentParam : variantMediaType
+                        .getParameters()) {
                     if (isParameterFound(currentParam, preferenceMediaType)) {
                         score++;
                     }
@@ -521,9 +521,9 @@ public class Engine extends org.restlet.gwt.util.Engine {
      * range.
      * 
      * @param searchedParam
-     *                The searched parameter.
+     *            The searched parameter.
      * @param mediaRange
-     *                The media range to inspect.
+     *            The media range to inspect.
      * @return True if the searched parameter is specified in the given media
      *         range.
      */
@@ -531,8 +531,8 @@ public class Engine extends org.restlet.gwt.util.Engine {
             MediaType mediaRange) {
         boolean result = false;
 
-        for (Iterator<Parameter> iter = mediaRange.getParameters().iterator(); !result
-                && iter.hasNext();) {
+        for (final Iterator<Parameter> iter = mediaRange.getParameters()
+                .iterator(); !result && iter.hasNext();) {
             result = searchedParam.equals(iter.next());
         }
 
@@ -559,7 +559,7 @@ public class Engine extends org.restlet.gwt.util.Engine {
             throws IllegalArgumentException {
         try {
             return ContentType.parseContentType(contentType);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new IllegalArgumentException("The content type string \""
                     + contentType + "\" can not be parsed: " + e.getMessage());
         }
@@ -567,10 +567,10 @@ public class Engine extends org.restlet.gwt.util.Engine {
 
     @Override
     public Cookie parseCookie(String cookie) throws IllegalArgumentException {
-        CookieReader cr = new CookieReader(cookie);
+        final CookieReader cr = new CookieReader(cookie);
         try {
             return cr.readCookie();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new IllegalArgumentException("Could not read the cookie");
         }
     }
@@ -578,10 +578,10 @@ public class Engine extends org.restlet.gwt.util.Engine {
     @Override
     public CookieSetting parseCookieSetting(String cookieSetting)
             throws IllegalArgumentException {
-        CookieReader cr = new CookieReader(cookieSetting);
+        final CookieReader cr = new CookieReader(cookieSetting);
         try {
             return cr.readCookieSetting();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new IllegalArgumentException(
                     "Could not read the cookie setting");
         }
@@ -590,13 +590,13 @@ public class Engine extends org.restlet.gwt.util.Engine {
     @Override
     public List<Product> parseUserAgent(String userAgent)
             throws IllegalArgumentException {
-        List<Product> result = new ArrayList<Product>();
+        final List<Product> result = new ArrayList<Product>();
 
         if (userAgent != null) {
             String token = null;
             String version = null;
             String comment = null;
-            char[] tab = userAgent.trim().toCharArray();
+            final char[] tab = userAgent.trim().toCharArray();
             StringBuilder tokenBuilder = new StringBuilder();
             StringBuilder versionBuilder = null;
             StringBuilder commentBuilder = null;
@@ -606,10 +606,10 @@ public class Engine extends org.restlet.gwt.util.Engine {
             boolean insideComment = false;
 
             for (index = 0; index < tab.length; index++) {
-                char c = tab[index];
+                final char c = tab[index];
                 if (insideToken) {
-                    if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')
-                            || c == ' ') {
+                    if (((c >= 'a') && (c <= 'z'))
+                            || ((c >= 'A') && (c <= 'Z')) || (c == ' ')) {
                         tokenBuilder.append(c);
                     } else {
                         token = tokenBuilder.toString().trim();
@@ -665,7 +665,7 @@ public class Engine extends org.restlet.gwt.util.Engine {
                     version = versionBuilder.toString();
                     result.add(new Product(token, version, null));
                 } else {
-                    if (insideToken && tokenBuilder.length() > 0) {
+                    if (insideToken && (tokenBuilder.length() > 0)) {
                         token = tokenBuilder.toString();
                         result.add(new Product(token, null, null));
                     }

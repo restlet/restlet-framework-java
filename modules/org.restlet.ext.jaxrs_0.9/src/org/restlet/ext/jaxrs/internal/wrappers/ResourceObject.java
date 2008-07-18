@@ -33,22 +33,25 @@ public class ResourceObject {
      * Creates a new wrapper for a resource object
      * 
      * @param jaxRsResourceObject
-     *                the resource object
+     *            the resource object
      * @param resourceClass
-     *                the wrapped resource class
+     *            the wrapped resource class
      * @param logger
-     *                The logger to log unexpected Exceptions.
+     *            The logger to log unexpected Exceptions.
      */
     ResourceObject(Object jaxRsResourceObject, ResourceClass resourceClass) {
-        if (jaxRsResourceObject == null)
+        if (jaxRsResourceObject == null) {
             throw new IllegalArgumentException(
                     "The JAX-RS resource object must not be null");
-        if (resourceClass == null)
+        }
+        if (resourceClass == null) {
             throw new IllegalArgumentException(
                     "The ResourceClass must not be null");
-        if (jaxRsResourceObject instanceof ResourceObject)
+        }
+        if (jaxRsResourceObject instanceof ResourceObject) {
             throw new IllegalArgumentException(
                     "The given resource class object should not be an instance of the wrapping class ResourceObject");
+        }
         this.jaxRsResourceObject = jaxRsResourceObject;
         this.resourceClass = resourceClass;
     }
@@ -57,13 +60,13 @@ public class ResourceObject {
      * @return Returns the wrapped JAX-RS resource object. Returns never null.
      */
     public Object getJaxRsResourceObject() {
-        return jaxRsResourceObject;
+        return this.jaxRsResourceObject;
     }
 
     /**
      * @return Returns the wrapped resource class. Returns never null.
      */
     public ResourceClass getResourceClass() {
-        return resourceClass;
+        return this.resourceClass;
     }
 }

@@ -50,14 +50,14 @@ public class GwtHttpClientCall extends HttpClientCall implements
      * Constructor.
      * 
      * @param helper
-     *                The parent HTTP client helper.
+     *            The parent HTTP client helper.
      * @param method
-     *                The method name.
+     *            The method name.
      * @param requestUri
-     *                The request URI.
+     *            The request URI.
      * @param hasEntity
-     *                Indicates if the call will have an entity to send to the
-     *                server.
+     *            Indicates if the call will have an entity to send to the
+     *            server.
      */
     public GwtHttpClientCall(GwtHttpClientHelper helper, String method,
             String requestUri, boolean hasEntity) {
@@ -114,7 +114,7 @@ public class GwtHttpClientCall extends HttpClientCall implements
      * @return The GWT response.
      */
     public Response getResponse() {
-        return response;
+        return this.response;
     }
 
     @Override
@@ -129,10 +129,10 @@ public class GwtHttpClientCall extends HttpClientCall implements
      */
     @Override
     public Series<Parameter> getResponseHeaders() {
-        Series<Parameter> result = super.getResponseHeaders();
+        final Series<Parameter> result = super.getResponseHeaders();
 
         if (!this.responseHeadersAdded) {
-            for (Header header : getResponse().getHeaders()) {
+            for (final Header header : getResponse().getHeaders()) {
                 result.add(header.getName(), header.getValue());
             }
 
@@ -169,14 +169,14 @@ public class GwtHttpClientCall extends HttpClientCall implements
 
     @Override
     public void sendRequest(Request request) throws Exception {
-        Representation entity = request.isEntityAvailable() ? request
+        final Representation entity = request.isEntityAvailable() ? request
                 .getEntity() : null;
         if (entity != null) {
             getRequestBuilder().setRequestData(entity.getText());
         }
 
         // Set the request headers
-        for (Parameter header : getRequestHeaders()) {
+        for (final Parameter header : getRequestHeaders()) {
             getRequestBuilder().setHeader(header.getName(),
                     getRequestHeaders().getValues(header.getName()));
         }
@@ -192,7 +192,7 @@ public class GwtHttpClientCall extends HttpClientCall implements
      * Sets the GWT response.
      * 
      * @param response
-     *                The GWT response.
+     *            The GWT response.
      */
     public void setResponse(Response response) {
         this.response = response;

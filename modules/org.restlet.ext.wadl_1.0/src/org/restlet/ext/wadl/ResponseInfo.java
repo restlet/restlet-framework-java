@@ -56,8 +56,9 @@ public class ResponseInfo {
         if (d == null) {
             synchronized (this) {
                 d = this.documentations;
-                if (d == null)
+                if (d == null) {
                     this.documentations = d = new ArrayList<DocumentationInfo>();
+                }
             }
         }
         return d;
@@ -76,8 +77,9 @@ public class ResponseInfo {
         if (f == null) {
             synchronized (this) {
                 f = this.faults;
-                if (f == null)
+                if (f == null) {
                     this.faults = f = new ArrayList<FaultInfo>();
+                }
             }
         }
         return f;
@@ -94,8 +96,9 @@ public class ResponseInfo {
         if (p == null) {
             synchronized (this) {
                 p = this.parameters;
-                if (p == null)
+                if (p == null) {
                     this.parameters = p = new ArrayList<ParameterInfo>();
+                }
             }
         }
         return p;
@@ -112,8 +115,9 @@ public class ResponseInfo {
         if (r == null) {
             synchronized (this) {
                 r = this.representations;
-                if (r == null)
+                if (r == null) {
                     this.representations = r = new ArrayList<RepresentationInfo>();
+                }
             }
         }
         return r;
@@ -175,19 +179,19 @@ public class ResponseInfo {
         } else {
             writer.startElement(APP_NAMESPACE, "response");
 
-            for (DocumentationInfo documentationInfo : getDocumentations()) {
+            for (final DocumentationInfo documentationInfo : getDocumentations()) {
                 documentationInfo.writeElement(writer);
             }
 
-            for (ParameterInfo parameterInfo : getParameters()) {
+            for (final ParameterInfo parameterInfo : getParameters()) {
                 parameterInfo.writeElement(writer);
             }
 
-            for (RepresentationInfo representationInfo : getRepresentations()) {
+            for (final RepresentationInfo representationInfo : getRepresentations()) {
                 representationInfo.writeElement(writer);
             }
 
-            for (FaultInfo faultInfo : getFaults()) {
+            for (final FaultInfo faultInfo : getFaults()) {
                 faultInfo.writeElement(writer);
             }
 

@@ -46,7 +46,7 @@ public final class Preference<T extends Metadata> {
      * Constructor.
      * 
      * @param metadata
-     *                The associated metadata.
+     *            The associated metadata.
      */
     public Preference(T metadata) {
         this(metadata, 1F, null);
@@ -56,9 +56,9 @@ public final class Preference<T extends Metadata> {
      * Constructor.
      * 
      * @param metadata
-     *                The associated metadata.
+     *            The associated metadata.
      * @param quality
-     *                The quality/preference level.
+     *            The quality/preference level.
      */
     public Preference(T metadata, float quality) {
         this(metadata, quality, null);
@@ -68,11 +68,11 @@ public final class Preference<T extends Metadata> {
      * Constructor.
      * 
      * @param metadata
-     *                The associated metadata.
+     *            The associated metadata.
      * @param quality
-     *                The quality/preference level.
+     *            The quality/preference level.
      * @param parameters
-     *                The list of parameters.
+     *            The list of parameters.
      */
     public Preference(T metadata, float quality, Series<Parameter> parameters) {
         this.metadata = metadata;
@@ -86,7 +86,7 @@ public final class Preference<T extends Metadata> {
      * @return The metadata associated with this preference.
      */
     public T getMetadata() {
-        return metadata;
+        return this.metadata;
     }
 
     /**
@@ -101,8 +101,9 @@ public final class Preference<T extends Metadata> {
         if (p == null) {
             synchronized (this) {
                 p = this.parameters;
-                if (p == null)
+                if (p == null) {
                     this.parameters = p = new Form();
+                }
             }
         }
         return p;
@@ -114,14 +115,14 @@ public final class Preference<T extends Metadata> {
      * @return The quality/preference level.
      */
     public float getQuality() {
-        return quality;
+        return this.quality;
     }
 
     /**
      * Sets the metadata associated with this preference.
      * 
      * @param metadata
-     *                The metadata associated with this preference.
+     *            The metadata associated with this preference.
      */
     public void setMetadata(T metadata) {
         this.metadata = metadata;
@@ -131,7 +132,7 @@ public final class Preference<T extends Metadata> {
      * Sets the modifiable list of parameters.
      * 
      * @param parameters
-     *                The modifiable list of parameters.
+     *            The modifiable list of parameters.
      */
     public void setParameters(Series<Parameter> parameters) {
         this.parameters = parameters;
@@ -141,7 +142,7 @@ public final class Preference<T extends Metadata> {
      * Sets the quality/preference level.
      * 
      * @param quality
-     *                The quality/preference level.
+     *            The quality/preference level.
      */
     public void setQuality(float quality) {
         this.quality = quality;

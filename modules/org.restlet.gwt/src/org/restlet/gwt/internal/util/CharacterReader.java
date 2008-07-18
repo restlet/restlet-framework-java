@@ -26,7 +26,7 @@ package org.restlet.gwt.internal.util;
 public class CharacterReader {
 
     /** The text to read. */
-    private String text;
+    private final String text;
 
     /** The next position to read. */
     private int position;
@@ -35,7 +35,7 @@ public class CharacterReader {
      * Constructor.
      * 
      * @param text
-     *                The source text to read.
+     *            The source text to read.
      */
     public CharacterReader(String text) {
         this.text = text;

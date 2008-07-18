@@ -32,42 +32,42 @@ public class RecursiveTest extends JaxRsTestCase {
     }
 
     public void test0() throws Exception {
-        Response response = get();
+        final Response response = get();
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("0", response.getEntity().getText());
     }
 
     public void test1a() throws Exception {
-        Response response = get("a");
+        final Response response = get("a");
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("1", response.getEntity().getText());
     }
 
     public void test1b() throws Exception {
-        Response response = get("a/");
+        final Response response = get("a/");
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("1", response.getEntity().getText());
     }
 
     public void test2() throws Exception {
-        Response response = get("a/a");
+        final Response response = get("a/a");
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("2", response.getEntity().getText());
     }
 
     public void test2b() throws Exception {
-        Response response = get("a/a/");
+        final Response response = get("a/a/");
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("2", response.getEntity().getText());
     }
 
     public void test3() throws Exception {
-        Response response = get("a/a/a");
+        final Response response = get("a/a/a");
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("3", response.getEntity().getText());

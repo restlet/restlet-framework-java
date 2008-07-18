@@ -54,7 +54,7 @@ public class DomRepresentation extends XmlRepresentation {
      * Constructor for an empty document.
      * 
      * @param mediaType
-     *                The representation's media type.
+     *            The representation's media type.
      */
     public DomRepresentation(MediaType mediaType) throws IOException {
         super(mediaType);
@@ -65,9 +65,9 @@ public class DomRepresentation extends XmlRepresentation {
      * Constructor from an existing DOM document.
      * 
      * @param mediaType
-     *                The representation's media type.
+     *            The representation's media type.
      * @param xmlDocument
-     *                The source DOM document.
+     *            The source DOM document.
      */
     public DomRepresentation(MediaType mediaType, Document xmlDocument) {
         super(mediaType);
@@ -78,7 +78,7 @@ public class DomRepresentation extends XmlRepresentation {
      * Constructor.
      * 
      * @param xmlRepresentation
-     *                A source XML representation to parse.
+     *            A source XML representation to parse.
      */
     public DomRepresentation(Representation xmlRepresentation) {
         super((xmlRepresentation == null) ? null : xmlRepresentation
@@ -95,7 +95,7 @@ public class DomRepresentation extends XmlRepresentation {
      */
     protected Transformer createTransformer() throws IOException {
         try {
-            Transformer transformer = TransformerFactory.newInstance()
+            final Transformer transformer = TransformerFactory.newInstance()
                     .newTransformer();
             transformer.setOutputProperty(OutputKeys.METHOD, "xml");
 
@@ -107,7 +107,7 @@ public class DomRepresentation extends XmlRepresentation {
             }
 
             return transformer;
-        } catch (TransformerConfigurationException tce) {
+        } catch (final TransformerConfigurationException tce) {
             throw new IOException("Couldn't write the XML representation: "
                     + tce.getMessage());
         }
@@ -116,7 +116,7 @@ public class DomRepresentation extends XmlRepresentation {
     @Override
     public Object evaluate(String expression, QName returnType)
             throws Exception {
-        XPath xpath = XPathFactory.newInstance().newXPath();
+        final XPath xpath = XPathFactory.newInstance().newXPath();
         xpath.setNamespaceContext(this);
         return xpath.evaluate(expression, getDocument(), returnType);
     }
@@ -133,8 +133,8 @@ public class DomRepresentation extends XmlRepresentation {
             if (this.xmlRepresentation != null) {
                 try {
                     this.dom = getDocumentBuilder().parse(
-                            xmlRepresentation.getStream());
-                } catch (SAXException se) {
+                            this.xmlRepresentation.getStream());
+                } catch (final SAXException se) {
                     throw new IOException(
                             "Couldn't read the XML representation. "
                                     + se.getMessage());
@@ -176,7 +176,7 @@ public class DomRepresentation extends XmlRepresentation {
      * Sets the wrapped DOM document.
      * 
      * @param dom
-     *                The wrapped DOM document.
+     *            The wrapped DOM document.
      */
     public void setDocument(Document dom) {
         this.dom = dom;
@@ -186,17 +186,17 @@ public class DomRepresentation extends XmlRepresentation {
     public void write(OutputStream outputStream) throws IOException {
         try {
             if (getDocument() != null) {
-                Transformer transformer = createTransformer();
+                final Transformer transformer = createTransformer();
                 transformer.transform(new DOMSource(getDocument()),
                         new StreamResult(outputStream));
             }
-        } catch (TransformerConfigurationException tce) {
+        } catch (final TransformerConfigurationException tce) {
             throw new IOException("Couldn't write the XML representation: "
                     + tce.getMessage());
-        } catch (TransformerException te) {
+        } catch (final TransformerException te) {
             throw new IOException("Couldn't write the XML representation: "
                     + te.getMessage());
-        } catch (TransformerFactoryConfigurationError tfce) {
+        } catch (final TransformerFactoryConfigurationError tfce) {
             throw new IOException("Couldn't write the XML representation: "
                     + tfce.getMessage());
         }

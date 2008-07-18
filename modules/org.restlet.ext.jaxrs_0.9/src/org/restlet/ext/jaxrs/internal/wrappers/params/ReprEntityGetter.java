@@ -38,27 +38,6 @@ import org.restlet.resource.Representation;
 public abstract class ReprEntityGetter implements ParamGetter {
 
     /**
-     * EntityGetter, if there is a constructor for only the entity.
-     */
-    static class ReprOnlyEntityGetter extends ReprEntityGetter {
-
-        /**
-         * @param constructor
-         */
-        ReprOnlyEntityGetter(Constructor<?> constructor) {
-            super(constructor);
-        }
-
-        @Override
-        Representation createInstance(Representation entity)
-                throws IllegalArgumentException, InstantiationException,
-                IllegalAccessException, InvocationTargetException {
-            return constr.newInstance(entity);
-        }
-
-    }
-
-    /**
      * EntityGetter, if there is a constructor with two arguments: Class and
      * Representation
      */
@@ -74,7 +53,7 @@ public abstract class ReprEntityGetter implements ParamGetter {
         Representation createInstance(Representation entity)
                 throws IllegalArgumentException, InstantiationException,
                 IllegalAccessException, InvocationTargetException {
-            return constr.newInstance(clazz, entity);
+            return this.constr.newInstance(this.clazz, entity);
         }
 
     }
@@ -111,7 +90,28 @@ public abstract class ReprEntityGetter implements ParamGetter {
         Representation createInstance(Representation entity)
                 throws IllegalArgumentException, InstantiationException,
                 IllegalAccessException, InvocationTargetException {
-            return constr.newInstance(entity, clazz);
+            return this.constr.newInstance(entity, this.clazz);
+        }
+
+    }
+
+    /**
+     * EntityGetter, if there is a constructor for only the entity.
+     */
+    static class ReprOnlyEntityGetter extends ReprEntityGetter {
+
+        /**
+         * @param constructor
+         */
+        ReprOnlyEntityGetter(Constructor<?> constructor) {
+            super(constructor);
+        }
+
+        @Override
+        Representation createInstance(Representation entity)
+                throws IllegalArgumentException, InstantiationException,
+                IllegalAccessException, InvocationTargetException {
+            return this.constr.newInstance(entity);
         }
 
     }
@@ -127,44 +127,48 @@ public abstract class ReprEntityGetter implements ParamGetter {
      */
     public static ParamGetter create(Class<?> representationType,
             Type convToGen, Logger logger) {
-        if (representationType.equals(Representation.class))
+        if (representationType.equals(Representation.class)) {
             return new DirectReprEntityGetter();
+        }
         try {
             return new ReprOnlyEntityGetter(representationType
                     .getConstructor(Representation.class));
-        } catch (SecurityException e) {
+        } catch (final SecurityException e) {
             logger.warning("The constructor " + representationType
                     + "(Representation) is not accessable.");
-        } catch (NoSuchMethodException e) {
+        } catch (final NoSuchMethodException e) {
             // try next
         }
-        if (!(convToGen instanceof ParameterizedType))
+        if (!(convToGen instanceof ParameterizedType)) {
             return null;
-        ParameterizedType pType = (ParameterizedType) convToGen;
-        Type[] typeArgs = pType.getActualTypeArguments();
-        if (typeArgs.length != 1)
+        }
+        final ParameterizedType pType = (ParameterizedType) convToGen;
+        final Type[] typeArgs = pType.getActualTypeArguments();
+        if (typeArgs.length != 1) {
             return null;
-        Type typeArg = typeArgs[0];
-        if (!(typeArg instanceof Class))
+        }
+        final Type typeArg = typeArgs[0];
+        if (!(typeArg instanceof Class)) {
             return null;
-        Class<?> genClass = (Class<?>) typeArg;
+        }
+        final Class<?> genClass = (Class<?>) typeArg;
         try {
             return new ReprClassEntityGetter(representationType.getConstructor(
                     Representation.class, Class.class), genClass);
-        } catch (SecurityException e) {
+        } catch (final SecurityException e) {
             logger.warning("The constructor " + representationType
                     + "(Representation) is not accessable.");
-        } catch (NoSuchMethodException e) {
+        } catch (final NoSuchMethodException e) {
             // try next
         }
         try {
             return new ClassReprEntityGetter(genClass, representationType
                     .getConstructor(Class.class, Representation.class));
-        } catch (SecurityException e) {
+        } catch (final SecurityException e) {
             logger.warning("The constructor " + representationType
                     + "(Representation) is not accessable.");
             return null;
-        } catch (NoSuchMethodException e) {
+        } catch (final NoSuchMethodException e) {
             return null;
         }
     }
@@ -193,20 +197,22 @@ public abstract class ReprEntityGetter implements ParamGetter {
     public Object getValue() throws InvocationTargetException,
             ConvertRepresentationException, WebApplicationException {
         try {
-            Request request = Request.getCurrent();
-            if(!request.isEntityAvailable())
+            final Request request = Request.getCurrent();
+            if (!request.isEntityAvailable()) {
                 return null;
-            Representation entity = request.getEntity();
-            if(entity == null)
+            }
+            final Representation entity = request.getEntity();
+            if (entity == null) {
                 return null;
+            }
             return createInstance(entity);
-        } catch (IllegalArgumentException e) {
+        } catch (final IllegalArgumentException e) {
             throw ConvertRepresentationException.object(getReprClass(),
                     "the message body", e);
-        } catch (InstantiationException e) {
+        } catch (final InstantiationException e) {
             throw ConvertRepresentationException.object(getReprClass(),
                     "the message body", e);
-        } catch (IllegalAccessException e) {
+        } catch (final IllegalAccessException e) {
             throw ConvertRepresentationException.object(getReprClass(),
                     "the message body", e);
         }

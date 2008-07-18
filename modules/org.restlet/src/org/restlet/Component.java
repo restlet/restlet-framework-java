@@ -66,8 +66,8 @@ import org.w3c.dom.NodeList;
  * supported, see the WADL Restlet extension for details).<br>
  * <br>
  * The XML Schema of the configuration files is available both <a
- * href="http://www.restlet.org/schemas/1.1/Component">online</a> and inside
- * the API JAR under the "org.restlet.Component.xsd" name.<br>
+ * href="http://www.restlet.org/schemas/1.1/Component">online</a> and inside the
+ * API JAR under the "org.restlet.Component.xsd" name.<br>
  * <br>
  * Here is a sample of XML configuration:
  * 
@@ -93,9 +93,9 @@ import org.w3c.dom.NodeList;
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
  * 
- * @see <a
- *      href="http://roy.gbiv.com/pubs/dissertation/software_arch.htm#sec_1_2_1">Source
- *      dissertation</a>
+ * @see <a *
+ *      href="http://roy.gbiv.com/pubs/dissertation/software_arch.htm#sec_1_2_1"
+ *      >Source * dissertation< /a>
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
@@ -106,7 +106,7 @@ public class Component extends Restlet {
      * file.
      * 
      * @param args
-     *                The list of in-line parameters.
+     *            The list of in-line parameters.
      */
     public static void main(String[] args) throws Exception {
         try {
@@ -119,7 +119,7 @@ public class Component extends Restlet {
                 new Component(LocalReference.createFileReference(args[0]))
                         .start();
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             System.err
                     .println("Can't launch the component.\nAn unexpected exception occurred:");
             e.printStackTrace(System.err);
@@ -184,24 +184,25 @@ public class Component extends Restlet {
      * Parse a configuration file and update the component's configuration.
      * 
      * @param xmlConfigReference
-     *                The reference to the XML config file.
+     *            The reference to the XML config file.
      */
     public Component(Reference xmlConfigReference) {
         this();
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(false);
         dbf.setValidating(false);
 
         try {
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            Document document = db.parse(new FileInputStream(
+            final DocumentBuilder db = dbf.newDocumentBuilder();
+            final Document document = db.parse(new FileInputStream(
                     new LocalReference(xmlConfigReference).getFile()));
 
             // Look for clients
-            NodeList clientNodes = document.getElementsByTagName("client");
+            final NodeList clientNodes = document
+                    .getElementsByTagName("client");
 
             for (int i = 0; i < clientNodes.getLength(); i++) {
-                Node clientNode = clientNodes.item(i);
+                final Node clientNode = clientNodes.item(i);
                 Node item = clientNode.getAttributes().getNamedItem("protocol");
                 Client client = null;
 
@@ -209,11 +210,12 @@ public class Component extends Restlet {
                     item = clientNode.getAttributes().getNamedItem("protocols");
 
                     if (item != null) {
-                        String[] protocols = item.getNodeValue().split(" ");
-                        List<Protocol> protocolsList = new ArrayList<Protocol>();
+                        final String[] protocols = item.getNodeValue().split(
+                                " ");
+                        final List<Protocol> protocolsList = new ArrayList<Protocol>();
 
-                        for (int j = 0; j < protocols.length; j++) {
-                            protocolsList.add(getProtocol(protocols[j]));
+                        for (final String protocol : protocols) {
+                            protocolsList.add(getProtocol(protocol));
                         }
 
                         client = new Client(getContext(), protocolsList);
@@ -224,33 +226,36 @@ public class Component extends Restlet {
                 }
 
                 if (client != null) {
-                    this.getClients().add(client);
+                    getClients().add(client);
                 }
             }
 
             // Look for servers
-            NodeList serverNodes = document.getElementsByTagName("server");
+            final NodeList serverNodes = document
+                    .getElementsByTagName("server");
 
             for (int i = 0; i < serverNodes.getLength(); i++) {
-                Node serverNode = serverNodes.item(i);
+                final Node serverNode = serverNodes.item(i);
                 Node item = serverNode.getAttributes().getNamedItem("protocol");
-                Node portNode = serverNode.getAttributes().getNamedItem("port");
-                Node addressNode = serverNode.getAttributes().getNamedItem(
-                        "address");
+                final Node portNode = serverNode.getAttributes().getNamedItem(
+                        "port");
+                final Node addressNode = serverNode.getAttributes()
+                        .getNamedItem("address");
                 Server server = null;
 
                 if (item == null) {
                     item = serverNode.getAttributes().getNamedItem("protocols");
 
                     if (item != null) {
-                        String[] protocols = item.getNodeValue().split(" ");
-                        List<Protocol> protocolsList = new ArrayList<Protocol>();
+                        final String[] protocols = item.getNodeValue().split(
+                                " ");
+                        final List<Protocol> protocolsList = new ArrayList<Protocol>();
 
-                        for (int j = 0; j < protocols.length; j++) {
-                            protocolsList.add(getProtocol(protocols[j]));
+                        for (final String protocol : protocols) {
+                            protocolsList.add(getProtocol(protocol));
                         }
 
-                        int port = getInt(portNode, Protocol.UNKNOWN_PORT);
+                        final int port = getInt(portNode, Protocol.UNKNOWN_PORT);
 
                         if (port == Protocol.UNKNOWN_PORT) {
                             getLogger()
@@ -259,47 +264,48 @@ public class Component extends Restlet {
                         } else {
                             server = new Server(getContext(), protocolsList,
                                     getInt(portNode, Protocol.UNKNOWN_PORT),
-                                    this.getServers().getTarget());
+                                    getServers().getTarget());
                         }
                     }
                 } else {
-                    Protocol protocol = getProtocol(item.getNodeValue());
+                    final Protocol protocol = getProtocol(item.getNodeValue());
                     server = new Server(getContext(), protocol, getInt(
-                            portNode, protocol.getDefaultPort()), this
-                            .getServers().getTarget());
+                            portNode, protocol.getDefaultPort()), getServers()
+                            .getTarget());
                 }
 
                 if (server != null) {
                     if (addressNode != null) {
-                        String address = addressNode.getNodeValue();
+                        final String address = addressNode.getNodeValue();
                         if (address != null) {
                             server.setAddress(address);
                         }
                     }
 
-                    this.getServers().add(server);
+                    getServers().add(server);
                 }
 
                 // Look for default host
-                NodeList defaultHostNodes = document
+                final NodeList defaultHostNodes = document
                         .getElementsByTagName("defaultHost");
 
                 if (defaultHostNodes.getLength() > 0) {
-                    parseHost(this.getDefaultHost(), defaultHostNodes.item(0));
+                    parseHost(getDefaultHost(), defaultHostNodes.item(0));
                 }
 
                 // Look for other virtual hosts
-                NodeList hostNodes = document.getElementsByTagName("host");
+                final NodeList hostNodes = document
+                        .getElementsByTagName("host");
 
                 for (int j = 0; j < hostNodes.getLength(); j++) {
-                    VirtualHost host = new VirtualHost();
+                    final VirtualHost host = new VirtualHost();
                     parseHost(host, hostNodes.item(j));
-                    this.getHosts().add(host);
+                    getHosts().add(host);
                 }
             }
 
             // Look for internal router
-            NodeList internalRouterNodes = document
+            final NodeList internalRouterNodes = document
                     .getElementsByTagName("internalRouter");
 
             if (internalRouterNodes.getLength() > 0) {
@@ -307,71 +313,68 @@ public class Component extends Restlet {
             }
 
             // Look for logService
-            NodeList logServiceNodes = document
+            final NodeList logServiceNodes = document
                     .getElementsByTagName("logService");
 
             if (logServiceNodes.getLength() > 0) {
-                Node node = logServiceNodes.item(0);
+                final Node node = logServiceNodes.item(0);
                 Node item = node.getAttributes().getNamedItem("logFormat");
 
                 if (item != null) {
-                    this.getLogService().setLogFormat(item.getNodeValue());
+                    getLogService().setLogFormat(item.getNodeValue());
                 }
 
                 item = node.getAttributes().getNamedItem("loggerName");
 
                 if (item != null) {
-                    this.getLogService().setLoggerName(item.getNodeValue());
+                    getLogService().setLoggerName(item.getNodeValue());
                 }
 
                 item = node.getAttributes().getNamedItem("enabled");
 
                 if (item != null) {
-                    this.getLogService().setEnabled(getBoolean(item, true));
+                    getLogService().setEnabled(getBoolean(item, true));
                 }
 
                 item = node.getAttributes().getNamedItem("identityCheck");
 
                 if (item != null) {
-                    this.getLogService().setIdentityCheck(
-                            getBoolean(item, true));
+                    getLogService().setIdentityCheck(getBoolean(item, true));
                 }
             }
 
             // Look for statusService
-            NodeList statusServiceNodes = document
+            final NodeList statusServiceNodes = document
                     .getElementsByTagName("statusService");
 
             if (statusServiceNodes.getLength() > 0) {
-                Node node = statusServiceNodes.item(0);
+                final Node node = statusServiceNodes.item(0);
                 Node item = node.getAttributes().getNamedItem("contactEmail");
 
                 if (item != null) {
-                    this.getStatusService()
-                            .setContactEmail(item.getNodeValue());
+                    getStatusService().setContactEmail(item.getNodeValue());
                 }
 
                 item = node.getAttributes().getNamedItem("enabled");
 
                 if (item != null) {
-                    this.getStatusService().setEnabled(getBoolean(item, true));
+                    getStatusService().setEnabled(getBoolean(item, true));
                 }
 
                 item = node.getAttributes().getNamedItem("homeRef");
 
                 if (item != null) {
-                    this.getStatusService().setHomeRef(
+                    getStatusService().setHomeRef(
                             new Reference(item.getNodeValue()));
                 }
 
                 item = node.getAttributes().getNamedItem("overwrite");
 
                 if (item != null) {
-                    this.getStatusService()
-                            .setOverwrite(getBoolean(item, true));
+                    getStatusService().setOverwrite(getBoolean(item, true));
                 }
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             getLogger().log(Level.WARNING,
                     "Unable to parse the Component XML configuration.", e);
         }
@@ -382,13 +385,13 @@ public class Component extends Restlet {
      * URI pattern.
      * 
      * @param router
-     *                the router.
+     *            the router.
      * @param targetClassName
-     *                the target class name.
+     *            the target class name.
      * @param uriPattern
-     *                the URI pattern.
+     *            the URI pattern.
      * @param defaultRoute
-     *                Is this route the default one?
+     *            Is this route the default one?
      * @return the created route, or null.
      */
     @SuppressWarnings("unchecked")
@@ -398,14 +401,15 @@ public class Component extends Restlet {
         // Load the application class using the given class name
         if (targetClassName != null) {
             try {
-                Class<?> targetClass = Engine.classForName(targetClassName);
+                final Class<?> targetClass = Engine
+                        .classForName(targetClassName);
 
                 // First, check if we have a Resource class that should be
                 // attached directly to the router.
                 if (Resource.class.isAssignableFrom(targetClass)) {
-                    Class<? extends Resource> resourceClass = (Class<? extends Resource>) targetClass;
+                    final Class<? extends Resource> resourceClass = (Class<? extends Resource>) targetClass;
 
-                    if (uriPattern != null && !defaultRoute) {
+                    if ((uriPattern != null) && !defaultRoute) {
                         route = router.attach(uriPattern, resourceClass);
                     } else {
                         route = router.attachDefault(resourceClass);
@@ -418,7 +422,7 @@ public class Component extends Restlet {
                         // invoking the constructor with the Context parameter.
                         target = (Restlet) targetClass.getConstructor(
                                 Context.class).newInstance(getContext());
-                    } catch (NoSuchMethodException e) {
+                    } catch (final NoSuchMethodException e) {
                         getLogger()
                                 .log(
                                         Level.WARNING,
@@ -436,38 +440,38 @@ public class Component extends Restlet {
                     }
 
                     if (target != null) {
-                        if (uriPattern != null && !defaultRoute) {
+                        if ((uriPattern != null) && !defaultRoute) {
                             route = router.attach(uriPattern, target);
                         } else {
                             route = router.attachDefault(target);
                         }
                     }
                 }
-            } catch (ClassNotFoundException e) {
+            } catch (final ClassNotFoundException e) {
                 getLogger().log(
                         Level.WARNING,
                         "Couldn't find the target class. Please check that your classpath includes "
                                 + targetClassName, e);
 
-            } catch (InstantiationException e) {
+            } catch (final InstantiationException e) {
                 getLogger()
                         .log(
                                 Level.WARNING,
                                 "Couldn't instantiate the target class. Please check this class has an empty constructor "
                                         + targetClassName, e);
-            } catch (IllegalAccessException e) {
+            } catch (final IllegalAccessException e) {
                 getLogger()
                         .log(
                                 Level.WARNING,
                                 "Couldn't instantiate the target class. Please check that you have to proper access rights to "
                                         + targetClassName, e);
-            } catch (NoSuchMethodException e) {
+            } catch (final NoSuchMethodException e) {
                 getLogger()
                         .log(
                                 Level.WARNING,
                                 "Couldn't invoke the constructor of the target class. Please check this class has a constructor with a single parameter of Context "
                                         + targetClassName, e);
-            } catch (InvocationTargetException e) {
+            } catch (final InvocationTargetException e) {
                 getLogger()
                         .log(
                                 Level.WARNING,
@@ -483,13 +487,13 @@ public class Component extends Restlet {
      * URI pattern.
      * 
      * @param router
-     *                the router.
+     *            the router.
      * @param targetDescriptor
-     *                the target descriptor.
+     *            the target descriptor.
      * @param uriPattern
-     *                the URI pattern.
+     *            the URI pattern.
      * @param defaultRoute
-     *                Is this route the default one?
+     *            Is this route the default one?
      * @return the created route, or null.
      */
     private Route attachWithDescriptor(Router router, String targetDescriptor,
@@ -499,21 +503,21 @@ public class Component extends Restlet {
         try {
             // Only WADL descriptors are supported at this moment.
             targetClassName = "org.restlet.ext.wadl.WadlApplication";
-            Class<?> targetClass = Engine.classForName(targetClassName);
+            final Class<?> targetClass = Engine.classForName(targetClassName);
 
             // Get the WADL document
-            Response response = getContext().getClientDispatcher().get(
+            final Response response = getContext().getClientDispatcher().get(
                     targetDescriptor);
             if (response.getStatus().isSuccess()
                     && response.isEntityAvailable()) {
-                Representation representation = response.getEntity();
+                final Representation representation = response.getEntity();
                 // Create a new instance of the application class by
                 // invoking the constructor with the Context parameter.
-                Application target = (Application) targetClass.getConstructor(
-                        Context.class, Representation.class).newInstance(
-                        getContext(), representation);
+                final Application target = (Application) targetClass
+                        .getConstructor(Context.class, Representation.class)
+                        .newInstance(getContext(), representation);
                 if (target != null) {
-                    if (uriPattern != null && !defaultRoute) {
+                    if ((uriPattern != null) && !defaultRoute) {
                         route = router.attach(uriPattern, target);
                     } else {
                         route = router.attachDefault(target);
@@ -526,30 +530,30 @@ public class Component extends Restlet {
                                 "The target descriptor has not been found or is not available, or no client supporting the URI's protocol has been defined on this component. "
                                         + targetDescriptor);
             }
-        } catch (ClassNotFoundException e) {
+        } catch (final ClassNotFoundException e) {
             getLogger().log(
                     Level.WARNING,
                     "Couldn't find the target class. Please check that your classpath includes "
                             + targetClassName, e);
-        } catch (InstantiationException e) {
+        } catch (final InstantiationException e) {
             getLogger()
                     .log(
                             Level.WARNING,
                             "Couldn't instantiate the target class. Please check this class has an empty constructor "
                                     + targetClassName, e);
-        } catch (IllegalAccessException e) {
+        } catch (final IllegalAccessException e) {
             getLogger()
                     .log(
                             Level.WARNING,
                             "Couldn't instantiate the target class. Please check that you have to proper access rights to "
                                     + targetClassName, e);
-        } catch (NoSuchMethodException e) {
+        } catch (final NoSuchMethodException e) {
             getLogger()
                     .log(
                             Level.WARNING,
                             "Couldn't invoke the constructor of the target class. Please check this class has a constructor with a single parameter of Context "
                                     + targetClassName, e);
-        } catch (InvocationTargetException e) {
+        } catch (final InvocationTargetException e) {
             getLogger()
                     .log(
                             Level.WARNING,
@@ -564,9 +568,9 @@ public class Component extends Restlet {
      * Parses a port node and returns the port value.
      * 
      * @param portNode
-     *                the node to parse.
+     *            the node to parse.
      * @param defaultPort
-     *                the default value;
+     *            the default value;
      * @return the port number.
      */
     private boolean getBoolean(Node node, boolean defaultValue) {
@@ -574,7 +578,7 @@ public class Component extends Restlet {
         if (node != null) {
             try {
                 value = Boolean.parseBoolean(node.getNodeValue());
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 value = defaultValue;
             }
         }
@@ -604,9 +608,9 @@ public class Component extends Restlet {
      * Parses a node and returns the float value.
      * 
      * @param node
-     *                the node to parse.
+     *            the node to parse.
      * @param defaultValue
-     *                the default value;
+     *            the default value;
      * @return the float value of the node.
      */
     private float getFloat(Node node, float defaultValue) {
@@ -614,7 +618,7 @@ public class Component extends Restlet {
         if (node != null) {
             try {
                 value = Float.parseFloat(node.getNodeValue());
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 value = defaultValue;
             }
         }
@@ -644,9 +648,9 @@ public class Component extends Restlet {
      * Parses a node and returns the int value.
      * 
      * @param node
-     *                the node to parse.
+     *            the node to parse.
      * @param defaultValue
-     *                the default value;
+     *            the default value;
      * @return the int value of the node.
      */
     private int getInt(Node node, int defaultValue) {
@@ -654,7 +658,7 @@ public class Component extends Restlet {
         if (node != null) {
             try {
                 value = Integer.parseInt(node.getNodeValue());
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 value = defaultValue;
             }
         }
@@ -682,7 +686,7 @@ public class Component extends Restlet {
      * @return The private internal router.
      */
     public Router getInternalRouter() {
-        return internalRouter;
+        return this.internalRouter;
     }
 
     /**
@@ -703,9 +707,9 @@ public class Component extends Restlet {
      * Parses a node and returns the long value.
      * 
      * @param node
-     *                the node to parse.
+     *            the node to parse.
      * @param defaultValue
-     *                the default value;
+     *            the default value;
      * @return the long value of the node.
      */
     private long getLong(Node node, long defaultValue) {
@@ -713,7 +717,7 @@ public class Component extends Restlet {
         if (node != null) {
             try {
                 value = Long.parseLong(node.getNodeValue());
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 value = defaultValue;
             }
         }
@@ -725,7 +729,7 @@ public class Component extends Restlet {
      * new protocol object.
      * 
      * @param scheme
-     *                the scheme of the desired protocol.
+     *            the scheme of the desired protocol.
      * @return a known protocol or a new instance.
      */
     private Protocol getProtocol(String scheme) {
@@ -760,56 +764,57 @@ public class Component extends Restlet {
     public void handle(Request request, Response response) {
         super.handle(request, response);
 
-        if (getHelper() != null)
+        if (getHelper() != null) {
             getHelper().handle(request, response);
+        }
     }
 
     /**
      * Parse the attributes of a DOM node and update the given host.
      * 
      * @param host
-     *                the host to update.
+     *            the host to update.
      * @param hostNode
-     *                the DOM node.
+     *            the DOM node.
      */
     private void parseHost(VirtualHost host, Node hostNode) {
         // Update the "Router" attributes.
         parseRouter(host, hostNode);
 
         Node item = hostNode.getAttributes().getNamedItem("hostDomain");
-        if (item != null && item.getNodeValue() != null) {
+        if ((item != null) && (item.getNodeValue() != null)) {
             host.setHostDomain(item.getNodeValue());
         }
         item = hostNode.getAttributes().getNamedItem("hostPort");
-        if (item != null && item.getNodeValue() != null) {
+        if ((item != null) && (item.getNodeValue() != null)) {
             host.setHostPort(item.getNodeValue());
         }
         item = hostNode.getAttributes().getNamedItem("hostScheme");
-        if (item != null && item.getNodeValue() != null) {
+        if ((item != null) && (item.getNodeValue() != null)) {
             host.setHostScheme(item.getNodeValue());
         }
         item = hostNode.getAttributes().getNamedItem("name");
-        if (item != null && item.getNodeValue() != null) {
+        if ((item != null) && (item.getNodeValue() != null)) {
             host.setName(item.getNodeValue());
         }
         item = hostNode.getAttributes().getNamedItem("resourceDomain");
-        if (item != null && item.getNodeValue() != null) {
+        if ((item != null) && (item.getNodeValue() != null)) {
             host.setResourceDomain(item.getNodeValue());
         }
         item = hostNode.getAttributes().getNamedItem("resourcePort");
-        if (item != null && item.getNodeValue() != null) {
+        if ((item != null) && (item.getNodeValue() != null)) {
             host.setResourcePort(item.getNodeValue());
         }
         item = hostNode.getAttributes().getNamedItem("resourceScheme");
-        if (item != null && item.getNodeValue() != null) {
+        if ((item != null) && (item.getNodeValue() != null)) {
             host.setResourceScheme(item.getNodeValue());
         }
         item = hostNode.getAttributes().getNamedItem("serverAddress");
-        if (item != null && item.getNodeValue() != null) {
+        if ((item != null) && (item.getNodeValue() != null)) {
             host.setServerAddress(item.getNodeValue());
         }
         item = hostNode.getAttributes().getNamedItem("serverPort");
-        if (item != null && item.getNodeValue() != null) {
+        if ((item != null) && (item.getNodeValue() != null)) {
             host.setServerPort(item.getNodeValue());
         }
         // Loops the list of "attach" instructions
@@ -820,21 +825,21 @@ public class Component extends Restlet {
      * Parse the attributes of a DOM node and update the given router.
      * 
      * @param router
-     *                the router to update.
+     *            the router to update.
      * @param hostNode
-     *                the DOM node.
+     *            the DOM node.
      */
     private void parseRouter(Router router, Node routerNode) {
         Node item = routerNode.getAttributes().getNamedItem(
                 "defaultMatchingMode");
         if (item != null) {
-            this.getInternalRouter().setDefaultMatchingMode(
+            getInternalRouter().setDefaultMatchingMode(
                     getInt(item, getInternalRouter().getDefaultMatchingMode()));
         }
 
         item = routerNode.getAttributes().getNamedItem("defaultMatchingQuery");
         if (item != null) {
-            this.getInternalRouter()
+            getInternalRouter()
                     .setDefaultMatchQuery(
                             getBoolean(item, getInternalRouter()
                                     .getDefaultMatchQuery()));
@@ -842,28 +847,26 @@ public class Component extends Restlet {
 
         item = routerNode.getAttributes().getNamedItem("maxAttempts");
         if (item != null) {
-            this.getInternalRouter().setMaxAttempts(
-                    getInt(item, this.getInternalRouter().getMaxAttempts()));
+            getInternalRouter().setMaxAttempts(
+                    getInt(item, getInternalRouter().getMaxAttempts()));
         }
 
         item = routerNode.getAttributes().getNamedItem("routingMode");
         if (item != null) {
-            this.getInternalRouter().setRoutingMode(
-                    getInt(item, this.getInternalRouter().getRoutingMode()));
+            getInternalRouter().setRoutingMode(
+                    getInt(item, getInternalRouter().getRoutingMode()));
         }
 
         item = routerNode.getAttributes().getNamedItem("requiredScore");
         if (item != null) {
-            this.getInternalRouter()
-                    .setRequiredScore(
-                            getFloat(item, this.getInternalRouter()
-                                    .getRequiredScore()));
+            getInternalRouter().setRequiredScore(
+                    getFloat(item, getInternalRouter().getRequiredScore()));
         }
 
         item = routerNode.getAttributes().getNamedItem("retryDelay");
         if (item != null) {
-            this.getInternalRouter().setRetryDelay(
-                    getLong(item, this.getInternalRouter().getRetryDelay()));
+            getInternalRouter().setRetryDelay(
+                    getLong(item, getInternalRouter().getRetryDelay()));
         }
 
         // Loops the list of "attach" instructions
@@ -871,9 +874,9 @@ public class Component extends Restlet {
     }
 
     private void setAttach(Router router, Node node) {
-        NodeList childNodes = node.getChildNodes();
+        final NodeList childNodes = node.getChildNodes();
         for (int i = 0; i < childNodes.getLength(); i++) {
-            Node childNode = childNodes.item(i);
+            final Node childNode = childNodes.item(i);
             if ("attach".equals(childNode.getNodeName())) {
                 String uriPattern = null;
                 Node item = childNode.getAttributes()
@@ -885,7 +888,7 @@ public class Component extends Restlet {
                 }
 
                 item = childNode.getAttributes().getNamedItem("default");
-                boolean bDefault = getBoolean(item, false);
+                final boolean bDefault = getBoolean(item, false);
 
                 // Attaches a new route.
                 Route route = null;
@@ -908,7 +911,7 @@ public class Component extends Restlet {
                 }
 
                 if (route != null) {
-                    Template template = route.getTemplate();
+                    final Template template = route.getTemplate();
                     item = childNode.getAttributes().getNamedItem(
                             "matchingMode");
                     template.setMatchingMode(getInt(item,
@@ -927,7 +930,7 @@ public class Component extends Restlet {
      * compound action (clear, addAll) atomic, not for visibility.
      * 
      * @param clients
-     *                A modifiable list of client connectors.
+     *            A modifiable list of client connectors.
      */
     public synchronized void setClients(ClientList clients) {
         this.clients.clear();
@@ -941,7 +944,7 @@ public class Component extends Restlet {
      * Sets the default virtual host.
      * 
      * @param defaultHost
-     *                The default virtual host.
+     *            The default virtual host.
      */
     public void setDefaultHost(VirtualHost defaultHost) {
         this.defaultHost = defaultHost;
@@ -952,7 +955,7 @@ public class Component extends Restlet {
      * compound action (clear, addAll) atomic, not for visibility.
      * 
      * @param hosts
-     *                The modifiable list of virtual hosts.
+     *            The modifiable list of virtual hosts.
      */
     public synchronized void setHosts(List<VirtualHost> hosts) {
         this.hosts.clear();
@@ -967,7 +970,7 @@ public class Component extends Restlet {
      * attached.
      * 
      * @param internalRouter
-     *                The private internal router.
+     *            The private internal router.
      * @see #getInternalRouter()
      */
     public void setInternalRouter(Router internalRouter) {
@@ -978,7 +981,7 @@ public class Component extends Restlet {
      * Sets the global log service.
      * 
      * @param logService
-     *                The global log service.
+     *            The global log service.
      */
     public void setLogService(LogService logService) {
         this.logService = logService;
@@ -989,7 +992,7 @@ public class Component extends Restlet {
      * compound action (clear, addAll) atomic, not for visibility.
      * 
      * @param servers
-     *                A modifiable list of server connectors.
+     *            A modifiable list of server connectors.
      */
     public synchronized void setServers(ServerList servers) {
         this.servers.clear();
@@ -1003,7 +1006,7 @@ public class Component extends Restlet {
      * Sets the status service.
      * 
      * @param statusService
-     *                The status service.
+     *            The status service.
      */
     public void setStatusService(StatusService statusService) {
         this.statusService = statusService;
@@ -1035,7 +1038,7 @@ public class Component extends Restlet {
      */
     protected synchronized void startClients() throws Exception {
         if (this.clients != null) {
-            for (Client client : this.clients) {
+            for (final Client client : this.clients) {
                 client.start();
             }
         }
@@ -1047,8 +1050,9 @@ public class Component extends Restlet {
      * @throws Exception
      */
     protected synchronized void startHelper() throws Exception {
-        if (getHelper() != null)
+        if (getHelper() != null) {
             getHelper().start();
+        }
     }
 
     /**
@@ -1058,7 +1062,7 @@ public class Component extends Restlet {
      */
     protected synchronized void startServers() throws Exception {
         if (this.servers != null) {
-            for (Server server : this.servers) {
+            for (final Server server : this.servers) {
                 server.start();
             }
         }
@@ -1088,7 +1092,7 @@ public class Component extends Restlet {
      */
     protected synchronized void stopClients() throws Exception {
         if (this.clients != null) {
-            for (Client client : this.clients) {
+            for (final Client client : this.clients) {
                 client.stop();
             }
         }
@@ -1100,8 +1104,9 @@ public class Component extends Restlet {
      * @throws Exception
      */
     protected synchronized void stopHelper() throws Exception {
-        if (getHelper() != null)
+        if (getHelper() != null) {
             getHelper().stop();
+        }
     }
 
     /**
@@ -1111,7 +1116,7 @@ public class Component extends Restlet {
      */
     protected synchronized void stopServers() throws Exception {
         if (this.servers != null) {
-            for (Server server : this.servers) {
+            for (final Server server : this.servers) {
                 server.stop();
             }
         }

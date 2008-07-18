@@ -31,6 +31,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 
+import org.restlet.test.jaxrs.services.tests.ListParamTest;
+
 /**
  * @author Stephan Koops
  * @see ListParamTest
@@ -41,52 +43,52 @@ public class ListParamService {
     @GET
     @Path("cookie")
     @Produces("text/plain")
-    public String getCookie(@CookieParam("c") String c, 
+    public String getCookie(@CookieParam("c") String c,
             @CookieParam("cc") List<String> cc) {
-        return "c=" + c + "\ncc="+cc;
+        return "c=" + c + "\ncc=" + cc;
     }
 
     @GET
     @Path("header")
     @Produces("text/plain")
-    public String getHeader(@HeaderParam("h") String h, 
+    public String getHeader(@HeaderParam("h") String h,
             @HeaderParam("hh") Set<String> hh) {
-        return "h=" + h + "\nhh="+hh;
+        return "h=" + h + "\nhh=" + hh;
     }
 
     @GET
     @Path("matrix")
     @Produces("text/plain")
-    public String getMatrix(@MatrixParam("m") String m, 
+    public String getMatrix(@MatrixParam("m") String m,
             @MatrixParam("mm") Collection<String> mm) {
-        return "m=" + m + "\nmm="+mm;
+        return "m=" + m + "\nmm=" + mm;
+    }
+
+    // @Path("{other}")
+    public ListParamService getOther() {
+        return new ListParamService();
     }
 
     @GET
     @Path("path/{p}/{p}/{pp}/{pp}")
     @Produces("text/plain")
-    public String getPath(@PathParam("p") String p, 
+    public String getPath(@PathParam("p") String p,
             @PathParam("pp") SortedSet<String> pp) {
-        return "p=" + p + "\npp="+pp;
+        return "p=" + p + "\npp=" + pp;
     }
 
     @GET
     @Path("query")
     @Produces("text/plain")
-    public String getQuery(@QueryParam("q") String q, 
+    public String getQuery(@QueryParam("q") String q,
             @QueryParam("qq") List<String> qq) {
-        return "q=" + q + "\nqq="+qq;
+        return "q=" + q + "\nqq=" + qq;
     }
-    
-    //@Path("{other}")
-    public ListParamService getOther() {
-        return new ListParamService();
-    }
-    
+
     @GET
     @Produces("text/plain")
-    public String getZ(@PathParam("other") String other, 
+    public String getZ(@PathParam("other") String other,
             @PathParam("other") List<String> others) {
-        return "other="+other+"\nothers="+others;
+        return "other=" + other + "\nothers=" + others;
     }
 }

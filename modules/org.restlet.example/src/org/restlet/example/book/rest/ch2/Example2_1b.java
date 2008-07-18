@@ -39,18 +39,18 @@ public class Example2_1b {
             System.err.println("You need to pass a term to search");
         } else {
             // Fetch a resource: an XML document full of search results
-            String term = Reference.encode(args[0]);
-            String uri = BASE_URI + "?appid=restbook&query=" + term;
-            Response response = new Client(Protocol.HTTP).get(uri);
-            DomRepresentation document = response.getEntityAsDom();
+            final String term = Reference.encode(args[0]);
+            final String uri = BASE_URI + "?appid=restbook&query=" + term;
+            final Response response = new Client(Protocol.HTTP).get(uri);
+            final DomRepresentation document = response.getEntityAsDom();
 
             // Associate the namespace with the prefix y
             document.setNamespaceAware(true);
             document.putNamespace("y", "urn:yahoo:srch");
 
             // Use XPath to find the interesting parts of the data structure
-            String expr = "/y:ResultSet/y:Result/y:Title/text()";
-            for (Node node : document.getNodes(expr)) {
+            final String expr = "/y:ResultSet/y:Result/y:Title/text()";
+            for (final Node node : document.getNodes(expr)) {
                 System.out.println(node.getTextContent());
             }
         }

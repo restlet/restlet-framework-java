@@ -87,7 +87,7 @@ public class DocumentationInfo {
      * @return The language of this documentation element.
      */
     public Language getLanguage() {
-        return language;
+        return this.language;
     }
 
     /**
@@ -96,7 +96,7 @@ public class DocumentationInfo {
      * @return The content of that element as text.
      */
     public String getTextContent() {
-        return textContent;
+        return this.textContent;
     }
 
     /**
@@ -105,7 +105,7 @@ public class DocumentationInfo {
      * @return The title of that documentation element.
      */
     public String getTitle() {
-        return title;
+        return this.title;
     }
 
     /**
@@ -114,7 +114,7 @@ public class DocumentationInfo {
      * @return The content of that element as XML element.
      */
     public Element getXmlContent() {
-        return xmlContent;
+        return this.xmlContent;
     }
 
     /**
@@ -165,17 +165,17 @@ public class DocumentationInfo {
      * @throws SAXException
      */
     public void writeElement(XmlWriter writer) throws SAXException {
-        AttributesImpl attributes = new AttributesImpl();
-        if (getTitle() != null && !getTitle().equals("")) {
+        final AttributesImpl attributes = new AttributesImpl();
+        if ((getTitle() != null) && !getTitle().equals("")) {
             attributes.addAttribute("", "title", null, "xs:string", getTitle());
         }
-        if (getLanguage() != null && getLanguage().toString() != null) {
+        if ((getLanguage() != null) && (getLanguage().toString() != null)) {
             attributes.addAttribute("", "xml:lang", null, "xs:string",
                     getLanguage().toString());
         }
 
-        if ((getTextContent() == null || getTextContent().equals(""))
-                && getXmlContent() == null) {
+        if (((getTextContent() == null) || getTextContent().equals(""))
+                && (getXmlContent() == null)) {
             writer.emptyElement(APP_NAMESPACE, "doc", null, attributes);
         } else {
 
@@ -185,7 +185,7 @@ public class DocumentationInfo {
                 writer.startElement(APP_NAMESPACE, "doc", null, attributes);
                 try {
                     writer.getWriter().write(getTextContent());
-                } catch (IOException e) {
+                } catch (final IOException e) {
                     logger
                             .log(
                                     Level.SEVERE,

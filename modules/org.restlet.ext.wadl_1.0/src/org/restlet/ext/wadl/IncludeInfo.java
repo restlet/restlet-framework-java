@@ -52,8 +52,9 @@ public class IncludeInfo {
         if (d == null) {
             synchronized (this) {
                 d = this.documentations;
-                if (d == null)
+                if (d == null) {
                     this.documentations = d = new ArrayList<DocumentationInfo>();
+                }
             }
         }
         return d;
@@ -65,7 +66,7 @@ public class IncludeInfo {
      * @return The URI of the referenced definition.
      */
     public Reference getTargetRef() {
-        return targetRef;
+        return this.targetRef;
     }
 
     /**
@@ -96,8 +97,8 @@ public class IncludeInfo {
      * @throws SAXException
      */
     public void writeElement(XmlWriter writer) throws SAXException {
-        AttributesImpl attributes = new AttributesImpl();
-        if (getTargetRef() != null && getTargetRef().toString() != null) {
+        final AttributesImpl attributes = new AttributesImpl();
+        if ((getTargetRef() != null) && (getTargetRef().toString() != null)) {
             attributes.addAttribute("", "href", null, "xs:anyURI",
                     getTargetRef().toString());
         }
@@ -106,7 +107,7 @@ public class IncludeInfo {
             writer.emptyElement(APP_NAMESPACE, "include", null, attributes);
         } else {
             writer.startElement(APP_NAMESPACE, "include", null, attributes);
-            for (DocumentationInfo documentationInfo : getDocumentations()) {
+            for (final DocumentationInfo documentationInfo : getDocumentations()) {
                 documentationInfo.writeElement(writer);
             }
             writer.endElement(APP_NAMESPACE, "include");

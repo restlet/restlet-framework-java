@@ -42,9 +42,9 @@ import org.restlet.resource.StringRepresentation;
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
  * 
- * @see <a
- *      href="http://www.restlet.org/documentation/1.1/tutorial#part08">Tutorial:
- *      Displaying error pages</a>
+ * @see <a *
+ *      href="http://www.restlet.org/documentation/1.1/tutorial#part08">Tutorial
+ *      : * Displaying error pages< /a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class StatusFilter extends Filter {
@@ -61,15 +61,15 @@ public class StatusFilter extends Filter {
      * Constructor.
      * 
      * @param context
-     *                The context.
+     *            The context.
      * @param overwrite
-     *                Indicates whether an existing representation should be
-     *                overwritten.
+     *            Indicates whether an existing representation should be
+     *            overwritten.
      * @param email
-     *                Email address of the administrator to contact in case of
-     *                error.
+     *            Email address of the administrator to contact in case of
+     *            error.
      * @param homeUri
-     *                The home URI to propose in case of error.
+     *            The home URI to propose in case of error.
      */
     public StatusFilter(Context context, boolean overwrite, String email,
             String homeUri) {
@@ -84,9 +84,9 @@ public class StatusFilter extends Filter {
      * by default.
      * 
      * @param request
-     *                The request to handle.
+     *            The request to handle.
      * @param response
-     *                The response to update.
+     *            The response to update.
      */
     @Override
     public void afterHandle(Request request, Response response) {
@@ -97,7 +97,7 @@ public class StatusFilter extends Filter {
 
         // Do we need to get a representation for the current status?
         if (response.getStatus().isError()
-                && ((response.getEntity() == null) || overwrite)) {
+                && ((response.getEntity() == null) || this.overwrite)) {
             response.setEntity(getRepresentation(response.getStatus(), request,
                     response));
         }
@@ -109,9 +109,9 @@ public class StatusFilter extends Filter {
      * invoked.
      * 
      * @param request
-     *                The request to handle.
+     *            The request to handle.
      * @param response
-     *                The response to update.
+     *            The response to update.
      * @return The continuation status.
      */
     @Override
@@ -119,7 +119,7 @@ public class StatusFilter extends Filter {
         // Normally handle the call
         try {
             super.doHandle(request, response);
-        } catch (Throwable t) {
+        } catch (final Throwable t) {
             response.setStatus(getStatus(t, request, response));
         }
 
@@ -132,16 +132,16 @@ public class StatusFilter extends Filter {
      * overriden.
      * 
      * @param status
-     *                The status to represent.
+     *            The status to represent.
      * @param request
-     *                The request handled.
+     *            The request handled.
      * @param response
-     *                The response updated.
+     *            The response updated.
      * @return The representation of the given status.
      */
     public Representation getRepresentation(Status status, Request request,
             Response response) {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         sb.append("<html>\n");
         sb.append("<head>\n");
         sb.append("   <title>Status page</title>\n");
@@ -159,16 +159,16 @@ public class StatusFilter extends Filter {
         sb.append(status.getUri());
         sb.append("\">here</a>.<br>\n");
 
-        if (email != null) {
+        if (this.email != null) {
             sb
                     .append("For further assistance, you can contact the <a href=\"mailto:");
-            sb.append(email);
+            sb.append(this.email);
             sb.append("\">administrator</a>.<br>\n");
         }
 
-        if (homeURI != null) {
+        if (this.homeURI != null) {
             sb.append("Please continue your visit at our <a href=\"");
-            sb.append(homeURI);
+            sb.append(this.homeURI);
             sb.append("\">home page</a>.\n");
         }
 
@@ -186,11 +186,11 @@ public class StatusFilter extends Filter {
      * In order to customize the default behavior, this method can be overriden.
      * 
      * @param throwable
-     *                The exception or error caught.
+     *            The exception or error caught.
      * @param request
-     *                The request handled.
+     *            The request handled.
      * @param response
-     *                The response updated.
+     *            The response updated.
      * @return The representation of the given status.
      */
     public Status getStatus(Throwable throwable, Request request,

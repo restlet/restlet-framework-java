@@ -54,7 +54,7 @@ public class ConnectorService {
      * does nothing.
      * 
      * @param entity
-     *                The entity about to be committed.
+     *            The entity about to be committed.
      */
     public void afterSend(Representation entity) {
         // Do nothing by default.
@@ -66,7 +66,7 @@ public class ConnectorService {
      * does nothing.
      * 
      * @param entity
-     *                The entity about to be committed.
+     *            The entity about to be committed.
      */
     public void beforeSend(Representation entity) {
         // Do nothing by default.
@@ -99,7 +99,7 @@ public class ConnectorService {
      * Sets the list of required client protocols.
      * 
      * @param clientProtocols
-     *                The list of required client protocols.
+     *            The list of required client protocols.
      */
     public void setClientProtocols(List<Protocol> clientProtocols) {
         this.clientProtocols = clientProtocols;
@@ -109,7 +109,7 @@ public class ConnectorService {
      * Sets he list of required server protocols.
      * 
      * @param serverProtocols
-     *                The list of required server protocols.
+     *            The list of required server protocols.
      */
     public void setServerProtocols(List<Protocol> serverProtocols) {
         this.serverProtocols = serverProtocols;

@@ -55,14 +55,14 @@ public class WrapperFactory {
 
     /**
      * @param tlContext
-     *                the {@link ThreadLocalizedContext} of the
-     *                {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
+     *            the {@link ThreadLocalizedContext} of the
+     *            {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
      * @param entityProviders
      * @param allCtxResolvers
      * @param extensionBackwardMapping
-     *                the extension backward mapping
+     *            the extension backward mapping
      * @param logger
-     *                the to log warnings and so on
+     *            the to log warnings and so on
      */
     public WrapperFactory(ThreadLocalizedContext tlContext,
             EntityProviders entityProviders,
@@ -88,14 +88,14 @@ public class WrapperFactory {
         ResourceClass rc;
         // NICE thread save Map access without synchronized?
         synchronized (this.resourceClasses) {
-            rc = resourceClasses.get(jaxRsResourceClass);
+            rc = this.resourceClasses.get(jaxRsResourceClass);
         }
         if (rc == null) {
-            rc = new ResourceClass(jaxRsResourceClass, tlContext,
-                    entityProviders, allCtxResolvers, extensionBackwardMapping,
-                    logger);
+            rc = new ResourceClass(jaxRsResourceClass, this.tlContext,
+                    this.entityProviders, this.allCtxResolvers,
+                    this.extensionBackwardMapping, this.logger);
             synchronized (this.resourceClasses) {
-                resourceClasses.put(jaxRsResourceClass, rc);
+                this.resourceClasses.put(jaxRsResourceClass, rc);
             }
         }
         return rc;
@@ -107,22 +107,23 @@ public class WrapperFactory {
      * @param jaxRsRootResourceClass
      * @return the wrapped root resource class.
      * @throws IllegalArgumentException
-     *                 if the class is not a valid root resource class.
+     *             if the class is not a valid root resource class.
      * @throws MissingAnnotationException
-     *                 if the class is not annotated with &#64;Path.
+     *             if the class is not annotated with &#64;Path.
      * @throws IllegalPathOnClassException
      * @throws MissingConstructorException
-     *                 if no valid constructor could be found.
-     * @throws IllegalBeanSetterTypeException 
-     * @throws IllegalFieldTypeException 
-     * @throws IllegalConstrParamTypeException 
+     *             if no valid constructor could be found.
+     * @throws IllegalBeanSetterTypeException
+     * @throws IllegalFieldTypeException
+     * @throws IllegalConstrParamTypeException
      */
     public RootResourceClass getRootResourceClass(
             Class<?> jaxRsRootResourceClass) throws IllegalArgumentException,
             MissingAnnotationException, IllegalPathOnClassException,
-            MissingConstructorException, IllegalConstrParamTypeException, IllegalFieldTypeException, IllegalBeanSetterTypeException {
-        return new RootResourceClass(jaxRsRootResourceClass, tlContext,
-                entityProviders, allCtxResolvers, extensionBackwardMapping,
-                logger);
+            MissingConstructorException, IllegalConstrParamTypeException,
+            IllegalFieldTypeException, IllegalBeanSetterTypeException {
+        return new RootResourceClass(jaxRsRootResourceClass, this.tlContext,
+                this.entityProviders, this.allCtxResolvers,
+                this.extensionBackwardMapping, this.logger);
     }
 }

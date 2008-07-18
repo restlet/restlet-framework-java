@@ -43,7 +43,7 @@ public class AccessLogFileHandler extends java.util.logging.FileHandler {
      * Constructor.
      * 
      * @param pattern
-     *                The name of the output file.
+     *            The name of the output file.
      * @throws IOException
      * @throws SecurityException
      */
@@ -57,9 +57,9 @@ public class AccessLogFileHandler extends java.util.logging.FileHandler {
      * Constructor.
      * 
      * @param pattern
-     *                The name of the output file.
+     *            The name of the output file.
      * @param append
-     *                Specifies append mode.
+     *            Specifies append mode.
      * @throws IOException
      * @throws SecurityException
      */
@@ -73,11 +73,11 @@ public class AccessLogFileHandler extends java.util.logging.FileHandler {
      * Constructor.
      * 
      * @param pattern
-     *                The name of the output file.
+     *            The name of the output file.
      * @param limit
-     *                The maximum number of bytes to write to any one file.
+     *            The maximum number of bytes to write to any one file.
      * @param count
-     *                The number of files to use.
+     *            The number of files to use.
      * @throws IOException
      * @throws SecurityException
      */
@@ -91,13 +91,13 @@ public class AccessLogFileHandler extends java.util.logging.FileHandler {
      * Constructor.
      * 
      * @param pattern
-     *                The name of the output file.
+     *            The name of the output file.
      * @param limit
-     *                The maximum number of bytes to write to any one file.
+     *            The maximum number of bytes to write to any one file.
      * @param count
-     *                The number of files to use.
+     *            The number of files to use.
      * @param append
-     *                Specifies append mode.
+     *            Specifies append mode.
      * @throws IOException
      * @throws SecurityException
      */

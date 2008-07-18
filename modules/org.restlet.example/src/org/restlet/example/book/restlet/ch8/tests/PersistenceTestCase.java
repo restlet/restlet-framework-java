@@ -36,44 +36,165 @@ public class PersistenceTestCase extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        db4oFile.delete();
-        Configuration configuration = Db4o.newConfiguration();
+        this.db4oFile.delete();
+        final Configuration configuration = Db4o.newConfiguration();
         configuration.activationDepth(10);
         configuration.add(new TransparentPersistenceSupport());
-        objectContainer = Db4o.openFile(configuration, db4oFile
+        this.objectContainer = Db4o.openFile(configuration, this.db4oFile
                 .getAbsolutePath());
 
-        domainObjects = new DomainObjects();
-        mailRoot = domainObjects.getMailRoot();
+        this.domainObjects = new DomainObjects();
+        this.mailRoot = this.domainObjects.getMailRoot();
 
-        objectContainer.store(mailRoot);
-        mailRoot = null;
+        this.objectContainer.store(this.mailRoot);
+        this.mailRoot = null;
 
-        ObjectSet<MailRoot> list = objectContainer
+        final ObjectSet<MailRoot> list = this.objectContainer
                 .queryByExample(new MailRoot());
         if (list.isEmpty()) {
             throw new Exception("The database has not been properly mounted.");
         } else {
-            mailRoot = list.get(0);
+            this.mailRoot = list.get(0);
         }
     }
 
     @Override
     protected void tearDown() throws Exception {
-        objectContainer.close();
+        this.objectContainer.close();
         super.tearDown();
     }
 
-    public void testMailboxes() {
-        assertEquals(mailRoot.getMailboxes().size(), 3);
-        assertEquals(mailRoot.getMailboxes().get(0).getOwner(), mailRoot
-                .getUsers().get(0));
-        assertTrue(mailRoot.getMailboxes().get(2).getOwner().isAdministrator());
+    public void testDB1() {
+        final Mailbox mailbox = this.mailRoot.getMailboxes().get(2);
+
+        // Get the unique administrator of the db.
+        final User proto = new User();
+        proto.setAdministrator(true);
+
+        ObjectSet<User> result = this.objectContainer.queryByExample(proto);
+        assertEquals(result.size(), 1);
+
+        mailbox.getOwner().setAdministrator(false);
+
+        this.objectContainer.store(mailbox.getOwner());
+        this.objectContainer.commit();
+        result = this.objectContainer.queryByExample(proto);
+
+        assertEquals(result.size(), 0);
+    }
+
+    public void testDB2() {
+        // Set a contact prototype for future research.
+        final Contact contactProto = new Contact();
+        // Set a Mail predicate for future research.
+        final Predicate<Mail> mailByContactNamePredicate = new Predicate<Mail>() {
+            static final long serialVersionUID = 1l;
+
+            @Override
+            public boolean match(Mail mail) {
+                boolean found = false;
+                for (final Contact contact : mail.getRecipients()) {
+                    if ("contact-5".equals(contact.getName())) {
+                        found = true;
+                        break;
+                    }
+                }
+
+                return found;
+            }
+        };
+        // Set a Mailbox predicate for future research.
+        final Predicate<Mailbox> mailboxByContactNamePredicate = new Predicate<Mailbox>() {
+            static final long serialVersionUID = 1l;
+
+            @Override
+            public boolean match(Mailbox mailbox) {
+                boolean found = false;
+                for (final Contact contact : mailbox.getContacts()) {
+                    if ("contact-5".equals(contact.getName())) {
+                        found = true;
+                        break;
+                    }
+                }
+
+                return found;
+            }
+        };
+
+        // Set of contacts resulting from a request
+        ObjectSet<Contact> contactList;
+        // Set of mails resulting from a request
+        ObjectSet<Mail> mailList;
+        // Set of mailboxess resulting from a request
+        ObjectSet<Mailbox> mailboxList;
+
+        // Search contact by name.
+        contactProto.setName("contact-4");
+        contactList = this.objectContainer.queryByExample(contactProto);
+        assertEquals(contactList.size(), 1);
+
+        // Search mail by name of contact.
+        mailList = this.objectContainer.query(mailByContactNamePredicate);
+        assertEquals(mailList.size(), 1);
+
+        // Update this contact
+        final Contact contact = contactList.get(0);
+        contact.setName("contact-5");
+        this.objectContainer.store(contact);
+        this.objectContainer.commit();
+
+        // Check that the mail sent to contact-4 now points to contact-5
+        mailList = this.objectContainer.query(mailByContactNamePredicate);
+        assertEquals(mailList.size(), 2);
+
+        mailboxList = this.objectContainer.query(mailboxByContactNamePredicate);
+        assertEquals(mailboxList.size(), 1);
+
+        // Look for "contact-5" (2 contacts) and delete them.
+        contactProto.setName("contact-5");
+        contactList = this.objectContainer.queryByExample(contactProto);
+        for (final Contact contact2 : contactList) {
+            for (final Mailbox mailbox : mailboxList) {
+                boolean found = false;
+                for (int i = 0; (i < mailbox.getContacts().size()) && !found; i++) {
+                    final Contact contact3 = mailbox.getContacts().get(i);
+                    if (contact2.getId().equals(contact3.getId())) {
+                        mailbox.getContacts().remove(i);
+                        found = true;
+                    }
+                }
+                this.objectContainer.store(mailbox);
+            }
+            for (final Mail mail : mailList) {
+                final List<Contact> list = new ArrayList<Contact>();
+                for (int i = 0; i < mail.getRecipients().size(); i++) {
+                    final Contact contact3 = mail.getRecipients().get(i);
+                    if (!contact2.getId().equals(contact3.getId())) {
+                        list.add(contact3);
+                    }
+                }
+                mail.setRecipients(list);
+                this.objectContainer.store(mail);
+            }
+
+            this.objectContainer.delete(contact2);
+        }
+        this.objectContainer.commit();
+
+        // Check the list is empty
+        contactList = this.objectContainer.queryByExample(contactProto);
+        assertTrue(contactList.isEmpty());
+
+        mailboxList = this.objectContainer.query(mailboxByContactNamePredicate);
+        assertTrue(mailboxList.isEmpty());
+
+        mailList = this.objectContainer.query(mailByContactNamePredicate);
+        assertTrue(mailList.isEmpty());
     }
 
     public void testMailbox1() {
         // Test first Mailbox
-        Mailbox mailbox = mailRoot.getMailboxes().get(0);
+        final Mailbox mailbox = this.mailRoot.getMailboxes().get(0);
         assertEquals(mailbox.getContacts().size(), 2);
         assertEquals(mailbox.getContacts().get(1).getName(), "contact-2");
         assertEquals(mailbox.getMails().size(), 2);
@@ -98,7 +219,7 @@ public class PersistenceTestCase extends TestCase {
 
     public void testMailbox2() {
         // Test second Mailbox
-        Mailbox mailbox = mailRoot.getMailboxes().get(1);
+        final Mailbox mailbox = this.mailRoot.getMailboxes().get(1);
         assertEquals(mailbox.getContacts().size(), 3);
         assertEquals(mailbox.getContacts().get(1).getName(), "contact-4");
         assertEquals(mailbox.getMails().size(), 3);
@@ -126,7 +247,7 @@ public class PersistenceTestCase extends TestCase {
 
     public void testMailbox3() {
         // Test third Mailbox
-        Mailbox mailbox = mailRoot.getMailboxes().get(2);
+        final Mailbox mailbox = this.mailRoot.getMailboxes().get(2);
 
         assertEquals(mailbox.getContacts().size(), 4);
         assertEquals(mailbox.getContacts().get(1).getName(), "contact-7");
@@ -155,131 +276,11 @@ public class PersistenceTestCase extends TestCase {
                 .getContacts().get(3));
     }
 
-    public void testDB1() {
-        Mailbox mailbox = mailRoot.getMailboxes().get(2);
-
-        // Get the unique administrator of the db.
-        User proto = new User();
-        proto.setAdministrator(true);
-
-        ObjectSet<User> result = objectContainer.queryByExample(proto);
-        assertEquals(result.size(), 1);
-
-        mailbox.getOwner().setAdministrator(false);
-
-        objectContainer.store(mailbox.getOwner());
-        objectContainer.commit();
-        result = objectContainer.queryByExample(proto);
-
-        assertEquals(result.size(), 0);
-    }
-
-    public void testDB2() {
-        // Set a contact prototype for future research.
-        Contact contactProto = new Contact();
-        // Set a Mail predicate for future research.
-        Predicate<Mail> mailByContactNamePredicate = new Predicate<Mail>() {
-            static final long serialVersionUID = 1l;
-
-            @Override
-            public boolean match(Mail mail) {
-                boolean found = false;
-                for (Contact contact : mail.getRecipients()) {
-                    if ("contact-5".equals(contact.getName())) {
-                        found = true;
-                        break;
-                    }
-                }
-
-                return found;
-            }
-        };
-        // Set a Mailbox predicate for future research.
-        Predicate<Mailbox> mailboxByContactNamePredicate = new Predicate<Mailbox>() {
-            static final long serialVersionUID = 1l;
-
-            @Override
-            public boolean match(Mailbox mailbox) {
-                boolean found = false;
-                for (Contact contact : mailbox.getContacts()) {
-                    if ("contact-5".equals(contact.getName())) {
-                        found = true;
-                        break;
-                    }
-                }
-
-                return found;
-            }
-        };
-
-        // Set of contacts resulting from a request
-        ObjectSet<Contact> contactList;
-        // Set of mails resulting from a request
-        ObjectSet<Mail> mailList;
-        // Set of mailboxess resulting from a request
-        ObjectSet<Mailbox> mailboxList;
-
-        // Search contact by name.
-        contactProto.setName("contact-4");
-        contactList = objectContainer.queryByExample(contactProto);
-        assertEquals(contactList.size(), 1);
-
-        // Search mail by name of contact.
-        mailList = objectContainer.query(mailByContactNamePredicate);
-        assertEquals(mailList.size(), 1);
-
-        // Update this contact
-        Contact contact = contactList.get(0);
-        contact.setName("contact-5");
-        objectContainer.store(contact);
-        objectContainer.commit();
-
-        // Check that the mail sent to contact-4 now points to contact-5
-        mailList = objectContainer.query(mailByContactNamePredicate);
-        assertEquals(mailList.size(), 2);
-
-        mailboxList = objectContainer.query(mailboxByContactNamePredicate);
-        assertEquals(mailboxList.size(), 1);
-
-        // Look for "contact-5" (2 contacts) and delete them.
-        contactProto.setName("contact-5");
-        contactList = objectContainer.queryByExample(contactProto);
-        for (Contact contact2 : contactList) {
-            for (Mailbox mailbox : mailboxList) {
-                boolean found = false;
-                for (int i = 0; i < mailbox.getContacts().size() && !found; i++) {
-                    Contact contact3 = mailbox.getContacts().get(i);
-                    if (contact2.getId().equals(contact3.getId())) {
-                        mailbox.getContacts().remove(i);
-                        found = true;
-                    }
-                }
-                objectContainer.store(mailbox);
-            }
-            for (Mail mail : mailList) {
-                List<Contact> list = new ArrayList<Contact>();
-                for (int i = 0; i < mail.getRecipients().size(); i++) {
-                    Contact contact3 = mail.getRecipients().get(i);
-                    if (!contact2.getId().equals(contact3.getId())) {
-                        list.add(contact3);
-                    }
-                }
-                mail.setRecipients(list);
-                objectContainer.store(mail);
-            }
-
-            objectContainer.delete(contact2);
-        }
-        objectContainer.commit();
-
-        // Check the list is empty
-        contactList = objectContainer.queryByExample(contactProto);
-        assertTrue(contactList.isEmpty());
-
-        mailboxList = objectContainer.query(mailboxByContactNamePredicate);
-        assertTrue(mailboxList.isEmpty());
-
-        mailList = objectContainer.query(mailByContactNamePredicate);
-        assertTrue(mailList.isEmpty());
+    public void testMailboxes() {
+        assertEquals(this.mailRoot.getMailboxes().size(), 3);
+        assertEquals(this.mailRoot.getMailboxes().get(0).getOwner(),
+                this.mailRoot.getUsers().get(0));
+        assertTrue(this.mailRoot.getMailboxes().get(2).getOwner()
+                .isAdministrator());
     }
 }

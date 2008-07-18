@@ -66,8 +66,9 @@ public class LinkInfo {
         if (d == null) {
             synchronized (this) {
                 d = this.documentations;
-                if (d == null)
+                if (d == null) {
                     this.documentations = d = new ArrayList<DocumentationInfo>();
+                }
             }
         }
         return d;
@@ -79,7 +80,7 @@ public class LinkInfo {
      * @return The relationship attribute value.
      */
     public String getRelationship() {
-        return relationship;
+        return this.relationship;
     }
 
     /**
@@ -88,7 +89,7 @@ public class LinkInfo {
      * @return The reference to the resource type of the linked resource.
      */
     public Reference getResourceType() {
-        return resourceType;
+        return this.resourceType;
     }
 
     /**
@@ -97,7 +98,7 @@ public class LinkInfo {
      * @return The reverse relationship attribute value.
      */
     public String getReverseRelationship() {
-        return reverseRelationship;
+        return this.reverseRelationship;
     }
 
     /**
@@ -148,18 +149,19 @@ public class LinkInfo {
      * @throws SAXException
      */
     public void writeElement(XmlWriter writer) throws SAXException {
-        AttributesImpl attributes = new AttributesImpl();
-        if (getRelationship() != null && !getRelationship().equals("")) {
+        final AttributesImpl attributes = new AttributesImpl();
+        if ((getRelationship() != null) && !getRelationship().equals("")) {
             attributes.addAttribute("", "rel", null, "xs:token",
                     getRelationship());
         }
-        if (getReverseRelationship() != null
+        if ((getReverseRelationship() != null)
                 && !getReverseRelationship().equals("")) {
             attributes.addAttribute("", "rev", null, "xs:token",
                     getReverseRelationship());
         }
 
-        if (getResourceType() != null && getResourceType().toString() != null) {
+        if ((getResourceType() != null)
+                && (getResourceType().toString() != null)) {
             attributes.addAttribute("", "resource_type", null, "xs:anyURI",
                     getResourceType().toString());
         }
@@ -169,7 +171,7 @@ public class LinkInfo {
         } else {
             writer.startElement(APP_NAMESPACE, "link", null, attributes);
 
-            for (DocumentationInfo documentationInfo : getDocumentations()) {
+            for (final DocumentationInfo documentationInfo : getDocumentations()) {
                 documentationInfo.writeElement(writer);
             }
 

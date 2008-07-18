@@ -71,6 +71,168 @@ public class FileClientHelper extends LocalClientHelper {
     }
 
     /**
+     * Check that all extensions of the file correspond to a known metadata
+     * 
+     * @param file
+     * @param metadataService
+     * @param representation
+     * @return
+     */
+    private boolean checkExtensionsConsistency(File file,
+            MetadataService metadataService) {
+        boolean knownExtension = true;
+
+        final Set<String> set = getExtensions(file, metadataService);
+        final Iterator<String> iterator = set.iterator();
+        while (iterator.hasNext() && knownExtension) {
+            knownExtension = metadataService.getMetadata(iterator.next()) != null;
+        }
+
+        return knownExtension;
+    }
+
+    /**
+     * Checks that the URI and the representation are compatible. The whole set
+     * of metadata of the representation must be included in the set of those of
+     * the URI
+     * 
+     * @param fileName
+     *            The name of the resource
+     * @param metadataService
+     *            metadata helper
+     * @param representation
+     *            the provided representation
+     * @return true if the metadata of the representation are compatible with
+     *         the metadata extracted from the filename
+     */
+    private boolean checkMetadataConsistency(String fileName,
+            MetadataService metadataService, Representation representation) {
+        boolean result = true;
+        if (representation != null) {
+            final Variant var = new Variant();
+            updateMetadata(metadataService, fileName, var);
+            // "rep" contains the theorical correct metadata
+            if (!representation.getLanguages().isEmpty()
+                    && !var.getLanguages().containsAll(
+                            representation.getLanguages())) {
+                result = false;
+            }
+            if ((representation.getMediaType() != null)
+                    && !((var.getMediaType() != null) && var.getMediaType()
+                            .includes(representation.getMediaType()))) {
+                result = false;
+            }
+            if (!representation.getEncodings().isEmpty()
+                    && !var.getEncodings().containsAll(
+                            representation.getEncodings())) {
+                result = false;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Returns the base name as the longest part of the name without known
+     * extensions (beginning from the left)
+     * 
+     * @param file
+     * @param metadataService
+     * @return the base name of the file
+     */
+    private String getBaseName(File file, MetadataService metadataService) {
+        final String[] result = file.getName().split("\\.");
+        final StringBuilder baseName = new StringBuilder().append(result[0]);
+        boolean extensionFound = false;
+        for (int i = 1; (i < result.length) && !extensionFound; i++) {
+            extensionFound = metadataService.getMetadata(result[i]) != null;
+            if (!extensionFound) {
+                baseName.append(".").append(result[i]);
+            }
+        }
+        return baseName.toString();
+    }
+
+    /**
+     * Returns the Set of extensions of a file
+     * 
+     * @param file
+     * @param metadataService
+     * @return
+     */
+    private Set<String> getExtensions(File file, MetadataService metadataService) {
+        final Set<String> result = new TreeSet<String>();
+
+        final String[] tokens = file.getName().split("\\.");
+        boolean extensionFound = false;
+        int i;
+        for (i = 1; (i < tokens.length) && !extensionFound; i++) {
+            extensionFound = metadataService.getMetadata(tokens[i]) != null;
+        }
+        if (extensionFound) {
+            for (--i; (i < tokens.length); i++) {
+                result.add(tokens[i]);
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Percent-encodes the given percent-decoded variant name of a resource
+     * whose percent-encoded name is given. Tries to match the longest common
+     * part of both encoded file name and decoded variant name.
+     * 
+     * @param encodedFileName
+     *            the percent-encoded name of the initial resource
+     * @param decodedVariantFileName
+     *            the percent-decoded file name of a variant of the initial
+     *            resource.
+     * @return the variant percent-encoded file name.
+     */
+    private String getReencodedVariantFileName(String encodedFileName,
+            String decodedVariantFileName) {
+        int i = 0;
+        int j = 0;
+        boolean stop = false;
+        for (i = 0; (i < decodedVariantFileName.length())
+                && (j < encodedFileName.length()) && !stop; i++) {
+            final String decodedChar = decodedVariantFileName.substring(i,
+                    i + 1);
+            if (decodedChar.equals(encodedFileName.substring(j, j + 1))) {
+                j++;
+            } else {
+                if (encodedFileName.substring(j, j + 1).equals("%")) {
+                    if (decodedChar.equals(Reference.decode(encodedFileName
+                            .substring(j, j + 3)))) {
+                        j += 3;
+                    } else {
+                        stop = true;
+                    }
+                } else {
+                    if (decodedChar.equals(Reference.decode(encodedFileName
+                            .substring(j, j + 1)))) {
+                        j++;
+                    } else {
+                        stop = true;
+                    }
+                }
+            }
+        }
+
+        if (stop) {
+            return encodedFileName.substring(0, j)
+                    + decodedVariantFileName.substring(i - 1);
+        }
+
+        if (j == encodedFileName.length()) {
+            return encodedFileName.substring(0, j)
+                    + decodedVariantFileName.substring(i);
+        }
+
+        return encodedFileName.substring(0, j);
+    }
+
+    /**
      * Handles a call.
      * 
      * @param request
@@ -80,7 +242,7 @@ public class FileClientHelper extends LocalClientHelper {
      */
     @Override
     public void handle(Request request, Response response) {
-        String scheme = request.getResourceRef().getScheme();
+        final String scheme = request.getResourceRef().getScheme();
 
         // Ensure that all ".." and "." are normalized into the path
         // to preven unauthorized access to user directories.
@@ -109,10 +271,10 @@ public class FileClientHelper extends LocalClientHelper {
     protected void handleFile(Request request, Response response, String path) {
         // As the path may be percent-encoded, it has to be percent-decoded.
         // Then, all generated uris must be encoded.
-        String decodedPath = LocalReference
-                .localizePath(Reference.decode(path));
+        final String decodedPath = LocalReference.localizePath(Reference
+                .decode(path));
         File file = new File(decodedPath);
-        MetadataService metadataService = getMetadataService(request);
+        final MetadataService metadataService = getMetadataService(request);
 
         if (request.getMethod().equals(Method.GET)
                 || request.getMethod().equals(Method.HEAD)) {
@@ -120,29 +282,29 @@ public class FileClientHelper extends LocalClientHelper {
 
             // Get variants for a resource
             boolean found = false;
-            Iterator<Preference<MediaType>> iterator = request.getClientInfo()
-                    .getAcceptedMediaTypes().iterator();
+            final Iterator<Preference<MediaType>> iterator = request
+                    .getClientInfo().getAcceptedMediaTypes().iterator();
             while (iterator.hasNext() && !found) {
-                Preference<MediaType> pref = iterator.next();
+                final Preference<MediaType> pref = iterator.next();
                 found = pref.getMetadata().equals(MediaType.TEXT_URI_LIST);
             }
             if (found) {
                 // Try to list all variants of this resource
                 // 1- set up base name as the longest part of the name without
                 // known extensions (beginning from the left)
-                String baseName = getBaseName(file, metadataService);
+                final String baseName = getBaseName(file, metadataService);
                 // 2- looking for resources with the same base name
                 if (file.getParentFile() != null) {
-                    File[] files = file.getParentFile().listFiles();
+                    final File[] files = file.getParentFile().listFiles();
                     if (files != null) {
-                        ReferenceList rl = new ReferenceList(files.length);
+                        final ReferenceList rl = new ReferenceList(files.length);
 
-                        String encodedParentDirectoryURI = path.substring(0,
-                                path.lastIndexOf("/"));
-                        String encodedFileName = path.substring(path
+                        final String encodedParentDirectoryURI = path
+                                .substring(0, path.lastIndexOf("/"));
+                        final String encodedFileName = path.substring(path
                                 .lastIndexOf("/") + 1);
 
-                        for (File entry : files) {
+                        for (final File entry : files) {
                             if (baseName.equals(getBaseName(entry,
                                     metadataService))) {
                                 rl
@@ -161,8 +323,8 @@ public class FileClientHelper extends LocalClientHelper {
                 if (file.exists()) {
                     if (file.isDirectory()) {
                         // Return the directory listing
-                        File[] files = file.listFiles();
-                        ReferenceList rl = new ReferenceList(files.length);
+                        final File[] files = file.listFiles();
+                        final ReferenceList rl = new ReferenceList(files.length);
                         String directoryUri = request.getResourceRef()
                                 .toString();
 
@@ -171,7 +333,7 @@ public class FileClientHelper extends LocalClientHelper {
                             directoryUri += "/";
                         }
 
-                        for (File entry : files) {
+                        for (final File entry : files) {
                             rl.add(directoryUri
                                     + Reference.encode(entry.getName()));
                         }
@@ -188,18 +350,18 @@ public class FileClientHelper extends LocalClientHelper {
                     // extensions in a distinct order.
                     // 1- set up base name as the longest part of the name
                     // without known extensions (beginning from the left)
-                    String baseName = getBaseName(file, metadataService);
-                    Set<String> extensions = getExtensions(file,
+                    final String baseName = getBaseName(file, metadataService);
+                    final Set<String> extensions = getExtensions(file,
                             metadataService);
                     // 2- loooking for resources with the same base name
-                    File[] files = file.getParentFile().listFiles();
+                    final File[] files = file.getParentFile().listFiles();
                     File uniqueVariant = null;
 
                     if (files != null) {
-                        for (File entry : files) {
+                        for (final File entry : files) {
                             if (baseName.equals(getBaseName(entry,
                                     metadataService))) {
-                                Set<String> entryExtensions = getExtensions(
+                                final Set<String> entryExtensions = getExtensions(
                                         entry, metadataService);
                                 if (entryExtensions.containsAll(extensions)
                                         && extensions
@@ -268,19 +430,19 @@ public class FileClientHelper extends LocalClientHelper {
                     // We look for the possible variants
                     // 1- set up base name as the longest part of the name
                     // without known extensions (beginning from the left)
-                    String baseName = getBaseName(file, metadataService);
-                    Set<String> extensions = getExtensions(file,
+                    final String baseName = getBaseName(file, metadataService);
+                    final Set<String> extensions = getExtensions(file,
                             metadataService);
                     // 2- loooking for resources with the same base name
-                    File[] files = file.getParentFile().listFiles();
+                    final File[] files = file.getParentFile().listFiles();
                     File uniqueVariant = null;
 
-                    List<File> variantsList = new ArrayList<File>();
+                    final List<File> variantsList = new ArrayList<File>();
                     if (files != null) {
-                        for (File entry : files) {
+                        for (final File entry : files) {
                             if (baseName.equals(getBaseName(entry,
                                     metadataService))) {
-                                Set<String> entryExtensions = getExtensions(
+                                final Set<String> entryExtensions = getExtensions(
                                         entry, metadataService);
                                 if (entryExtensions.containsAll(extensions)) {
                                     variantsList.add(entry);
@@ -322,7 +484,7 @@ public class FileClientHelper extends LocalClientHelper {
                                         metadataService.getDefaultMediaType());
                             }
                             if (request.getEntity().getEncodings().isEmpty()) {
-                                if (metadataService.getDefaultEncoding() != null
+                                if ((metadataService.getDefaultEncoding() != null)
                                         && !metadataService
                                                 .getDefaultEncoding().equals(
                                                         Encoding.IDENTITY)) {
@@ -332,14 +494,15 @@ public class FileClientHelper extends LocalClientHelper {
                                 }
                             }
                             // Update the URI
-                            StringBuilder fileName = new StringBuilder(baseName);
+                            final StringBuilder fileName = new StringBuilder(
+                                    baseName);
                             if (metadataService.getExtension(request
                                     .getEntity().getMediaType()) != null) {
                                 fileName.append("."
                                         + metadataService.getExtension(request
                                                 .getEntity().getMediaType()));
                             }
-                            for (Language language : request.getEntity()
+                            for (final Language language : request.getEntity()
                                     .getLanguages()) {
                                 if (metadataService.getExtension(language) != null) {
                                     fileName.append("."
@@ -347,7 +510,7 @@ public class FileClientHelper extends LocalClientHelper {
                                                     .getExtension(language));
                                 }
                             }
-                            for (Encoding encoding : request.getEntity()
+                            for (final Encoding encoding : request.getEntity()
                                     .getEncodings()) {
                                 if (metadataService.getExtension(encoding) != null) {
                                     fileName.append("."
@@ -382,7 +545,7 @@ public class FileClientHelper extends LocalClientHelper {
                                     ByteUtils.write(request.getEntity()
                                             .getStream(), fos);
                                 }
-                            } catch (IOException ioe) {
+                            } catch (final IOException ioe) {
                                 getLogger().log(Level.WARNING,
                                         "Unable to create the temporary file",
                                         ioe);
@@ -391,9 +554,10 @@ public class FileClientHelper extends LocalClientHelper {
                                         "Unable to create a temporary file"));
                             } finally {
                                 try {
-                                    if (fos != null)
+                                    if (fos != null) {
                                         fos.close();
-                                } catch (IOException ioe) {
+                                    }
+                                } catch (final IOException ioe) {
                                     getLogger()
                                             .log(
                                                     Level.WARNING,
@@ -423,22 +587,23 @@ public class FileClientHelper extends LocalClientHelper {
                                     // platform-dependent: The rename operation
                                     // might not be able to move a file from one
                                     // filesystem to another.
-                                    if (tmp != null && tmp.exists()) {
+                                    if ((tmp != null) && tmp.exists()) {
                                         try {
-                                            BufferedReader br = new BufferedReader(
+                                            final BufferedReader br = new BufferedReader(
                                                     new FileReader(tmp));
-                                            BufferedWriter wr = new BufferedWriter(
+                                            final BufferedWriter wr = new BufferedWriter(
                                                     new FileWriter(file));
                                             String s;
-                                            while ((s = br.readLine()) != null)
+                                            while ((s = br.readLine()) != null) {
                                                 wr.append(s);
+                                            }
 
                                             br.close();
                                             wr.flush();
                                             wr.close();
                                             renameSuccessfull = true;
                                             tmp.delete();
-                                        } catch (Exception e) {
+                                        } catch (final Exception e) {
                                             renameSuccessfull = false;
                                         }
                                     }
@@ -460,7 +625,7 @@ public class FileClientHelper extends LocalClientHelper {
                                         "Unable to delete the existing file"));
                             }
                         } else {
-                            File parent = file.getParentFile();
+                            final File parent = file.getParentFile();
                             if ((parent != null) && !parent.exists()) {
                                 // Create the parent directories then the new
                                 // file
@@ -495,21 +660,22 @@ public class FileClientHelper extends LocalClientHelper {
                                             Status.SERVER_ERROR_INTERNAL,
                                             "Unable to create the new file"));
                                 }
-                            } catch (FileNotFoundException fnfe) {
+                            } catch (final FileNotFoundException fnfe) {
                                 getLogger().log(Level.WARNING,
                                         "Unable to create the new file", fnfe);
                                 response.setStatus(
                                         Status.SERVER_ERROR_INTERNAL, fnfe);
-                            } catch (IOException ioe) {
+                            } catch (final IOException ioe) {
                                 getLogger().log(Level.WARNING,
                                         "Unable to create the new file", ioe);
                                 response.setStatus(
                                         Status.SERVER_ERROR_INTERNAL, ioe);
                             } finally {
                                 try {
-                                    if (fos != null)
+                                    if (fos != null) {
                                         fos.close();
-                                } catch (IOException ioe) {
+                                    }
+                                } catch (final IOException ioe) {
                                     getLogger()
                                             .log(
                                                     Level.WARNING,
@@ -551,166 +717,5 @@ public class FileClientHelper extends LocalClientHelper {
             response.getAllowedMethods().add(Method.PUT);
             response.getAllowedMethods().add(Method.DELETE);
         }
-    }
-
-    /**
-     * Returns the base name as the longest part of the name without known
-     * extensions (beginning from the left)
-     * 
-     * @param file
-     * @param metadataService
-     * @return the base name of the file
-     */
-    private String getBaseName(File file, MetadataService metadataService) {
-        String[] result = file.getName().split("\\.");
-        StringBuilder baseName = new StringBuilder().append(result[0]);
-        boolean extensionFound = false;
-        for (int i = 1; (i < result.length) && !extensionFound; i++) {
-            extensionFound = metadataService.getMetadata(result[i]) != null;
-            if (!extensionFound) {
-                baseName.append(".").append(result[i]);
-            }
-        }
-        return baseName.toString();
-    }
-
-    /**
-     * Returns the Set of extensions of a file
-     * 
-     * @param file
-     * @param metadataService
-     * @return
-     */
-    private Set<String> getExtensions(File file, MetadataService metadataService) {
-        Set<String> result = new TreeSet<String>();
-
-        String[] tokens = file.getName().split("\\.");
-        boolean extensionFound = false;
-        int i;
-        for (i = 1; (i < tokens.length) && !extensionFound; i++) {
-            extensionFound = metadataService.getMetadata(tokens[i]) != null;
-        }
-        if (extensionFound) {
-            for (--i; (i < tokens.length); i++) {
-                result.add(tokens[i]);
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Checks that the URI and the representation are compatible. The whole set
-     * of metadata of the representation must be included in the set of those of
-     * the URI
-     * 
-     * @param fileName
-     *            The name of the resource
-     * @param metadataService
-     *            metadata helper
-     * @param representation
-     *            the provided representation
-     * @return true if the metadata of the representation are compatible with
-     *         the metadata extracted from the filename
-     */
-    private boolean checkMetadataConsistency(String fileName,
-            MetadataService metadataService, Representation representation) {
-        boolean result = true;
-        if (representation != null) {
-            Variant var = new Variant();
-            updateMetadata(metadataService, fileName, var);
-            // "rep" contains the theorical correct metadata
-            if (!representation.getLanguages().isEmpty()
-                    && !var.getLanguages().containsAll(
-                            representation.getLanguages())) {
-                result = false;
-            }
-            if (representation.getMediaType() != null
-                    && !(var.getMediaType() != null && var.getMediaType()
-                            .includes(representation.getMediaType()))) {
-                result = false;
-            }
-            if (!representation.getEncodings().isEmpty()
-                    && !var.getEncodings().containsAll(
-                            representation.getEncodings())) {
-                result = false;
-            }
-        }
-        return result;
-    }
-
-    /**
-     * Check that all extensions of the file correspond to a known metadata
-     * 
-     * @param file
-     * @param metadataService
-     * @param representation
-     * @return
-     */
-    private boolean checkExtensionsConsistency(File file,
-            MetadataService metadataService) {
-        boolean knownExtension = true;
-
-        Set<String> set = getExtensions(file, metadataService);
-        Iterator<String> iterator = set.iterator();
-        while (iterator.hasNext() && knownExtension) {
-            knownExtension = metadataService.getMetadata(iterator.next()) != null;
-        }
-
-        return knownExtension;
-    }
-
-    /**
-     * Percent-encodes the given percent-decoded variant name of a resource
-     * whose percent-encoded name is given. Tries to match the longest common
-     * part of both encoded file name and decoded variant name.
-     * 
-     * @param encodedFileName
-     *            the percent-encoded name of the initial resource
-     * @param decodedVariantFileName
-     *            the percent-decoded file name of a variant of the initial
-     *            resource.
-     * @return the variant percent-encoded file name.
-     */
-    private String getReencodedVariantFileName(String encodedFileName,
-            String decodedVariantFileName) {
-        int i = 0;
-        int j = 0;
-        boolean stop = false;
-        for (i = 0; i < decodedVariantFileName.length()
-                && (j < encodedFileName.length()) && !stop; i++) {
-            String decodedChar = decodedVariantFileName.substring(i, i + 1);
-            if (decodedChar.equals(encodedFileName.substring(j, j + 1))) {
-                j++;
-            } else {
-                if (encodedFileName.substring(j, j + 1).equals("%")) {
-                    if (decodedChar.equals(Reference.decode(encodedFileName
-                            .substring(j, j + 3)))) {
-                        j += 3;
-                    } else {
-                        stop = true;
-                    }
-                } else {
-                    if (decodedChar.equals(Reference.decode(encodedFileName
-                            .substring(j, j + 1)))) {
-                        j++;
-                    } else {
-                        stop = true;
-                    }
-                }
-            }
-        }
-
-        if (stop) {
-            return encodedFileName.substring(0, j)
-                    + decodedVariantFileName.substring(i - 1);
-        }
-
-        if (j == encodedFileName.length()) {
-            return encodedFileName.substring(0, j)
-                    + decodedVariantFileName.substring(i);
-        }
-
-        return encodedFileName.substring(0, j);
     }
 }

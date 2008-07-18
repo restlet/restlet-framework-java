@@ -253,12 +253,13 @@ public class ServerServlet extends HttpServlet {
 
         // Try to instantiate a new target application
         // First, find the application class name
-        String applicationClassName = getInitParameter(APPLICATION_KEY, null);
+        final String applicationClassName = getInitParameter(APPLICATION_KEY,
+                null);
 
         // Load the application class using the given class name
         if (applicationClassName != null) {
             try {
-                Class<?> targetClass = getClass(applicationClassName);
+                final Class<?> targetClass = getClass(applicationClassName);
 
                 try {
                     // Create a new instance of the application class by
@@ -266,7 +267,7 @@ public class ServerServlet extends HttpServlet {
                     application = (Application) targetClass.getConstructor(
                             Context.class).newInstance(
                             new ServletContextAdapter(this, context));
-                } catch (NoSuchMethodException e) {
+                } catch (final NoSuchMethodException e) {
                     log(
                             "[Noelios Restlet Engine] - The ServerServlet couldn't invoke the constructor of the target class. Please check this class has a constructor with a single parameter of type Context. The empty constructor and the context setter will be used instead.",
                             e);
@@ -277,30 +278,30 @@ public class ServerServlet extends HttpServlet {
                             .newInstance();
 
                     // Set the context based on the Servlet's context
-                    ApplicationContext applicationContext = (ApplicationContext) application
+                    final ApplicationContext applicationContext = (ApplicationContext) application
                             .getContext();
                     application.setContext(new ApplicationContext(application,
                             new ServletContextAdapter(this, context),
                             applicationContext.getLogger()));
                 }
-            } catch (ClassNotFoundException e) {
+            } catch (final ClassNotFoundException e) {
                 log(
                         "[Noelios Restlet Engine] - The ServerServlet couldn't find the target class. Please check that your classpath includes "
                                 + applicationClassName, e);
 
-            } catch (InstantiationException e) {
+            } catch (final InstantiationException e) {
                 log(
                         "[Noelios Restlet Engine] - The ServerServlet couldn't instantiate the target class. Please check this class has an empty constructor "
                                 + applicationClassName, e);
-            } catch (IllegalAccessException e) {
+            } catch (final IllegalAccessException e) {
                 log(
                         "[Noelios Restlet Engine] - The ServerServlet couldn't instantiate the target class. Please check that you have to proper access rights to "
                                 + applicationClassName, e);
-            } catch (NoSuchMethodException e) {
+            } catch (final NoSuchMethodException e) {
                 log(
                         "[Noelios Restlet Engine] - The ServerServlet couldn't invoke the constructor of the target class. Please check this class has a constructor with a single parameter of Context "
                                 + applicationClassName, e);
-            } catch (InvocationTargetException e) {
+            } catch (final InvocationTargetException e) {
                 log(
                         "[Noelios Restlet Engine] - The ServerServlet couldn't instantiate the target class. An exception was thrown while creating "
                                 + applicationClassName, e);
@@ -308,15 +309,15 @@ public class ServerServlet extends HttpServlet {
         }
 
         if (application != null) {
-            ApplicationContext applicationContext = (ApplicationContext) application
+            final ApplicationContext applicationContext = (ApplicationContext) application
                     .getContext();
 
             // Copy all the servlet parameters into the context
             String initParam;
 
             // Copy all the Servlet component initialization parameters
-            javax.servlet.ServletConfig servletConfig = getServletConfig();
-            for (Enumeration<String> enum1 = servletConfig
+            final javax.servlet.ServletConfig servletConfig = getServletConfig();
+            for (final Enumeration<String> enum1 = servletConfig
                     .getInitParameterNames(); enum1.hasMoreElements();) {
                 initParam = enum1.nextElement();
                 applicationContext.getParameters().add(initParam,
@@ -324,7 +325,7 @@ public class ServerServlet extends HttpServlet {
             }
 
             // Copy all the Servlet application initialization parameters
-            for (Enumeration<String> enum1 = getServletContext()
+            for (final Enumeration<String> enum1 = getServletContext()
                     .getInitParameterNames(); enum1.hasMoreElements();) {
                 initParam = enum1.nextElement();
                 applicationContext.getParameters().add(initParam,
@@ -362,35 +363,36 @@ public class ServerServlet extends HttpServlet {
         Component component = null;
 
         // Look for the Component XML configuration file.
-        String configPath = getServletContext().getRealPath(
+        final String configPath = getServletContext().getRealPath(
                 "/WEB-INF/restlet.xml");
-        File configFile = new File(configPath);
-        if (configPath != null && configFile.exists()) {
+        final File configFile = new File(configPath);
+        if ((configPath != null) && configFile.exists()) {
             component = new Component(LocalReference
                     .createFileReference(configPath));
         } else {
             // Try to instantiate a new target component
             // First, find the component class name
-            String componentClassName = getInitParameter(COMPONENT_KEY, null);
+            final String componentClassName = getInitParameter(COMPONENT_KEY,
+                    null);
 
             // Load the component class using the given class name
             if (componentClassName != null) {
                 try {
-                    Class<?> targetClass = getClass(componentClassName);
+                    final Class<?> targetClass = getClass(componentClassName);
 
                     // Create a new instance of the component class by
                     // invoking the constructor with the Context parameter.
                     component = (Component) targetClass.newInstance();
-                } catch (ClassNotFoundException e) {
+                } catch (final ClassNotFoundException e) {
                     log(
                             "[Noelios Restlet Engine] - The ServerServlet couldn't find the target class. Please check that your classpath includes "
                                     + componentClassName, e);
 
-                } catch (InstantiationException e) {
+                } catch (final InstantiationException e) {
                     log(
                             "[Noelios Restlet Engine] - The ServerServlet couldn't instantiate the target class. Please check this class has an empty constructor "
                                     + componentClassName, e);
-                } catch (IllegalAccessException e) {
+                } catch (final IllegalAccessException e) {
                     log(
                             "[Noelios Restlet Engine] - The ServerServlet couldn't instantiate the target class. Please check that you have to proper access rights to "
                                     + componentClassName, e);
@@ -405,11 +407,12 @@ public class ServerServlet extends HttpServlet {
                 component.getStatusService().setEnabled(false);
 
                 // Define the list of supported client protocols.
-                String clientProtocolsString = getInitParameter(CLIENTS_KEY,
-                        null);
+                final String clientProtocolsString = getInitParameter(
+                        CLIENTS_KEY, null);
                 if (clientProtocolsString != null) {
-                    String[] clientProtocols = clientProtocolsString.split(" ");
-                    for (String clientProtocol : clientProtocols) {
+                    final String[] clientProtocols = clientProtocolsString
+                            .split(" ");
+                    for (final String clientProtocol : clientProtocols) {
                         component.getClients().add(
                                 Protocol.valueOf(clientProtocol));
                     }
@@ -424,21 +427,21 @@ public class ServerServlet extends HttpServlet {
                 createWarClient(component.getContext(), getServletConfig()));
 
         // Copy all the servlet parameters into the context
-        ComponentContext componentContext = (ComponentContext) component
+        final ComponentContext componentContext = (ComponentContext) component
                 .getContext();
         String initParam;
 
         // Copy all the Servlet container initialization parameters
-        javax.servlet.ServletConfig servletConfig = getServletConfig();
-        for (Enumeration<String> enum1 = servletConfig.getInitParameterNames(); enum1
-                .hasMoreElements();) {
+        final javax.servlet.ServletConfig servletConfig = getServletConfig();
+        for (final Enumeration<String> enum1 = servletConfig
+                .getInitParameterNames(); enum1.hasMoreElements();) {
             initParam = enum1.nextElement();
             componentContext.getParameters().add(initParam,
                     servletConfig.getInitParameter(initParam));
         }
 
         // Copy all the Servlet application initialization parameters
-        for (Enumeration<String> enum1 = getServletContext()
+        for (final Enumeration<String> enum1 = getServletContext()
                 .getInitParameterNames(); enum1.hasMoreElements();) {
             initParam = enum1.nextElement();
             componentContext.getParameters().add(initParam,
@@ -457,37 +460,38 @@ public class ServerServlet extends HttpServlet {
      */
     protected HttpServerHelper createServer(HttpServletRequest request) {
         HttpServerHelper result = null;
-        Component component = getComponent();
+        final Component component = getComponent();
 
         if (component != null) {
             // First, let's create a pseudo server
-            Server server = new Server(component.getContext(),
+            final Server server = new Server(component.getContext(),
                     (List<Protocol>) null, request.getLocalAddr(), request
                             .getLocalPort(), component);
             result = new HttpServerHelper(server);
 
             // Attach the default hosted application(s) to the right path
-            String uriPattern = request.getContextPath()
+            final String uriPattern = request.getContextPath()
                     + request.getServletPath();
 
             if (isDefaultComponent()) {
-                if (application != null) {
-                    if (application != null) {
+                if (this.application != null) {
+                    if (this.application != null) {
                         log("[Noelios Restlet Engine] - Attaching application: "
-                                + application + " to URI: " + uriPattern);
+                                + this.application + " to URI: " + uriPattern);
                         component.getDefaultHost().attach(uriPattern,
-                                application);
+                                this.application);
                     }
                 }
             } else {
                 // According to the mode, configure correctly the component.
-                String autoWire = getInitParameter(AUTO_WIRE_KEY,
+                final String autoWire = getInitParameter(AUTO_WIRE_KEY,
                         AUTO_WIRE_KEY_DEFAULT);
                 if (AUTO_WIRE_KEY_DEFAULT.equalsIgnoreCase(autoWire)) {
                     // Translate all defined routes according to the context
                     // path.
-                    for (Route route : component.getDefaultHost().getRoutes()) {
-                        if (route.getTemplate().getPattern() == null
+                    for (final Route route : component.getDefaultHost()
+                            .getRoutes()) {
+                        if ((route.getTemplate().getPattern() == null)
                                 || !route.getTemplate().getPattern()
                                         .startsWith(uriPattern)) {
                             log("[Noelios Restlet Engine] - Attaching restlet: "
@@ -500,9 +504,9 @@ public class ServerServlet extends HttpServlet {
                                             + route.getTemplate().getPattern());
                         }
                     }
-                    for (VirtualHost virtualHost : component.getHosts()) {
-                        for (Route route : virtualHost.getRoutes()) {
-                            if (route.getTemplate().getPattern() == null
+                    for (final VirtualHost virtualHost : component.getHosts()) {
+                        for (final Route route : virtualHost.getRoutes()) {
+                            if ((route.getTemplate().getPattern() == null)
                                     || !route.getTemplate().getPattern()
                                             .startsWith(uriPattern)) {
                                 log("[Noelios Restlet Engine] - Attaching restlet: "
@@ -542,7 +546,7 @@ public class ServerServlet extends HttpServlet {
         if ((getComponent() != null) && (getComponent().isStarted())) {
             try {
                 getComponent().stop();
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 log("Error during the stopping of the Restlet Component", e);
             }
         }
@@ -567,7 +571,7 @@ public class ServerServlet extends HttpServlet {
                     if (isDefaultComponent()) {
                         // Find the attribute name to use to store the
                         // application
-                        String applicationAttributeName = getInitParameter(
+                        final String applicationAttributeName = getInitParameter(
                                 NAME_APPLICATION_ATTRIBUTE,
                                 NAME_APPLICATION_ATTRIBUTE_DEFAULT);
 
@@ -616,7 +620,7 @@ public class ServerServlet extends HttpServlet {
             synchronized (ServerServlet.class) {
                 if (result == null) {
                     // Find the attribute name to use to store the component
-                    String componentAttributeName = getInitParameter(
+                    final String componentAttributeName = getInitParameter(
                             NAME_COMPONENT_ATTRIBUTE,
                             NAME_COMPONENT_ATTRIBUTE_DEFAULT);
 
@@ -680,7 +684,7 @@ public class ServerServlet extends HttpServlet {
                 if (result == null) {
                     // Find the attribute name to use to store the server
                     // reference
-                    String serverAttributeName = getInitParameter(
+                    final String serverAttributeName = getInitParameter(
                             NAME_SERVER_ATTRIBUTE,
                             NAME_SERVER_ATTRIBUTE_DEFAULT);
 
@@ -708,7 +712,7 @@ public class ServerServlet extends HttpServlet {
             if ((getApplication() != null) && (getApplication().isStopped())) {
                 try {
                     getApplication().start();
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     log("Error during the starting of the Restlet Application",
                             e);
                 }
@@ -724,15 +728,16 @@ public class ServerServlet extends HttpServlet {
      */
     private boolean isDefaultComponent() {
         // The Component is provided via an XML configuration file.
-        String configPath = getServletContext().getRealPath(
+        final String configPath = getServletContext().getRealPath(
                 "/WEB-INF/restlet.xml");
-        File configFile = new File(configPath);
+        final File configFile = new File(configPath);
 
         // The Component is provided via a context parameter in the "web.xml"
         // file.
-        String componentAttributeName = getInitParameter(COMPONENT_KEY, null);
-        if ((configPath != null && configFile.exists())
-                || componentAttributeName != null) {
+        final String componentAttributeName = getInitParameter(COMPONENT_KEY,
+                null);
+        if (((configPath != null) && configFile.exists())
+                || (componentAttributeName != null)) {
             return false;
         }
 
@@ -750,7 +755,7 @@ public class ServerServlet extends HttpServlet {
     @Override
     public void service(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpServerHelper helper = getServer(request);
+        final HttpServerHelper helper = getServer(request);
 
         if (helper != null) {
             helper.handle(createCall(helper.getHelped(), request, response));

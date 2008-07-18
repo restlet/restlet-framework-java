@@ -100,17 +100,21 @@ public class Util {
     public static final Comparator<org.restlet.data.MediaType> MEDIA_TYPE_COMP = new Comparator<org.restlet.data.MediaType>() {
         public int compare(org.restlet.data.MediaType mediaType1,
                 org.restlet.data.MediaType mediaType2) {
-            if (mediaType1 == null)
+            if (mediaType1 == null) {
                 return mediaType2 == null ? 0 : 1;
-            if (mediaType2 == null)
+            }
+            if (mediaType2 == null) {
                 return -1;
-            if (mediaType1.equals(mediaType2, false))
+            }
+            if (mediaType1.equals(mediaType2, false)) {
                 return 0;
-            int specNess1 = specificness(mediaType1);
-            int specNess2 = specificness(mediaType2);
-            int rt = specNess1 - specNess2;
-            if (rt != 0)
+            }
+            final int specNess1 = specificness(mediaType1);
+            final int specNess2 = specificness(mediaType2);
+            final int rt = specNess1 - specNess2;
+            if (rt != 0) {
                 return rt;
+            }
             // NICE optimizing possible here: do not use toString()
             return mediaType1.toString().compareToIgnoreCase(
                     mediaType2.toString());
@@ -137,13 +141,13 @@ public class Util {
      * all "{" and "}" are converted to "%7B" and "%7D"
      * 
      * @param stb
-     *                the Appendable to append on
+     *            the Appendable to append on
      * @param string
-     *                the CharSequence to append
+     *            the CharSequence to append
      * @param convertBraces
-     *                if true, all braces are converted, if false then not.
+     *            if true, all braces are converted, if false then not.
      * @throws IOException
-     *                 If the Appendable have a problem
+     *             If the Appendable have a problem
      */
     public static void append(Appendable stb, CharSequence string,
             boolean convertBraces) throws IOException {
@@ -151,29 +155,32 @@ public class Util {
             stb.append(string);
             return;
         }
-        int l = string.length();
+        final int l = string.length();
         for (int i = 0; i < l; i++) {
-            char c = string.charAt(i);
-            if (c == '{')
+            final char c = string.charAt(i);
+            if (c == '{') {
                 stb.append("%7B");
-            else if (c == '}')
+            } else if (c == '}') {
                 stb.append("%7D");
-            else
+            } else {
                 stb.append(c);
+            }
         }
     }
 
     /**
-     * appends the array elements to the {@link StringBuilder}, separated by ", ".
+     * appends the array elements to the {@link StringBuilder}, separated by
+     * ", ".
      * 
      * @param stb
-     *                The {@link StringBuilder} to append the array elements.
+     *            The {@link StringBuilder} to append the array elements.
      * @param array
-     *                The array to append to the {@link StringBuilder}.
+     *            The array to append to the {@link StringBuilder}.
      */
     public static void append(StringBuilder stb, Object[] array) {
-        if (array == null || array.length == 0)
+        if ((array == null) || (array.length == 0)) {
             return;
+        }
         stb.append(array[0]);
         for (int i = 1; i < array.length; i++) {
             stb.append(", ");
@@ -185,16 +192,15 @@ public class Util {
      * Checks, if the class is concrete.
      * 
      * @param jaxRsClass
-     *                JAX-RS root resource class or JAX-RS provider.
+     *            JAX-RS root resource class or JAX-RS provider.
      * @param typeName
-     *                for the exception message "root resource class" or
-     *                "provider"
+     *            for the exception message "root resource class" or "provider"
      * @throws IllegalArgumentException
-     *                 if the class is not concrete.
+     *             if the class is not concrete.
      */
     public static void checkClassConcrete(Class<?> jaxRsClass, String typeName)
             throws IllegalArgumentException {
-        int modifiers = jaxRsClass.getModifiers();
+        final int modifiers = jaxRsClass.getModifiers();
         if (Modifier.isAbstract(modifiers) || Modifier.isInterface(modifiers)) {
             throw new IllegalArgumentException("The " + typeName + " "
                     + jaxRsClass.getName() + " is not concrete");
@@ -205,27 +211,28 @@ public class Util {
      * Copies headers into a response.
      * 
      * @param jaxRsHeaders
-     *                Headers of an JAX-RS-Response.
+     *            Headers of an JAX-RS-Response.
      * @param restletResponse
-     *                Restlet Response to copy the headers in.
+     *            Restlet Response to copy the headers in.
      * @param logger
-     *                The logger to use
+     *            The logger to use
      * @see javax.ws.rs.core.Response#getMetadata()
      */
     public static void copyResponseHeaders(
             final MultivaluedMap<String, Object> jaxRsHeaders,
             Response restletResponse, Logger logger) {
-        Collection<Parameter> headers = new ArrayList<Parameter>();
-        for (Map.Entry<String, List<Object>> m : jaxRsHeaders.entrySet()) {
-            String headerName = m.getKey();
-            for (Object headerValue : m.getValue()) {
+        final Collection<Parameter> headers = new ArrayList<Parameter>();
+        for (final Map.Entry<String, List<Object>> m : jaxRsHeaders.entrySet()) {
+            final String headerName = m.getKey();
+            for (final Object headerValue : m.getValue()) {
                 String hValue;
-                if (headerValue == null)
+                if (headerValue == null) {
                     hValue = null;
-                else if (headerValue instanceof Date)
+                } else if (headerValue instanceof Date) {
                     hValue = formatDate((Date) headerValue, false);
-                else
+                } else {
                     hValue = headerValue.toString();
+                }
                 headers.add(new Parameter(headerName, hValue));
             }
         }
@@ -241,17 +248,17 @@ public class Util {
      * {@link Series}.
      * 
      * @param restletResponse
-     *                The response to update. Should contain a
-     *                {@link Representation} to copy the representation headers
-     *                from it.
+     *            The response to update. Should contain a
+     *            {@link Representation} to copy the representation headers from
+     *            it.
      * @param logger
-     *                The logger to use.
+     *            The logger to use.
      * @return The copied headers.
      */
     public static Series<Parameter> copyResponseHeaders(
             Response restletResponse, Logger logger) {
-        Series<Parameter> headers = new Form();
-        Engine engine = Engine.getInstance();
+        final Series<Parameter> headers = new Form();
+        final Engine engine = Engine.getInstance();
         engine.copyResponseHeaders(restletResponse, headers, logger);
         return headers;
     }
@@ -265,7 +272,7 @@ public class Util {
      */
     public static void copyStream(InputStream in, OutputStream out)
             throws IOException {
-        byte[] buffer = new byte[512];
+        final byte[] buffer = new byte[512];
         int bytesRead;
         while ((bytesRead = in.read(buffer)) >= 0) {
             out.write(buffer, 0, bytesRead);
@@ -281,10 +288,11 @@ public class Util {
      */
     public static StringBuilder copyToStringBuilder(InputStream in)
             throws IOException {
-        StringBuilder stb = new StringBuilder();
+        final StringBuilder stb = new StringBuilder();
         int ch;
-        while ((ch = in.read()) >= 0)
+        while ((ch = in.read()) >= 0) {
             stb.append((char) ch);
+        }
         return stb;
     }
 
@@ -310,12 +318,13 @@ public class Util {
      *         list, if the given object is null.
      */
     public static <A> List<A> createList(A... objects) {
-        List<A> list = new ArrayList<A>();
-        int l = objects.length;
+        final List<A> list = new ArrayList<A>();
+        final int l = objects.length;
         for (int i = 0; i < l; i++) {
-            A o = objects[i];
-            if (o != null)
+            final A o = objects[i];
+            if (o != null) {
                 list.add(o);
+            }
         }
         return list;
     }
@@ -324,14 +333,15 @@ public class Util {
      * Creates a map with the given keys and values.
      * 
      * @param keysAndValues
-     *                first element is key1, second element value1, third
-     *                element key2, forth element value2 and so on.
+     *            first element is key1, second element value1, third element
+     *            key2, forth element value2 and so on.
      * @return
      */
     public static Map<String, String> createMap(String... keysAndValues) {
-        Map<String, String> map = new HashMap<String, String>();
-        for (int i = 0; i < keysAndValues.length; i += 2)
+        final Map<String, String> map = new HashMap<String, String>();
+        for (int i = 0; i < keysAndValues.length; i += 2) {
             map.put(keysAndValues[i], keysAndValues[i + 1]);
+        }
         return map;
     }
 
@@ -344,12 +354,13 @@ public class Util {
      * @return the created Set
      */
     public static <A> Set<A> createSet(A... objects) {
-        Set<A> set = new HashSet<A>();
-        int l = objects.length;
+        final Set<A> set = new HashSet<A>();
+        final int l = objects.length;
         for (int i = 0; i < l; i++) {
-            A o = objects[i];
-            if (o != null)
+            final A o = objects[i];
+            if (o != null) {
                 set.add(o);
+            }
         }
         return set;
     }
@@ -363,8 +374,9 @@ public class Util {
      * @return
      */
     public static boolean equals(Object object1, Object object2) {
-        if (object1 == null)
+        if (object1 == null) {
             return object2 == null;
+        }
         return object1.equals(object2);
     }
 
@@ -373,9 +385,9 @@ public class Util {
      * {@link com.noelios.restlet.HttpCall}.
      * 
      * @param date
-     *                Date to format
+     *            Date to format
      * @param cookie
-     *                if true, using RFC 1036 format, otherwise RFC 1123 format.
+     *            if true, using RFC 1036 format, otherwise RFC 1123 format.
      * @return
      */
     public static String formatDate(Date date, boolean cookie) {
@@ -391,7 +403,7 @@ public class Util {
      * HTTP Vary header.
      * 
      * @param dimensions
-     *                the dimensions to format.
+     *            the dimensions to format.
      * @return the Vary header or null, if dimensions is null or empty.
      */
     public static String formatDimensions(Set<Dimension> dimensions) {
@@ -403,9 +415,9 @@ public class Util {
      * a JAX-RS {@link javax.ws.rs.core.Response}).
      * 
      * @param httpHeaders
-     *                the JAX-RS {@link javax.ws.rs.core.Response}
+     *            the JAX-RS {@link javax.ws.rs.core.Response}
      * @param defaultCs
-     *                the character set to return, if no one could be found.
+     *            the character set to return, if no one could be found.
      * @return the Restlet {@link CharacterSet} of the given http headers, or
      *         the given defaultCs as String if the header "Content-Type" is not
      *         available or has no parameter "charset". Returns only null, if
@@ -414,12 +426,14 @@ public class Util {
      */
     public static String getCharsetName(
             MultivaluedMap<String, Object> httpHeaders, CharacterSet defaultCs) {
-        MediaType mediaType = getMediaType(httpHeaders);
+        final MediaType mediaType = getMediaType(httpHeaders);
         String charset = null;
-        if (mediaType != null)
+        if (mediaType != null) {
             charset = mediaType.getParameters().getFirstValue(CHARSET);
-        if (charset == null || charset.length() == 0)
+        }
+        if ((charset == null) || (charset.length() == 0)) {
             return defaultCs != null ? defaultCs.toString() : null;
+        }
         return charset;
     }
 
@@ -431,17 +445,20 @@ public class Util {
      * @param <A>
      * @return Returns the first Element of the collection
      * @throws NoSuchElementException
-     *                 If the collection is empty.
+     *             If the collection is empty.
      */
     public static <A> A getFirstElement(Collection<A> coll)
             throws NoSuchElementException {
-        if (coll.isEmpty())
+        if (coll.isEmpty()) {
             throw new NoSuchElementException(
                     "The Collection is empty; you can't get the first element of it.");
-        if (coll instanceof LinkedList)
+        }
+        if (coll instanceof LinkedList) {
             return ((LinkedList<A>) coll).getFirst();
-        if (coll instanceof List)
+        }
+        if (coll instanceof List) {
             return ((List<A>) coll).get(0);
+        }
         return coll.iterator().next();
     }
 
@@ -453,40 +470,44 @@ public class Util {
      * @param <A>
      * @return Returns the first Element of the collection
      * @throws NoSuchElementException
-     *                 If the collection is empty
+     *             If the collection is empty
      */
     public static <A> A getFirstElement(Iterable<A> coll)
             throws NoSuchElementException {
-        if (coll instanceof LinkedList)
+        if (coll instanceof LinkedList) {
             return ((LinkedList<A>) coll).getFirst();
-        if (coll instanceof List)
+        }
+        if (coll instanceof List) {
             return ((List<A>) coll).get(0);
+        }
         return coll.iterator().next();
     }
 
     /**
-     * Returns the first element of the {@link List}. Throws an exception if
-     * the list is empty.
+     * Returns the first element of the {@link List}. Throws an exception if the
+     * list is empty.
      * 
      * @param list
      * @param <A>
      * @return Returns the first Element of the collection
      * @throws IndexOutOfBoundsException
-     *                 If the list is empty
+     *             If the list is empty
      */
     public static <A> A getFirstElement(List<A> list)
             throws IndexOutOfBoundsException {
-        if (list.isEmpty())
+        if (list.isEmpty()) {
             throw new IndexOutOfBoundsException(
                     "The Collection is empty; you can't get the first element of it.");
-        if (list instanceof LinkedList)
+        }
+        if (list instanceof LinkedList) {
             return ((LinkedList<A>) list).getFirst();
+        }
         return list.get(0);
     }
 
     /**
-     * Returns the first element of the given {@link Iterable}. Returns null,
-     * if the {@link Iterable} is empty.
+     * Returns the first element of the given {@link Iterable}. Returns null, if
+     * the {@link Iterable} is empty.
      * 
      * @param coll
      * @param <A>
@@ -495,20 +516,23 @@ public class Util {
      */
     public static <A> A getFirstElementOrNull(Iterable<A> coll) {
         if (coll instanceof LinkedList) {
-            LinkedList<A> linkedList = ((LinkedList<A>) coll);
-            if (linkedList.isEmpty())
+            final LinkedList<A> linkedList = ((LinkedList<A>) coll);
+            if (linkedList.isEmpty()) {
                 return null;
+            }
             return linkedList.getFirst();
         }
         if (coll instanceof List) {
-            List<A> list = ((List<A>) coll);
-            if (list.isEmpty())
+            final List<A> list = ((List<A>) coll);
+            if (list.isEmpty()) {
                 return null;
+            }
             return list.get(0);
         }
         if (coll instanceof Collection) {
-            if (((Collection<A>) coll).isEmpty())
+            if (((Collection<A>) coll).isEmpty()) {
                 return null;
+            }
         }
         return coll.iterator().next();
     }
@@ -522,7 +546,7 @@ public class Util {
      * @param <V>
      * @return the first entry of the given {@link Map}.
      * @throws NoSuchElementException
-     *                 If the map is empty.
+     *             If the map is empty.
      */
     public static <K, V> Map.Entry<K, V> getFirstEntry(Map<K, V> map)
             throws NoSuchElementException {
@@ -538,7 +562,7 @@ public class Util {
      * @param <V>
      * @return the key of the first entry of the given {@link Map}.
      * @throws NoSuchElementException
-     *                 If the map is empty.
+     *             If the map is empty.
      */
     public static <K, V> K getFirstKey(Map<K, V> map)
             throws NoSuchElementException {
@@ -554,7 +578,7 @@ public class Util {
      * @param <V>
      * @return the value of the first entry of the given {@link Map}.
      * @throws NoSuchElementException
-     *                 If the map is empty.
+     *             If the map is empty.
      */
     public static <K, V> V getFirstValue(Map<K, V> map)
             throws NoSuchElementException {
@@ -568,18 +592,21 @@ public class Util {
      * @return otherwise null
      */
     public static Class<?> getGenericClass(Type genericType) {
-        if (!(genericType instanceof ParameterizedType))
+        if (!(genericType instanceof ParameterizedType)) {
             return null;
-        ParameterizedType pt = (ParameterizedType) genericType;
-        Type atp = pt.getActualTypeArguments()[0];
-        if (atp instanceof Class)
+        }
+        final ParameterizedType pt = (ParameterizedType) genericType;
+        final Type atp = pt.getActualTypeArguments()[0];
+        if (atp instanceof Class) {
             return (Class<?>) atp;
+        }
         if (atp instanceof ParameterizedType) {
-            Type rawType = ((ParameterizedType) atp).getRawType();
-            if (rawType instanceof Class)
+            final Type rawType = ((ParameterizedType) atp).getRawType();
+            if (rawType instanceof Class) {
                 return (Class<?>) rawType;
-            else
+            } else {
                 return null;
+            }
         }
         return null;
     }
@@ -624,7 +651,7 @@ public class Util {
      */
     public static MultivaluedMap<String, String> getJaxRsHttpHeaders(
             Request request) {
-        Map<String, Object> attrsOfRequ = request.getAttributes();
+        final Map<String, Object> attrsOfRequ = request.getAttributes();
         @SuppressWarnings("unchecked")
         MultivaluedMap<String, String> headers = (MultivaluedMap) attrsOfRequ
                 .get(ORG_RESTLET_EXT_JAXRS_HTTP_HEADERS);
@@ -644,18 +671,18 @@ public class Util {
      * @param <A>
      * @return Returns the last element of the {@link Iterable}
      * @throws IndexOutOfBoundsException
-     *                 If the {@link Iterable} is a {@link List} and its is
-     *                 empty.
+     *             If the {@link Iterable} is a {@link List} and its is empty.
      * @throws NoSuchElementException
-     *                 If the {@link Iterable} is empty and the {@link Iterable}
-     *                 is not a {@link List}.
+     *             If the {@link Iterable} is empty and the {@link Iterable} is
+     *             not a {@link List}.
      */
     public static <A> A getLastElement(Iterable<A> iterable)
             throws IndexOutOfBoundsException, NoSuchElementException {
-        if (iterable instanceof LinkedList)
+        if (iterable instanceof LinkedList) {
             return ((LinkedList<A>) iterable).getLast();
+        }
         if (iterable instanceof List) {
-            List<A> list = ((List<A>) iterable);
+            final List<A> list = ((List<A>) iterable);
             return list.get(list.size() - 1);
         }
         return getLastElement(iterable.iterator());
@@ -669,13 +696,14 @@ public class Util {
      * @param <A>
      * @return Returns the last element of the {@link Iterator}.
      * @throws NoSuchElementException
-     *                 If the {@link Iterator} is empty.
+     *             If the {@link Iterator} is empty.
      */
     public static <A> A getLastElement(Iterator<A> iter)
             throws NoSuchElementException {
         A e = iter.next();
-        while (iter.hasNext())
+        while (iter.hasNext()) {
             e = iter.next();
+        }
         return e;
     }
 
@@ -687,12 +715,13 @@ public class Util {
      * @param <A>
      * @return Returns the last element of the list
      * @throws IndexOutOfBoundsException
-     *                 If the list is empty
+     *             If the list is empty
      */
     public static <A> A getLastElement(List<A> list)
             throws IndexOutOfBoundsException {
-        if (list instanceof LinkedList)
+        if (list instanceof LinkedList) {
             return ((LinkedList<A>) list).getLast();
+        }
         return list.get(list.size() - 1);
     }
 
@@ -707,20 +736,23 @@ public class Util {
      */
     public static <A> A getLastElementOrNull(Iterable<A> iterable) {
         if (iterable instanceof LinkedList) {
-            LinkedList<A> linkedList = ((LinkedList<A>) iterable);
-            if (linkedList.isEmpty())
+            final LinkedList<A> linkedList = ((LinkedList<A>) iterable);
+            if (linkedList.isEmpty()) {
                 return null;
+            }
             return linkedList.getLast();
         }
         if (iterable instanceof List) {
-            List<A> list = ((List<A>) iterable);
-            if (list.isEmpty())
+            final List<A> list = ((List<A>) iterable);
+            if (list.isEmpty()) {
                 return null;
+            }
             return list.get(list.size() - 1);
         }
         if (iterable instanceof Collection) {
-            if (((Collection<A>) iterable).isEmpty())
+            if (((Collection<A>) iterable).isEmpty()) {
                 return null;
+            }
         }
         return getLastElementOrNull(iterable.iterator());
     }
@@ -735,8 +767,9 @@ public class Util {
      */
     public static <A> A getLastElementOrNull(Iterator<A> iter) {
         A e = null;
-        while (iter.hasNext())
+        while (iter.hasNext()) {
             e = iter.next();
+        }
         return e;
     }
 
@@ -745,20 +778,23 @@ public class Util {
      * from a JAX-RS {@link javax.ws.rs.core.Response}).
      * 
      * @param httpHeaders
-     *                the JAX-RS {@link javax.ws.rs.core.Response}
+     *            the JAX-RS {@link javax.ws.rs.core.Response}
      * @return the Restlet {@link MediaType} of the given http headers, or null,
      *         if the header "Content-Type" is not available.
      */
     public static MediaType getMediaType(
             MultivaluedMap<String, Object> httpHeaders) {
-        Object contentType = httpHeaders.getFirst(CONTENT_TYPE);
-        if (contentType == null)
+        final Object contentType = httpHeaders.getFirst(CONTENT_TYPE);
+        if (contentType == null) {
             return null;
-        if (contentType instanceof MediaType)
+        }
+        if (contentType instanceof MediaType) {
             return (MediaType) contentType;
-        if (contentType instanceof javax.ws.rs.core.MediaType)
+        }
+        if (contentType instanceof javax.ws.rs.core.MediaType) {
             return Converter
                     .toRestletMediaType((javax.ws.rs.core.MediaType) contentType);
+        }
         return Engine.getInstance().parseContentType(contentType.toString());
     }
 
@@ -767,27 +803,30 @@ public class Util {
      * (case-sensitive)
      * 
      * @param clazz
-     *                The {@link Class} to search the {@link Method}s.
+     *            The {@link Class} to search the {@link Method}s.
      * @param methodName
-     *                The name of the {@link Method} to search.
+     *            The name of the {@link Method} to search.
      * @return Returns a {@link Collection} all of {@link Method}s with the
      *         given name. Never returns null. If no methods are found an empty
      *         Collection will be returned. The method {@link Iterator#remove()}
      *         of this collection is supported.
      * @throws IllegalArgumentException
-     *                 if the clazz or the method name is null.
+     *             if the clazz or the method name is null.
      */
     public static Collection<Method> getMethodsByName(Class<?> clazz,
             String methodName) throws IllegalArgumentException {
-        if (clazz == null)
+        if (clazz == null) {
             throw new IllegalArgumentException("The class must not be null");
-        if (methodName == null)
+        }
+        if (methodName == null) {
             throw new IllegalArgumentException(
                     "The method name must not be null");
-        Collection<Method> methods = new ArrayList<Method>(2);
-        for (Method method : clazz.getMethods()) {
-            if (method.getName().equals(methodName))
+        }
+        final Collection<Method> methods = new ArrayList<Method>(2);
+        for (final Method method : clazz.getMethods()) {
+            if (method.getName().equals(methodName)) {
                 methods.add(method);
+            }
         }
         return methods;
     }
@@ -798,22 +837,26 @@ public class Util {
      * 
      * @param <A>
      * @param list
-     *                a List with at most one element
+     *            a List with at most one element
      * @return The element of the List, or null, if there is no element.
      * @throws IllegalArgumentException
-     *                 if the list contains more than one element.
+     *             if the list contains more than one element.
      */
     public static <A> A getOnlyElement(Collection<A> list)
             throws IllegalArgumentException {
-        if (list == null)
+        if (list == null) {
             return null;
-        if (list.isEmpty())
+        }
+        if (list.isEmpty()) {
             return null;
-        if (list.size() > 1)
+        }
+        if (list.size() > 1) {
             throw new IllegalArgumentException(
                     "The list must have exactly one element");
-        if (list instanceof List)
+        }
+        if (list instanceof List) {
             return ((List<A>) list).get(0);
+        }
         return list.iterator().next();
     }
 
@@ -826,9 +869,10 @@ public class Util {
      * @see #getOnlyElement(List)
      */
     public static String getOnlyMetadataName(List<? extends Metadata> metadatas) {
-        Metadata metadata = getOnlyElement(metadatas);
-        if (metadata == null)
+        final Metadata metadata = getOnlyElement(metadatas);
+        if (metadata == null) {
             return null;
+        }
         return metadata.getName();
     }
 
@@ -837,23 +881,25 @@ public class Util {
      * class.
      * 
      * @param jaxRsClass
-     *                the root resource class.
+     *            the root resource class.
      * @return the &#64;{@link Path} annotation of the given root resource
      *         class.
      * @throws MissingAnnotationException
-     *                 if the path annotation is missing
+     *             if the path annotation is missing
      * @throws IllegalArgumentException
-     *                 if the jaxRsClass is null.
+     *             if the jaxRsClass is null.
      */
     public static Path getPathAnnotation(Class<?> jaxRsClass)
             throws MissingAnnotationException, IllegalArgumentException {
-        if (jaxRsClass == null)
+        if (jaxRsClass == null) {
             throw new IllegalArgumentException(
                     "The jaxRsClass must not be null");
-        Path path = jaxRsClass.getAnnotation(Path.class);
-        if (path == null)
+        }
+        final Path path = jaxRsClass.getAnnotation(Path.class);
+        if (path == null) {
             throw new MissingAnnotationException(
                     "The root resource class does not have a @Path annotation");
+        }
         return path;
     }
 
@@ -863,22 +909,24 @@ public class Util {
      * available.
      * 
      * @param method
-     *                the java method to get the &#64;Path from
+     *            the java method to get the &#64;Path from
      * @return the &#64;Path annotation.
      * @throws IllegalArgumentException
-     *                 if null was given.
+     *             if null was given.
      * @throws MissingAnnotationException
-     *                 if the annotation is not present.
+     *             if the annotation is not present.
      */
     public static Path getPathAnnotation(Method method)
             throws IllegalArgumentException, MissingAnnotationException {
-        if (method == null)
+        if (method == null) {
             throw new IllegalArgumentException(
                     "The root resource class must not be null");
-        Path path = method.getAnnotation(Path.class);
-        if (path == null)
+        }
+        final Path path = method.getAnnotation(Path.class);
+        if (path == null) {
             throw new MissingAnnotationException("The method "
                     + method.getName() + " does not have an annotation @Path");
+        }
         return path;
     }
 
@@ -887,16 +935,17 @@ public class Util {
      * locator. Returns null if no &#64;{@link Path} annotation is available.
      * 
      * @param method
-     *                the java method to get the &#64;Path from
+     *            the java method to get the &#64;Path from
      * @return the &#64;Path annotation or null, if not present.
      * @throws IllegalArgumentException
-     *                 if the method is null.
+     *             if the method is null.
      */
     public static Path getPathAnnotationOrNull(Method method)
             throws IllegalArgumentException {
-        if (method == null)
+        if (method == null) {
             throw new IllegalArgumentException(
                     "The root resource class must not be null");
+        }
         return method.getAnnotation(Path.class);
     }
 
@@ -914,7 +963,7 @@ public class Util {
             IllegalArgumentException {
         try {
             return getPathTemplate(Util.getPathAnnotation(resource));
-        } catch (IllegalPathException e) {
+        } catch (final IllegalPathException e) {
             throw new IllegalPathOnClassException(e);
         }
     }
@@ -924,7 +973,7 @@ public class Util {
      * resource method. It is encoded (if necessary) and valid.
      * 
      * @param method
-     *                the java method
+     *            the java method
      * @return the path template
      * @throws IllegalPathOnMethodException
      * @throws IllegalArgumentException
@@ -933,10 +982,10 @@ public class Util {
     public static String getPathTemplate(Method method)
             throws IllegalArgumentException, IllegalPathOnMethodException,
             MissingAnnotationException {
-        Path path = getPathAnnotation(method);
+        final Path path = getPathAnnotation(method);
         try {
             return getPathTemplate(path);
-        } catch (IllegalPathException e) {
+        } catch (final IllegalPathException e) {
             throw new IllegalPathOnMethodException(e);
         }
     }
@@ -947,7 +996,7 @@ public class Util {
      * valid.
      * 
      * @param path
-     *                The {@link Path} annotation. Must not be null.
+     *            The {@link Path} annotation. Must not be null.
      * @return the encoded path template
      * @throws IllegalPathException
      * @see Path#encode()
@@ -958,14 +1007,14 @@ public class Util {
             try {
                 pathTemplate = EncodeOrCheck.pathWithoutMatrix(pathTemplate)
                         .toString();
-            } catch (IllegalArgumentException e) {
+            } catch (final IllegalArgumentException e) {
                 throw new IllegalPathException(path, e);
             }
         } else {
             try {
                 EncodeOrCheck.checkForInvalidUriChars(pathTemplate, -1,
                         "path template");
-            } catch (IllegalArgumentException iae) {
+            } catch (final IllegalArgumentException iae) {
                 throw new IllegalPathException(path, iae);
             }
         }
@@ -977,15 +1026,17 @@ public class Util {
      * Returns UTF-8 otherwise.
      * 
      * @param characterSet
-     *                the wished {@link CharacterSet}
+     *            the wished {@link CharacterSet}
      * @return a supported {@link CharacterSet}, never null.
      * @see #getCharsetName(MultivaluedMap, CharacterSet)
      */
     public static CharacterSet getSupportedCharSet(CharacterSet characterSet) {
-        if (characterSet == null)
+        if (characterSet == null) {
             return JAX_RS_DEFAULT_CHARACTER_SET;
-        if (Charset.isSupported(characterSet.toString()))
+        }
+        if (Charset.isSupported(characterSet.toString())) {
             return characterSet;
+        }
         return logUnsupportedCharSet(characterSet.toString());
     }
 
@@ -999,10 +1050,11 @@ public class Util {
      */
     public static CharacterSet getSupportedCharSet(
             MultivaluedMap<String, Object> httpResponseHeaders) {
-        String csn = getCharsetName(httpResponseHeaders,
+        final String csn = getCharsetName(httpResponseHeaders,
                 JAX_RS_DEFAULT_CHARACTER_SET);
-        if (Charset.isSupported(csn))
+        if (Charset.isSupported(csn)) {
             return CharacterSet.valueOf(csn);
+        }
         return logUnsupportedCharSet(csn);
     }
 
@@ -1021,13 +1073,14 @@ public class Util {
             AccessibleObject fieldOrBeanSetter, Object toInject)
             throws InvocationTargetException, IllegalArgumentException,
             InjectException {
-        if (fieldOrBeanSetter instanceof Field)
+        if (fieldOrBeanSetter instanceof Field) {
             inject(resource, (Field) fieldOrBeanSetter, toInject);
-        else if (fieldOrBeanSetter instanceof Method)
+        } else if (fieldOrBeanSetter instanceof Method) {
             inject(resource, (Method) fieldOrBeanSetter, toInject);
-        else
+        } else {
             throw new IllegalArgumentException(
                     "The fieldOrBeanSetter must be a java.lang.reflect.Field or a java.lang.reflect.Method");
+        }
     }
 
     /**
@@ -1035,35 +1088,36 @@ public class Util {
      * whatever)
      * 
      * @param resource
-     *                the concrete Object to inject the other object in. If the
-     *                field is static, thsi object may be null.
+     *            the concrete Object to inject the other object in. If the
+     *            field is static, thsi object may be null.
      * @param field
-     *                the field to inject the third parameter in.
+     *            the field to inject the third parameter in.
      * @param toInject
-     *                the object to inject in the first parameter object.
+     *            the object to inject in the first parameter object.
      * @throws InjectException
-     *                 if the injection was not possible. See
-     *                 {@link InjectException#getCause()} for the reason.
+     *             if the injection was not possible. See
+     *             {@link InjectException#getCause()} for the reason.
      */
     public static void inject(final Object resource, final Field field,
             final Object toInject) throws InjectException {
         try {
-            IllegalAccessException iae = AccessController
+            final IllegalAccessException iae = AccessController
                     .doPrivileged(new PrivilegedAction<IllegalAccessException>() {
                         public IllegalAccessException run() {
                             try {
                                 field.set(resource, toInject);
                                 return null;
-                            } catch (IllegalAccessException e) {
+                            } catch (final IllegalAccessException e) {
                                 return e;
                             }
                         }
                     });
-            if (iae != null)
+            if (iae != null) {
                 throw new InjectException("Could not inject the "
                         + toInject.getClass() + " into field " + field
                         + " of object " + resource, iae);
-        } catch (RuntimeException e) {
+            }
+        } catch (final RuntimeException e) {
             throw new InjectException("Could not inject the "
                     + toInject.getClass() + " into field " + field
                     + " of object " + resource, e);
@@ -1085,7 +1139,7 @@ public class Util {
             IllegalArgumentException, InjectException {
         try {
             invokeMethod(resource, beanSetter, toInject);
-        } catch (MethodInvokeException mie) {
+        } catch (final MethodInvokeException mie) {
             throw new InjectException(mie);
         }
     }
@@ -1097,16 +1151,16 @@ public class Util {
      * If no javaMethod is given, nothing happens.
      * 
      * @param object
-     *                the object to call the method on.
+     *            the object to call the method on.
      * @param javaMethod
-     *                the method to call
+     *            the method to call
      * @param args
-     *                the arguments of the method
+     *            the arguments of the method
      * @throws MethodInvokeException
      * @throws InvocationTargetException
      * @throws IllegalArgumentException
-     *                 if at least one argument does not match the required
-     *                 method parameters.
+     *             if at least one argument does not match the required method
+     *             parameters.
      * @see #inject(Object, Field, Object)
      * @see #findPostConstructMethod(Class)
      * @see #findPreDestroyMethod(Class)
@@ -1115,8 +1169,9 @@ public class Util {
             final Method javaMethod, final Object... args)
             throws MethodInvokeException, InvocationTargetException,
             IllegalArgumentException {
-        if (javaMethod == null)
+        if (javaMethod == null) {
             return;
+        }
         try {
             AccessController
                     .doPrivileged(new PrivilegedExceptionAction<Object>() {
@@ -1125,20 +1180,24 @@ public class Util {
                             return null;
                         }
                     });
-        } catch (PrivilegedActionException e) {
-            Throwable cause = e.getCause();
-            if (cause instanceof IllegalAccessException)
+        } catch (final PrivilegedActionException e) {
+            final Throwable cause = e.getCause();
+            if (cause instanceof IllegalAccessException) {
                 throw new MethodInvokeException(
                         "Not allowed to invoke post construct method "
                                 + javaMethod, cause);
-            if (cause instanceof InvocationTargetException)
+            }
+            if (cause instanceof InvocationTargetException) {
                 throw (InvocationTargetException) cause;
-            if (cause instanceof ExceptionInInitializerError)
+            }
+            if (cause instanceof ExceptionInInitializerError) {
                 throw new MethodInvokeException(
                         "Could not invoke post construct method " + javaMethod,
                         cause);
-            if (cause instanceof RuntimeException)
+            }
+            if (cause instanceof RuntimeException) {
                 throw (RuntimeException) cause;
+            }
             throw new JaxRsRuntimeException(
                     "Error while invoking post construct method " + javaMethod,
                     cause);
@@ -1154,7 +1213,7 @@ public class Util {
      * @see #isEmpty(Object[])
      */
     public static boolean isEmpty(List<?> list) {
-        return (list == null || list.isEmpty());
+        return ((list == null) || list.isEmpty());
     }
 
     /**
@@ -1167,8 +1226,9 @@ public class Util {
      * @see #isEmpty(List)
      */
     public static boolean isEmpty(Object[] array) {
-        if (array == null || array.length == 0)
+        if ((array == null) || (array.length == 0)) {
             return true;
+        }
         return false;
     }
 
@@ -1181,7 +1241,7 @@ public class Util {
      *         otherwise false.
      */
     public static boolean isEmptyOrSlash(String string) {
-        return string == null || string.length() == 0 || string.equals("/");
+        return (string == null) || (string.length() == 0) || string.equals("/");
     }
 
     /**
@@ -1192,7 +1252,7 @@ public class Util {
      *         empty or null.
      */
     public static boolean isNotEmpty(List<?> list) {
-        return (list != null && !list.isEmpty());
+        return ((list != null) && !list.isEmpty());
     }
 
     /**
@@ -1220,17 +1280,23 @@ public class Util {
      */
     public static List<org.restlet.data.MediaType> sortByConcreteness(
             Collection<org.restlet.data.MediaType> mediaTypes) {
-        List<org.restlet.data.MediaType> newList = new ArrayList<org.restlet.data.MediaType>(
+        final List<org.restlet.data.MediaType> newList = new ArrayList<org.restlet.data.MediaType>(
                 mediaTypes.size());
-        for (org.restlet.data.MediaType mediaType : mediaTypes)
-            if (specificness(mediaType) > 0)
+        for (final org.restlet.data.MediaType mediaType : mediaTypes) {
+            if (specificness(mediaType) > 0) {
                 newList.add(mediaType);
-        for (org.restlet.data.MediaType mediaType : mediaTypes)
-            if (specificness(mediaType) == 0)
+            }
+        }
+        for (final org.restlet.data.MediaType mediaType : mediaTypes) {
+            if (specificness(mediaType) == 0) {
                 newList.add(mediaType);
-        for (org.restlet.data.MediaType mediaType : mediaTypes)
-            if (specificness(mediaType) < 0)
+            }
+        }
+        for (final org.restlet.data.MediaType mediaType : mediaTypes) {
+            if (specificness(mediaType) < 0) {
                 newList.add(mediaType);
+            }
+        }
         return newList;
     }
 
@@ -1248,10 +1314,12 @@ public class Util {
      * @see #sortByConcreteness(Collection)
      */
     public static int specificness(org.restlet.data.MediaType mediaType) {
-        if (mediaType.equals(org.restlet.data.MediaType.ALL, true))
+        if (mediaType.equals(org.restlet.data.MediaType.ALL, true)) {
             return -1;
-        if (mediaType.getSubType().equals("*"))
+        }
+        if (mediaType.getSubType().equals("*")) {
             return 0;
+        }
         return 1;
     }
 
@@ -1264,8 +1332,9 @@ public class Util {
      * @throws NegativeArraySizeException
      */
     public static Object toArray(Collection<?> coll, Class<?> arrayType) {
-        int collSize = coll.size();
-        Object[] array = (Object[]) Array.newInstance(arrayType, collSize);
+        final int collSize = coll.size();
+        final Object[] array = (Object[]) Array
+                .newInstance(arrayType, collSize);
         return coll.toArray(array);
     }
 
@@ -1278,15 +1347,17 @@ public class Util {
      * @return the concatenated
      */
     public static String toString(Collection<?> collection, String delimiter) {
-        if (collection == null || collection.isEmpty())
+        if ((collection == null) || collection.isEmpty()) {
             return "";
-        Iterator<?> iterator = collection.iterator();
-        if (collection.size() == 1)
+        }
+        final Iterator<?> iterator = collection.iterator();
+        if (collection.size() == 1) {
             return String.valueOf(iterator.next());
-        StringBuilder stb = new StringBuilder();
+        }
+        final StringBuilder stb = new StringBuilder();
         stb.append(iterator.next());
         while (iterator.hasNext()) {
-            Object object = iterator.next();
+            final Object object = iterator.next();
             stb.append(delimiter);
             stb.append(object);
         }

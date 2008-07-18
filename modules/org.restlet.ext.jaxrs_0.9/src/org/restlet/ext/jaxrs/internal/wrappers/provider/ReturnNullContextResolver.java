@@ -31,12 +31,10 @@ public class ReturnNullContextResolver<T> implements ContextResolver<T> {
 
     /**
      * The instance.
+     * 
      * @see #get()
      */
     public static final ReturnNullContextResolver<Object> INSTANCE = new ReturnNullContextResolver<Object>();
-
-    private ReturnNullContextResolver() {
-    }
 
     /**
      * Returns the singelton instance.
@@ -47,6 +45,9 @@ public class ReturnNullContextResolver<T> implements ContextResolver<T> {
     @SuppressWarnings("unchecked")
     public static <A> ReturnNullContextResolver<A> get() {
         return (ReturnNullContextResolver) INSTANCE;
+    }
+
+    private ReturnNullContextResolver() {
     }
 
     /**

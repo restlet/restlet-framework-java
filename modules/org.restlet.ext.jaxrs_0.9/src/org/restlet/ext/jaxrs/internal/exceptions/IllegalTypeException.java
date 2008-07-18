@@ -34,17 +34,17 @@ public class IllegalTypeException extends JaxRsException {
     }
 
     /**
-     * @param cause
-     */
-    public IllegalTypeException(Throwable cause) {
-        super(cause);
-    }
-
-    /**
      * @param message
      * @param cause
      */
     public IllegalTypeException(String message, Throwable cause) {
         super(message, cause);
+    }
+
+    /**
+     * @param cause
+     */
+    public IllegalTypeException(Throwable cause) {
+        super(cause);
     }
 }

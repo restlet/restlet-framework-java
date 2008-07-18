@@ -65,8 +65,9 @@ public class MethodInfo {
         if (d == null) {
             synchronized (this) {
                 d = this.documentations;
-                if (d == null)
+                if (d == null) {
                     this.documentations = d = new ArrayList<DocumentationInfo>();
+                }
             }
         }
         return d;
@@ -78,7 +79,7 @@ public class MethodInfo {
      * @return The identifier for the method.
      */
     public String getIdentifier() {
-        return identifier;
+        return this.identifier;
     }
 
     /**
@@ -88,7 +89,7 @@ public class MethodInfo {
      */
 
     public Method getName() {
-        return name;
+        return this.name;
     }
 
     /**
@@ -97,7 +98,7 @@ public class MethodInfo {
      * @return The input to the method.
      */
     public RequestInfo getRequest() {
-        return request;
+        return this.request;
     }
 
     /**
@@ -106,7 +107,7 @@ public class MethodInfo {
      * @return The output of the method.
      */
     public ResponseInfo getResponse() {
-        return response;
+        return this.response;
     }
 
     /**
@@ -115,7 +116,7 @@ public class MethodInfo {
      * @return The reference to a method definition element.
      */
     public Reference getTargetRef() {
-        return targetRef;
+        return this.targetRef;
     }
 
     /**
@@ -186,28 +187,28 @@ public class MethodInfo {
      * @throws SAXException
      */
     public void writeElement(XmlWriter writer) throws SAXException {
-        AttributesImpl attributes = new AttributesImpl();
-        if (getIdentifier() != null && !getIdentifier().equals("")) {
+        final AttributesImpl attributes = new AttributesImpl();
+        if ((getIdentifier() != null) && !getIdentifier().equals("")) {
             attributes.addAttribute("", "id", null, "xs:ID", getIdentifier());
         }
 
-        if (getName() != null && getName().toString() != null) {
+        if ((getName() != null) && (getName().toString() != null)) {
             attributes.addAttribute("", "name", null, "xs:NMTOKEN", getName()
                     .toString());
         }
-        if (getTargetRef() != null && getTargetRef().toString() != null) {
+        if ((getTargetRef() != null) && (getTargetRef().toString() != null)) {
             attributes.addAttribute("", "href", null, "xs:anyURI",
                     getTargetRef().toString());
         }
 
-        if (getDocumentations().isEmpty() && getRequest() == null
-                && getResponse() == null) {
+        if (getDocumentations().isEmpty() && (getRequest() == null)
+                && (getResponse() == null)) {
             writer.emptyElement(APP_NAMESPACE, "method", null, attributes);
         } else {
             writer.startElement(APP_NAMESPACE, "method", null, attributes);
 
             if (getDocumentations() != null) {
-                for (DocumentationInfo documentationInfo : getDocumentations()) {
+                for (final DocumentationInfo documentationInfo : getDocumentations()) {
                     documentationInfo.writeElement(writer);
                 }
             }

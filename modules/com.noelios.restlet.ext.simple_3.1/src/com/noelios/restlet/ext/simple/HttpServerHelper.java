@@ -18,8 +18,8 @@
 
 package com.noelios.restlet.ext.simple;
 
-import java.net.ServerSocket;
 import java.net.InetAddress;
+import java.net.ServerSocket;
 
 import org.restlet.Server;
 import org.restlet.data.Protocol;
@@ -38,7 +38,7 @@ public class HttpServerHelper extends SimpleServerHelper {
      * Constructor.
      * 
      * @param server
-     *                The server to help.
+     *            The server to help.
      */
     public HttpServerHelper(Server server) {
         super(server);
@@ -48,12 +48,12 @@ public class HttpServerHelper extends SimpleServerHelper {
     /** Starts the Restlet. */
     @Override
     public void start() throws Exception {
-        String addr = getHelped().getAddress();
+        final String addr = getHelped().getAddress();
         if (addr != null) {
             // This call may throw UnknownHostException and otherwise always
             // returns an instance of INetAddress.
             // Note: textual representation of inet addresses are supported
-            InetAddress iaddr = InetAddress.getByName(addr);
+            final InetAddress iaddr = InetAddress.getByName(addr);
 
             // Note: the backlog of 50 is the default
             setSocket(new ServerSocket(getHelped().getPort(), 50, iaddr));

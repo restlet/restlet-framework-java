@@ -2,8 +2,8 @@ package org.restlet.example.book.restlet.ch8.tests;
 
 import junit.framework.TestCase;
 
-import org.restlet.example.book.restlet.ch8.objects.Mailbox;
 import org.restlet.example.book.restlet.ch8.objects.MailRoot;
+import org.restlet.example.book.restlet.ch8.objects.Mailbox;
 
 public class DomainTestCase extends TestCase {
 
@@ -16,21 +16,13 @@ public class DomainTestCase extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        domainObjects = new DomainObjects();
-        mailRoot = domainObjects.getMailRoot();
-    }
-
-    public void testMailboxes() {
-        assertEquals(mailRoot.getMailboxes().size(), 3);
-        assertEquals(mailRoot.getMailboxes().get(0).getOwner(), mailRoot
-                .getUsers().get(0));
-        assertTrue(mailRoot.getMailboxes().get(2).getOwner().isAdministrator());
-
+        this.domainObjects = new DomainObjects();
+        this.mailRoot = this.domainObjects.getMailRoot();
     }
 
     public void testMailbox1() {
         // Test first Mailbox
-        Mailbox mailbox = mailRoot.getMailboxes().get(0);
+        final Mailbox mailbox = this.mailRoot.getMailboxes().get(0);
         assertEquals(mailbox.getContacts().size(), 2);
         assertEquals(mailbox.getContacts().get(1).getName(), "contact-2");
         assertEquals(mailbox.getMails().size(), 2);
@@ -55,7 +47,7 @@ public class DomainTestCase extends TestCase {
 
     public void testMailbox2() {
         // Test second Mailbox
-        Mailbox mailbox = mailRoot.getMailboxes().get(1);
+        final Mailbox mailbox = this.mailRoot.getMailboxes().get(1);
         assertEquals(mailbox.getContacts().size(), 3);
         assertEquals(mailbox.getContacts().get(1).getName(), "contact-4");
         assertEquals(mailbox.getMails().size(), 3);
@@ -83,7 +75,7 @@ public class DomainTestCase extends TestCase {
 
     public void testMailbox3() {
         // Test third Mailbox
-        Mailbox mailbox = mailRoot.getMailboxes().get(2);
+        final Mailbox mailbox = this.mailRoot.getMailboxes().get(2);
 
         assertEquals(mailbox.getContacts().size(), 4);
         assertEquals(mailbox.getContacts().get(1).getName(), "contact-7");
@@ -110,6 +102,15 @@ public class DomainTestCase extends TestCase {
         assertEquals(mailbox.getMails().get(1).getRecipients().size(), 4);
         assertEquals(mailbox.getMails().get(1).getRecipients().get(3), mailbox
                 .getContacts().get(3));
+    }
+
+    public void testMailboxes() {
+        assertEquals(this.mailRoot.getMailboxes().size(), 3);
+        assertEquals(this.mailRoot.getMailboxes().get(0).getOwner(),
+                this.mailRoot.getUsers().get(0));
+        assertTrue(this.mailRoot.getMailboxes().get(2).getOwner()
+                .isAdministrator());
+
     }
 
 }

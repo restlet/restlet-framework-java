@@ -45,7 +45,7 @@ import freemarker.template.TemplateScalarModel;
  * FreeMarker template representation. Useful for dynamic string-based
  * representations.
  * 
- * @see <a href="http://freemarker.org/">FreeMarker home page</a>
+ * @see <a href="http://freemarker.org/">FreeMarker home page< /a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class TemplateRepresentation extends OutputRepresentation {
@@ -55,13 +55,13 @@ public class TemplateRepresentation extends OutputRepresentation {
      */
     private class ResolverHashModel implements TemplateHashModel {
         /** The inner resolver instance. */
-        private Resolver<? extends Object> resolver;
+        private final Resolver<? extends Object> resolver;
 
         /**
          * Constructor.
          * 
          * @param resolver
-         *                The inner resolver.
+         *            The inner resolver.
          */
         public ResolverHashModel(Resolver<? extends Object> resolver) {
             super();
@@ -73,7 +73,7 @@ public class TemplateRepresentation extends OutputRepresentation {
          * according to the key.
          */
         public TemplateModel get(String key) throws TemplateModelException {
-            return new ScalarModel(resolver.resolve(key));
+            return new ScalarModel(this.resolver.resolve(key));
         }
 
         /**
@@ -92,13 +92,13 @@ public class TemplateRepresentation extends OutputRepresentation {
      */
     private class ScalarModel implements TemplateScalarModel {
         /** The inner value. */
-        private Object value;
+        private final Object value;
 
         /**
          * Constructor.
          * 
          * @param value
-         *                the provided value of this scalar model.
+         *            the provided value of this scalar model.
          */
         public ScalarModel(Object value) {
             super();
@@ -106,7 +106,7 @@ public class TemplateRepresentation extends OutputRepresentation {
         }
 
         public String getAsString() throws TemplateModelException {
-            return value.toString();
+            return this.value.toString();
         }
     }
 
@@ -118,9 +118,9 @@ public class TemplateRepresentation extends OutputRepresentation {
      * Returns a FreeMarker template from a representation and a configuration.
      * 
      * @param templateRepresentation
-     *                The template representation.
+     *            The template representation.
      * @param config
-     *                The FreeMarker configuration.
+     *            The FreeMarker configuration.
      * @return The template or null if not found.
      */
     private static Template getTemplate(Representation templateRepresentation,
@@ -136,7 +136,7 @@ public class TemplateRepresentation extends OutputRepresentation {
                 return new Template("template", templateRepresentation
                         .getReader(), config, CharacterSet.UTF_8.getName());
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             logger
                     .warning("Unable to get the template from the representation "
                             + templateRepresentation.getIdentifier()
@@ -149,16 +149,16 @@ public class TemplateRepresentation extends OutputRepresentation {
      * Returns a FreeMarker template from its name and a configuration.
      * 
      * @param templateName
-     *                The template name.
+     *            The template name.
      * @param config
-     *                The FreeMarker configuration.
+     *            The FreeMarker configuration.
      * @return The template or null if not found.
      */
     private static Template getTemplate(String templateName,
             Configuration config) {
         try {
             return config.getTemplate(templateName);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             logger.warning("Unable to get the template " + templateName
                     + ". Error message: " + e.getMessage());
             return null;
@@ -175,11 +175,11 @@ public class TemplateRepresentation extends OutputRepresentation {
      * Constructor.
      * 
      * @param templateRepresentation
-     *                The FreeMarker template provided via a representation.
+     *            The FreeMarker template provided via a representation.
      * @param config
-     *                The FreeMarker configuration.
+     *            The FreeMarker configuration.
      * @param mediaType
-     *                The representation's media type.
+     *            The representation's media type.
      */
     public TemplateRepresentation(Representation templateRepresentation,
             Configuration config, MediaType mediaType) {
@@ -190,13 +190,13 @@ public class TemplateRepresentation extends OutputRepresentation {
      * Constructor.
      * 
      * @param templateRepresentation
-     *                The FreeMarker template provided via a representation.
+     *            The FreeMarker template provided via a representation.
      * @param config
-     *                The FreeMarker configuration.
+     *            The FreeMarker configuration.
      * @param dataModel
-     *                The template's data model.
+     *            The template's data model.
      * @param mediaType
-     *                The representation's media type.
+     *            The representation's media type.
      */
     public TemplateRepresentation(Representation templateRepresentation,
             Configuration config, Object dataModel, MediaType mediaType) {
@@ -207,12 +207,12 @@ public class TemplateRepresentation extends OutputRepresentation {
      * Constructor.
      * 
      * @param templateName
-     *                The FreeMarker template's name. The full path is resolved
-     *                by the configuration.
+     *            The FreeMarker template's name. The full path is resolved by
+     *            the configuration.
      * @param config
-     *                The FreeMarker configuration.
+     *            The FreeMarker configuration.
      * @param mediaType
-     *                The representation's media type.
+     *            The representation's media type.
      */
     public TemplateRepresentation(String templateName, Configuration config,
             MediaType mediaType) {
@@ -223,14 +223,14 @@ public class TemplateRepresentation extends OutputRepresentation {
      * Constructor.
      * 
      * @param templateName
-     *                The FreeMarker template's name. The full path is resolved
-     *                by the configuration.
+     *            The FreeMarker template's name. The full path is resolved by
+     *            the configuration.
      * @param config
-     *                The FreeMarker configuration.
+     *            The FreeMarker configuration.
      * @param dataModel
-     *                The template's data model.
+     *            The template's data model.
      * @param mediaType
-     *                The representation's media type.
+     *            The representation's media type.
      */
     public TemplateRepresentation(String templateName, Configuration config,
             Object dataModel, MediaType mediaType) {
@@ -241,9 +241,9 @@ public class TemplateRepresentation extends OutputRepresentation {
      * Constructor.
      * 
      * @param template
-     *                The FreeMarker template.
+     *            The FreeMarker template.
      * @param mediaType
-     *                The representation's media type.
+     *            The representation's media type.
      */
     public TemplateRepresentation(Template template, MediaType mediaType) {
         super(mediaType);
@@ -254,11 +254,11 @@ public class TemplateRepresentation extends OutputRepresentation {
      * Constructor.
      * 
      * @param template
-     *                The FreeMarker template.
+     *            The FreeMarker template.
      * @param dataModel
-     *                The template's data model.
+     *            The template's data model.
      * @param mediaType
-     *                The representation's media type.
+     *            The representation's media type.
      */
     public TemplateRepresentation(Template template, Object dataModel,
             MediaType mediaType) {
@@ -280,7 +280,7 @@ public class TemplateRepresentation extends OutputRepresentation {
      * Sets the template's data model.
      * 
      * @param dataModel
-     *                The template's data model.
+     *            The template's data model.
      * @return The template's data model.
      */
     public Object setDataModel(Object dataModel) {
@@ -296,34 +296,34 @@ public class TemplateRepresentation extends OutputRepresentation {
      * @see Resolver#createResolver(Request, Response)
      * 
      * @param request
-     *                The request where data are located.
+     *            The request where data are located.
      * @param response
-     *                The response where data are located.
+     *            The response where data are located.
      * @return The template's data model.
      */
     public Object setDataModel(Request request, Response response) {
         this.dataModel = new ResolverHashModel(Resolver.createResolver(request,
                 response));
-        return dataModel;
+        return this.dataModel;
     }
 
     /**
      * Sets the template's data model from a resolver.
      * 
      * @param resolver
-     *                The resolver.
+     *            The resolver.
      * @return The template's data model.
      */
     public Object setDataModel(Resolver<Object> resolver) {
         this.dataModel = new ResolverHashModel(resolver);
-        return dataModel;
+        return this.dataModel;
     }
 
     /**
      * Writes the datum as a stream of bytes.
      * 
      * @param outputStream
-     *                The stream to use when writing.
+     *            The stream to use when writing.
      */
     @Override
     public void write(OutputStream outputStream) throws IOException {
@@ -340,7 +340,7 @@ public class TemplateRepresentation extends OutputRepresentation {
 
             this.template.process(getDataModel(), tmplWriter);
             tmplWriter.flush();
-        } catch (TemplateException te) {
+        } catch (final TemplateException te) {
             throw new IOException("Template processing error "
                     + te.getMessage());
         }

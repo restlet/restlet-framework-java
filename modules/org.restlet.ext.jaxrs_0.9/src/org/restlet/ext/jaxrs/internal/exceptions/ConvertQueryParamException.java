@@ -37,6 +37,6 @@ public class ConvertQueryParamException extends WebApplicationException {
      */
     public ConvertQueryParamException(ConvertParameterException cpe) {
         super(cpe.getCause(), Status.NOT_FOUND);
-        this.setStackTrace(cpe.getStackTrace());
+        setStackTrace(cpe.getStackTrace());
     }
 }

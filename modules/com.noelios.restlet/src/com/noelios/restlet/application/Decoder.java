@@ -53,7 +53,7 @@ public class Decoder extends Filter {
      * Constructor to only decode request entities before handling.
      * 
      * @param context
-     *                The context.
+     *            The context.
      */
     public Decoder(Context context) {
         this(context, true, false);
@@ -63,11 +63,11 @@ public class Decoder extends Filter {
      * Constructor.
      * 
      * @param context
-     *                The context.
+     *            The context.
      * @param decodeRequest
-     *                Indicates if the request entity should be decoded.
+     *            Indicates if the request entity should be decoded.
      * @param decodeResponse
-     *                Indicates if the response entity should be decoded.
+     *            Indicates if the response entity should be decoded.
      */
     public Decoder(Context context, boolean decodeRequest,
             boolean decodeResponse) {
@@ -81,9 +81,9 @@ public class Decoder extends Filter {
      * by default.
      * 
      * @param request
-     *                The request to filter.
+     *            The request to filter.
      * @param response
-     *                The response to filter.
+     *            The response to filter.
      */
     @Override
     public void afterHandle(Request request, Response response) {
@@ -98,9 +98,9 @@ public class Decoder extends Filter {
      * by default.
      * 
      * @param request
-     *                The request to filter.
+     *            The request to filter.
      * @param response
-     *                The response to filter.
+     *            The response to filter.
      * @return The continuation status.
      */
     @Override
@@ -117,7 +117,7 @@ public class Decoder extends Filter {
      * Indicates if a representation can be decoded.
      * 
      * @param representation
-     *                The representation to test.
+     *            The representation to test.
      * @return True if the call can be decoded.
      */
     public boolean canDecode(Representation representation) {
@@ -128,7 +128,7 @@ public class Decoder extends Filter {
 
         if (result) {
             boolean found = false;
-            for (Iterator<Encoding> iter = representation.getEncodings()
+            for (final Iterator<Encoding> iter = representation.getEncodings()
                     .iterator(); !found && iter.hasNext();) {
                 found = (!iter.next().equals(Encoding.IDENTITY));
             }
@@ -141,7 +141,7 @@ public class Decoder extends Filter {
      * Decodes a given representation if its encodings are supported by NRE.
      * 
      * @param representation
-     *                The representation to encode.
+     *            The representation to encode.
      * @return The decoded representation or the original one if the encoding
      *         isn't supported by NRE.
      */
@@ -154,9 +154,9 @@ public class Decoder extends Filter {
         boolean supported = true;
         // True if all representation's encodings are IDENTITY
         boolean identityEncodings = true;
-        for (Iterator<Encoding> iter = representation.getEncodings().iterator(); supported
-                && iter.hasNext();) {
-            Encoding encoding = iter.next();
+        for (final Iterator<Encoding> iter = representation.getEncodings()
+                .iterator(); supported && iter.hasNext();) {
+            final Encoding encoding = iter.next();
             supported = DecodeRepresentation.getSupportedEncodings().contains(
                     encoding);
             identityEncodings &= encoding.equals(Encoding.IDENTITY);
@@ -191,7 +191,7 @@ public class Decoder extends Filter {
      * Indicates if the request entity should be decoded.
      * 
      * @param decodeRequest
-     *                True if the request entity should be decoded.
+     *            True if the request entity should be decoded.
      */
     public void setDecodeRequest(boolean decodeRequest) {
         this.decodeRequest = decodeRequest;
@@ -201,7 +201,7 @@ public class Decoder extends Filter {
      * Indicates if the response entity should be decoded.
      * 
      * @param decodeResponse
-     *                True if the response entity should be decoded.
+     *            True if the response entity should be decoded.
      */
     public void setDecodeResponse(boolean decodeResponse) {
         this.decodeResponse = decodeResponse;

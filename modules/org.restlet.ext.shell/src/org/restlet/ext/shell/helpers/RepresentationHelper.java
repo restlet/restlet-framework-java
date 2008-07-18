@@ -7,34 +7,13 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
+
 import org.restlet.resource.Representation;
 
 public class RepresentationHelper {
 
-    private RepresentationHelper() {
-    }
-
-    public static void save(Representation representation) {
-        OutputStream outputStream = null;
-
-        try {
-            outputStream = new FileOutputStream(representation.getDownloadName());
-            representation.write(outputStream);
-        } catch (IOException ex) {
-            throw new RuntimeException("cannot write to " + representation.getDownloadName(), ex);
-        } finally {
-            try {
-                if (outputStream != null) {
-                    outputStream.close();
-                }
-            } catch (IOException ex) {
-                // ignored
-            }
-        }
-    }
-
     public static String loadFrom(String fileName) {
-        File file = new File(fileName);
+        final File file = new File(fileName);
 
         BufferedReader bufferedReader = null;
         StringWriter stringWriter = null;
@@ -49,16 +28,40 @@ public class RepresentationHelper {
             }
 
             return stringWriter.toString();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new RuntimeException("unable to read file");
         } finally {
             if (bufferedReader != null) {
                 try {
                     bufferedReader.close();
-                } catch (IOException ex) {
+                } catch (final IOException ex) {
                     // ignored
                 }
             }
         }
+    }
+
+    public static void save(Representation representation) {
+        OutputStream outputStream = null;
+
+        try {
+            outputStream = new FileOutputStream(representation
+                    .getDownloadName());
+            representation.write(outputStream);
+        } catch (final IOException ex) {
+            throw new RuntimeException("cannot write to "
+                    + representation.getDownloadName(), ex);
+        } finally {
+            try {
+                if (outputStream != null) {
+                    outputStream.close();
+                }
+            } catch (final IOException ex) {
+                // ignored
+            }
+        }
+    }
+
+    private RepresentationHelper() {
     }
 }

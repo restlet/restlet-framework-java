@@ -55,8 +55,8 @@ public class GenericTypeMBW implements MessageBodyWriter<List<String>> {
      */
     public boolean isWriteable(Class<?> type, Type genericType,
             Annotation[] annotations) {
-        return (List.class.isAssignableFrom(type) && Util.getGenericClass(genericType)
-                .equals(String.class));
+        return (List.class.isAssignableFrom(type) && Util.getGenericClass(
+                genericType).equals(String.class));
     }
 
     /**
@@ -68,7 +68,7 @@ public class GenericTypeMBW implements MessageBodyWriter<List<String>> {
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException,
             WebApplicationException {
-        for (String s : t) {
+        for (final String s : t) {
             entityStream.write(s.getBytes());
             entityStream.write('\n');
         }

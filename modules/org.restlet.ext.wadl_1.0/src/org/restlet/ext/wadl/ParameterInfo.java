@@ -84,7 +84,7 @@ public class ParameterInfo {
      * @return The default value of this parameter.
      */
     public String getDefaultValue() {
-        return defaultValue;
+        return this.defaultValue;
     }
 
     /**
@@ -98,8 +98,9 @@ public class ParameterInfo {
         if (d == null) {
             synchronized (this) {
                 d = this.documentations;
-                if (d == null)
+                if (d == null) {
                     this.documentations = d = new ArrayList<DocumentationInfo>();
+                }
             }
         }
         return d;
@@ -111,7 +112,7 @@ public class ParameterInfo {
      * @return The fixed value for the parameter.
      */
     public String getFixed() {
-        return fixed;
+        return this.fixed;
     }
 
     /**
@@ -121,7 +122,7 @@ public class ParameterInfo {
      */
 
     public String getIdentifier() {
-        return identifier;
+        return this.identifier;
     }
 
     /**
@@ -131,7 +132,7 @@ public class ParameterInfo {
      */
 
     public LinkInfo getLink() {
-        return link;
+        return this.link;
     }
 
     /**
@@ -141,7 +142,7 @@ public class ParameterInfo {
      */
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     /**
@@ -156,8 +157,9 @@ public class ParameterInfo {
         if (o == null) {
             synchronized (this) {
                 o = this.options;
-                if (o == null)
+                if (o == null) {
                     this.options = o = new ArrayList<OptionInfo>();
+                }
             }
         }
         return o;
@@ -172,7 +174,7 @@ public class ParameterInfo {
      */
 
     public String getPath() {
-        return path;
+        return this.path;
     }
 
     /**
@@ -182,7 +184,7 @@ public class ParameterInfo {
      */
 
     public ParameterStyle getStyle() {
-        return style;
+        return this.style;
     }
 
     /**
@@ -191,7 +193,7 @@ public class ParameterInfo {
      * @return The parameter type.
      */
     public String getType() {
-        return type;
+        return this.type;
     }
 
     /**
@@ -203,7 +205,7 @@ public class ParameterInfo {
      */
 
     public boolean isRepeating() {
-        return repeating;
+        return this.repeating;
     }
 
     /**
@@ -212,7 +214,7 @@ public class ParameterInfo {
      * @return True if the parameter is required, false otherwise.
      */
     public boolean isRequired() {
-        return required;
+        return this.required;
     }
 
     /**
@@ -347,22 +349,22 @@ public class ParameterInfo {
      * @throws SAXException
      */
     public void writeElement(XmlWriter writer) throws SAXException {
-        AttributesImpl attributes = new AttributesImpl();
+        final AttributesImpl attributes = new AttributesImpl();
 
-        if (getDefaultValue() != null && !getDefaultValue().equals("")) {
+        if ((getDefaultValue() != null) && !getDefaultValue().equals("")) {
             attributes.addAttribute("", "default", null, "xs:string",
                     getDefaultValue());
         }
 
-        if (getFixed() != null && !getFixed().equals("")) {
+        if ((getFixed() != null) && !getFixed().equals("")) {
             attributes.addAttribute("", "fixed", null, "xs:string", getFixed());
         }
 
-        if (getIdentifier() != null && !getIdentifier().equals("")) {
+        if ((getIdentifier() != null) && !getIdentifier().equals("")) {
             attributes.addAttribute("", "id", null, "xs:ID", getIdentifier());
         }
 
-        if (getPath() != null && !getPath().equals("")) {
+        if ((getPath() != null) && !getPath().equals("")) {
             attributes.addAttribute("", "path", null, "xs:string", getPath());
         }
 
@@ -371,11 +373,11 @@ public class ParameterInfo {
                     .toString());
         }
 
-        if (getName() != null && !getName().equals("")) {
+        if ((getName() != null) && !getName().equals("")) {
             attributes.addAttribute("", "name", null, "xs:NMTOKEN", getName());
         }
 
-        if (getType() != null && !getType().equals("")) {
+        if ((getType() != null) && !getType().equals("")) {
             attributes.addAttribute("", "type", null, "xs:QName", getType());
         }
 
@@ -388,7 +390,7 @@ public class ParameterInfo {
             attributes.addAttribute("", "required", null, "xs:boolean", "true");
         }
 
-        if (getLink() == null && getDocumentations().isEmpty()
+        if ((getLink() == null) && getDocumentations().isEmpty()
                 && getOptions().isEmpty()) {
             writer.emptyElement(APP_NAMESPACE, "param", null, attributes);
         } else {
@@ -398,11 +400,11 @@ public class ParameterInfo {
                 getLink().writeElement(writer);
             }
 
-            for (DocumentationInfo documentationInfo : getDocumentations()) {
+            for (final DocumentationInfo documentationInfo : getDocumentations()) {
                 documentationInfo.writeElement(writer);
             }
 
-            for (OptionInfo optionInfo : getOptions()) {
+            for (final OptionInfo optionInfo : getOptions()) {
                 optionInfo.writeElement(writer);
             }
 

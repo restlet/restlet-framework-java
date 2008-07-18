@@ -18,6 +18,7 @@
 
 package org.restlet.gwt.internal.http;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -37,11 +38,11 @@ public class CookieUtils {
      * Appends a source string as an HTTP comment.
      * 
      * @param value
-     *                The source string to format.
+     *            The source string to format.
      * @param version
-     *                The cookie version.
+     *            The cookie version.
      * @param destination
-     *                The appendable destination.
+     *            The appendable destination.
      * @throws IOException
      */
     private static StringBuilder appendValue(CharSequence value, int version,
@@ -59,16 +60,16 @@ public class CookieUtils {
      * Formats a cookie.
      * 
      * @param cookie
-     *                The cookie to format.
+     *            The cookie to format.
      * @return The formatted cookie.
      * @throws IllegalArgumentException
-     *                 If the Cookie contains illegal values.
+     *             If the Cookie contains illegal values.
      */
     public static String format(Cookie cookie) throws IllegalArgumentException {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         try {
             format(cookie, sb);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             // IOExceptions are not possible on StringBuilders
         }
         return sb.toString();
@@ -78,18 +79,18 @@ public class CookieUtils {
      * Formats a cookie setting.
      * 
      * @param cookie
-     *                The cookie to format.
+     *            The cookie to format.
      * @param destination
-     *                The appendable destination.
+     *            The appendable destination.
      * @throws IOException
      * @throws IllegalArgumentException
-     *                 If the Cookie contains illegal values.
+     *             If the Cookie contains illegal values.
      */
     public static void format(Cookie cookie, StringBuilder destination)
             throws IllegalArgumentException, Exception {
-        String name = cookie.getName();
-        String value = cookie.getValue();
-        int version = cookie.getVersion();
+        final String name = cookie.getName();
+        final String value = cookie.getValue();
+        final int version = cookie.getVersion();
 
         if ((name == null) || (name.length() == 0)) {
             throw new IllegalArgumentException(
@@ -103,13 +104,13 @@ public class CookieUtils {
             }
             if (version > 0) {
                 // Append the path
-                String path = cookie.getPath();
+                final String path = cookie.getPath();
                 if ((path != null) && (path.length() > 0)) {
                     destination.append("; $Path=");
                     HttpUtils.appendQuote(path, destination);
                 }
                 // Append the domain
-                String domain = cookie.getDomain();
+                final String domain = cookie.getDomain();
                 if ((domain != null) && (domain.length() > 0)) {
                     destination.append("; $Domain=");
                     HttpUtils.appendQuote(domain, destination);
@@ -122,18 +123,18 @@ public class CookieUtils {
      * Formats a cookie setting.
      * 
      * @param cookieSetting
-     *                The cookie setting to format.
+     *            The cookie setting to format.
      * @return The formatted cookie setting.
      * @throws IllegalArgumentException
-     *                 If the CookieSetting can not be formatted to a String
+     *             If the CookieSetting can not be formatted to a String
      */
     public static String format(CookieSetting cookieSetting)
             throws IllegalArgumentException {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
 
         try {
             format(cookieSetting, sb);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             // log error
         }
 
@@ -144,19 +145,19 @@ public class CookieUtils {
      * Formats a cookie setting.
      * 
      * @param cookieSetting
-     *                The cookie setting to format.
+     *            The cookie setting to format.
      * @param destination
-     *                The appendable destination.
+     *            The appendable destination.
      * @throws IOException
      * @throws IllegalArgumentException
-     *                 If the CookieSetting can not be formatted to a String
+     *             If the CookieSetting can not be formatted to a String
      */
     public static void format(CookieSetting cookieSetting,
             StringBuilder destination) throws Exception,
             IllegalArgumentException {
-        String name = cookieSetting.getName();
-        String value = cookieSetting.getValue();
-        int version = cookieSetting.getVersion();
+        final String name = cookieSetting.getName();
+        final String value = cookieSetting.getValue();
+        final int version = cookieSetting.getVersion();
 
         if ((name == null) || (name.length() == 0)) {
             throw new IllegalArgumentException(
@@ -176,7 +177,7 @@ public class CookieUtils {
             }
 
             // Append the path
-            String path = cookieSetting.getPath();
+            final String path = cookieSetting.getPath();
             if ((path != null) && (path.length() > 0)) {
                 destination.append("; Path=");
 
@@ -188,13 +189,13 @@ public class CookieUtils {
             }
 
             // Append the expiration date
-            int maxAge = cookieSetting.getMaxAge();
+            final int maxAge = cookieSetting.getMaxAge();
             if (maxAge >= 0) {
                 if (version == 0) {
-                    long currentTime = System.currentTimeMillis();
-                    long maxTime = (maxAge * 1000L);
-                    long expiresTime = currentTime + maxTime;
-                    Date expires = new Date(expiresTime);
+                    final long currentTime = System.currentTimeMillis();
+                    final long maxTime = (maxAge * 1000L);
+                    final long expiresTime = currentTime + maxTime;
+                    final Date expires = new Date(expiresTime);
                     destination.append("; Expires=");
                     appendValue(DateUtils.format(expires,
                             DateUtils.FORMAT_RFC_1036.get(0)), version,
@@ -214,7 +215,7 @@ public class CookieUtils {
             }
 
             // Append the domain
-            String domain = cookieSetting.getDomain();
+            final String domain = cookieSetting.getDomain();
             if ((domain != null) && (domain.length() > 0)) {
                 destination.append("; Domain=");
                 appendValue(domain.toLowerCase(), version, destination);
@@ -232,7 +233,7 @@ public class CookieUtils {
 
             // Append the comment
             if (version > 0) {
-                String comment = cookieSetting.getComment();
+                final String comment = cookieSetting.getComment();
                 if ((comment != null) && (comment.length() > 0)) {
                     destination.append("; Comment=");
                     appendValue(comment, version, destination);
@@ -245,14 +246,14 @@ public class CookieUtils {
      * Formats a list of cookies as an HTTP header.
      * 
      * @param cookies
-     *                The list of cookies to format.
+     *            The list of cookies to format.
      * @return The HTTP header.
      * @throws IllegalArgumentException
-     *                 If one of the Cookies contains illegal values
+     *             If one of the Cookies contains illegal values
      */
     public static String format(List<Cookie> cookies)
             throws IllegalArgumentException {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
 
         Cookie cookie;
         for (int i = 0; i < cookies.size(); i++) {
@@ -269,7 +270,7 @@ public class CookieUtils {
 
             try {
                 format(cookie, sb);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 // IOExceptiosn are not possible on StringBuilder
             }
         }
@@ -282,15 +283,15 @@ public class CookieUtils {
      * cookie is found, its value is put in the map.
      * 
      * @param source
-     *                The source list of cookies.
+     *            The source list of cookies.
      * @param destination
-     *                The cookies map controlling the reading.
+     *            The cookies map controlling the reading.
      */
     public static void getCookies(List<Cookie> source,
             Map<String, Cookie> destination) {
         Cookie cookie;
 
-        for (Iterator<Cookie> iter = source.iterator(); iter.hasNext();) {
+        for (final Iterator<Cookie> iter = source.iterator(); iter.hasNext();) {
             cookie = iter.next();
 
             if (destination.containsKey(cookie.getName())) {

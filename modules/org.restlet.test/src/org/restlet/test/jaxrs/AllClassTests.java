@@ -40,7 +40,7 @@ import org.restlet.test.jaxrs.wrappers.WrapperClassesTests;
  */
 public class AllClassTests extends TestCase {
     public static Test suite() {
-        TestSuite mySuite = new TestSuite();
+        final TestSuite mySuite = new TestSuite();
         mySuite.setName("All class tests");
         // package .
         mySuite.addTestSuite(ExceptionMappersTest.class);

@@ -35,7 +35,7 @@ import org.restlet.test.jaxrs.services.tests.ThrowExceptionTest;
 public class ThrowExceptionResource {
 
     public static final int WEB_APP_EXC_STATUS = 583;
-    
+
     @GET
     @Path("IOException")
     public String getIoe() throws IOException {

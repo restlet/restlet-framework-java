@@ -33,21 +33,21 @@ import org.w3c.dom.Node;
 public class S3App extends S3Authorized {
 
     public static void main(String... args) {
-        for (S3Bucket bucket : new S3App().getBuckets()) {
+        for (final S3Bucket bucket : new S3App().getBuckets()) {
             System.out.println(bucket.getName() + " : " + bucket.getUri());
         }
     }
 
     public List<S3Bucket> getBuckets() {
-        List<S3Bucket> result = new ArrayList<S3Bucket>();
+        final List<S3Bucket> result = new ArrayList<S3Bucket>();
 
         // Fetch a resource: an XML document with our list of buckets
-        Response response = authorizedGet(HOST);
-        DomRepresentation document = response.getEntityAsDom();
+        final Response response = authorizedGet(HOST);
+        final DomRepresentation document = response.getEntityAsDom();
 
         if (response.getStatus().isSuccess()) {
             // Use XPath to find the bucket names
-            for (Node node : document.getNodes("//Bucket/Name")) {
+            for (final Node node : document.getNodes("//Bucket/Name")) {
                 result.add(new S3Bucket(node.getTextContent()));
             }
         } else {

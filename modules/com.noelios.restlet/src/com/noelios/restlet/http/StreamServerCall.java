@@ -58,13 +58,13 @@ public class StreamServerCall extends HttpServerCall {
      * Constructor.
      * 
      * @param server
-     *                The server connector.
+     *            The server connector.
      * @param requestStream
-     *                The request input stream.
+     *            The request input stream.
      * @param responseStream
-     *                The response output stream.
+     *            The response output stream.
      * @param socket
-     *                The request socket
+     *            The request socket
      */
     public StreamServerCall(Server server, InputStream requestStream,
             OutputStream responseStream, Socket socket) {
@@ -77,7 +77,7 @@ public class StreamServerCall extends HttpServerCall {
 
         try {
             readRequestHead(getRequestHeadStream());
-        } catch (IOException ioe) {
+        } catch (final IOException ioe) {
             getLogger().log(Level.WARNING, "Unable to parse the HTTP request",
                     ioe);
         }
@@ -86,16 +86,16 @@ public class StreamServerCall extends HttpServerCall {
     @Override
     public void complete() {
         try {
-            socket.getOutputStream().flush();
+            this.socket.getOutputStream().flush();
 
             // Exhaust the input stream before closing in case
             // the client is still writing to it
             ByteUtils.exhaust(getRequestEntityStream(getContentLength()));
 
-            if (!socket.isClosed()) {
-                socket.shutdownOutput();
+            if (!this.socket.isClosed()) {
+                this.socket.shutdownOutput();
             }
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             getLogger().log(Level.WARNING, "Unable to shutdown server socket",
                     ex);
         }
@@ -103,12 +103,12 @@ public class StreamServerCall extends HttpServerCall {
 
     @Override
     public String getClientAddress() {
-        return socket.getInetAddress().getHostAddress();
+        return this.socket.getInetAddress().getHostAddress();
     }
 
     @Override
     public int getClientPort() {
-        return socket.getPort();
+        return this.socket.getPort();
     }
 
     @Override
@@ -118,15 +118,16 @@ public class StreamServerCall extends HttpServerCall {
 
     @Override
     public InputStream getRequestEntityStream(long size) {
-        if (requestEntityStream == null) {
+        if (this.requestEntityStream == null) {
             if (isRequestChunked()) {
-                requestEntityStream = new ChunkedInputStream(getRequestStream());
+                this.requestEntityStream = new ChunkedInputStream(
+                        getRequestStream());
             } else {
-                requestEntityStream = new InputEntityStream(getRequestStream(),
-                        size);
+                this.requestEntityStream = new InputEntityStream(
+                        getRequestStream(), size);
             }
         }
-        return requestEntityStream;
+        return this.requestEntityStream;
     }
 
     @Override
@@ -140,7 +141,7 @@ public class StreamServerCall extends HttpServerCall {
     }
 
     private InputStream getRequestStream() {
-        return requestStream;
+        return this.requestStream;
     }
 
     @Override
@@ -150,20 +151,20 @@ public class StreamServerCall extends HttpServerCall {
 
     @Override
     public OutputStream getResponseEntityStream() {
-        if (responseEntityStream == null) {
+        if (this.responseEntityStream == null) {
             if (isResponseChunked()) {
-                responseEntityStream = new ChunkedOutputStream(
+                this.responseEntityStream = new ChunkedOutputStream(
                         getResponseStream());
             } else {
-                responseEntityStream = new KeepAliveOutputStream(
+                this.responseEntityStream = new KeepAliveOutputStream(
                         getResponseStream());
             }
         }
-        return responseEntityStream;
+        return this.responseEntityStream;
     }
 
     private OutputStream getResponseStream() {
-        return responseStream;
+        return this.responseStream;
     }
 
     @Override

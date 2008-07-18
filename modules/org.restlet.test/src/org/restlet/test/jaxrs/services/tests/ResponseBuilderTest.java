@@ -38,8 +38,8 @@ public class ResponseBuilderTest extends JaxRsTestCase {
     }
 
     public void test1() {
-        Response response = get("1");
-        Set<Dimension> dimensions = response.getDimensions();
+        final Response response = get("1");
+        final Set<Dimension> dimensions = response.getDimensions();
 
         assertTrue("dimension must contain MediaType", dimensions
                 .contains(Dimension.MEDIA_TYPE));
@@ -48,18 +48,19 @@ public class ResponseBuilderTest extends JaxRsTestCase {
     }
 
     public void test2() {
-        Response response = get("2");
-        Set<Dimension> dimensions = response.getDimensions();
+        final Response response = get("2");
+        final Set<Dimension> dimensions = response.getDimensions();
 
         assertTrue("dimension must contain Language", dimensions
                 .contains(Dimension.LANGUAGE));
         assertTrue("dimension must contain CharacterSet", dimensions
                 .contains(Dimension.CHARACTER_SET));
     }
-    
+
     public void testDelete() {
-        Response r = accessServer(Method.DELETE, getRootResourceClass(), null);
-        
+        final Response r = accessServer(Method.DELETE, getRootResourceClass(),
+                null);
+
         assertEquals(Status.SUCCESS_OK, r.getStatus());
     }
 }

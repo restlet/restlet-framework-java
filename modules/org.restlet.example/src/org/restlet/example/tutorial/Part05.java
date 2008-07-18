@@ -33,17 +33,17 @@ import org.restlet.data.Response;
 public class Part05 {
     public static void main(String[] args) throws Exception {
         // Create a new Restlet component and add a HTTP server connector to it
-        Component component = new Component();
+        final Component component = new Component();
         component.getServers().add(Protocol.HTTP, 8182);
 
         // Create a new tracing Restlet
-        Restlet restlet = new Restlet() {
+        final Restlet restlet = new Restlet() {
             @Override
             public void handle(Request request, Response response) {
                 // Print the requested URI path
-                String message = "Resource URI  : " + request.getResourceRef()
-                        + '\n' + "Root URI      : " + request.getRootRef()
-                        + '\n' + "Routed part   : "
+                final String message = "Resource URI  : "
+                        + request.getResourceRef() + '\n' + "Root URI      : "
+                        + request.getRootRef() + '\n' + "Routed part   : "
                         + request.getResourceRef().getBaseRef() + '\n'
                         + "Remaining part: "
                         + request.getResourceRef().getRemainingPart();

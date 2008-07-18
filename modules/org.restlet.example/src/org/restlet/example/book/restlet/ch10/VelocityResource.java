@@ -19,13 +19,13 @@ import org.restlet.resource.Variant;
 public class VelocityResource extends Resource {
 
     // List of items
-    private List<String> items;
+    private final List<String> items;
 
     public VelocityResource(Context context, Request request, Response response) {
         super(context, request, response);
         // This resource is able to generate one kind of representations, then
         // turn off content negotiation.
-        this.setNegotiateContent(false);
+        setNegotiateContent(false);
         getVariants().add(new Variant(MediaType.TEXT_PLAIN));
 
         // Collect data
@@ -40,8 +40,8 @@ public class VelocityResource extends Resource {
         TemplateRepresentation representation = null;
 
         try {
-            Map<String, Object> map = new TreeMap<String, Object>();
-            map.put("items", items);
+            final Map<String, Object> map = new TreeMap<String, Object>();
+            map.put("items", this.items);
             representation = new TemplateRepresentation("items.vtl", map,
                     MediaType.TEXT_PLAIN);
             representation
@@ -49,7 +49,7 @@ public class VelocityResource extends Resource {
                     .addProperty(
                             "file.resource.loader.path",
                             "D:\\alaska\\forge\\build\\swc\\nre\\trunk\\books\\apress\\manuscript\\sample\\");
-        } catch (Exception e) {
+        } catch (final Exception e) {
             getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e);
         }
 

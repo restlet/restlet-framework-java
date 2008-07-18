@@ -26,12 +26,12 @@ package org.restlet.gwt.data;
  * entities are equivalent and could be substituted for each other with no
  * significant change in semantics."
  * 
- * @see <a
- *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11">HTTP
- *      Entity Tags</a>
- * @see <a
- *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html#sec13.3.2">HTTP
- *      Entity Tag Cache Validators</a>
+ * @see <a *
+ *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11"
+ *      >HTTP * Entity Tags< /a>
+ * @see <a *
+ *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html#sec13.3.2"
+ *      >HTTP * Entity Tag Cache Validators< /a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public final class Tag extends Metadata {
@@ -42,14 +42,14 @@ public final class Tag extends Metadata {
      * Parses a tag formatted as defined by the HTTP standard.
      * 
      * @param httpTag
-     *                The HTTP tag string; if it starts with 'W/' the tag will
-     *                be marked as weak and the data following the 'W/' used as
-     *                the tag; otherwise it should be surrounded with quotes
-     *                (e.g., "sometag").
+     *            The HTTP tag string; if it starts with 'W/' the tag will be
+     *            marked as weak and the data following the 'W/' used as the
+     *            tag; otherwise it should be surrounded with quotes (e.g.,
+     *            "sometag").
      * @return A new tag instance.
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11">HTTP
-     *      Entity Tags</a>
+     * @see <a *
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11"
+     *      >HTTP * Entity Tags< /a>
      */
     public static Tag parse(final String httpTag) {
         Tag result = null;
@@ -88,7 +88,7 @@ public final class Tag extends Metadata {
      * Constructor of weak tags.
      * 
      * @param opaqueTag
-     *                The tag value.
+     *            The tag value.
      */
     public Tag(final String opaqueTag) {
         this(opaqueTag, true);
@@ -98,9 +98,9 @@ public final class Tag extends Metadata {
      * Constructor.
      * 
      * @param opaqueTag
-     *                The tag value.
+     *            The tag value.
      * @param weak
-     *                The weakness indicator.
+     *            The weakness indicator.
      */
     public Tag(final String opaqueTag, boolean weak) {
         super(opaqueTag);
@@ -111,7 +111,7 @@ public final class Tag extends Metadata {
      * Indicates if both tags are equal.
      * 
      * @param object
-     *                The object to compare to.
+     *            The object to compare to.
      * @return True if both tags are equal.
      */
     @Override
@@ -123,9 +123,9 @@ public final class Tag extends Metadata {
      * Indicates if both tags are equal.
      * 
      * @param object
-     *                The object to compare to.
+     *            The object to compare to.
      * @param checkWeakness
-     *                the equality test takes care or not of the weakness.
+     *            the equality test takes care or not of the weakness.
      * 
      * @return True if both tags are equal.
      */
@@ -133,7 +133,7 @@ public final class Tag extends Metadata {
         boolean result = (object != null) && (object instanceof Tag);
 
         if (result) {
-            Tag that = (Tag) object;
+            final Tag that = (Tag) object;
 
             if (checkWeakness) {
                 result = (that.isWeak() == isWeak());
@@ -155,18 +155,19 @@ public final class Tag extends Metadata {
      * Returns tag formatted as an HTTP tag string.
      * 
      * @return The formatted HTTP tag string.
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11">HTTP
-     *      Entity Tags</a>
+     * @see <a *
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11"
+     *      >HTTP * Entity Tags< /a>
      */
     public String format() {
         if (getName().equals("*")) {
             return "*";
         }
 
-        StringBuilder sb = new StringBuilder();
-        if (isWeak())
+        final StringBuilder sb = new StringBuilder();
+        if (isWeak()) {
             sb.append("W/");
+        }
         return sb.append('"').append(getName()).append('"').toString();
     }
 

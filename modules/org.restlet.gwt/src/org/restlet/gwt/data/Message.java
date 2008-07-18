@@ -50,7 +50,7 @@ public abstract class Message {
      * Constructor.
      * 
      * @param entity
-     *                The payload of the message.
+     *            The payload of the message.
      */
     public Message(Representation entity) {
         this.attributes = null;
@@ -82,8 +82,8 @@ public abstract class Message {
      * <td>Server HTTP connectors must provide all request headers and client
      * HTTP connectors must provide all response headers, exactly as they were
      * received. In addition, developers can also use this attribute to specify
-     * <b>non-standard</b> headers that should be added to the request or to
-     * the response. </td>
+     * <b>non-standard</b> headers that should be added to the request or to the
+     * response.</td>
      * </tr>
      * <tr>
      * <td>org.restlet.https.clientCertificates</td>
@@ -91,9 +91,10 @@ public abstract class Message {
      * <td>For requests received via a secure connector, indicates the ordered
      * list of client certificates, if they are available and accessible.</td>
      * </tr>
-     * </table> Adding standard HTTP headers is forbidden because it could
-     * conflict with the connector's internal behavior, limit portability or
-     * prevent future optimizations.</td>
+     * </table>
+     * Adding standard HTTP headers is forbidden because it could conflict with
+     * the connector's internal behavior, limit portability or prevent future
+     * optimizations.</td>
      * 
      * @return The modifiable attributes map.
      */
@@ -156,7 +157,7 @@ public abstract class Message {
      * Sets the modifiable map of attributes
      * 
      * @param attributes
-     *                The modifiable map of attributes
+     *            The modifiable map of attributes
      */
     public void setAttributes(Map<String, Object> attributes) {
         this.attributes = attributes;
@@ -166,7 +167,7 @@ public abstract class Message {
      * Sets the entity representation.
      * 
      * @param entity
-     *                The entity representation.
+     *            The entity representation.
      */
     public void setEntity(Representation entity) {
         this.entity = entity;
@@ -176,9 +177,9 @@ public abstract class Message {
      * Sets a textual entity.
      * 
      * @param value
-     *                The represented string.
+     *            The represented string.
      * @param mediaType
-     *                The representation's media type.
+     *            The representation's media type.
      */
     public void setEntity(String value, MediaType mediaType) {
         setEntity(new StringRepresentation(value, mediaType));

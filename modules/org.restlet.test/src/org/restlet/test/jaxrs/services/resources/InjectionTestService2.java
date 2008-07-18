@@ -61,20 +61,27 @@ public class InjectionTestService2 {
     @Produces("text/plain")
     public Response get() {
         String msg = "";
-        if (securityContext == null)
+        if (this.securityContext == null) {
             msg += "\n* securityContext";
-        if (uriInfo == null)
+        }
+        if (this.uriInfo == null) {
             msg += "\n* uriInfo";
-        if (request == null)
+        }
+        if (this.request == null) {
             msg += "\n* request";
-        if (httpHeaders == null)
+        }
+        if (this.httpHeaders == null) {
             msg += "\n* httpHeaders";
-        if (idf == null)
+        }
+        if (this.idf == null) {
             msg += "\n* id";
-        if (hostHost == null)
+        }
+        if (this.hostHost == null) {
             msg += "\n* host";
-        if (msg.length() > 0)
+        }
+        if (msg.length() > 0) {
             return Response.serverError().entity("missing:" + msg).build();
-        return Response.ok(String.valueOf(idf)).build();
+        }
+        return Response.ok(String.valueOf(this.idf)).build();
     }
 }

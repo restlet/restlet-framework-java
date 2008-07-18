@@ -51,7 +51,7 @@ public class TunnelFilter extends Filter {
      * Constructor.
      * 
      * @param context
-     *                The parent context.
+     *            The parent context.
      */
     public TunnelFilter(Context context) {
         super(context);
@@ -68,7 +68,7 @@ public class TunnelFilter extends Filter {
      * {@link MetadataService}.
      * 
      * @param extension
-     *                The extension to lookup.
+     *            The extension to lookup.
      * @return The matched metadata.
      */
     private Metadata getMetadata(String extension) {
@@ -101,21 +101,21 @@ public class TunnelFilter extends Filter {
      * href="https://jsr311.dev.java.net">https://jsr311.dev.java.net</a>)
      * 
      * @param request
-     *                The request to update.
+     *            The request to update.
      * @return True if the query has been updated, false otherwise.
      */
     private boolean processExtensions(Request request) {
-        TunnelService tunnelService = getTunnelService();
+        final TunnelService tunnelService = getTunnelService();
         boolean extensionsModified = false;
 
         // Tunnel the client preferences for all methods
         if (tunnelService.isPreferencesTunnel()) {
             // in JAX-RS this is not only for GET; it is also required for
             // responses to other methods.
-            Reference resourceRef = request.getResourceRef();
+            final Reference resourceRef = request.getResourceRef();
 
             if (resourceRef.hasExtensions()) {
-                ClientInfo clientInfo = request.getClientInfo();
+                final ClientInfo clientInfo = request.getClientInfo();
                 boolean encodingFound = false;
                 boolean characterSetFound = false;
                 boolean mediaTypeFound = false;
@@ -123,10 +123,10 @@ public class TunnelFilter extends Filter {
                 String extensions = resourceRef.getExtensions();
 
                 for (;;) {
-                    int lastIndexOfPoint = extensions.lastIndexOf('.');
-                    String extension = extensions
+                    final int lastIndexOfPoint = extensions.lastIndexOf('.');
+                    final String extension = extensions
                             .substring(lastIndexOfPoint + 1);
-                    Metadata metadata = getMetadata(extension);
+                    final Metadata metadata = getMetadata(extension);
 
                     if (!mediaTypeFound && (metadata instanceof MediaType)) {
                         updateMetadata(clientInfo, metadata);
@@ -170,9 +170,9 @@ public class TunnelFilter extends Filter {
      * preferences for the same type of metadata if necessary.
      * 
      * @param clientInfo
-     *                The client info to update.
+     *            The client info to update.
      * @param metadata
-     *                The metadata to use.
+     *            The metadata to use.
      */
     private void updateMetadata(ClientInfo clientInfo, Metadata metadata) {
         if (metadata != null) {

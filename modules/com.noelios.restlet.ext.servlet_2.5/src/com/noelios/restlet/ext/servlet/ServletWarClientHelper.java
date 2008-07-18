@@ -54,6 +54,7 @@ import com.noelios.restlet.local.FileClientHelper;
  * require the use of a authority. Such URI are "relative" to the root of the
  * servlet context.<br>
  * Here is a sample code excerpt that illustrates the way to use this connector:
+ * 
  * <code>Response response = getContext().getClientDispatcher().get("war:///myDir/test.txt");
  if (response.isEntityAvailable()) {
  //Do what you want to do.
@@ -70,9 +71,9 @@ public class ServletWarClientHelper extends FileClientHelper {
      * Constructor.
      * 
      * @param client
-     *                The client to help.
+     *            The client to help.
      * @param servletContext
-     *                The Servlet context
+     *            The Servlet context
      */
     public ServletWarClientHelper(Client client, ServletContext servletContext) {
         super(client);
@@ -100,21 +101,21 @@ public class ServletWarClientHelper extends FileClientHelper {
             // to prevent unauthorized access to user directories.
             request.getResourceRef().normalize();
 
-            String basePath = request.getResourceRef().getPath();
-            int lastSlashIndex = basePath.lastIndexOf('/');
+            final String basePath = request.getResourceRef().getPath();
+            final int lastSlashIndex = basePath.lastIndexOf('/');
             String entry = (lastSlashIndex == -1) ? basePath : basePath
                     .substring(lastSlashIndex + 1);
             Representation output = null;
 
             if (basePath.endsWith("/")) {
                 // Return the directory listing
-                Set<String> entries = getServletContext().getResourcePaths(
-                        basePath);
+                final Set<String> entries = getServletContext()
+                        .getResourcePaths(basePath);
                 if (entries != null) {
-                    ReferenceList rl = new ReferenceList(entries.size());
+                    final ReferenceList rl = new ReferenceList(entries.size());
                     rl.setIdentifier(request.getResourceRef());
 
-                    for (Iterator<String> iter = entries.iterator(); iter
+                    for (final Iterator<String> iter = entries.iterator(); iter
                             .hasNext();) {
                         entry = iter.next();
                         rl.add(new Reference(basePath
@@ -125,10 +126,10 @@ public class ServletWarClientHelper extends FileClientHelper {
                 }
             } else {
                 // Return the entry content
-                InputStream ris = getServletContext().getResourceAsStream(
-                        basePath);
+                final InputStream ris = getServletContext()
+                        .getResourceAsStream(basePath);
                 if (ris != null) {
-                    MetadataService metadataService = getMetadataService(request);
+                    final MetadataService metadataService = getMetadataService(request);
                     output = new InputRepresentation(ris, metadataService
                             .getDefaultMediaType());
                     output.setIdentifier(request.getResourceRef());
@@ -136,8 +137,8 @@ public class ServletWarClientHelper extends FileClientHelper {
 
                     // See if the Servlet context specified a particular Mime
                     // Type
-                    String mediaType = getServletContext()
-                            .getMimeType(basePath);
+                    final String mediaType = getServletContext().getMimeType(
+                            basePath);
 
                     if (mediaType != null) {
                         output.setMediaType(new MediaType(mediaType));

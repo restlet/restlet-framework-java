@@ -31,12 +31,12 @@ public class Db4oFacade extends DataFacade {
      * Constructor with the path to the db file.
      * 
      * @param db4oFilePath
-     *                the path to the db file.
+     *            the path to the db file.
      */
     public Db4oFacade(String db4oFilePath) {
         super();
 
-        Configuration config = Db4o.newConfiguration();
+        final Configuration config = Db4o.newConfiguration();
         config.updateDepth(2);
         config.activationDepth(10);
 
@@ -46,36 +46,83 @@ public class Db4oFacade extends DataFacade {
     @Override
     public Contact createContact(Contact contact) {
         contact.setId(Long.toString(new Date().getTime()));
-        objectContainer.store(contact);
-        objectContainer.commit();
+        this.objectContainer.store(contact);
+        this.objectContainer.commit();
 
         return contact;
     }
 
     @Override
-    public void deleteContact(Contact contact) {
-        objectContainer.delete(contact);
-        objectContainer.commit();
+    public Feed createFeed(Feed feed) {
+        feed.setId(Long.toString(new Date().getTime()));
+        this.objectContainer.store(feed);
+        this.objectContainer.commit();
+
+        return feed;
     }
 
     @Override
-    public Contact getContactById(String contactId) {
-        Contact prototype = new Contact();
-        prototype.setId(contactId);
+    public Mail createMail(Mail mail) {
+        mail.setId(Long.toString(new Date().getTime()));
+        this.objectContainer.store(mail);
+        this.objectContainer.commit();
 
-        return getContact(prototype);
+        return mail;
+    }
+
+    @Override
+    public void createMailbox(Mailbox mailbox) {
+        this.objectContainer.store(mailbox);
+        this.objectContainer.commit();
+    }
+
+    @Override
+    public void createUser(User user) {
+        this.objectContainer.store(user);
+        this.objectContainer.commit();
+    }
+
+    @Override
+    public void deleteContact(Contact contact) {
+        this.objectContainer.delete(contact);
+        this.objectContainer.commit();
+    }
+
+    @Override
+    public void deleteFeed(Feed feed) {
+        this.objectContainer.delete(feed);
+        this.objectContainer.commit();
+    }
+
+    @Override
+    public void deleteMail(Mail mail) {
+        this.objectContainer.delete(mail);
+        this.objectContainer.commit();
+    }
+
+    @Override
+    public void deleteMailbox(Mailbox mailbox) {
+        this.objectContainer.delete(mailbox);
+        this.objectContainer.commit();
+    }
+
+    @Override
+    public void deleteUser(User user) {
+        this.objectContainer.delete(user);
+        this.objectContainer.commit();
     }
 
     /**
      * Get a contact according to a prototype.
      * 
      * @param prototype
-     *                the prototype.
+     *            the prototype.
      * @return a Contact object or null if no contact has been found.
      */
     private Contact getContact(Contact prototype) {
         Contact contact = null;
-        ObjectSet<Contact> result = objectContainer.queryByExample(prototype);
+        final ObjectSet<Contact> result = this.objectContainer
+                .queryByExample(prototype);
 
         if (!result.isEmpty()) {
             contact = result.get(0);
@@ -85,38 +132,24 @@ public class Db4oFacade extends DataFacade {
     }
 
     @Override
-    public void updateContact(Contact contact) {
-        objectContainer.store(contact);
-        objectContainer.commit();
-    }
+    public Contact getContactById(String contactId) {
+        final Contact prototype = new Contact();
+        prototype.setId(contactId);
 
-    @Override
-    public Feed createFeed(Feed feed) {
-        feed.setId(Long.toString(new Date().getTime()));
-        objectContainer.store(feed);
-        objectContainer.commit();
-
-        return feed;
-    }
-
-    @Override
-    public Feed getFeedById(String feedId) {
-        Feed prototype = new Feed();
-        prototype.setId(feedId);
-
-        return getFeed(prototype);
+        return getContact(prototype);
     }
 
     /**
      * Get a feed according to a prototype.
      * 
      * @param prototype
-     *                the prototype.
+     *            the prototype.
      * @return a Feed object or null if no feed has been found.
      */
     private Feed getFeed(Feed prototype) {
         Feed feed = null;
-        ObjectSet<Feed> result = objectContainer.queryByExample(prototype);
+        final ObjectSet<Feed> result = this.objectContainer
+                .queryByExample(prototype);
 
         if (!result.isEmpty()) {
             feed = result.get(0);
@@ -126,41 +159,43 @@ public class Db4oFacade extends DataFacade {
     }
 
     @Override
-    public void updateFeed(Feed feed) {
-        objectContainer.store(feed);
-        objectContainer.commit();
+    public Feed getFeedById(String feedId) {
+        final Feed prototype = new Feed();
+        prototype.setId(feedId);
+
+        return getFeed(prototype);
     }
 
-    @Override
-    public void deleteFeed(Feed feed) {
-        objectContainer.delete(feed);
-        objectContainer.commit();
-    }
+    /**
+     * Get a mail according to a prototype.
+     * 
+     * @param prototype
+     *            the prototype.
+     * @return a Mail object or null if no mail has been found.
+     */
+    private Mail getMail(Mail prototype) {
+        Mail mail = null;
+        final ObjectSet<Mail> result = this.objectContainer
+                .queryByExample(prototype);
 
-    @Override
-    public void createMailbox(Mailbox mailbox) {
-        objectContainer.store(mailbox);
-        objectContainer.commit();
-    }
+        if (!result.isEmpty()) {
+            mail = result.get(0);
+        }
 
-    @Override
-    public Mailbox getMailboxById(String mailboxId) {
-        Mailbox prototype = new Mailbox();
-        prototype.setId(mailboxId);
-
-        return getMailbox(prototype);
+        return mail;
     }
 
     /**
      * Get a mailbox according to a prototype.
      * 
      * @param prototype
-     *                the prototype.
+     *            the prototype.
      * @return a Mailbox object or null if no mailbox has been found.
      */
     private Mailbox getMailbox(Mailbox prototype) {
         Mailbox mailbox = null;
-        ObjectSet<Mailbox> result = objectContainer.queryByExample(prototype);
+        final ObjectSet<Mailbox> result = this.objectContainer
+                .queryByExample(prototype);
 
         if (!result.isEmpty()) {
             mailbox = result.get(0);
@@ -170,9 +205,17 @@ public class Db4oFacade extends DataFacade {
     }
 
     @Override
+    public Mailbox getMailboxById(String mailboxId) {
+        final Mailbox prototype = new Mailbox();
+        prototype.setId(mailboxId);
+
+        return getMailbox(prototype);
+    }
+
+    @Override
     public List<Mailbox> getMailboxes() {
         // Get all mailboxes
-        Predicate<Mailbox> predicate = new Predicate<Mailbox>() {
+        final Predicate<Mailbox> predicate = new Predicate<Mailbox>() {
             static final long serialVersionUID = 1l;
 
             @Override
@@ -181,7 +224,7 @@ public class Db4oFacade extends DataFacade {
             }
         };
         // Sort by owner name
-        QueryComparator<Mailbox> comparator = new QueryComparator<Mailbox>() {
+        final QueryComparator<Mailbox> comparator = new QueryComparator<Mailbox>() {
             static final long serialVersionUID = 1l;
 
             public int compare(Mailbox arg0, Mailbox arg1) {
@@ -196,76 +239,105 @@ public class Db4oFacade extends DataFacade {
 
         };
 
-        List<Mailbox> result = new ArrayList<Mailbox>();
-        ObjectSet<Mailbox> list = objectContainer.query(predicate, comparator);
+        final List<Mailbox> result = new ArrayList<Mailbox>();
+        final ObjectSet<Mailbox> list = this.objectContainer.query(predicate,
+                comparator);
         result.addAll(list);
         return result;
     }
 
     @Override
-    public void updateMailbox(Mailbox mailbox) {
-        objectContainer.store(mailbox);
-        objectContainer.commit();
-    }
+    public List<Mailbox> getMailboxes(User user) {
+        final String userId = user.getId();
+        final Predicate<Mailbox> predicate = new Predicate<Mailbox>() {
+            static final long serialVersionUID = 1l;
 
-    @Override
-    public void deleteMailbox(Mailbox mailbox) {
-        objectContainer.delete(mailbox);
-        objectContainer.commit();
-    }
-
-    @Override
-    public Mail createMail(Mail mail) {
-        mail.setId(Long.toString(new Date().getTime()));
-        objectContainer.store(mail);
-        objectContainer.commit();
-
-        return mail;
+            @Override
+            public boolean match(Mailbox mailbox) {
+                return mailbox.getOwner().getId().equals(userId);
+            }
+        };
+        return new ArrayList<Mailbox>(this.objectContainer.query(predicate));
     }
 
     @Override
     public Mail getMailById(String mailId) {
-        Mail prototype = new Mail();
+        final Mail prototype = new Mail();
         prototype.setId(mailId);
 
         return getMail(prototype);
     }
 
     /**
-     * Get a mail according to a prototype.
+     * Get a user according to a prototype.
      * 
      * @param prototype
-     *                the prototype.
-     * @return a Mail object or null if no mail has been found.
+     *            the prototype.
+     * @return a User object or null if no user has been found.
      */
-    private Mail getMail(Mail prototype) {
-        Mail mail = null;
-        ObjectSet<Mail> result = objectContainer.queryByExample(prototype);
+    private User getUser(User prototype) {
+        User user = null;
+        final ObjectSet<User> result = this.objectContainer
+                .queryByExample(prototype);
 
         if (!result.isEmpty()) {
-            mail = result.get(0);
+            user = result.get(0);
         }
 
-        return mail;
+        return user;
     }
 
     @Override
-    public void updateMail(Mail mail) {
-        objectContainer.store(mail);
-        objectContainer.commit();
+    public User getUserById(String userId) {
+        final User prototype = new User();
+        prototype.setId(userId);
+
+        return getUser(prototype);
     }
 
     @Override
-    public void deleteMail(Mail mail) {
-        objectContainer.delete(mail);
-        objectContainer.commit();
+    public User getUserByLoginPwd(String login, char[] password) {
+        final User prototype = new User();
+        prototype.setLogin(login);
+        prototype.setPassword(new String(password));
+
+        return getUser(prototype);
+    }
+
+    @Override
+    public List<User> getUsers() {
+        // Get all users
+        final Predicate<User> predicate = new Predicate<User>() {
+            static final long serialVersionUID = 1l;
+
+            @Override
+            public boolean match(User arg0) {
+                return true;
+            }
+        };
+        // Sort by last name
+        final QueryComparator<User> comparator = new QueryComparator<User>() {
+            static final long serialVersionUID = 1l;
+
+            public int compare(User arg0, User arg1) {
+                return arg0.getLastName().compareToIgnoreCase(
+                        arg1.getLastName());
+            }
+
+        };
+        final List<User> result = new ArrayList<User>();
+        final ObjectSet<User> list = this.objectContainer.query(predicate,
+                comparator);
+        result.addAll(list);
+        return result;
     }
 
     @Override
     public void initAdmin() {
-        User prototype = new User();
+        final User prototype = new User();
         prototype.setAdministrator(true);
-        ObjectSet<User> result = objectContainer.queryByExample(prototype);
+        final ObjectSet<User> result = this.objectContainer
+                .queryByExample(prototype);
 
         if (result.isEmpty()) {
             prototype.setId("admin");
@@ -280,97 +352,33 @@ public class Db4oFacade extends DataFacade {
     }
 
     @Override
-    public void createUser(User user) {
-        objectContainer.store(user);
-        objectContainer.commit();
+    public void updateContact(Contact contact) {
+        this.objectContainer.store(contact);
+        this.objectContainer.commit();
     }
 
     @Override
-    public User getUserByLoginPwd(String login, char[] password) {
-        User prototype = new User();
-        prototype.setLogin(login);
-        prototype.setPassword(new String(password));
-
-        return getUser(prototype);
+    public void updateFeed(Feed feed) {
+        this.objectContainer.store(feed);
+        this.objectContainer.commit();
     }
 
     @Override
-    public User getUserById(String userId) {
-        User prototype = new User();
-        prototype.setId(userId);
-
-        return getUser(prototype);
-    }
-
-    /**
-     * Get a user according to a prototype.
-     * 
-     * @param prototype
-     *                the prototype.
-     * @return a User object or null if no user has been found.
-     */
-    private User getUser(User prototype) {
-        User user = null;
-        ObjectSet<User> result = objectContainer.queryByExample(prototype);
-
-        if (!result.isEmpty()) {
-            user = result.get(0);
-        }
-
-        return user;
+    public void updateMail(Mail mail) {
+        this.objectContainer.store(mail);
+        this.objectContainer.commit();
     }
 
     @Override
-    public List<User> getUsers() {
-        // Get all users
-        Predicate<User> predicate = new Predicate<User>() {
-            static final long serialVersionUID = 1l;
-
-            @Override
-            public boolean match(User arg0) {
-                return true;
-            }
-        };
-        // Sort by last name
-        QueryComparator<User> comparator = new QueryComparator<User>() {
-            static final long serialVersionUID = 1l;
-
-            public int compare(User arg0, User arg1) {
-                return arg0.getLastName().compareToIgnoreCase(
-                        arg1.getLastName());
-            }
-
-        };
-        List<User> result = new ArrayList<User>();
-        ObjectSet<User> list = objectContainer.query(predicate, comparator);
-        result.addAll(list);
-        return result;
-    }
-
-    @Override
-    public void deleteUser(User user) {
-        objectContainer.delete(user);
-        objectContainer.commit();
+    public void updateMailbox(Mailbox mailbox) {
+        this.objectContainer.store(mailbox);
+        this.objectContainer.commit();
     }
 
     @Override
     public void updateUser(User user) {
-        objectContainer.store(user);
-        objectContainer.commit();
-    }
-
-    @Override
-    public List<Mailbox> getMailboxes(User user) {
-        final String userId = user.getId();
-        Predicate<Mailbox> predicate = new Predicate<Mailbox>() {
-            static final long serialVersionUID = 1l;
-
-            @Override
-            public boolean match(Mailbox mailbox) {
-                return mailbox.getOwner().getId().equals(userId);
-            }
-        };
-        return new ArrayList<Mailbox>(objectContainer.query(predicate));
+        this.objectContainer.store(user);
+        this.objectContainer.commit();
     }
 
 }

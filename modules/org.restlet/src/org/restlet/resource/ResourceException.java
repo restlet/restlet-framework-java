@@ -36,7 +36,7 @@ public class ResourceException extends Exception {
      * Constructor.
      * 
      * @param code
-     *                The specification code.
+     *            The specification code.
      */
     public ResourceException(final int code) {
         this(new Status(code));
@@ -46,13 +46,13 @@ public class ResourceException extends Exception {
      * Constructor.
      * 
      * @param code
-     *                The specification code.
+     *            The specification code.
      * @param name
-     *                The name.
+     *            The name.
      * @param description
-     *                The description.
+     *            The description.
      * @param uri
-     *                The URI of the specification describing the method.
+     *            The URI of the specification describing the method.
      */
     public ResourceException(final int code, final String name,
             final String description, final String uri) {
@@ -63,15 +63,15 @@ public class ResourceException extends Exception {
      * Constructor.
      * 
      * @param code
-     *                The specification code.
+     *            The specification code.
      * @param name
-     *                The name.
+     *            The name.
      * @param description
-     *                The description.
+     *            The description.
      * @param uri
-     *                The URI of the specification describing the method.
+     *            The URI of the specification describing the method.
      * @param cause
-     *                The wrapped cause error or exception.
+     *            The wrapped cause error or exception.
      */
     public ResourceException(final int code, final String name,
             final String description, final String uri, final Throwable cause) {
@@ -82,9 +82,9 @@ public class ResourceException extends Exception {
      * Constructor.
      * 
      * @param code
-     *                The specification code.
+     *            The specification code.
      * @param cause
-     *                The wrapped cause error or exception.
+     *            The wrapped cause error or exception.
      */
     public ResourceException(final int code, final Throwable cause) {
         this(new Status(code, cause), cause);
@@ -94,7 +94,7 @@ public class ResourceException extends Exception {
      * Constructor.
      * 
      * @param status
-     *                The status to associate.
+     *            The status to associate.
      */
     public ResourceException(final Status status) {
         super((status == null) ? null : status.toString());
@@ -105,9 +105,9 @@ public class ResourceException extends Exception {
      * Constructor.
      * 
      * @param status
-     *                The status to copy.
+     *            The status to copy.
      * @param description
-     *                The description to associate.
+     *            The description to associate.
      */
     public ResourceException(final Status status, final String description) {
         this(new Status(status, description));
@@ -117,11 +117,11 @@ public class ResourceException extends Exception {
      * Constructor.
      * 
      * @param status
-     *                The status to copy.
+     *            The status to copy.
      * @param description
-     *                The description to associate.
+     *            The description to associate.
      * @param cause
-     *                The wrapped cause error or exception.
+     *            The wrapped cause error or exception.
      */
     public ResourceException(final Status status, final String description,
             final Throwable cause) {
@@ -132,9 +132,9 @@ public class ResourceException extends Exception {
      * Constructor.
      * 
      * @param status
-     *                The status to associate.
+     *            The status to associate.
      * @param cause
-     *                The wrapped cause error or exception.
+     *            The wrapped cause error or exception.
      */
     public ResourceException(final Status status, final Throwable cause) {
         super((status == null) ? null : status.getDescription(), cause);
@@ -147,7 +147,7 @@ public class ResourceException extends Exception {
      * related error or exception.
      * 
      * @param cause
-     *                The wrapped cause error or exception.
+     *            The wrapped cause error or exception.
      */
     public ResourceException(final Throwable cause) {
         this(new Status(Status.SERVER_ERROR_INTERNAL, cause), cause);
@@ -159,7 +159,7 @@ public class ResourceException extends Exception {
      * @return The status associated to this exception.
      */
     public Status getStatus() {
-        return status;
+        return this.status;
     }
 
 }

@@ -37,7 +37,7 @@ public abstract class CharacterRepresentation extends Representation {
      * Constructor.
      * 
      * @param mediaType
-     *                The media type.
+     *            The media type.
      */
     public CharacterRepresentation(MediaType mediaType) {
         super(mediaType);

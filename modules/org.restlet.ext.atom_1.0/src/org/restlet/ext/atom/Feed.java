@@ -59,7 +59,7 @@ public class Feed extends SaxRepresentation {
 
         private Entry currentEntry;
 
-        private Feed currentFeed;
+        private final Feed currentFeed;
 
         private Link currentLink;
 
@@ -85,16 +85,16 @@ public class Feed extends SaxRepresentation {
          * Receive notification of character data.
          * 
          * @param ch
-         *                The characters from the XML document.
+         *            The characters from the XML document.
          * @param start
-         *                The start position in the array.
+         *            The start position in the array.
          * @param length
-         *                The number of characters to read from the array.
+         *            The number of characters to read from the array.
          */
         @Override
         public void characters(char[] ch, int start, int length)
                 throws SAXException {
-            contentBuffer.append(ch, start, length);
+            this.contentBuffer.append(ch, start, length);
         }
 
         /**
@@ -111,144 +111,149 @@ public class Feed extends SaxRepresentation {
          * Receive notification of the end of an element.
          * 
          * @param uri
-         *                The Namespace URI, or the empty string if the element
-         *                has no Namespace URI or if Namespace processing is not
-         *                being performed.
+         *            The Namespace URI, or the empty string if the element has
+         *            no Namespace URI or if Namespace processing is not being
+         *            performed.
          * @param localName
-         *                The local name (without prefix), or the empty string
-         *                if Namespace processing is not being performed.
+         *            The local name (without prefix), or the empty string if
+         *            Namespace processing is not being performed.
          * @param qName
-         *                The qualified XML name (with prefix), or the empty
-         *                string if qualified names are not available.
+         *            The qualified XML name (with prefix), or the empty string
+         *            if qualified names are not available.
          */
         @Override
         public void endElement(String uri, String localName, String qName)
                 throws SAXException {
-            if (currentText != null) {
-                currentText.setContent(contentBuffer.toString());
+            if (this.currentText != null) {
+                this.currentText.setContent(this.contentBuffer.toString());
             }
 
-            if (currentDate != null) {
-                String formattedDate = contentBuffer.toString();
-                Date parsedDate = DateUtils.parse(formattedDate,
+            if (this.currentDate != null) {
+                final String formattedDate = this.contentBuffer.toString();
+                final Date parsedDate = DateUtils.parse(formattedDate,
                         DateUtils.FORMAT_RFC_3339);
 
                 if (parsedDate != null) {
-                    currentDate.setTime(parsedDate.getTime());
+                    this.currentDate.setTime(parsedDate.getTime());
                 } else {
-                    currentDate = null;
+                    this.currentDate = null;
                 }
             }
 
             if (uri.equalsIgnoreCase(ATOM_NAMESPACE)) {
                 if (localName.equals("feed")) {
-                    state = State.NONE;
+                    this.state = State.NONE;
                 } else if (localName.equals("title")) {
-                    if (state == State.FEED_TITLE) {
-                        currentFeed.setTitle(currentText);
-                        state = State.FEED;
-                    } else if (state == State.FEED_ENTRY_TITLE) {
-                        currentEntry.setTitle(currentText);
-                        state = State.FEED_ENTRY;
-                    } else if (state == State.FEED_ENTRY_SOURCE_TITLE) {
-                        currentEntry.getSource().setTitle(currentText);
-                        state = State.FEED_ENTRY_SOURCE;
+                    if (this.state == State.FEED_TITLE) {
+                        this.currentFeed.setTitle(this.currentText);
+                        this.state = State.FEED;
+                    } else if (this.state == State.FEED_ENTRY_TITLE) {
+                        this.currentEntry.setTitle(this.currentText);
+                        this.state = State.FEED_ENTRY;
+                    } else if (this.state == State.FEED_ENTRY_SOURCE_TITLE) {
+                        this.currentEntry.getSource()
+                                .setTitle(this.currentText);
+                        this.state = State.FEED_ENTRY_SOURCE;
                     }
                 } else if (localName.equals("updated")) {
-                    if (state == State.FEED_UPDATED) {
-                        currentFeed.setUpdated(currentDate);
-                        state = State.FEED;
-                    } else if (state == State.FEED_ENTRY_UPDATED) {
-                        currentEntry.setUpdated(currentDate);
-                        state = State.FEED_ENTRY;
-                    } else if (state == State.FEED_ENTRY_SOURCE_UPDATED) {
-                        currentEntry.getSource().setUpdated(currentDate);
-                        state = State.FEED_ENTRY_SOURCE;
+                    if (this.state == State.FEED_UPDATED) {
+                        this.currentFeed.setUpdated(this.currentDate);
+                        this.state = State.FEED;
+                    } else if (this.state == State.FEED_ENTRY_UPDATED) {
+                        this.currentEntry.setUpdated(this.currentDate);
+                        this.state = State.FEED_ENTRY;
+                    } else if (this.state == State.FEED_ENTRY_SOURCE_UPDATED) {
+                        this.currentEntry.getSource().setUpdated(
+                                this.currentDate);
+                        this.state = State.FEED_ENTRY_SOURCE;
                     }
                 } else if (localName.equals("author")) {
-                    if (state == State.FEED_AUTHOR) {
-                        currentFeed.getAuthors().add(currentPerson);
-                        state = State.FEED;
-                    } else if (state == State.FEED_ENTRY_AUTHOR) {
-                        currentEntry.getAuthors().add(currentPerson);
-                        state = State.FEED_ENTRY;
-                    } else if (state == State.FEED_ENTRY_SOURCE_AUTHOR) {
-                        currentEntry.getSource().getAuthors()
-                                .add(currentPerson);
-                        state = State.FEED_ENTRY_SOURCE;
+                    if (this.state == State.FEED_AUTHOR) {
+                        this.currentFeed.getAuthors().add(this.currentPerson);
+                        this.state = State.FEED;
+                    } else if (this.state == State.FEED_ENTRY_AUTHOR) {
+                        this.currentEntry.getAuthors().add(this.currentPerson);
+                        this.state = State.FEED_ENTRY;
+                    } else if (this.state == State.FEED_ENTRY_SOURCE_AUTHOR) {
+                        this.currentEntry.getSource().getAuthors().add(
+                                this.currentPerson);
+                        this.state = State.FEED_ENTRY_SOURCE;
                     }
                 } else if (localName.equals("name")) {
-                    currentPerson.setName(contentBuffer.toString());
+                    this.currentPerson.setName(this.contentBuffer.toString());
 
-                    if (state == State.FEED_AUTHOR_NAME) {
-                        state = State.FEED_AUTHOR;
-                    } else if (state == State.FEED_ENTRY_AUTHOR_NAME) {
-                        state = State.FEED_ENTRY_AUTHOR;
-                    } else if (state == State.FEED_ENTRY_SOURCE_AUTHOR_NAME) {
-                        state = State.FEED_ENTRY_SOURCE_AUTHOR;
+                    if (this.state == State.FEED_AUTHOR_NAME) {
+                        this.state = State.FEED_AUTHOR;
+                    } else if (this.state == State.FEED_ENTRY_AUTHOR_NAME) {
+                        this.state = State.FEED_ENTRY_AUTHOR;
+                    } else if (this.state == State.FEED_ENTRY_SOURCE_AUTHOR_NAME) {
+                        this.state = State.FEED_ENTRY_SOURCE_AUTHOR;
                     }
                 } else if (localName.equals("id")) {
-                    if (state == State.FEED_ID) {
-                        currentFeed.setId(contentBuffer.toString());
-                        state = State.FEED;
-                    } else if (state == State.FEED_ENTRY_ID) {
-                        currentEntry.setId(contentBuffer.toString());
-                        state = State.FEED_ENTRY;
-                    } else if (state == State.FEED_ENTRY_SOURCE_ID) {
-                        currentEntry.getSource()
-                                .setId(contentBuffer.toString());
-                        state = State.FEED_ENTRY_SOURCE;
+                    if (this.state == State.FEED_ID) {
+                        this.currentFeed.setId(this.contentBuffer.toString());
+                        this.state = State.FEED;
+                    } else if (this.state == State.FEED_ENTRY_ID) {
+                        this.currentEntry.setId(this.contentBuffer.toString());
+                        this.state = State.FEED_ENTRY;
+                    } else if (this.state == State.FEED_ENTRY_SOURCE_ID) {
+                        this.currentEntry.getSource().setId(
+                                this.contentBuffer.toString());
+                        this.state = State.FEED_ENTRY_SOURCE;
                     }
                 } else if (localName.equals("link")) {
-                    if (state == State.FEED_LINK) {
-                        currentFeed.getLinks().add(currentLink);
-                        state = State.FEED;
-                    } else if (state == State.FEED_ENTRY_LINK) {
-                        currentEntry.getLinks().add(currentLink);
-                        state = State.FEED_ENTRY;
-                    } else if (state == State.FEED_ENTRY_SOURCE_LINK) {
-                        currentEntry.getSource().getLinks().add(currentLink);
-                        state = State.FEED_ENTRY_SOURCE;
+                    if (this.state == State.FEED_LINK) {
+                        this.currentFeed.getLinks().add(this.currentLink);
+                        this.state = State.FEED;
+                    } else if (this.state == State.FEED_ENTRY_LINK) {
+                        this.currentEntry.getLinks().add(this.currentLink);
+                        this.state = State.FEED_ENTRY;
+                    } else if (this.state == State.FEED_ENTRY_SOURCE_LINK) {
+                        this.currentEntry.getSource().getLinks().add(
+                                this.currentLink);
+                        this.state = State.FEED_ENTRY_SOURCE;
                     }
                 } else if (localName.equalsIgnoreCase("entry")) {
-                    if (state == State.FEED_ENTRY) {
-                        currentFeed.getEntries().add(currentEntry);
-                        state = State.FEED;
+                    if (this.state == State.FEED_ENTRY) {
+                        this.currentFeed.getEntries().add(this.currentEntry);
+                        this.state = State.FEED;
                     }
                 } else if (localName.equals("category")) {
-                    if (state == State.FEED_CATEGORY) {
-                        currentFeed.getCategories().add(currentCategory);
-                        state = State.FEED;
-                    } else if (state == State.FEED_ENTRY_CATEGORY) {
-                        currentEntry.getCategories().add(currentCategory);
-                        state = State.FEED_ENTRY;
-                    } else if (state == State.FEED_ENTRY_SOURCE_CATEGORY) {
-                        currentEntry.getSource().getCategories().add(
-                                currentCategory);
-                        state = State.FEED_ENTRY_SOURCE;
+                    if (this.state == State.FEED_CATEGORY) {
+                        this.currentFeed.getCategories().add(
+                                this.currentCategory);
+                        this.state = State.FEED;
+                    } else if (this.state == State.FEED_ENTRY_CATEGORY) {
+                        this.currentEntry.getCategories().add(
+                                this.currentCategory);
+                        this.state = State.FEED_ENTRY;
+                    } else if (this.state == State.FEED_ENTRY_SOURCE_CATEGORY) {
+                        this.currentEntry.getSource().getCategories().add(
+                                this.currentCategory);
+                        this.state = State.FEED_ENTRY_SOURCE;
                     }
                 } else if (localName.equalsIgnoreCase("content")) {
-                    if (state == State.FEED_ENTRY_CONTENT) {
-                        if (currentEntry.getContent().isInline()) {
-                            StringRepresentation sr = (StringRepresentation) currentEntry
+                    if (this.state == State.FEED_ENTRY_CONTENT) {
+                        if (this.currentEntry.getContent().isInline()) {
+                            final StringRepresentation sr = (StringRepresentation) this.currentEntry
                                     .getContent().getInlineContent();
-                            sr.setText(contentBuffer.toString());
+                            sr.setText(this.contentBuffer.toString());
                         }
 
-                        state = State.FEED_ENTRY;
+                        this.state = State.FEED_ENTRY;
                     }
                 }
             }
 
-            currentText = null;
-            currentDate = null;
+            this.currentText = null;
+            this.currentDate = null;
         }
 
         /**
          * Returns a media type from an Atom type attribute.
          * 
          * @param type
-         *                The Atom type attribute.
+         *            The Atom type attribute.
          * @return The media type.
          */
         private MediaType getMediaType(String type) {
@@ -281,20 +286,20 @@ public class Feed extends SaxRepresentation {
          * Receive notification of the beginning of an element.
          * 
          * @param uri
-         *                The Namespace URI, or the empty string if the element
-         *                has no Namespace URI or if Namespace processing is not
-         *                being performed.
+         *            The Namespace URI, or the empty string if the element has
+         *            no Namespace URI or if Namespace processing is not being
+         *            performed.
          * @param localName
-         *                The local name (without prefix), or the empty string
-         *                if Namespace processing is not being performed.
+         *            The local name (without prefix), or the empty string if
+         *            Namespace processing is not being performed.
          * @param qName
-         *                The qualified name (with prefix), or the empty string
-         *                if qualified names are not available.
+         *            The qualified name (with prefix), or the empty string if
+         *            qualified names are not available.
          * @param attrs
-         *                The attributes attached to the element. If there are
-         *                no attributes, it shall be an empty Attributes object.
-         *                The value of this object after startElement returns is
-         *                undefined.
+         *            The attributes attached to the element. If there are no
+         *            attributes, it shall be an empty Attributes object. The
+         *            value of this object after startElement returns is
+         *            undefined.
          */
         @Override
         public void startElement(String uri, String localName, String qName,
@@ -303,100 +308,100 @@ public class Feed extends SaxRepresentation {
 
             if (uri.equalsIgnoreCase(ATOM_NAMESPACE)) {
                 if (localName.equals("feed")) {
-                    state = State.FEED;
+                    this.state = State.FEED;
                 } else if (localName.equals("title")) {
                     startTextElement(attrs);
 
-                    if (state == State.FEED) {
-                        state = State.FEED_TITLE;
-                    } else if (state == State.FEED_ENTRY) {
-                        state = State.FEED_ENTRY_TITLE;
-                    } else if (state == State.FEED_ENTRY_SOURCE) {
-                        state = State.FEED_ENTRY_SOURCE_TITLE;
+                    if (this.state == State.FEED) {
+                        this.state = State.FEED_TITLE;
+                    } else if (this.state == State.FEED_ENTRY) {
+                        this.state = State.FEED_ENTRY_TITLE;
+                    } else if (this.state == State.FEED_ENTRY_SOURCE) {
+                        this.state = State.FEED_ENTRY_SOURCE_TITLE;
                     }
                 } else if (localName.equals("updated")) {
-                    currentDate = new Date();
+                    this.currentDate = new Date();
 
-                    if (state == State.FEED) {
-                        state = State.FEED_UPDATED;
-                    } else if (state == State.FEED_ENTRY) {
-                        state = State.FEED_ENTRY_UPDATED;
-                    } else if (state == State.FEED_ENTRY_SOURCE) {
-                        state = State.FEED_ENTRY_SOURCE_UPDATED;
+                    if (this.state == State.FEED) {
+                        this.state = State.FEED_UPDATED;
+                    } else if (this.state == State.FEED_ENTRY) {
+                        this.state = State.FEED_ENTRY_UPDATED;
+                    } else if (this.state == State.FEED_ENTRY_SOURCE) {
+                        this.state = State.FEED_ENTRY_SOURCE_UPDATED;
                     }
                 } else if (localName.equals("author")) {
-                    currentPerson = new Person();
+                    this.currentPerson = new Person();
 
-                    if (state == State.FEED) {
-                        state = State.FEED_AUTHOR;
-                    } else if (state == State.FEED_ENTRY) {
-                        state = State.FEED_ENTRY_AUTHOR;
-                    } else if (state == State.FEED_ENTRY_SOURCE) {
-                        state = State.FEED_ENTRY_SOURCE_AUTHOR;
+                    if (this.state == State.FEED) {
+                        this.state = State.FEED_AUTHOR;
+                    } else if (this.state == State.FEED_ENTRY) {
+                        this.state = State.FEED_ENTRY_AUTHOR;
+                    } else if (this.state == State.FEED_ENTRY_SOURCE) {
+                        this.state = State.FEED_ENTRY_SOURCE_AUTHOR;
                     }
                 } else if (localName.equals("name")) {
-                    if (state == State.FEED_AUTHOR) {
-                        state = State.FEED_AUTHOR_NAME;
-                    } else if (state == State.FEED_ENTRY_AUTHOR) {
-                        state = State.FEED_ENTRY_AUTHOR_NAME;
-                    } else if (state == State.FEED_ENTRY_SOURCE_AUTHOR) {
-                        state = State.FEED_ENTRY_SOURCE_AUTHOR_NAME;
+                    if (this.state == State.FEED_AUTHOR) {
+                        this.state = State.FEED_AUTHOR_NAME;
+                    } else if (this.state == State.FEED_ENTRY_AUTHOR) {
+                        this.state = State.FEED_ENTRY_AUTHOR_NAME;
+                    } else if (this.state == State.FEED_ENTRY_SOURCE_AUTHOR) {
+                        this.state = State.FEED_ENTRY_SOURCE_AUTHOR_NAME;
                     }
                 } else if (localName.equals("id")) {
-                    if (state == State.FEED) {
-                        state = State.FEED_ID;
-                    } else if (state == State.FEED_ENTRY) {
-                        state = State.FEED_ENTRY_ID;
-                    } else if (state == State.FEED_ENTRY_SOURCE) {
-                        state = State.FEED_ENTRY_SOURCE_ID;
+                    if (this.state == State.FEED) {
+                        this.state = State.FEED_ID;
+                    } else if (this.state == State.FEED_ENTRY) {
+                        this.state = State.FEED_ENTRY_ID;
+                    } else if (this.state == State.FEED_ENTRY_SOURCE) {
+                        this.state = State.FEED_ENTRY_SOURCE_ID;
                     }
                 } else if (localName.equals("link")) {
-                    currentLink = new Link();
-                    currentLink.setHref(new Reference(attrs
-                            .getValue("", "href")));
-                    currentLink.setRel(Relation
-                            .parse(attrs.getValue("", "rel")));
-                    currentLink.setType(new MediaType(attrs
-                            .getValue("", "type")));
-                    currentLink.setHrefLang(new Language(attrs.getValue("",
-                            "hreflang")));
-                    currentLink.setTitle(attrs.getValue("", "title"));
-                    String attr = attrs.getValue("", "length");
-                    currentLink.setLength((attr == null) ? -1L : Long
+                    this.currentLink = new Link();
+                    this.currentLink.setHref(new Reference(attrs.getValue("",
+                            "href")));
+                    this.currentLink.setRel(Relation.parse(attrs.getValue("",
+                            "rel")));
+                    this.currentLink.setType(new MediaType(attrs.getValue("",
+                            "type")));
+                    this.currentLink.setHrefLang(new Language(attrs.getValue(
+                            "", "hreflang")));
+                    this.currentLink.setTitle(attrs.getValue("", "title"));
+                    final String attr = attrs.getValue("", "length");
+                    this.currentLink.setLength((attr == null) ? -1L : Long
                             .parseLong(attr));
 
-                    if (state == State.FEED) {
-                        state = State.FEED_LINK;
-                    } else if (state == State.FEED_ENTRY) {
-                        state = State.FEED_ENTRY_LINK;
-                    } else if (state == State.FEED_ENTRY_SOURCE) {
-                        state = State.FEED_ENTRY_SOURCE_LINK;
+                    if (this.state == State.FEED) {
+                        this.state = State.FEED_LINK;
+                    } else if (this.state == State.FEED_ENTRY) {
+                        this.state = State.FEED_ENTRY_LINK;
+                    } else if (this.state == State.FEED_ENTRY_SOURCE) {
+                        this.state = State.FEED_ENTRY_SOURCE_LINK;
                     }
                 } else if (localName.equalsIgnoreCase("entry")) {
-                    if (state == State.FEED) {
-                        currentEntry = new Entry();
-                        state = State.FEED_ENTRY;
+                    if (this.state == State.FEED) {
+                        this.currentEntry = new Entry();
+                        this.state = State.FEED_ENTRY;
                     }
                 } else if (localName.equals("category")) {
-                    currentCategory = new Category();
-                    currentCategory.setTerm(attrs.getValue("", "term"));
-                    currentCategory.setScheme(new Reference(attrs.getValue("",
-                            "scheme")));
-                    currentCategory.setLabel(attrs.getValue("", "label"));
+                    this.currentCategory = new Category();
+                    this.currentCategory.setTerm(attrs.getValue("", "term"));
+                    this.currentCategory.setScheme(new Reference(attrs
+                            .getValue("", "scheme")));
+                    this.currentCategory.setLabel(attrs.getValue("", "label"));
 
-                    if (state == State.FEED) {
-                        state = State.FEED_CATEGORY;
-                    } else if (state == State.FEED_ENTRY) {
-                        state = State.FEED_ENTRY_CATEGORY;
-                    } else if (state == State.FEED_ENTRY_SOURCE) {
-                        state = State.FEED_ENTRY_SOURCE_CATEGORY;
+                    if (this.state == State.FEED) {
+                        this.state = State.FEED_CATEGORY;
+                    } else if (this.state == State.FEED_ENTRY) {
+                        this.state = State.FEED_ENTRY_CATEGORY;
+                    } else if (this.state == State.FEED_ENTRY_SOURCE) {
+                        this.state = State.FEED_ENTRY_SOURCE_CATEGORY;
                     }
                 } else if (localName.equalsIgnoreCase("content")) {
-                    if (state == State.FEED_ENTRY) {
-                        MediaType type = getMediaType(attrs
-                                .getValue("", "type"));
-                        String srcAttr = attrs.getValue("", "src");
-                        Content currentContent = new Content();
+                    if (this.state == State.FEED_ENTRY) {
+                        final MediaType type = getMediaType(attrs.getValue("",
+                                "type"));
+                        final String srcAttr = attrs.getValue("", "src");
+                        final Content currentContent = new Content();
 
                         if (srcAttr == null) {
                             // Content available inline
@@ -410,8 +415,8 @@ public class Feed extends SaxRepresentation {
                             currentContent.setExternalType(type);
                         }
 
-                        currentEntry.setContent(currentContent);
-                        state = State.FEED_ENTRY_CONTENT;
+                        this.currentEntry.setContent(currentContent);
+                        this.state = State.FEED_ENTRY_CONTENT;
                     }
                 }
             }
@@ -421,10 +426,11 @@ public class Feed extends SaxRepresentation {
          * Receive notification of the beginning of a text element.
          * 
          * @param attrs
-         *                The attributes attached to the element.
+         *            The attributes attached to the element.
          */
         public void startTextElement(Attributes attrs) {
-            currentText = new Text(getMediaType(attrs.getValue("", "type")));
+            this.currentText = new Text(
+                    getMediaType(attrs.getValue("", "type")));
         }
     }
 
@@ -500,7 +506,7 @@ public class Feed extends SaxRepresentation {
      * Constructor.
      * 
      * @param xmlFeed
-     *                The XML feed document.
+     *            The XML feed document.
      * @throws IOException
      */
     public Feed(Representation xmlFeed) throws IOException {
@@ -519,8 +525,9 @@ public class Feed extends SaxRepresentation {
         if (a == null) {
             synchronized (this) {
                 a = this.authors;
-                if (a == null)
+                if (a == null) {
                     this.authors = a = new ArrayList<Person>();
+                }
             }
         }
         return a;
@@ -537,8 +544,9 @@ public class Feed extends SaxRepresentation {
         if (c == null) {
             synchronized (this) {
                 c = this.categories;
-                if (c == null)
+                if (c == null) {
                     this.categories = c = new ArrayList<Category>();
+                }
             }
         }
         return c;
@@ -555,8 +563,9 @@ public class Feed extends SaxRepresentation {
         if (c == null) {
             synchronized (this) {
                 c = this.contributors;
-                if (c == null)
+                if (c == null) {
                     this.contributors = c = new ArrayList<Person>();
+                }
             }
         }
         return c;
@@ -575,8 +584,9 @@ public class Feed extends SaxRepresentation {
         if (e == null) {
             synchronized (this) {
                 e = this.entries;
-                if (e == null)
+                if (e == null) {
                     this.entries = e = new ArrayList<Entry>();
+                }
             }
         }
         return e;
@@ -620,8 +630,9 @@ public class Feed extends SaxRepresentation {
         if (l == null) {
             synchronized (this) {
                 l = this.links;
-                if (l == null)
+                if (l == null) {
                     this.links = l = new ArrayList<Link>();
+                }
             }
         }
         return l;
@@ -678,7 +689,7 @@ public class Feed extends SaxRepresentation {
      * Sets the agent used to generate a feed.
      * 
      * @param generator
-     *                The agent used to generate a feed.
+     *            The agent used to generate a feed.
      */
     public void setGenerator(Generator generator) {
         this.generator = generator;
@@ -688,8 +699,8 @@ public class Feed extends SaxRepresentation {
      * Sets the image that provides iconic visual identification for a feed.
      * 
      * @param icon
-     *                The image that provides iconic visual identification for a
-     *                feed.
+     *            The image that provides iconic visual identification for a
+     *            feed.
      */
     public void setIcon(Reference icon) {
         this.icon = icon;
@@ -699,8 +710,7 @@ public class Feed extends SaxRepresentation {
      * Sets the permanent, universally unique identifier for the entry.
      * 
      * @param id
-     *                The permanent, universally unique identifier for the
-     *                entry.
+     *            The permanent, universally unique identifier for the entry.
      */
     public void setId(String id) {
         this.id = id;
@@ -710,7 +720,7 @@ public class Feed extends SaxRepresentation {
      * Sets the image that provides visual identification for a feed.
      * 
      * @param logo
-     *                The image that provides visual identification for a feed.
+     *            The image that provides visual identification for a feed.
      */
     public void setLogo(Reference logo) {
         this.logo = logo;
@@ -720,7 +730,7 @@ public class Feed extends SaxRepresentation {
      * Sets the information about rights held in and over an entry.
      * 
      * @param rights
-     *                The information about rights held in and over an entry.
+     *            The information about rights held in and over an entry.
      */
     public void setRights(Text rights) {
         this.rights = rights;
@@ -730,7 +740,7 @@ public class Feed extends SaxRepresentation {
      * Sets the short summary, abstract, or excerpt of an entry.
      * 
      * @param subtitle
-     *                The short summary, abstract, or excerpt of an entry.
+     *            The short summary, abstract, or excerpt of an entry.
      */
     public void setSubtitle(Text subtitle) {
         this.subtitle = subtitle;
@@ -740,7 +750,7 @@ public class Feed extends SaxRepresentation {
      * Sets the human-readable title for the entry.
      * 
      * @param title
-     *                The human-readable title for the entry.
+     *            The human-readable title for the entry.
      */
     public void setTitle(Text title) {
         this.title = title;
@@ -751,8 +761,8 @@ public class Feed extends SaxRepresentation {
      * way.
      * 
      * @param updated
-     *                The most recent moment when the entry was modified in a
-     *                significant way.
+     *            The most recent moment when the entry was modified in a
+     *            significant way.
      */
     public void setUpdated(Date updated) {
         this.updated = DateUtils.unmodifiable(updated);
@@ -762,7 +772,7 @@ public class Feed extends SaxRepresentation {
      * Writes the representation to a XML writer.
      * 
      * @param writer
-     *                The XML writer to write to.
+     *            The XML writer to write to.
      * @throws IOException
      */
     @Override
@@ -774,7 +784,7 @@ public class Feed extends SaxRepresentation {
             writer.startDocument();
             writeElement(writer);
             writer.endDocument();
-        } catch (SAXException e) {
+        } catch (final SAXException e) {
             e.printStackTrace();
         }
     }
@@ -783,25 +793,25 @@ public class Feed extends SaxRepresentation {
      * Writes the current object as an XML element using the given SAX writer.
      * 
      * @param writer
-     *                The SAX writer.
+     *            The SAX writer.
      * @throws SAXException
      */
     public void writeElement(XmlWriter writer) throws SAXException {
         writer.startElement(ATOM_NAMESPACE, "feed");
 
         if (getAuthors() != null) {
-            for (Person person : getAuthors()) {
+            for (final Person person : getAuthors()) {
                 person.writeElement(writer, "author");
             }
         }
 
         if (getCategories() != null) {
-            for (Category category : getCategories()) {
+            for (final Category category : getCategories()) {
                 category.writeElement(writer);
             }
         }
         if (getContributors() != null) {
-            for (Person person : getContributors()) {
+            for (final Person person : getContributors()) {
                 person.writeElement(writer, "contributor");
             }
         }
@@ -820,12 +830,12 @@ public class Feed extends SaxRepresentation {
         }
 
         if (getLinks() != null) {
-            for (Link link : getLinks()) {
+            for (final Link link : getLinks()) {
                 link.writeElement(writer);
             }
         }
 
-        if (getLogo() != null && getLogo().toString() != null) {
+        if ((getLogo() != null) && (getLogo().toString() != null)) {
             writer.dataElement(ATOM_NAMESPACE, "logo", getLogo().toString());
         }
 
@@ -846,7 +856,7 @@ public class Feed extends SaxRepresentation {
         }
 
         if (getEntries() != null) {
-            for (Entry entry : getEntries()) {
+            for (final Entry entry : getEntries()) {
                 entry.writeElement(writer);
             }
         }

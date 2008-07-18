@@ -50,10 +50,10 @@ public class UsersResource extends BaseResource {
             // Authenticated access.
             if (getCurrentUser().isAdministrator()) {
                 setModifiable(true);
-                users = getObjectsFacade().getUsers();
+                this.users = getObjectsFacade().getUsers();
             } else {
-                users = new ArrayList<User>();
-                users.add(getCurrentUser());
+                this.users = new ArrayList<User>();
+                this.users.add(getCurrentUser());
             }
         } else {
             // Anonymous access.
@@ -69,7 +69,7 @@ public class UsersResource extends BaseResource {
     @Override
     public void acceptRepresentation(Representation entity)
             throws ResourceException {
-        Form form = new Form(entity);
+        final Form form = new Form(entity);
 
         User user = new User();
         user.setFirstName(form.getFirstValue("firstName"));
@@ -85,10 +85,10 @@ public class UsersResource extends BaseResource {
             getResponse().redirectSeeOther(
                     getChildReference(getRequest().getResourceRef(), user
                             .getId()));
-        } catch (ObjectsException e) {
-            Map<String, Object> dataModel = new TreeMap<String, Object>();
+        } catch (final ObjectsException e) {
+            final Map<String, Object> dataModel = new TreeMap<String, Object>();
             dataModel.put("currentUser", getCurrentUser());
-            dataModel.put("users", users);
+            dataModel.put("users", this.users);
             dataModel.put("resourceRef", getRequest().getResourceRef());
             dataModel.put("rootRef", getRequest().getRootRef());
             dataModel.put("firstName", form.getFirstValue("firstName"));
@@ -107,9 +107,9 @@ public class UsersResource extends BaseResource {
      */
     @Override
     public Representation represent(Variant variant) throws ResourceException {
-        Map<String, Object> dataModel = new TreeMap<String, Object>();
+        final Map<String, Object> dataModel = new TreeMap<String, Object>();
         dataModel.put("currentUser", getCurrentUser());
-        dataModel.put("users", users);
+        dataModel.put("users", this.users);
         dataModel.put("resourceRef", getRequest().getResourceRef());
         dataModel.put("rootRef", getRequest().getRootRef());
 

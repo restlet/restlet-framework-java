@@ -18,6 +18,7 @@
 package org.restlet.test.jaxrs.util;
 
 import junit.framework.TestCase;
+
 import org.restlet.ext.jaxrs.internal.util.RemainingPath;
 
 /**
@@ -26,6 +27,16 @@ import org.restlet.ext.jaxrs.internal.util.RemainingPath;
  */
 @SuppressWarnings("all")
 public class RemainingPathTests extends TestCase {
+
+    /**
+     * assertEqualsAfterRemove
+     * 
+     * @param expected
+     * @param actual
+     */
+    public void aear(String expected, String actual) {
+        assertEquals(expected, RemainingPath.removeMatrixParams(actual));
+    }
 
     public void testRemoveParams1() {
         aear("sdhfk", "sdhfk;sdf");
@@ -37,6 +48,15 @@ public class RemainingPathTests extends TestCase {
         aear("sdhfk", "sdhfk;sdf=1?x&;/");
         aear("sdhfk", "sdhfk;sdf=1?x&;c/");
         aear("sdhfk", "sdhfk;sdf=1?x&;c/sdf");
+    }
+
+    public void testRemoveParams11() {
+        aear("/ddf", ";/ddf");
+        aear("/ddf", ";sdf/ddf");
+        aear("/ddf", ";sdf=/ddf");
+        aear("/ddf", ";sdf=sfsd/ddf");
+        aear("/ddf", ";sdf=sfsd;/ddf");
+        aear("/ddf", ";sdf=sfsd;sdf/ddf");
     }
 
     public void testRemoveParams3() {
@@ -77,15 +97,6 @@ public class RemainingPathTests extends TestCase {
         aear("sdhfk/gkjj/a", "sdhfk;sdf=1;ff=2/gkjj/a");
     }
 
-    public void testRemoveParams11() {
-        aear("/ddf", ";/ddf");
-        aear("/ddf", ";sdf/ddf");
-        aear("/ddf", ";sdf=/ddf");
-        aear("/ddf", ";sdf=sfsd/ddf");
-        aear("/ddf", ";sdf=sfsd;/ddf");
-        aear("/ddf", ";sdf=sfsd;sdf/ddf");
-    }
-
     public void testRemoveParamsEmptyResult1() {
         aear("", ";");
         aear("", ";df");
@@ -107,15 +118,5 @@ public class RemainingPathTests extends TestCase {
         aear("", "?df=sdfsdf&sdf=");
         aear("", "?df=sdfsdf&sdf=sdffs");
         aear("", "?df=sdfsdf?sdf=sdffs");
-    }
-
-    /**
-     * assertEqualsAfterRemove
-     * 
-     * @param expected
-     * @param actual
-     */
-    public void aear(String expected, String actual) {
-        assertEquals(expected, RemainingPath.removeMatrixParams(actual));
     }
 }

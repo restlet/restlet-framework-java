@@ -47,7 +47,7 @@ import org.restlet.util.Resolver;
  * Velocity template representation. Useful for dynamic string-based
  * representations.
  * 
- * @see <a href="http://velocity.apache.org/">Velocity home page</a>
+ * @see <a href="http://velocity.apache.org/">Velocity home page< /a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class TemplateRepresentation extends OutputRepresentation {
@@ -65,7 +65,7 @@ public class TemplateRepresentation extends OutputRepresentation {
          * Constructor.
          * 
          * @param resolver
-         *                The resolver.
+         *            The resolver.
          */
         public ResolverContext(Resolver<? extends Object> resolver) {
             super();
@@ -76,22 +76,21 @@ public class TemplateRepresentation extends OutputRepresentation {
          * Indicates whether the specified key is in the context.
          * 
          * @param key
-         *                The key to look for.
+         *            The key to look for.
          * @Return True if the key is in the context, false otherwise.
          */
         public boolean containsKey(Object key) {
-            return resolver.resolve((String) key) != null;
+            return this.resolver.resolve((String) key) != null;
         }
 
         /**
          * Gets the value corresponding to the provided key from the context.
          * 
-         * @Param key
-         *                The name of the desired value.
+         * @Param key The name of the desired value.
          * @Return The value corresponding to the provided key.
          */
         public Object get(String key) {
-            return resolver.resolve(key);
+            return this.resolver.resolve(key);
         }
 
         /**
@@ -108,9 +107,9 @@ public class TemplateRepresentation extends OutputRepresentation {
          * Returns null since a resolver as a data model cannot be updated.
          * 
          * @param key
-         *                The name to key the provided value with.
+         *            The name to key the provided value with.
          * @param value
-         *                The corresponding value.
+         *            The corresponding value.
          * @return null.
          */
         public Object put(String key, Object value) {
@@ -121,7 +120,7 @@ public class TemplateRepresentation extends OutputRepresentation {
          * Does nothing since resolver as a data model cannot be updated.
          * 
          * @param value
-         *                The name of the value to remove.
+         *            The name of the value to remove.
          * @return null.
          */
         public Object remove(Object value) {
@@ -146,43 +145,11 @@ public class TemplateRepresentation extends OutputRepresentation {
      * Constructor based on a Velocity 'encoded' representation.
      * 
      * @param templateRepresentation
-     *                The representation to 'decode'.
-     * @param mediaType
-     *                The representation's media type.
-     * @throws IOException
-     * @throws ParseErrorException
-     * @throws ResourceNotFoundException
-     */
-    public TemplateRepresentation(Representation templateRepresentation,
-            MediaType mediaType) throws ResourceNotFoundException,
-            ParseErrorException, IOException {
-        super(mediaType);
-        this.engine = null;
-        this.template = new Template();
-        this.template
-                .setEncoding((templateRepresentation.getCharacterSet() == null) ? Charset
-                        .defaultCharset().name()
-                        : templateRepresentation.getCharacterSet().getName());
-        this.template.setLastModified((templateRepresentation
-                .getModificationDate() == null) ? new Date().getTime()
-                : templateRepresentation.getModificationDate().getTime());
-        this.template.setName("org.restlet.resource.representation");
-        this.template.setRuntimeServices(RuntimeSingleton.getRuntimeServices());
-        this.template.setResourceLoader(new RepresentationResourceLoader(
-                templateRepresentation));
-        this.template.process();
-        this.templateName = null;
-    }
-
-    /**
-     * Constructor based on a Velocity 'encoded' representation.
-     * 
-     * @param templateRepresentation
-     *                The representation to 'decode'.
+     *            The representation to 'decode'.
      * @param dataModel
-     *                The Velocity template's data model.
+     *            The Velocity template's data model.
      * @param mediaType
-     *                The representation's media type.
+     *            The representation's media type.
      * @throws IOException
      * @throws ParseErrorException
      * @throws ResourceNotFoundException
@@ -209,15 +176,47 @@ public class TemplateRepresentation extends OutputRepresentation {
     }
 
     /**
+     * Constructor based on a Velocity 'encoded' representation.
+     * 
+     * @param templateRepresentation
+     *            The representation to 'decode'.
+     * @param mediaType
+     *            The representation's media type.
+     * @throws IOException
+     * @throws ParseErrorException
+     * @throws ResourceNotFoundException
+     */
+    public TemplateRepresentation(Representation templateRepresentation,
+            MediaType mediaType) throws ResourceNotFoundException,
+            ParseErrorException, IOException {
+        super(mediaType);
+        this.engine = null;
+        this.template = new Template();
+        this.template
+                .setEncoding((templateRepresentation.getCharacterSet() == null) ? Charset
+                        .defaultCharset().name()
+                        : templateRepresentation.getCharacterSet().getName());
+        this.template.setLastModified((templateRepresentation
+                .getModificationDate() == null) ? new Date().getTime()
+                : templateRepresentation.getModificationDate().getTime());
+        this.template.setName("org.restlet.resource.representation");
+        this.template.setRuntimeServices(RuntimeSingleton.getRuntimeServices());
+        this.template.setResourceLoader(new RepresentationResourceLoader(
+                templateRepresentation));
+        this.template.process();
+        this.templateName = null;
+    }
+
+    /**
      * Constructor.
      * 
      * @param templateName
-     *                The Velocity template's name. The actual template is
-     *                retrieved using the Velocity configuration.
+     *            The Velocity template's name. The actual template is retrieved
+     *            using the Velocity configuration.
      * @param dataModel
-     *                The Velocity template's data model.
+     *            The Velocity template's data model.
      * @param mediaType
-     *                The representation's media type.
+     *            The representation's media type.
      */
     public TemplateRepresentation(String templateName,
             Map<String, Object> dataModel, MediaType mediaType) {
@@ -228,7 +227,7 @@ public class TemplateRepresentation extends OutputRepresentation {
             this.engine = new VelocityEngine();
             this.template = null;
             this.templateName = templateName;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
     }
@@ -237,10 +236,10 @@ public class TemplateRepresentation extends OutputRepresentation {
      * Constructor.
      * 
      * @param templateName
-     *                The Velocity template's name. The full path is resolved by
-     *                the configuration.
+     *            The Velocity template's name. The full path is resolved by the
+     *            configuration.
      * @param mediaType
-     *                The representation's media type.
+     *            The representation's media type.
      */
     public TemplateRepresentation(String templateName, MediaType mediaType) {
         this(templateName, new TreeMap<String, Object>(), mediaType);
@@ -250,11 +249,11 @@ public class TemplateRepresentation extends OutputRepresentation {
      * Constructor.
      * 
      * @param template
-     *                The Velocity template.
+     *            The Velocity template.
      * @param dataModel
-     *                The Velocity template's data model.
+     *            The Velocity template's data model.
      * @param mediaType
-     *                The representation's media type.
+     *            The representation's media type.
      */
     public TemplateRepresentation(Template template,
             Map<String, Object> dataModel, MediaType mediaType) {
@@ -269,9 +268,9 @@ public class TemplateRepresentation extends OutputRepresentation {
      * Constructor.
      * 
      * @param template
-     *                The Velocity template.
+     *            The Velocity template.
      * @param mediaType
-     *                The representation's media type.
+     *            The representation's media type.
      */
     public TemplateRepresentation(Template template, MediaType mediaType) {
         super(mediaType);
@@ -308,9 +307,9 @@ public class TemplateRepresentation extends OutputRepresentation {
             if (this.templateName != null) {
                 try {
                     getEngine().init();
-                    this.template = getEngine().getTemplate(templateName);
-                } catch (Exception e) {
-                    Context context = Context.getCurrent();
+                    this.template = getEngine().getTemplate(this.templateName);
+                } catch (final Exception e) {
+                    final Context context = Context.getCurrent();
 
                     if (context != null) {
                         context.getLogger().log(Level.WARNING,
@@ -327,7 +326,7 @@ public class TemplateRepresentation extends OutputRepresentation {
      * Sets the Velocity context.
      * 
      * @param context
-     *                The Velocity context
+     *            The Velocity context
      */
     private void setContext(org.apache.velocity.context.Context context) {
         this.context = context;
@@ -337,7 +336,7 @@ public class TemplateRepresentation extends OutputRepresentation {
      * Sets the template's data model.
      * 
      * @param dataModel
-     *                The template's data model.
+     *            The template's data model.
      */
     public void setDataModel(Map<String, Object> dataModel) {
         setContext(new VelocityContext(dataModel));
@@ -351,9 +350,9 @@ public class TemplateRepresentation extends OutputRepresentation {
      * @see Resolver#createResolver(Request, Response)
      * 
      * @param request
-     *                The request where data are located.
+     *            The request where data are located.
      * @param response
-     *                The response where data are located.
+     *            The response where data are located.
      */
     public void setDataModel(Request request, Response response) {
         setContext(new ResolverContext(Resolver.createResolver(request,
@@ -364,7 +363,7 @@ public class TemplateRepresentation extends OutputRepresentation {
      * Sets the template's data model from a resolver.
      * 
      * @param resolver
-     *                The resolver.
+     *            The resolver.
      */
     public void setDataModel(Resolver<Object> resolver) {
         setContext(new ResolverContext(resolver));
@@ -374,7 +373,7 @@ public class TemplateRepresentation extends OutputRepresentation {
      * Writes the datum as a stream of bytes.
      * 
      * @param outputStream
-     *                The stream to use when writing.
+     *            The stream to use when writing.
      */
     @Override
     public void write(OutputStream outputStream) throws IOException {
@@ -398,8 +397,8 @@ public class TemplateRepresentation extends OutputRepresentation {
             // Process the template
             getTemplate().merge(getContext(), tmplWriter);
             tmplWriter.flush();
-        } catch (Exception e) {
-            Context context = Context.getCurrent();
+        } catch (final Exception e) {
+            final Context context = Context.getCurrent();
 
             if (context != null) {
                 context.getLogger().log(Level.WARNING,

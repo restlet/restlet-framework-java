@@ -47,7 +47,14 @@ public class ExceptionMappersTest extends TestCase {
 
     private static final class TestHttpHeaders implements HttpHeaders {
 
-        private List<MediaType> accMediaTypes = new ArrayList<MediaType>();
+        private final List<MediaType> accMediaTypes = new ArrayList<MediaType>();
+
+        /**
+         * @see javax.ws.rs.core.HttpHeaders#getAcceptableLanguages()
+         */
+        public List<Locale> getAcceptableLanguages() {
+            return new ArrayList<Locale>();
+        }
 
         public List<MediaType> getAcceptableMediaTypes() {
             return this.accMediaTypes;
@@ -72,13 +79,6 @@ public class ExceptionMappersTest extends TestCase {
         public MultivaluedMap<String, String> getRequestHeaders() {
             return new MultivaluedMapImpl<String, String>();
         }
-
-        /**
-         * @see javax.ws.rs.core.HttpHeaders#getAcceptableLanguages()
-         */
-        public List<Locale> getAcceptableLanguages() {
-            return new ArrayList<Locale>();
-        }
     }
 
     private static final int INTERNAL_SERVER_ERROR = Status.INTERNAL_SERVER_ERROR
@@ -91,7 +91,7 @@ public class ExceptionMappersTest extends TestCase {
      * @return
      */
     private Response convert(Throwable exc) {
-        return exceptionMappers.convert(exc);
+        return this.exceptionMappers.convert(exc);
     }
 
     /**
@@ -100,27 +100,27 @@ public class ExceptionMappersTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        IllegalArgExcMapper illegalArgExcMapper = new IllegalArgExcMapper();
+        final IllegalArgExcMapper illegalArgExcMapper = new IllegalArgExcMapper();
         illegalArgExcMapper.httpHeaders = new TestHttpHeaders();
         this.exceptionMappers = new ExceptionMappers();
         this.exceptionMappers.add(illegalArgExcMapper);
     }
 
     public void testIae() throws Exception {
-        Response r = convert(new IllegalArgumentException());
+        final Response r = convert(new IllegalArgumentException());
         assertNotNull(r);
         assertEquals(IllegalArgExcMapper.STATUS, r.getStatus());
     }
 
     public void testIoe() throws Exception {
-        Response r = convert(new IOException(
+        final Response r = convert(new IOException(
                 "This exception is planned for testing !"));
         assertNotNull(r);
         assertEquals(INTERNAL_SERVER_ERROR, r.getStatus());
     }
 
     public void testNfe() throws Exception {
-        Response r = convert(new NumberFormatException());
+        final Response r = convert(new NumberFormatException());
         assertNotNull(r);
         assertEquals(IllegalArgExcMapper.STATUS, r.getStatus());
     }

@@ -19,6 +19,8 @@ Changes log
           Evan Worley.
         - Moved generation of entries at the the end of Atom feeds. 
           Reported by Bruno Harbulot.
+        - Fix potential NPE in Template class. Reported by Ralf
+          Bommersbach
     - API Enhancements
         - Added a "Request.originalRef" property containing the URI 
           reference originally requested by the client. Clarified the

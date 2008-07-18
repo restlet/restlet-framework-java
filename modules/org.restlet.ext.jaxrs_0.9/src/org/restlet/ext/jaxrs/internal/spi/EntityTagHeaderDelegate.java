@@ -43,10 +43,10 @@ public class EntityTagHeaderDelegate implements HeaderDelegate<EntityTag> {
      * Parse the supplied value and create an instance of <code>T</code>.
      * 
      * @param value
-     *                the string value
+     *            the string value
      * @return the newly created instance of <code>T</code>
      * @throws IllegalArgumentException
-     *                 if the supplied string cannot be parsed
+     *             if the supplied string cannot be parsed
      * @see javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate#fromString(java.lang.String)
      */
     public EntityTag fromString(String string) throws IllegalArgumentException {
@@ -57,10 +57,10 @@ public class EntityTagHeaderDelegate implements HeaderDelegate<EntityTag> {
      * Convert the supplied value to a String.
      * 
      * @param value
-     *                the value of type <code>T</code>
+     *            the value of type <code>T</code>
      * @return a String representation of the value
      * @throws IllegalArgumentException
-     *                 if the supplied object cannot be serialized
+     *             if the supplied object cannot be serialized
      * @see javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate#toString(java.lang.Object)
      */
     public String toString(EntityTag entityTag) {

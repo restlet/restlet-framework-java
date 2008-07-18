@@ -46,16 +46,18 @@ public class HeadOptionsTest extends JaxRsTestCase {
     // if the GET-Method is not prefered to the HEAD method.
 
     public void testHead1() throws Exception {
-        Response responseGett = get("headTest1", MediaType.TEXT_HTML);
-        Response responseHead = head("headTest1", MediaType.TEXT_HTML);
-        if (responseGett.getStatus().isError())
+        final Response responseGett = get("headTest1", MediaType.TEXT_HTML);
+        final Response responseHead = head("headTest1", MediaType.TEXT_HTML);
+        if (responseGett.getStatus().isError()) {
             System.out.println(responseGett.getEntity().getText());
+        }
         assertEquals(Status.SUCCESS_OK, responseGett.getStatus());
-        if (responseHead.getStatus().isError())
+        if (responseHead.getStatus().isError()) {
             System.out.println(responseHead.getEntity().getText());
+        }
         assertEquals(Status.SUCCESS_OK, responseHead.getStatus());
-        Representation entityGett = responseGett.getEntity();
-        Representation entityHead = responseHead.getEntity();
+        final Representation entityGett = responseGett.getEntity();
+        final Representation entityHead = responseHead.getEntity();
         assertNotNull(entityGett);
         assertNotNull("Must not be null to read the entity headers", entityHead);
         assertEqualMediaType(MediaType.TEXT_HTML, entityGett.getMediaType());
@@ -66,16 +68,18 @@ public class HeadOptionsTest extends JaxRsTestCase {
     }
 
     public void testHead2() throws Exception {
-        Response responseGett = get("headTest2", MediaType.TEXT_HTML);
-        Response responseHead = head("headTest2", MediaType.TEXT_HTML);
-        if (responseGett.getStatus().isError())
+        final Response responseGett = get("headTest2", MediaType.TEXT_HTML);
+        final Response responseHead = head("headTest2", MediaType.TEXT_HTML);
+        if (responseGett.getStatus().isError()) {
             System.out.println(responseGett.getEntity().getText());
+        }
         assertEquals(Status.SUCCESS_OK, responseGett.getStatus());
-        if (responseHead.getStatus().isError())
+        if (responseHead.getStatus().isError()) {
             System.out.println(responseHead.getEntity().getText());
+        }
         assertEquals(Status.SUCCESS_OK, responseHead.getStatus());
-        Representation entityGett = responseGett.getEntity();
-        Representation entityHead = responseHead.getEntity();
+        final Representation entityGett = responseGett.getEntity();
+        final Representation entityHead = responseHead.getEntity();
         assertNotNull(entityGett);
         assertNotNull("Must not be null to read the entity headers", entityHead);
         assertEqualMediaType(MediaType.TEXT_HTML, entityGett.getMediaType());
@@ -86,16 +90,18 @@ public class HeadOptionsTest extends JaxRsTestCase {
     }
 
     public void testHead2plain() throws Exception {
-        Response responseGett = get("headTest2", MediaType.TEXT_PLAIN);
-        Response responseHead = head("headTest2", MediaType.TEXT_PLAIN);
-        if (responseGett.getStatus().isError())
+        final Response responseGett = get("headTest2", MediaType.TEXT_PLAIN);
+        final Response responseHead = head("headTest2", MediaType.TEXT_PLAIN);
+        if (responseGett.getStatus().isError()) {
             System.out.println(responseGett.getEntity().getText());
+        }
         assertEquals(Status.SUCCESS_OK, responseGett.getStatus());
-        if (responseHead.getStatus().isError())
+        if (responseHead.getStatus().isError()) {
             System.out.println(responseHead.getEntity().getText());
+        }
         assertEquals(Status.SUCCESS_OK, responseHead.getStatus());
-        Representation entityGett = responseGett.getEntity();
-        Representation entityHead = responseHead.getEntity();
+        final Representation entityGett = responseGett.getEntity();
+        final Representation entityHead = responseHead.getEntity();
         assertNotNull(entityGett);
         assertNotNull("Must not be null to read the entity headers", entityHead);
         assertEqualMediaType(MediaType.TEXT_PLAIN, entityGett.getMediaType());

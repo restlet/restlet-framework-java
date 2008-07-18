@@ -38,8 +38,7 @@ import javax.ws.rs.ext.Provider;
 
 /**
  * Entity Provider, that reads "multipart/form-data" to a {@link Multipart} and
- * writes vice versa.
- * <br>
+ * writes vice versa. <br>
  * This provider is not tested yet.
  * 
  * @author Stephan Koops
@@ -84,14 +83,15 @@ public class MultipartProvider implements MessageBodyReader<Multipart>,
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, String> httpResponseHeaders,
             InputStream entityStream) throws IOException {
-        String contentType = "multipart/form-data";
-        DataSource ds = new ByteArrayDataSource(entityStream, contentType);
+        final String contentType = "multipart/form-data";
+        final DataSource ds = new ByteArrayDataSource(entityStream, contentType);
         try {
             return new MimeMultipart(ds);
-        } catch (MessagingException e) {
-            if (e.getCause() instanceof IOException)
+        } catch (final MessagingException e) {
+            if (e.getCause() instanceof IOException) {
                 throw (IOException) e.getCause();
-            IOException ioExc = new IOException(
+            }
+            final IOException ioExc = new IOException(
                     "Could not deserialize the data to a Multipart");
             ioExc.initCause(e);
             throw ioExc;
@@ -108,10 +108,11 @@ public class MultipartProvider implements MessageBodyReader<Multipart>,
             OutputStream entityStream) throws IOException {
         try {
             multipart.writeTo(entityStream);
-        } catch (MessagingException e) {
-            if (e.getCause() instanceof IOException)
+        } catch (final MessagingException e) {
+            if (e.getCause() instanceof IOException) {
                 throw (IOException) e.getCause();
-            IOException ioExc = new IOException(
+            }
+            final IOException ioExc = new IOException(
                     "Could not serialize the Multipart");
             ioExc.initCause(e);
             throw ioExc;

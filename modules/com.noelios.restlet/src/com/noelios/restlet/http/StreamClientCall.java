@@ -64,12 +64,12 @@ public class StreamClientCall extends HttpClientCall {
         @Override
         public void release() {
             try {
-                if (!socket.isClosed()) {
-                    socket.shutdownOutput();
-                    socket.close();
+                if (!this.socket.isClosed()) {
+                    this.socket.shutdownOutput();
+                    this.socket.close();
                 }
-            } catch (IOException ex) {
-                log.log(Level.WARNING,
+            } catch (final IOException ex) {
+                this.log.log(Level.WARNING,
                         "An error occured closing the client socket", ex);
             }
 
@@ -93,9 +93,9 @@ public class StreamClientCall extends HttpClientCall {
      * Constructor.
      * 
      * @param helper
-     *                The client connector helper.
+     *            The client connector helper.
      * @param request
-     *                The request to send.
+     *            The request to send.
      */
     public StreamClientCall(StreamClientHelper helper, Request request) {
         // The path of the request uri must not be empty.
@@ -111,9 +111,9 @@ public class StreamClientCall extends HttpClientCall {
      * response.
      * 
      * @param hostDomain
-     *                The target host domain name.
+     *            The target host domain name.
      * @param hostPort
-     *                The target host port.
+     *            The target host port.
      * @return The created socket.
      * @throws UnknownHostException
      * @throws IOException
@@ -125,8 +125,8 @@ public class StreamClientCall extends HttpClientCall {
 
     @Override
     protected Representation getRepresentation(InputStream stream) {
-        Representation result = super.getRepresentation(stream);
-        return new SocketWrapperRepresentation(result, socket, getHelper()
+        final Representation result = super.getRepresentation(stream);
+        return new SocketWrapperRepresentation(result, this.socket, getHelper()
                 .getLogger());
     }
 
@@ -137,23 +137,23 @@ public class StreamClientCall extends HttpClientCall {
 
     @Override
     public OutputStream getRequestEntityStream() {
-        if (requestEntityStream == null) {
+        if (this.requestEntityStream == null) {
             if (isRequestChunked() && isKeepAlive()) {
-                requestEntityStream = new ChunkedOutputStream(
+                this.requestEntityStream = new ChunkedOutputStream(
                         new KeepAliveOutputStream(getRequestHeadStream()));
             } else if (isRequestChunked()) {
-                requestEntityStream = new ChunkedOutputStream(
+                this.requestEntityStream = new ChunkedOutputStream(
                         getRequestHeadStream());
             } else if (isKeepAlive()) {
-                requestEntityStream = new KeepAliveOutputStream(
+                this.requestEntityStream = new KeepAliveOutputStream(
                         getRequestHeadStream());
             } else {
-                requestEntityStream = new KeepAliveOutputStream(
+                this.requestEntityStream = new KeepAliveOutputStream(
                         getRequestHeadStream());
             }
         }
 
-        return requestEntityStream;
+        return this.requestEntityStream;
     }
 
     @Override
@@ -197,7 +197,7 @@ public class StreamClientCall extends HttpClientCall {
      * @throws IOException
      */
     protected void parseResponse() throws IOException {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
 
         // Parse the HTTP version
         int next = getResponseStream().read();
@@ -267,7 +267,7 @@ public class StreamClientCall extends HttpClientCall {
 
         try {
             // Extract the host info
-            String hostDomain = request.getResourceRef().getHostDomain();
+            final String hostDomain = request.getResourceRef().getHostDomain();
             int hostPort = request.getResourceRef().getHostPort();
             if (hostPort == -1) {
                 hostPort = request.getResourceRef().getSchemeProtocol()
@@ -276,8 +276,8 @@ public class StreamClientCall extends HttpClientCall {
 
             // Create the client socket
             this.socket = createSocket(hostDomain, hostPort);
-            this.requestStream = socket.getOutputStream();
-            this.responseStream = socket.getInputStream();
+            this.requestStream = this.socket.getOutputStream();
+            this.responseStream = this.socket.getInputStream();
 
             // Write the request line
             getRequestHeadStream().write(getMethod().getBytes());
@@ -304,7 +304,7 @@ public class StreamClientCall extends HttpClientCall {
             getRequestHeaders().set(HttpConstants.HEADER_HOST, host, true);
 
             // Write the request headers
-            for (Parameter header : getRequestHeaders()) {
+            for (final Parameter header : getRequestHeaders()) {
                 HttpUtils.writeHeader(header, getRequestHeadStream());
             }
 
@@ -323,7 +323,7 @@ public class StreamClientCall extends HttpClientCall {
 
             // Build the result
             result = new Status(getStatusCode(), null, getReasonPhrase(), null);
-        } catch (IOException ioe) {
+        } catch (final IOException ioe) {
             getHelper()
                     .getLogger()
                     .log(

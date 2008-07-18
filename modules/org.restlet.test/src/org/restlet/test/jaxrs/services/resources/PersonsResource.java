@@ -40,22 +40,12 @@ public class PersonsResource {
     @Context
     UriInfo uris;
 
-    @GET
-    @Produces( { "application/xml", "text/xml" })
-    public PersonList getPersons() {
-        PersonList list = new PersonList();
-        list.add(new Person("Angela", "Merkel"));
-        list.add(new Person("Ehud", "Olmert"));
-        list.add(new Person("George U.", "Bush"));
-        return list;
-    }
-
     @POST
     @Produces( { "application/xml", "text/xml" })
     public Response addPerson(Person person) {
-        int id = createPerson(person);
-        URI location = uris.getBaseUriBuilder().path(PersonResource.class)
-                .build(String.valueOf(id));
+        final int id = createPerson(person);
+        final URI location = this.uris.getBaseUriBuilder().path(
+                PersonResource.class).build(String.valueOf(id));
         return Response.created(location).build();
     }
 
@@ -65,5 +55,15 @@ public class PersonsResource {
      */
     private int createPerson(Person person) {
         return 5;
+    }
+
+    @GET
+    @Produces( { "application/xml", "text/xml" })
+    public PersonList getPersons() {
+        final PersonList list = new PersonList();
+        list.add(new Person("Angela", "Merkel"));
+        list.add(new Person("Ehud", "Olmert"));
+        list.add(new Person("George U.", "Bush"));
+        return list;
     }
 }

@@ -63,7 +63,7 @@ public class TemplateFilter extends Filter {
      * Constructor.
      * 
      * @param context
-     *                The context.
+     *            The context.
      */
     public TemplateFilter(Context context) {
         super(context);
@@ -73,9 +73,9 @@ public class TemplateFilter extends Filter {
      * Constructor.
      * 
      * @param context
-     *                The context.
+     *            The context.
      * @param next
-     *                The next Restlet.
+     *            The next Restlet.
      */
     public TemplateFilter(Context context, Restlet next) {
         super(context, next);
@@ -87,11 +87,11 @@ public class TemplateFilter extends Filter {
      * Constructor.
      * 
      * @param context
-     *                The context.
+     *            The context.
      * @param next
-     *                The next Restlet.
+     *            The next Restlet.
      * @param dataModel
-     *                The filter's data model.
+     *            The filter's data model.
      */
     public TemplateFilter(Context context, Restlet next,
             Map<String, Object> dataModel) {
@@ -104,11 +104,11 @@ public class TemplateFilter extends Filter {
      * Constructor.
      * 
      * @param context
-     *                The context.
+     *            The context.
      * @param next
-     *                The next Restlet.
+     *            The next Restlet.
      * @param dataModel
-     *                The filter's data model.
+     *            The filter's data model.
      */
     public TemplateFilter(Context context, Restlet next,
             Resolver<Object> dataModel) {
@@ -123,26 +123,27 @@ public class TemplateFilter extends Filter {
                 && response.getEntity().getEncodings().contains(
                         Encoding.VELOCITY)) {
             try {
-                TemplateRepresentation representation = new TemplateRepresentation(
+                final TemplateRepresentation representation = new TemplateRepresentation(
                         response.getEntity(), response.getEntity()
                                 .getMediaType());
 
-                if (this.mapDataModel == null && this.resolverDataModel == null) {
+                if ((this.mapDataModel == null)
+                        && (this.resolverDataModel == null)) {
                     representation.setDataModel(request, response);
                 } else {
                     if (this.mapDataModel == null) {
-                        representation.setDataModel(resolverDataModel);
+                        representation.setDataModel(this.resolverDataModel);
                     } else {
-                        representation.setDataModel(mapDataModel);
+                        representation.setDataModel(this.mapDataModel);
                     }
                 }
 
                 response.setEntity(representation);
-            } catch (ResourceNotFoundException e) {
+            } catch (final ResourceNotFoundException e) {
                 response.setStatus(Status.CLIENT_ERROR_NOT_FOUND, e);
-            } catch (ParseErrorException e) {
+            } catch (final ParseErrorException e) {
                 response.setStatus(Status.SERVER_ERROR_INTERNAL, e);
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 response.setStatus(Status.SERVER_ERROR_INTERNAL, e);
             }
         }

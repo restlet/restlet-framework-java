@@ -35,9 +35,12 @@ import org.restlet.test.jaxrs.services.tests.PrimitiveWrapperEntityTest;
 public class PrimitiveWrapperEntityResource {
 
     @PUT
-    @Path("intReturnInt")
-    public int intReturnInt(int i) {
-        return i;
+    @Path("BooleanReturnboolean")
+    public boolean BooleanReturnboolean(Boolean b) {
+        if (b == null) {
+            return false;
+        }
+        return b;
     }
 
     @PUT
@@ -47,16 +50,14 @@ public class PrimitiveWrapperEntityResource {
     }
 
     @PUT
-    @Path("BooleanReturnboolean")
-    public boolean BooleanReturnboolean(Boolean b) {
-        if (b == null)
-            return false;
-        return b;
+    @Path("integerReturnInteger")
+    public Integer integerReturnInteger(Integer i) {
+        return i;
     }
 
     @PUT
-    @Path("integerReturnInteger")
-    public Integer integerReturnInteger(Integer i) {
+    @Path("intReturnInt")
+    public int intReturnInt(int i) {
         return i;
     }
 }

@@ -41,8 +41,8 @@ import org.restlet.resource.SaxRepresentation;
  * Request wrapper. Useful for application developer who need to enrich the
  * request with application related properties and behavior.
  * 
- * @see <a href="http://c2.com/cgi/wiki?DecoratorPattern">The decorator (aka
- *      wrapper) pattern</a>
+ * @see <a href="http://c2.com/cgi/wiki?DecoratorPattern">The decorator (aka *
+ *      wrapper) pattern< /a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class WrapperResponse extends Response {
@@ -53,7 +53,7 @@ public class WrapperResponse extends Response {
      * Constructor.
      * 
      * @param wrappedResponse
-     *                The wrapped response.
+     *            The wrapped response.
      */
     public WrapperResponse(Response wrappedResponse) {
         super((Request) null);
@@ -95,12 +95,13 @@ public class WrapperResponse extends Response {
      * <td>Server HTTP connectors must provide all request headers and client
      * HTTP connectors must provide all response headers, exactly as they were
      * received. In addition, developers can also use this attribute to specify
-     * <b>non-standard</b> headers that should be added to the request or to
-     * the response. </td>
+     * <b>non-standard</b> headers that should be added to the request or to the
+     * response.</td>
      * </tr>
-     * </table> Adding standard HTTP headers is forbidden because it could
-     * conflict with the connector's internal behavior, limit portability or
-     * prevent future optimizations.</td>
+     * </table>
+     * Adding standard HTTP headers is forbidden because it could conflict with
+     * the connector's internal behavior, limit portability or prevent future
+     * optimizations.</td>
      * 
      * @return The modifiable attributes map.
      */
@@ -308,7 +309,7 @@ public class WrapperResponse extends Response {
      * to reuse the same method for the new request.
      * 
      * @param targetRef
-     *                The target URI reference.
+     *            The target URI reference.
      */
     @Override
     public void redirectPermanent(Reference targetRef) {
@@ -320,7 +321,7 @@ public class WrapperResponse extends Response {
      * to reuse the same method for the new request.
      * 
      * @param targetUri
-     *                The target URI.
+     *            The target URI.
      */
     @Override
     public void redirectPermanent(String targetUri) {
@@ -335,7 +336,7 @@ public class WrapperResponse extends Response {
      * originally requested resource.
      * 
      * @param targetRef
-     *                The target reference.
+     *            The target reference.
      */
     @Override
     public void redirectSeeOther(Reference targetRef) {
@@ -350,7 +351,7 @@ public class WrapperResponse extends Response {
      * originally requested resource.
      * 
      * @param targetUri
-     *                The target URI.
+     *            The target URI.
      */
     @Override
     public void redirectSeeOther(String targetUri) {
@@ -362,7 +363,7 @@ public class WrapperResponse extends Response {
      * to reuse the same method for the new request.
      * 
      * @param targetRef
-     *                The target reference.
+     *            The target reference.
      */
     @Override
     public void redirectTemporary(Reference targetRef) {
@@ -374,7 +375,7 @@ public class WrapperResponse extends Response {
      * to reuse the same method for the new request.
      * 
      * @param targetUri
-     *                The target URI.
+     *            The target URI.
      */
     @Override
     public void redirectTemporary(String targetUri) {
@@ -385,8 +386,8 @@ public class WrapperResponse extends Response {
      * Sets the authentication request sent by an origin server to a client.
      * 
      * @param request
-     *                The authentication request sent by an origin server to a
-     *                client.
+     *            The authentication request sent by an origin server to a
+     *            client.
      */
     @Override
     public void setChallengeRequest(ChallengeRequest request) {
@@ -398,8 +399,8 @@ public class WrapperResponse extends Response {
      * client.
      * 
      * @param requests
-     *                The list of authentication requests sent by an origin
-     *                server to a client.
+     *            The list of authentication requests sent by an origin server
+     *            to a client.
      */
     @Override
     public void setChallengeRequests(List<ChallengeRequest> requests) {
@@ -414,7 +415,7 @@ public class WrapperResponse extends Response {
      * the toRepresentation(Object) method.
      * 
      * @param object
-     *                The higher-level object.
+     *            The higher-level object.
      * @deprecated Since 1.1, the ConverterService is deprecated, with no
      *             replacement as it doesn't fit well with content negotiation.
      *             Most users prefer to handle those conversion in Resource
@@ -430,7 +431,7 @@ public class WrapperResponse extends Response {
      * Sets the entity representation.
      * 
      * @param entity
-     *                The entity representation.
+     *            The entity representation.
      */
     @Override
     public void setEntity(Representation entity) {
@@ -441,9 +442,9 @@ public class WrapperResponse extends Response {
      * Sets a textual entity.
      * 
      * @param value
-     *                The represented string.
+     *            The represented string.
      * @param mediaType
-     *                The representation's media type.
+     *            The representation's media type.
      */
     @Override
     public void setEntity(String value, MediaType mediaType) {
@@ -455,7 +456,7 @@ public class WrapperResponse extends Response {
      * resource creations.
      * 
      * @param locationRef
-     *                The reference to set.
+     *            The reference to set.
      */
     @Override
     public void setLocationRef(Reference locationRef) {
@@ -467,7 +468,7 @@ public class WrapperResponse extends Response {
      * resource creations.
      * 
      * @param locationUri
-     *                The URI to set.
+     *            The URI to set.
      */
     @Override
     public void setLocationRef(String locationUri) {
@@ -479,7 +480,7 @@ public class WrapperResponse extends Response {
      * resource creations.
      * 
      * @param redirectRef
-     *                The redirection reference.
+     *            The redirection reference.
      * @deprecated Use the setLocationRef() method instead.
      */
     @Override
@@ -493,7 +494,7 @@ public class WrapperResponse extends Response {
      * resource creations.
      * 
      * @param redirectUri
-     *                The redirection URI.
+     *            The redirection URI.
      * @deprecated Use the setLocationRef() method instead.
      */
     @Override
@@ -506,7 +507,7 @@ public class WrapperResponse extends Response {
      * Sets the associated request.
      * 
      * @param request
-     *                The associated request
+     *            The associated request
      */
     @Override
     public void setRequest(Request request) {
@@ -517,7 +518,7 @@ public class WrapperResponse extends Response {
      * Sets the associated request.
      * 
      * @param request
-     *                The associated request
+     *            The associated request
      */
     public void setRequest(WrapperRequest request) {
         getWrappedResponse().setRequest(request);
@@ -527,7 +528,7 @@ public class WrapperResponse extends Response {
      * Sets the status.
      * 
      * @param status
-     *                The status to set.
+     *            The status to set.
      */
     @Override
     public void setStatus(Status status) {
@@ -538,9 +539,9 @@ public class WrapperResponse extends Response {
      * Sets the status.
      * 
      * @param status
-     *                The status to set.
+     *            The status to set.
      * @param message
-     *                The status message.
+     *            The status message.
      */
     @Override
     public void setStatus(Status status, String message) {

@@ -12,7 +12,7 @@ public class DirectoryApplication extends Application {
     public DirectoryApplication(Context parentContext) {
         super(parentContext);
         // Sets the facultative name of the application.
-        this.setName("directoryApplication");
+        setName("directoryApplication");
         // the application requires the following client connector.
         getConnectorService().getClientProtocols().add(Protocol.FILE);
 
@@ -27,7 +27,7 @@ public class DirectoryApplication extends Application {
     @Override
     public Restlet createRoot() {
         // Instantiates the Directory with the path of the root directory
-        Directory directory = new Directory(getContext(), LocalReference
+        final Directory directory = new Directory(getContext(), LocalReference
                 .createFileReference("d:\\temp"));
         // Make sure the content negotiation is activated.
         directory.setNegotiateContent(true);

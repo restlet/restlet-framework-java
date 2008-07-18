@@ -40,7 +40,7 @@ public class Application extends org.restlet.Application {
 
     public static void main(String... args) throws Exception {
         // Create a component with an HTTP server connector
-        Component comp = new Component();
+        final Component comp = new Component();
         comp.getServers().add(Protocol.HTTP, 3000);
 
         // Attach the application to the default host and start it
@@ -48,11 +48,11 @@ public class Application extends org.restlet.Application {
         comp.start();
     }
 
-    private ObjectContainer container;
+    private final ObjectContainer container;
 
     public Application() {
         /** Open and keep the db4o object container. */
-        Configuration config = Db4o.newConfiguration();
+        final Configuration config = Db4o.newConfiguration();
         config.updateDepth(2);
         this.container = Db4o.openFile(System.getProperty("user.home")
                 + File.separator + "restbook.dbo");
@@ -60,7 +60,7 @@ public class Application extends org.restlet.Application {
 
     @Override
     public Restlet createRoot() {
-        Router router = new Router(getContext());
+        final Router router = new Router(getContext());
 
         // Add a route for user resources
         router.attach("/users/{username}", UserResource.class);
@@ -69,8 +69,8 @@ public class Application extends org.restlet.Application {
         router.attach("/users/{username}/bookmarks", BookmarksResource.class);
 
         // Add a route for bookmark resources
-        Route uriRoute = router.attach("/users/{username}/bookmarks/{URI}",
-                BookmarkResource.class);
+        final Route uriRoute = router.attach(
+                "/users/{username}/bookmarks/{URI}", BookmarkResource.class);
         uriRoute.getTemplate().getVariables().put("URI",
                 new Variable(Variable.TYPE_URI_ALL));
 

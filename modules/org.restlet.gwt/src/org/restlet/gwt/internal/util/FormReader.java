@@ -18,6 +18,7 @@
 
 package org.restlet.gwt.internal.util;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -52,9 +53,9 @@ public class FormReader {
      * character set is used.
      * 
      * @param representation
-     *                The web form content.
+     *            The web form content.
      * @throws IOException
-     *                 if the stream of the representation could not be opened.
+     *             if the stream of the representation could not be opened.
      */
     public FormReader(Representation representation) throws Exception {
         this.decode = true;
@@ -72,7 +73,7 @@ public class FormReader {
      * Constructor. Will leave the parsed data encoded.
      * 
      * @param parametersString
-     *                The parameters string.
+     *            The parameters string.
      */
     public FormReader(String parametersString, char separator) {
         this.decode = false;
@@ -85,10 +86,10 @@ public class FormReader {
      * Constructor.
      * 
      * @param parametersString
-     *                The parameters string.
+     *            The parameters string.
      * @param characterSet
-     *                The supported character encoding. Set to null to leave the
-     *                data encoded.
+     *            The supported character encoding. Set to null to leave the
+     *            data encoded.
      */
     public FormReader(String parametersString, CharacterSet characterSet,
             char separator) {
@@ -102,7 +103,7 @@ public class FormReader {
      * Adds the parameters into a given form.
      * 
      * @param form
-     *                The target form.
+     *            The target form.
      */
     public void addParameters(Form form) {
         boolean readNext = true;
@@ -121,7 +122,7 @@ public class FormReader {
                     readNext = false;
                 }
             }
-        } catch (Exception ioe) {
+        } catch (final Exception ioe) {
             System.err
                     .println("Unable to parse a form parameter. Skipping the remaining parameters.");
         }
@@ -132,10 +133,10 @@ public class FormReader {
      * 
      * @return The form read.
      * @throws IOException
-     *                 If the parameters could not be read.
+     *             If the parameters could not be read.
      */
     public Form read() throws Exception {
-        Form result = new Form();
+        final Form result = new Form();
         Parameter param = readNextParameter();
 
         while (param != null) {
@@ -150,7 +151,7 @@ public class FormReader {
      * Reads the first parameter with the given name.
      * 
      * @param name
-     *                The parameter name to match.
+     *            The parameter name to match.
      * @return The parameter value.
      * @throws IOException
      */
@@ -174,16 +175,16 @@ public class FormReader {
      * 
      * @return The next parameter available or null.
      * @throws IOException
-     *                 If the next parameter could not be read.
+     *             If the next parameter could not be read.
      */
     public Parameter readNextParameter() throws Exception {
         Parameter result = null;
         boolean readingName = true;
         boolean readingValue = false;
-        StringBuilder nameBuffer = new StringBuilder();
-        StringBuilder valueBuffer = new StringBuilder();
+        final StringBuilder nameBuffer = new StringBuilder();
+        final StringBuilder valueBuffer = new StringBuilder();
 
-        CharacterReader cr = new CharacterReader(this.text);
+        final CharacterReader cr = new CharacterReader(this.text);
         int nextChar = 0;
         while ((result == null) && (nextChar != -1)) {
             nextChar = cr.read();
@@ -200,7 +201,7 @@ public class FormReader {
                 } else if ((nextChar == this.separator) || (nextChar == -1)) {
                     if (nameBuffer.length() > 0) {
                         result = FormUtils.create(nameBuffer, null,
-                                this.decode, characterSet);
+                                this.decode, this.characterSet);
                     } else if (nextChar == -1) {
                         // Do nothing return null preference
                     } else {
@@ -214,10 +215,10 @@ public class FormReader {
                 if ((nextChar == this.separator) || (nextChar == -1)) {
                     if (valueBuffer.length() > 0) {
                         result = FormUtils.create(nameBuffer, valueBuffer,
-                                this.decode, characterSet);
+                                this.decode, this.characterSet);
                     } else {
                         result = FormUtils.create(nameBuffer, null,
-                                this.decode, characterSet);
+                                this.decode, this.characterSet);
                     }
                 } else {
                     valueBuffer.append((char) nextChar);
@@ -233,10 +234,10 @@ public class FormReader {
      * list is returned created.
      * 
      * @param name
-     *                The parameter name to match.
+     *            The parameter name to match.
      * @return The parameter value or list of values.
      * @throws IOException
-     *                 If the parameters could not be read.
+     *             If the parameters could not be read.
      */
     @SuppressWarnings("unchecked")
     public Object readParameter(String name) throws Exception {
@@ -285,9 +286,9 @@ public class FormReader {
      * found, a list is created and set in the map.
      * 
      * @param parameters
-     *                The parameters map controlling the reading.
+     *            The parameters map controlling the reading.
      * @throws IOException
-     *                 If the parameters could not be read.
+     *             If the parameters could not be read.
      */
     @SuppressWarnings("unchecked")
     public void readParameters(Map<String, Object> parameters) throws Exception {

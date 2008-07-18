@@ -37,7 +37,7 @@ public abstract class ChannelRepresentation extends Representation {
      * Constructor.
      * 
      * @param mediaType
-     *                The media type.
+     *            The media type.
      */
     public ChannelRepresentation(MediaType mediaType) {
         super(mediaType);

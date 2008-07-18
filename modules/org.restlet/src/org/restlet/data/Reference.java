@@ -104,7 +104,7 @@ import java.util.logging.Logger;
  * members.
  * 
  * @author Jerome Louvel (contact@noelios.com)
- * @see <a href="http://www.faqs.org/rfcs/rfc3986.html">RFC 3986</a>
+ * @see <a href="http://www.faqs.org/rfcs/rfc3986.html">RFC 3986< /a>
  */
 public class Reference {
 
@@ -113,7 +113,7 @@ public class Reference {
      * UTF-8 character set.
      * 
      * @param toDecode
-     *                The string to decode.
+     *            The string to decode.
      * @return The decoded string.
      */
     public static String decode(String toDecode) {
@@ -121,7 +121,7 @@ public class Reference {
 
         try {
             result = URLDecoder.decode(toDecode, "UTF-8");
-        } catch (UnsupportedEncodingException uee) {
+        } catch (final UnsupportedEncodingException uee) {
             Logger
                     .getLogger(Reference.class.getCanonicalName())
                     .log(
@@ -142,9 +142,9 @@ public class Reference {
      * used. Not doing so may introduce incompatibilites.</em>
      * 
      * @param toDecode
-     *                The string to decode.
+     *            The string to decode.
      * @param characterSet
-     *                The name of a supported character encoding.
+     *            The name of a supported character encoding.
      * @return The decoded string or null if the named character encoding is not
      *         supported.
      */
@@ -154,7 +154,7 @@ public class Reference {
         try {
             result = (characterSet == null) ? toDecode : URLDecoder.decode(
                     toDecode, characterSet.getName());
-        } catch (UnsupportedEncodingException uee) {
+        } catch (final UnsupportedEncodingException uee) {
             Logger
                     .getLogger(Reference.class.getCanonicalName())
                     .log(
@@ -171,7 +171,7 @@ public class Reference {
      * UTF-8 character set.
      * 
      * @param toEncode
-     *                The string to encode.
+     *            The string to encode.
      * @return The encoded string.
      */
     public static String encode(String toEncode) {
@@ -180,7 +180,7 @@ public class Reference {
         if (toEncode != null) {
             try {
                 result = URLEncoder.encode(toEncode, "UTF-8");
-            } catch (UnsupportedEncodingException uee) {
+            } catch (final UnsupportedEncodingException uee) {
                 Logger
                         .getLogger(Reference.class.getCanonicalName())
                         .log(
@@ -203,9 +203,9 @@ public class Reference {
      * used. Not doing so may introduce incompatibilites.</em>
      * 
      * @param toEncode
-     *                The string to encode.
+     *            The string to encode.
      * @param characterSet
-     *                The supported character encoding.
+     *            The supported character encoding.
      * @return The encoded string or null if the named character encoding is not
      *         supported.
      */
@@ -215,7 +215,7 @@ public class Reference {
         try {
             result = (characterSet == null) ? toEncode : URLEncoder.encode(
                     toEncode, characterSet.getName());
-        } catch (UnsupportedEncodingException uee) {
+        } catch (final UnsupportedEncodingException uee) {
             Logger
                     .getLogger(Reference.class.getCanonicalName())
                     .log(
@@ -231,7 +231,7 @@ public class Reference {
      * Indicates if the given character is alphabetical (a-z or A-Z).
      * 
      * @param character
-     *                The character to test.
+     *            The character to test.
      * @return True if the given character is alphabetical (a-z or A-Z).
      */
     private static boolean isAlpha(int character) {
@@ -242,7 +242,7 @@ public class Reference {
      * Indicates if the given character is a digit (0-9).
      * 
      * @param character
-     *                The character to test.
+     *            The character to test.
      * @return True if the given character is a digit (0-9).
      */
     private static boolean isDigit(int character) {
@@ -254,7 +254,7 @@ public class Reference {
      * character.
      * 
      * @param character
-     *                The character to test.
+     *            The character to test.
      * @return True if the given character is a generic URI component delimiter
      *         character.
      */
@@ -268,7 +268,7 @@ public class Reference {
      * Indicates if the given character is lower case (a-z).
      * 
      * @param character
-     *                The character to test.
+     *            The character to test.
      * @return True if the given character is lower case (a-z).
      */
     private static boolean isLowerCase(int character) {
@@ -279,7 +279,7 @@ public class Reference {
      * Indicates if the given character is a reserved URI character.
      * 
      * @param character
-     *                The character to test.
+     *            The character to test.
      * @return True if the given character is a reserved URI character.
      */
     public static boolean isReserved(int character) {
@@ -291,7 +291,7 @@ public class Reference {
      * character.
      * 
      * @param character
-     *                The character to test.
+     *            The character to test.
      * @return True if the given character is an URI subcomponent delimiter
      *         character.
      */
@@ -307,7 +307,7 @@ public class Reference {
      * Indicates if the given character is an unreserved URI character.
      * 
      * @param character
-     *                The character to test.
+     *            The character to test.
      * @return True if the given character is an unreserved URI character.
      */
     public static boolean isUnreserved(int character) {
@@ -320,7 +320,7 @@ public class Reference {
      * Indicates if the given character is upper case (A-Z).
      * 
      * @param character
-     *                The character to test.
+     *            The character to test.
      * @return True if the given character is upper case (A-Z).
      */
     private static boolean isUpperCase(int character) {
@@ -331,7 +331,7 @@ public class Reference {
      * Indicates if the given character is a valid URI character.
      * 
      * @param character
-     *                The character to test.
+     *            The character to test.
      * @return True if the given character is a valid URI character.
      */
     public static boolean isValid(int character) {
@@ -343,17 +343,17 @@ public class Reference {
      * Creates a reference string from its parts.
      * 
      * @param scheme
-     *                The scheme ("http", "https" or "ftp").
+     *            The scheme ("http", "https" or "ftp").
      * @param hostName
-     *                The host name or IP address.
+     *            The host name or IP address.
      * @param hostPort
-     *                The host port (default ports are correctly ignored).
+     *            The host port (default ports are correctly ignored).
      * @param path
-     *                The path component for hierarchical identifiers.
+     *            The path component for hierarchical identifiers.
      * @param query
-     *                The optional query component for hierarchical identifiers.
+     *            The optional query component for hierarchical identifiers.
      * @param fragment
-     *                The optional fragment identifier.
+     *            The optional fragment identifier.
      * @return The reference as String.
      */
     public static String toString(String scheme, String hostName,
@@ -362,7 +362,7 @@ public class Reference {
 
         // Appends the host port number
         if (hostPort != null) {
-            int defaultPort = Protocol.valueOf(scheme).getDefaultPort();
+            final int defaultPort = Protocol.valueOf(scheme).getDefaultPort();
             if (hostPort != defaultPort) {
                 host = hostName + ':' + hostPort;
             }
@@ -375,16 +375,16 @@ public class Reference {
      * Creates a relative reference string from its parts.
      * 
      * @param relativePart
-     *                The relative part component.
+     *            The relative part component.
      * @param query
-     *                The optional query component for hierarchical identifiers.
+     *            The optional query component for hierarchical identifiers.
      * @param fragment
-     *                The optional fragment identifier.
+     *            The optional fragment identifier.
      * @return The relative reference as a String.
      */
     public static String toString(String relativePart, String query,
             String fragment) {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
 
         // Append the path
         if (relativePart != null) {
@@ -409,20 +409,20 @@ public class Reference {
      * Creates a reference string from its parts.
      * 
      * @param scheme
-     *                The scheme ("http", "https" or "ftp").
+     *            The scheme ("http", "https" or "ftp").
      * @param host
-     *                The host name or IP address plus the optional port number.
+     *            The host name or IP address plus the optional port number.
      * @param path
-     *                The path component for hierarchical identifiers.
+     *            The path component for hierarchical identifiers.
      * @param query
-     *                The optional query component for hierarchical identifiers.
+     *            The optional query component for hierarchical identifiers.
      * @param fragment
-     *                The optional fragment identifier.
+     *            The optional fragment identifier.
      * @return The reference a String.
      */
     public static String toString(String scheme, String host, String path,
             String query, String fragment) {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
 
         if (scheme != null) {
             // Append the scheme and host name
@@ -475,9 +475,9 @@ public class Reference {
      * given protocol.
      * 
      * @param protocol
-     *                Protocol/scheme to use
+     *            Protocol/scheme to use
      * @param hostName
-     *                The host name or IP address.
+     *            The host name or IP address.
      */
     public Reference(Protocol protocol, String hostName) {
         this(protocol, hostName, protocol.getDefaultPort());
@@ -487,11 +487,11 @@ public class Reference {
      * Constructor for a protocol, host name and host port
      * 
      * @param protocol
-     *                Protocol/scheme to use
+     *            Protocol/scheme to use
      * @param hostName
-     *                The host name or IP address.
+     *            The host name or IP address.
      * @param hostPort
-     *                The host port (default ports are correctly ignored).
+     *            The host port (default ports are correctly ignored).
      */
     public Reference(Protocol protocol, String hostName, int hostPort) {
         this(protocol.getSchemeName(), hostName, hostPort, null, null, null);
@@ -501,7 +501,7 @@ public class Reference {
      * Clone constructor.
      * 
      * @param ref
-     *                The reference to clone.
+     *            The reference to clone.
      */
     public Reference(Reference ref) {
         this(ref.baseRef, ref.internalRef);
@@ -511,9 +511,9 @@ public class Reference {
      * Constructor from an URI reference (most likely relative).
      * 
      * @param baseRef
-     *                The base reference.
+     *            The base reference.
      * @param uriReference
-     *                The URI reference, either absolute or relative.
+     *            The URI reference, either absolute or relative.
      */
     public Reference(Reference baseRef, Reference uriReference) {
         this(baseRef, uriReference.toString());
@@ -523,9 +523,9 @@ public class Reference {
      * Constructor from an URI reference (most likely relative).
      * 
      * @param baseRef
-     *                The base reference.
+     *            The base reference.
      * @param uriRef
-     *                The URI reference, either absolute or relative.
+     *            The URI reference, either absolute or relative.
      */
     public Reference(Reference baseRef, String uriRef) {
         checkValidity(uriRef);
@@ -538,14 +538,14 @@ public class Reference {
      * Constructor of relative reference from its parts.
      * 
      * @param baseRef
-     *                The base reference.
+     *            The base reference.
      * @param relativePart
-     *                The relative part component (most of the time it is the
-     *                path component).
+     *            The relative part component (most of the time it is the path
+     *            component).
      * @param query
-     *                The optional query component for hierarchical identifiers.
+     *            The optional query component for hierarchical identifiers.
      * @param fragment
-     *                The optional fragment identifier.
+     *            The optional fragment identifier.
      */
     public Reference(Reference baseRef, String relativePart, String query,
             String fragment) {
@@ -556,7 +556,7 @@ public class Reference {
      * Constructor from an URI reference.
      * 
      * @param uriReference
-     *                The URI reference, either absolute or relative.
+     *            The URI reference, either absolute or relative.
      */
     public Reference(String uriReference) {
         this((Reference) null, uriReference);
@@ -566,9 +566,9 @@ public class Reference {
      * Constructor from an identifier and a fragment.
      * 
      * @param identifier
-     *                The resource identifier.
+     *            The resource identifier.
      * @param fragment
-     *                The fragment identifier.
+     *            The fragment identifier.
      */
     public Reference(String identifier, String fragment) {
         this((fragment == null) ? identifier : identifier + '#' + fragment);
@@ -578,17 +578,17 @@ public class Reference {
      * Constructor of absolute reference from its parts.
      * 
      * @param scheme
-     *                The scheme ("http", "https" or "ftp").
+     *            The scheme ("http", "https" or "ftp").
      * @param hostName
-     *                The host name or IP address.
+     *            The host name or IP address.
      * @param hostPort
-     *                The host port (default ports are correctly ignored).
+     *            The host port (default ports are correctly ignored).
      * @param path
-     *                The path component for hierarchical identifiers.
+     *            The path component for hierarchical identifiers.
      * @param query
-     *                The optional query component for hierarchical identifiers.
+     *            The optional query component for hierarchical identifiers.
      * @param fragment
-     *                The optional fragment identifier.
+     *            The optional fragment identifier.
      */
     public Reference(String scheme, String hostName, int hostPort, String path,
             String query, String fragment) {
@@ -600,13 +600,13 @@ public class Reference {
      * automatically encoded if necessary.
      * 
      * @param name
-     *                The parameter name.
+     *            The parameter name.
      * @param value
-     *                The optional parameter value.
+     *            The optional parameter value.
      * @return The updated reference.
      */
     public Reference addQueryParameter(String name, String value) {
-        String query = getQuery();
+        final String query = getQuery();
 
         if (query == null) {
             if (value == null) {
@@ -631,11 +631,11 @@ public class Reference {
      * value is automatically encoded if necessary.
      * 
      * @param value
-     *                The segment value to add.
+     *            The segment value to add.
      * @return The updated reference.
      */
     public Reference addSegment(String value) {
-        String path = getPath();
+        final String path = getPath();
 
         if (value != null) {
             if (path == null) {
@@ -656,7 +656,7 @@ public class Reference {
      * Checks if all characters are valid.
      * 
      * @param uriRef
-     *                The URI reference to check.
+     *            The URI reference to check.
      */
     private void checkValidity(String uriRef) throws IllegalArgumentException {
         if (uriRef != null) {
@@ -673,20 +673,20 @@ public class Reference {
 
     @Override
     public Reference clone() {
-        Reference newRef = new Reference();
+        final Reference newRef = new Reference();
 
         if (this.baseRef == null) {
             newRef.baseRef = null;
-        } else if (this.equals(this.baseRef)) {
+        } else if (equals(this.baseRef)) {
             newRef.baseRef = newRef;
         } else {
             newRef.baseRef = this.baseRef.clone();
         }
 
-        newRef.fragmentIndex = fragmentIndex;
-        newRef.internalRef = internalRef;
-        newRef.queryIndex = queryIndex;
-        newRef.schemeIndex = schemeIndex;
+        newRef.fragmentIndex = this.fragmentIndex;
+        newRef.internalRef = this.internalRef;
+        newRef.queryIndex = this.queryIndex;
+        newRef.schemeIndex = this.schemeIndex;
         return newRef;
     }
 
@@ -694,13 +694,13 @@ public class Reference {
      * Indicates whether some other object is "equal to" this one.
      * 
      * @param object
-     *                The object to compare to.
+     *            The object to compare to.
      * @return True if this object is the same as the obj argument.
      */
     @Override
     public boolean equals(Object object) {
         if (object instanceof Reference) {
-            Reference ref = (Reference) object;
+            final Reference ref = (Reference) object;
             if (this.internalRef == null) {
                 return ref.internalRef == null;
             }
@@ -719,7 +719,7 @@ public class Reference {
      * @return The authority component for hierarchical identifiers.
      */
     public String getAuthority() {
-        String part = isRelative() ? getRelativePart()
+        final String part = isRelative() ? getRelativePart()
                 : getSchemeSpecificPart();
 
         if ((part != null) && part.startsWith("//")) {
@@ -745,8 +745,8 @@ public class Reference {
      * Returns the optionnally decoded authority component.
      * 
      * @param decode
-     *                Indicates if the result should be decoded using the
-     *                {@link #decode(String)} method.
+     *            Indicates if the result should be decoded using the
+     *            {@link #decode(String)} method.
      * @return The optionnally decoded authority component.
      * @see #getAuthority()
      */
@@ -777,11 +777,11 @@ public class Reference {
      */
     public String getExtensions() {
         String result = null;
-        String lastSegment = getLastSegment();
+        final String lastSegment = getLastSegment();
 
         if (lastSegment != null) {
-            int extensionIndex = lastSegment.indexOf('.');
-            int matrixIndex = lastSegment.indexOf(';');
+            final int extensionIndex = lastSegment.indexOf('.');
+            final int matrixIndex = lastSegment.indexOf(';');
 
             if (extensionIndex != -1) {
                 // Extensions found
@@ -806,7 +806,7 @@ public class Reference {
      */
     public String[] getExtensionsAsArray() {
         String[] result = null;
-        String extensions = getExtensions();
+        final String extensions = getExtensions();
 
         if (extensions != null) {
             result = extensions.split("\\.");
@@ -823,7 +823,7 @@ public class Reference {
      */
     public String getFragment() {
         if (hasFragment()) {
-            return this.internalRef.substring(fragmentIndex + 1);
+            return this.internalRef.substring(this.fragmentIndex + 1);
         }
 
         return null;
@@ -833,8 +833,8 @@ public class Reference {
      * Returns the optionnally decoded fragment identifier.
      * 
      * @param decode
-     *                Indicates if the result should be decoded using the
-     *                {@link #decode(String)} method.
+     *            Indicates if the result should be decoded using the
+     *            {@link #decode(String)} method.
      * @return The optionnally decoded fragment identifier.
      * @see #getFragment()
      */
@@ -854,27 +854,28 @@ public class Reference {
             // Scheme found
             if (hasQuery()) {
                 // Query found
-                return this.internalRef.substring(schemeIndex + 1, queryIndex);
+                return this.internalRef.substring(this.schemeIndex + 1,
+                        this.queryIndex);
             }
             // No query found
             if (hasFragment()) {
                 // Fragment found
-                return this.internalRef.substring(schemeIndex + 1,
-                        fragmentIndex);
+                return this.internalRef.substring(this.schemeIndex + 1,
+                        this.fragmentIndex);
             }
             // No fragment found
-            return this.internalRef.substring(schemeIndex + 1);
+            return this.internalRef.substring(this.schemeIndex + 1);
 
         }
 
         // No scheme found
         if (hasQuery()) {
             // Query found
-            return this.internalRef.substring(0, queryIndex);
+            return this.internalRef.substring(0, this.queryIndex);
         }
         if (hasFragment()) {
             // Fragment found
-            return this.internalRef.substring(0, fragmentIndex);
+            return this.internalRef.substring(0, this.fragmentIndex);
         }
 
         // No fragment found
@@ -885,8 +886,8 @@ public class Reference {
      * Returns the optionnally decoded hierarchical part.
      * 
      * @param decode
-     *                Indicates if the result should be decoded using the
-     *                {@link #decode(String)} method.
+     *            Indicates if the result should be decoded using the
+     *            {@link #decode(String)} method.
      * @return The optionnally decoded hierarchical part.
      * @see #getHierarchicalPart()
      */
@@ -905,12 +906,13 @@ public class Reference {
      */
     public String getHostDomain() {
         String result = null;
-        String authority = getAuthority();
+        final String authority = getAuthority();
 
         if (authority != null) {
-            int index1 = authority.indexOf('@');
+            final int index1 = authority.indexOf('@');
             // We must prevent the case where the userinfo part contains ':'
-            int index2 = authority.indexOf(':', (index1 == -1 ? 0 : index1));
+            final int index2 = authority.indexOf(':', (index1 == -1 ? 0
+                    : index1));
 
             if (index1 != -1) {
                 // User info found
@@ -940,8 +942,8 @@ public class Reference {
      * Returns the optionnally decoded host domain name component.
      * 
      * @param decode
-     *                Indicates if the result should be decoded using the
-     *                {@link #decode(String)} method.
+     *            Indicates if the result should be decoded using the
+     *            {@link #decode(String)} method.
      * @return The optionnally decoded host domain name component.
      * @see #getHostDomain()
      */
@@ -957,7 +959,7 @@ public class Reference {
      * @return The host identifier.
      */
     public String getHostIdentifier() {
-        StringBuilder result = new StringBuilder();
+        final StringBuilder result = new StringBuilder();
         result.append(getScheme()).append("://").append(getAuthority());
         return result.toString();
     }
@@ -966,8 +968,8 @@ public class Reference {
      * Returns the optionnally decoded host identifier.
      * 
      * @param decode
-     *                Indicates if the result should be decoded using the
-     *                {@link #decode(String)} method.
+     *            Indicates if the result should be decoded using the
+     *            {@link #decode(String)} method.
      * @return The optionnally decoded host identifier.
      * @see #getHostIdentifier()
      */
@@ -984,21 +986,23 @@ public class Reference {
      */
     public int getHostPort() {
         int result = -1;
-        String authority = getAuthority();
+        final String authority = getAuthority();
 
         if (authority != null) {
-            int index1 = authority.indexOf('@');
+            final int index1 = authority.indexOf('@');
             // We must prevent the case where the userinfo part contains ':'
-            int index = authority.indexOf(':', (index1 == -1 ? 0 : index1));
+            final int index = authority.indexOf(':',
+                    (index1 == -1 ? 0 : index1));
 
             if (index != -1) {
                 try {
                     result = Integer.parseInt(authority.substring(index + 1));
-                } catch (NumberFormatException nfe) {
+                } catch (final NumberFormatException nfe) {
                     Logger.getLogger(Reference.class.getCanonicalName()).log(
                             Level.WARNING,
                             "Can't parse hostPort : [hostRef,requestUri]=["
-                                    + getBaseRef() + "," + internalRef + "]");
+                                    + getBaseRef() + "," + this.internalRef
+                                    + "]");
                 }
             }
         }
@@ -1015,7 +1019,7 @@ public class Reference {
     public String getIdentifier() {
         if (hasFragment()) {
             // Fragment found
-            return this.internalRef.substring(0, fragmentIndex);
+            return this.internalRef.substring(0, this.fragmentIndex);
         }
 
         // No fragment found
@@ -1026,8 +1030,8 @@ public class Reference {
      * Returns the optionnally decoded absolute resource identifier.
      * 
      * @param decode
-     *                Indicates if the result should be decoded using the
-     *                {@link #decode(String)} method.
+     *            Indicates if the result should be decoded using the
+     *            {@link #decode(String)} method.
      * @return The optionnally decoded absolute resource identifier.
      * @see #getIdentifier()
      */
@@ -1052,7 +1056,7 @@ public class Reference {
                 path = path.substring(0, path.length() - 1);
             }
 
-            int lastSlash = path.lastIndexOf('/');
+            final int lastSlash = path.lastIndexOf('/');
 
             if (lastSlash != -1) {
                 result = path.substring(lastSlash + 1);
@@ -1066,8 +1070,8 @@ public class Reference {
      * Returns the optionnally decoded last segment.
      * 
      * @param decode
-     *                Indicates if the result should be decoded using the
-     *                {@link #decode(String)} method.
+     *            Indicates if the result should be decoded using the
+     *            {@link #decode(String)} method.
      * @return The optionnally decoded last segment.
      * @see #getLastSegment()
      */
@@ -1079,8 +1083,8 @@ public class Reference {
      * Returns the optionnally decoded last segment.
      * 
      * @param decode
-     *                Indicates if the result should be decoded using the
-     *                {@link #decode(String)} method.
+     *            Indicates if the result should be decoded using the
+     *            {@link #decode(String)} method.
      * @param excludeMatrix
      * @return The optionnally decoded last segment.
      * @see #getLastSegment()
@@ -1089,7 +1093,7 @@ public class Reference {
         String result = getLastSegment();
 
         if (excludeMatrix && (result != null)) {
-            int matrixIndex = result.indexOf(';');
+            final int matrixIndex = result.indexOf(';');
 
             if (matrixIndex != -1) {
                 result = result.substring(0, matrixIndex);
@@ -1109,8 +1113,8 @@ public class Reference {
      * @return The matrix or null.
      */
     public String getMatrix() {
-        String lastSegment = getLastSegment();
-        int matrixIndex = lastSegment.indexOf(';');
+        final String lastSegment = getLastSegment();
+        final int matrixIndex = lastSegment.indexOf(';');
 
         if (matrixIndex != -1) {
             return lastSegment.substring(matrixIndex + 1);
@@ -1124,8 +1128,8 @@ public class Reference {
      * Returns the optionnally decoded matrix.
      * 
      * @param decode
-     *                Indicates if the result should be decoded using the
-     *                {@link #decode(String)} method.
+     *            Indicates if the result should be decoded using the
+     *            {@link #decode(String)} method.
      * @return The optionnally decoded matrix.
      * @see #getMatrix()
      */
@@ -1146,7 +1150,7 @@ public class Reference {
      * Returns the optional matrix as a form submission.
      * 
      * @param characterSet
-     *                The supported character encoding.
+     *            The supported character encoding.
      * @return The optional matrix as a form.
      */
     public Form getMatrixAsForm(CharacterSet characterSet) {
@@ -1190,17 +1194,17 @@ public class Reference {
      */
     public String getPath() {
         String result = null;
-        String part = isRelative() ? getRelativePart()
+        final String part = isRelative() ? getRelativePart()
                 : getSchemeSpecificPart();
 
         if (part != null) {
             if (part.startsWith("//")) {
                 // Authority found
-                int index1 = part.indexOf('/', 2);
+                final int index1 = part.indexOf('/', 2);
 
                 if (index1 != -1) {
                     // Path found
-                    int index2 = part.indexOf('?');
+                    final int index2 = part.indexOf('?');
                     if (index2 != -1) {
                         // Query found
                         result = part.substring(index1, index2);
@@ -1213,7 +1217,7 @@ public class Reference {
                 }
             } else {
                 // No authority found
-                int index = part.indexOf('?');
+                final int index = part.indexOf('?');
                 if (index != -1) {
                     // Query found
                     result = part.substring(0, index);
@@ -1231,8 +1235,8 @@ public class Reference {
      * Returns the optionnally decoded path component.
      * 
      * @param decode
-     *                Indicates if the result should be decoded using the
-     *                {@link #decode(String)} method.
+     *            Indicates if the result should be decoded using the
+     *            {@link #decode(String)} method.
      * @return The optionnally decoded path component.
      * @see #getPath()
      */
@@ -1250,17 +1254,17 @@ public class Reference {
         if (hasQuery()) {
             // Query found
             if (hasFragment()) {
-                if (queryIndex < fragmentIndex) {
+                if (this.queryIndex < this.fragmentIndex) {
                     // Fragment found and query sign not inside fragment
-                    return this.internalRef.substring(queryIndex + 1,
-                            fragmentIndex);
+                    return this.internalRef.substring(this.queryIndex + 1,
+                            this.fragmentIndex);
                 }
 
                 return null;
             }
 
             // No fragment found
-            return this.internalRef.substring(queryIndex + 1);
+            return this.internalRef.substring(this.queryIndex + 1);
         }
 
         // No query found
@@ -1271,8 +1275,8 @@ public class Reference {
      * Returns the optionnally decoded query component.
      * 
      * @param decode
-     *                Indicates if the result should be decoded using the
-     *                {@link #decode(String)} method.
+     *            Indicates if the result should be decoded using the
+     *            {@link #decode(String)} method.
      * @return The optionnally decoded query component.
      * @see #getQuery()
      */
@@ -1293,7 +1297,7 @@ public class Reference {
      * Returns the optional query component as a form submission.
      * 
      * @param characterSet
-     *                The supported character encoding.
+     *            The supported character encoding.
      * @return The optional query component as a form submission.
      */
     public Form getQueryAsForm(CharacterSet characterSet) {
@@ -1315,8 +1319,8 @@ public class Reference {
      * Returns the optionnally decoded relative part.
      * 
      * @param decode
-     *                Indicates if the result should be decoded using the
-     *                {@link #decode(String)} method.
+     *            Indicates if the result should be decoded using the
+     *            {@link #decode(String)} method.
      * @return The optionnally decoded relative part.
      * @see #getRelativePart()
      */
@@ -1343,11 +1347,10 @@ public class Reference {
      * IllegalArgumentException will be raised.
      * 
      * @param base
-     *                The base reference to use.
+     *            The base reference to use.
      * @throws IllegalArgumentException
-     *                 If the relative reference is computed although the
-     *                 reference or the base reference are not absolute or not
-     *                 hierarchical.
+     *             If the relative reference is computed although the reference
+     *             or the base reference are not absolute or not hierarchical.
      * @return The current reference relatively to a base reference.
      */
     public Reference getRelativeRef(Reference base) {
@@ -1364,8 +1367,8 @@ public class Reference {
         } else if (!getHostIdentifier().equals(base.getHostIdentifier())) {
             result = this;
         } else {
-            String localPath = getPath();
-            String basePath = base.getPath();
+            final String localPath = getPath();
+            final String basePath = base.getPath();
             String relativePath = null;
 
             if ((basePath == null) || (localPath == null)) {
@@ -1383,8 +1386,9 @@ public class Reference {
                     if (current != basePath.charAt(i)) {
                         diffFound = true;
                     } else {
-                        if (current == '/')
+                        if (current == '/') {
                             lastSlashIndex = i;
+                        }
                         i++;
                     }
                 }
@@ -1404,7 +1408,7 @@ public class Reference {
                                 // path
                                 // We need to add enough ".." in the relative
                                 // path
-                                StringBuilder sb = new StringBuilder();
+                                final StringBuilder sb = new StringBuilder();
                                 sb.append("..");
                                 boolean canAdd = false;
 
@@ -1424,7 +1428,7 @@ public class Reference {
                             // the last local path segment
                             // But that is longer. Situation similar to a
                             // junction
-                            StringBuilder sb = new StringBuilder();
+                            final StringBuilder sb = new StringBuilder();
                             boolean firstAdd = true;
                             boolean canAdd = false;
 
@@ -1444,16 +1448,18 @@ public class Reference {
                             }
 
                             if (lastSlashIndex + 1 < localPath.length()) {
-                                if (!firstAdd)
+                                if (!firstAdd) {
                                     sb.append('/');
+                                }
                                 sb.append(localPath
                                         .substring(lastSlashIndex + 1));
                             }
 
                             relativePath = sb.toString();
 
-                            if (relativePath.equals(""))
+                            if (relativePath.equals("")) {
                                 relativePath = ".";
+                            }
                         }
                     } else if (i == basePath.length()) {
                         if (localPath.charAt(i) == '/') {
@@ -1480,7 +1486,7 @@ public class Reference {
                     // We found a junction point, we need to add enough ".." in
                     // the relative path and append the rest of the local path
                     // the local path is a direct subpath of the base path
-                    StringBuilder sb = new StringBuilder();
+                    final StringBuilder sb = new StringBuilder();
                     boolean canAdd = false;
                     boolean firstAdd = true;
 
@@ -1499,8 +1505,9 @@ public class Reference {
                         }
                     }
 
-                    if (!firstAdd)
+                    if (!firstAdd) {
                         sb.append('/');
+                    }
                     sb.append(localPath.substring(lastSlashIndex + 1));
                     relativePath = sb.toString();
                 }
@@ -1508,8 +1515,8 @@ public class Reference {
 
             // Builde the result reference
             result = new Reference();
-            String query = getQuery();
-            String fragment = getFragment();
+            final String query = getQuery();
+            final String fragment = getFragment();
             boolean modified = false;
 
             if ((query != null) && (!query.equals(base.getQuery()))) {
@@ -1530,7 +1537,7 @@ public class Reference {
         return result;
     }
 
-    /**
+/**
      * Returns the part of the resource identifier remaining after the base
      * reference. Note that the optional fragment is not returned by this
      * method. Must be used with the following prerequisites:
@@ -1553,8 +1560,8 @@ public class Reference {
      * Returns the optionally decoded remaining part.
      * 
      * @param decode
-     *                Indicates if the result should be decoded using the
-     *                {@link #decode(String)} method.
+     *            Indicates if the result should be decoded using the
+     *            {@link #decode(String)} method.
      * @return The optionally decoded remaining part.
      * @see #getRemainingPart()
      */
@@ -1567,20 +1574,19 @@ public class Reference {
      * part of the reference.
      * 
      * @param decode
-     *                Indicates if the result should be decoded using the
-     *                {@link #decode(String)} method.
+     *            Indicates if the result should be decoded using the
+     *            {@link #decode(String)} method.
      * @param query
-     *                True if the query part should be returned, false
-     *                otherwise.
+     *            True if the query part should be returned, false otherwise.
      * @return The optionally decoded remaining part.
      * @see #getRemainingPart()
      */
     public String getRemainingPart(boolean decode, boolean query) {
         String result = null;
-        String all = toString(query, false);
+        final String all = toString(query, false);
 
         if (getBaseRef() != null) {
-            String base = getBaseRef().toString(query, false);
+            final String base = getBaseRef().toString(query, false);
 
             if ((base != null) && all.startsWith(base)) {
                 result = all.substring(base.length());
@@ -1601,7 +1607,7 @@ public class Reference {
     public String getScheme() {
         if (hasScheme()) {
             // Scheme found
-            return this.internalRef.substring(0, schemeIndex);
+            return this.internalRef.substring(0, this.schemeIndex);
         }
 
         // No scheme found
@@ -1612,8 +1618,8 @@ public class Reference {
      * Returns the optionnally decoded scheme component.
      * 
      * @param decode
-     *                Indicates if the result should be decoded using the
-     *                {@link #decode(String)} method.
+     *            Indicates if the result should be decoded using the
+     *            {@link #decode(String)} method.
      * @return The optionnally decoded scheme component.
      * @see #getScheme()
      */
@@ -1643,11 +1649,11 @@ public class Reference {
             // Scheme found
             if (hasFragment()) {
                 // Fragment found
-                result = this.internalRef.substring(schemeIndex + 1,
-                        fragmentIndex);
+                result = this.internalRef.substring(this.schemeIndex + 1,
+                        this.fragmentIndex);
             } else {
                 // No fragment found
-                result = this.internalRef.substring(schemeIndex + 1);
+                result = this.internalRef.substring(this.schemeIndex + 1);
             }
         }
 
@@ -1658,8 +1664,8 @@ public class Reference {
      * Returns the optionnally decoded scheme specific part.
      * 
      * @param decode
-     *                Indicates if the result should be decoded using the
-     *                {@link #decode(String)} method.
+     *            Indicates if the result should be decoded using the
+     *            {@link #decode(String)} method.
      * @return The optionnally decoded scheme specific part.
      * @see #getSchemeSpecificPart()
      */
@@ -1676,8 +1682,8 @@ public class Reference {
      * @return The segments of a hierarchical path.
      */
     public List<String> getSegments() {
-        List<String> result = new ArrayList<String>();
-        String path = getPath();
+        final List<String> result = new ArrayList<String>();
+        final String path = getPath();
         int start = -2; // The index of the slash starting the segment
         char current;
 
@@ -1718,13 +1724,13 @@ public class Reference {
      * Returns the optionnally decoded list of segments.
      * 
      * @param decode
-     *                Indicates if the result should be decoded using the
-     *                {@link #decode(String)} method.
+     *            Indicates if the result should be decoded using the
+     *            {@link #decode(String)} method.
      * @return The optionnally decoded list of segments.
      * @see #getSegments()
      */
     public List<String> getSegments(boolean decode) {
-        List<String> result = getSegments();
+        final List<String> result = getSegments();
 
         if (decode) {
             for (int i = 0; i < result.size(); i++) {
@@ -1740,10 +1746,10 @@ public class Reference {
      * against the base reference then normalize them.
      * 
      * @throws IllegalArgumentException
-     *                 If the base reference (after resolution) is not absolute.
+     *             If the base reference (after resolution) is not absolute.
      * @throws IllegalArgumentException
-     *                 If the reference is relative and not base reference has
-     *                 been provided.
+     *             If the reference is relative and not base reference has been
+     *             provided.
      * 
      * @return The target reference.
      */
@@ -1764,10 +1770,10 @@ public class Reference {
             }
 
             // Relative URI detected
-            String authority = getAuthority();
-            String path = getPath();
-            String query = getQuery();
-            String fragment = getFragment();
+            final String authority = getAuthority();
+            final String path = getPath();
+            final String query = getQuery();
+            final String fragment = getFragment();
 
             // Create an empty reference
             result = new Reference();
@@ -1792,7 +1798,7 @@ public class Reference {
                     if (path.startsWith("/")) {
                         result.setPath(path);
                     } else {
-                        String basePath = baseReference.getPath();
+                        final String basePath = baseReference.getPath();
                         String mergedPath = null;
 
                         if ((baseReference.getAuthority() != null)
@@ -1801,7 +1807,7 @@ public class Reference {
                         } else {
                             // Remove the last segment which may be empty if
                             // the path is ending with a slash
-                            int lastSlash = basePath.lastIndexOf('/');
+                            final int lastSlash = basePath.lastIndexOf('/');
                             if (lastSlash == -1) {
                                 mergedPath = path;
                             } else {
@@ -1844,10 +1850,10 @@ public class Reference {
      */
     public String getUserInfo() {
         String result = null;
-        String authority = getAuthority();
+        final String authority = getAuthority();
 
         if (authority != null) {
-            int index = authority.indexOf('@');
+            final int index = authority.indexOf('@');
 
             if (index != -1) {
                 result = authority.substring(0, index);
@@ -1861,8 +1867,8 @@ public class Reference {
      * Returns the optionnally decoded user info component.
      * 
      * @param decode
-     *                Indicates if the result should be decoded using the
-     *                {@link #decode(String)} method.
+     *            Indicates if the result should be decoded using the
+     *            {@link #decode(String)} method.
      * @return The optionnally decoded user info component.
      * @see #getUserInfo()
      */
@@ -1881,13 +1887,13 @@ public class Reference {
         boolean result = false;
 
         // If these reference ends with a "/", it cannot be a file.
-        String path = getPath();
-        if (!(path != null && path.endsWith("/"))) {
-            String lastSegment = getLastSegment();
+        final String path = getPath();
+        if (!((path != null) && path.endsWith("/"))) {
+            final String lastSegment = getLastSegment();
 
             if (lastSegment != null) {
-                int extensionsIndex = lastSegment.indexOf('.');
-                int matrixIndex = lastSegment.indexOf(';');
+                final int extensionsIndex = lastSegment.indexOf('.');
+                final int matrixIndex = lastSegment.indexOf(';');
                 result = (extensionsIndex != -1)
                         && ((matrixIndex == -1) || (extensionsIndex < matrixIndex));
             }
@@ -1902,7 +1908,7 @@ public class Reference {
      * @return True if there is a fragment identifier.
      */
     public boolean hasFragment() {
-        return (fragmentIndex != -1);
+        return (this.fragmentIndex != -1);
     }
 
     /**
@@ -1931,7 +1937,7 @@ public class Reference {
      * @return True if there is a query.
      */
     public boolean hasQuery() {
-        return (queryIndex != -1);
+        return (this.queryIndex != -1);
     }
 
     /**
@@ -1940,7 +1946,7 @@ public class Reference {
      * @return True if there is a scheme component.
      */
     public boolean hasScheme() {
-        return (schemeIndex != -1);
+        return (this.schemeIndex != -1);
     }
 
     /**
@@ -1957,7 +1963,7 @@ public class Reference {
      * to the same target reference.
      * 
      * @param ref
-     *                The reference to compare.
+     *            The reference to compare.
      * @return True if both reference are equivalent.
      */
     public boolean isEquivalentTo(Reference ref) {
@@ -1987,7 +1993,7 @@ public class Reference {
      * reference.
      * 
      * @param childRef
-     *                The hierarchical reference.
+     *            The hierarchical reference.
      * @return True if the reference is a parent of the hierarchical child
      *         reference.
      */
@@ -2020,11 +2026,12 @@ public class Reference {
     public Reference normalize() {
         // 1. The input buffer is initialized with the now-appended path
         // components and the output buffer is initialized to the empty string.
-        StringBuilder output = new StringBuilder();
-        StringBuilder input = new StringBuilder();
-        String path = getPath();
-        if (path != null)
+        final StringBuilder output = new StringBuilder();
+        final StringBuilder input = new StringBuilder();
+        final String path = getPath();
+        if (path != null) {
             input.append(path);
+        }
 
         // 2. While the input buffer is not empty, loop as follows:
         while (input.length() > 0) {
@@ -2078,8 +2085,9 @@ public class Reference {
             else {
                 int max = -1;
                 for (int i = 1; (max == -1) && (i < input.length()); i++) {
-                    if (input.charAt(i) == '/')
+                    if (input.charAt(i) == '/') {
                         max = i;
+                    }
                 }
 
                 if (max != -1) {
@@ -2103,9 +2111,10 @@ public class Reference {
 
         // Remove the port if it is equal to the default port of the reference's
         // Protocol.
-        int hostPort = getHostPort();
+        final int hostPort = getHostPort();
         if (hostPort != -1) {
-            int defaultPort = Protocol.valueOf(getScheme()).getDefaultPort();
+            final int defaultPort = Protocol.valueOf(getScheme())
+                    .getDefaultPort();
             if (hostPort == defaultPort) {
                 setHostPort(null);
             }
@@ -2117,13 +2126,14 @@ public class Reference {
      * Removes the last segement from the output builder.
      * 
      * @param output
-     *                The output builder to update.
+     *            The output builder to update.
      */
     private void removeLastSegment(StringBuilder output) {
         int min = -1;
         for (int i = output.length() - 1; (min == -1) && (i >= 0); i--) {
-            if (output.charAt(i) == '/')
+            if (output.charAt(i) == '/') {
                 min = i;
+            }
         }
 
         if (min != -1) {
@@ -2140,13 +2150,13 @@ public class Reference {
      * Sets the authority component for hierarchical identifiers.
      * 
      * @param authority
-     *                The authority component for hierarchical identifiers.
+     *            The authority component for hierarchical identifiers.
      */
     public void setAuthority(String authority) {
-        String oldPart = isRelative() ? getRelativePart()
+        final String oldPart = isRelative() ? getRelativePart()
                 : getSchemeSpecificPart();
         String newPart;
-        String newAuthority = (authority == null) ? "" : "//" + authority;
+        final String newAuthority = (authority == null) ? "" : "//" + authority;
 
         if (oldPart == null) {
             newPart = newAuthority;
@@ -2178,7 +2188,7 @@ public class Reference {
      * Sets the base reference for relative references.
      * 
      * @param baseRef
-     *                The base reference for relative references.
+     *            The base reference for relative references.
      */
     public void setBaseRef(Reference baseRef) {
         this.baseRef = baseRef;
@@ -2188,7 +2198,7 @@ public class Reference {
      * Sets the base reference for relative references.
      * 
      * @param baseUri
-     *                The base URI for relative references.
+     *            The base URI for relative references.
      */
     public void setBaseRef(String baseUri) {
         setBaseRef(new Reference(baseUri));
@@ -2203,19 +2213,19 @@ public class Reference {
      * Note that no URI decoding is done by this method.
      * 
      * @param extensions
-     *                The extensions to set or null (without leading or trailing
-     *                dots).
+     *            The extensions to set or null (without leading or trailing
+     *            dots).
      * @see #getExtensions()
      * @see #getExtensionsAsArray()
      * @see #setExtensions(String[])
      */
     public void setExtensions(String extensions) {
-        String lastSegment = getLastSegment();
+        final String lastSegment = getLastSegment();
 
         if (lastSegment != null) {
-            int extensionIndex = lastSegment.indexOf('.');
-            int matrixIndex = lastSegment.indexOf(';');
-            StringBuilder sb = new StringBuilder();
+            final int extensionIndex = lastSegment.indexOf('.');
+            final int matrixIndex = lastSegment.indexOf(';');
+            final StringBuilder sb = new StringBuilder();
 
             if (extensionIndex != -1) {
                 // Extensions found
@@ -2258,7 +2268,7 @@ public class Reference {
      * Sets the extensions based on an array of extension tokens (without dots).
      * 
      * @param extensions
-     *                The array of extensions.
+     *            The array of extensions.
      * @see #getExtensions()
      * @see #getExtensionsAsArray()
      * @see #setExtensions(String)
@@ -2267,7 +2277,7 @@ public class Reference {
         String exts = null;
 
         if (extensions != null) {
-            StringBuilder sb = new StringBuilder();
+            final StringBuilder sb = new StringBuilder();
 
             for (int i = 0; i < extensions.length; i++) {
                 if (i > 0) {
@@ -2287,10 +2297,10 @@ public class Reference {
      * Sets the fragment identifier.
      * 
      * @param fragment
-     *                The fragment identifier.
+     *            The fragment identifier.
      * @throws IllegalArgumentException
-     *                 if the fragment parameter contains the fragment delimiter
-     *                 ('#').
+     *             if the fragment parameter contains the fragment delimiter
+     *             ('#').
      */
     public void setFragment(String fragment) {
         checkValidity(fragment);
@@ -2304,10 +2314,11 @@ public class Reference {
             // Existing fragment
             if (fragment != null) {
                 this.internalRef = this.internalRef.substring(0,
-                        fragmentIndex + 1)
+                        this.fragmentIndex + 1)
                         + fragment;
             } else {
-                this.internalRef = this.internalRef.substring(0, fragmentIndex);
+                this.internalRef = this.internalRef.substring(0,
+                        this.fragmentIndex);
             }
         } else {
             // No existing fragment
@@ -2329,11 +2340,10 @@ public class Reference {
      * Sets the host domain component for server based hierarchical identifiers.
      * 
      * @param domain
-     *                The host component for server based hierarchical
-     *                identifiers.
+     *            The host component for server based hierarchical identifiers.
      */
     public void setHostDomain(String domain) {
-        String authority = getAuthority();
+        final String authority = getAuthority();
 
         if (authority == null) {
             setAuthority(domain);
@@ -2346,9 +2356,10 @@ public class Reference {
                 domain = domain.toLowerCase();
             }
 
-            int index1 = authority.indexOf('@');
+            final int index1 = authority.indexOf('@');
             // We must prevent the case where the userinfo part contains ':'
-            int index2 = authority.indexOf(':', (index1 == -1 ? 0 : index1));
+            final int index2 = authority.indexOf(':', (index1 == -1 ? 0
+                    : index1));
 
             if (index1 != -1) {
                 // User info found
@@ -2377,19 +2388,20 @@ public class Reference {
      * Sets the optional port number for server based hierarchical identifiers.
      * 
      * @param port
-     *                The optional port number for server based hierarchical
-     *                identifiers.
+     *            The optional port number for server based hierarchical
+     *            identifiers.
      * @throws IllegalArgumentException
-     *                 If the autority has not been defined.
+     *             If the autority has not been defined.
      */
     public void setHostPort(Integer port) {
-        String authority = getAuthority();
+        final String authority = getAuthority();
 
         if (authority != null) {
-            int index1 = authority.indexOf('@');
+            final int index1 = authority.indexOf('@');
             // We must prevent the case where the userinfo part contains ':'
-            int index = authority.indexOf(':', (index1 == -1 ? 0 : index1));
-            String newPort = (port == null) ? "" : ":" + port;
+            final int index = authority.indexOf(':',
+                    (index1 == -1 ? 0 : index1));
+            final String newPort = (port == null) ? "" : ":" + port;
 
             if (index != -1) {
                 setAuthority(authority.substring(0, index) + newPort);
@@ -2406,10 +2418,10 @@ public class Reference {
      * Sets the absolute resource identifier.
      * 
      * @param identifier
-     *                The absolute resource identifier.
+     *            The absolute resource identifier.
      * @throws IllegalArgumentException
-     *                 If the identifier parameter contains the fragment
-     *                 delimiter ('#').
+     *             If the identifier parameter contains the fragment delimiter
+     *             ('#').
      */
     public void setIdentifier(String identifier) {
         checkValidity(identifier);
@@ -2426,7 +2438,7 @@ public class Reference {
         if (hasFragment()) {
             // Fragment found
             this.internalRef = identifier
-                    + this.internalRef.substring(fragmentIndex);
+                    + this.internalRef.substring(this.fragmentIndex);
         } else {
             // No fragment found
             this.internalRef = identifier;
@@ -2441,11 +2453,11 @@ public class Reference {
      * Note that no URI decoding is done by this method.
      * 
      * @param lastSegment
-     *                The last segment of a hierarchical path.
+     *            The last segment of a hierarchical path.
      */
     public void setLastSegment(String lastSegment) {
-        String path = getPath();
-        int lastSlashIndex = path.lastIndexOf('/');
+        final String path = getPath();
+        final int lastSlashIndex = path.lastIndexOf('/');
 
         if (lastSlashIndex != -1) {
             setPath(path.substring(0, lastSlashIndex + 1) + lastSegment);
@@ -2458,10 +2470,10 @@ public class Reference {
      * Sets the path component for hierarchical identifiers.
      * 
      * @param path
-     *                The path component for hierarchical identifiers.
+     *            The path component for hierarchical identifiers.
      */
     public void setPath(String path) {
-        String oldPart = isRelative() ? getRelativePart()
+        final String oldPart = isRelative() ? getRelativePart()
                 : getSchemeSpecificPart();
         String newPart = null;
 
@@ -2472,11 +2484,11 @@ public class Reference {
 
             if (oldPart.startsWith("//")) {
                 // Authority found
-                int index1 = oldPart.indexOf('/', 2);
+                final int index1 = oldPart.indexOf('/', 2);
 
                 if (index1 != -1) {
                     // Path found
-                    int index2 = oldPart.indexOf('?');
+                    final int index2 = oldPart.indexOf('?');
 
                     if (index2 != -1) {
                         // Query found
@@ -2488,7 +2500,7 @@ public class Reference {
                     }
                 } else {
                     // No path found
-                    int index2 = oldPart.indexOf('?');
+                    final int index2 = oldPart.indexOf('?');
 
                     if (index2 != -1) {
                         // Query found
@@ -2501,7 +2513,7 @@ public class Reference {
                 }
             } else {
                 // No authority found
-                int index = oldPart.indexOf('?');
+                final int index = oldPart.indexOf('?');
 
                 if (index != -1) {
                     // Query found
@@ -2526,7 +2538,7 @@ public class Reference {
      * Sets the scheme component based on this protocol.
      * 
      * @param protocol
-     *                The protocol of the scheme component.
+     *            The protocol of the scheme component.
      */
     public void setProtocol(Protocol protocol) {
         setScheme(protocol.getSchemeName());
@@ -2536,11 +2548,11 @@ public class Reference {
      * Sets the query component for hierarchical identifiers.
      * 
      * @param query
-     *                The query component for hierarchical identifiers.
+     *            The query component for hierarchical identifiers.
      */
     public void setQuery(String query) {
         checkValidity(query);
-        boolean emptyQueryString = (query == null || query.length() <= 0);
+        final boolean emptyQueryString = ((query == null) || (query.length() <= 0));
 
         if (hasQuery()) {
             // Query found
@@ -2548,22 +2560,23 @@ public class Reference {
                 // Fragment found
                 if (!emptyQueryString) {
                     this.internalRef = this.internalRef.substring(0,
-                            queryIndex + 1)
-                            + query + this.internalRef.substring(fragmentIndex);
+                            this.queryIndex + 1)
+                            + query
+                            + this.internalRef.substring(this.fragmentIndex);
                 } else {
-                    this.internalRef = this.internalRef
-                            .substring(0, queryIndex)
-                            + this.internalRef.substring(fragmentIndex);
+                    this.internalRef = this.internalRef.substring(0,
+                            this.queryIndex)
+                            + this.internalRef.substring(this.fragmentIndex);
                 }
             } else {
                 // No fragment found
                 if (!emptyQueryString) {
                     this.internalRef = this.internalRef.substring(0,
-                            queryIndex + 1)
+                            this.queryIndex + 1)
                             + query;
                 } else {
-                    this.internalRef = this.internalRef
-                            .substring(0, queryIndex);
+                    this.internalRef = this.internalRef.substring(0,
+                            this.queryIndex);
                 }
             }
         } else {
@@ -2572,10 +2585,10 @@ public class Reference {
                 // Fragment found
                 if (!emptyQueryString) {
                     this.internalRef = this.internalRef.substring(0,
-                            fragmentIndex)
+                            this.fragmentIndex)
                             + '?'
                             + query
-                            + this.internalRef.substring(fragmentIndex);
+                            + this.internalRef.substring(this.fragmentIndex);
                 } else {
                     // Do nothing;
                 }
@@ -2600,7 +2613,7 @@ public class Reference {
      * Sets the relative part for relative references only.
      * 
      * @param relativePart
-     *                The relative part to set.
+     *            The relative part to set.
      */
     public void setRelativePart(String relativePart) {
         checkValidity(relativePart);
@@ -2614,11 +2627,11 @@ public class Reference {
             if (hasQuery()) {
                 // Query found
                 this.internalRef = relativePart
-                        + this.internalRef.substring(queryIndex);
+                        + this.internalRef.substring(this.queryIndex);
             } else if (hasFragment()) {
                 // Fragment found
                 this.internalRef = relativePart
-                        + this.internalRef.substring(fragmentIndex);
+                        + this.internalRef.substring(this.fragmentIndex);
             } else {
                 // No fragment found
                 this.internalRef = relativePart;
@@ -2632,7 +2645,7 @@ public class Reference {
      * Sets the scheme component.
      * 
      * @param scheme
-     *                The scheme component.
+     *            The scheme component.
      */
     public void setScheme(String scheme) {
         checkValidity(scheme);
@@ -2647,9 +2660,10 @@ public class Reference {
             // Scheme found
             if (scheme != null) {
                 this.internalRef = scheme
-                        + this.internalRef.substring(schemeIndex);
+                        + this.internalRef.substring(this.schemeIndex);
             } else {
-                this.internalRef = this.internalRef.substring(schemeIndex + 1);
+                this.internalRef = this.internalRef
+                        .substring(this.schemeIndex + 1);
             }
         } else {
             // No scheme found
@@ -2669,7 +2683,7 @@ public class Reference {
      * Sets the scheme specific part.
      * 
      * @param schemeSpecificPart
-     *                The scheme specific part.
+     *            The scheme specific part.
      */
     public void setSchemeSpecificPart(String schemeSpecificPart) {
         checkValidity(schemeSpecificPart);
@@ -2683,13 +2697,13 @@ public class Reference {
             if (hasFragment()) {
                 // Fragment found
                 this.internalRef = this.internalRef.substring(0,
-                        schemeIndex + 1)
+                        this.schemeIndex + 1)
                         + schemeSpecificPart
-                        + this.internalRef.substring(fragmentIndex);
+                        + this.internalRef.substring(this.fragmentIndex);
             } else {
                 // No fragment found
                 this.internalRef = this.internalRef.substring(0,
-                        schemeIndex + 1)
+                        this.schemeIndex + 1)
                         + schemeSpecificPart;
             }
         } else {
@@ -2697,7 +2711,7 @@ public class Reference {
             if (hasFragment()) {
                 // Fragment found
                 this.internalRef = schemeSpecificPart
-                        + this.internalRef.substring(fragmentIndex);
+                        + this.internalRef.substring(this.fragmentIndex);
             } else {
                 // No fragment found
                 this.internalRef = schemeSpecificPart;
@@ -2712,12 +2726,12 @@ public class Reference {
      * A new absolute path will replace any existing one.
      * 
      * @param segments
-     *                The segments of the hierarchical path.
+     *            The segments of the hierarchical path.
      */
     public void setSegments(List<String> segments) {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
 
-        for (String segment : segments) {
+        for (final String segment : segments) {
             sb.append('/').append(segment);
         }
 
@@ -2728,17 +2742,17 @@ public class Reference {
      * Sets the user info component for server based hierarchical identifiers.
      * 
      * @param userInfo
-     *                The user info component for server based hierarchical
-     *                identifiers.
+     *            The user info component for server based hierarchical
+     *            identifiers.
      * @throws IllegalArgumentException
-     *                 If the autority part has not been defined.
+     *             If the autority part has not been defined.
      */
     public void setUserInfo(String userInfo) {
-        String authority = getAuthority();
+        final String authority = getAuthority();
 
         if (authority != null) {
-            int index = authority.indexOf('@');
-            String newUserInfo = (userInfo == null) ? "" : userInfo + '@';
+            final int index = authority.indexOf('@');
+            final String newUserInfo = (userInfo == null) ? "" : userInfo + '@';
 
             if (index != -1) {
                 setAuthority(newUserInfo + authority.substring(index + 1));
@@ -2765,9 +2779,9 @@ public class Reference {
      * Returns the URI reference string.
      * 
      * @param query
-     *                Indicates if the query should be included;
+     *            Indicates if the query should be included;
      * @param fragment
-     *                Indicates if the fragment should be included;
+     *            Indicates if the fragment should be included;
      * @return The URI reference string.
      */
     public String toString(boolean query, boolean fragment) {
@@ -2777,7 +2791,7 @@ public class Reference {
             }
 
             if (hasFragment()) {
-                return this.internalRef.substring(0, fragmentIndex);
+                return this.internalRef.substring(0, this.fragmentIndex);
             }
             return this.internalRef;
         }
@@ -2788,12 +2802,12 @@ public class Reference {
                 // Query found
                 if (hasFragment()) {
                     // Fragment found
-                    return this.internalRef.substring(0, queryIndex) + "#"
+                    return this.internalRef.substring(0, this.queryIndex) + "#"
                             + getFragment();
                 }
 
                 // No fragment found
-                return this.internalRef.substring(0, queryIndex);
+                return this.internalRef.substring(0, this.queryIndex);
             }
 
             // No query found
@@ -2803,11 +2817,11 @@ public class Reference {
         // Fragment should not be included
         if (hasQuery()) {
             // Query found
-            return this.internalRef.substring(0, queryIndex);
+            return this.internalRef.substring(0, this.queryIndex);
         }
         if (hasFragment()) {
             // Fragment found
-            return this.internalRef.substring(0, fragmentIndex);
+            return this.internalRef.substring(0, this.fragmentIndex);
         }
 
         return this.internalRef;
@@ -2817,9 +2831,9 @@ public class Reference {
      * Updates internal indexes.
      */
     private void updateIndexes() {
-        if (internalRef != null) {
+        if (this.internalRef != null) {
             // Compute the indexes
-            int firstSlashIndex = this.internalRef.indexOf('/');
+            final int firstSlashIndex = this.internalRef.indexOf('/');
             this.schemeIndex = this.internalRef.indexOf(':');
 
             if ((firstSlashIndex != -1) && (this.schemeIndex > firstSlashIndex)) {

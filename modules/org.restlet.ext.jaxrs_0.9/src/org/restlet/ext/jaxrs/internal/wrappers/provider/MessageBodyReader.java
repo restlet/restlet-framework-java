@@ -26,9 +26,10 @@ import org.restlet.data.MediaType;
  * 
  * @author Stephan Koops
  * @param <T>
- *                the java type to convert to.
+ *            the java type to convert to.
  */
-public interface MessageBodyReader<T> extends javax.ws.rs.ext.MessageBodyReader<T> {
+public interface MessageBodyReader<T> extends
+        javax.ws.rs.ext.MessageBodyReader<T> {
 
     /**
      * Returns the list of produced {@link MediaType}s of the wrapped

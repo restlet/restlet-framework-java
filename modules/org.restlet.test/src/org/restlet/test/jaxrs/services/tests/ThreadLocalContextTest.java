@@ -47,7 +47,8 @@ public class ThreadLocalContextTest extends JaxRsTestCase {
     }
 
     /**
-     * This test first 
+     * This test first
+     * 
      * @see ContextResolverTestResource#getHomeUri()
      * @see TestContextResolver
      */
@@ -57,15 +58,16 @@ public class ThreadLocalContextTest extends JaxRsTestCase {
         new Thread() {
             @Override
             public void run() {
-                Response response = get(MediaType.TEXT_PLAIN);
+                final Response response = get(MediaType.TEXT_PLAIN);
                 c.add(response);
             }
         }.start();
         Response response = get(MediaType.TEXT_HTML);
         assertEqualMediaType(MediaType.TEXT_HTML, response);
 
-        while (c.isEmpty())
+        while (c.isEmpty()) {
             TestUtils.sleep();
+        }
 
         response = c.get(0);
         assertEqualMediaType(MediaType.TEXT_PLAIN, response);

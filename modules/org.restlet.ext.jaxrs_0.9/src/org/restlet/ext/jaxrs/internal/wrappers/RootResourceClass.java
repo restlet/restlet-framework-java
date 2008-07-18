@@ -59,16 +59,16 @@ public class RootResourceClass extends ResourceClass {
      * Checks, if the class is public and so on.
      * 
      * @param jaxRsClass
-     *                JAX-RS root resource class or JAX-RS provider.
+     *            JAX-RS root resource class or JAX-RS provider.
      * @param typeName
-     *                "root resource class" or "provider"
+     *            "root resource class" or "provider"
      * @throws MissingAnnotationException
-     *                 if the class is not annotated with &#64;Path.
+     *             if the class is not annotated with &#64;Path.
      */
     private static void checkClassForPathAnnot(Class<?> jaxRsClass,
             String typeName) throws MissingAnnotationException {
         if (!jaxRsClass.isAnnotationPresent(Path.class)) {
-            String msg = "The "
+            final String msg = "The "
                     + typeName
                     + " "
                     + jaxRsClass.getName()
@@ -92,26 +92,26 @@ public class RootResourceClass extends ResourceClass {
      * Creates a wrapper for the given JAX-RS root resource class.
      * 
      * @param jaxRsClass
-     *                the root resource class to wrap
+     *            the root resource class to wrap
      * @param tlContext
-     *                the {@link ThreadLocalizedContext} of the
-     *                {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
+     *            the {@link ThreadLocalizedContext} of the
+     *            {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
      * @param entityProviders
-     *                all entity providers.
+     *            all entity providers.
      * @param allCtxResolvers
-     *                all available {@link ContextResolver}s.
+     *            all available {@link ContextResolver}s.
      * @param extensionBackwardMapping
-     *                the extension backward mapping
+     *            the extension backward mapping
      * @param logger
-     *                the logger to use.
+     *            the logger to use.
      * @see WrapperFactory#getRootResourceClass(Class)
      * @throws IllegalArgumentException
-     *                 if the class is not a valid root resource class.
+     *             if the class is not a valid root resource class.
      * @throws MissingAnnotationException
-     *                 if the class is not annotated with &#64;Path.
+     *             if the class is not annotated with &#64;Path.
      * @throws IllegalPathOnClassException
      * @throws MissingConstructorException
-     *                 if no valid constructor could be found
+     *             if no valid constructor could be found
      * @throws IllegalConstrParamTypeException
      * @throws IllegalBeanSetterTypeException
      * @throws IllegalFieldTypeException
@@ -133,14 +133,14 @@ public class RootResourceClass extends ResourceClass {
                 extensionBackwardMapping);
         this.constructor = WrapperUtil.findJaxRsConstructor(getJaxRsClass(),
                 "root resource class");
-        boolean constructorLeaveEncoded = this.isLeaveEncoded()
-                || constructor.isAnnotationPresent(Encoded.class);
+        final boolean constructorLeaveEncoded = isLeaveEncoded()
+                || this.constructor.isAnnotationPresent(Encoded.class);
         try {
             this.constructorParameters = new ParameterList(this.constructor,
                     tlContext, constructorLeaveEncoded, entityProviders,
                     allCtxResolvers, extensionBackwardMapping, true, logger,
                     !this.singelton);
-        } catch (IllegalTypeException e) {
+        } catch (final IllegalTypeException e) {
             throw new IllegalConstrParamTypeException(e);
         }
     }
@@ -149,8 +149,8 @@ public class RootResourceClass extends ResourceClass {
      * Creates an instance of the root resource class.
      * 
      * @param objectFactory
-     *                object responsible for instantiating the root resource
-     *                class. Optional, thus can be null.
+     *            object responsible for instantiating the root resource class.
+     *            Optional, thus can be null.
      * @return
      * @throws InvocationTargetException
      * @throws InstantiateException
@@ -160,21 +160,23 @@ public class RootResourceClass extends ResourceClass {
     public ResourceObject createInstance(ObjectFactory objectFactory)
             throws InstantiateException, InvocationTargetException {
         Object instance = null;
-        if (objectFactory != null)
-            instance = objectFactory.getInstance(jaxRsClass);
+        if (objectFactory != null) {
+            instance = objectFactory.getInstance(this.jaxRsClass);
+        }
         if (instance == null) {
             try {
-                Object[] args = constructorParameters.get();
-                instance = WrapperUtil.createInstance(constructor, args);
-            } catch (ConvertRepresentationException e) {
+                final Object[] args = this.constructorParameters.get();
+                instance = WrapperUtil.createInstance(this.constructor, args);
+            } catch (final ConvertRepresentationException e) {
                 // is (or should be :-) ) not possible
                 throw new ImplementationException("Must not be possible", e);
             }
         }
-        ResourceObject rootResourceObject = new ResourceObject(instance, this);
+        final ResourceObject rootResourceObject = new ResourceObject(instance,
+                this);
         try {
             this.injectHelper.injectInto(instance, true);
-        } catch (InjectException e) {
+        } catch (final InjectException e) {
             throw new InstantiateException(e);
         }
         return rootResourceObject;
@@ -182,11 +184,13 @@ public class RootResourceClass extends ResourceClass {
 
     @Override
     public boolean equals(Object anotherObject) {
-        if (this == anotherObject)
+        if (this == anotherObject) {
             return true;
-        if (!(anotherObject instanceof RootResourceClass))
+        }
+        if (!(anotherObject instanceof RootResourceClass)) {
             return false;
-        RootResourceClass otherRootResourceClass = (RootResourceClass) anotherObject;
+        }
+        final RootResourceClass otherRootResourceClass = (RootResourceClass) anotherObject;
         return this.jaxRsClass.equals(otherRootResourceClass.jaxRsClass);
     }
 

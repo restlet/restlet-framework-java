@@ -30,8 +30,8 @@ import org.restlet.data.LocalReference;
 public class FileReferenceTestCase extends TestCase {
 
     public void testCreation() {
-        String path = "D:\\Restlet\\build.xml";
-        LocalReference fr = LocalReference.createFileReference(path);
+        final String path = "D:\\Restlet\\build.xml";
+        final LocalReference fr = LocalReference.createFileReference(path);
         fr.getFile();
 
         assertEquals("file", fr.getScheme());

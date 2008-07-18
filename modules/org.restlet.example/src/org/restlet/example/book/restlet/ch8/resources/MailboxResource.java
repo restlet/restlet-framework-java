@@ -44,17 +44,17 @@ import org.restlet.util.Series;
 public class MailboxResource extends BaseResource {
 
     /** The mailbox represented by this resource. */
-    private Mailbox mailbox;
+    private final Mailbox mailbox;
 
     public MailboxResource(Context context, Request request, Response response) {
         super(context, request, response);
 
-        String mailboxId = Reference.decode((String) request.getAttributes()
-                .get("mailboxId"), CharacterSet.ISO_8859_1);
-        mailbox = getObjectsFacade().getMailboxById(mailboxId);
+        final String mailboxId = Reference.decode((String) request
+                .getAttributes().get("mailboxId"), CharacterSet.ISO_8859_1);
+        this.mailbox = getObjectsFacade().getMailboxById(mailboxId);
         System.out.println(Reference.encode(mailboxId));
 
-        if (mailbox != null) {
+        if (this.mailbox != null) {
             getVariants().add(new Variant(MediaType.TEXT_HTML));
         }
 
@@ -69,16 +69,16 @@ public class MailboxResource extends BaseResource {
     @Override
     public void acceptRepresentation(Representation entity)
             throws ResourceException {
-        Form form = new Form(entity);
-        Mail mail = new Mail();
+        final Form form = new Form(entity);
+        final Mail mail = new Mail();
         mail.setStatus(Mail.STATUS_RECEIVED);
 
         // Look for an existing contact or create it.
-        String senderAddress = form.getFirstValue("senderAddress");
-        String senderName = form.getFirstValue("senderName");
+        final String senderAddress = form.getFirstValue("senderAddress");
+        final String senderName = form.getFirstValue("senderName");
 
         Contact contact = getObjectsFacade().lookForContact(senderAddress,
-                mailbox);
+                this.mailbox);
         if (contact == null) {
             contact = new Contact();
             contact.setMailAddress(senderAddress);
@@ -89,19 +89,20 @@ public class MailboxResource extends BaseResource {
         mail.setMessage(form.getFirstValue("message"));
         mail.setSubject(form.getFirstValue("subject"));
         // form2.add("sendingDate", mail.getSendingDate().toString());
-        Series<Parameter> recipients = form.subList("recipient");
-        for (Parameter recipient : recipients) {
+        final Series<Parameter> recipients = form.subList("recipient");
+        for (final Parameter recipient : recipients) {
             contact = getObjectsFacade().lookForContact(recipient.getValue(),
-                    mailbox);
+                    this.mailbox);
             if (contact == null) {
                 contact = new Contact();
-                String[] recipientValues = recipient.getValue().split("\\$");
+                final String[] recipientValues = recipient.getValue().split(
+                        "\\$");
                 contact.setMailAddress(recipientValues[0]);
                 contact.setName(recipientValues[1]);
             }
             mail.getRecipients().add(contact);
         }
-        getObjectsFacade().createMail(mailbox, mail);
+        getObjectsFacade().createMail(this.mailbox, mail);
     }
 
     /**
@@ -109,7 +110,7 @@ public class MailboxResource extends BaseResource {
      */
     @Override
     public void removeRepresentations() throws ResourceException {
-        getObjectsFacade().deleteMailbox(mailbox);
+        getObjectsFacade().deleteMailbox(this.mailbox);
         getResponse().redirectSeeOther(
                 getRequest().getResourceRef().getParentRef());
     }
@@ -119,9 +120,9 @@ public class MailboxResource extends BaseResource {
      */
     @Override
     public Representation represent(Variant variant) throws ResourceException {
-        Map<String, Object> dataModel = new TreeMap<String, Object>();
+        final Map<String, Object> dataModel = new TreeMap<String, Object>();
         dataModel.put("currentUser", getCurrentUser());
-        dataModel.put("mailbox", mailbox);
+        dataModel.put("mailbox", this.mailbox);
         dataModel.put("resourceRef", getRequest().getResourceRef());
         dataModel.put("rootRef", getRequest().getRootRef());
 
@@ -134,11 +135,11 @@ public class MailboxResource extends BaseResource {
     @Override
     public void storeRepresentation(Representation entity)
             throws ResourceException {
-        Form form = new Form(entity);
-        mailbox.setNickname(form.getFirstValue("nickname"));
-        mailbox.setSenderName(form.getFirstValue("senderName"));
+        final Form form = new Form(entity);
+        this.mailbox.setNickname(form.getFirstValue("nickname"));
+        this.mailbox.setSenderName(form.getFirstValue("senderName"));
 
-        getObjectsFacade().updateMailbox(mailbox);
+        getObjectsFacade().updateMailbox(this.mailbox);
         getResponse().redirectSeeOther(getRequest().getResourceRef());
     }
 

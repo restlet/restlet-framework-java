@@ -35,14 +35,21 @@ import org.restlet.data.Response;
  */
 public class PostPutTestCase extends BaseConnectorsTestCase {
     @Override
+    protected void call(String uri) throws Exception {
+        final Client client = new Client(Protocol.HTTP);
+        testCall(client, Method.POST, uri);
+        testCall(client, Method.PUT, uri);
+    }
+
+    @Override
     protected Application createApplication(final Component component) {
-        Application application = new Application(component.getContext()) {
+        final Application application = new Application(component.getContext()) {
             @Override
             public Restlet createRoot() {
-                Restlet trace = new Restlet(component.getContext()) {
+                final Restlet trace = new Restlet(component.getContext()) {
                     @Override
                     public void handle(Request request, Response response) {
-                        Form inputForm = request.getEntityAsForm();
+                        final Form inputForm = request.getEntityAsForm();
                         response.setEntity(inputForm.getWebRepresentation());
                     }
                 };
@@ -54,26 +61,19 @@ public class PostPutTestCase extends BaseConnectorsTestCase {
         return application;
     }
 
-    @Override
-    protected void call(String uri) throws Exception {
-        Client client = new Client(Protocol.HTTP);
-        testCall(client, Method.POST, uri);
-        testCall(client, Method.PUT, uri);
-    }
-
     private void testCall(Client client, Method method, String uri)
             throws Exception {
-        Form inputForm = new Form();
+        final Form inputForm = new Form();
         inputForm.add("a", "a");
         inputForm.add("b", "b");
 
-        Request request = new Request(method, uri);
+        final Request request = new Request(method, uri);
         request.setEntity(inputForm.getWebRepresentation());
 
-        Response response = client.handle(request);
+        final Response response = client.handle(request);
         assertNotNull(response.getEntity());
 
-        Form outputForm = response.getEntityAsForm();
+        final Form outputForm = response.getEntityAsForm();
         assertEquals(2, outputForm.size());
         assertEquals("a", outputForm.getFirstValue("a"));
         assertEquals("b", outputForm.getFirstValue("b"));

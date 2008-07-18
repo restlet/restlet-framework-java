@@ -47,10 +47,10 @@ public class SmtpPlainHelper extends AuthenticationHelper {
             ChallengeResponse challenge, Request request,
             Series<Parameter> httpHeaders) {
         try {
-            String credentials = "^@" + challenge.getIdentifier() + "^@"
+            final String credentials = "^@" + challenge.getIdentifier() + "^@"
                     + new String(challenge.getSecret());
             sb.append(Base64.encode(credentials.getBytes("US-ASCII"), false));
-        } catch (UnsupportedEncodingException e) {
+        } catch (final UnsupportedEncodingException e) {
             throw new RuntimeException(
                     "Unsupported encoding, unable to encode credentials");
         }

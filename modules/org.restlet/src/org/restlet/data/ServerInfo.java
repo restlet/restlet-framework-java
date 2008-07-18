@@ -74,7 +74,7 @@ public final class ServerInfo {
      * Sets the IP address which received the call.
      * 
      * @param address
-     *                The IP address which received the call.
+     *            The IP address which received the call.
      */
     public void setAddress(String address) {
         this.address = address;
@@ -84,7 +84,7 @@ public final class ServerInfo {
      * Sets the agent name (ex: "Noelios Restlet Engine/1.1").
      * 
      * @param agent
-     *                The agent name.
+     *            The agent name.
      */
     public void setAgent(String agent) {
         this.agent = agent;
@@ -94,7 +94,7 @@ public final class ServerInfo {
      * Sets the port number which received the call.
      * 
      * @param port
-     *                The port number which received the call.
+     *            The port number which received the call.
      */
     public void setPort(int port) {
         this.port = port;

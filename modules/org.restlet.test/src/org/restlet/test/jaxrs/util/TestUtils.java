@@ -24,9 +24,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.PathSegment;
 
-import org.restlet.data.Language;
 import org.restlet.ext.jaxrs.internal.util.Util;
 
 /**
@@ -37,17 +35,11 @@ import org.restlet.ext.jaxrs.internal.util.Util;
 @SuppressWarnings("all")
 public class TestUtils {
     /**
-     * Reads the full inputStream and returns an byte-array of it
-     * 
-     * @param inputStream
+     * @param objetcs
      * @return
-     * @throws IOException
      */
-    public static byte[] getByteArray(InputStream inputStream)
-            throws IOException {
-        ByteArrayOutputStream byteStream = new ByteArrayOutputStream(4096);
-        Util.copyStream(inputStream, byteStream);
-        return byteStream.toByteArray();
+    public static <A> List<A> createList(A... objects) {
+        return Util.createList(objects);
     }
 
     public static MediaType createMediaType(String type, String subtype,
@@ -64,19 +56,17 @@ public class TestUtils {
     }
 
     /**
-     * @param objetcs
+     * Reads the full inputStream and returns an byte-array of it
+     * 
+     * @param inputStream
      * @return
+     * @throws IOException
      */
-    public static <A> List<A> createList(A... objects) {
-        return Util.createList(objects);
-    }
-
-    /**
-     * @param languages
-     * @return
-     */
-    public static <A> A getOnlyElement(List<A> languages) {
-        return Util.getOnlyElement(languages);
+    public static byte[] getByteArray(InputStream inputStream)
+            throws IOException {
+        final ByteArrayOutputStream byteStream = new ByteArrayOutputStream(4096);
+        Util.copyStream(inputStream, byteStream);
+        return byteStream.toByteArray();
     }
 
     /**
@@ -88,12 +78,20 @@ public class TestUtils {
     }
 
     /**
+     * @param languages
+     * @return
+     */
+    public static <A> A getOnlyElement(List<A> languages) {
+        return Util.getOnlyElement(languages);
+    }
+
+    /**
      * @throws InterruptedException
      */
     public static void sleep() {
         try {
             Thread.sleep(100);
-        } catch (InterruptedException e) {
+        } catch (final InterruptedException e) {
             // shit happens
         }
     }

@@ -49,12 +49,12 @@ public class SecurityUtils {
      * </pre></code>
      * 
      * @param secretKey
-     *                a secret value known only to the creator of the nonce.
-     *                It's inserted into the nonce, and can be used later to
-     *                validate the nonce.
+     *            a secret value known only to the creator of the nonce. It's
+     *            inserted into the nonce, and can be used later to validate the
+     *            nonce.
      */
     public static String makeNonce(String secretKey) {
-        long currentTimeMS = System.currentTimeMillis();
+        final long currentTimeMS = System.currentTimeMillis();
         return Base64.encode((currentTimeMS + ":" + toMd5(currentTimeMS + ":"
                 + secretKey)).getBytes(), true);
     }
@@ -63,9 +63,9 @@ public class SecurityUtils {
      * Converts a source string to its HMAC/SHA-1 value.
      * 
      * @param source
-     *                The source string to convert.
+     *            The source string to convert.
      * @param secretKey
-     *                The secret key to use for conversion.
+     *            The secret key to use for conversion.
      * @return The HMac value of the source string.
      */
     public static byte[] toHMac(String source, String secretKey) {
@@ -73,20 +73,20 @@ public class SecurityUtils {
 
         try {
             // Create the HMAC/SHA1 key
-            SecretKeySpec signingKey = new SecretKeySpec(secretKey.getBytes(),
-                    "HmacSHA1");
+            final SecretKeySpec signingKey = new SecretKeySpec(secretKey
+                    .getBytes(), "HmacSHA1");
 
             // Create the message authentication code (MAC)
-            Mac mac = Mac.getInstance("HmacSHA1");
+            final Mac mac = Mac.getInstance("HmacSHA1");
             mac.init(signingKey);
 
             // Compute the HMAC value
             result = mac.doFinal(source.getBytes());
-        } catch (NoSuchAlgorithmException nsae) {
+        } catch (final NoSuchAlgorithmException nsae) {
             throw new RuntimeException(
                     "Could not find the SHA-1 algorithm. HMac conversion failed.",
                     nsae);
-        } catch (InvalidKeyException ike) {
+        } catch (final InvalidKeyException ike) {
             throw new RuntimeException(
                     "Invalid key exception detected. HMac conversion failed.",
                     ike);
@@ -102,13 +102,13 @@ public class SecurityUtils {
      * "HelloWorld", this method returns "68e109f0f40ca72a15e05cc22786f8e6".
      * 
      * @param target
-     *                The string to encode.
+     *            The string to encode.
      * @return The MD5 digest of the target string.
      */
     public static String toMd5(String target) {
         try {
             return toMd5(target, "US-ASCII");
-        } catch (UnsupportedEncodingException uee) {
+        } catch (final UnsupportedEncodingException uee) {
             // Unlikely, US-ASCII comes with every JVM
             throw new RuntimeException(
                     "US-ASCII is an unsupported encoding, unable to compute MD5");
@@ -122,9 +122,9 @@ public class SecurityUtils {
      * "HelloWorld", this method returns "68e109f0f40ca72a15e05cc22786f8e6".
      * 
      * @param target
-     *                The string to encode.
+     *            The string to encode.
      * @param charsetName
-     *                The character set.
+     *            The character set.
      * @return The MD5 digest of the target string.
      * 
      * @throws UnsupportedEncodingException
@@ -132,16 +132,16 @@ public class SecurityUtils {
     public static String toMd5(String target, String charsetName)
             throws UnsupportedEncodingException {
         try {
-            byte[] md5 = MessageDigest.getInstance("MD5").digest(
+            final byte[] md5 = MessageDigest.getInstance("MD5").digest(
                     target.getBytes(charsetName));
-            char[] md5Chars = new char[32];
+            final char[] md5Chars = new char[32];
             int i = 0;
-            for (byte b : md5) {
+            for (final byte b : md5) {
                 md5Chars[i++] = HEXDIGITS[(b >> 4) & 0xF];
                 md5Chars[i++] = HEXDIGITS[b & 0xF];
             }
             return new String(md5Chars);
-        } catch (NoSuchAlgorithmException nsae) {
+        } catch (final NoSuchAlgorithmException nsae) {
             throw new RuntimeException(
                     "No MD5 algorithm, unable to compute MD5");
         }
@@ -152,13 +152,13 @@ public class SecurityUtils {
      * using the US-ASCII charset.
      * 
      * @param target
-     *                The string to encode.
+     *            The string to encode.
      * @return The MD5 digest of the target string.
      */
     public static String toSha1(String target) {
         try {
             return toSha1(target, "US-ASCII");
-        } catch (UnsupportedEncodingException uee) {
+        } catch (final UnsupportedEncodingException uee) {
             // Unlikely, US-ASCII comes with every JVM
             throw new RuntimeException(
                     "US-ASCII is an unsupported encoding, unable to compute SHA1");
@@ -170,9 +170,9 @@ public class SecurityUtils {
      * using the named charset.
      * 
      * @param target
-     *                The string to encode.
+     *            The string to encode.
      * @param charsetName
-     *                The character set.
+     *            The character set.
      * @return The SHA1 digest of the target string.
      * 
      * @throws UnsupportedEncodingException
@@ -182,7 +182,7 @@ public class SecurityUtils {
         try {
             return Base64.encode(MessageDigest.getInstance("SHA1").digest(
                     target.getBytes(charsetName)), false);
-        } catch (NoSuchAlgorithmException nsae) {
+        } catch (final NoSuchAlgorithmException nsae) {
             throw new RuntimeException(
                     "No SHA1 algorithm, unable to compute SHA1");
         }

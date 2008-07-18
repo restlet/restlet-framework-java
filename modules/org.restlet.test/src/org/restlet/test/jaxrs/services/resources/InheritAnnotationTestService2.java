@@ -32,22 +32,6 @@ import org.restlet.test.jaxrs.services.tests.InheritAnnotationTest;
 public class InheritAnnotationTestService2 implements
         InheritAnnotationTestServiceInterface {
 
-    public static final String RETURN_STRING = "fromGetTextResource";
-
-    public static final String RETURN_STRING_SUB = "fromGetTextExtResource";
-
-    public static final String RETURN_STRING_SUB2 = "fromGetTextExt2Resource";
-
-    @Path("getText")
-    public GetTextResource getText() {
-        return new GetTextResource();
-    }
-
-    @Path("getSubClassText")
-    public SubClassResource getSubClass() {
-        return new SubClassResource();
-    }
-
     public class GetTextResource {
         @GET
         @Produces("text/plain")
@@ -74,5 +58,21 @@ public class InheritAnnotationTestService2 implements
         public String get() {
             return RETURN_STRING_SUB2;
         }
+    }
+
+    public static final String RETURN_STRING = "fromGetTextResource";
+
+    public static final String RETURN_STRING_SUB = "fromGetTextExtResource";
+
+    public static final String RETURN_STRING_SUB2 = "fromGetTextExt2Resource";
+
+    @Path("getSubClassText")
+    public SubClassResource getSubClass() {
+        return new SubClassResource();
+    }
+
+    @Path("getText")
+    public GetTextResource getText() {
+        return new GetTextResource();
     }
 }

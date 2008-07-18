@@ -49,7 +49,7 @@ public class ResourcesInfo {
      * @return The base URI for each child resource identifier.
      */
     public Reference getBaseRef() {
-        return baseRef;
+        return this.baseRef;
     }
 
     /**
@@ -63,8 +63,9 @@ public class ResourcesInfo {
         if (d == null) {
             synchronized (this) {
                 d = this.documentations;
-                if (d == null)
+                if (d == null) {
                     this.documentations = d = new ArrayList<DocumentationInfo>();
+                }
             }
         }
         return d;
@@ -81,8 +82,9 @@ public class ResourcesInfo {
         if (r == null) {
             synchronized (this) {
                 r = this.resources;
-                if (r == null)
+                if (r == null) {
                     this.resources = r = new ArrayList<ResourceInfo>();
+                }
             }
         }
         return r;
@@ -126,7 +128,7 @@ public class ResourcesInfo {
      * @throws SAXException
      */
     public void writeElement(XmlWriter writer) throws SAXException {
-        AttributesImpl attributes = new AttributesImpl();
+        final AttributesImpl attributes = new AttributesImpl();
         if (getBaseRef() != null) {
             attributes.addAttribute("", "base", null, "xs:anyURI", getBaseRef()
                     .toString());
@@ -137,11 +139,11 @@ public class ResourcesInfo {
         } else {
             writer.startElement(APP_NAMESPACE, "resources", null, attributes);
 
-            for (DocumentationInfo documentationInfo : getDocumentations()) {
+            for (final DocumentationInfo documentationInfo : getDocumentations()) {
                 documentationInfo.writeElement(writer);
             }
 
-            for (ResourceInfo resourceInfo : getResources()) {
+            for (final ResourceInfo resourceInfo : getResources()) {
                 resourceInfo.writeElement(writer);
             }
             writer.endElement(APP_NAMESPACE, "resources");

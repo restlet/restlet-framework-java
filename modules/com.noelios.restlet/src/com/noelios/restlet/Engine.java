@@ -117,17 +117,17 @@ public class Engine extends org.restlet.util.Engine {
      * the version number of the Java Runtime Environment (e.g. "1" for
      * "1.3.0").
      * 
-     * @see <a href="http://java.sun.com/j2se/versioning_naming.html">Official
-     *      Java versioning</a>
+     * @see <a href="http://java.sun.com/j2se/versioning_naming.html">Official *
+     *      Java versioning< /a>
      * @return The major version number of the Java Runtime Environment.
      */
     public static int getJavaMajorVersion() {
         int result;
-        String javaVersion = System.getProperty("java.version");
+        final String javaVersion = System.getProperty("java.version");
         try {
             result = Integer.parseInt(javaVersion.substring(0, javaVersion
                     .indexOf(".")));
-        } catch (Exception e) {
+        } catch (final Exception e) {
             result = 0;
         }
 
@@ -139,16 +139,16 @@ public class Engine extends org.restlet.util.Engine {
      * the version number of the Java Runtime Environment (e.g. "3" for
      * "1.3.0").
      * 
-     * @see <a href="http://java.sun.com/j2se/versioning_naming.html">Official
-     *      Java versioning</a>
+     * @see <a href="http://java.sun.com/j2se/versioning_naming.html">Official *
+     *      Java versioning< /a>
      * @return The minor version number of the Java Runtime Environment.
      */
     public static int getJavaMinorVersion() {
         int result;
-        String javaVersion = System.getProperty("java.version");
+        final String javaVersion = System.getProperty("java.version");
         try {
             result = Integer.parseInt(javaVersion.split("\\.")[1]);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             result = 0;
         }
 
@@ -159,18 +159,18 @@ public class Engine extends org.restlet.util.Engine {
      * Parses the "java.version" system property and returns the update release
      * number of the Java Runtime Environment (e.g. "10" for "1.3.0_10").
      * 
-     * @see <a href="http://java.sun.com/j2se/versioning_naming.html">Official
-     *      Java versioning</a>
+     * @see <a href="http://java.sun.com/j2se/versioning_naming.html">Official *
+     *      Java versioning< /a>
      * @return The release number of the Java Runtime Environment or 0 if it
      *         does not exist.
      */
     public static int getJavaUpdateVersion() {
         int result;
-        String javaVersion = System.getProperty("java.version");
+        final String javaVersion = System.getProperty("java.version");
         try {
             result = Integer.parseInt(javaVersion.substring(javaVersion
                     .indexOf('_') + 1));
-        } catch (Exception e) {
+        } catch (final Exception e) {
             result = 0;
         }
 
@@ -190,11 +190,11 @@ public class Engine extends org.restlet.util.Engine {
      * Registers a new Noelios Restlet Engine.
      * 
      * @param discoverConnectors
-     *                True if connectors should be automatically discovered.
+     *            True if connectors should be automatically discovered.
      * @return The registered engine.
      */
     public static Engine register(boolean discoverConnectors) {
-        Engine result = new Engine(discoverConnectors);
+        final Engine result = new Engine(discoverConnectors);
         org.restlet.util.Engine.setInstance(result);
         return result;
     }
@@ -219,7 +219,7 @@ public class Engine extends org.restlet.util.Engine {
      * Constructor.
      * 
      * @param discoverHelpers
-     *                True if helpers should be automatically discovered.
+     *            True if helpers should be automatically discovered.
      */
     public Engine(boolean discoverHelpers) {
         this.registeredClients = new CopyOnWriteArrayList<ClientHelper>();
@@ -246,13 +246,12 @@ public class Engine extends org.restlet.util.Engine {
      * Copies the given header parameters into the given {@link Response}.
      * 
      * @param responseHeaders
-     *                The headers to copy.
+     *            The headers to copy.
      * @param response
-     *                The response to update. Must contain a
-     *                {@link Representation} to copy the representation headers
-     *                in it.
+     *            The response to update. Must contain a {@link Representation}
+     *            to copy the representation headers in it.
      * @param logger
-     *                The logger to use.
+     *            The logger to use.
      * @see org.restlet.util.Engine#copyResponseHeaders(java.lang.Iterable,
      *      org.restlet.data.Response, java.util.logging.Logger)
      */
@@ -270,13 +269,13 @@ public class Engine extends org.restlet.util.Engine {
      * {@link Series}.
      * 
      * @param response
-     *                The response to update. Should contain a
-     *                {@link Representation} to copy the representation headers
-     *                from it.
+     *            The response to update. Should contain a
+     *            {@link Representation} to copy the representation headers from
+     *            it.
      * @param headers
-     *                The Series to copy the headers in.
+     *            The Series to copy the headers in.
      * @param logger
-     *                The logger to use.
+     *            The logger to use.
      * @see org.restlet.util.Engine#copyResponseHeaders(Response, Series,
      *      Logger)
      */
@@ -305,7 +304,7 @@ public class Engine extends org.restlet.util.Engine {
 
         if (client.getProtocols().size() > 0) {
             ClientHelper connector = null;
-            for (Iterator<ClientHelper> iter = getRegisteredClients()
+            for (final Iterator<ClientHelper> iter = getRegisteredClients()
                     .iterator(); (result == null) && iter.hasNext();) {
                 connector = iter.next();
 
@@ -316,7 +315,7 @@ public class Engine extends org.restlet.util.Engine {
                         try {
                             result = connector.getClass().getConstructor(
                                     Client.class).newInstance(client);
-                        } catch (Exception e) {
+                        } catch (final Exception e) {
                             logger
                                     .log(
                                             Level.SEVERE,
@@ -329,11 +328,11 @@ public class Engine extends org.restlet.util.Engine {
 
             if (result == null) {
                 // Couldn't find a matching connector
-                StringBuilder sb = new StringBuilder();
+                final StringBuilder sb = new StringBuilder();
                 sb
                         .append("No available client connector supports the required protocols: ");
 
-                for (Protocol p : client.getProtocols()) {
+                for (final Protocol p : client.getProtocols()) {
                     sb.append("'").append(p.getName()).append("' ");
                 }
 
@@ -358,7 +357,7 @@ public class Engine extends org.restlet.util.Engine {
 
         if (server.getProtocols().size() > 0) {
             ServerHelper connector = null;
-            for (Iterator<ServerHelper> iter = getRegisteredServers()
+            for (final Iterator<ServerHelper> iter = getRegisteredServers()
                     .iterator(); (result == null) && iter.hasNext();) {
                 connector = iter.next();
 
@@ -370,7 +369,7 @@ public class Engine extends org.restlet.util.Engine {
                         try {
                             result = connector.getClass().getConstructor(
                                     Server.class).newInstance(server);
-                        } catch (Exception e) {
+                        } catch (final Exception e) {
                             logger
                                     .log(
                                             Level.SEVERE,
@@ -383,11 +382,11 @@ public class Engine extends org.restlet.util.Engine {
 
             if (result == null) {
                 // Couldn't find a matching connector
-                StringBuilder sb = new StringBuilder();
+                final StringBuilder sb = new StringBuilder();
                 sb
                         .append("No available server connector supports the required protocols: ");
 
-                for (Protocol p : server.getProtocols()) {
+                for (final Protocol p : server.getProtocols()) {
                     sb.append("'").append(p.getName()).append("' ");
                 }
 
@@ -406,7 +405,8 @@ public class Engine extends org.restlet.util.Engine {
      */
     private void discoverAuthentications() {
         // Find the factory class name
-        ClassLoader classLoader = org.restlet.util.Engine.getClassLoader();
+        final ClassLoader classLoader = org.restlet.util.Engine
+                .getClassLoader();
 
         discoverHelpers(classLoader,
                 "META-INF/services/com.noelios.restlet.AuthenticationHelper",
@@ -421,7 +421,7 @@ public class Engine extends org.restlet.util.Engine {
      * Discovers client connectors in the classpath.
      * 
      * @param classLoader
-     *                Classloader to search.
+     *            Classloader to search.
      */
     private void discoverClientConnectors(ClassLoader classLoader) {
         discoverHelpers(classLoader,
@@ -435,7 +435,8 @@ public class Engine extends org.restlet.util.Engine {
      */
     private void discoverConnectors() {
         // Find the factory class name
-        ClassLoader classLoader = org.restlet.util.Engine.getClassLoader();
+        final ClassLoader classLoader = org.restlet.util.Engine
+                .getClassLoader();
 
         // Register the client connector providers
         discoverClientConnectors(classLoader);
@@ -453,21 +454,21 @@ public class Engine extends org.restlet.util.Engine {
      * list.
      * 
      * @param classLoader
-     *                Classloader to search.
+     *            Classloader to search.
      * @param descriptor
-     *                The descriptor location to parse.
+     *            The descriptor location to parse.
      * @param helpers
-     *                The list of helpers to update.
+     *            The list of helpers to update.
      * @param constructorClass
-     *                The constructor parameter class to look for.
+     *            The constructor parameter class to look for.
      */
     @SuppressWarnings("unchecked")
     private void discoverHelpers(ClassLoader classLoader, String descriptor,
             List helpers, Class constructorClass) {
         try {
-            for (Enumeration<URL> configUrls = classLoader
+            for (final Enumeration<URL> configUrls = classLoader
                     .getResources(descriptor); configUrls.hasMoreElements();) {
-                URL configURL = configUrls.nextElement();
+                final URL configURL = configUrls.nextElement();
 
                 BufferedReader reader = null;
                 try {
@@ -476,12 +477,13 @@ public class Engine extends org.restlet.util.Engine {
                     String line = reader.readLine();
 
                     while (line != null) {
-                        String provider = getProviderClassName(line);
+                        final String provider = getProviderClassName(line);
 
                         if ((provider != null) && (!provider.equals(""))) {
                             // Instantiate the factory
                             try {
-                                Class providerClass = Class.forName(provider);
+                                final Class providerClass = Class
+                                        .forName(provider);
 
                                 if (constructorClass == null) {
                                     helpers.add(providerClass.newInstance());
@@ -490,7 +492,7 @@ public class Engine extends org.restlet.util.Engine {
                                             constructorClass).newInstance(
                                             constructorClass.cast(null)));
                                 }
-                            } catch (Exception e) {
+                            } catch (final Exception e) {
                                 logger.log(Level.SEVERE,
                                         "Unable to register the connector "
                                                 + provider, e);
@@ -499,16 +501,17 @@ public class Engine extends org.restlet.util.Engine {
 
                         line = reader.readLine();
                     }
-                } catch (IOException e) {
+                } catch (final IOException e) {
                     logger.log(Level.SEVERE,
                             "Unable to read the provider descriptor: "
                                     + configURL.toString());
                 } finally {
-                    if (reader != null)
+                    if (reader != null) {
                         reader.close();
+                    }
                 }
             }
-        } catch (IOException ioe) {
+        } catch (final IOException ioe) {
             logger.log(Level.SEVERE,
                     "Exception while detecting the client connectors.", ioe);
         }
@@ -518,7 +521,7 @@ public class Engine extends org.restlet.util.Engine {
      * Discovers server connectors in the classpath.
      * 
      * @param classLoader
-     *                Classloader to search.
+     *            Classloader to search.
      */
     private void discoverServerConnectors(ClassLoader classLoader) {
         discoverHelpers(classLoader,
@@ -530,17 +533,17 @@ public class Engine extends org.restlet.util.Engine {
      * Finds the authentication helper supporting the given scheme.
      * 
      * @param challengeScheme
-     *                The challenge scheme to match.
+     *            The challenge scheme to match.
      * @param clientSide
-     *                Indicates if client side support is required.
+     *            Indicates if client side support is required.
      * @param serverSide
-     *                Indicates if server side support is required.
+     *            Indicates if server side support is required.
      * @return The authentication helper or null.
      */
     public AuthenticationHelper findHelper(ChallengeScheme challengeScheme,
             boolean clientSide, boolean serverSide) {
         AuthenticationHelper result = null;
-        List<AuthenticationHelper> helpers = getRegisteredAuthentications();
+        final List<AuthenticationHelper> helpers = getRegisteredAuthentications();
         AuthenticationHelper current;
 
         for (int i = 0; (result == null) && (i < helpers.size()); i++) {
@@ -575,12 +578,13 @@ public class Engine extends org.restlet.util.Engine {
     @Override
     public String formatUserAgent(List<Product> products)
             throws IllegalArgumentException {
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
 
-        for (Iterator<Product> iterator = products.iterator(); iterator
+        for (final Iterator<Product> iterator = products.iterator(); iterator
                 .hasNext();) {
-            Product product = iterator.next();
-            if (product.getName() == null && product.getName().length() == 0) {
+            final Product product = iterator.next();
+            if ((product.getName() == null)
+                    && (product.getName().length() == 0)) {
                 throw new IllegalArgumentException(
                         "Product name cannot be null.");
             }
@@ -639,12 +643,12 @@ public class Engine extends org.restlet.util.Engine {
         // - all languages with quality 0.001
         List<Preference<Language>> languagePrefs = client
                 .getAcceptedLanguages();
-        List<Preference<Language>> primaryLanguagePrefs = new ArrayList<Preference<Language>>();
+        final List<Preference<Language>> primaryLanguagePrefs = new ArrayList<Preference<Language>>();
         // A default language preference is defined with a better weight
         // than the "All languages" preference
-        Preference<Language> defaultLanguagePref = ((defaultLanguage == null) ? null
+        final Preference<Language> defaultLanguagePref = ((defaultLanguage == null) ? null
                 : new Preference<Language>(defaultLanguage, 0.003f));
-        Preference<Language> allLanguagesPref = new Preference<Language>(
+        final Preference<Language> allLanguagesPref = new Preference<Language>(
                 Language.ALL, 0.001f);
 
         if (languagePrefs.isEmpty()) {
@@ -653,9 +657,9 @@ public class Engine extends org.restlet.util.Engine {
         } else {
             // Get the primary language preferences that are not currently
             // accepted by the client
-            List<String> list = new ArrayList<String>();
-            for (Preference<Language> preference : languagePrefs) {
-                Language language = preference.getMetadata();
+            final List<String> list = new ArrayList<String>();
+            for (final Preference<Language> preference : languagePrefs) {
+                final Language language = preference.getMetadata();
                 if (!language.getSubTags().isEmpty()) {
                     if (!list.contains(language.getPrimaryTag())) {
                         list.add(language.getPrimaryTag());
@@ -667,7 +671,7 @@ public class Engine extends org.restlet.util.Engine {
             }
             // If the default language is a "primary" language but is not
             // present in the list of all primary languages, add it.
-            if (defaultLanguage != null
+            if ((defaultLanguage != null)
                     && !defaultLanguage.getSubTags().isEmpty()) {
                 if (!list.contains(defaultLanguage.getPrimaryTag())) {
                     primaryLanguagePrefs.add(new Preference<Language>(
@@ -685,9 +689,9 @@ public class Engine extends org.restlet.util.Engine {
             // In this case, if the client adds the "all languages"
             // preference, the latter is removed, in order to support the
             // default preference defined by the server
-            List<Preference<Language>> list = new ArrayList<Preference<Language>>();
-            for (Preference<Language> preference : languagePrefs) {
-                Language language = preference.getMetadata();
+            final List<Preference<Language>> list = new ArrayList<Preference<Language>>();
+            for (final Preference<Language> preference : languagePrefs) {
+                final Language language = preference.getMetadata();
                 if (!language.equals(Language.ALL)) {
                     list.add(preference);
                 }
@@ -698,23 +702,24 @@ public class Engine extends org.restlet.util.Engine {
 
         // For each available variant, we will compute the negotiation score
         // which depends on both language and media type scores.
-        for (Iterator<Variant> iter1 = variants.iterator(); iter1.hasNext();) {
+        for (final Iterator<Variant> iter1 = variants.iterator(); iter1
+                .hasNext();) {
             currentVariant = iter1.next();
             variantLanguages = currentVariant.getLanguages();
             variantMediaType = currentVariant.getMediaType();
 
             // All languages of the current variant are scored.
-            for (Language variantLanguage : variantLanguages) {
+            for (final Language variantLanguage : variantLanguages) {
                 // For each language preference defined in the call
                 // Calculate the score and remember the best scoring
                 // preference
-                for (Iterator<Preference<Language>> iter2 = languagePrefs
+                for (final Iterator<Preference<Language>> iter2 = languagePrefs
                         .iterator(); (variantLanguage != null)
                         && iter2.hasNext();) {
                     currentLanguagePref = iter2.next();
-                    float currentScore = getScore(variantLanguage,
+                    final float currentScore = getScore(variantLanguage,
                             currentLanguagePref.getMetadata());
-                    boolean compatiblePref = (currentScore != -1.0f);
+                    final boolean compatiblePref = (currentScore != -1.0f);
                     // 3) Do we have a better preference?
                     // currentScore *= currentPref.getQuality();
                     if (compatiblePref
@@ -732,19 +737,20 @@ public class Engine extends org.restlet.util.Engine {
 
             // If no media type preference is defined, assume that all media
             // types are acceptable
-            List<Preference<MediaType>> mediaTypePrefs = client
+            final List<Preference<MediaType>> mediaTypePrefs = client
                     .getAcceptedMediaTypes();
-            if (mediaTypePrefs.size() == 0)
+            if (mediaTypePrefs.size() == 0) {
                 mediaTypePrefs.add(new Preference<MediaType>(MediaType.ALL));
+            }
 
             // For each media range preference defined in the call
             // Calculate the score and remember the best scoring preference
-            for (Iterator<Preference<MediaType>> iter2 = mediaTypePrefs
+            for (final Iterator<Preference<MediaType>> iter2 = mediaTypePrefs
                     .iterator(); compatibleLanguage && iter2.hasNext();) {
                 currentMediaTypePref = iter2.next();
-                float currentScore = getScore(variantMediaType,
+                final float currentScore = getScore(variantMediaType,
                         currentMediaTypePref.getMetadata());
-                boolean compatiblePref = (currentScore != -1.0f);
+                final boolean compatiblePref = (currentScore != -1.0f);
                 // 3) Do we have a better preference?
                 // currentScore *= currentPref.getQuality();
                 if (compatiblePref
@@ -798,13 +804,14 @@ public class Engine extends org.restlet.util.Engine {
      * Parses a line to extract the provider class name.
      * 
      * @param line
-     *                The line to parse.
+     *            The line to parse.
      * @return The provider's class name or an empty string.
      */
     private String getProviderClassName(String line) {
-        int index = line.indexOf('#');
-        if (index != -1)
+        final int index = line.indexOf('#');
+        if (index != -1) {
             line = line.substring(0, index);
+        }
         return line.trim();
     }
 
@@ -872,9 +879,9 @@ public class Engine extends org.restlet.util.Engine {
                     // Don't change the score
                 }
             } else {
-                int maxSize = Math.min(preferenceLanguage.getSubTags().size(),
-                        variantLanguage.getSubTags().size());
-                for (int i = 0; i < maxSize && compatibleLang; i++) {
+                final int maxSize = Math.min(preferenceLanguage.getSubTags()
+                        .size(), variantLanguage.getSubTags().size());
+                for (int i = 0; (i < maxSize) && compatibleLang; i++) {
                     if (preferenceLanguage.getSubTags().get(i)
                             .equalsIgnoreCase(
                                     variantLanguage.getSubTags().get(i))) {
@@ -933,10 +940,8 @@ public class Engine extends org.restlet.util.Engine {
                 // If current media type is compatible with the
                 // current media range then the parameters need to
                 // be checked too
-                for (Iterator<Parameter> iter3 = variantMediaType
-                        .getParameters().iterator(); iter3.hasNext();) {
-                    Parameter currentParam = iter3.next();
-
+                for (final Parameter currentParam : variantMediaType
+                        .getParameters()) {
                     if (isParameterFound(currentParam, preferenceMediaType)) {
                         score++;
                     }
@@ -952,9 +957,9 @@ public class Engine extends org.restlet.util.Engine {
      * range.
      * 
      * @param searchedParam
-     *                The searched parameter.
+     *            The searched parameter.
      * @param mediaRange
-     *                The media range to inspect.
+     *            The media range to inspect.
      * @return True if the searched parameter is specified in the given media
      *         range.
      */
@@ -962,8 +967,8 @@ public class Engine extends org.restlet.util.Engine {
             MediaType mediaRange) {
         boolean result = false;
 
-        for (Iterator<Parameter> iter = mediaRange.getParameters().iterator(); !result
-                && iter.hasNext();) {
+        for (final Iterator<Parameter> iter = mediaRange.getParameters()
+                .iterator(); !result && iter.hasNext();) {
             result = searchedParam.equals(iter.next());
         }
 
@@ -991,7 +996,7 @@ public class Engine extends org.restlet.util.Engine {
             throws IllegalArgumentException {
         try {
             return ContentType.parseContentType(contentType);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new IllegalArgumentException("The content type string \""
                     + contentType + "\" can not be parsed: " + e.getMessage(),
                     e);
@@ -1000,10 +1005,10 @@ public class Engine extends org.restlet.util.Engine {
 
     @Override
     public Cookie parseCookie(String cookie) throws IllegalArgumentException {
-        CookieReader cr = new CookieReader(logger, cookie);
+        final CookieReader cr = new CookieReader(logger, cookie);
         try {
             return cr.readCookie();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new IllegalArgumentException("Could not read the cookie", e);
         }
     }
@@ -1011,10 +1016,10 @@ public class Engine extends org.restlet.util.Engine {
     @Override
     public CookieSetting parseCookieSetting(String cookieSetting)
             throws IllegalArgumentException {
-        CookieReader cr = new CookieReader(logger, cookieSetting);
+        final CookieReader cr = new CookieReader(logger, cookieSetting);
         try {
             return cr.readCookieSetting();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw new IllegalArgumentException(
                     "Could not read the cookie setting", e);
         }
@@ -1023,13 +1028,13 @@ public class Engine extends org.restlet.util.Engine {
     @Override
     public List<Product> parseUserAgent(String userAgent)
             throws IllegalArgumentException {
-        List<Product> result = new ArrayList<Product>();
+        final List<Product> result = new ArrayList<Product>();
 
         if (userAgent != null) {
             String token = null;
             String version = null;
             String comment = null;
-            char[] tab = userAgent.trim().toCharArray();
+            final char[] tab = userAgent.trim().toCharArray();
             StringBuilder tokenBuilder = new StringBuilder();
             StringBuilder versionBuilder = null;
             StringBuilder commentBuilder = null;
@@ -1039,10 +1044,10 @@ public class Engine extends org.restlet.util.Engine {
             boolean insideComment = false;
 
             for (index = 0; index < tab.length; index++) {
-                char c = tab[index];
+                final char c = tab[index];
                 if (insideToken) {
-                    if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')
-                            || c == ' ') {
+                    if (((c >= 'a') && (c <= 'z'))
+                            || ((c >= 'A') && (c <= 'Z')) || (c == ' ')) {
                         tokenBuilder.append(c);
                     } else {
                         token = tokenBuilder.toString().trim();
@@ -1080,9 +1085,7 @@ public class Engine extends org.restlet.util.Engine {
                                     commentBuilder.append(c);
                                 }
                             } else {
-                                result
-                                        .add(new Product(token, version,
-                                                null));
+                                result.add(new Product(token, version, null));
                                 insideToken = true;
                                 tokenBuilder = new StringBuilder();
                                 tokenBuilder.append(c);
@@ -1100,7 +1103,7 @@ public class Engine extends org.restlet.util.Engine {
                     version = versionBuilder.toString();
                     result.add(new Product(token, version, null));
                 } else {
-                    if (insideToken && tokenBuilder.length() > 0) {
+                    if (insideToken && (tokenBuilder.length() > 0)) {
                         token = tokenBuilder.toString();
                         result.add(new Product(token, null, null));
                     }
@@ -1124,7 +1127,7 @@ public class Engine extends org.restlet.util.Engine {
 
         // In order to support the deprecated AWS constant
         // we need to register another instance of S3 helper.
-        AuthenticationHelper helper = new HttpAmazonS3Helper();
+        final AuthenticationHelper helper = new HttpAmazonS3Helper();
         helper.setChallengeScheme(ChallengeScheme.HTTP_AWS);
         getRegisteredAuthentications().add(helper);
     }
@@ -1152,7 +1155,7 @@ public class Engine extends org.restlet.util.Engine {
         // proper creation of java.net.URL instances
         URL.setURLStreamHandlerFactory(new URLStreamHandlerFactory() {
             public URLStreamHandler createURLStreamHandler(String protocol) {
-                URLStreamHandler result = new URLStreamHandler() {
+                final URLStreamHandler result = new URLStreamHandler() {
 
                     @Override
                     protected URLConnection openConnection(URL url)
@@ -1169,12 +1172,12 @@ public class Engine extends org.restlet.util.Engine {
                                 InputStream result = null;
 
                                 // Retrieve the current context
-                                Context context = Context.getCurrent();
+                                final Context context = Context.getCurrent();
 
                                 if (context != null) {
-                                    Response response = context
+                                    final Response response = context
                                             .getClientDispatcher().get(
-                                                    url.toString());
+                                                    this.url.toString());
 
                                     if (response.getStatus().isSuccess()) {
                                         result = response.getEntity()

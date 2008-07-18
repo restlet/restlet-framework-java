@@ -58,12 +58,12 @@ public class MailsResource extends BaseResource {
             setModifiable(true);
             // Get the parent mailbox thanks to its ID taken from the resource's
             // URI.
-            String mailboxId = Reference.decode((String) request
+            final String mailboxId = Reference.decode((String) request
                     .getAttributes().get("mailboxId"));
-            mailbox = getObjectsFacade().getMailboxById(mailboxId);
+            this.mailbox = getObjectsFacade().getMailboxById(mailboxId);
 
-            if (mailbox != null) {
-                mails = mailbox.getMails();
+            if (this.mailbox != null) {
+                this.mails = this.mailbox.getMails();
                 getVariants().add(new Variant(MediaType.TEXT_HTML));
             }
         } else {
@@ -78,23 +78,23 @@ public class MailsResource extends BaseResource {
     @Override
     public void acceptRepresentation(Representation entity)
             throws ResourceException {
-        Form form = new Form(entity);
+        final Form form = new Form(entity);
 
         Mail mail = new Mail();
         mail.setStatus(Mail.STATUS_DRAFT);
-        Contact sender = new Contact();
+        final Contact sender = new Contact();
         sender.setName(getCurrentUser().getFirstName() + " "
                 + getCurrentUser().getLastName());
         sender.setMailAddress(getRequest().getRootRef().getIdentifier()
-                + "/mailboxes/" + mailbox.getId());
+                + "/mailboxes/" + this.mailbox.getId());
         mail.setSender(sender);
         mail.setSubject(form.getFirstValue("subject"));
         mail.setMessage(form.getFirstValue("message"));
 
         if (form.getFirstValue("recipients") != null) {
-            List<Contact> recipients = new ArrayList<Contact>();
-            for (Parameter parameter : form.subList("recipients")) {
-                for (Contact contact : mailbox.getContacts()) {
+            final List<Contact> recipients = new ArrayList<Contact>();
+            for (final Parameter parameter : form.subList("recipients")) {
+                for (final Contact contact : this.mailbox.getContacts()) {
                     if (contact.getId().equals(parameter.getValue())) {
                         recipients.add(contact);
                     }
@@ -112,7 +112,7 @@ public class MailsResource extends BaseResource {
             mail.setTags(null);
         }
 
-        mail = getObjectsFacade().createMail(mailbox, mail);
+        mail = getObjectsFacade().createMail(this.mailbox, mail);
 
         getResponse().redirectSeeOther(
                 getChildReference(getRequest().getResourceRef(), mail.getId()));
@@ -128,10 +128,10 @@ public class MailsResource extends BaseResource {
      */
     @Override
     public Representation represent(Variant variant) throws ResourceException {
-        Map<String, Object> dataModel = new TreeMap<String, Object>();
+        final Map<String, Object> dataModel = new TreeMap<String, Object>();
         dataModel.put("currentUser", getCurrentUser());
-        dataModel.put("mailbox", mailbox);
-        dataModel.put("mails", mails);
+        dataModel.put("mailbox", this.mailbox);
+        dataModel.put("mails", this.mails);
         dataModel.put("resourceRef", getRequest().getResourceRef());
         dataModel.put("rootRef", getRequest().getRootRef());
 

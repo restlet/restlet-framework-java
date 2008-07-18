@@ -43,8 +43,7 @@ public class Activator implements BundleActivator {
         this.clientHelper = new HttpClientHelper(null);
 
         // Add the helpers
-        Engine.getInstance().getRegisteredClients().add(0,
-                this.clientHelper);
+        Engine.getInstance().getRegisteredClients().add(0, this.clientHelper);
     }
 
     /**

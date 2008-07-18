@@ -28,7 +28,7 @@ import junit.framework.TestSuite;
  */
 public class AllServiceTests extends TestCase {
     public static Test suite() {
-        TestSuite mySuite = new TestSuite();
+        final TestSuite mySuite = new TestSuite();
         mySuite.setName("All service tests");
         mySuite.addTestSuite(AncestorTest.class);
         mySuite.addTestSuite(AppPlusXmlTest.class);

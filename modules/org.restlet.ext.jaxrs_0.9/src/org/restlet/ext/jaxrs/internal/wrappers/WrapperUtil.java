@@ -63,17 +63,20 @@ public class WrapperUtil {
      * related annotation.
      * 
      * @param javaMethod
-     *                Java method, class or something like that.
+     *            Java method, class or something like that.
      * @return true, if the given accessible object is annotated with any
      *         JAX-RS-Annotation.
      */
     static boolean checkForJaxRsAnnotations(Method javaMethod) {
-        for (Annotation annotation : javaMethod.getAnnotations()) {
-            Class<? extends Annotation> annoType = annotation.annotationType();
-            if (annoType.getName().startsWith(JAX_RS_PACKAGE_PREFIX))
+        for (final Annotation annotation : javaMethod.getAnnotations()) {
+            final Class<? extends Annotation> annoType = annotation
+                    .annotationType();
+            if (annoType.getName().startsWith(JAX_RS_PACKAGE_PREFIX)) {
                 return true;
-            if (annoType.isAnnotationPresent(HttpMethod.class))
+            }
+            if (annoType.isAnnotationPresent(HttpMethod.class)) {
                 return true;
+            }
         }
         return false;
     }
@@ -86,20 +89,21 @@ public class WrapperUtil {
      * @param parameterTypes
      * @returns true, if the
      * @throws IllegalTypeException
-     *                 If a parameter is annotated with {@link Context}, but
-     *                 the type is invalid (must be UriInfo, Request or
-     *                 HttpHeaders).
+     *             If a parameter is annotated with {@link Context}, but the
+     *             type is invalid (must be UriInfo, Request or HttpHeaders).
      */
     private static boolean checkParamAnnotations(Constructor<?> constr) {
-        Annotation[][] paramAnnotationss = constr.getParameterAnnotations();
-        Class<?>[] parameterTypes = constr.getParameterTypes();
+        final Annotation[][] paramAnnotationss = constr
+                .getParameterAnnotations();
+        final Class<?>[] parameterTypes = constr.getParameterTypes();
         for (int i = 0; i < paramAnnotationss.length; i++) {
-            Annotation[] parameterAnnotations = paramAnnotationss[i];
-            Class<?> parameterType = parameterTypes[i];
-            boolean ok = checkParameterAnnotation(parameterAnnotations,
+            final Annotation[] parameterAnnotations = paramAnnotationss[i];
+            final Class<?> parameterType = parameterTypes[i];
+            final boolean ok = checkParameterAnnotation(parameterAnnotations,
                     parameterType);
-            if (!ok)
+            if (!ok) {
                 return false;
+            }
         }
         return true;
     }
@@ -114,24 +118,29 @@ public class WrapperUtil {
      */
     private static boolean checkParameterAnnotation(
             Annotation[] parameterAnnotations, Class<?> parameterType) {
-        if (parameterAnnotations.length == 0)
+        if (parameterAnnotations.length == 0) {
             return false;
-        for (Annotation annotation : parameterAnnotations) {
-            Class<? extends Annotation> annotationType = annotation
+        }
+        for (final Annotation annotation : parameterAnnotations) {
+            final Class<? extends Annotation> annotationType = annotation
                     .annotationType();
             if (annotationType.equals(HeaderParam.class)) {
                 continue;
             } else if (annotationType.equals(PathParam.class)) {
                 continue;
             } else if (annotationType.equals(Context.class)) {
-                if (parameterType.equals(UriInfo.class))
+                if (parameterType.equals(UriInfo.class)) {
                     continue;
-                if (parameterType.equals(Request.class))
+                }
+                if (parameterType.equals(Request.class)) {
                     continue;
-                if (parameterType.equals(HttpHeaders.class))
+                }
+                if (parameterType.equals(HttpHeaders.class)) {
                     continue;
-                if (parameterType.equals(SecurityContext.class))
+                }
+                if (parameterType.equals(SecurityContext.class)) {
                     continue;
+                }
                 return false;
             } else if (annotationType.equals(MatrixParam.class)) {
                 continue;
@@ -144,17 +153,6 @@ public class WrapperUtil {
     }
 
     /**
-     * Checks, if the method is volatile(the return type of a sub class differs
-     * from the return type of the superclass, but is compatibel).
-     * 
-     * @param javaMethod
-     * @return true, if the method is volatile, otherwise false.
-     */
-    static boolean isVolatile(Method javaMethod) {
-        return Modifier.isVolatile(javaMethod.getModifiers());
-    }
-
-    /**
      * Converts the given mimes to a List of MediaTypes. Will never returns
      * null.
      * 
@@ -162,12 +160,14 @@ public class WrapperUtil {
      * @return Returns an unmodifiable List of MediaTypes
      */
     public static List<MediaType> convertToMediaTypes(String[] mimes) {
-        List<MediaType> mediaTypes = new ArrayList<MediaType>(mimes.length);
-        for (String mime : mimes) {
-            if (mime == null)
+        final List<MediaType> mediaTypes = new ArrayList<MediaType>(
+                mimes.length);
+        for (final String mime : mimes) {
+            if (mime == null) {
                 mediaTypes.add(MediaType.ALL);
-            else
+            } else {
                 mediaTypes.add(MediaType.valueOf(mime));
+            }
         }
         return Collections.unmodifiableList(mediaTypes);
     }
@@ -186,13 +186,13 @@ public class WrapperUtil {
             InstantiateException {
         try {
             return constructor.newInstance(args);
-        } catch (IllegalArgumentException e) {
+        } catch (final IllegalArgumentException e) {
             throw new InstantiateException("Could not instantiate "
                     + constructor.getDeclaringClass(), e);
-        } catch (InstantiationException e) {
+        } catch (final InstantiationException e) {
             throw new InstantiateException("Could not instantiate "
                     + constructor.getDeclaringClass(), e);
-        } catch (IllegalAccessException e) {
+        } catch (final IllegalAccessException e) {
             throw new InstantiateException("Could not instantiate "
                     + constructor.getDeclaringClass(), e);
         }
@@ -202,9 +202,9 @@ public class WrapperUtil {
      * Finds the constructor to use by the JAX-RS runtime.
      * 
      * @param jaxRsClass
-     *                the root resource or provider class.
+     *            the root resource or provider class.
      * @param rrcOrProvider
-     *                "root resource class" or "provider"
+     *            "root resource class" or "provider"
      * @return Returns the constructor to use for the given root resource class
      *         or provider. If no constructor could be found, null is returned.
      *         Than try {@link Class#newInstance()}
@@ -214,20 +214,24 @@ public class WrapperUtil {
             String rrcOrProvider) throws MissingConstructorException {
         Constructor<?> constructor = null;
         int constructorParamNo = Integer.MIN_VALUE;
-        for (Constructor<?> constr : jaxRsClass.getConstructors()) {
-            if (!Modifier.isPublic(constr.getModifiers()))
+        for (final Constructor<?> constr : jaxRsClass.getConstructors()) {
+            if (!Modifier.isPublic(constr.getModifiers())) {
                 continue;
-            int constrParamNo = constr.getParameterTypes().length;
+            }
+            final int constrParamNo = constr.getParameterTypes().length;
             // TODo warn if multiple constrs are possible (see spec f. details)
-            if (constrParamNo <= constructorParamNo)
+            if (constrParamNo <= constructorParamNo) {
                 continue; // ignore this constructor
-            if (!checkParamAnnotations(constr))
+            }
+            if (!checkParamAnnotations(constr)) {
                 continue; // ignore this constructor
+            }
             constructor = constr;
             constructorParamNo = constrParamNo;
         }
-        if (constructor != null)
+        if (constructor != null) {
             return constructor;
+        }
         throw new MissingConstructorException(jaxRsClass, rrcOrProvider);
     }
 
@@ -235,7 +239,7 @@ public class WrapperUtil {
      * Creates the {@link ContextResolver} to inject in the given field.
      * 
      * @param genType
-     *                generic type of field {@link ContextResolver}.
+     *            generic type of field {@link ContextResolver}.
      * @param allCtxResolvers
      * @return
      * @throws RuntimeException
@@ -243,37 +247,44 @@ public class WrapperUtil {
     @SuppressWarnings("unchecked")
     public static ContextResolver<?> getContextResolver(Type genType,
             Collection<ContextResolver<?>> allCtxResolvers) {
-        if (!(genType instanceof ParameterizedType))
+        if (!(genType instanceof ParameterizedType)) {
             return ReturnNullContextResolver.get();
-        Type t = ((ParameterizedType) genType).getActualTypeArguments()[0];
-        if (!(t instanceof Class))
+        }
+        final Type t = ((ParameterizedType) genType).getActualTypeArguments()[0];
+        if (!(t instanceof Class)) {
             return ReturnNullContextResolver.get();
-        Class crType = (Class) t;
-        List<ContextResolver<?>> returnResolvers = new ArrayList<javax.ws.rs.ext.ContextResolver<?>>();
-        for (ContextResolver<?> cr : allCtxResolvers) {
-            Class<?> crClaz = cr.getClass();
-            Class<?> genClass = getCtxResGenClass(crClaz);
-            if (genClass == null || !genClass.equals(crType))
+        }
+        final Class crType = (Class) t;
+        final List<ContextResolver<?>> returnResolvers = new ArrayList<javax.ws.rs.ext.ContextResolver<?>>();
+        for (final ContextResolver<?> cr : allCtxResolvers) {
+            final Class<?> crClaz = cr.getClass();
+            final Class<?> genClass = getCtxResGenClass(crClaz);
+            if ((genClass == null) || !genClass.equals(crType)) {
                 continue;
+            }
             try {
-                Method getContext = crClaz.getMethod("getContext", Class.class);
-                if (getContext.getReturnType().equals(crType))
+                final Method getContext = crClaz.getMethod("getContext",
+                        Class.class);
+                if (getContext.getReturnType().equals(crType)) {
                     returnResolvers.add(cr);
-            } catch (SecurityException e) {
+                }
+            } catch (final SecurityException e) {
                 throw new RuntimeException(
                         "sorry, the method getContext(Class) of ContextResolver "
                                 + crClaz + " is not accessible");
-            } catch (NoSuchMethodException e) {
+            } catch (final NoSuchMethodException e) {
                 throw new RuntimeException(
                         "The ContextResolver "
                                 + crClaz
                                 + " is not valid, because it has no method getContext(Class)");
             }
         }
-        if (returnResolvers.isEmpty())
+        if (returnResolvers.isEmpty()) {
             return ReturnNullContextResolver.get();
-        if (returnResolvers.size() == 1)
+        }
+        if (returnResolvers.size() == 1) {
             return returnResolvers.get(0);
+        }
         return new ContextResolverCollection(returnResolvers);
     }
 
@@ -283,13 +294,16 @@ public class WrapperUtil {
      * @param crClaz
      */
     private static Class<?> getCtxResGenClass(Class<?> crClaz) {
-        Type[] crIfTypes = crClaz.getGenericInterfaces();
-        for (Type crIfType : crIfTypes) {
-            if (!(crIfType instanceof ParameterizedType))
+        final Type[] crIfTypes = crClaz.getGenericInterfaces();
+        for (final Type crIfType : crIfTypes) {
+            if (!(crIfType instanceof ParameterizedType)) {
                 continue;
-            Type t = ((ParameterizedType) crIfType).getActualTypeArguments()[0];
-            if (!(t instanceof Class))
+            }
+            final Type t = ((ParameterizedType) crIfType)
+                    .getActualTypeArguments()[0];
+            if (!(t instanceof Class)) {
                 continue;
+            }
             return (Class<?>) t;
         }
         return null;
@@ -302,13 +316,14 @@ public class WrapperUtil {
      * @return
      */
     static org.restlet.data.Method getHttpMethod(Method javaMethod) {
-        for (Annotation annotation : javaMethod.getAnnotations()) {
-            Class<? extends Annotation> annoType = annotation.annotationType();
-            HttpMethod httpMethodAnnot = annoType
+        for (final Annotation annotation : javaMethod.getAnnotations()) {
+            final Class<? extends Annotation> annoType = annotation
+                    .annotationType();
+            final HttpMethod httpMethodAnnot = annoType
                     .getAnnotation(HttpMethod.class);
             if (httpMethodAnnot != null) {
                 // Annotation of Annotation of the method is the HTTP-Method
-                String httpMethodName = httpMethodAnnot.value();
+                final String httpMethodName = httpMethodAnnot.value();
                 return org.restlet.data.Method.valueOf(httpMethodName);
                 // NICE check if another designator is available: reject or warn
             }
@@ -318,8 +333,8 @@ public class WrapperUtil {
 
     /**
      * Returns the value from the given Parameter. If the given parameter is
-     * null, null will returned. If the parameter is not null, but it's value, ""
-     * is returned.
+     * null, null will returned. If the parameter is not null, but it's value,
+     * "" is returned.
      * 
      * @param parameter
      * @return the value from the given Parameter. If the given parameter is
@@ -327,11 +342,13 @@ public class WrapperUtil {
      *         value, "" is returned.
      */
     public static String getValue(Parameter parameter) {
-        if (parameter == null)
+        if (parameter == null) {
             return null;
-        String paramValue = parameter.getValue();
-        if (paramValue == null)
+        }
+        final String paramValue = parameter.getValue();
+        if (paramValue == null) {
             return "";
+        }
         return paramValue;
     }
 
@@ -350,9 +367,20 @@ public class WrapperUtil {
             throws SecurityException {
         if (method.isAnnotationPresent(annotationClass)
                 && method.getName().startsWith("set")
-                && method.getParameterTypes().length == 1) {
+                && (method.getParameterTypes().length == 1)) {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Checks, if the method is volatile(the return type of a sub class differs
+     * from the return type of the superclass, but is compatibel).
+     * 
+     * @param javaMethod
+     * @return true, if the method is volatile, otherwise false.
+     */
+    static boolean isVolatile(Method javaMethod) {
+        return Modifier.isVolatile(javaMethod.getModifiers());
     }
 }

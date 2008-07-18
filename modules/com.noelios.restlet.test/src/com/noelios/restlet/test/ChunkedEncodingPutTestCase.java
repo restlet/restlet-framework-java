@@ -63,15 +63,15 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
      * Returns a StringRepresentation which size depends on the given argument.
      * 
      * @param size
-     *                the size of the representation
+     *            the size of the representation
      * @return A DomRepresentation.
      */
     private static Representation createChunckedRepresentation(int size) {
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
         for (int i = 0; i < size; i++) {
             builder.append("a");
         }
-        Representation rep = new StringRepresentation(builder.toString(),
+        final Representation rep = new StringRepresentation(builder.toString(),
                 MediaType.TEXT_PLAIN);
         rep.setSize(Representation.UNKNOWN_SIZE);
         return rep;
@@ -92,10 +92,10 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
 
     @Override
     protected Application createApplication(Component component) {
-        Application application = new Application(component.getContext()) {
+        final Application application = new Application(component.getContext()) {
             @Override
             public Restlet createRoot() {
-                Router router = new Router(getContext());
+                final Router router = new Router(getContext());
                 router.attach("/test", PutTestResource.class);
                 return router;
             }
@@ -104,9 +104,9 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
     }
 
     private void sendPut(String uri, int size) throws Exception {
-        Request request = new Request(Method.PUT, uri,
+        final Request request = new Request(Method.PUT, uri,
                 createChunckedRepresentation(size));
-        Response r = new Client(Protocol.HTTP).handle(request);
+        final Response r = new Client(Protocol.HTTP).handle(request);
 
         try {
             assertEquals(createChunckedRepresentation(size).getText(), r

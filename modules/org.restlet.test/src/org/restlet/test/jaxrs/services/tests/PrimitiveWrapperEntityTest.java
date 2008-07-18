@@ -35,31 +35,34 @@ import org.restlet.test.jaxrs.util.TestUtils;
 public class PrimitiveWrapperEntityTest extends JaxRsTestCase {
 
     @Override
-    protected Class<?> getRootResourceClass() {
-        return PrimitiveWrapperEntityResource.class;
-    }
-
-    @Override
     @SuppressWarnings("all")
     public Set<Class<?>> getProvClasses() {
         return (Set) TestUtils.createSet(IntegerEntityProvider.class,
                 CharacterEntityProvider.class, BooleanEntityProvider.class);
     }
 
+    @Override
+    protected Class<?> getRootResourceClass() {
+        return PrimitiveWrapperEntityResource.class;
+    }
+
     public void test1() throws Exception {
-        Response response = put("intReturnInt", new StringRepresentation("47"));
+        final Response response = put("intReturnInt", new StringRepresentation(
+                "47"));
         sysOutEntityIfError(response);
-        assertEquals(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE, response.getStatus());
+        assertEquals(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE, response
+                .getStatus());
     }
 
     /**
      * @see PrimitiveWrapperEntityResource#charReturnCharacter(char)
      */
     public void test2() throws Exception {
-        Response response = put("charReturnCharacter",
+        final Response response = put("charReturnCharacter",
                 new StringRepresentation("x"));
         sysOutEntityIfError(response);
-        assertEquals(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE, response.getStatus());
+        assertEquals(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE, response
+                .getStatus());
     }
 
     /**
@@ -75,8 +78,9 @@ public class PrimitiveWrapperEntityTest extends JaxRsTestCase {
         response = put("BooleanReturnboolean", null);
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        if (response.getEntity() != null)
+        if (response.getEntity() != null) {
             assertEquals("false", response.getEntity().getText());
+        }
     }
 
     public void test4() throws Exception {

@@ -33,26 +33,26 @@ public class ContextsTest extends JaxRsTestCase {
     }
 
     public void testFields() throws Exception {
-        Response response = get("fields");
+        final Response response = get("fields");
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        String entity = response.getEntity().getText();
+        final String entity = response.getEntity().getText();
         assertEquals("messageBodyWorkers\ncontextResolver\nuriInfo\n", entity);
     }
-    
+
     public void testLastPathSegm() throws Exception {
-        Response response = get("lastPathSegm;a=b;c=d;c=e");
+        final Response response = get("lastPathSegm;a=b;c=d;c=e");
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        String entity = response.getEntity().getText();
+        final String entity = response.getEntity().getText();
         assertEquals("a : [b]\nc : [d, e]\n", entity);
     }
 
     public void testParams() throws Exception {
-        Response response = get("params");
+        final Response response = get("params");
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        String entity = response.getEntity().getText();
+        final String entity = response.getEntity().getText();
         assertEquals("messageBodyWorkers\ncontextResolver\nuriInfo\n", entity);
     }
 }

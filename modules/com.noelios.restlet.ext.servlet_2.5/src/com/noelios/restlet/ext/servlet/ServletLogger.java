@@ -34,22 +34,11 @@ public class ServletLogger extends Logger {
      * Constructor.
      * 
      * @param context
-     *                The Servlet context to use.
+     *            The Servlet context to use.
      */
     public ServletLogger(javax.servlet.ServletContext context) {
         super(null, null);
         this.context = context;
-    }
-
-    /**
-     * Log a LogRecord.
-     * 
-     * @param record
-     *                The LogRecord to be published
-     */
-    @Override
-    public void log(LogRecord record) {
-        getContext().log(record.getMessage(), record.getThrown());
     }
 
     /**
@@ -59,6 +48,17 @@ public class ServletLogger extends Logger {
      */
     private javax.servlet.ServletContext getContext() {
         return this.context;
+    }
+
+    /**
+     * Log a LogRecord.
+     * 
+     * @param record
+     *            The LogRecord to be published
+     */
+    @Override
+    public void log(LogRecord record) {
+        getContext().log(record.getMessage(), record.getThrown());
     }
 
 }

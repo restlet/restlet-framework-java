@@ -19,6 +19,7 @@
 package org.restlet.ext.wadl;
 
 import static org.restlet.ext.wadl.WadlRepresentation.APP_NAMESPACE;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,8 +68,9 @@ public class ApplicationInfo {
         if (d == null) {
             synchronized (this) {
                 d = this.documentations;
-                if (d == null)
+                if (d == null) {
                     this.documentations = d = new ArrayList<DocumentationInfo>();
+                }
             }
         }
         return d;
@@ -85,8 +87,9 @@ public class ApplicationInfo {
         if (f == null) {
             synchronized (this) {
                 f = this.faults;
-                if (f == null)
+                if (f == null) {
                     this.faults = f = new ArrayList<FaultInfo>();
+                }
             }
         }
         return f;
@@ -98,7 +101,7 @@ public class ApplicationInfo {
      * @return The grammar elements.
      */
     public GrammarsInfo getGrammars() {
-        return grammars;
+        return this.grammars;
     }
 
     /**
@@ -112,8 +115,9 @@ public class ApplicationInfo {
         if (m == null) {
             synchronized (this) {
                 m = this.methods;
-                if (m == null)
+                if (m == null) {
                     this.methods = m = new ArrayList<MethodInfo>();
+                }
             }
         }
         return m;
@@ -130,8 +134,9 @@ public class ApplicationInfo {
         if (r == null) {
             synchronized (this) {
                 r = this.representations;
-                if (r == null)
+                if (r == null) {
                     this.representations = r = new ArrayList<RepresentationInfo>();
+                }
             }
         }
         return r;
@@ -148,8 +153,9 @@ public class ApplicationInfo {
         if (r == null) {
             synchronized (this) {
                 r = this.resources;
-                if (r == null)
+                if (r == null) {
                     this.resources = r = new ResourcesInfo();
+                }
             }
         }
         return r;
@@ -166,8 +172,9 @@ public class ApplicationInfo {
         if (rt == null) {
             synchronized (this) {
                 rt = this.resourceTypes;
-                if (rt == null)
+                if (rt == null) {
                     this.resourceTypes = rt = new ArrayList<ResourceTypeInfo>();
+                }
             }
         }
         return rt;
@@ -253,7 +260,7 @@ public class ApplicationInfo {
     public void writeElement(XmlWriter writer) throws SAXException {
         writer.startElement(APP_NAMESPACE, "application");
 
-        for (DocumentationInfo documentationInfo : getDocumentations()) {
+        for (final DocumentationInfo documentationInfo : getDocumentations()) {
             documentationInfo.writeElement(writer);
         }
 
@@ -261,11 +268,11 @@ public class ApplicationInfo {
             getGrammars().writeElement(writer);
         }
 
-        for (MethodInfo methodInfo : getMethods()) {
+        for (final MethodInfo methodInfo : getMethods()) {
             methodInfo.writeElement(writer);
         }
 
-        for (RepresentationInfo representationInfo : getRepresentations()) {
+        for (final RepresentationInfo representationInfo : getRepresentations()) {
             representationInfo.writeElement(writer);
         }
 
@@ -273,11 +280,11 @@ public class ApplicationInfo {
             getResources().writeElement(writer);
         }
 
-        for (ResourceTypeInfo resourceTypeInfo : getResourceTypes()) {
+        for (final ResourceTypeInfo resourceTypeInfo : getResourceTypes()) {
             resourceTypeInfo.writeElement(writer);
         }
 
-        for (FaultInfo faultInfo : getFaults()) {
+        for (final FaultInfo faultInfo : getFaults()) {
             faultInfo.writeElement(writer);
         }
 

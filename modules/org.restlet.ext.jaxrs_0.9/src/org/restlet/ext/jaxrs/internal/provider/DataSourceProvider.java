@@ -75,7 +75,7 @@ public class DataSourceProvider extends AbstractProvider<DataSource> {
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
-        InputStream inputStream = dataSource.getInputStream();
+        final InputStream inputStream = dataSource.getInputStream();
         Util.copyStream(inputStream, entityStream);
     }
 }

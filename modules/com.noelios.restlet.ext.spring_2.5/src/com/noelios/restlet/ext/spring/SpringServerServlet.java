@@ -63,7 +63,7 @@ public class SpringServerServlet extends ServerServlet {
      * {@link #APPLICATION_BEAN_PARAM_NAME}.
      * 
      * @param context
-     *                The Context for the Application.
+     *            The Context for the Application.
      * @return The Restlet-Application to use.
      */
     @SuppressWarnings("unchecked")
@@ -71,14 +71,14 @@ public class SpringServerServlet extends ServerServlet {
     public Application createApplication(Context context) {
         Application application = null;
 
-        String applicationBeanName = getInitParameter(
+        final String applicationBeanName = getInitParameter(
                 SpringServerServlet.APPLICATION_BEAN_PARAM_NAME, null);
         application = (Application) getWebApplicationContext().getBean(
                 applicationBeanName);
 
         if (application != null) {
             // Set the context based on the Servlet's context
-            ApplicationContext applicationContext = (ApplicationContext) application
+            final ApplicationContext applicationContext = (ApplicationContext) application
                     .getContext();
             application.setContext(new ApplicationContext(application,
                     new ServletContextAdapter(this, context),
@@ -88,8 +88,8 @@ public class SpringServerServlet extends ServerServlet {
             String initParam;
 
             // Copy all the Web component initialization parameters
-            javax.servlet.ServletConfig servletConfig = getServletConfig();
-            for (Enumeration<String> enum1 = servletConfig
+            final javax.servlet.ServletConfig servletConfig = getServletConfig();
+            for (final Enumeration<String> enum1 = servletConfig
                     .getInitParameterNames(); enum1.hasMoreElements();) {
                 initParam = enum1.nextElement();
                 applicationContext.getParameters().add(initParam,
@@ -97,7 +97,7 @@ public class SpringServerServlet extends ServerServlet {
             }
 
             // Copy all the Web Application initialization parameters
-            for (Enumeration<String> enum1 = getServletContext()
+            for (final Enumeration<String> enum1 = getServletContext()
                     .getInitParameterNames(); enum1.hasMoreElements();) {
                 initParam = enum1.nextElement();
                 applicationContext.getParameters().add(initParam,
@@ -121,8 +121,8 @@ public class SpringServerServlet extends ServerServlet {
     @Override
     public Component createComponent() {
         Component component = null;
-        String componentBeanName = getInitParameter(Component_BEAN_PARAM_NAME,
-                null);
+        final String componentBeanName = getInitParameter(
+                Component_BEAN_PARAM_NAME, null);
         component = (Component) getWebApplicationContext().getBean(
                 componentBeanName);
 
@@ -137,7 +137,8 @@ public class SpringServerServlet extends ServerServlet {
      * Get the Spring WebApplicationContext from the ServletContext. (by hand
      * would be webApplicationContext applicationContext =
      * (WebApplicationContext)
-     * getServletContext().getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);)
+     * getServletContext().getAttribute(WebApplicationContext
+     * .ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);)
      * 
      * @return The Spring WebApplicationContext.
      */

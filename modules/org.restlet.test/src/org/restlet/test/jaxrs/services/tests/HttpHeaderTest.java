@@ -31,7 +31,6 @@ import java.util.Set;
 
 import javax.ws.rs.core.ApplicationConfig;
 
-import org.restlet.Restlet;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Cookie;
 import org.restlet.data.Language;
@@ -60,7 +59,16 @@ public class HttpHeaderTest extends JaxRsTestCase {
      * @return
      */
     protected ApplicationConfig getAppConfig() {
-        ApplicationConfig appConfig = new ApplicationConfig() {
+        final ApplicationConfig appConfig = new ApplicationConfig() {
+            @Override
+            public Map<String, javax.ws.rs.core.MediaType> getMediaTypeMappings() {
+                final Map<String, javax.ws.rs.core.MediaType> mediaTypeMapping = new HashMap<String, javax.ws.rs.core.MediaType>();
+                mediaTypeMapping.put("txt", TEXT_PLAIN_TYPE);
+                mediaTypeMapping.put("html", TEXT_HTML_TYPE);
+                mediaTypeMapping.put("xml", APPLICATION_XML_TYPE);
+                return mediaTypeMapping;
+            }
+
             @Override
             public Set<Class<?>> getProviderClasses() {
                 return (Set) getProvClasses();
@@ -71,15 +79,6 @@ public class HttpHeaderTest extends JaxRsTestCase {
             public Set<Class<?>> getResourceClasses() {
                 return (Set) Collections.singleton(getRootResourceClass());
             }
-
-            @Override
-            public Map<String, javax.ws.rs.core.MediaType> getMediaTypeMappings() {
-                Map<String, javax.ws.rs.core.MediaType> mediaTypeMapping = new HashMap<String, javax.ws.rs.core.MediaType>();
-                mediaTypeMapping.put("txt", TEXT_PLAIN_TYPE);
-                mediaTypeMapping.put("html", TEXT_HTML_TYPE);
-                mediaTypeMapping.put("xml", APPLICATION_XML_TYPE);
-                return mediaTypeMapping;
-            }
         };
         return appConfig;
     }
@@ -87,6 +86,21 @@ public class HttpHeaderTest extends JaxRsTestCase {
     @Override
     protected Class<?> getRootResourceClass() {
         return HttpHeaderTestService.class;
+    }
+
+    public void testAccMediaType() throws IOException {
+        final Response response = get("accMediaTypes", MediaType.TEXT_PLAIN);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("[" + MediaType.TEXT_PLAIN.toString() + "]", response
+                .getEntity().getText());
+    }
+
+    public void testCookies() throws IOException {
+        final Request request = createGetRequest("cookies/cookieName");
+        request.getCookies().add(new Cookie("cookieName", "cookie-value"));
+        final Response response = accessServer(request);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("cookieName=cookie-value", response.getEntity().getText());
     }
 
     public void testHeaderParam() throws IOException {
@@ -111,40 +125,6 @@ public class HttpHeaderTest extends JaxRsTestCase {
         response = accessServer(request);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("abc", response.getEntity().getText());
-    }
-
-    public void testAccMediaType() throws IOException {
-        Response response = get("accMediaTypes", MediaType.TEXT_PLAIN);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEquals("[" + MediaType.TEXT_PLAIN.toString() + "]", response
-                .getEntity().getText());
-    }
-
-    public void testCookies() throws IOException {
-        Request request = createGetRequest("cookies/cookieName");
-        request.getCookies().add(new Cookie("cookieName", "cookie-value"));
-        Response response = accessServer(request);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEquals("cookieName=cookie-value", response.getEntity().getText());
-    }
-
-    /**
-     * @see HttpHeaderTestService#getLanguage(javax.ws.rs.core.HttpHeaders)
-     */
-    public void testLanguage() throws IOException {
-        List<Preference<Language>> acceptedLanguages = new ArrayList<Preference<Language>>();
-        acceptedLanguages.add(new Preference<Language>(Language.ENGLISH));
-        ClientInfo clientInfo = new ClientInfo();
-        clientInfo.setAcceptedLanguages(acceptedLanguages);
-
-        Request request = new Request(Method.POST, createReference(
-                HttpHeaderTestService.class, "language"));
-        request.setClientInfo(clientInfo);
-        request.setEntity(new StringRepresentation("entity", Language.ENGLISH));
-        Response response = accessServer(request);
-
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEquals("en", response.getEntity().getText());
     }
 
     public void testHttpHeaders() throws IOException {
@@ -174,9 +154,28 @@ public class HttpHeaderTest extends JaxRsTestCase {
     }
 
     public void testHttpHeadersCaseInsensitive() {
-        Response response = get("header2");
+        final Response response = get("header2");
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
+    }
+
+    /**
+     * @see HttpHeaderTestService#getLanguage(javax.ws.rs.core.HttpHeaders)
+     */
+    public void testLanguage() throws IOException {
+        final List<Preference<Language>> acceptedLanguages = new ArrayList<Preference<Language>>();
+        acceptedLanguages.add(new Preference<Language>(Language.ENGLISH));
+        final ClientInfo clientInfo = new ClientInfo();
+        clientInfo.setAcceptedLanguages(acceptedLanguages);
+
+        final Request request = new Request(Method.POST, createReference(
+                HttpHeaderTestService.class, "language"));
+        request.setClientInfo(clientInfo);
+        request.setEntity(new StringRepresentation("entity", Language.ENGLISH));
+        final Response response = accessServer(request);
+
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("en", response.getEntity().getText());
     }
 
     public void testWithDefault() throws Exception {

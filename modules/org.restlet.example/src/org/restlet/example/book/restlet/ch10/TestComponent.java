@@ -16,7 +16,7 @@ import org.restlet.data.Response;
 public class TestComponent {
 
     public static void main(String[] args) throws Exception {
-        Component component = new Component();
+        final Component component = new Component();
         // Add a new HTTP server connector
         component.getServers().add(Protocol.HTTP, 8182);
         // Add a new FILE client connector
@@ -29,13 +29,12 @@ public class TestComponent {
         component.start();
 
         // Request the XML file
-        Client client = new Client(Protocol.HTTP);
-        Request request = new Request(Method.GET,
+        final Client client = new Client(Protocol.HTTP);
+        final Request request = new Request(Method.GET,
                 "http://localhost:8182/dynamicApplication/transformer");
         request.getClientInfo().getAcceptedMediaTypes().add(
                 new Preference<MediaType>(MediaType.TEXT_HTML));
-        Response response = client
-                .handle(request);
+        final Response response = client.handle(request);
         if (response.getStatus().isSuccess() && response.isEntityAvailable()) {
             response.getEntity().write(System.out);
         }

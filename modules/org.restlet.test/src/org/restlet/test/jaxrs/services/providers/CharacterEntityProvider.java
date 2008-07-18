@@ -42,8 +42,9 @@ public class CharacterEntityProvider implements MessageBodyReader<Character>,
      * @see javax.ws.rs.ext.MessageBodyWriter#getSize(java.lang.Object)
      */
     public long getSize(Character c) {
-        if (c == null)
+        if (c == null) {
             return 0;
+        }
         return 1;
     }
 
@@ -75,9 +76,10 @@ public class CharacterEntityProvider implements MessageBodyReader<Character>,
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
-        String str = Util.copyToStringBuilder(entityStream).toString();
-        if (str.length() == 0)
+        final String str = Util.copyToStringBuilder(entityStream).toString();
+        if (str.length() == 0) {
             return null;
+        }
         return str.charAt(0);
     }
 

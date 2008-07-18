@@ -41,9 +41,9 @@ public class ComponentContext extends Context {
      * Constructor.
      * 
      * @param componentHelper
-     *                The component helper.
+     *            The component helper.
      * @param logger
-     *                The logger instance of use.
+     *            The logger instance of use.
      */
     public ComponentContext(ComponentHelper componentHelper, Logger logger) {
         super(logger);
@@ -75,7 +75,7 @@ public class ComponentContext extends Context {
      * Sets the component helper.
      * 
      * @param componentHelper
-     *                The component helper.
+     *            The component helper.
      */
     protected void setComponentHelper(ComponentHelper componentHelper) {
         this.componentHelper = componentHelper;

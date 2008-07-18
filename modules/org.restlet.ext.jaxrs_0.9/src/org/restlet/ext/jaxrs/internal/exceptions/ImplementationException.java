@@ -35,17 +35,17 @@ public class ImplementationException extends JaxRsRuntimeException {
     }
 
     /**
-     * @param cause
-     */
-    public ImplementationException(Throwable cause) {
-        super(cause);
-    }
-
-    /**
      * @param message
      * @param cause
      */
     public ImplementationException(String message, Throwable cause) {
         super(message, cause);
+    }
+
+    /**
+     * @param cause
+     */
+    public ImplementationException(Throwable cause) {
+        super(cause);
     }
 }

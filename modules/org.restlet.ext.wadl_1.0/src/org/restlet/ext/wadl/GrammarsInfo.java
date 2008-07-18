@@ -52,8 +52,9 @@ public class GrammarsInfo {
         if (d == null) {
             synchronized (this) {
                 d = this.documentations;
-                if (d == null)
+                if (d == null) {
                     this.documentations = d = new ArrayList<DocumentationInfo>();
+                }
             }
         }
         return d;
@@ -70,8 +71,9 @@ public class GrammarsInfo {
         if (i == null) {
             synchronized (this) {
                 i = this.includes;
-                if (i == null)
+                if (i == null) {
                     this.includes = i = new ArrayList<IncludeInfo>();
+                }
             }
         }
         return i;
@@ -111,11 +113,11 @@ public class GrammarsInfo {
         } else {
             writer.startElement(APP_NAMESPACE, "grammars");
 
-            for (DocumentationInfo documentationInfo : getDocumentations()) {
+            for (final DocumentationInfo documentationInfo : getDocumentations()) {
                 documentationInfo.writeElement(writer);
             }
 
-            for (IncludeInfo includeInfo : getIncludes()) {
+            for (final IncludeInfo includeInfo : getIncludes()) {
                 includeInfo.writeElement(writer);
             }
 

@@ -37,8 +37,25 @@ import javax.xml.bind.Unmarshaller;
  */
 abstract class AbstractJaxbProvider<T> extends AbstractProvider<T> {
 
-    @Context ContextResolver<JAXBContext> contextResolver;
-    
+    @Context
+    ContextResolver<JAXBContext> contextResolver;
+
+    private JAXBContext getJaxbContext(Class<?> type) throws JAXBException {
+        // NICE perhaps caching the JAXBContext
+        final JAXBContext jaxbContext = this.contextResolver.getContext(type);
+        if (jaxbContext != null) {
+            return jaxbContext;
+        }
+        try {
+            return JAXBContext.newInstance(type);
+        } catch (final NoClassDefFoundError e) {
+            throw new WebApplicationException(Response.serverError().entity(
+                    e.getMessage()).build());
+        }
+    }
+
+    abstract Logger getLogger();
+
     /**
      * @see MessageBodyWriter#getSize(Object)
      */
@@ -47,42 +64,27 @@ abstract class AbstractJaxbProvider<T> extends AbstractProvider<T> {
         return -1;
     }
 
-    Object unmarshal(Class<?> type, InputStream entityStream)
-            throws IOException {
-        try {
-            JAXBContext jaxbContext = getJaxbContext(type);
-            Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-            return unmarshaller.unmarshal(entityStream);
-        } catch (JAXBException e) {
-            String message = "Could not unmarshal to " + type.getName();
-            throw logAndIOExc(getLogger(), message, e);
-        }
-    }
-
-    abstract Logger getLogger();
-
     void marshal(Object object, OutputStream entityStream) throws IOException {
-        Class<? extends Object> type = object.getClass();
+        final Class<? extends Object> type = object.getClass();
         try {
-            JAXBContext jaxbContext = getJaxbContext(object.getClass());
-            Marshaller marshaller = jaxbContext.createMarshaller();
+            final JAXBContext jaxbContext = getJaxbContext(object.getClass());
+            final Marshaller marshaller = jaxbContext.createMarshaller();
             marshaller.marshal(object, entityStream);
-        } catch (JAXBException e) {
+        } catch (final JAXBException e) {
             throw logAndIOExc(getLogger(), "Could not marshal the "
                     + type.getName(), e);
         }
     }
 
-    private JAXBContext getJaxbContext(Class<?> type) throws JAXBException {
-        // NICE perhaps caching the JAXBContext
-        JAXBContext jaxbContext = contextResolver.getContext(type);
-        if(jaxbContext != null)
-            return jaxbContext;
+    Object unmarshal(Class<?> type, InputStream entityStream)
+            throws IOException {
         try {
-            return JAXBContext.newInstance(type);
-        } catch (NoClassDefFoundError e) {
-            throw new WebApplicationException(Response.serverError().entity(
-                    e.getMessage()).build());
+            final JAXBContext jaxbContext = getJaxbContext(type);
+            final Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+            return unmarshaller.unmarshal(entityStream);
+        } catch (final JAXBException e) {
+            final String message = "Could not unmarshal to " + type.getName();
+            throw logAndIOExc(getLogger(), message, e);
         }
     }
 }

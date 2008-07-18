@@ -90,14 +90,15 @@ public abstract class Engine {
      * loader first, or the classloader of the current class.
      * 
      * @param classname
-     *                The class name to lookup.
+     *            The class name to lookup.
      * @return The class object.
      * @throws ClassNotFoundException
      */
     public static Class<?> classForName(String classname)
             throws ClassNotFoundException {
         Class<?> result = null;
-        ClassLoader loader = Thread.currentThread().getContextClassLoader();
+        final ClassLoader loader = Thread.currentThread()
+                .getContextClassLoader();
 
         if (loader != null) {
             result = Class.forName(classname, false, loader);
@@ -151,12 +152,13 @@ public abstract class Engine {
                 try {
                     reader = new BufferedReader(new InputStreamReader(configURL
                             .openStream(), "utf-8"));
-                    String providerName = reader.readLine();
+                    final String providerName = reader.readLine();
 
-                    if (providerName != null)
+                    if (providerName != null) {
                         engineClassName = providerName.substring(0,
                                 providerName.indexOf('#')).trim();
-                } catch (IOException e) {
+                    }
+                } catch (final IOException e) {
                     logger
                             .log(
                                     Level.SEVERE,
@@ -165,7 +167,7 @@ public abstract class Engine {
                     if (reader != null) {
                         try {
                             reader.close();
-                        } catch (IOException e) {
+                        } catch (final IOException e) {
                             logger
                                     .warning("IOException encountered while closing an open BufferedReader"
                                             + e.getMessage());
@@ -179,7 +181,7 @@ public abstract class Engine {
                     instance = (Engine) Class.forName(engineClassName)
                             .newInstance();
                     result = instance;
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     logger
                             .log(
                                     Level.SEVERE,
@@ -207,7 +209,7 @@ public abstract class Engine {
      * specified in List.hasCode().
      * 
      * @param objects
-     *                the objects to compute the hashCode
+     *            the objects to compute the hashCode
      * 
      * @return The hash code of a set of objects.
      */
@@ -215,7 +217,7 @@ public abstract class Engine {
         int result = 1;
 
         if (objects != null) {
-            for (Object obj : objects) {
+            for (final Object obj : objects) {
                 result = 31 * result + (obj == null ? 0 : obj.hashCode());
             }
         }
@@ -228,7 +230,7 @@ public abstract class Engine {
      * classes.
      * 
      * @param newClassloader
-     *                The new class loader to use.
+     *            The new class loader to use.
      */
     public static void setClassLoader(ClassLoader newClassloader) {
         classloader = newClassloader;
@@ -238,7 +240,7 @@ public abstract class Engine {
      * Sets the registered Restlet engine.
      * 
      * @param engine
-     *                The registered Restlet engine.
+     *            The registered Restlet engine.
      */
     public static void setInstance(Engine engine) {
         instance = engine;
@@ -249,9 +251,9 @@ public abstract class Engine {
      * delegates credential checking to checkSecret().
      * 
      * @param request
-     *                The request to authenticate.
+     *            The request to authenticate.
      * @param guard
-     *                The associated guard to callback.
+     *            The associated guard to callback.
      * @return -1 if the given credentials were invalid, 0 if no credentials
      *         were found and 1 otherwise.
      * @see Guard#checkSecret(Request, String, char[])
@@ -263,11 +265,11 @@ public abstract class Engine {
      * by setting the status to CLIENT_ERROR_UNAUTHORIZED.
      * 
      * @param response
-     *                The response to update.
+     *            The response to update.
      * @param stale
-     *                Indicates if the new challenge is due to a stale response.
+     *            Indicates if the new challenge is due to a stale response.
      * @param guard
-     *                The associated guard to callback.
+     *            The associated guard to callback.
      */
     public abstract void challenge(Response response, boolean stale, Guard guard);
 
@@ -275,13 +277,12 @@ public abstract class Engine {
      * Copies the given header parameters into the given {@link Response}.
      * 
      * @param headers
-     *                The headers to copy.
+     *            The headers to copy.
      * @param response
-     *                The response to update. Must contain a
-     *                {@link Representation} to copy the representation headers
-     *                in it.
+     *            The response to update. Must contain a {@link Representation}
+     *            to copy the representation headers in it.
      * @param logger
-     *                The logger to use.
+     *            The logger to use.
      */
     public abstract void copyResponseHeaders(Iterable<Parameter> headers,
             Response response, Logger logger);
@@ -291,13 +292,13 @@ public abstract class Engine {
      * {@link Series}.
      * 
      * @param response
-     *                The response to update. Should contain a
-     *                {@link Representation} to copy the representation headers
-     *                from it.
+     *            The response to update. Should contain a
+     *            {@link Representation} to copy the representation headers from
+     *            it.
      * @param headers
-     *                The Series to copy the headers in.
+     *            The Series to copy the headers in.
      * @param logger
-     *                The logger to use.
+     *            The logger to use.
      */
     public abstract void copyResponseHeaders(Response response,
             Series<Parameter> headers, Logger logger);
@@ -306,11 +307,11 @@ public abstract class Engine {
      * Creates a directory resource.
      * 
      * @param handler
-     *                The parent directory handler.
+     *            The parent directory handler.
      * @param request
-     *                The request to handle.
+     *            The request to handle.
      * @param response
-     *                The response to return.
+     *            The response to return.
      * @return A new directory resource.
      * @throws IOException
      */
@@ -321,9 +322,9 @@ public abstract class Engine {
      * Creates a new helper for a given component.
      * 
      * @param application
-     *                The application to help.
+     *            The application to help.
      * @param parentContext
-     *                The parent context, typically the component's context.
+     *            The parent context, typically the component's context.
      * @return The new helper.
      */
     public abstract Helper<Application> createHelper(Application application,
@@ -333,9 +334,9 @@ public abstract class Engine {
      * Creates a new helper for a given client connector.
      * 
      * @param client
-     *                The client to help.
+     *            The client to help.
      * @param helperClass
-     *                Optional helper class name.
+     *            Optional helper class name.
      * @return The new helper.
      */
     public abstract Helper<Client> createHelper(Client client,
@@ -345,7 +346,7 @@ public abstract class Engine {
      * Creates a new helper for a given component.
      * 
      * @param component
-     *                The component to help.
+     *            The component to help.
      * @return The new helper.
      */
     public abstract Helper<Component> createHelper(Component component);
@@ -354,9 +355,9 @@ public abstract class Engine {
      * Creates a new helper for a given server connector.
      * 
      * @param server
-     *                The server to help.
+     *            The server to help.
      * @param helperClass
-     *                Optional helper class name.
+     *            Optional helper class name.
      * @return The new helper.
      */
     public abstract Helper<Server> createHelper(Server server,
@@ -368,7 +369,7 @@ public abstract class Engine {
      * @param cookie
      * @return the Cookie as String
      * @throws IllegalArgumentException
-     *                 Thrown if the Cookie contains illegal values
+     *             Thrown if the Cookie contains illegal values
      */
     public abstract String formatCookie(Cookie cookie)
             throws IllegalArgumentException;
@@ -379,7 +380,7 @@ public abstract class Engine {
      * @param cookieSetting
      * @return the CookieSetting as String
      * @throws IllegalArgumentException
-     *                 Thrown if the CookieSetting contains illegal values
+     *             Thrown if the CookieSetting contains illegal values
      */
     public abstract String formatCookieSetting(CookieSetting cookieSetting)
             throws IllegalArgumentException;
@@ -388,7 +389,7 @@ public abstract class Engine {
      * Formats the given Set of Dimensions to a String for the HTTP Vary header.
      * 
      * @param dimensions
-     *                the dimensions to format.
+     *            the dimensions to format.
      * @return the Vary header or null, if dimensions is null or empty.
      */
     public abstract String formatDimensions(Collection<Dimension> dimensions);
@@ -397,10 +398,10 @@ public abstract class Engine {
      * Formats the given List of Products to a String.
      * 
      * @param products
-     *                The list of products to format.
+     *            The list of products to format.
      * @return the List of Products as String.
      * @throws IllegalArgumentException
-     *                 Thrown if the List of Products contains illegal values
+     *             Thrown if the List of Products contains illegal values
      */
     public abstract String formatUserAgent(List<Product> products)
             throws IllegalArgumentException;
@@ -412,15 +413,15 @@ public abstract class Engine {
      * client preferences.
      * 
      * @param client
-     *                The client preferences.
+     *            The client preferences.
      * @param variants
-     *                The list of variants to compare.
+     *            The list of variants to compare.
      * @param defaultLanguage
-     *                The default language.
+     *            The default language.
      * @return The preferred variant.
-     * @see <a
-     *      href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache
-     *      content negotiation algorithm</a>
+     * @see <a * href=
+     *      "http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm"
+     *      >Apache * content negotiation algorithm< /a>
      */
     public abstract Variant getPreferredVariant(ClientInfo client,
             List<Variant> variants, Language defaultLanguage);
@@ -429,11 +430,11 @@ public abstract class Engine {
      * Parses a representation into a form.
      * 
      * @param logger
-     *                The logger to use.
+     *            The logger to use.
      * @param form
-     *                The target form.
+     *            The target form.
      * @param representation
-     *                The representation to parse.
+     *            The representation to parse.
      */
     public abstract void parse(Logger logger, Form form,
             Representation representation);
@@ -442,18 +443,18 @@ public abstract class Engine {
      * Parses a parameters string to parse into a given form.
      * 
      * @param logger
-     *                The logger to use.
+     *            The logger to use.
      * @param form
-     *                The target form.
+     *            The target form.
      * @param parametersString
-     *                The parameters string to parse.
+     *            The parameters string to parse.
      * @param characterSet
-     *                The supported character encoding.
+     *            The supported character encoding.
      * @param decode
-     *                Indicates if the parameters should be decoded using the
-     *                given character set.
+     *            Indicates if the parameters should be decoded using the given
+     *            character set.
      * @param separator
-     *                The separator character to append between parameters.
+     *            The separator character to append between parameters.
      */
     public abstract void parse(Logger logger, Form form,
             String parametersString, CharacterSet characterSet, boolean decode,
@@ -463,10 +464,10 @@ public abstract class Engine {
      * Parses the given Content Type.
      * 
      * @param contentType
-     *                the Content Type as String
+     *            the Content Type as String
      * @return the ContentType as MediaType; charset etc. are parameters.
      * @throws IllegalArgumentException
-     *                 if the String can not be parsed.
+     *             if the String can not be parsed.
      */
     public abstract MediaType parseContentType(String contentType)
             throws IllegalArgumentException;
@@ -477,7 +478,7 @@ public abstract class Engine {
      * @param cookie
      * @return the Cookie parsed from the String
      * @throws IllegalArgumentException
-     *                 Thrown if the String can not be parsed as Cookie.
+     *             Thrown if the String can not be parsed as Cookie.
      */
     public abstract Cookie parseCookie(String cookie)
             throws IllegalArgumentException;
@@ -488,7 +489,7 @@ public abstract class Engine {
      * @param cookieSetting
      * @return the CookieSetting parsed from the String
      * @throws IllegalArgumentException
-     *                 Thrown if the String can not be parsed as CookieSetting.
+     *             Thrown if the String can not be parsed as CookieSetting.
      */
     public abstract CookieSetting parseCookieSetting(String cookieSetting)
             throws IllegalArgumentException;
@@ -499,8 +500,8 @@ public abstract class Engine {
      * @param userAgent
      * @return the List of Product objects parsed from the String
      * @throws IllegalArgumentException
-     *                 Thrown if the String can not be parsed as a list of
-     *                 Product instances.
+     *             Thrown if the String can not be parsed as a list of Product
+     *             instances.
      */
     public abstract List<Product> parseUserAgent(String userAgent)
             throws IllegalArgumentException;
@@ -512,7 +513,7 @@ public abstract class Engine {
      * "HelloWorld", this method returns "68e109f0f40ca72a15e05cc22786f8e6".
      * 
      * @param target
-     *                The string to encode.
+     *            The string to encode.
      * @return The MD5 digest of the target string.
      */
     public abstract String toMd5(String target);

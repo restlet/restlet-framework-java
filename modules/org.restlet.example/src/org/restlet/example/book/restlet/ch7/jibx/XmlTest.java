@@ -11,10 +11,10 @@ import org.restlet.ext.jibx.JibxRepresentation;
 
 public class XmlTest {
     public static void main(String[] args) {
-        Restlet jibxRestlet = new Restlet() {
+        final Restlet jibxRestlet = new Restlet() {
             @Override
             public void handle(Request request, Response response) {
-                Customer customer = new Customer();
+                final Customer customer = new Customer();
                 customer.state = "state_value";
                 customer.street = "street_value";
                 customer.city = "city_value";
@@ -25,17 +25,17 @@ public class XmlTest {
             }
         };
 
-        Server server = new Server(Protocol.HTTP, 8182, jibxRestlet);
+        final Server server = new Server(Protocol.HTTP, 8182, jibxRestlet);
 
         try {
             server.start();
 
-            Client client = new Client(Protocol.HTTP);
-            Response response = client.get("http://localhost:8182/");
+            final Client client = new Client(Protocol.HTTP);
+            final Response response = client.get("http://localhost:8182/");
             if (response.isEntityAvailable()) {
-                JibxRepresentation<Customer> representation = new JibxRepresentation<Customer>(
+                final JibxRepresentation<Customer> representation = new JibxRepresentation<Customer>(
                         response.getEntity(), Customer.class);
-                Customer customer = representation.getObject();
+                final Customer customer = representation.getObject();
                 System.out.println(customer.state);
                 System.out.println(customer.street);
                 System.out.println(customer.city);
@@ -44,12 +44,12 @@ public class XmlTest {
             } else {
                 System.err.println("No entity");
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         } finally {
             try {
                 server.stop();
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 e.printStackTrace();
             }
         }

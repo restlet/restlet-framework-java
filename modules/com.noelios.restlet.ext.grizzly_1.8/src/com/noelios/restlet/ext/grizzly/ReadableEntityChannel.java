@@ -29,12 +29,11 @@ public class ReadableEntityChannel extends SelectableChannel implements
      * Constructor.
      * 
      * @param remainingBuffer
-     *                The byte buffer remaining from previous read processing.
+     *            The byte buffer remaining from previous read processing.
      * @param source
-     *                The source channel.
+     *            The source channel.
      * @param availableSize
-     *                The available size that can be read from the source
-     *                channel.
+     *            The available size that can be read from the source channel.
      */
     public ReadableEntityChannel(ByteBuffer remainingBuffer,
             SelectableChannel source, long availableSize) {
@@ -87,7 +86,7 @@ public class ReadableEntityChannel extends SelectableChannel implements
      * from the underlying channel.
      * 
      * @param dst
-     *                The destination buffer.
+     *            The destination buffer.
      * @return The number of bytes read, or -1 if the end of the channel has
      *         been reached.
      */
@@ -97,7 +96,7 @@ public class ReadableEntityChannel extends SelectableChannel implements
         if ((this.remainingBuffer != null)
                 && (this.remainingBuffer.hasRemaining())) {
             // First make sure that the remaining buffer is empty
-            byte[] src = new byte[this.remainingBuffer.remaining()];
+            final byte[] src = new byte[this.remainingBuffer.remaining()];
             this.remainingBuffer.get(src);
             dst.put(src);
         } else {

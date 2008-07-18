@@ -34,14 +34,14 @@ import org.restlet.resource.StringRepresentation;
  * Notation and is a lightweight data-interchange format.
  * 
  * @author Jerome Louvel (contact@noelios.com)
- * @see <a href="http://www.json.org">JSON home</a>
+ * @see <a href="http://www.json.org">JSON home< /a>
  */
 public class JsonRepresentation extends StringRepresentation {
     /**
      * Constructor from a JSON object.
      * 
      * @param jsonObject
-     *                The JSON object.
+     *            The JSON object.
      */
     public JsonRepresentation(JSONObject jsonObject) {
         super(jsonObject.toString(), MediaType.APPLICATION_JSON, null,
@@ -52,7 +52,7 @@ public class JsonRepresentation extends StringRepresentation {
      * Constructor from a map object.
      * 
      * @param map
-     *                The map to convert to JSON.
+     *            The map to convert to JSON.
      * @see org.json.JSONObject#JSONObject(Map)
      */
     public JsonRepresentation(Map<Object, Object> map) {
@@ -63,7 +63,7 @@ public class JsonRepresentation extends StringRepresentation {
      * Constructor from a bean using reflection to generate JSON names.
      * 
      * @param bean
-     *                The bean to convert to JSON.
+     *            The bean to convert to JSON.
      * @see org.json.JSONObject#JSONObject(Object)
      */
     public JsonRepresentation(Object bean) {
@@ -74,7 +74,7 @@ public class JsonRepresentation extends StringRepresentation {
      * Constructor.
      * 
      * @param jsonRepresentation
-     *                A source JSON representation to parse.
+     *            A source JSON representation to parse.
      */
     public JsonRepresentation(Representation jsonRepresentation)
             throws IOException {
@@ -86,7 +86,7 @@ public class JsonRepresentation extends StringRepresentation {
      * Constructor from a JSON string.
      * 
      * @param jsonString
-     *                The JSON string.
+     *            The JSON string.
      */
     public JsonRepresentation(String jsonString) {
         super(jsonString, MediaType.APPLICATION_JSON, null, CharacterSet.UTF_8);

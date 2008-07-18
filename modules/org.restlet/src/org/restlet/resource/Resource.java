@@ -74,12 +74,12 @@ import org.restlet.util.Series;
  * a Resource instance is not reused by several calls and is only invoked by one
  * thread. Therefore, it doesn't have to be thread-safe.<br>
  * 
- * @see <a
- *      href="http://roy.gbiv.com/pubs/dissertation/rest_arch_style.htm#sec_5_2_1_1">Source
- *      dissertation</a>
- * @see <a
- *      href="http://www.restlet.org/documentation/1.1/tutorial#part12">Tutorial:
- *      Reaching target Resources</a>
+ * @see <a * href=
+ *      "http://roy.gbiv.com/pubs/dissertation/rest_arch_style.htm#sec_5_2_1_1"
+ *      >Source * dissertation< /a>
+ * @see <a *
+ *      href="http://www.restlet.org/documentation/1.1/tutorial#part12">Tutorial
+ *      : * Reaching target Resources< /a>
  * @see org.restlet.resource.Representation
  * @see org.restlet.Finder
  * @author Jerome Louvel (contact@noelios.com)
@@ -135,11 +135,11 @@ public class Resource extends Handler {
      * by default.
      * 
      * @param context
-     *                The parent context.
+     *            The parent context.
      * @param request
-     *                The request to handle.
+     *            The request to handle.
      * @param response
-     *                The response to return.
+     *            The response to return.
      */
     public Resource(Context context, Request request, Response response) {
         super(context, request, response);
@@ -153,7 +153,7 @@ public class Resource extends Handler {
      * This is the higher-level method that let you process POST requests.
      * 
      * @param entity
-     *                The posted entity.
+     *            The posted entity.
      */
     @SuppressWarnings("unused")
     public void acceptRepresentation(Representation entity)
@@ -215,7 +215,7 @@ public class Resource extends Handler {
     public void delete() {
         try {
             removeRepresentations();
-        } catch (ResourceException re) {
+        } catch (final ResourceException re) {
             getResponse().setStatus(re.getStatus());
         }
     }
@@ -234,7 +234,7 @@ public class Resource extends Handler {
 
         try {
             result = represent();
-        } catch (ResourceException re) {
+        } catch (final ResourceException re) {
             getResponse().setStatus(re.getStatus());
         }
 
@@ -249,13 +249,13 @@ public class Resource extends Handler {
      */
     public Variant getPreferredVariant() {
         Variant result = null;
-        List<Variant> variants = getVariants();
+        final List<Variant> variants = getVariants();
 
         if ((variants != null) && (!variants.isEmpty())) {
             Language language = null;
             // Compute the preferred variant. Get the default language
             // preference from the Application (if any).
-            Application app = Application.getCurrent();
+            final Application app = Application.getCurrent();
 
             if (app != null) {
                 language = app.getMetadataService().getDefaultLanguage();
@@ -283,7 +283,7 @@ public class Resource extends Handler {
      * actually server the one selected via this method.
      * 
      * @param variant
-     *                The variant whose full representation must be returned.
+     *            The variant whose full representation must be returned.
      * @return The full representation for the variant.
      * @see #getVariants()
      * @deprecated Use the {@link #represent(Variant)} method instead.
@@ -294,7 +294,7 @@ public class Resource extends Handler {
 
         try {
             result = represent(variant);
-        } catch (ResourceException re) {
+        } catch (final ResourceException re) {
             getResponse().setStatus(re.getStatus(), re);
         }
 
@@ -327,8 +327,9 @@ public class Resource extends Handler {
         if (v == null) {
             synchronized (this) {
                 v = this.variants;
-                if (v == null)
+                if (v == null) {
                     this.variants = v = new ArrayList<Variant>();
+                }
             }
         }
         return v;
@@ -347,7 +348,7 @@ public class Resource extends Handler {
             if (isNegotiateContent()) {
                 preferredVariant = getPreferredVariant();
             } else {
-                List<Variant> variants = getVariants();
+                final List<Variant> variants = getVariants();
 
                 if (variants.size() == 1) {
                     preferredVariant = variants.get(0);
@@ -361,7 +362,7 @@ public class Resource extends Handler {
             // The conditions have to be checked
             // even if there is no preferred variant.
             if (canDelete) {
-                Status status = getRequest().getConditions().getStatus(
+                final Status status = getRequest().getConditions().getStatus(
                         getRequest().getMethod(),
                         getRepresentation(preferredVariant));
 
@@ -420,7 +421,7 @@ public class Resource extends Handler {
             // The variant that may need to meet the request conditions
             Representation selectedRepresentation = null;
 
-            List<Variant> variants = getVariants();
+            final List<Variant> variants = getVariants();
             if ((variants == null) || (variants.isEmpty())) {
                 // Resource not found
                 getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
@@ -429,15 +430,16 @@ public class Resource extends Handler {
                                 "A resource should normally have at least one variant added by calling getVariants().add() in the constructor. Check your resource \""
                                         + getRequest().getResourceRef() + "\".");
             } else if (isNegotiateContent()) {
-                Variant preferredVariant = getPreferredVariant();
+                final Variant preferredVariant = getPreferredVariant();
 
                 if (preferredVariant == null) {
                     // No variant was found matching the client preferences
                     getResponse().setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
 
                     // The list of all variants is transmitted to the client
-                    ReferenceList refs = new ReferenceList(variants.size());
-                    for (Variant variant : variants) {
+                    final ReferenceList refs = new ReferenceList(variants
+                            .size());
+                    for (final Variant variant : variants) {
                         if (variant.getIdentifier() != null) {
                             refs.add(variant.getIdentifier());
                         }
@@ -463,9 +465,9 @@ public class Resource extends Handler {
                     getResponse().setEntity(getRepresentation(variants.get(0)));
                     selectedRepresentation = getResponse().getEntity();
                 } else {
-                    ReferenceList variantRefs = new ReferenceList();
+                    final ReferenceList variantRefs = new ReferenceList();
 
-                    for (Variant variant : variants) {
+                    for (final Variant variant : variants) {
                         if (variant.getIdentifier() != null) {
                             variantRefs.add(variant.getIdentifier());
                         } else {
@@ -499,8 +501,9 @@ public class Resource extends Handler {
                 // The given representation (even if null) must meet the request
                 // conditions (if any).
                 if (getRequest().getConditions().hasSome()) {
-                    Status status = getRequest().getConditions().getStatus(
-                            getRequest().getMethod(), selectedRepresentation);
+                    final Status status = getRequest().getConditions()
+                            .getStatus(getRequest().getMethod(),
+                                    selectedRepresentation);
 
                     if (status != null) {
                         getResponse().setStatus(status);
@@ -546,7 +549,7 @@ public class Resource extends Handler {
             if (isNegotiateContent()) {
                 preferredVariant = getPreferredVariant();
             } else {
-                List<Variant> variants = getVariants();
+                final List<Variant> variants = getVariants();
 
                 if (variants.size() == 1) {
                     preferredVariant = variants.get(0);
@@ -560,7 +563,7 @@ public class Resource extends Handler {
             // The conditions have to be checked
             // even if there is no preferred variant.
             if (canPut) {
-                Status status = getRequest().getConditions().getStatus(
+                final Status status = getRequest().getConditions().getStatus(
                         getRequest().getMethod(),
                         getRepresentation(preferredVariant));
                 if (status != null) {
@@ -573,10 +576,10 @@ public class Resource extends Handler {
         if (canPut) {
             // Check the Content-Range HTTP Header
             // in order to prevent usage of partial PUTs
-            Object oHeaders = getRequest().getAttributes().get(
+            final Object oHeaders = getRequest().getAttributes().get(
                     "org.restlet.http.headers");
             if (oHeaders != null) {
-                Series<Parameter> headers = (Series<Parameter>) oHeaders;
+                final Series<Parameter> headers = (Series<Parameter>) oHeaders;
                 if (headers.getFirst("Content-Range", true) != null) {
                     getResponse()
                             .setStatus(
@@ -608,11 +611,11 @@ public class Resource extends Handler {
      * your Resource won't behave properly.
      * 
      * @param context
-     *                The parent context.
+     *            The parent context.
      * @param request
-     *                The request to handle.
+     *            The request to handle.
      * @param response
-     *                The response to return.
+     *            The response to return.
      */
     @Override
     public void init(Context context, Request request, Response response) {
@@ -668,7 +671,7 @@ public class Resource extends Handler {
      * the {@link #acceptRepresentation(Representation)} method.
      * 
      * @param entity
-     *                The representation posted.
+     *            The representation posted.
      * @deprecated Use the {@link #acceptRepresentation(Representation)} method
      *             instead.
      */
@@ -676,7 +679,7 @@ public class Resource extends Handler {
     public void post(Representation entity) {
         try {
             acceptRepresentation(entity);
-        } catch (ResourceException re) {
+        } catch (final ResourceException re) {
             getResponse().setStatus(re.getStatus());
         }
     }
@@ -686,7 +689,7 @@ public class Resource extends Handler {
      * the {@link #storeRepresentation(Representation)} method.
      * 
      * @param entity
-     *                The representation put.
+     *            The representation put.
      * @deprecated Use the {@link #storeRepresentation(Representation)} method
      *             instead.
      */
@@ -694,7 +697,7 @@ public class Resource extends Handler {
     public void put(Representation entity) {
         try {
             storeRepresentation(entity);
-        } catch (ResourceException re) {
+        } catch (final ResourceException re) {
             getResponse().setStatus(re.getStatus());
         }
     }
@@ -737,7 +740,7 @@ public class Resource extends Handler {
      * actually server the one selected via this method.
      * 
      * @param variant
-     *                The variant whose full representation must be returned.
+     *            The variant whose full representation must be returned.
      * @return The full representation for the variant.
      * @see #getVariants()
      */
@@ -760,7 +763,7 @@ public class Resource extends Handler {
      * {@link Status#CLIENT_ERROR_NOT_FOUND} if this property is false.
      * 
      * @param available
-     *                True if the resource is actually available.
+     *            True if the resource is actually available.
      */
     public void setAvailable(boolean available) {
         this.available = available;
@@ -772,7 +775,7 @@ public class Resource extends Handler {
      * {@link #handleDelete()} methods.
      * 
      * @param modifiable
-     *                Indicates if the representations can be modified.
+     *            Indicates if the representations can be modified.
      */
     public void setModifiable(boolean modifiable) {
         this.modifiable = modifiable;
@@ -783,7 +786,7 @@ public class Resource extends Handler {
      * Default value is true.
      * 
      * @param negotiateContent
-     *                True if content negotiation is enabled.
+     *            True if content negotiation is enabled.
      */
     public void setNegotiateContent(boolean negotiateContent) {
         this.negotiateContent = negotiateContent;
@@ -794,7 +797,7 @@ public class Resource extends Handler {
      * method.
      * 
      * @param readable
-     *                Indicates if the representations can be read.
+     *            Indicates if the representations can be read.
      */
     public void setReadable(boolean readable) {
         this.readable = readable;
@@ -804,7 +807,7 @@ public class Resource extends Handler {
      * Sets the modifiable list of variants.
      * 
      * @param variants
-     *                The modifiable list of variants.
+     *            The modifiable list of variants.
      */
     public void setVariants(List<Variant> variants) {
         this.variants = variants;

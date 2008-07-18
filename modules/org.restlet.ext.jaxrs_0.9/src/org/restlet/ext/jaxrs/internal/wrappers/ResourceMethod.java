@@ -92,34 +92,33 @@ public class ResourceMethod extends AbstractMethodWrapper implements
      * Creates a wrapper for a resource method.
      * 
      * @param executeMethod
-     *                the Java method to wrap.
+     *            the Java method to wrap.
      * @param annotatedMethod
-     *                the java method that contains the annotations for this
-     *                method.
+     *            the java method that contains the annotations for this method.
      * @param resourceClass
-     *                the wrapped class of the method.
+     *            the wrapped class of the method.
      * @param httpMethod
-     *                the HTTP method of the Java method. It will be checked be
-     *                the {@link org.restlet.ext.jaxrs.JaxRsRestlet}, so
-     *                avoiding double work. It will be requested from the
-     *                javaMethod.
+     *            the HTTP method of the Java method. It will be checked be the
+     *            {@link org.restlet.ext.jaxrs.JaxRsRestlet}, so avoiding double
+     *            work. It will be requested from the javaMethod.
      * @param tlContext
-     *                the {@link ThreadLocalizedContext} of the
-     *                {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
+     *            the {@link ThreadLocalizedContext} of the
+     *            {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
      * @param entityProviders
-     *                all entity providers
+     *            all entity providers
      * @param allCtxResolvers
-     *                all ContextResolvers
+     *            all ContextResolvers
      * @param extensionBackwardMapping
-     *                the extension backward mapping
+     *            the extension backward mapping
      * @param logger
      * @throws IllegalPathOnMethodException
      * @throws MissingAnnotationException
      * @throws IllegalArgumentException
-     *                 if the annotated method is null
+     *             if the annotated method is null
      * @throws IllegalMethodParamTypeException
-     *                 if one of the method parameters annotated with &#64;{@link Context}
-     *                 has a type that must not be annotated with &#64;{@link Context}.
+     *             if one of the method parameters annotated with &#64;
+     *             {@link Context} has a type that must not be annotated with
+     *             &#64;{@link Context}.
      */
     ResourceMethod(Method executeMethod, Method annotatedMethod,
             ResourceClass resourceClass, org.restlet.data.Method httpMethod,
@@ -132,10 +131,11 @@ public class ResourceMethod extends AbstractMethodWrapper implements
                 entityProviders, allCtxResolvers, extensionBackwardMapping,
                 true, logger);
         this.annotatedMethod = annotatedMethod;
-        if (httpMethod != null)
+        if (httpMethod != null) {
             this.httpMethod = httpMethod;
-        else
+        } else {
             this.httpMethod = WrapperUtil.getHttpMethod(this.annotatedMethod);
+        }
         this.consumedMimes = createConsumedMimes();
         this.producedMimes = createProducedMimes();
         this.supportedVariants = createSupportedVariants();
@@ -150,13 +150,15 @@ public class ResourceMethod extends AbstractMethodWrapper implements
     private List<MediaType> createConsumedMimes() {
         Consumes consumes;
         consumes = this.annotatedMethod.getAnnotation(Consumes.class);
-        if (consumes == null)
+        if (consumes == null) {
             consumes = this.executeMethod.getDeclaringClass().getAnnotation(
                     Consumes.class);
-        if (consumes != null)
+        }
+        if (consumes != null) {
             return WrapperUtil.convertToMediaTypes(consumes.value());
-        else
+        } else {
             return Collections.singletonList(MediaType.ALL);
+        }
     }
 
     /**
@@ -168,13 +170,15 @@ public class ResourceMethod extends AbstractMethodWrapper implements
     private List<MediaType> createProducedMimes() {
         Produces produces;
         produces = this.annotatedMethod.getAnnotation(Produces.class);
-        if (produces == null)
+        if (produces == null) {
             produces = this.executeMethod.getDeclaringClass().getAnnotation(
                     Produces.class);
-        if (produces != null)
+        }
+        if (produces != null) {
             return WrapperUtil.convertToMediaTypes(produces.value());
-        else
+        } else {
             return Collections.emptyList();
+        }
     }
 
     /**
@@ -183,8 +187,8 @@ public class ResourceMethod extends AbstractMethodWrapper implements
      * {@link #supportedVariants}.
      */
     private Collection<Variant> createSupportedVariants() {
-        Collection<Variant> supportedVariants = new ArrayList<Variant>();
-        for (MediaType mediaType : this.getProducedMimes()) {
+        final Collection<Variant> supportedVariants = new ArrayList<Variant>();
+        for (final MediaType mediaType : getProducedMimes()) {
             javax.ws.rs.core.MediaType mt;
             mt = Converter.toJaxRsMediaType(mediaType);
             supportedVariants.add(new Variant(mt, null, null));
@@ -199,7 +203,7 @@ public class ResourceMethod extends AbstractMethodWrapper implements
      * @see Method#getAnnotations()
      */
     public Annotation[] getAnnotations() {
-        return annotatedMethod.getAnnotations();
+        return this.annotatedMethod.getAnnotations();
     }
 
     /**
@@ -218,7 +222,7 @@ public class ResourceMethod extends AbstractMethodWrapper implements
      * @see Method#getGenericReturnType()
      */
     public Type getGenericReturnType() {
-        return executeMethod.getGenericReturnType();
+        return this.executeMethod.getGenericReturnType();
     }
 
     /**
@@ -231,13 +235,13 @@ public class ResourceMethod extends AbstractMethodWrapper implements
     /**
      * @return Returns an unmodifiable List of MediaTypes the given Resource
      *         Method. if the method is not annotated with {@link Produces},
-     *         than the {@link Produces} of the Resource class is returned.
-     *         If no {@link Produces} can be found, an empty (also
-     *         unmodifiable) List will returned.<br>
+     *         than the {@link Produces} of the Resource class is returned. If
+     *         no {@link Produces} can be found, an empty (also unmodifiable)
+     *         List will returned.<br>
      *         This method never returns null.
      */
     public List<MediaType> getProducedMimes() {
-        return producedMimes;
+        return this.producedMimes;
     }
 
     /**
@@ -272,12 +276,12 @@ public class ResourceMethod extends AbstractMethodWrapper implements
             ConvertRepresentationException, WebApplicationException {
         try {
             return internalInvoke(resourceObject);
-        } catch (IllegalArgumentException e) {
-            throw new MethodInvokeException(
-                    "Could not invoke " + executeMethod, e);
-        } catch (IllegalAccessException e) {
-            throw new MethodInvokeException(
-                    "Could not invoke " + executeMethod, e);
+        } catch (final IllegalArgumentException e) {
+            throw new MethodInvokeException("Could not invoke "
+                    + this.executeMethod, e);
+        } catch (final IllegalAccessException e) {
+            throw new MethodInvokeException("Could not invoke "
+                    + this.executeMethod, e);
         }
     }
 
@@ -285,40 +289,46 @@ public class ResourceMethod extends AbstractMethodWrapper implements
      * Check if this method supports the media type to produce for a request.
      * 
      * @param accMediaTypess
-     *                The Media Types the client would accept, ordered by
-     *                quality. See {@link SortedMetadata}
+     *            The Media Types the client would accept, ordered by quality.
+     *            See {@link SortedMetadata}
      * @return Returns true, if the give MediaType is supported by the method,
      *         or no MediaType is given for the method, otherweise false.
      */
     public boolean isAcceptedMediaTypeSupported(
             SortedMetadata<MediaType> accMediaTypess) {
-        if (accMediaTypess == null || accMediaTypess.isEmpty())
+        if ((accMediaTypess == null) || accMediaTypess.isEmpty()) {
             return true;
-        List<MediaType> prodMimes = getProducedMimes();
-        if (prodMimes.isEmpty())
+        }
+        final List<MediaType> prodMimes = getProducedMimes();
+        if (prodMimes.isEmpty()) {
             return true;
-        for (MediaType producedMediaType : prodMimes) {
-            for (MediaType accMediaType : accMediaTypess)
-                if (accMediaType.isCompatible(producedMediaType))
+        }
+        for (final MediaType producedMediaType : prodMimes) {
+            for (final MediaType accMediaType : accMediaTypess) {
+                if (accMediaType.isCompatible(producedMediaType)) {
                     return true;
+                }
+            }
         }
         return false;
     }
 
     /**
      * @param resourceMethod
-     *                the resource method to check
+     *            the resource method to check
      * @param givenMediaType
-     *                the MediaType of the request entity
+     *            the MediaType of the request entity
      * @return Returns true, if the given MediaType is supported by the method,
      *         or no MediaType is given for the method, otherweise false;
      */
     public boolean isGivenMediaTypeSupported(MediaType givenMediaType) {
-        if (givenMediaType == null)
+        if (givenMediaType == null) {
             return true;
-        for (MediaType consumedMime : this.getConsumedMimes()) {
-            if (consumedMime.includes(givenMediaType))
+        }
+        for (final MediaType consumedMime : getConsumedMimes()) {
+            if (consumedMime.includes(givenMediaType)) {
                 return true;
+            }
         }
         return false;
     }
@@ -341,10 +351,10 @@ public class ResourceMethod extends AbstractMethodWrapper implements
      * Checks, if this method suppors the given HTTP method.
      * 
      * @param requestedMethod
-     *                the requested Method
+     *            the requested Method
      * @param alsoGet
-     *                if true, than this method returns also true, if this
-     *                method is GET. This functionality is needed for HEAD.
+     *            if true, than this method returns also true, if this method is
+     *            GET. This functionality is needed for HEAD.
      * @return true, if this method supports the given HTTP method. Returns also
      *         true, if alsoGet is true and this method is true.
      * @throws IllegalArgumentException
@@ -352,17 +362,19 @@ public class ResourceMethod extends AbstractMethodWrapper implements
     public boolean isHttpMethodSupported(
             org.restlet.data.Method requestedMethod, boolean alsoGet)
             throws IllegalArgumentException {
-        if (requestedMethod == null)
+        if (requestedMethod == null) {
             throw new IllegalArgumentException(
                     "null is not a valid HTTP method");
-        if (alsoGet && this.httpMethod.equals(org.restlet.data.Method.GET))
+        }
+        if (alsoGet && this.httpMethod.equals(org.restlet.data.Method.GET)) {
             return true;
+        }
         return this.httpMethod.equals(requestedMethod);
     }
 
     @Override
     public String toString() {
-        return this.getClass().getSimpleName() + "[" + executeMethod.toString()
-                + ", " + this.httpMethod + "]";
+        return this.getClass().getSimpleName() + "["
+                + this.executeMethod.toString() + ", " + this.httpMethod + "]";
     }
 }

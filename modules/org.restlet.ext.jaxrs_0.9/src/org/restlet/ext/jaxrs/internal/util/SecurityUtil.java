@@ -37,28 +37,29 @@ public class SecurityUtil {
      * name).
      * 
      * @param request
-     *                the Request to get the Principal from.
+     *            the Request to get the Principal from.
      * @return the Principal, or null, if no one is found.
      */
     public static Principal getSslClientCertPrincipal(Request request) {
-        List<X509Certificate> sslClientCerts = getSslClientCerts(request);
+        final List<X509Certificate> sslClientCerts = getSslClientCerts(request);
         if (sslClientCerts != null) {
-            for (X509Certificate cert : sslClientCerts) {
-                Principal p = cert.getSubjectDN();
-                if (p.getName() != null && p.getName().length() > 0)
+            for (final X509Certificate cert : sslClientCerts) {
+                final Principal p = cert.getSubjectDN();
+                if ((p.getName() != null) && (p.getName().length() > 0)) {
                     return p;
+                }
             }
         }
         return null;
     }
-    
+
     // LATER load auth data from Servlet-API ?
 
     /**
      * Returns the client certificates from the given Request.
      * 
      * @param request
-     *                The request to get the client certificates from
+     *            The request to get the client certificates from
      * @return the client certifucates. May be null.
      */
     @SuppressWarnings("unchecked")
@@ -72,7 +73,7 @@ public class SecurityUtil {
      * certificate.
      * 
      * @param request
-     *                The Request to check
+     *            The Request to check
      * @return true, if the given request was authenticated by a SSL client
      *         certificate, otherwise false.
      */

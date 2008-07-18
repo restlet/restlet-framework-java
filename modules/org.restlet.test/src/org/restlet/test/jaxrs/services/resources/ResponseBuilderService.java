@@ -40,30 +40,38 @@ import org.restlet.test.jaxrs.util.TestUtils;
 @Path("/responseBuilder")
 public class ResponseBuilderService {
 
+    @DELETE
+    public Response delete() {
+        return Response.ok().build();
+    }
+
     @GET
     @Path("1")
     public Response get1() {
-        List<Variant> variants = new ArrayList<Variant>();
-        variants.add(new Variant(TestUtils.createMediaType("text", "sjk"), Locale.ENGLISH, "encoding"));
-        variants.add(new Variant(TestUtils.createMediaType("text", "sfgs"), Locale.ENGLISH, "encoding2"));
-        variants.add(new Variant(TestUtils.createMediaType("text", "ydgdsfg"), Locale.ENGLISH, "encoding"));
-        variants.add(new Variant(TestUtils.createMediaType("text", "sjk"), Locale.ENGLISH, "encoding2"));
+        final List<Variant> variants = new ArrayList<Variant>();
+        variants.add(new Variant(TestUtils.createMediaType("text", "sjk"),
+                Locale.ENGLISH, "encoding"));
+        variants.add(new Variant(TestUtils.createMediaType("text", "sfgs"),
+                Locale.ENGLISH, "encoding2"));
+        variants.add(new Variant(TestUtils.createMediaType("text", "ydgdsfg"),
+                Locale.ENGLISH, "encoding"));
+        variants.add(new Variant(TestUtils.createMediaType("text", "sjk"),
+                Locale.ENGLISH, "encoding2"));
         return Response.notAcceptable(variants).build();
     }
 
     @GET
     @Path("2")
     public Response get2() {
-        List<Variant> variants = new ArrayList<Variant>();
-        variants.add(new Variant(TestUtils.createMediaType("text", "sjk"), Locale.ENGLISH, "encoding"));
-        variants.add(new Variant(TestUtils.createMediaType("text", "sjk", "charset", "enc"), Locale.ENGLISH, "encoding"));
-        variants.add(new Variant(TestUtils.createMediaType("text", "sjk", "charset", "skl"), Locale.ENGLISH, "encoding"));
-        variants.add(new Variant(TestUtils.createMediaType("text", "sjk"), Locale.GERMAN, "encoding"));
+        final List<Variant> variants = new ArrayList<Variant>();
+        variants.add(new Variant(TestUtils.createMediaType("text", "sjk"),
+                Locale.ENGLISH, "encoding"));
+        variants.add(new Variant(TestUtils.createMediaType("text", "sjk",
+                "charset", "enc"), Locale.ENGLISH, "encoding"));
+        variants.add(new Variant(TestUtils.createMediaType("text", "sjk",
+                "charset", "skl"), Locale.ENGLISH, "encoding"));
+        variants.add(new Variant(TestUtils.createMediaType("text", "sjk"),
+                Locale.GERMAN, "encoding"));
         return Response.notAcceptable(variants).build();
-    }
-    
-    @DELETE
-    public Response delete() {
-        return Response.ok().build();
     }
 }

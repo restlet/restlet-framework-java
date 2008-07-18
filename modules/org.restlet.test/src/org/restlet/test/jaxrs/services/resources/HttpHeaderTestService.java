@@ -50,30 +50,10 @@ public class HttpHeaderTestService {
     public static final String TEST_HEADER_NAME = "testHeader";
 
     @GET
-    @Produces("text/plain")
-    public String getPlain() {
-        return "media type text/plain is supported\n";
-    }
-
-    @GET
-    @Produces({"text/xml", MediaType.APPLICATION_XML})
-    public String getXML() {
-        return "<text>the media types text/xml and application/xml are supported</text>\n";
-    }
-
-    @GET
-    @Path("HeaderParam")
-    @Produces("text/plain")
-    public String getHeaderParam(
-            @HeaderParam(TEST_HEADER_NAME) String testHeaderValue) {
-        return testHeaderValue;
-    }
-
-    @GET
     @Path("accMediaTypes")
     @Produces("text/plain")
     public String getAccMediaTypes(@Context HttpHeaders headers) {
-        List<MediaType> mediaTypes = headers.getAcceptableMediaTypes();
+        final List<MediaType> mediaTypes = headers.getAcceptableMediaTypes();
         return mediaTypes.toString();
     }
 
@@ -82,32 +62,26 @@ public class HttpHeaderTestService {
     @Produces("text/plain")
     public String getCookies(@Context HttpHeaders headers,
             @PathParam("cookieName") String cookieName) {
-        Map<String, Cookie> cookies = headers.getCookies();
+        final Map<String, Cookie> cookies = headers.getCookies();
         try {
             cookies.put("notAllowed", new Cookie("notAllowed", "value"));
             throw new WebApplicationException(Response.serverError().entity(
                     "could add cookie notAllowed").build());
-        } catch (UnsupportedOperationException uoe) {
+        } catch (final UnsupportedOperationException uoe) {
             // not allowed
         }
         try {
             cookies.put("xyz", new Cookie("notAllowed", "value"));
             throw new WebApplicationException(Response.serverError().entity(
                     "could add xyz").build());
-        } catch (UnsupportedOperationException uoe) {
+        } catch (final UnsupportedOperationException uoe) {
             // not allowed
         }
-        Cookie cookie = cookies.get(cookieName);
-        if (cookie == null)
+        final Cookie cookie = cookies.get(cookieName);
+        if (cookie == null) {
             return null;
+        }
         return cookie.toString();
-    }
-
-    @POST
-    @Path("language")
-    @Produces({"text/plain", "text/html"})
-    public String getLanguage(@Context HttpHeaders headers) {
-        return headers.getLanguage().toString();
     }
 
     @GET
@@ -115,9 +89,9 @@ public class HttpHeaderTestService {
     @Produces("text/plain")
     public String getHeader(@Context HttpHeaders headers,
             @PathParam("headername") String headername) {
-        MultivaluedMap<String, String> requestHeaders = headers
+        final MultivaluedMap<String, String> requestHeaders = headers
                 .getRequestHeaders();
-        String headerValue = requestHeaders.getFirst(headername);
+        final String headerValue = requestHeaders.getFirst(headername);
         return headerValue;
     }
 
@@ -132,13 +106,22 @@ public class HttpHeaderTestService {
     @Path("header2")
     @Produces("text/plain")
     public Object getHeader2(@HeaderParam("host") String hostLower,
-            @HeaderParam("HOST") String hostUpper, 
+            @HeaderParam("HOST") String hostUpper,
             @HeaderParam("Host") String hostMixed) {
-        if (hostLower.equals(hostUpper) && hostLower.equals(hostMixed))
+        if (hostLower.equals(hostUpper) && hostLower.equals(hostMixed)) {
             return hostMixed;
-        String hosts = "mixed: " + hostMixed + "\nupper: " + hostUpper
+        }
+        final String hosts = "mixed: " + hostMixed + "\nupper: " + hostUpper
                 + "\n lower: " + hostLower;
         return Response.serverError().entity(hosts).build();
+    }
+
+    @GET
+    @Path("HeaderParam")
+    @Produces("text/plain")
+    public String getHeaderParam(
+            @HeaderParam(TEST_HEADER_NAME) String testHeaderValue) {
+        return testHeaderValue;
     }
 
     @GET
@@ -147,5 +130,24 @@ public class HttpHeaderTestService {
     public String getHeaderWithDefault(
             @HeaderParam(TEST_HEADER_NAME) @DefaultValue("default") String testHeader) {
         return testHeader;
+    }
+
+    @POST
+    @Path("language")
+    @Produces( { "text/plain", "text/html" })
+    public String getLanguage(@Context HttpHeaders headers) {
+        return headers.getLanguage().toString();
+    }
+
+    @GET
+    @Produces("text/plain")
+    public String getPlain() {
+        return "media type text/plain is supported\n";
+    }
+
+    @GET
+    @Produces( { "text/xml", MediaType.APPLICATION_XML })
+    public String getXML() {
+        return "<text>the media types text/xml and application/xml are supported</text>\n";
     }
 }

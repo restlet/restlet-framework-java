@@ -56,13 +56,13 @@ public class Server extends Connector {
      * Constructor.
      * 
      * @param context
-     *                The context.
+     *            The context.
      * @param protocols
-     *                The connector protocols.
+     *            The connector protocols.
      * @param port
-     *                The listening port.
+     *            The listening port.
      * @param target
-     *                The target Restlet.
+     *            The target Restlet.
      */
     public Server(Context context, List<Protocol> protocols, int port,
             Restlet target) {
@@ -73,17 +73,17 @@ public class Server extends Connector {
      * Constructor.
      * 
      * @param context
-     *                The context.
+     *            The context.
      * @param protocols
-     *                The connector protocols.
+     *            The connector protocols.
      * @param address
-     *                The optional listening IP address (useful if multiple IP
-     *                addresses available). You can also use a domain name as an
-     *                alias for the IP address to listen to.
+     *            The optional listening IP address (useful if multiple IP
+     *            addresses available). You can also use a domain name as an
+     *            alias for the IP address to listen to.
      * @param port
-     *                The listening port.
+     *            The listening port.
      * @param target
-     *                The target Restlet.
+     *            The target Restlet.
      */
     public Server(Context context, List<Protocol> protocols, String address,
             int port, Restlet target) {
@@ -94,19 +94,19 @@ public class Server extends Connector {
      * Constructor.
      * 
      * @param context
-     *                The context.
+     *            The context.
      * @param protocols
-     *                The connector protocols.
+     *            The connector protocols.
      * @param address
-     *                The optional listening IP address (useful if multiple IP
-     *                addresses available). You can also use a domain name as an
-     *                alias for the IP address to listen to.
+     *            The optional listening IP address (useful if multiple IP
+     *            addresses available). You can also use a domain name as an
+     *            alias for the IP address to listen to.
      * @param port
-     *                The listening port.
+     *            The listening port.
      * @param target
-     *                The target Restlet.
+     *            The target Restlet.
      * @param helperClass
-     *                Optional helper class name.
+     *            Optional helper class name.
      */
     public Server(Context context, List<Protocol> protocols, String address,
             int port, Restlet target, String helperClass) {
@@ -124,13 +124,13 @@ public class Server extends Connector {
      * Constructor.
      * 
      * @param context
-     *                The context.
+     *            The context.
      * @param protocol
-     *                The connector protocol.
+     *            The connector protocol.
      * @param port
-     *                The listening port.
+     *            The listening port.
      * @param target
-     *                The target Restlet.
+     *            The target Restlet.
      */
     public Server(Context context, Protocol protocol, int port, Restlet target) {
         this(context, protocol, null, port, target);
@@ -140,11 +140,11 @@ public class Server extends Connector {
      * Constructor using the protocol's default port.
      * 
      * @param context
-     *                The context.
+     *            The context.
      * @param protocol
-     *                The connector protocol.
+     *            The connector protocol.
      * @param target
-     *                The target Restlet.
+     *            The target Restlet.
      */
     public Server(Context context, Protocol protocol, Restlet target) {
         this(context, protocol, null, (protocol == null) ? -1 : protocol
@@ -155,17 +155,17 @@ public class Server extends Connector {
      * Constructor.
      * 
      * @param context
-     *                The context.
+     *            The context.
      * @param protocol
-     *                The connector protocol.
+     *            The connector protocol.
      * @param address
-     *                The optional listening IP address (useful if multiple IP
-     *                addresses available). You can also use a domain name as an
-     *                alias for the IP address to listen to.
+     *            The optional listening IP address (useful if multiple IP
+     *            addresses available). You can also use a domain name as an
+     *            alias for the IP address to listen to.
      * @param port
-     *                The listening port.
+     *            The listening port.
      * @param target
-     *                The target Restlet.
+     *            The target Restlet.
      */
     public Server(Context context, Protocol protocol, String address, int port,
             Restlet target) {
@@ -177,11 +177,11 @@ public class Server extends Connector {
      * Constructor.
      * 
      * @param protocols
-     *                The connector protocols.
+     *            The connector protocols.
      * @param port
-     *                The listening port.
+     *            The listening port.
      * @param target
-     *                The target Restlet.
+     *            The target Restlet.
      */
     public Server(List<Protocol> protocols, int port, Restlet target) {
         this(null, protocols, port, target);
@@ -191,15 +191,15 @@ public class Server extends Connector {
      * Constructor.
      * 
      * @param protocols
-     *                The connector protocols.
+     *            The connector protocols.
      * @param address
-     *                The optional listening IP address (useful if multiple IP
-     *                addresses available). You can also use a domain name as an
-     *                alias for the IP address to listen to.
+     *            The optional listening IP address (useful if multiple IP
+     *            addresses available). You can also use a domain name as an
+     *            alias for the IP address to listen to.
      * @param port
-     *                The listening port.
+     *            The listening port.
      * @param target
-     *                The target Restlet.
+     *            The target Restlet.
      */
     public Server(List<Protocol> protocols, String address, int port,
             Restlet target) {
@@ -210,11 +210,11 @@ public class Server extends Connector {
      * Constructor.
      * 
      * @param protocol
-     *                The connector protocol.
+     *            The connector protocol.
      * @param port
-     *                The listening port.
+     *            The listening port.
      * @param target
-     *                The target Restlet.
+     *            The target Restlet.
      */
     public Server(Protocol protocol, int port, Restlet target) {
         this(null, protocol, port, target);
@@ -224,9 +224,9 @@ public class Server extends Connector {
      * Constructor using the protocol's default port.
      * 
      * @param protocol
-     *                The connector protocol.
+     *            The connector protocol.
      * @param target
-     *                The target Restlet.
+     *            The target Restlet.
      */
     public Server(Protocol protocol, Restlet target) {
         this(null, protocol, target);
@@ -236,15 +236,15 @@ public class Server extends Connector {
      * Constructor.
      * 
      * @param protocol
-     *                The connector protocol.
+     *            The connector protocol.
      * @param address
-     *                The optional listening IP address (useful if multiple IP
-     *                addresses available). You can also use a domain name as an
-     *                alias for the IP address to listen to.
+     *            The optional listening IP address (useful if multiple IP
+     *            addresses available). You can also use a domain name as an
+     *            alias for the IP address to listen to.
      * @param port
-     *                The listening port.
+     *            The listening port.
      * @param target
-     *                The target Restlet.
+     *            The target Restlet.
      */
     public Server(Protocol protocol, String address, int port, Restlet target) {
         this(null, protocol, address, port, target);
@@ -254,13 +254,13 @@ public class Server extends Connector {
      * Constructor using the protocol's default port.
      * 
      * @param protocol
-     *                The connector protocol.
+     *            The connector protocol.
      * @param address
-     *                The listening IP address (useful if multiple IP addresses
-     *                available). You can also use a domain name as an alias for
-     *                the IP address to listen to.
+     *            The listening IP address (useful if multiple IP addresses
+     *            available). You can also use a domain name as an alias for the
+     *            IP address to listen to.
      * @param target
-     *                The target Restlet.
+     *            The target Restlet.
      */
     public Server(Protocol protocol, String address, Restlet target) {
         this(null, protocol, address, protocol.getDefaultPort(), target);
@@ -336,8 +336,7 @@ public class Server extends Connector {
      * Sets the optional listening IP address (local host used if null).
      * 
      * @param address
-     *                The optional listening IP address (local host used if
-     *                null).
+     *            The optional listening IP address (local host used if null).
      */
     protected void setAddress(String address) {
         this.address = address;
@@ -350,7 +349,7 @@ public class Server extends Connector {
      * {@link #getEphemeralPort()} method.
      * 
      * @param port
-     *                The listening port if specified.
+     *            The listening port if specified.
      */
     protected void setPort(int port) {
         this.port = port;
@@ -360,7 +359,7 @@ public class Server extends Connector {
      * Sets the target Restlet.
      * 
      * @param target
-     *                The target Restlet.
+     *            The target Restlet.
      */
     public void setTarget(Restlet target) {
         this.target = target;
@@ -371,16 +370,18 @@ public class Server extends Connector {
         if (isStopped()) {
             super.start();
 
-            if (getHelper() != null)
+            if (getHelper() != null) {
                 getHelper().start();
+            }
         }
     }
 
     @Override
     public synchronized void stop() throws Exception {
         if (isStarted()) {
-            if (getHelper() != null)
+            if (getHelper() != null) {
                 getHelper().stop();
+            }
 
             super.stop();
         }

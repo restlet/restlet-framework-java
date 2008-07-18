@@ -39,6 +39,20 @@ import org.restlet.ext.jaxrs.internal.core.VariantListBuilderImpl;
  */
 public class RuntimeDelegateImpl extends javax.ws.rs.ext.RuntimeDelegate {
     /**
+     * This method is not supported by this implementation.
+     * 
+     * @throws UnsupportedOperationException
+     *             ever.
+     */
+    @Override
+    @Deprecated
+    public <T> T createEndpoint(ApplicationConfig applicationConfig,
+            Class<T> endpointType) throws UnsupportedOperationException {
+        throw new UnsupportedOperationException(
+                "The method RuntimeDelegate.createEndpoint() is not available by the Restlet JAX-RS extension");
+    }
+
+    /**
      * Obtain an instance of a HeaderDelegate for the supplied class. An
      * implementation is required to support the following classes: Cookie,
      * CacheControl, EntityTag, NewCookie, MediaType.<br>
@@ -50,16 +64,21 @@ public class RuntimeDelegateImpl extends javax.ws.rs.ext.RuntimeDelegate {
     @SuppressWarnings("unchecked")
     public <T> HeaderDelegate createHeaderDelegate(Class<T> type)
             throws IllegalArgumentException {
-        if (type.equals(Cookie.class))
+        if (type.equals(Cookie.class)) {
             return new CookieHeaderDelegate();
-        if (type.equals(CacheControl.class))
+        }
+        if (type.equals(CacheControl.class)) {
             return new CacheControlHeaderDelegate();
-        if (type.equals(EntityTag.class))
+        }
+        if (type.equals(EntityTag.class)) {
             return new EntityTagHeaderDelegate();
-        if (type.equals(NewCookie.class))
+        }
+        if (type.equals(NewCookie.class)) {
             return new NewCookieHeaderDelegate();
-        if (type.equals(MediaType.class))
+        }
+        if (type.equals(MediaType.class)) {
             return new MediaTypeHeaderDelegate();
+        }
         throw new IllegalArgumentException(
                 "This method supports only the Types Cookie, CacheControl, EntityTag, NewCookie and MediaType");
     }
@@ -86,19 +105,5 @@ public class RuntimeDelegateImpl extends javax.ws.rs.ext.RuntimeDelegate {
     @Override
     public VariantListBuilder createVariantListBuilder() {
         return new VariantListBuilderImpl();
-    }
-
-    /**
-     * This method is not supported by this implementation.
-     * 
-     * @throws UnsupportedOperationException
-     *                 ever.
-     */
-    @Override
-    @Deprecated
-    public <T> T createEndpoint(ApplicationConfig applicationConfig,
-            Class<T> endpointType) throws UnsupportedOperationException {
-        throw new UnsupportedOperationException(
-                "The method RuntimeDelegate.createEndpoint() is not available by the Restlet JAX-RS extension");
     }
 }

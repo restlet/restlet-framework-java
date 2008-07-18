@@ -43,7 +43,7 @@ public class ResponseImpl extends Response {
      * Creates a new Response Instance.
      * 
      * @param status
-     *                the status code for the new response.
+     *            the status code for the new response.
      */
     public ResponseImpl(int status) {
         this.status = status;
@@ -51,7 +51,7 @@ public class ResponseImpl extends Response {
 
     @Override
     public ResponseImpl clone() {
-        ResponseImpl newResp = new ResponseImpl(this.status);
+        final ResponseImpl newResp = new ResponseImpl(this.status);
         newResp.entity = this.entity;
         newResp.metadata = new MultivaluedMapImpl<String, Object>(this.metadata);
         return newResp;
@@ -70,8 +70,9 @@ public class ResponseImpl extends Response {
      */
     @Override
     public MultivaluedMap<String, Object> getMetadata() {
-        if (this.metadata == null)
+        if (this.metadata == null) {
             this.metadata = new MultivaluedMapImpl<String, Object>();
+        }
         return this.metadata;
     }
 

@@ -50,15 +50,15 @@ public class HttpAmazonS3Helper extends AuthenticationHelper {
      * Returns the canonicalized AMZ headers.
      * 
      * @param requestHeaders
-     *                The list of request headers.
+     *            The list of request headers.
      * @return The canonicalized AMZ headers.
      */
     private static String getCanonicalizedAmzHeaders(
             Series<Parameter> requestHeaders) {
         // Filter out all the AMZ headers required for AWS authentication
-        SortedMap<String, String> amzHeaders = new TreeMap<String, String>();
+        final SortedMap<String, String> amzHeaders = new TreeMap<String, String>();
         String headerName;
-        for (Parameter param : requestHeaders) {
+        for (final Parameter param : requestHeaders) {
             headerName = param.getName().toLowerCase();
             if (headerName.startsWith("x-amz-")) {
                 if (!amzHeaders.containsKey(headerName)) {
@@ -69,8 +69,8 @@ public class HttpAmazonS3Helper extends AuthenticationHelper {
         }
 
         // Concatenate all AMZ headers
-        StringBuilder sb = new StringBuilder();
-        for (Entry<String, String> entry : amzHeaders.entrySet()) {
+        final StringBuilder sb = new StringBuilder();
+        for (final Entry<String, String> entry : amzHeaders.entrySet()) {
             sb.append(entry.getKey()).append(':').append(entry.getValue())
                     .append("\n");
         }
@@ -82,14 +82,14 @@ public class HttpAmazonS3Helper extends AuthenticationHelper {
      * Returns the canonicalized resource name.
      * 
      * @param resourceRef
-     *                The resource reference.
+     *            The resource reference.
      * @return The canonicalized resource name.
      */
     private static String getCanonicalizedResourceName(Reference resourceRef) {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         sb.append(resourceRef.getPath());
 
-        Form query = resourceRef.getQueryAsForm();
+        final Form query = resourceRef.getQueryAsForm();
         if (query.getFirst("acl", true) != null) {
             sb.append("?acl");
         } else if (query.getFirst("torrent", true) != null) {
@@ -117,7 +117,7 @@ public class HttpAmazonS3Helper extends AuthenticationHelper {
             Series<Parameter> httpHeaders) {
 
         // Setup the method name
-        String methodName = request.getMethod().getName();
+        final String methodName = request.getMethod().getName();
 
         // Setup the Date header
         String date = "";
@@ -136,8 +136,9 @@ public class HttpAmazonS3Helper extends AuthenticationHelper {
         // Setup the ContentType header
         String contentMd5 = httpHeaders.getFirstValue(
                 HttpConstants.HEADER_CONTENT_MD5, true);
-        if (contentMd5 == null)
+        if (contentMd5 == null) {
             contentMd5 = "";
+        }
 
         // Setup the ContentType header
         String contentType = httpHeaders.getFirstValue(
@@ -146,11 +147,11 @@ public class HttpAmazonS3Helper extends AuthenticationHelper {
             boolean applyPatch = false;
 
             // This patch seems to apply to Sun JVM only.
-            String jvmVendor = System.getProperty("java.vm.vendor");
-            if (jvmVendor != null
+            final String jvmVendor = System.getProperty("java.vm.vendor");
+            if ((jvmVendor != null)
                     && (jvmVendor.toLowerCase()).startsWith("sun")) {
-                int majorVersionNumber = Engine.getJavaMajorVersion();
-                int minorVersionNumber = Engine.getJavaMinorVersion();
+                final int majorVersionNumber = Engine.getJavaMajorVersion();
+                final int minorVersionNumber = Engine.getJavaMinorVersion();
 
                 if (majorVersionNumber == 1) {
                     if (minorVersionNumber < 5) {
@@ -170,14 +171,14 @@ public class HttpAmazonS3Helper extends AuthenticationHelper {
         }
 
         // Setup the canonicalized AmzHeaders
-        String canonicalizedAmzHeaders = getCanonicalizedAmzHeaders(httpHeaders);
+        final String canonicalizedAmzHeaders = getCanonicalizedAmzHeaders(httpHeaders);
 
         // Setup the canonicalized resource name
-        String canonicalizedResource = getCanonicalizedResourceName(request
+        final String canonicalizedResource = getCanonicalizedResourceName(request
                 .getResourceRef());
 
         // Setup the message part
-        StringBuilder rest = new StringBuilder();
+        final StringBuilder rest = new StringBuilder();
         rest.append(methodName).append('\n').append(contentMd5).append('\n')
                 .append(contentType).append('\n').append(date).append('\n')
                 .append(canonicalizedAmzHeaders).append(canonicalizedResource);

@@ -24,7 +24,7 @@ public class UserAgentTestResource extends Resource {
 
     @Override
     public Representation represent(Variant variant) throws ResourceException {
-        MediaType mediaType = variant.getMediaType();
+        final MediaType mediaType = variant.getMediaType();
         if (mediaType.equals(MediaType.TEXT_XML)) {
             return new StringRepresentation("<a>b</a>", mediaType);
         } else if (mediaType.equals(MediaType.TEXT_HTML)) {

@@ -153,8 +153,9 @@ public final class ClientInfo {
         if (a == null) {
             synchronized (this) {
                 a = this.acceptedCharacterSets;
-                if (a == null)
+                if (a == null) {
                     this.acceptedCharacterSets = a = new ArrayList<Preference<CharacterSet>>();
+                }
             }
         }
         return a;
@@ -172,8 +173,9 @@ public final class ClientInfo {
         if (a == null) {
             synchronized (this) {
                 a = this.acceptedEncodings;
-                if (a == null)
+                if (a == null) {
                     this.acceptedEncodings = a = new ArrayList<Preference<Encoding>>();
+                }
             }
         }
         return a;
@@ -191,8 +193,9 @@ public final class ClientInfo {
         if (a == null) {
             synchronized (this) {
                 a = this.acceptedLanguages;
-                if (a == null)
+                if (a == null) {
                     this.acceptedLanguages = a = new ArrayList<Preference<Language>>();
+                }
             }
         }
         return a;
@@ -210,8 +213,9 @@ public final class ClientInfo {
         if (a == null) {
             synchronized (this) {
                 a = this.acceptedMediaTypes;
-                if (a == null)
+                if (a == null) {
                     this.acceptedMediaTypes = a = new ArrayList<Preference<MediaType>>();
+                }
             }
         }
         return a;
@@ -247,8 +251,9 @@ public final class ClientInfo {
         if (a == null) {
             synchronized (this) {
                 a = this.addresses;
-                if (a == null)
+                if (a == null) {
                     this.addresses = a = new ArrayList<String>();
+                }
             }
         }
         return a;
@@ -290,7 +295,7 @@ public final class ClientInfo {
      * Sets the character set preferences.
      * 
      * @param acceptedCharacterSets
-     *                The character set preferences.
+     *            The character set preferences.
      */
     public void setAcceptedCharacterSets(
             List<Preference<CharacterSet>> acceptedCharacterSets) {
@@ -301,7 +306,7 @@ public final class ClientInfo {
      * Sets the encoding preferences.
      * 
      * @param acceptedEncodings
-     *                The encoding preferences.
+     *            The encoding preferences.
      */
     public void setAcceptedEncodings(
             List<Preference<Encoding>> acceptedEncodings) {
@@ -312,7 +317,7 @@ public final class ClientInfo {
      * Sets the language preferences.
      * 
      * @param acceptedLanguages
-     *                The language preferences.
+     *            The language preferences.
      */
     public void setAcceptedLanguages(
             List<Preference<Language>> acceptedLanguages) {
@@ -323,7 +328,7 @@ public final class ClientInfo {
      * Sets the media type preferences.
      * 
      * @param acceptedMediaTypes
-     *                The media type preferences.
+     *            The media type preferences.
      */
     public void setAcceptedMediaTypes(
             List<Preference<MediaType>> acceptedMediaTypes) {
@@ -334,7 +339,7 @@ public final class ClientInfo {
      * Sets the client's IP address.
      * 
      * @param address
-     *                The client's IP address.
+     *            The client's IP address.
      */
     public void setAddress(String address) {
         if (getAddresses().isEmpty()) {
@@ -348,7 +353,7 @@ public final class ClientInfo {
      * Sets the list of client IP addresses.
      * 
      * @param addresses
-     *                The list of client IP addresses.
+     *            The list of client IP addresses.
      */
     public void setAddresses(List<String> addresses) {
         this.addresses = addresses;
@@ -358,7 +363,7 @@ public final class ClientInfo {
      * Sets the agent name (ex: "Noelios Restlet Engine/1.1").
      * 
      * @param agent
-     *                The agent name.
+     *            The agent name.
      */
     public void setAgent(String agent) {
         this.agent = agent;
@@ -368,7 +373,7 @@ public final class ClientInfo {
      * Sets the port number which sent the call.
      * 
      * @param port
-     *                The port number which sent the call.
+     *            The port number which sent the call.
      */
     public void setPort(int port) {
         this.port = port;

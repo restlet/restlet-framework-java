@@ -43,6 +43,11 @@ public abstract class ConnectorHelper<T extends Connector> extends Helper<T> {
         this.protocols = new ArrayList<Protocol>();
     }
 
+    @Override
+    public Context createContext(String loggerName) {
+        return null;
+    }
+
     /**
      * Returns the protocols simultaneously supported.
      * 
@@ -50,11 +55,6 @@ public abstract class ConnectorHelper<T extends Connector> extends Helper<T> {
      */
     public List<Protocol> getProtocols() {
         return this.protocols;
-    }
-
-    @Override
-    public Context createContext(String loggerName) {
-        return null;
     }
 
     @Override

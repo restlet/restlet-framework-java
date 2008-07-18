@@ -33,22 +33,33 @@ public class AppPlusXmlTest extends JaxRsTestCase {
     private static final MediaType APP_PERSON_XML = new MediaType(
             "application/Person+xml");
 
+    /**
+     * @param mt
+     */
+    private void getAndCheck(MediaType mt) {
+        final Response response = get(mt);
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        final MediaType mediaType = response.getEntity().getMediaType();
+        assertEqualMediaType(mt, mediaType);
+    }
+
     @Override
     protected Class<?> getRootResourceClass() {
         return AppPlusXmlResource.class;
     }
 
     public void testGet() throws Exception {
-        Response response = get();
+        final Response response = get();
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        MediaType mediaType = response.getEntity().getMediaType();
+        final MediaType mediaType = response.getEntity().getMediaType();
         try {
             assertEqualMediaType(MediaType.TEXT_XML, mediaType);
-        } catch (AssertionFailedError afe) {
+        } catch (final AssertionFailedError afe) {
             try {
                 assertEqualMediaType(MediaType.APPLICATION_XML, mediaType);
-            } catch (AssertionFailedError afe2) {
+            } catch (final AssertionFailedError afe2) {
                 assertEqualMediaType(APP_PERSON_XML, mediaType);
             }
         }
@@ -61,16 +72,5 @@ public class AppPlusXmlTest extends JaxRsTestCase {
         getAndCheck(MediaType.TEXT_XML);
         getAndCheck(MediaType.APPLICATION_XML);
         getAndCheck(APP_PERSON_XML);
-    }
-
-    /**
-     * @param mt
-     */
-    private void getAndCheck(MediaType mt) {
-        Response response = get(mt);
-        sysOutEntityIfError(response);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
-        MediaType mediaType = response.getEntity().getMediaType();
-        assertEqualMediaType(mt, mediaType);
     }
 }

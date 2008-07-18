@@ -24,6 +24,7 @@ import javax.ws.rs.core.Response;
 
 import org.restlet.test.jaxrs.services.others.Person;
 import org.restlet.test.jaxrs.services.providers.MessageBodyWorkersTestProvider;
+import org.restlet.test.jaxrs.services.tests.MessageBodyWorkersTest;
 
 /**
  * @author Stephan Koops
@@ -38,7 +39,7 @@ public class MessageBodyWorkersTestResource {
     @GET
     @Produces("text/crazy-person")
     public Response get() {
-        Person person = new Person("Angela", "Merkel");
+        final Person person = new Person("Angela", "Merkel");
         return Response.ok(person).header("h1", "h1v").build();
     }
 }

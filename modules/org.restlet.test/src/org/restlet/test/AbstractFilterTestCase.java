@@ -48,7 +48,7 @@ public abstract class AbstractFilterTestCase extends RestletTestCase {
      * Returns a response.
      * 
      * @param request
-     *                The associated request.
+     *            The associated request.
      * @return Response instance.
      */
     protected abstract Response getResponse(Request request);
@@ -71,14 +71,14 @@ public abstract class AbstractFilterTestCase extends RestletTestCase {
      * Test Restlet instance attaching/detaching.
      */
     public void testAttachDetachInstance() throws Exception {
-        Filter filter = getFilter();
+        final Filter filter = getFilter();
         assertFalse(filter.hasNext());
         filter.setNext(getRestlet());
         filter.start();
         assertTrue(filter.isStarted());
         assertFalse(filter.isStopped());
-        Request request = getRequest();
-        Response response = getResponse(request);
+        final Request request = getRequest();
+        final Response response = getResponse(request);
         filter.handle(request, response);
         assertTrue(filter.hasNext());
         filter.setNext((Restlet) null);
@@ -86,42 +86,42 @@ public abstract class AbstractFilterTestCase extends RestletTestCase {
     }
 
     /**
-     * Test with null target.
-     */
-    public void testIllegalTarget() throws Exception {
-        Filter filter = getFilter();
-        filter.start();
-        assertTrue(filter.isStarted());
-        assertFalse(filter.isStopped());
-        assertFalse(filter.hasNext());
-        Request request = getRequest();
-        Response response = getResponse(request);
-        try {
-            filter.handle(request, response);
-            fail("Filter handles call without a target");
-        } catch (Exception ex) {
-            // noop.
-        }
-    }
-
-    /**
      * Test not started Filter.
      */
     public void testIllegalStartedState() throws Exception {
-        Filter filter = getFilter();
+        final Filter filter = getFilter();
         filter.setNext(getRestlet());
         assertTrue(filter.hasNext());
         assertFalse(filter.isStarted());
         assertTrue(filter.isStopped());
-        Request request = getRequest();
-        Response response = getResponse(request);
+        final Request request = getRequest();
+        final Response response = getResponse(request);
         try {
             filter.handle(request, response);
 
             if (!filter.isStarted()) {
                 fail("Filter handles call without being started");
             }
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
+            // noop.
+        }
+    }
+
+    /**
+     * Test with null target.
+     */
+    public void testIllegalTarget() throws Exception {
+        final Filter filter = getFilter();
+        filter.start();
+        assertTrue(filter.isStarted());
+        assertFalse(filter.isStopped());
+        assertFalse(filter.hasNext());
+        final Request request = getRequest();
+        final Response response = getResponse(request);
+        try {
+            filter.handle(request, response);
+            fail("Filter handles call without a target");
+        } catch (final Exception ex) {
             // noop.
         }
     }

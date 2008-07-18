@@ -36,6 +36,6 @@ public class ConvertPathParamException extends WebApplicationException {
      */
     public ConvertPathParamException(ConvertParameterException cpe) {
         super(cpe.getCause(), Status.NOT_FOUND);
-        this.setStackTrace(cpe.getStackTrace());
+        setStackTrace(cpe.getStackTrace());
     }
 }

@@ -30,15 +30,15 @@ public enum ParameterStyle {
     @Override
     public String toString() {
         String result = null;
-        if (this.equals(HEADER)) {
+        if (equals(HEADER)) {
             result = "header";
-        } else if (this.equals(MATRIX)) {
+        } else if (equals(MATRIX)) {
             result = "matrix";
-        } else if (this.equals(PLAIN)) {
+        } else if (equals(PLAIN)) {
             result = "plain";
-        } else if (this.equals(QUERY)) {
+        } else if (equals(QUERY)) {
             result = "query";
-        } else if (this.equals(TEMPLATE)) {
+        } else if (equals(TEMPLATE)) {
             result = "template";
         }
 

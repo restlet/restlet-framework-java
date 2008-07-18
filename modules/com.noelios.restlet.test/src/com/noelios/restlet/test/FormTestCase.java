@@ -38,15 +38,15 @@ public class FormTestCase extends TestCase {
      * Tests the cookies parsing.
      */
     public void testParsing() throws IOException {
-        Form form = new Form();
+        final Form form = new Form();
         form.add("name", "John D. Mitchell");
         form.add("email", "john@bob.net");
         form.add("email2", "joe@bob.net");
 
-        String query = form.encode(CharacterSet.UTF_8);
-        Form newForm = new FormReader(Logger.getLogger(FormTestCase.class
+        final String query = form.encode(CharacterSet.UTF_8);
+        final Form newForm = new FormReader(Logger.getLogger(FormTestCase.class
                 .getCanonicalName()), query, CharacterSet.UTF_8, '&').read();
-        String newQuery = newForm.encode(CharacterSet.UTF_8);
+        final String newQuery = newForm.encode(CharacterSet.UTF_8);
         assertEquals(query, newQuery);
     }
 }

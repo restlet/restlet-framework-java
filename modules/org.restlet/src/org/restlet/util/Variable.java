@@ -73,33 +73,6 @@ public final class Variable {
     /** Matches all alphabetical and digital characters plus the underscore. */
     public static final int TYPE_WORD = 12;
 
-    /**
-     * According to the type of the variable, encodes the value given in
-     * parameters.
-     * 
-     * @param value
-     *                The value to encode.
-     * @return The encoded value, according to the variable type.
-     */
-    public String encode(String value) {
-        switch (this.type) {
-        case Variable.TYPE_URI_ALL:
-            return Reference.encode(value);
-        case Variable.TYPE_URI_UNRESERVED:
-            return Reference.encode(value);
-        case Variable.TYPE_URI_FRAGMENT:
-            return Reference.encode(value);
-        case Variable.TYPE_URI_PATH:
-            return Reference.encode(value);
-        case Variable.TYPE_URI_QUERY:
-            return Reference.encode(value);
-        case Variable.TYPE_URI_SEGMENT:
-            return Reference.encode(value);
-        default:
-            return value;
-        }
-    }
-
     /** Indicates if the parsed value must be decoded. */
     private volatile boolean decodedOnParse;
 
@@ -133,7 +106,7 @@ public final class Variable {
      * Constructor. Default value is "", required is true and fixed is false.
      * 
      * @param type
-     *                The type of variable. See TYPE_* constants.
+     *            The type of variable. See TYPE_* constants.
      */
     public Variable(int type) {
         this(type, "", true, false);
@@ -143,15 +116,15 @@ public final class Variable {
      * Constructor.
      * 
      * @param type
-     *                The type of variable. See TYPE_* constants.
+     *            The type of variable. See TYPE_* constants.
      * @param defaultValue
-     *                The default value to use if the key couldn't be found in
-     *                the model.
+     *            The default value to use if the key couldn't be found in the
+     *            model.
      * @param required
-     *                Indicates if the variable is required or optional.
+     *            Indicates if the variable is required or optional.
      * @param fixed
-     *                Indicates if the value is fixed, in which case the
-     *                "defaultValue" property is always used.
+     *            Indicates if the value is fixed, in which case the
+     *            "defaultValue" property is always used.
      */
     public Variable(int type, String defaultValue, boolean required,
             boolean fixed) {
@@ -162,19 +135,19 @@ public final class Variable {
      * Constructor.
      * 
      * @param type
-     *                The type of variable. See TYPE_* constants.
+     *            The type of variable. See TYPE_* constants.
      * @param defaultValue
-     *                The default value to use if the key couldn't be found in
-     *                the model.
+     *            The default value to use if the key couldn't be found in the
+     *            model.
      * @param required
-     *                Indicates if the variable is required or optional.
+     *            Indicates if the variable is required or optional.
      * @param fixed
-     *                Indicates if the value is fixed, in which case the
-     *                "defaultValue" property is always used.
+     *            Indicates if the value is fixed, in which case the
+     *            "defaultValue" property is always used.
      * @param decodedOnParse
-     *                Indicates if the parsed value must be decoded.
+     *            Indicates if the parsed value must be decoded.
      * @param encodedOnFormat
-     *                Indicates if the formatted value must be encoded.
+     *            Indicates if the formatted value must be encoded.
      */
     public Variable(int type, String defaultValue, boolean required,
             boolean fixed, boolean decodedOnParse, boolean encodedOnFormat) {
@@ -184,6 +157,33 @@ public final class Variable {
         this.fixed = fixed;
         this.decodedOnParse = decodedOnParse;
         this.encodedOnFormat = encodedOnFormat;
+    }
+
+    /**
+     * According to the type of the variable, encodes the value given in
+     * parameters.
+     * 
+     * @param value
+     *            The value to encode.
+     * @return The encoded value, according to the variable type.
+     */
+    public String encode(String value) {
+        switch (this.type) {
+        case Variable.TYPE_URI_ALL:
+            return Reference.encode(value);
+        case Variable.TYPE_URI_UNRESERVED:
+            return Reference.encode(value);
+        case Variable.TYPE_URI_FRAGMENT:
+            return Reference.encode(value);
+        case Variable.TYPE_URI_PATH:
+            return Reference.encode(value);
+        case Variable.TYPE_URI_QUERY:
+            return Reference.encode(value);
+        case Variable.TYPE_URI_SEGMENT:
+            return Reference.encode(value);
+        default:
+            return value;
+        }
     }
 
     /**
@@ -212,7 +212,7 @@ public final class Variable {
      * @return True if the parsed value must be decoded, false otherwise.
      */
     public boolean isDecodedOnParse() {
-        return decodedOnParse;
+        return this.decodedOnParse;
     }
 
     /**
@@ -221,7 +221,7 @@ public final class Variable {
      * @return True if the formatted value must be encoded, false otherwise.
      */
     public boolean isEncodedOnFormat() {
-        return encodedOnFormat;
+        return this.encodedOnFormat;
     }
 
     /**
@@ -248,7 +248,7 @@ public final class Variable {
      * Indicates if the parsed value must be decoded.
      * 
      * @param decodedOnParse
-     *                True if the parsed value must be decoded, false otherwise.
+     *            True if the parsed value must be decoded, false otherwise.
      */
     public void setDecodedOnParse(boolean decodedOnParse) {
         this.decodedOnParse = decodedOnParse;
@@ -258,8 +258,8 @@ public final class Variable {
      * Sets the default value to use if the key couldn't be found in the model.
      * 
      * @param defaultValue
-     *                The default value to use if the key couldn't be found in
-     *                the model.
+     *            The default value to use if the key couldn't be found in the
+     *            model.
      */
     public void setDefaultValue(String defaultValue) {
         this.defaultValue = defaultValue;
@@ -269,8 +269,7 @@ public final class Variable {
      * Indicates if the formatted value must be encoded.
      * 
      * @param encodedOnFormat
-     *                True if the formatted value must be encoded, false
-     *                otherwise.
+     *            True if the formatted value must be encoded, false otherwise.
      */
     public void setEncodedOnFormat(boolean encodedOnFormat) {
         this.encodedOnFormat = encodedOnFormat;
@@ -280,7 +279,7 @@ public final class Variable {
      * Indicates if the value is fixed
      * 
      * @param fixed
-     *                True if the value is fixed
+     *            True if the value is fixed
      */
     public void setFixed(boolean fixed) {
         this.fixed = fixed;
@@ -290,7 +289,7 @@ public final class Variable {
      * Indicates if the variable is required or optional.
      * 
      * @param required
-     *                True if the variable is required or optional.
+     *            True if the variable is required or optional.
      */
     public void setRequired(boolean required) {
         this.required = required;
@@ -300,7 +299,7 @@ public final class Variable {
      * Sets the type of variable. See TYPE_* constants.
      * 
      * @param type
-     *                The type of variable.
+     *            The type of variable.
      */
     public void setType(int type) {
         this.type = type;

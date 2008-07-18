@@ -27,7 +27,7 @@ public class Notizen {
     // REQUEST javadoc of attribute setters of CacheControl does not ease it to
     // use the class
 
-    // REQUEST perhaps document in UriInfo.getPathSegments(), that ever all 
+    // REQUEST perhaps document in UriInfo.getPathSegments(), that ever all
     // path segments are returned.
 
     // LATER @Path(limited=false) effects only trailing values; implement when

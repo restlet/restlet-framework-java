@@ -59,7 +59,7 @@ public class FileProvider extends AbstractProvider<File> {
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
-        File file = File.createTempFile("FileProvider", ".tmp");
+        final File file = File.createTempFile("FileProvider", ".tmp");
         Util.copyStream(entityStream, new FileOutputStream(file));
         return file;
     }
@@ -81,7 +81,7 @@ public class FileProvider extends AbstractProvider<File> {
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
-        InputStream inputStream = new FileInputStream(file);
+        final InputStream inputStream = new FileInputStream(file);
         Util.copyStream(inputStream, entityStream);
     }
 }

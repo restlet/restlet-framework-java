@@ -18,19 +18,19 @@
 
 package org.restlet.ext.spring;
 
-import org.restlet.Router;
 import org.restlet.Finder;
+import org.restlet.Router;
 import org.restlet.resource.Resource;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.beans.factory.BeanFactory;
 
 /**
  * Restlet {@link Router} which behaves like Spring's
- * {@link org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping}.
- * It takes every bean of type {@link Resource} defined in a particular context
- * and examines its aliases (generally speaking, its name and id). If one of the
+ * {@link org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping}. It
+ * takes every bean of type {@link Resource} defined in a particular context and
+ * examines its aliases (generally speaking, its name and id). If one of the
  * aliases begins with a forward slash, the resource will be attached to that
  * URL.
  * <p>
@@ -64,13 +64,13 @@ public class SpringBeanRouter extends Router implements
         BeanFactoryPostProcessor {
 
     /**
-     * Creates an instance of {@link SpringBeanFinder}. This can be overriden
-     * if necessary.
+     * Creates an instance of {@link SpringBeanFinder}. This can be overriden if
+     * necessary.
      * 
      * @param beanFactory
-     *                The Spring bean factory.
+     *            The Spring bean factory.
      * @param beanName
-     *                The bean name.
+     *            The bean name.
      */
     protected Finder createFinder(BeanFactory beanFactory, String beanName) {
         return new SpringBeanFinder(beanFactory, beanName);
@@ -85,11 +85,11 @@ public class SpringBeanRouter extends Router implements
      */
     public void postProcessBeanFactory(ConfigurableListableBeanFactory factory)
             throws BeansException {
-        String[] names = factory
-                .getBeanNamesForType(Resource.class, true, true);
+        final String[] names = factory.getBeanNamesForType(Resource.class,
+                true, true);
 
-        for (String name : names) {
-            String uri = resolveUri(name, factory);
+        for (final String name : names) {
+            final String uri = resolveUri(name, factory);
             if (uri != null) {
                 attach(uri, createFinder(factory, name));
             }
@@ -99,13 +99,15 @@ public class SpringBeanRouter extends Router implements
     /**
      * Uses this first alias for this bean that starts with '/'. This mimics the
      * behavior of
-     * {@link org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping}.
+     * {@link org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping}
+     * .
      */
     protected String resolveUri(String resourceName,
             ConfigurableListableBeanFactory factory) {
-        for (String alias : factory.getAliases(resourceName)) {
-            if (alias.startsWith("/"))
+        for (final String alias : factory.getAliases(resourceName)) {
+            if (alias.startsWith("/")) {
                 return alias;
+            }
         }
 
         return null;

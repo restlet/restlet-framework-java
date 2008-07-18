@@ -23,7 +23,7 @@ package org.restlet.example.book.restlet.ch8.objects;
  * 
  */
 public class User extends BaseObject {
-    
+
     /** Is the user an administrator? */
     private boolean administrator;
 
@@ -45,23 +45,23 @@ public class User extends BaseObject {
     }
 
     public String getFirstName() {
-        return firstName;
+        return this.firstName;
     }
 
     public String getLastName() {
-        return lastName;
+        return this.lastName;
     }
 
     public String getLogin() {
-        return login;
+        return this.login;
     }
 
     public String getPassword() {
-        return password;
+        return this.password;
     }
 
     public boolean isAdministrator() {
-        return administrator;
+        return this.administrator;
     }
 
     public void setAdministrator(boolean administrator) {

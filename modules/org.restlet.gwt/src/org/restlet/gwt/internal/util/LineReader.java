@@ -29,7 +29,7 @@ public class LineReader extends CharacterReader {
      * Constructor.
      * 
      * @param text
-     *                The source text to read.
+     *            The source text to read.
      */
     public LineReader(String text) {
         super(text);

@@ -44,7 +44,7 @@ import org.restlet.VirtualHost;
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
  * 
- * @see <a href="http://www.springframework.org/">Spring home page</a>
+ * @see <a href="http://www.springframework.org/">Spring home page< /a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class SpringHost extends VirtualHost {
@@ -55,7 +55,7 @@ public class SpringHost extends VirtualHost {
      * instances or as qualified class names).
      * 
      * @param routes
-     *                The map of routes to attach.
+     *            The map of routes to attach.
      */
     public void setAttachments(Map<String, Object> routes) {
         SpringRouter.setAttachments(this, routes);

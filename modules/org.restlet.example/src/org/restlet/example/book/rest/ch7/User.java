@@ -39,9 +39,10 @@ public class User {
     private List<Bookmark> bookmarks;
 
     public Bookmark getBookmark(String uri) {
-        for (Bookmark bookmark : getBookmarks()) {
-            if (bookmark.getUri().equals(uri))
+        for (final Bookmark bookmark : getBookmarks()) {
+            if (bookmark.getUri().equals(uri)) {
                 return bookmark;
+            }
         }
 
         return null;
@@ -51,8 +52,9 @@ public class User {
      * @return the modifiable list of bookmarks
      */
     public List<Bookmark> getBookmarks() {
-        if (this.bookmarks == null)
+        if (this.bookmarks == null) {
             this.bookmarks = new ArrayList<Bookmark>();
+        }
         return this.bookmarks;
     }
 
@@ -64,18 +66,32 @@ public class User {
     }
 
     /**
+     * @return the fullName
+     */
+    public String getFullName() {
+        return this.fullName;
+    }
+
+    /**
+     * @return the name
+     */
+    public String getName() {
+        return this.name;
+    }
+
+    /**
+     * @return the password
+     */
+    public String getPassword() {
+        return this.password;
+    }
+
+    /**
      * @param email
      *            the email to set
      */
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    /**
-     * @return the fullName
-     */
-    public String getFullName() {
-        return this.fullName;
     }
 
     /**
@@ -87,25 +103,11 @@ public class User {
     }
 
     /**
-     * @return the name
-     */
-    public String getName() {
-        return this.name;
-    }
-
-    /**
      * @param name
      *            the name to set
      */
     public void setName(String name) {
         this.name = name;
-    }
-
-    /**
-     * @return the password
-     */
-    public String getPassword() {
-        return this.password;
     }
 
     /**

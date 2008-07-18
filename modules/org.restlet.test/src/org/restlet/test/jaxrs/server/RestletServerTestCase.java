@@ -57,13 +57,13 @@ import org.restlet.util.WrapperRepresentation;
 /**
  * <p>
  * This JUnit {@link TestCase} subclass could be used to test
- * {@link Application}s. It allows switching between real TCP server access
- * (via localhost) or direct application access.<br>
+ * {@link Application}s. It allows switching between real TCP server access (via
+ * localhost) or direct application access.<br>
  * Set {@link #useTcp} via {@link #setUseTcp(boolean)} to
  * <ul>
  * <li>true to use real TCP to access the server.</li>
- * <li>false to access the {@link Application} directly without TCP attach
- * (very fast, but nearly the same effect for testing).</li>
+ * <li>false to access the {@link Application} directly without TCP attach (very
+ * fast, but nearly the same effect for testing).</li>
  * </ul>
  * That's all you need to switch between real TCP access to the server or direct
  * {@link Application} access.
@@ -106,25 +106,26 @@ public abstract class RestletServerTestCase extends TestCase {
      * Adds the given media types to the accepted media types.
      * 
      * @param request
-     *                a Restlet {@link Request}
+     *            a Restlet {@link Request}
      * @param mediaTypes
-     *                a collection of {@link MediaType}s or {@link Preference}<{@link MediaType}>;
-     *                mixing is also allowed.
+     *            a collection of {@link MediaType}s or {@link Preference}<
+     *            {@link MediaType}>; mixing is also allowed.
      */
     @SuppressWarnings("unchecked")
     static void addAcceptedMediaTypes(Request request, Collection mediaTypes) {
-        if (mediaTypes == null || mediaTypes.isEmpty())
+        if ((mediaTypes == null) || mediaTypes.isEmpty()) {
             return;
-        Collection<Preference<MediaType>> mediaTypePrefs = new ArrayList<Preference<MediaType>>(
+        }
+        final Collection<Preference<MediaType>> mediaTypePrefs = new ArrayList<Preference<MediaType>>(
                 mediaTypes.size());
-        for (Object mediaType : mediaTypes) {
+        for (final Object mediaType : mediaTypes) {
             if (mediaType instanceof MediaType) {
                 mediaTypePrefs.add(new Preference<MediaType>(
                         (MediaType) mediaType));
                 continue;
             }
             if (mediaType instanceof Preference) {
-                Preference<Metadata> preference = (Preference) mediaType;
+                final Preference<Metadata> preference = (Preference) mediaType;
                 if (preference.getMetadata() instanceof MediaType) {
                     mediaTypePrefs.add((Preference) preference);
                     continue;
@@ -145,7 +146,7 @@ public abstract class RestletServerTestCase extends TestCase {
      */
     public static Guard createGuard(final Context context,
             final ChallengeScheme challengeScheme) {
-        Guard guard = new Guard(context, challengeScheme, "");
+        final Guard guard = new Guard(context, challengeScheme, "");
         guard.getSecrets().put("admin", "adminPW".toCharArray());
         guard.getSecrets().put("alice", "alicesSecret".toCharArray());
         guard.getSecrets().put("bob", "bobsSecret".toCharArray());
@@ -170,10 +171,11 @@ public abstract class RestletServerTestCase extends TestCase {
 
     public static ServerWrapperFactory getServerWrapperFactory() {
         if (serverWrapperFactory == null) {
-            if (useTcp)
+            if (useTcp) {
                 serverWrapperFactory = new RestletServerWrapperFactory();
-            else
+            } else {
                 serverWrapperFactory = new DirectServerWrapperFactory();
+            }
         }
         return serverWrapperFactory;
     }
@@ -184,25 +186,47 @@ public abstract class RestletServerTestCase extends TestCase {
      * @param newServerWrapper
      */
     public static void setServerWrapperFactory(ServerWrapperFactory swf) {
-        if (swf == null)
+        if (swf == null) {
             throw new IllegalArgumentException(
                     "null is an illegal ServerWrapperFactory");
+        }
         serverWrapperFactory = swf;
     }
 
     /**
      * @param useTcp
-     *                the useTcp to set
+     *            the useTcp to set
      */
     public static void setUseTcp(boolean useTcp) {
         if (useTcp) {
-            if (serverWrapperFactory != null && !serverWrapperFactory.usesTcp())
+            if ((serverWrapperFactory != null)
+                    && !serverWrapperFactory.usesTcp()) {
                 serverWrapperFactory = null;
+            }
         } else {
-            if (serverWrapperFactory != null && serverWrapperFactory.usesTcp())
+            if ((serverWrapperFactory != null)
+                    && serverWrapperFactory.usesTcp()) {
                 serverWrapperFactory = null;
+            }
         }
         RestletServerTestCase.useTcp = useTcp;
+    }
+
+    /**
+     * @param response
+     */
+    private static void sysOutEntity(Response response) {
+        final Representation entity = response.getEntity();
+        try {
+            if (entity != null) {
+                System.out.println(entity.getText());
+            } else {
+                System.out.println("[no Entity available]");
+            }
+        } catch (final IOException e) {
+            System.out.println("Entity not readable: ");
+            e.printStackTrace(System.out);
+        }
     }
 
     /**
@@ -219,29 +243,13 @@ public abstract class RestletServerTestCase extends TestCase {
     }
 
     /**
-     * @param response
-     */
-    private static void sysOutEntity(Response response) {
-        Representation entity = response.getEntity();
-        try {
-            if (entity != null)
-                System.out.println(entity.getText());
-            else
-                System.out.println("[no Entity available]");
-        } catch (IOException e) {
-            System.out.println("Entity not readable: ");
-            e.printStackTrace(System.out);
-        }
-    }
-
-    /**
      * @param status
      * @param response
      */
-    public static void sysOutEntityIfNotStatus(Status status,
-            Response response) {
-        if(!response.getStatus().equals(status))
+    public static void sysOutEntityIfNotStatus(Status status, Response response) {
+        if (!response.getStatus().equals(status)) {
             sysOutEntity(response);
+        }
     }
 
     /**
@@ -279,22 +287,21 @@ public abstract class RestletServerTestCase extends TestCase {
      * access the server with the given values.
      * 
      * @param httpMethod
-     *                The HTTP method to use.
+     *            The HTTP method to use.
      * @param reference
-     *                The {@link Reference}
+     *            The {@link Reference}
      * @param accMediaTypes
-     *                the accepted {@link MediaType}s and/or {@link Preference}<{@link MediaType}>
-     *                (may be mixed). May be null or empty.
+     *            the accepted {@link MediaType}s and/or {@link Preference}<
+     *            {@link MediaType}> (may be mixed). May be null or empty.
      * @param entity
-     *                the entity to send. null for GET and DELETE requests
+     *            the entity to send. null for GET and DELETE requests
      * @param challengeResponse
      * @param conditions
-     *                the conditions to send with the request. May be null.
+     *            the conditions to send with the request. May be null.
      * @param addCookies
-     *                {@link Cookie}s to add to the {@link Request}. May be
-     *                null.
+     *            {@link Cookie}s to add to the {@link Request}. May be null.
      * @param addHeaders
-     *                headers to add to the request. May be null.
+     *            headers to add to the request. May be null.
      * @return
      * @see #accessServer(Request)
      * @see #accessServer(Method, Reference)
@@ -304,13 +311,14 @@ public abstract class RestletServerTestCase extends TestCase {
             Collection accMediaTypes, Representation entity,
             ChallengeResponse challengeResponse, Conditions conditions,
             Collection<Cookie> addCookies, Collection<Parameter> addHeaders) {
-        Request request = new Request(httpMethod, reference);
+        final Request request = new Request(httpMethod, reference);
         addAcceptedMediaTypes(request, accMediaTypes);
         request.setChallengeResponse(challengeResponse);
         request.setEntity(entity);
         request.setConditions(conditions);
-        if (addCookies != null)
+        if (addCookies != null) {
             request.getCookies().addAll(addCookies);
+        }
         if (addHeaders != null) {
             getHttpHeaders(request).addAll(addHeaders);
         }
@@ -325,16 +333,17 @@ public abstract class RestletServerTestCase extends TestCase {
      *      ChallengeResponse, Conditions, Collection, Collection)
      */
     public Response accessServer(Request request) {
-        Reference reference = request.getResourceRef();
-        if (reference.getBaseRef() == null)
+        final Reference reference = request.getResourceRef();
+        if (reference.getBaseRef() == null) {
             reference.setBaseRef(reference.getHostIdentifier());
+        }
         request.setOriginalRef(reference.getTargetRef());
-        Restlet connector = getClientConnector();
+        final Restlet connector = getClientConnector();
         if (shouldAccessWithoutTcp()) {
-            String hostDomain = request.getResourceRef().getHostDomain();
+            final String hostDomain = request.getResourceRef().getHostDomain();
             getHttpHeaders(request).add("host", hostDomain);
         }
-        Response response = connector.handle(request);
+        final Response response = connector.handle(request);
         if (!useTcp && request.getMethod().equals(Method.HEAD)) {
             response.setEntity(new WrapperRepresentation(response.getEntity()) {
 
@@ -387,11 +396,12 @@ public abstract class RestletServerTestCase extends TestCase {
     protected abstract Application createApplication();
 
     protected Reference createBaseRef() {
-        Reference reference = new Reference();
+        final Reference reference = new Reference();
         reference.setProtocol(Protocol.HTTP);
         reference.setAuthority("localhost");
-        if (!shouldAccessWithoutTcp())
+        if (!shouldAccessWithoutTcp()) {
             reference.setHostPort(getServerWrapper().getServerPort());
+        }
         return reference;
     }
 
@@ -407,9 +417,11 @@ public abstract class RestletServerTestCase extends TestCase {
     }
 
     public ServerWrapper getServerWrapper() {
-        if (serverWrapper == null)
-            serverWrapper = getServerWrapperFactory().createServerWrapper();
-        return serverWrapper;
+        if (this.serverWrapper == null) {
+            this.serverWrapper = getServerWrapperFactory()
+                    .createServerWrapper();
+        }
+        return this.serverWrapper;
     }
 
     /**
@@ -419,7 +431,7 @@ public abstract class RestletServerTestCase extends TestCase {
      */
     protected void runServerAfterStart() {
         System.out.print("server is accessable via http://localhost:");
-        System.out.println(this.getServerPort());
+        System.out.println(getServerPort());
     }
 
     /**
@@ -437,11 +449,11 @@ public abstract class RestletServerTestCase extends TestCase {
      */
     public void runServerUntilKeyPressed() throws Exception {
         setUseTcp(true);
-        startServer(this.createApplication());
+        startServer(createApplication());
         runServerAfterStart();
         System.out.println("press key to stop . . .");
         System.in.read();
-        this.stopServer();
+        stopServer();
         System.out.println("server stopped");
     }
 
@@ -493,10 +505,10 @@ public abstract class RestletServerTestCase extends TestCase {
             throws Exception {
         try {
             getServerWrapper().startServer(jaxRsApplication, protocol);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             try {
                 stopServer();
-            } catch (Exception e1) {
+            } catch (final Exception e1) {
                 // ignore exception, throw before catched Exception later
             }
             throw e;
@@ -508,8 +520,9 @@ public abstract class RestletServerTestCase extends TestCase {
      * @see {@link #accessServer(Request)}
      */
     protected void stopServer() throws Exception {
-        if (serverWrapper != null)
-            serverWrapper.stopServer();
+        if (this.serverWrapper != null) {
+            this.serverWrapper.stopServer();
+        }
     }
 
     @Override

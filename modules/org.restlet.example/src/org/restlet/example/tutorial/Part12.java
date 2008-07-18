@@ -36,16 +36,16 @@ public class Part12 extends Application {
      * Run the example as a standalone component.
      * 
      * @param args
-     *                The optional arguments.
+     *            The optional arguments.
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {
         // Create a component
-        Component component = new Component();
+        final Component component = new Component();
         component.getServers().add(Protocol.HTTP, 8182);
 
         // Create an application
-        Application application = new Part12(component.getContext());
+        final Application application = new Part12(component.getContext());
 
         // Attach the application to the component and start it
         component.getDefaultHost().attachDefault(application);
@@ -56,7 +56,7 @@ public class Part12 extends Application {
      * Constructor.
      * 
      * @param parentContext
-     *                The component's context.
+     *            The component's context.
      */
     public Part12(Context parentContext) {
         super(parentContext);
@@ -65,7 +65,7 @@ public class Part12 extends Application {
     @Override
     public Restlet createRoot() {
         // Create a router
-        Router router = new Router(getContext());
+        final Router router = new Router(getContext());
 
         // Attach the resources to the router
         router.attach("/users/{user}", UserResource.class);

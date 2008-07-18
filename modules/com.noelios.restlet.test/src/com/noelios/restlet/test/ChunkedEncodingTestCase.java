@@ -78,13 +78,13 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
         public void storeRepresentation(Representation entity) {
             checkForChunkedHeader(getRequest());
 
-            DomRepresentation dom = new DomRepresentation(entity);
+            final DomRepresentation dom = new DomRepresentation(entity);
             try {
-                Document doc = dom.getDocument();
+                final Document doc = dom.getDocument();
                 assertXML(dom);
                 getResponse().setEntity(
                         new DomRepresentation(MediaType.TEXT_XML, doc));
-            } catch (IOException ex) {
+            } catch (final IOException ex) {
                 ex.printStackTrace();
                 fail(ex.getMessage());
             }
@@ -93,9 +93,9 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
 
     static void assertXML(DomRepresentation entity) {
         try {
-            Document document = entity.getDocument();
-            Node root = document.getDocumentElement();
-            NodeList children = root.getChildNodes();
+            final Document document = entity.getDocument();
+            final Node root = document.getDocumentElement();
+            final NodeList children = root.getChildNodes();
 
             assertEquals("root", root.getNodeName());
             assertEquals(2, children.getLength());
@@ -106,7 +106,7 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
             assertEquals("name-1", children.item(1).getAttributes()
                     .getNamedItem("name").getNodeValue());
 
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             fail(ex.getMessage());
         } finally {
             entity.release();
@@ -114,9 +114,9 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
     }
 
     static void checkForChunkedHeader(Message message) {
-        Form parameters = (Form) message.getAttributes().get(
+        final Form parameters = (Form) message.getAttributes().get(
                 "org.restlet.http.headers");
-        Parameter p = parameters
+        final Parameter p = parameters
                 .getFirst(HttpConstants.HEADER_TRANSFER_ENCODING);
         assertFalse(p == null);
         assertEquals("chunked", p.getValue());
@@ -126,19 +126,19 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
         try {
             return DocumentBuilderFactory.newInstance().newDocumentBuilder()
                     .newDocument();
-        } catch (ParserConfigurationException ex) {
+        } catch (final ParserConfigurationException ex) {
             throw new RuntimeException(ex);
         }
     }
 
     private static Representation createTestXml() {
-        Document doc = createDocument();
-        Element root = doc.createElement("root");
+        final Document doc = createDocument();
+        final Element root = doc.createElement("root");
 
         doc.appendChild(root);
 
         for (int i = 0; i < 2; i++) {
-            Element e = doc.createElement("child-" + i);
+            final Element e = doc.createElement("child-" + i);
             e.setAttribute("name", "name-" + i);
             root.appendChild(e);
         }
@@ -158,10 +158,10 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
 
     @Override
     protected Application createApplication(Component component) {
-        Application application = new Application(component.getContext()) {
+        final Application application = new Application(component.getContext()) {
             @Override
             public Restlet createRoot() {
-                Router router = new Router(getContext());
+                final Router router = new Router(getContext());
                 router.attach("/test", PutTestResource.class);
                 return router;
             }
@@ -170,8 +170,8 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
     }
 
     private void sendGet(String uri) throws Exception {
-        Request request = new Request(Method.GET, uri);
-        Response r = new Client(Protocol.HTTP).handle(request);
+        final Request request = new Request(Method.GET, uri);
+        final Response r = new Client(Protocol.HTTP).handle(request);
         try {
             assertEquals(r.getStatus().getDescription(), Status.SUCCESS_OK, r
                     .getStatus());
@@ -183,11 +183,11 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
     }
 
     private void sendPut(String uri) throws Exception {
-        Request request = new Request(Method.PUT, uri, createTestXml());
-        Response r = new Client(Protocol.HTTP).handle(request);
+        final Request request = new Request(Method.PUT, uri, createTestXml());
+        final Response r = new Client(Protocol.HTTP).handle(request);
 
         try {
-            if (checkedForChunkedResponse) {
+            if (this.checkedForChunkedResponse) {
                 checkForChunkedHeader(r);
             }
             assertEquals(r.getStatus().getDescription(), Status.SUCCESS_OK, r
@@ -202,14 +202,14 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
     @Override
     public void setUp() {
         super.setUp();
-        checkedForChunkedResponse = true;
+        this.checkedForChunkedResponse = true;
     }
 
     @Override
     public void testJettyAndInternal() throws Exception {
         // Jetty will not send a chunked response when a client sends
         // Connection: close, which the default client helper does
-        checkedForChunkedResponse = false;
+        this.checkedForChunkedResponse = false;
         super.testJettyAndInternal();
     }
 
@@ -217,7 +217,7 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
     public void testSimpleAndInternal() throws Exception {
         // Simple will not send a chunked response when a client sends
         // Connection: close, which the default client helper does
-        checkedForChunkedResponse = false;
+        this.checkedForChunkedResponse = false;
         super.testSimpleAndInternal();
     }
 

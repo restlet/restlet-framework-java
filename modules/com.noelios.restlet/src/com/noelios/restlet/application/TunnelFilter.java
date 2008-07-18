@@ -62,7 +62,7 @@ public class TunnelFilter extends Filter {
      * Constructor.
      * 
      * @param context
-     *                The parent context.
+     *            The parent context.
      */
     public TunnelFilter(Context context) {
         super(context);
@@ -90,7 +90,7 @@ public class TunnelFilter extends Filter {
      * {@link MetadataService}.
      * 
      * @param extension
-     *                The extension to lookup.
+     *            The extension to lookup.
      * @return The matched metadata.
      */
     private Metadata getMetadata(String extension) {
@@ -123,21 +123,21 @@ public class TunnelFilter extends Filter {
      * href="https://jsr311.dev.java.net">https://jsr311.dev.java.net</a>)
      * 
      * @param request
-     *                The request to update.
+     *            The request to update.
      * @return True if the query has been updated, false otherwise.
      */
     private boolean processExtensions(Request request) {
-        TunnelService tunnelService = getTunnelService();
+        final TunnelService tunnelService = getTunnelService();
         boolean extensionsModified = false;
 
         // Tunnel the client preferences only for GET or HEAD requests
-        Method method = request.getMethod();
+        final Method method = request.getMethod();
         if (tunnelService.isPreferencesTunnel()
                 && (method.equals(Method.GET) || method.equals(Method.HEAD))) {
-            Reference resourceRef = request.getResourceRef();
+            final Reference resourceRef = request.getResourceRef();
 
             if (resourceRef.hasExtensions()) {
-                ClientInfo clientInfo = request.getClientInfo();
+                final ClientInfo clientInfo = request.getClientInfo();
                 boolean encodingFound = false;
                 boolean characterSetFound = false;
                 boolean mediaTypeFound = false;
@@ -149,10 +149,10 @@ public class TunnelFilter extends Filter {
                 // also allowed: i.e. one language, one mediatype, one encoding,
                 // one character set.
                 while (true) {
-                    int lastIndexOfPoint = extensions.lastIndexOf('.');
-                    String extension = extensions
+                    final int lastIndexOfPoint = extensions.lastIndexOf('.');
+                    final String extension = extensions
                             .substring(lastIndexOfPoint + 1);
-                    Metadata metadata = getMetadata(extension);
+                    final Metadata metadata = getMetadata(extension);
 
                     if (!mediaTypeFound && (metadata instanceof MediaType)) {
                         updateMetadata(clientInfo, metadata);
@@ -197,21 +197,21 @@ public class TunnelFilter extends Filter {
      * parameters. The matched parameters are removed from the query.
      * 
      * @param request
-     *                The request to update.
+     *            The request to update.
      * @return True if the query has been updated, false otherwise.
      */
     private boolean processQuery(Request request) {
-        TunnelService tunnelService = getTunnelService();
+        final TunnelService tunnelService = getTunnelService();
         boolean queryModified = false;
-        Reference resourceRef = request.getResourceRef();
+        final Reference resourceRef = request.getResourceRef();
 
         if (resourceRef.hasQuery()) {
-            Form query = resourceRef.getQueryAsForm(null);
+            final Form query = resourceRef.getQueryAsForm(null);
 
             // Tunnel the request method
-            Method method = request.getMethod();
+            final Method method = request.getMethod();
             if (tunnelService.isMethodTunnel() && method.equals(Method.POST)) {
-                String methodName = query.getFirstValue(tunnelService
+                final String methodName = query.getFirstValue(tunnelService
                         .getMethodParameter());
 
                 if (methodName != null) {
@@ -224,24 +224,27 @@ public class TunnelFilter extends Filter {
             // Tunnel the client preferences
             if (tunnelService.isPreferencesTunnel()) {
                 // Get the parameter names to look for
-                String charSetParameter = tunnelService
+                final String charSetParameter = tunnelService
                         .getCharacterSetParameter();
-                String encodingParameter = tunnelService.getEncodingParameter();
-                String languageParameter = tunnelService.getLanguageParameter();
-                String mediaTypeParameter = tunnelService
+                final String encodingParameter = tunnelService
+                        .getEncodingParameter();
+                final String languageParameter = tunnelService
+                        .getLanguageParameter();
+                final String mediaTypeParameter = tunnelService
                         .getMediaTypeParameter();
 
                 // Get the preferences from the query
-                String acceptedCharSet = query.getFirstValue(charSetParameter);
-                String acceptedEncoding = query
+                final String acceptedCharSet = query
+                        .getFirstValue(charSetParameter);
+                final String acceptedEncoding = query
                         .getFirstValue(encodingParameter);
-                String acceptedLanguage = query
+                final String acceptedLanguage = query
                         .getFirstValue(languageParameter);
-                String acceptedMediaType = query
+                final String acceptedMediaType = query
                         .getFirstValue(mediaTypeParameter);
 
                 // Updates the client preferences
-                ClientInfo clientInfo = request.getClientInfo();
+                final ClientInfo clientInfo = request.getClientInfo();
                 Metadata metadata = getMetadata(acceptedCharSet);
                 if (metadata instanceof CharacterSet) {
                     updateMetadata(clientInfo, metadata);
@@ -310,19 +313,19 @@ public class TunnelFilter extends Filter {
      * etc.) but can provide their own "Accept" header.
      * 
      * @param request
-     *                the request to update.
+     *            the request to update.
      */
     private void processUserAgent(Request request) {
-        Map<String, String> agentAttributes = request.getClientInfo()
+        final Map<String, String> agentAttributes = request.getClientInfo()
                 .getAgentAttributes();
         if (agentAttributes != null) {
-            URL userAgentPropertiesUrl = Engine.getClassLoader().getResource(
-                    "org/restlet/service/accept.properties");
+            final URL userAgentPropertiesUrl = Engine.getClassLoader()
+                    .getResource("org/restlet/service/accept.properties");
             if (userAgentPropertiesUrl != null) {
                 // Get the old Accept header value
-                Form headers = (Form) request.getAttributes().get(
+                final Form headers = (Form) request.getAttributes().get(
                         HttpConstants.ATTRIBUTE_HEADERS);
-                String acceptOld = headers
+                final String acceptOld = headers
                         .getFirstValue(HttpConstants.HEADER_ACCEPT);
 
                 BufferedReader reader;
@@ -338,13 +341,13 @@ public class TunnelFilter extends Filter {
                     String line = reader.readLine();
                     for (; line != null; line = reader.readLine()) {
                         if (!line.startsWith("#")) {
-                            String[] keyValue = line.split(":");
+                            final String[] keyValue = line.split(":");
                             if (keyValue.length == 2) {
-                                String key = keyValue[0].trim();
-                                String value = keyValue[1].trim();
+                                final String key = keyValue[0].trim();
+                                final String value = keyValue[1].trim();
                                 if ("acceptNew".equalsIgnoreCase(key)) {
                                     if (processAcceptHeader) {
-                                        ClientInfo clientInfo = new ClientInfo();
+                                        final ClientInfo clientInfo = new ClientInfo();
                                         PreferenceUtils.parseMediaTypes(value,
                                                 clientInfo);
                                         request
@@ -358,14 +361,14 @@ public class TunnelFilter extends Filter {
                                 } else {
                                     if (processAcceptHeader) {
                                         if ("acceptOld".equalsIgnoreCase(key)
-                                                && !(value == null || value
-                                                        .length() == 0)) {
+                                                && !((value == null) || (value
+                                                        .length() == 0))) {
                                             processAcceptHeader = value
                                                     .equalsIgnoreCase(acceptOld);
                                         } else {
-                                            String attribute = agentAttributes
+                                            final String attribute = agentAttributes
                                                     .get(key);
-                                            processAcceptHeader = attribute != null
+                                            processAcceptHeader = (attribute != null)
                                                     && attribute
                                                             .equalsIgnoreCase(value);
                                         }
@@ -375,7 +378,7 @@ public class TunnelFilter extends Filter {
                         }
                     }
                     reader.close();
-                } catch (IOException e) {
+                } catch (final IOException e) {
                 }
             }
         }
@@ -386,9 +389,9 @@ public class TunnelFilter extends Filter {
      * preferences for the same type of metadata if necessary.
      * 
      * @param clientInfo
-     *                The client info to update.
+     *            The client info to update.
      * @param metadata
-     *                The metadata to use.
+     *            The metadata to use.
      */
     private void updateMetadata(ClientInfo clientInfo, Metadata metadata) {
         if (metadata != null) {

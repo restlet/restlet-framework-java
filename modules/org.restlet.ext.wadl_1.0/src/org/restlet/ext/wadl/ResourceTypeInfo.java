@@ -57,8 +57,9 @@ public class ResourceTypeInfo {
         if (d == null) {
             synchronized (this) {
                 d = this.documentations;
-                if (d == null)
+                if (d == null) {
                     this.documentations = d = new ArrayList<DocumentationInfo>();
+                }
             }
         }
         return d;
@@ -70,7 +71,7 @@ public class ResourceTypeInfo {
      * @return The identifier for that element.
      */
     public String getIdentifier() {
-        return identifier;
+        return this.identifier;
     }
 
     /**
@@ -84,8 +85,9 @@ public class ResourceTypeInfo {
         if (m == null) {
             synchronized (this) {
                 m = this.methods;
-                if (m == null)
+                if (m == null) {
                     this.methods = m = new ArrayList<MethodInfo>();
+                }
             }
         }
         return m;
@@ -102,8 +104,9 @@ public class ResourceTypeInfo {
         if (p == null) {
             synchronized (this) {
                 p = this.parameters;
-                if (p == null)
+                if (p == null) {
                     this.parameters = p = new ArrayList<ParameterInfo>();
+                }
             }
         }
         return p;
@@ -157,8 +160,8 @@ public class ResourceTypeInfo {
      * @throws SAXException
      */
     public void writeElement(XmlWriter writer) throws SAXException {
-        AttributesImpl attributes = new AttributesImpl();
-        if (getIdentifier() != null && !getIdentifier().equals("")) {
+        final AttributesImpl attributes = new AttributesImpl();
+        if ((getIdentifier() != null) && !getIdentifier().equals("")) {
             attributes.addAttribute("", "id", null, "xs:ID", getIdentifier());
         }
 
@@ -169,15 +172,15 @@ public class ResourceTypeInfo {
         } else {
             writer.startElement(APP_NAMESPACE, "resource_type", null,
                     attributes);
-            for (DocumentationInfo documentationInfo : getDocumentations()) {
+            for (final DocumentationInfo documentationInfo : getDocumentations()) {
                 documentationInfo.writeElement(writer);
             }
 
-            for (MethodInfo methodInfo : getMethods()) {
+            for (final MethodInfo methodInfo : getMethods()) {
                 methodInfo.writeElement(writer);
             }
 
-            for (ParameterInfo parameterInfo : getParameters()) {
+            for (final ParameterInfo parameterInfo : getParameters()) {
                 parameterInfo.writeElement(writer);
             }
 

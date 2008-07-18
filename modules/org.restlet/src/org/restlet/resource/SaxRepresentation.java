@@ -60,7 +60,7 @@ public class SaxRepresentation extends XmlRepresentation {
      * Constructor.
      * 
      * @param mediaType
-     *                The representation media type.
+     *            The representation media type.
      */
     public SaxRepresentation(MediaType mediaType) {
         super(mediaType);
@@ -70,9 +70,9 @@ public class SaxRepresentation extends XmlRepresentation {
      * Constructor.
      * 
      * @param mediaType
-     *                The representation's media type.
+     *            The representation's media type.
      * @param xmlDocument
-     *                A DOM document to parse.
+     *            A DOM document to parse.
      */
     public SaxRepresentation(MediaType mediaType, Document xmlDocument) {
         super(mediaType);
@@ -84,9 +84,9 @@ public class SaxRepresentation extends XmlRepresentation {
      * Constructor.
      * 
      * @param mediaType
-     *                The representation's media type.
+     *            The representation's media type.
      * @param xmlSource
-     *                A SAX input source to parse.
+     *            A SAX input source to parse.
      */
     public SaxRepresentation(MediaType mediaType, InputSource xmlSource) {
         super(mediaType);
@@ -97,9 +97,9 @@ public class SaxRepresentation extends XmlRepresentation {
      * Constructor.
      * 
      * @param mediaType
-     *                The representation's media type.
+     *            The representation's media type.
      * @param xmlSource
-     *                A JAXP source to parse.
+     *            A JAXP source to parse.
      */
     public SaxRepresentation(MediaType mediaType, SAXSource xmlSource) {
         super(mediaType);
@@ -110,7 +110,7 @@ public class SaxRepresentation extends XmlRepresentation {
      * Constructor.
      * 
      * @param xmlRepresentation
-     *                A source XML representation to parse.
+     *            A source XML representation to parse.
      * @throws IOException
      */
     public SaxRepresentation(Representation xmlRepresentation) {
@@ -129,7 +129,7 @@ public class SaxRepresentation extends XmlRepresentation {
                 this.source.setSystemId(xmlRepresentation.getIdentifier()
                         .getTargetRef().toString());
             }
-        } catch (IOException ioe) {
+        } catch (final IOException ioe) {
             ioe.printStackTrace();
         }
     }
@@ -138,11 +138,11 @@ public class SaxRepresentation extends XmlRepresentation {
     public Object evaluate(String expression, QName returnType)
             throws Exception {
         Object result = null;
-        XPath xpath = XPathFactory.newInstance().newXPath();
+        final XPath xpath = XPathFactory.newInstance().newXPath();
         xpath.setNamespaceContext(this);
 
         if (this.source != null) {
-            Document document = getDocumentBuilder().parse(
+            final Document document = getDocumentBuilder().parse(
                     SAXSource.sourceToInputSource(this.source));
             result = xpath.evaluate(expression, document, returnType);
         } else {
@@ -167,24 +167,24 @@ public class SaxRepresentation extends XmlRepresentation {
      * Parses the source and sends SAX events to a content handler.
      * 
      * @param contentHandler
-     *                The SAX content handler to use for parsing.
+     *            The SAX content handler to use for parsing.
      */
     public void parse(ContentHandler contentHandler) throws IOException {
         if (contentHandler != null) {
             try {
-                Result result = new SAXResult(contentHandler);
+                final Result result = new SAXResult(contentHandler);
                 TransformerFactory.newInstance().newTransformer().transform(
                         this.source, result);
-            } catch (TransformerConfigurationException tce) {
+            } catch (final TransformerConfigurationException tce) {
                 throw new IOException(
                         "Couldn't parse the source representation: "
                                 + tce.getMessage());
-            } catch (TransformerException te) {
+            } catch (final TransformerException te) {
                 te.printStackTrace();
                 throw new IOException(
                         "Couldn't parse the source representation: "
                                 + te.getMessage());
-            } catch (TransformerFactoryConfigurationError tfce) {
+            } catch (final TransformerFactoryConfigurationError tfce) {
                 throw new IOException(
                         "Couldn't parse the source representation: "
                                 + tfce.getMessage());
@@ -212,7 +212,7 @@ public class SaxRepresentation extends XmlRepresentation {
      * {@link #parse(ContentHandler)} method.
      * 
      * @param source
-     *                A SAX source.
+     *            A SAX source.
      */
     public void setSaxSource(SAXSource source) {
         this.source = source;
@@ -228,7 +228,7 @@ public class SaxRepresentation extends XmlRepresentation {
      * does nothing and is intended to be overriden.
      * 
      * @param writer
-     *                The XML writer to write to.
+     *            The XML writer to write to.
      * @throws IOException
      */
     public void write(XmlWriter writer) throws IOException {

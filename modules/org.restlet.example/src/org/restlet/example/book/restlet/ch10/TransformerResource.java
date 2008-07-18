@@ -25,11 +25,11 @@ public class TransformerResource extends Resource {
 
     @Override
     public Representation represent(Variant variant) throws ResourceException {
-        File dir = new File(
+        final File dir = new File(
                 "D:\\alaska\\forge\\build\\swc\\nre\\trunk\\books\\apress\\manuscript\\sample");
         // Get the source XML
-        Representation source = new FileRepresentation(
-                new File(dir, "mail.xml"), MediaType.APPLICATION_XML);
+        final Representation source = new FileRepresentation(new File(dir,
+                "mail.xml"), MediaType.APPLICATION_XML);
 
         Representation transformSheet = null;
         // Get the XSLT stylesheet
@@ -42,7 +42,7 @@ public class TransformerResource extends Resource {
         }
 
         // Instantiates the representation with both source and stylesheet.
-        Representation representation = new TransformRepresentation(
+        final Representation representation = new TransformRepresentation(
                 getContext(), source, transformSheet);
         // Set the right media-type
         representation.setMediaType(variant.getMediaType());

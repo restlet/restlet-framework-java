@@ -54,24 +54,28 @@ public class RestletServerWrapper implements ServerWrapper {
     }
 
     public int getServerPort() {
-        if (this.component == null)
+        if (this.component == null) {
             throw new IllegalStateException("the server is not started yet.");
-        Server server = this.component.getServers().get(0);
+        }
+        final Server server = this.component.getServers().get(0);
         int port = server.getPort();
-        if (port > 0)
+        if (port > 0) {
             return port;
+        }
         port = server.getEphemeralPort();
-        if (port > 0)
+        if (port > 0) {
             return port;
+        }
         for (int i = 0; i < 100; i++) {
             try {
                 Thread.sleep(20);
-            } catch (InterruptedException e) {
+            } catch (final InterruptedException e) {
                 // 
             }
             port = server.getEphemeralPort();
-            if (port > 0)
+            if (port > 0) {
                 return port;
+            }
         }
         throw new IllegalStateException("Sorry, the port is not available");
     }
@@ -87,7 +91,7 @@ public class RestletServerWrapper implements ServerWrapper {
     public void startServer(Application application, Protocol protocol)
             throws Exception {
 
-        Component comp = new Component();
+        final Component comp = new Component();
         comp.getServers().add(protocol, 0);
 
         // Attach the application to the component and start it
@@ -105,7 +109,8 @@ public class RestletServerWrapper implements ServerWrapper {
      * @throws Exception
      */
     public void stopServer() throws Exception {
-        if (this.component != null)
+        if (this.component != null) {
             this.component.stop();
+        }
     }
 }

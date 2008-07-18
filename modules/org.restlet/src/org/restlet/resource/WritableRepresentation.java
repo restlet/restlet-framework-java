@@ -40,7 +40,7 @@ public abstract class WritableRepresentation extends ChannelRepresentation {
      * Constructor.
      * 
      * @param mediaType
-     *                The representation's media type.
+     *            The representation's media type.
      */
     public WritableRepresentation(MediaType mediaType) {
         super(mediaType);
@@ -51,10 +51,6 @@ public abstract class WritableRepresentation extends ChannelRepresentation {
         return ByteUtils.getChannel(this);
     }
 
-    @Override
-    public abstract void write(WritableByteChannel writableChannel)
-            throws IOException;
-
     /**
      * Calls parent's implementation.
      */
@@ -62,5 +58,9 @@ public abstract class WritableRepresentation extends ChannelRepresentation {
     public void release() {
         super.release();
     }
+
+    @Override
+    public abstract void write(WritableByteChannel writableChannel)
+            throws IOException;
 
 }

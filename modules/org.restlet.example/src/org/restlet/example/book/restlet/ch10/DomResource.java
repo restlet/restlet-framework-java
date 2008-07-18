@@ -27,20 +27,20 @@ public class DomResource extends Resource {
         Representation rep = null;
 
         try {
-            Document d = DocumentBuilderFactory.newInstance()
+            final Document d = DocumentBuilderFactory.newInstance()
                     .newDocumentBuilder().newDocument();
-            Element r = d.createElement("mail");
+            final Element r = d.createElement("mail");
             d.appendChild(r);
-            Element subject = d.createElement("subject");
+            final Element subject = d.createElement("subject");
             subject.appendChild(d
                     .createTextNode("This is the topic of the mail."));
             r.appendChild(subject);
-            Element from = d.createElement("from");
+            final Element from = d.createElement("from");
             from.appendChild(d.createTextNode("Me"));
             r.appendChild(from);
             d.normalizeDocument();
             rep = new DomRepresentation(MediaType.TEXT_XML, d);
-        } catch (ParserConfigurationException e) {
+        } catch (final ParserConfigurationException e) {
             e.printStackTrace();
         }
 

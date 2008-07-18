@@ -46,19 +46,15 @@ import javax.xml.transform.stream.StreamSource;
 @Provider
 public class SourceProvider extends AbstractProvider<Source> {
 
-    private Logger logger = Logger.getLogger(SourceProvider.class.getName());
+    private final Logger logger = Logger.getLogger(SourceProvider.class
+            .getName());
 
-    private TransformerFactory transformerFactory = TransformerFactory
+    private final TransformerFactory transformerFactory = TransformerFactory
             .newInstance();
 
     @Override
     public long getSize(Source object) {
         return -1;
-    }
-
-    @Override
-    protected Class<?> supportedClass() {
-        return Source.class;
     }
 
     /**
@@ -73,6 +69,11 @@ public class SourceProvider extends AbstractProvider<Source> {
         return new StreamSource(entityStream);
     }
 
+    @Override
+    protected Class<?> supportedClass() {
+        return Source.class;
+    }
+
     /**
      * @see MessageBodyWriter#writeTo(Object, Class, Type, Annotation[],
      *      MediaType, MultivaluedMap, OutputStream)
@@ -82,26 +83,26 @@ public class SourceProvider extends AbstractProvider<Source> {
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
-        StreamResult streamResult = new StreamResult(entityStream);
+        final StreamResult streamResult = new StreamResult(entityStream);
         Transformer transformer;
         try {
-            transformer = transformerFactory.newTransformer();
-        } catch (TransformerConfigurationException e) {
-            logger.log(Level.WARNING, "Could not create Transformer", e);
-            IOException ioException = new IOException(
+            transformer = this.transformerFactory.newTransformer();
+        } catch (final TransformerConfigurationException e) {
+            this.logger.log(Level.WARNING, "Could not create Transformer", e);
+            final IOException ioException = new IOException(
                     "Could not create javax.xml.transform.Transformer");
             ioException.setStackTrace(e.getStackTrace());
             throw ioException;
         }
         try {
             transformer.transform(source, streamResult);
-        } catch (Exception e) {
-            IOException ioException = new IOException(
+        } catch (final Exception e) {
+            final IOException ioException = new IOException(
                     "Could not transform the javax.xml.transform.Source");
             ioException.setStackTrace(e.getStackTrace());
             throw ioException;
-        } catch (TransformerFactoryConfigurationError e) {
-            IOException ioException = new IOException(
+        } catch (final TransformerFactoryConfigurationError e) {
+            final IOException ioException = new IOException(
                     "Could not transform the javax.xml.transform.Source");
             ioException.setStackTrace(e.getStackTrace());
             throw ioException;

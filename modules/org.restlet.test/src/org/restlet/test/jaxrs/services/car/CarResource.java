@@ -29,7 +29,16 @@ import javax.ws.rs.Produces;
  * @see EngineResource
  */
 public class CarResource {
-    private int id;
+    /**
+     * 
+     * @param carNumber
+     * @return
+     */
+    public static String createTextRepr(Object carNumber) {
+        return "This is the car with id " + carNumber + ".";
+    }
+
+    private final int id;
 
     /**
      * 
@@ -37,16 +46,6 @@ public class CarResource {
      */
     public CarResource(int id) {
         this.id = id;
-    }
-
-    /**
-     * 
-     * @return
-     */
-    @GET
-    @Produces("text/plain")
-    public String getText() {
-        return createTextRepr(id);
     }
 
     /**
@@ -63,15 +62,16 @@ public class CarResource {
      * @return
      */
     public int getId() {
-        return id;
+        return this.id;
     }
 
     /**
      * 
-     * @param carNumber
      * @return
      */
-    public static String createTextRepr(Object carNumber) {
-        return "This is the car with id " + carNumber + ".";
+    @GET
+    @Produces("text/plain")
+    public String getText() {
+        return createTextRepr(this.id);
     }
 }

@@ -37,6 +37,6 @@ public class ConvertHeaderParamException extends WebApplicationException {
      */
     public ConvertHeaderParamException(ConvertParameterException cpe) {
         super(cpe.getCause(), Status.BAD_REQUEST);
-        this.setStackTrace(cpe.getStackTrace());
+        setStackTrace(cpe.getStackTrace());
     }
 }

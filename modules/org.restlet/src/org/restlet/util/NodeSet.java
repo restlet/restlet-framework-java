@@ -39,7 +39,7 @@ public class NodeSet extends AbstractList<Node> implements List<Node>, NodeList 
      * Constructor.
      * 
      * @param nodes
-     *                The node list to wrap.
+     *            The node list to wrap.
      */
     public NodeSet(NodeList nodes) {
         this.nodes = nodes;

@@ -38,16 +38,16 @@ public class Part10 extends Application {
      * Run the example as a standalone component.
      * 
      * @param args
-     *                The optional arguments.
+     *            The optional arguments.
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {
         // Create a component
-        Component component = new Component();
+        final Component component = new Component();
         component.getServers().add(Protocol.HTTP, 8182);
 
         // Create an application
-        Application application = new Part10(component.getContext());
+        final Application application = new Part10(component.getContext());
 
         // Attach the application to the component and start it
         component.getDefaultHost().attachDefault(application);
@@ -58,7 +58,7 @@ public class Part10 extends Application {
      * Constructor.
      * 
      * @param parentContext
-     *                The component's context.
+     *            The component's context.
      */
     public Part10(Context parentContext) {
         super(parentContext);
@@ -67,21 +67,21 @@ public class Part10 extends Application {
     @Override
     public Restlet createRoot() {
         // Create a root router
-        Router router = new Router(getContext());
+        final Router router = new Router(getContext());
 
         // Create a Redirector to Google search service
-        String target = "http://www.google.com/search?q=site:mysite.org+{keywords}";
-        Redirector redirector = new Redirector(getContext(), target,
+        final String target = "http://www.google.com/search?q=site:mysite.org+{keywords}";
+        final Redirector redirector = new Redirector(getContext(), target,
                 Redirector.MODE_CLIENT_TEMPORARY);
 
         // Attach the redirector to the router
-        Route route = router.attach("/search", redirector);
+        final Route route = router.attach("/search", redirector);
 
         // While routing requests to the application, extract a query parameter
         // For instance :
         // http://localhost:8182/search?kwd=myKeyword1+myKeyword2
         // will be routed to
-        // http://www.google.com/search?q=site:mysite.org+myKeyword1%20myKeyword2
+        //http://www.google.com/search?q=site:mysite.org+myKeyword1%20myKeyword2
         route.extractQuery("keywords", "kwd", true);
 
         // Return the root router

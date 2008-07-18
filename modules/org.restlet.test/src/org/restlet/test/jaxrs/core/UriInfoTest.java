@@ -64,32 +64,11 @@ public class UriInfoTest extends TestCase {
             MultivaluedMap<String, String> multivaluedMap) {
         try {
             multivaluedMap.add("jh,", "hkj");
-        } catch (NotYetImplementedException usoe) {
+        } catch (final NotYetImplementedException usoe) {
             throw usoe;
-        } catch (UnsupportedOperationException usoe) {
+        } catch (final UnsupportedOperationException usoe) {
             // must be thrown, because it should be unmodifiable
         }
-    };
-
-    /**
-     * creates a new UriInfo object.
-     * <p>
-     * <b>You could only use one of these UriInfos at the same time !!!</b>
-     * 
-     * @param resourceRef
-     * @return
-     */
-    static ThreadLocalizedUriInfo newUriInfo(Reference resourceRef) {
-        Request request = new Request();
-        request.setResourceRef(resourceRef);
-        request.setOriginalRef(resourceRef);
-        Response response = new Response(request);
-        Response.setCurrent(response);
-        CallContext callContext = new CallContext(request, response,
-                RoleChecker.REJECT_WITH_ERROR);
-        ThreadLocalizedContext tlContext = new ThreadLocalizedContext();
-        tlContext.set(callContext);
-        return new ThreadLocalizedUriInfo(tlContext);
     };
 
     private static final UriInfo createUriInfo1() {
@@ -108,11 +87,32 @@ public class UriInfoTest extends TestCase {
     private static final ThreadLocalizedUriInfo createUriInfo7() {
         return newUriInfo(new Reference(BASE_REF, BASE_REF_STR
                 + "abc?def=123&ghi=456"));
-    }
+    };
 
     private static final ThreadLocalizedUriInfo createUriInfo8() {
         return newUriInfo(new Reference(BASE_REF, BASE_REF_STR
                 + "abc?def=1+23&gh%20i=45%206"));
+    }
+
+    /**
+     * creates a new UriInfo object.
+     * <p>
+     * <b>You could only use one of these UriInfos at the same time !!!</b>
+     * 
+     * @param resourceRef
+     * @return
+     */
+    static ThreadLocalizedUriInfo newUriInfo(Reference resourceRef) {
+        final Request request = new Request();
+        request.setResourceRef(resourceRef);
+        request.setOriginalRef(resourceRef);
+        final Response response = new Response(request);
+        Response.setCurrent(response);
+        final CallContext callContext = new CallContext(request, response,
+                RoleChecker.REJECT_WITH_ERROR);
+        final ThreadLocalizedContext tlContext = new ThreadLocalizedContext();
+        tlContext.set(callContext);
+        return new ThreadLocalizedUriInfo(tlContext);
     }
 
     // the Template parameters are tested in SimpleTrain and SimpleTrainTest
@@ -126,7 +126,7 @@ public class UriInfoTest extends TestCase {
      * @param pathSegments
      * @param path0
      * @param tpSize0
-     *                templatParamaterSize
+     *            templatParamaterSize
      * @param path1
      * @param tpSize1
      * @param path2
@@ -136,9 +136,9 @@ public class UriInfoTest extends TestCase {
             String path0, int tpSize0, String path1, int tpSize1, String path2,
             int tpSize2) {
         assertEquals(3, pathSegments.size());
-        PathSegment pathSegment0 = pathSegments.get(0);
-        PathSegment pathSegment1 = pathSegments.get(1);
-        PathSegment pathSegment2 = pathSegments.get(2);
+        final PathSegment pathSegment0 = pathSegments.get(0);
+        final PathSegment pathSegment1 = pathSegments.get(1);
+        final PathSegment pathSegment2 = pathSegments.get(2);
         assertEquals(path0, pathSegment0.getPath());
         assertEquals(tpSize0, pathSegment0.getMatrixParameters().size());
         assertEquals(path1, pathSegment1.getPath());
@@ -149,7 +149,8 @@ public class UriInfoTest extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.ThreadLocalizedUriInfo#getAbsolutePath()}.
+     * {@link org.restlet.ext.jaxrs.internal.core.ThreadLocalizedUriInfo#getAbsolutePath()}
+     * .
      */
     public void testGetAbsolutePath() throws Exception {
         JaxRsUriBuilderTest.assertEqualsURI(BASE_REF_STR + RELATIV_1,
@@ -160,39 +161,43 @@ public class UriInfoTest extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.ThreadLocalizedUriInfo#getAbsolutePathBuilder()}.
+     * {@link org.restlet.ext.jaxrs.internal.core.ThreadLocalizedUriInfo#getAbsolutePathBuilder()}
+     * .
      */
     public void testGetAbsolutePathBuilder() throws Exception {
         JaxRsUriBuilderTest.assertEqualsURI(BASE_REF_STR + RELATIV_1,
                 createUriInfo1().getAbsolutePathBuilder());
 
-        String expectedUri = BASE_REF_STR + RELATIV_2;
-        URI actualUri = createUriInfo2().getAbsolutePathBuilder().build();
+        final String expectedUri = BASE_REF_STR + RELATIV_2;
+        final URI actualUri = createUriInfo2().getAbsolutePathBuilder().build();
         JaxRsUriBuilderTest.assertEquals(new URI(expectedUri), actualUri);
         JaxRsUriBuilderTest.assertEquals(expectedUri, actualUri.toString());
     }
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.ThreadLocalizedUriInfo#getBaseUri()}.
+     * {@link org.restlet.ext.jaxrs.internal.core.ThreadLocalizedUriInfo#getBaseUri()}
+     * .
      */
     public void testGetBaseUri() {
-        URI baseUri1 = createUriInfo1().getBaseUri();
+        final URI baseUri1 = createUriInfo1().getBaseUri();
         assertEquals(BASE_REF_STR, baseUri1.toString());
     }
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.ThreadLocalizedUriInfo#getBaseUriBuilder()}.
+     * {@link org.restlet.ext.jaxrs.internal.core.ThreadLocalizedUriInfo#getBaseUriBuilder()}
+     * .
      */
     public void testGetBaseUriBuilder() throws Exception {
-        URI uri = createUriInfo1().getBaseUri();
+        final URI uri = createUriInfo1().getBaseUri();
         JaxRsUriBuilderTest.assertEqualsURI(BASE_REF_STR, uri);
     }
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.ThreadLocalizedUriInfo#getPath()}.
+     * {@link org.restlet.ext.jaxrs.internal.core.ThreadLocalizedUriInfo#getPath()}
+     * .
      */
     public void testGetPath() {
         assertEquals(RELATIV_1, createUriInfo1().getPath());
@@ -201,7 +206,8 @@ public class UriInfoTest extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.ThreadLocalizedUriInfo#getPath(boolean)}.
+     * {@link org.restlet.ext.jaxrs.internal.core.ThreadLocalizedUriInfo#getPath(boolean)}
+     * .
      */
     public void testGetPathBoolean() {
         assertEquals(RELATIV_1, createUriInfo1().getPath(true));
@@ -212,7 +218,8 @@ public class UriInfoTest extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.ThreadLocalizedUriInfo#getPathSegments()}.
+     * {@link org.restlet.ext.jaxrs.internal.core.ThreadLocalizedUriInfo#getPathSegments()}
+     * .
      */
     public void testGetPathSegments() {
         // must be alid for every UriInfo
@@ -224,7 +231,8 @@ public class UriInfoTest extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.ThreadLocalizedUriInfo#getPathSegments(boolean)}.
+     * {@link org.restlet.ext.jaxrs.internal.core.ThreadLocalizedUriInfo#getPathSegments(boolean)}
+     * .
      */
     public void testGetPathSegmentsBoolean() {
         checkPathSegments(createUriInfo1().getPathSegments(true), "relativ", 0,
@@ -237,18 +245,18 @@ public class UriInfoTest extends TestCase {
         checkPathSegments(createUriInfo2().getPathSegments(false), "relativ",
                 0, "%20a%20", 0, "%21b%40%2C", 0);
 
-        UriInfo uriInfo = newUriInfo(new Reference(BASE_REF, BASE_REF_STR
+        final UriInfo uriInfo = newUriInfo(new Reference(BASE_REF, BASE_REF_STR
                 + "abc/def;ghi=jkl;mno=pqr/stu;vwx=yz"));
-        List<PathSegment> pathSegments = uriInfo.getPathSegments();
+        final List<PathSegment> pathSegments = uriInfo.getPathSegments();
         checkPathSegments(pathSegments, "abc", 0, "def", 2, "stu", 1);
 
-        MultivaluedMap<String, String> templateParameters1 = pathSegments
+        final MultivaluedMap<String, String> templateParameters1 = pathSegments
                 .get(1).getMatrixParameters();
         assertEquals(2, templateParameters1.size());
         checkEntry("jkl", "ghi", templateParameters1);
         checkEntry("pqr", "mno", templateParameters1);
 
-        MultivaluedMap<String, String> templateParameters2 = pathSegments
+        final MultivaluedMap<String, String> templateParameters2 = pathSegments
                 .get(2).getMatrixParameters();
         assertEquals(1, templateParameters2.size());
         checkEntry("yz", "vwx", templateParameters2);
@@ -256,7 +264,8 @@ public class UriInfoTest extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.ThreadLocalizedUriInfo#getQueryParameters(boolean)}.
+     * {@link org.restlet.ext.jaxrs.internal.core.ThreadLocalizedUriInfo#getQueryParameters(boolean)}
+     * .
      */
     public void testGetQueryParametersDecoded() {
         assertEquals("123", createUriInfo7().getQueryParameters(true).getFirst(
@@ -274,7 +283,8 @@ public class UriInfoTest extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.ThreadLocalizedUriInfo#getQueryParameters()}.
+     * {@link org.restlet.ext.jaxrs.internal.core.ThreadLocalizedUriInfo#getQueryParameters()}
+     * .
      */
     public void testGetQueryParametersEncoded() {
         assertEquals("123", createUriInfo7().getQueryParameters(false)
@@ -297,15 +307,16 @@ public class UriInfoTest extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.ThreadLocalizedUriInfo#getRequestUri()}.
+     * {@link org.restlet.ext.jaxrs.internal.core.ThreadLocalizedUriInfo#getRequestUri()}
+     * .
      */
     public void testGetRequestUri() throws Exception {
-        URI uri1 = createUriInfo1().getRequestUri();
+        final URI uri1 = createUriInfo1().getRequestUri();
         assertEquals(new URI("http://localhost/test/relativ/a/b"), uri1);
     }
 
     public void testGetRequestUriBuilder() throws Exception {
-        UriBuilder uriBuilder1 = createUriInfo1().getRequestUriBuilder();
+        final UriBuilder uriBuilder1 = createUriInfo1().getRequestUriBuilder();
         JaxRsUriBuilderTest.assertEqualsURI(
                 "http://localhost/test/relativ/a/b", uriBuilder1);
     }

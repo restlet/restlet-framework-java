@@ -50,7 +50,7 @@ public class MessageRepresentation extends DomRepresentation {
      * Constructor.
      * 
      * @param message
-     *                The JavaMail message to format.
+     *            The JavaMail message to format.
      * @throws IOException
      * @throws MessagingException
      * @throws DOMException
@@ -59,65 +59,65 @@ public class MessageRepresentation extends DomRepresentation {
             DOMException, MessagingException {
         super(MediaType.APPLICATION_XML);
 
-        Document dom = getDocument();
-        Element email = dom.createElement("email");
+        final Document dom = getDocument();
+        final Element email = dom.createElement("email");
         dom.appendChild(email);
 
         // Add the email header
-        Element head = dom.createElement("head");
+        final Element head = dom.createElement("head");
         email.appendChild(head);
 
         if (message.getSubject() != null) {
-            Element subject = dom.createElement("subject");
+            final Element subject = dom.createElement("subject");
             subject.setTextContent(message.getSubject());
             head.appendChild(subject);
         }
 
-        Address[] froms = message.getFrom();
+        final Address[] froms = message.getFrom();
         if (froms != null) {
-            for (Address fromAddress : froms) {
-                Element from = dom.createElement("from");
+            for (final Address fromAddress : froms) {
+                final Element from = dom.createElement("from");
                 from.setTextContent(fromAddress.toString());
                 head.appendChild(from);
             }
         }
 
-        Address[] tos = message.getRecipients(Message.RecipientType.TO);
+        final Address[] tos = message.getRecipients(Message.RecipientType.TO);
         if (tos != null) {
-            for (Address toAddress : tos) {
-                Element to = dom.createElement("to");
+            for (final Address toAddress : tos) {
+                final Element to = dom.createElement("to");
                 to.setTextContent(toAddress.toString());
                 head.appendChild(to);
             }
         }
 
-        Address[] ccs = message.getRecipients(Message.RecipientType.CC);
+        final Address[] ccs = message.getRecipients(Message.RecipientType.CC);
         if (ccs != null) {
-            for (Address ccAddress : ccs) {
-                Element cc = dom.createElement("cc");
+            for (final Address ccAddress : ccs) {
+                final Element cc = dom.createElement("cc");
                 cc.setTextContent(ccAddress.toString());
                 head.appendChild(cc);
             }
         }
 
-        Address[] bccs = message.getRecipients(Message.RecipientType.BCC);
+        final Address[] bccs = message.getRecipients(Message.RecipientType.BCC);
         if (bccs != null) {
-            for (Address bccAddress : bccs) {
-                Element bcc = dom.createElement("bcc");
+            for (final Address bccAddress : bccs) {
+                final Element bcc = dom.createElement("bcc");
                 bcc.setTextContent(bccAddress.toString());
                 head.appendChild(bcc);
             }
         }
 
         if (message.getReceivedDate() != null) {
-            Element received = dom.createElement("received");
+            final Element received = dom.createElement("received");
             received.setTextContent(DateUtils.format(message.getReceivedDate(),
                     DateUtils.FORMAT_RFC_1123.get(0)));
             head.appendChild(received);
         }
 
         if (message.getSentDate() != null) {
-            Element sent = dom.createElement("sent");
+            final Element sent = dom.createElement("sent");
             sent.setTextContent(DateUtils.format(message.getSentDate(),
                     DateUtils.FORMAT_RFC_1123.get(0)));
             head.appendChild(sent);
@@ -128,12 +128,12 @@ public class MessageRepresentation extends DomRepresentation {
         Representation content = null;
         if (message.getContent() instanceof Multipart) {
             // Look for the text part of the mail.
-            Multipart multipart = (Multipart) message.getContent();
+            final Multipart multipart = (Multipart) message.getContent();
 
             for (int i = 0, n = multipart.getCount(); i < n; i++) {
-                Part part = multipart.getBodyPart(i);
+                final Part part = multipart.getBodyPart(i);
 
-                String disposition = part.getDisposition();
+                final String disposition = part.getDisposition();
                 if (disposition != null) {
                     if (disposition.equals(Part.ATTACHMENT)
                             || disposition.equals(Part.INLINE)) {
@@ -141,9 +141,9 @@ public class MessageRepresentation extends DomRepresentation {
                     }
                 } else {
                     // Check if plain text
-                    MimeBodyPart mimeBodyPart = (MimeBodyPart) part;
-                    ContentType contentType = new ContentType(mimeBodyPart
-                            .getContentType());
+                    final MimeBodyPart mimeBodyPart = (MimeBodyPart) part;
+                    final ContentType contentType = new ContentType(
+                            mimeBodyPart.getContentType());
                     if (MediaType.TEXT_PLAIN.equals(contentType.getMediaType(),
                             true)) {
                         content = new InputRepresentation(mimeBodyPart
@@ -158,7 +158,7 @@ public class MessageRepresentation extends DomRepresentation {
         } else {
             // Add the email body
             if (message.getContentType() != null) {
-                ContentType contentType = new ContentType(message
+                final ContentType contentType = new ContentType(message
                         .getContentType());
                 if (MediaType.TEXT_PLAIN.equals(contentType.getMediaType(),
                         true)) {
@@ -168,10 +168,10 @@ public class MessageRepresentation extends DomRepresentation {
             }
         }
         if (content != null) {
-            Element body = dom.createElement("body");
+            final Element body = dom.createElement("body");
 
-            CDATASection bodyContent = dom
-                    .createCDATASection(content.getText());
+            final CDATASection bodyContent = dom.createCDATASection(content
+                    .getText());
             body.appendChild(bodyContent);
             email.appendChild(body);
         }

@@ -40,17 +40,17 @@ public class Part09a extends Application {
      * Run the example as a standalone component.
      * 
      * @param args
-     *                The optional arguments.
+     *            The optional arguments.
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {
         // Create a component
-        Component component = new Component();
+        final Component component = new Component();
         component.getServers().add(Protocol.HTTP, 8182);
         component.getClients().add(Protocol.FILE);
 
         // Create an application
-        Application application = new Part09a(component.getContext());
+        final Application application = new Part09a(component.getContext());
 
         // Attach the application to the component and start it
         component.getDefaultHost().attachDefault(application);
@@ -61,7 +61,7 @@ public class Part09a extends Application {
      * Constructor.
      * 
      * @param parentContext
-     *                The component's context.
+     *            The component's context.
      */
     public Part09a(Context parentContext) {
         super(parentContext);
@@ -70,12 +70,12 @@ public class Part09a extends Application {
     @Override
     public Restlet createRoot() {
         // Create a Guard
-        Guard guard = new Guard(getContext(), ChallengeScheme.HTTP_BASIC,
+        final Guard guard = new Guard(getContext(), ChallengeScheme.HTTP_BASIC,
                 "Tutorial");
         guard.getSecrets().put("scott", "tiger".toCharArray());
 
         // Create a Directory able to return a deep hierarchy of files
-        Directory directory = new Directory(getContext(), ROOT_URI);
+        final Directory directory = new Directory(getContext(), ROOT_URI);
         guard.setNext(directory);
         return guard;
     }

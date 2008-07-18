@@ -42,9 +42,9 @@ import org.restlet.resource.Variant;
  */
 public class AccessTokenResource extends Resource {
 
-    private OAuthProvider provider;
+    private final OAuthProvider provider;
 
-    private String realm;
+    private final String realm;
 
     /**
      * Constructor.
@@ -57,22 +57,11 @@ public class AccessTokenResource extends Resource {
             Response response) {
         super(context, request, response);
 
-        provider = (OAuthProvider) context.getAttributes()
-                .get("oauth_provider");
-        realm = (String) context.getAttributes().get("realm");
+        this.provider = (OAuthProvider) context.getAttributes().get(
+                "oauth_provider");
+        this.realm = (String) context.getAttributes().get("realm");
 
         getVariants().add(new Variant(MediaType.TEXT_PLAIN));
-    }
-
-    @Override
-    public boolean allowPost() {
-        return true;
-    }
-
-    @Override
-    public Representation represent(Variant variant) {
-        handle();
-        return getResponse().getEntity();
     }
 
     @Override
@@ -80,12 +69,18 @@ public class AccessTokenResource extends Resource {
         handle();
     }
 
+    @Override
+    public boolean allowPost() {
+        return true;
+    }
+
     private void handle() {
-        OAuthMessage requestMessage = OAuthHelper.getMessage(getRequest(),
-                getLogger());
-        OAuthAccessor accessor = provider.getAccessor(requestMessage);
-        ChallengeRequest challengeRequest = new ChallengeRequest(
-                OAuthGuard.SCHEME, realm);
+        final OAuthMessage requestMessage = OAuthHelper.getMessage(
+                getRequest(), getLogger());
+        final OAuthAccessor accessor = this.provider
+                .getAccessor(requestMessage);
+        final ChallengeRequest challengeRequest = new ChallengeRequest(
+                OAuthGuard.SCHEME, this.realm);
 
         if (accessor == null) {
             getResponse().setChallengeRequest(challengeRequest);
@@ -99,7 +94,7 @@ public class AccessTokenResource extends Resource {
         // verify the signature
         try {
             requestMessage.validateSignature(accessor);
-        } catch (Exception e1) {
+        } catch (final Exception e1) {
             getResponse().setChallengeRequest(challengeRequest);
             getResponse().setStatus(Status.CLIENT_ERROR_UNAUTHORIZED, e1);
             challengeRequest.getParameters().add("oauth_problem",
@@ -117,16 +112,22 @@ public class AccessTokenResource extends Resource {
             return;
         }
 
-        provider.generateAccessToken(accessor);
+        this.provider.generateAccessToken(accessor);
 
         try {
             getResponse().setEntity(
                     new StringRepresentation(OAuth.formEncode(OAuth.newList(
                             "oauth_token", accessor.accessToken,
                             "oauth_token_secret", accessor.tokenSecret))));
-        } catch (IOException e) {
+        } catch (final IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public Representation represent(Variant variant) {
+        handle();
+        return getResponse().getEntity();
     }
 }

@@ -17,15 +17,15 @@ public class JxtaClientCall extends StreamClientCall {
     }
 
     @Override
-    public JxtaClientHelper getHelper() {
-        return (JxtaClientHelper) super.getHelper();
-    }
-
-    @Override
     public Socket createSocket(String hostDomain, int hostPort)
             throws UnknownHostException, IOException {
         return new JxtaSocket(getHelper().getPeerGroup(), getHelper()
                 .getPipeAdvertisement());
+    }
+
+    @Override
+    public JxtaClientHelper getHelper() {
+        return (JxtaClientHelper) super.getHelper();
     }
 
 }

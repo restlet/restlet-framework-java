@@ -42,7 +42,7 @@ import org.w3c.dom.NodeList;
  */
 public class MailResolver extends Resolver<String> {
     /** Mail identifier. */
-    private String identifier;
+    private final String identifier;
 
     /** The variables to use when formatting. */
     private Map<String, Object> map;
@@ -51,7 +51,7 @@ public class MailResolver extends Resolver<String> {
      * Constructor.
      * 
      * @param identifier
-     *                Identifier of the mail.
+     *            Identifier of the mail.
      * 
      */
     public MailResolver(String identifier) {
@@ -62,16 +62,16 @@ public class MailResolver extends Resolver<String> {
      * Constructor.
      * 
      * @param identifier
-     *                Identifier of the mail.
+     *            Identifier of the mail.
      * @param mail
-     *                The mail.
+     *            The mail.
      * 
      */
     public MailResolver(String identifier, Representation mail) {
         this.identifier = identifier;
 
         if (mail != null) {
-            map = new HashMap<String, Object>();
+            this.map = new HashMap<String, Object>();
             DomRepresentation rep = null;
             if (mail instanceof DomRepresentation) {
                 rep = (DomRepresentation) mail;
@@ -83,9 +83,9 @@ public class MailResolver extends Resolver<String> {
             if (node != null) {
                 add("from", node.getNodeValue());
             }
-            NodeList nodes = rep.getNodes("/email/head/to/text()");
-            if (nodes != null && nodes.getLength() > 0) {
-                StringBuilder builder = new StringBuilder(nodes.item(0)
+            final NodeList nodes = rep.getNodes("/email/head/to/text()");
+            if ((nodes != null) && (nodes.getLength() > 0)) {
+                final StringBuilder builder = new StringBuilder(nodes.item(0)
                         .getNodeValue());
                 for (int i = 1; i < nodes.getLength(); i++) {
                     builder.append(", ").append(nodes.item(i).getNodeValue());
@@ -103,30 +103,30 @@ public class MailResolver extends Resolver<String> {
         }
     }
 
+    /**
+     * Add a value.
+     * 
+     * @param key
+     *            The key of the value.
+     * @param value
+     *            The value.
+     */
+    public void add(String key, String value) {
+        this.map.put(key, value);
+    }
+
     @Override
     public String resolve(String name) {
         String result = null;
 
         if ("mailId".equals(name)) {
-            result = identifier;
+            result = this.identifier;
         } else {
-            Object value = this.map.get(name);
+            final Object value = this.map.get(name);
             result = (value == null) ? null : value.toString();
         }
 
         return result;
-    }
-
-    /**
-     * Add a value.
-     * 
-     * @param key
-     *                The key of the value.
-     * @param value
-     *                The value.
-     */
-    public void add(String key, String value) {
-        map.put(key, value);
     }
 
 }

@@ -81,7 +81,7 @@ public class ServletConverter extends HttpServerConverter {
      * invoking the service() method.
      * 
      * @param context
-     *                The Servlet context.
+     *            The Servlet context.
      */
     public ServletConverter(ServletContext context) {
         this(context, null);
@@ -91,9 +91,9 @@ public class ServletConverter extends HttpServerConverter {
      * Constructor.
      * 
      * @param context
-     *                The Servlet context.
+     *            The Servlet context.
      * @param target
-     *                The target Restlet.
+     *            The target Restlet.
      */
     public ServletConverter(ServletContext context, Restlet target) {
         super(new Context(new ServletLogger(context)));
@@ -101,23 +101,66 @@ public class ServletConverter extends HttpServerConverter {
     }
 
     /**
+     * Returns the base reference of new Restlet requests.
+     * 
+     * @param request
+     *            The Servlet request.
+     * @return The base reference of new Restlet requests.
+     */
+    public Reference getBaseRef(HttpServletRequest request) {
+        Reference result = null;
+        final String basePath = request.getContextPath()
+                + request.getServletPath();
+        final String baseUri = request.getRequestURL().toString();
+        final int baseIndex = baseUri.indexOf(basePath);
+        if (baseIndex != -1) {
+            result = new Reference(baseUri.substring(0, baseIndex
+                    + basePath.length()));
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the root reference of new Restlet requests. By default it returns
+     * the result of getBaseRef().
+     * 
+     * @param request
+     *            The Servlet request.
+     * @return The root reference of new Restlet requests.
+     */
+    public Reference getRootRef(HttpServletRequest request) {
+        return getBaseRef(request);
+    }
+
+    /**
+     * Returns the target Restlet.
+     * 
+     * @return The target Restlet.
+     */
+    public Restlet getTarget() {
+        return this.target;
+    }
+
+    /**
      * Services a HTTP Servlet request as a Restlet request handled by the
      * "target" Restlet.
      * 
      * @param request
-     *                The HTTP Servlet request.
+     *            The HTTP Servlet request.
      * @param response
-     *                The HTTP Servlet response.
+     *            The HTTP Servlet response.
      */
     @SuppressWarnings("unused")
     public void service(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         if (getTarget() != null) {
             // Convert the Servlet call to a Restlet call
-            ServletCall servletCall = new ServletCall(getLogger(), request
-                    .getLocalAddr(), request.getLocalPort(), request, response);
-            HttpRequest httpRequest = toRequest(servletCall);
-            HttpResponse httpResponse = new HttpResponse(servletCall,
+            final ServletCall servletCall = new ServletCall(getLogger(),
+                    request.getLocalAddr(), request.getLocalPort(), request,
+                    response);
+            final HttpRequest httpRequest = toRequest(servletCall);
+            final HttpResponse httpResponse = new HttpResponse(servletCall,
                     httpRequest);
 
             // Adjust the relative reference
@@ -135,21 +178,31 @@ public class ServletConverter extends HttpServerConverter {
     }
 
     /**
+     * Sets the target Restlet.
+     * 
+     * @param target
+     *            The target Restlet.
+     */
+    public void setTarget(Restlet target) {
+        this.target = target;
+    }
+
+    /**
      * Converts a low-level Servlet call into a high-level Restlet request. In
      * addition to the parent HttpServerConverter class, it also copies the
      * Servlet's request attributes into the Restlet's request attributes map.
      * 
      * @param servletCall
-     *                The low-level Servlet call.
+     *            The low-level Servlet call.
      * @return A new high-level uniform request.
      */
     @SuppressWarnings("unchecked")
     public HttpRequest toRequest(ServletCall servletCall) {
-        HttpRequest result = super.toRequest(servletCall);
+        final HttpRequest result = super.toRequest(servletCall);
 
         // Copy all Servlet's request attributes
         String attributeName;
-        for (Enumeration<String> namesEnum = servletCall.getRequest()
+        for (final Enumeration<String> namesEnum = servletCall.getRequest()
                 .getAttributeNames(); namesEnum.hasMoreElements();) {
             attributeName = namesEnum.nextElement();
             result.getAttributes().put(attributeName,
@@ -157,57 +210,6 @@ public class ServletConverter extends HttpServerConverter {
         }
 
         return result;
-    }
-
-    /**
-     * Returns the base reference of new Restlet requests.
-     * 
-     * @param request
-     *                The Servlet request.
-     * @return The base reference of new Restlet requests.
-     */
-    public Reference getBaseRef(HttpServletRequest request) {
-        Reference result = null;
-        String basePath = request.getContextPath() + request.getServletPath();
-        String baseUri = request.getRequestURL().toString();
-        int baseIndex = baseUri.indexOf(basePath);
-        if (baseIndex != -1) {
-            result = new Reference(baseUri.substring(0, baseIndex
-                    + basePath.length()));
-        }
-
-        return result;
-    }
-
-    /**
-     * Returns the root reference of new Restlet requests. By default it returns
-     * the result of getBaseRef().
-     * 
-     * @param request
-     *                The Servlet request.
-     * @return The root reference of new Restlet requests.
-     */
-    public Reference getRootRef(HttpServletRequest request) {
-        return getBaseRef(request);
-    }
-
-    /**
-     * Returns the target Restlet.
-     * 
-     * @return The target Restlet.
-     */
-    public Restlet getTarget() {
-        return this.target;
-    }
-
-    /**
-     * Sets the target Restlet.
-     * 
-     * @param target
-     *                The target Restlet.
-     */
-    public void setTarget(Restlet target) {
-        this.target = target;
     }
 
 }

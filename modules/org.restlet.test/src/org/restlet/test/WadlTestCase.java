@@ -31,10 +31,10 @@ import org.restlet.ext.wadl.WadlComponent;
 public class WadlTestCase extends TestCase {
 
     public void testWadl() throws Exception {
-        WadlComponent comp = new WadlComponent(
+        final WadlComponent comp = new WadlComponent(
                 "clap://class/org/restlet/test/YahooSearch.wadl");
 
-        WadlApplication app = (WadlApplication) comp.getHosts().get(0)
+        final WadlApplication app = (WadlApplication) comp.getHosts().get(0)
                 .getRoutes().get(0).getNext();
         assertNotNull(app);
         assertEquals(app.getRoot(), app.getRouter());

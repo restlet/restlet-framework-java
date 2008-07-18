@@ -55,7 +55,7 @@ public class QueryParamTestService {
             @QueryParam("lastname") String lastname) {
         return firstname + " " + lastname;
     }
-    
+
     @GET
     @Produces("text/plain")
     @Path("a")
@@ -63,7 +63,7 @@ public class QueryParamTestService {
             @QueryParam("lastname") String lastname) {
         return firstname + " " + lastname;
     }
-    
+
     @GET
     @Produces("text/plain")
     @Path("array")
@@ -83,14 +83,14 @@ public class QueryParamTestService {
     @Produces("text/plain")
     @Path("decoded")
     public String getFieldDecoded() {
-        return decoded;
+        return this.decoded;
     }
 
     @GET
     @Produces("text/plain")
     @Path("encoded")
     public String getFieldEncoded() {
-        return encoded;
+        return this.encoded;
     }
 
     @GET
@@ -99,18 +99,18 @@ public class QueryParamTestService {
     public String getInt(@QueryParam("n1") int n1,
             @QueryParam("n2") @DefaultValue("xx") int n2,
             @QueryParam("n3") @DefaultValue("99") int n3) {
-        return n1+" "+n2+" "+n3;
+        return n1 + " " + n2 + " " + n3;
     }
-    
+
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     @Path("Integer")
     public String getInteger(@QueryParam("n1") Integer n1,
             @QueryParam("n2") @DefaultValue("xx") Integer n2,
             @QueryParam("n3") @DefaultValue("99") Integer n3) {
-        return n1+" "+n2+" "+n3;
+        return n1 + " " + n2 + " " + n3;
     }
-    
+
     @GET
     @Produces("text/plain")
     @Path("list")
@@ -130,10 +130,12 @@ public class QueryParamTestService {
     @Produces("text/plain")
     @Path("one")
     public String getOne(@QueryParam("name") String name) {
-        if(name == null)
+        if (name == null) {
             return "[null]";
-        if (name.equals(""))
+        }
+        if (name.equals("")) {
             return "[empty]";
+        }
         return name;
     }
 
@@ -141,8 +143,10 @@ public class QueryParamTestService {
     @Produces("text/plain")
     @Path("qpDecoded")
     public String getQueryParamsDecoded(@Context UriInfo uriInfo) {
-        String firstname = uriInfo.getQueryParameters().getFirst("firstname");
-        String lastname = uriInfo.getQueryParameters().getFirst("lastname");
+        final String firstname = uriInfo.getQueryParameters().getFirst(
+                "firstname");
+        final String lastname = uriInfo.getQueryParameters().getFirst(
+                "lastname");
         return firstname + " " + lastname;
     }
 
@@ -150,8 +154,10 @@ public class QueryParamTestService {
     @Produces("text/plain")
     @Path("qpEncoded")
     public String getQueryParamsEncoded(@Context UriInfo uriInfo) {
-        String firstn = uriInfo.getQueryParameters(false).getFirst("firstname");
-        String lastn = uriInfo.getQueryParameters(false).getFirst("lastname");
+        final String firstn = uriInfo.getQueryParameters(false).getFirst(
+                "firstname");
+        final String lastn = uriInfo.getQueryParameters(false).getFirst(
+                "lastname");
         return firstn + " " + lastn;
     }
 }

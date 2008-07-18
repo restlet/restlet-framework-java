@@ -38,7 +38,7 @@ public abstract class OutputRepresentation extends StreamRepresentation {
      * Constructor.
      * 
      * @param mediaType
-     *                The representation's mediaType.
+     *            The representation's mediaType.
      */
     public OutputRepresentation(MediaType mediaType) {
         super(mediaType);
@@ -48,9 +48,9 @@ public abstract class OutputRepresentation extends StreamRepresentation {
      * Constructor.
      * 
      * @param mediaType
-     *                The representation's mediaType.
+     *            The representation's mediaType.
      * @param expectedSize
-     *                The expected input stream size.
+     *            The expected input stream size.
      */
     public OutputRepresentation(MediaType mediaType, long expectedSize) {
         super(mediaType);

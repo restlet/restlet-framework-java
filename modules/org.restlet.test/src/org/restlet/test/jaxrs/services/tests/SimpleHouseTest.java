@@ -37,38 +37,40 @@ public class SimpleHouseTest extends JaxRsTestCase {
     }
 
     public void testGetHtmlText() throws Exception {
-        Response response = get(MediaType.TEXT_HTML);
+        final Response response = get(MediaType.TEXT_HTML);
         assertEquals(Status.CLIENT_ERROR_NOT_ACCEPTABLE, response.getStatus());
     }
 
     public void testGetNull() throws Exception {
-        Response response = get("null");
+        final Response response = get("null");
         assertEquals(Status.SUCCESS_NO_CONTENT, response.getStatus());
-        Representation entity = response.getEntity();
-        if(entity != null)
+        final Representation entity = response.getEntity();
+        if (entity != null) {
             assertEquals(null, entity.getText());
+        }
     }
 
     public void testGetNullWithMediaType() throws Exception {
-        Response response = get("nullWithMediaType");
+        final Response response = get("nullWithMediaType");
         assertEquals(Status.SUCCESS_NO_CONTENT, response.getStatus());
-        Representation entity = response.getEntity();
-        if(entity != null)
+        final Representation entity = response.getEntity();
+        if (entity != null) {
             assertEquals(null, entity.getText());
+        }
     }
 
     public void testGetPlainText() throws Exception {
-        Response response = get(MediaType.TEXT_PLAIN);
+        final Response response = get(MediaType.TEXT_PLAIN);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        Representation entity = response.getEntity();
+        final Representation entity = response.getEntity();
         assertEquals(SimpleHouse.RERP_PLAIN_TEXT, entity.getText());
         assertEqualMediaType(MediaType.TEXT_PLAIN, entity.getMediaType());
     }
 
     public void testGetTextAll() throws Exception {
-        Response response = get(MediaType.TEXT_ALL);
+        final Response response = get(MediaType.TEXT_ALL);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        Representation entity = response.getEntity();
+        final Representation entity = response.getEntity();
         assertEquals(SimpleHouse.RERP_PLAIN_TEXT, entity.getText());
         assertEqualMediaType(MediaType.TEXT_PLAIN, entity.getMediaType());
     }

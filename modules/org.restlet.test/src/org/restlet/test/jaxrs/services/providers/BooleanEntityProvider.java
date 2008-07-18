@@ -42,12 +42,14 @@ public class BooleanEntityProvider implements MessageBodyReader<Boolean>,
      * @see javax.ws.rs.ext.MessageBodyWriter#getSize(java.lang.Object)
      */
     public long getSize(Boolean b) {
-        if (b == null)
+        if (b == null) {
             return 0;
-        if (b)
+        }
+        if (b) {
             return 4;
-        else
+        } else {
             return 5;
+        }
     }
 
     /**
@@ -78,9 +80,10 @@ public class BooleanEntityProvider implements MessageBodyReader<Boolean>,
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
-        String str = Util.copyToStringBuilder(entityStream).toString();
-        if (str.length() == 0)
+        final String str = Util.copyToStringBuilder(entityStream).toString();
+        if (str.length() == 0) {
             return null;
+        }
         return new Boolean(str);
     }
 

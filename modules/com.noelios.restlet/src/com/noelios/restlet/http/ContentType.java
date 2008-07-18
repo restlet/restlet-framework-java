@@ -31,6 +31,21 @@ import org.restlet.data.Preference;
  */
 public class ContentType {
     /**
+     * Parses the Content Type.
+     * 
+     * @param headerValue
+     * @return MediaType
+     * @throws IOException
+     */
+    public static MediaType parseContentType(String headerValue)
+            throws IOException {
+        final PreferenceReader<MediaType> pr = new PreferenceReader<MediaType>(
+                PreferenceReader.TYPE_MEDIA_TYPE, headerValue);
+        final Preference<MediaType> pref = pr.readPreference();
+        return pref.getMetadata();
+    }
+
+    /**
      * The content media type.
      */
     private volatile MediaType mediaType;
@@ -44,44 +59,20 @@ public class ContentType {
      * Constructor.
      * 
      * @param headerValue
-     *                The "Content-type" header to parse.
+     *            The "Content-type" header to parse.
      */
     public ContentType(String headerValue) {
         try {
             this.mediaType = parseContentType(headerValue);
-            String charSet = this.mediaType.getParameters().getFirstValue(
-                    "charset");
+            final String charSet = this.mediaType.getParameters()
+                    .getFirstValue("charset");
             if (charSet != null) {
                 this.characterSet = new CharacterSet(charSet);
             }
-        } catch (IOException ioe) {
+        } catch (final IOException ioe) {
             throw new IllegalArgumentException(
                     "The Content Type could not be read.", ioe);
         }
-    }
-
-    /**
-     * Parses the Content Type.
-     * 
-     * @param headerValue
-     * @return MediaType
-     * @throws IOException
-     */
-    public static MediaType parseContentType(String headerValue)
-            throws IOException {
-        PreferenceReader<MediaType> pr = new PreferenceReader<MediaType>(
-                PreferenceReader.TYPE_MEDIA_TYPE, headerValue);
-        Preference<MediaType> pref = pr.readPreference();
-        return pref.getMetadata();
-    }
-
-    /**
-     * Returns the media type.
-     * 
-     * @return The media type.
-     */
-    public MediaType getMediaType() {
-        return mediaType;
     }
 
     /**
@@ -90,6 +81,15 @@ public class ContentType {
      * @return The character set.
      */
     public CharacterSet getCharacterSet() {
-        return characterSet;
+        return this.characterSet;
+    }
+
+    /**
+     * Returns the media type.
+     * 
+     * @return The media type.
+     */
+    public MediaType getMediaType() {
+        return this.mediaType;
     }
 }

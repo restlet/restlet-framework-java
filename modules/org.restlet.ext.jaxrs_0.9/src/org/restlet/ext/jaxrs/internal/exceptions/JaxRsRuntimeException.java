@@ -34,17 +34,17 @@ public class JaxRsRuntimeException extends RuntimeException {
     }
 
     /**
-     * @param cause
-     */
-    public JaxRsRuntimeException(Throwable cause) {
-        super(cause);
-    }
-
-    /**
      * @param message
      * @param cause
      */
     public JaxRsRuntimeException(String message, Throwable cause) {
         super(message, cause);
+    }
+
+    /**
+     * @param cause
+     */
+    public JaxRsRuntimeException(Throwable cause) {
+        super(cause);
     }
 }

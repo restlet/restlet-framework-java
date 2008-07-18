@@ -28,16 +28,16 @@ import javax.ws.rs.Produces;
 public class NoProviderResource {
 
     @GET
-    @Path("text-plain")
-    @Produces("text/plain")
-    public Object getTextPlain() {
+    @Path("no-mbw")
+    @Produces("4711/0815")
+    public Object getNoMediaType() {
         return new Object();
     }
 
     @GET
-    @Path("no-mbw")
-    @Produces("4711/0815")
-    public Object getNoMediaType() {
+    @Path("text-plain")
+    @Produces("text/plain")
+    public Object getTextPlain() {
         return new Object();
     }
 }

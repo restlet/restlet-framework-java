@@ -20,7 +20,6 @@ package com.noelios.restlet.http;
 
 import java.io.IOException;
 
-
 /**
  * HTTP-style header reader.
  * 
@@ -37,7 +36,7 @@ public class HeaderReader {
      * Constructor.
      * 
      * @param header
-     *                The header to read.
+     *            The header to read.
      */
     public HeaderReader(String header) {
         this.header = header;
@@ -48,7 +47,7 @@ public class HeaderReader {
      * Appends the next quoted string.
      * 
      * @param buffer
-     *                The buffer to append.
+     *            The buffer to append.
      * @throws IOException
      */
     protected void appendQuotedString(Appendable buffer) throws IOException {
@@ -87,7 +86,7 @@ public class HeaderReader {
      * Indicates if the given character is a value separator.
      * 
      * @param character
-     *                The character to test.
+     *            The character to test.
      * @return True if the given character is a value separator.
      */
     protected boolean isLinearWhiteSpace(int character) {
@@ -101,7 +100,7 @@ public class HeaderReader {
      * Indicates if the given character is a value separator.
      * 
      * @param character
-     *                The character to test.
+     *            The character to test.
      * @return True if the given character is a value separator.
      */
     protected boolean isValueSeparator(int character) {
@@ -116,10 +115,11 @@ public class HeaderReader {
     public int read() {
         int result = -1;
 
-        if (index != -1) {
-            result = this.header.charAt(index++);
-            if (index >= this.header.length())
-                index = -1;
+        if (this.index != -1) {
+            result = this.header.charAt(this.index++);
+            if (this.index >= this.header.length()) {
+                this.index = -1;
+            }
         }
 
         return result;
@@ -132,7 +132,7 @@ public class HeaderReader {
      * @throws IOException
      */
     protected String readQuotedString() throws IOException {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         appendQuotedString(sb);
         return sb.toString();
     }
@@ -141,9 +141,9 @@ public class HeaderReader {
      * Read the next value of a multi-value header. It skips separator commas
      * and spaces.
      * 
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec2.html#sec2">HTTP
-     *      parsing rule</a>
+     * @see <a *
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec2.html#sec2"
+     *      >HTTP * parsing rule< /a>
      * @return The next value or null.
      */
     public String readValue() {
@@ -156,8 +156,9 @@ public class HeaderReader {
         }
 
         while ((next != -1) && !isValueSeparator(next)) {
-            if (sb == null)
+            if (sb == null) {
                 sb = new StringBuilder();
+            }
             sb.append((char) next);
             next = read();
         }

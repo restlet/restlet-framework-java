@@ -54,12 +54,12 @@ public class UserResource extends BaseResource {
             setModifiable(true);
             // Get user thanks to its ID taken from the resource's
             // URI.
-            String userId = Reference.decode((String) request.getAttributes()
-                    .get("userId"));
-            user = getObjectsFacade().getUserById(userId);
+            final String userId = Reference.decode((String) request
+                    .getAttributes().get("userId"));
+            this.user = getObjectsFacade().getUserById(userId);
 
-            if (user != null) {
-                mailboxes = getObjectsFacade().getMailboxes(user);
+            if (this.user != null) {
+                this.mailboxes = getObjectsFacade().getMailboxes(this.user);
                 getVariants().add(new Variant(MediaType.TEXT_HTML));
             }
         } else {
@@ -73,7 +73,7 @@ public class UserResource extends BaseResource {
      */
     @Override
     public void removeRepresentations() throws ResourceException {
-        getObjectsFacade().deleteUser(user);
+        getObjectsFacade().deleteUser(this.user);
         getResponse().redirectSeeOther(
                 getRequest().getResourceRef().getParentRef());
     }
@@ -83,10 +83,10 @@ public class UserResource extends BaseResource {
      */
     @Override
     public Representation represent(Variant variant) throws ResourceException {
-        Map<String, Object> dataModel = new TreeMap<String, Object>();
+        final Map<String, Object> dataModel = new TreeMap<String, Object>();
         dataModel.put("currentUser", getCurrentUser());
-        dataModel.put("user", user);
-        dataModel.put("mailboxes", mailboxes);
+        dataModel.put("user", this.user);
+        dataModel.put("mailboxes", this.mailboxes);
         dataModel.put("resourceRef", getRequest().getResourceRef());
         dataModel.put("rootRef", getRequest().getRootRef());
 
@@ -99,16 +99,16 @@ public class UserResource extends BaseResource {
     @Override
     public void storeRepresentation(Representation entity)
             throws ResourceException {
-        Form form = new Form(entity);
-        user
-                .setAdministrator(form.getFirstValue("administrator") == null ? user
+        final Form form = new Form(entity);
+        this.user
+                .setAdministrator(form.getFirstValue("administrator") == null ? this.user
                         .isAdministrator()
                         : true);
-        user.setFirstName(form.getFirstValue("firstName"));
-        user.setLastName(form.getFirstValue("lastName"));
-        user.setLogin(form.getFirstValue("login"));
-        user.setPassword(form.getFirstValue("password"));
-        getObjectsFacade().updateUser(user);
+        this.user.setFirstName(form.getFirstValue("firstName"));
+        this.user.setLastName(form.getFirstValue("lastName"));
+        this.user.setLogin(form.getFirstValue("login"));
+        this.user.setPassword(form.getFirstValue("password"));
+        getObjectsFacade().updateUser(this.user);
         getResponse().redirectSeeOther(getRequest().getResourceRef());
     }
 }

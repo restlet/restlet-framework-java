@@ -69,13 +69,13 @@ public class MessageBodyWorkersTestProvider implements
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
         MessageBodyWriter<Person> mbw;
-        mbw = messageBodyWorkers.getMessageBodyWriter(Person.class,
+        mbw = this.messageBodyWorkers.getMessageBodyWriter(Person.class,
                 Person.class, annotations, MediaType.APPLICATION_XML_TYPE);
         mbw.writeTo(t, Person.class, Person.class, annotations,
                 MediaType.APPLICATION_XML_TYPE, httpHeaders, entityStream);
 
-        MediaType mediaType2 = new MediaType("application", "crazyType");
-        mbw = messageBodyWorkers.getMessageBodyWriter(Person.class,
+        final MediaType mediaType2 = new MediaType("application", "crazyType");
+        mbw = this.messageBodyWorkers.getMessageBodyWriter(Person.class,
                 Person.class, annotations, mediaType2);
         mbw.writeTo(t, Person.class, Person.class, annotations, mediaType2,
                 httpHeaders, entityStream);

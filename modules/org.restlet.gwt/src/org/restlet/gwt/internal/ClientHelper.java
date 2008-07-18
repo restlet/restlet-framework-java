@@ -37,7 +37,7 @@ public class ClientHelper extends ConnectorHelper<Client> {
      * Constructor.
      * 
      * @param client
-     *                The client to help.
+     *            The client to help.
      */
     public ClientHelper(Client client) {
         super(client);
@@ -52,14 +52,14 @@ public class ClientHelper extends ConnectorHelper<Client> {
      * @return The connection timeout.
      */
     public int getConnectTimeout() {
-        return connectTimeout;
+        return this.connectTimeout;
     }
 
     /**
      * Sets the connection timeout.
      * 
      * @param connectTimeout
-     *                The connection timeout.
+     *            The connection timeout.
      */
     public void setConnectTimeout(int connectTimeout) {
         this.connectTimeout = connectTimeout;

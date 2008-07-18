@@ -3,6 +3,7 @@ package org.restlet.ext.shell.helpers;
 import java.io.File;
 import java.io.IOException;
 import java.util.SortedSet;
+
 import jline.ConsoleReader;
 import jline.History;
 import jline.SimpleCompletor;
@@ -17,38 +18,38 @@ public class ConsoleHelper {
 
     private History history;
 
-    private SimpleCompletor completor;
+    private final SimpleCompletor completor;
 
     public ConsoleHelper() {
         // / ConsoleHelper
         try {
-            consoleReader = new ConsoleReader();
-        } catch (IOException e) {
+            this.consoleReader = new ConsoleReader();
+        } catch (final IOException e) {
             throw new RuntimeException("cannot initialize jline", e);
         }
 
         // History
         try {
-            history = new History(historyFile);
-        } catch (IOException e) {
+            this.history = new History(historyFile);
+        } catch (final IOException e) {
             throw new RuntimeException(String.format(
                     "cannot initialize history file %s", historyFile), e);
         }
 
-        consoleReader.setHistory(history);
-        consoleReader.setUseHistory(true);
+        this.consoleReader.setHistory(this.history);
+        this.consoleReader.setUseHistory(true);
 
         // Completition
-        completor = new SimpleCompletor(new String[] { "help", "version" });
-        consoleReader.addCompletor(completor);
+        this.completor = new SimpleCompletor(new String[] { "help", "version" });
+        this.consoleReader.addCompletor(this.completor);
     }
 
     public String readLine(String aPrompt) {
         String line = null;
 
         try {
-            line = consoleReader.readLine(aPrompt);
-        } catch (IOException e) {
+            line = this.consoleReader.readLine(aPrompt);
+        } catch (final IOException e) {
             // do nothing
         }
 
@@ -59,24 +60,24 @@ public class ConsoleHelper {
         String password = null;
 
         try {
-            password = consoleReader.readLine(aPrompt);
-        } catch (IOException e) {
+            password = this.consoleReader.readLine(aPrompt);
+        } catch (final IOException e) {
             // do nothing
         }
 
         return password;
     }
 
-    public void writeLine(String line) {
-        try {
-            consoleReader.printString(line + "\n");
-            consoleReader.flushConsole();
-        } catch (IOException ex) {
-            // do nothing
-        }
+    public void setCandidates(SortedSet<String> canditates) {
+        this.completor.setCandidates(canditates);
     }
 
-    public void setCandidates(SortedSet<String> canditates) {
-        completor.setCandidates(canditates);
+    public void writeLine(String line) {
+        try {
+            this.consoleReader.printString(line + "\n");
+            this.consoleReader.flushConsole();
+        } catch (final IOException ex) {
+            // do nothing
+        }
     }
 }

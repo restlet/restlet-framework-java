@@ -44,19 +44,19 @@ public class FaultInfo extends RepresentationInfo {
      */
     @Override
     public void writeElement(XmlWriter writer) throws SAXException {
-        AttributesImpl attributes = new AttributesImpl();
-        if (getIdentifier() != null && !getIdentifier().equals("")) {
+        final AttributesImpl attributes = new AttributesImpl();
+        if ((getIdentifier() != null) && !getIdentifier().equals("")) {
             attributes.addAttribute("", "id", null, "xs:ID", getIdentifier());
         }
         if (getMediaType() != null) {
             attributes.addAttribute("", "mediaType", null, "xs:string",
                     getMediaType().toString());
         }
-        if (getProfiles() != null && !getProfiles().isEmpty()) {
-            StringBuilder builder = new StringBuilder();
-            for (Iterator<Reference> iterator = getProfiles().iterator(); iterator
+        if ((getProfiles() != null) && !getProfiles().isEmpty()) {
+            final StringBuilder builder = new StringBuilder();
+            for (final Iterator<Reference> iterator = getProfiles().iterator(); iterator
                     .hasNext();) {
-                Reference reference = iterator.next();
+                final Reference reference = iterator.next();
                 builder.append(reference.toString());
                 if (iterator.hasNext()) {
                     builder.append(" ");
@@ -65,11 +65,11 @@ public class FaultInfo extends RepresentationInfo {
             attributes.addAttribute("", "profile", null, "xs:string", builder
                     .toString());
         }
-        if (getStatuses() != null && !getStatuses().isEmpty()) {
-            StringBuilder builder = new StringBuilder();
-            for (Iterator<Status> iterator = getStatuses().iterator(); iterator
+        if ((getStatuses() != null) && !getStatuses().isEmpty()) {
+            final StringBuilder builder = new StringBuilder();
+            for (final Iterator<Status> iterator = getStatuses().iterator(); iterator
                     .hasNext();) {
-                Status status = iterator.next();
+                final Status status = iterator.next();
                 builder.append(status.getCode());
                 if (iterator.hasNext()) {
                     builder.append(" ");
@@ -78,7 +78,7 @@ public class FaultInfo extends RepresentationInfo {
             attributes.addAttribute("", "status", null, "xs:string", builder
                     .toString());
         }
-        if (getXmlElement() != null && !getXmlElement().equals("")) {
+        if ((getXmlElement() != null) && !getXmlElement().equals("")) {
             attributes.addAttribute("", "element", null, "xs:QName",
                     getXmlElement());
         }
@@ -88,10 +88,10 @@ public class FaultInfo extends RepresentationInfo {
         } else {
             writer.startElement(APP_NAMESPACE, "fault", null, attributes);
 
-            for (DocumentationInfo documentationInfo : getDocumentations()) {
+            for (final DocumentationInfo documentationInfo : getDocumentations()) {
                 documentationInfo.writeElement(writer);
             }
-            for (ParameterInfo parameterInfo : getParameters()) {
+            for (final ParameterInfo parameterInfo : getParameters()) {
                 parameterInfo.writeElement(writer);
             }
 

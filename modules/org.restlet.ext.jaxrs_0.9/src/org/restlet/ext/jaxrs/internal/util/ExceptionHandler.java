@@ -48,8 +48,8 @@ import org.restlet.ext.jaxrs.internal.wrappers.ResourceMethod;
 /**
  * <p>
  * This class contains the methods to handle exceptions occuring in the
- * {@link org.restlet.ext.jaxrs.JaxRsRestlet}, e.g. while identifying the
- * method that should handle the request.<br>
+ * {@link org.restlet.ext.jaxrs.JaxRsRestlet}, e.g. while identifying the method
+ * that should handle the request.<br>
  * Therefor it contains some Restlets that handles this exceptions.
  * </p>
  * <p>
@@ -69,9 +69,10 @@ public class ExceptionHandler {
      */
     private static Set<Variant> getSupportedVariants(
             Collection<ResourceMethod> supporting) {
-        Set<Variant> supportedVariants = new HashSet<Variant>();
-        for (ResourceMethod resourceMethod : supporting)
+        final Set<Variant> supportedVariants = new HashSet<Variant>();
+        for (final ResourceMethod resourceMethod : supporting) {
             supportedVariants.addAll(resourceMethod.getSupportedVariants());
+        }
         return supportedVariants;
     }
 
@@ -81,7 +82,7 @@ public class ExceptionHandler {
      * Creates a new ExceptionHandler.
      * 
      * @param logger
-     *                the logger to use
+     *            the logger to use
      */
     public ExceptionHandler(Logger logger) {
         this.logger = logger;
@@ -96,8 +97,8 @@ public class ExceptionHandler {
      */
     public RequestHandledException convertRepresentationExc(
             ConvertRepresentationException cre) throws WebApplicationException {
-        ResponseBuilder rb = Response.status(Status.BAD_REQUEST);
-        StringWriter stw = new StringWriter();
+        final ResponseBuilder rb = Response.status(Status.BAD_REQUEST);
+        final StringWriter stw = new StringWriter();
         cre.printStackTrace(new PrintWriter(stw));
         rb.entity(stw.toString());
         throw new WebApplicationException(cre, rb.build());
@@ -109,16 +110,15 @@ public class ExceptionHandler {
      * 
      * @param exception
      * @param callContext
-     *                Contains the encoded template Parameters, that are read
-     *                from the called URI, the Restlet
-     *                {@link org.restlet.data.Request} and the Restlet
-     *                {@link org.restlet.data.Response}.
+     *            Contains the encoded template Parameters, that are read from
+     *            the called URI, the Restlet {@link org.restlet.data.Request}
+     *            and the Restlet {@link org.restlet.data.Response}.
      * @param methodName
      * @param logMessage
      * @return staticly to throw, if needed by compiler.
      * @throws RequestHandledException
-     *                 throws this message to exit the method and indicate, that
-     *                 the request was handled.
+     *             throws this message to exit the method and indicate, that the
+     *             request was handled.
      * @throws RequestHandledException
      */
     public RequestHandledException instantiateExecption(
@@ -126,7 +126,7 @@ public class ExceptionHandler {
             String logMessage) throws RequestHandledException {
         callContext.getResponse().setStatus(
                 org.restlet.data.Status.SERVER_ERROR_INTERNAL);
-        logger.log(Level.WARNING, logMessage, exception.getCause());
+        this.logger.log(Level.WARNING, logMessage, exception.getCause());
         exception.printStackTrace();
         throw new RequestHandledException();
     }
@@ -137,16 +137,15 @@ public class ExceptionHandler {
      * 
      * @param exception
      * @param callContext
-     *                Contains the encoded template Parameters, that are read
-     *                from the called URI, the Restlet
-     *                {@link org.restlet.data.Request} and the Restlet
-     *                {@link org.restlet.data.Response}.
+     *            Contains the encoded template Parameters, that are read from
+     *            the called URI, the Restlet {@link org.restlet.data.Request}
+     *            and the Restlet {@link org.restlet.data.Response}.
      * @param methodName
      * @param logMessage
      * @return staticly to throw, if needed by compiler.
      * @throws RequestHandledException
-     *                 throws this message to exit the method and indicate, that
-     *                 the request was handled.
+     *             throws this message to exit the method and indicate, that the
+     *             request was handled.
      * @throws RequestHandledException
      */
     public RequestHandledException methodInvokeException(
@@ -154,7 +153,7 @@ public class ExceptionHandler {
             String logMessage) throws RequestHandledException {
         callContext.getResponse().setStatus(
                 org.restlet.data.Status.SERVER_ERROR_INTERNAL);
-        logger.log(Level.WARNING, logMessage, exception.getCause());
+        this.logger.log(Level.WARNING, logMessage, exception.getCause());
         exception.printStackTrace();
         throw new RequestHandledException();
     }
@@ -165,7 +164,7 @@ public class ExceptionHandler {
      */
     public void methodNotAllowed(Set<Method> allowedMethods)
             throws WebApplicationException {
-        ResponseBuilder rb = Response
+        final ResponseBuilder rb = Response
                 .status(org.restlet.data.Status.CLIENT_ERROR_METHOD_NOT_ALLOWED
                         .getCode());
         rb.header(HEADER_ALLOW, Util.toString(allowedMethods, ", "));
@@ -178,16 +177,15 @@ public class ExceptionHandler {
      * 
      * @param exception
      * @param callContext
-     *                Contains the encoded template Parameters, that are read
-     *                from the called URI, the Restlet
-     *                {@link org.restlet.data.Request} and the Restlet
-     *                {@link org.restlet.data.Response}.
+     *            Contains the encoded template Parameters, that are read from
+     *            the called URI, the Restlet {@link org.restlet.data.Request}
+     *            and the Restlet {@link org.restlet.data.Response}.
      * @param methodName
      * @param logMessage
      * @return staticly to throw, if needed by compiler.
      * @throws RequestHandledException
-     *                 throws this message to exit the method and indicate, that
-     *                 the request was handled.
+     *             throws this message to exit the method and indicate, that the
+     *             request was handled.
      * @throws RequestHandledException
      */
     public RequestHandledException missingAnnotation(
@@ -195,9 +193,10 @@ public class ExceptionHandler {
             String logMessage) throws RequestHandledException {
         callContext.getResponse().setStatus(
                 org.restlet.data.Status.SERVER_ERROR_INTERNAL);
-        if (exception != null)
+        if (exception != null) {
             logMessage += ": " + exception.getMessage();
-        logger.log(Level.WARNING, logMessage);
+        }
+        this.logger.log(Level.WARNING, logMessage);
         throw new RequestHandledException();
     }
 
@@ -211,8 +210,8 @@ public class ExceptionHandler {
      */
     public WebApplicationException noMessageBodyWriter(Class<?> entityClass,
             Type genericType, Annotation[] annotations) {
-        logger.warning("No message body writer found for class " + entityClass
-                + ", genericType " + genericType);
+        this.logger.warning("No message body writer found for class "
+                + entityClass + ", genericType " + genericType);
         // LATER log also annotations
         // NICE get as parameters the accMediaTypes and the entityClass.
         // and return supported MediaTypes as entity
@@ -223,14 +222,14 @@ public class ExceptionHandler {
      * see spec, section 3.7.2, item 3(a).4
      * 
      * @param supporting
-     *                the methods supporting the requested resource and the
-     *                given HTTP method.
+     *            the methods supporting the requested resource and the given
+     *            HTTP method.
      * @throws WebApplicationException
      */
     public void noResourceMethodForAccMediaTypes(
             Collection<ResourceMethod> supporting)
             throws WebApplicationException {
-        Set<Variant> supportedVariants = getSupportedVariants(supporting);
+        final Set<Variant> supportedVariants = getSupportedVariants(supporting);
         throw new NotAcceptableWebAppException(supportedVariants);
     }
 
@@ -276,20 +275,19 @@ public class ExceptionHandler {
      * a creation if a sub resource object.
      * 
      * @param exception
-     *                the exception to log
+     *            the exception to log
      * @param jaxRsMethod
-     *                the called method when the exception occurs. May be null.
+     *            the called method when the exception occurs. May be null.
      * @param callContext
-     *                Contains the encoded template Parameters, that are read
-     *                from the called URI, the Restlet
-     *                {@link org.restlet.data.Request} and the Restlet
-     *                {@link org.restlet.data.Response}.
+     *            Contains the encoded template Parameters, that are read from
+     *            the called URI, the Restlet {@link org.restlet.data.Request}
+     *            and the Restlet {@link org.restlet.data.Response}.
      * @param logMessage
      * @param methodName
      * @return staticly to throw, if needed by compiler.
      * @throws RequestHandledException
-     *                 throws this message to exit the method and indicate, that
-     *                 the request was handled.
+     *             throws this message to exit the method and indicate, that the
+     *             request was handled.
      * @throws RequestHandledException
      */
     public RequestHandledException runtimeExecption(RuntimeException exception,
@@ -297,9 +295,11 @@ public class ExceptionHandler {
             String logMessage) throws RequestHandledException {
         callContext.getResponse().setStatus(
                 org.restlet.data.Status.SERVER_ERROR_INTERNAL);
-        if (jaxRsMethod != null)
+        if (jaxRsMethod != null) {
             logMessage = jaxRsMethod + ": " + logMessage;
-        logger.log(Level.WARNING, jaxRsMethod + ": " + logMessage, exception);
+        }
+        this.logger.log(Level.WARNING, jaxRsMethod + ": " + logMessage,
+                exception);
         exception.printStackTrace();
         throw new RequestHandledException();
     }
@@ -308,13 +308,13 @@ public class ExceptionHandler {
      * see spec, section 3.7.2, item 3 (a) .3
      * 
      * @param accepting
-     *                resource methods for the requested resource and the given
-     *                HTTP method.
+     *            resource methods for the requested resource and the given HTTP
+     *            method.
      * @throws WebApplicationException
      */
     public void unsupportedMediaType(Collection<ResourceMethod> accepting)
             throws WebApplicationException {
-        Set<Variant> acceptedVariants = getSupportedVariants(accepting);
+        final Set<Variant> acceptedVariants = getSupportedVariants(accepting);
         throw new UnsupportedMediaTypeWebAppException(acceptedVariants);
     }
 }

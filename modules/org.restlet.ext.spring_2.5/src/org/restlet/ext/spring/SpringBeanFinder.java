@@ -49,9 +49,9 @@ public class SpringBeanFinder extends SpringFinder implements BeanFactoryAware {
      * Constructor.
      * 
      * @param beanFactory
-     *                The Spring bean factory.
+     *            The Spring bean factory.
      * @param beanName
-     *                The bean name.
+     *            The bean name.
      */
     public SpringBeanFinder(BeanFactory beanFactory, String beanName) {
         setBeanFactory(beanFactory);
@@ -60,7 +60,7 @@ public class SpringBeanFinder extends SpringFinder implements BeanFactoryAware {
 
     @Override
     public Resource createResource() {
-        Object resource = getBeanFactory().getBean(getBeanName());
+        final Object resource = getBeanFactory().getBean(getBeanName());
 
         if (!(resource instanceof Resource)) {
             throw new ClassCastException(getBeanName()
@@ -77,7 +77,7 @@ public class SpringBeanFinder extends SpringFinder implements BeanFactoryAware {
      * @return The parent bean factory.
      */
     public BeanFactory getBeanFactory() {
-        return beanFactory;
+        return this.beanFactory;
     }
 
     /**
@@ -86,14 +86,14 @@ public class SpringBeanFinder extends SpringFinder implements BeanFactoryAware {
      * @return The bean name.
      */
     public String getBeanName() {
-        return beanName;
+        return this.beanName;
     }
 
     /**
      * Sets the parent bean factory.
      * 
      * @param beanFactory
-     *                The parent bean factory.
+     *            The parent bean factory.
      */
     public void setBeanFactory(BeanFactory beanFactory) {
         this.beanFactory = beanFactory;
@@ -103,7 +103,7 @@ public class SpringBeanFinder extends SpringFinder implements BeanFactoryAware {
      * Sets the bean name.
      * 
      * @param beanName
-     *                The bean name.
+     *            The bean name.
      */
     public void setBeanName(String beanName) {
         this.beanName = beanName;

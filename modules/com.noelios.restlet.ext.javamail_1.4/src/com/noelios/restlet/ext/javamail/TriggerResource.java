@@ -75,7 +75,9 @@ public class TriggerResource extends Resource {
     /** Resolver that resolves a name into a value. */
     private MailResolver resolver;
 
-    /** Indicates if the target entity should be provided to the target resource. */
+    /**
+     * Indicates if the target entity should be provided to the target resource.
+     */
     private boolean targetEntityEnabled;
 
     /** The method to invoke on the target resource. */
@@ -88,11 +90,11 @@ public class TriggerResource extends Resource {
      * Constructor.
      * 
      * @param context
-     *                The parent context.
+     *            The parent context.
      * @param request
-     *                The request to handle.
+     *            The request to handle.
      * @param response
-     *                The response to return.
+     *            The response to return.
      */
     public TriggerResource(Context context, Request request, Response response) {
         super(context, request, response);
@@ -114,22 +116,22 @@ public class TriggerResource extends Resource {
             throws ResourceException {
 
         // 1 - Get list of identifiers for the mails in the inbox
-        List<String> mailIdentifiers = getMailIdentifiers();
+        final List<String> mailIdentifiers = getMailIdentifiers();
 
         // 2 - Process the list of mails
-        List<String> mailsSuccessful = new ArrayList<String>();
-        Map<String, String> mailsUnsuccessful = new HashMap<String, String>();
+        final List<String> mailsSuccessful = new ArrayList<String>();
+        final Map<String, String> mailsUnsuccessful = new HashMap<String, String>();
         Representation mail;
-        for (String mailIdentifier : mailIdentifiers) {
+        for (final String mailIdentifier : mailIdentifiers) {
             try {
                 mail = getMail(mailIdentifier);
                 if (mail != null) {
-                    resolver = getResolver(mailIdentifier, mail);
-                    callTarget(resolver);
+                    this.resolver = getResolver(mailIdentifier, mail);
+                    callTarget(this.resolver);
                     deleteMail(mailIdentifier);
                     mailsSuccessful.add(mailIdentifier);
                 }
-            } catch (ResourceException e) {
+            } catch (final ResourceException e) {
                 mailsUnsuccessful.put(mailIdentifier, e.getMessage());
             }
         }
@@ -145,18 +147,18 @@ public class TriggerResource extends Resource {
      * Requests the target resource.
      * 
      * @param resolver
-     *                The data model that provides parameters value.
+     *            The data model that provides parameters value.
      * @throws ResourceException
      */
     protected void callTarget(Resolver<String> resolver)
             throws ResourceException {
         // A - Build the request for the target resource
-        Method method = getTargetMethod(resolver);
+        final Method method = getTargetMethod(resolver);
 
-        Reference targetRef = getTargetRef(resolver);
+        final Reference targetRef = getTargetRef(resolver);
 
-        Request request = new Request(method, targetRef);
-        ChallengeResponse challengeResponse = getTargetChallengeResponse(resolver);
+        final Request request = new Request(method, targetRef);
+        final ChallengeResponse challengeResponse = getTargetChallengeResponse(resolver);
         if (challengeResponse != null) {
             request.setChallengeResponse(challengeResponse);
         }
@@ -166,7 +168,8 @@ public class TriggerResource extends Resource {
         }
 
         // B - Call the target resource
-        Response response = getContext().getClientDispatcher().handle(request);
+        final Response response = getContext().getClientDispatcher().handle(
+                request);
 
         if (!response.getStatus().isSuccess()) {
             throw new ResourceException(Status.SERVER_ERROR_INTERNAL,
@@ -178,7 +181,7 @@ public class TriggerResource extends Resource {
      * Deletes a mail after it has been processed.
      * 
      * @param mailIdentifier
-     *                The identifier of the mail
+     *            The identifier of the mail
      * @throws ResourceException
      */
     protected void deleteMail(String mailIdentifier) throws ResourceException {
@@ -191,14 +194,15 @@ public class TriggerResource extends Resource {
         }
 
         // B - Delete the mail
-        Request request = new Request(Method.DELETE, mailRef);
+        final Request request = new Request(Method.DELETE, mailRef);
         if (getMailboxChallengeScheme() != null) {
-            ChallengeResponse challengeResponse = new ChallengeResponse(
+            final ChallengeResponse challengeResponse = new ChallengeResponse(
                     getMailboxChallengeScheme(), getMailboxLogin(),
                     getMailboxPassword());
             request.setChallengeResponse(challengeResponse);
         }
-        Response response = getContext().getClientDispatcher().handle(request);
+        final Response response = getContext().getClientDispatcher().handle(
+                request);
 
         if (response.getStatus().isError()) {
             throw new ResourceException(Status.SERVER_ERROR_INTERNAL,
@@ -210,23 +214,24 @@ public class TriggerResource extends Resource {
      * Get the mail representation according to its identifier.
      * 
      * @param identifier
-     *                the mail identifier.
+     *            the mail identifier.
      * @throws ResourceException
      */
     protected Representation getMail(String identifier)
             throws ResourceException {
         // A - Build the mail URI
-        Reference mailRef = getMailRef(identifier);
+        final Reference mailRef = getMailRef(identifier);
 
         // B - Get the mail
-        Request request = new Request(Method.GET, mailRef);
+        final Request request = new Request(Method.GET, mailRef);
         if (getMailboxChallengeScheme() != null) {
-            ChallengeResponse challengeResponse = new ChallengeResponse(
+            final ChallengeResponse challengeResponse = new ChallengeResponse(
                     getMailboxChallengeScheme(), getMailboxLogin(),
                     getMailboxPassword());
             request.setChallengeResponse(challengeResponse);
         }
-        Response response = getContext().getClientDispatcher().handle(request);
+        final Response response = getContext().getClientDispatcher().handle(
+                request);
 
         if (!response.getStatus().isSuccess()) {
             throw new ResourceException(Status.SERVER_ERROR_INTERNAL,
@@ -299,17 +304,18 @@ public class TriggerResource extends Resource {
      * @throws ResourceException
      */
     protected List<String> getMailIdentifiers() throws ResourceException {
-        List<String> result = new ArrayList<String>();
+        final List<String> result = new ArrayList<String>();
 
         // 1 - Get to mailbox content
-        Request request = new Request(Method.GET, getMailboxUri());
+        final Request request = new Request(Method.GET, getMailboxUri());
         if (getMailboxChallengeScheme() != null) {
-            ChallengeResponse challengeResponse = new ChallengeResponse(
+            final ChallengeResponse challengeResponse = new ChallengeResponse(
                     getMailboxChallengeScheme(), getMailboxLogin(),
                     getMailboxPassword());
             request.setChallengeResponse(challengeResponse);
         }
-        Response response = getContext().getClientDispatcher().handle(request);
+        final Response response = getContext().getClientDispatcher().handle(
+                request);
 
         if (!response.getStatus().isSuccess()) {
             throw new ResourceException(response.getStatus(),
@@ -318,9 +324,9 @@ public class TriggerResource extends Resource {
 
         // 2 - Parse the list of mails
         if (response.isEntityAvailable()) {
-            DomRepresentation rep = response.getEntityAsDom();
-            for (Node node : rep.getNodes("/emails/email/@href")) {
-                String href = node.getNodeValue();
+            final DomRepresentation rep = response.getEntityAsDom();
+            for (final Node node : rep.getNodes("/emails/email/@href")) {
+                final String href = node.getNodeValue();
                 if (href.startsWith("/")) {
                     result.add(href.substring(1));
                 } else {
@@ -336,12 +342,12 @@ public class TriggerResource extends Resource {
      * Returns the reference of a mail according to its identifier.
      * 
      * @param identifier
-     *                The identifier of a mail.
+     *            The identifier of a mail.
      * @return The URI of the mail.
      * @throws ResourceException
      */
     protected Reference getMailRef(String identifier) throws ResourceException {
-        Template mailTemplate = new Template(getMailUriTemplate());
+        final Template mailTemplate = new Template(getMailUriTemplate());
         Reference result = new Reference(mailTemplate.format(new MailResolver(
                 identifier)));
 
@@ -359,7 +365,7 @@ public class TriggerResource extends Resource {
      * @return the template of the mail's URI.
      */
     public String getMailUriTemplate() {
-        return mailUriTemplate;
+        return this.mailUriTemplate;
     }
 
     /**
@@ -368,16 +374,16 @@ public class TriggerResource extends Resource {
      * @return The resolver.
      */
     public MailResolver getResolver() {
-        return resolver;
+        return this.resolver;
     }
 
     /**
      * Returns a new resolver based on a mail.
      * 
      * @param mailIdentifier
-     *                Identifier of the mail.
+     *            Identifier of the mail.
      * @param email
-     *                The mail.
+     *            The mail.
      * @return A resolver.
      */
     protected MailResolver getResolver(String mailIdentifier,
@@ -390,14 +396,14 @@ public class TriggerResource extends Resource {
      * successfull and unsuccessfull mails.
      * 
      * @param mailsSuccessful
-     *                The list of successfull mails.
+     *            The list of successfull mails.
      * @param mailsUnsuccessful
-     *                The list of successfull mails and related error message.
+     *            The list of successfull mails and related error message.
      * @return The response's representation.
      */
     protected Representation getResponseRepresentation(
             List<String> mailsSuccessful, Map<String, String> mailsUnsuccessful) {
-        Representation representation = null;
+        final Representation representation = null;
 
         return representation;
     }
@@ -407,9 +413,9 @@ public class TriggerResource extends Resource {
      * unsuccessfull mails.
      * 
      * @param mailsSuccessful
-     *                The list of successfull mails.
+     *            The list of successfull mails.
      * @param mailsUnsuccessful
-     *                The list of successfull mails and related error message.
+     *            The list of successfull mails and related error message.
      * @return The response's status.
      */
     protected Status getResponseStatus(List<String> mailsSuccessful,
@@ -430,19 +436,19 @@ public class TriggerResource extends Resource {
      * ChallengeResponse object. It can be overriden.
      * 
      * @param resolver
-     *                The resolver.
+     *            The resolver.
      * @return The target challengeResponse object.
      * @throws ResourceException
      */
     protected ChallengeResponse getTargetChallengeResponse(
             Resolver<String> resolver) throws ResourceException {
-        ChallengeScheme challengeScheme = ChallengeScheme.valueOf(resolver
-                .resolve("challengeScheme"));
-        String login = resolver.resolve("login");
-        String password = resolver.resolve("password");
+        final ChallengeScheme challengeScheme = ChallengeScheme
+                .valueOf(resolver.resolve("challengeScheme"));
+        final String login = resolver.resolve("login");
+        final String password = resolver.resolve("password");
 
         ChallengeResponse result = null;
-        if (challengeScheme != null && login != null && password != null) {
+        if ((challengeScheme != null) && (login != null) && (password != null)) {
             result = new ChallengeResponse(challengeScheme, login, password);
         }
 
@@ -454,7 +460,7 @@ public class TriggerResource extends Resource {
      * message.
      * 
      * @param resolver
-     *                the resolver.
+     *            the resolver.
      * @return The entity to be sent to the target.
      */
     protected Representation getTargetEntity(Resolver<String> resolver) {
@@ -467,14 +473,14 @@ public class TriggerResource extends Resource {
      * @return The default target method.
      */
     public Method getTargetMethod() {
-        return targetMethod;
+        return this.targetMethod;
     }
 
     /**
      * Returns the target method according to a list of properties.
      * 
      * @param resolver
-     *                The resolver.
+     *            The resolver.
      * @return The target method.
      */
     protected Method getTargetMethod(Resolver<String> resolver) {
@@ -491,13 +497,13 @@ public class TriggerResource extends Resource {
      * properties.
      * 
      * @param resolver
-     *                The resolver.
+     *            The resolver.
      * @return The target reference.
      * @throws ResourceException
      */
     protected Reference getTargetRef(Resolver<String> resolver)
             throws ResourceException {
-        Template targetTemplate = new Template(getTargetUri());
+        final Template targetTemplate = new Template(getTargetUri());
         Reference result = new Reference(targetTemplate.format(resolver));
 
         if (result.isRelative()) {
@@ -514,7 +520,7 @@ public class TriggerResource extends Resource {
      * @return The template that represents a target URI.
      */
     public String getTargetUri() {
-        return targetUri;
+        return this.targetUri;
     }
 
     /**
@@ -524,14 +530,14 @@ public class TriggerResource extends Resource {
      *         otherwise.
      */
     public boolean isTargetEntityEnabled() {
-        return targetEntityEnabled;
+        return this.targetEntityEnabled;
     }
 
     /**
      * Sets the scheme of the mailbox challenge.
      * 
      * @param mailboxChallengeScheme
-     *                The scheme of the mailbox challenge.
+     *            The scheme of the mailbox challenge.
      */
     public void setMailboxChallengeScheme(ChallengeScheme mailboxChallengeScheme) {
         this.mailboxChallengeScheme = mailboxChallengeScheme;
@@ -541,7 +547,7 @@ public class TriggerResource extends Resource {
      * Sets the login for the mailbox access.
      * 
      * @param mailboxLogin
-     *                The login for the mailbox access.
+     *            The login for the mailbox access.
      */
     public void setMailboxLogin(String mailboxLogin) {
         this.mailboxLogin = mailboxLogin;
@@ -551,7 +557,7 @@ public class TriggerResource extends Resource {
      * Sets the password for the mailbox access.
      * 
      * @param mailboxPassword
-     *                The password for the mailbox access.
+     *            The password for the mailbox access.
      */
     public void setMailboxPassword(String mailboxPassword) {
         this.mailboxPassword = mailboxPassword;
@@ -561,7 +567,7 @@ public class TriggerResource extends Resource {
      * Sets the URI of the mailbox.
      * 
      * @param mailboxUri
-     *                the URI of the mailbox.
+     *            the URI of the mailbox.
      */
     public void setMailboxUri(String mailboxUri) {
         this.mailboxUri = mailboxUri;
@@ -571,7 +577,7 @@ public class TriggerResource extends Resource {
      * Sets the URI template for the target.
      * 
      * @param mailUriTemplate
-     *                the URI template for the target.
+     *            the URI template for the target.
      */
     public void setMailUriTemplate(String mailUriTemplate) {
         this.mailUriTemplate = mailUriTemplate;
@@ -581,8 +587,8 @@ public class TriggerResource extends Resource {
      * Indicate whether or not the target supports entity in the request.
      * 
      * @param targetEntityEnabled
-     *                True if the target supports entity in the request, false,
-     *                otherwise.
+     *            True if the target supports entity in the request, false,
+     *            otherwise.
      */
     public void setTargetEntityEnabled(boolean targetEntityEnabled) {
         this.targetEntityEnabled = targetEntityEnabled;
@@ -592,7 +598,7 @@ public class TriggerResource extends Resource {
      * Sets the default target method.
      * 
      * @param targetMethod
-     *                The default target method.
+     *            The default target method.
      */
     public void setTargetMethod(Method targetMethod) {
         this.targetMethod = targetMethod;
@@ -602,7 +608,7 @@ public class TriggerResource extends Resource {
      * Sets the target URI template.
      * 
      * @param targetUri
-     *                The target URI template.
+     *            The target URI template.
      */
     public void setTargetUri(String targetUri) {
         this.targetUri = targetUri;

@@ -91,7 +91,7 @@ public enum Relation {
      * Parses a relation name into the equivalent enumeration item.
      * 
      * @param rel
-     *                The relation name to parse.
+     *            The relation name to parse.
      * @return The equivalent enumeration item.
      */
     public static Relation parse(String rel) {
@@ -128,7 +128,7 @@ public enum Relation {
      * Return a String object representing the specified Relation.
      * 
      * @param rel
-     *                The relation to be converted.
+     *            The relation to be converted.
      * @return The String representation of the argument.
      */
     public static String toString(Relation rel) {

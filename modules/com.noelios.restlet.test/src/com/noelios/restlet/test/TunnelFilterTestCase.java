@@ -69,11 +69,11 @@ public class TunnelFilterTestCase extends TestCase {
     private TunnelFilter tunnelFilter;
 
     void assertCharSets(CharacterSet... characterSets) {
-        assertEqualSet(accCharsets, characterSets);
+        assertEqualSet(this.accCharsets, characterSets);
     }
 
     void assertEncodings(Encoding... encodings) {
-        assertEqualSet(accEncodings, encodings);
+        assertEqualSet(this.accEncodings, encodings);
     }
 
     <A extends Metadata> A assertEqualSet(List<? extends Preference<A>> actual,
@@ -84,16 +84,16 @@ public class TunnelFilterTestCase extends TestCase {
         }
         assertEquals(actual.size(), expected.length);
         boolean contained = false;
-        for (Metadata exp : expected) {
-            for (Preference<? extends Metadata> act : actual) {
+        for (final Metadata exp : expected) {
+            for (final Preference<? extends Metadata> act : actual) {
                 if (exp.equals(act.getMetadata())) {
                     contained = true;
                     break;
                 }
             }
             if (!contained) {
-                String message = exp + " should be in, but is missing in "
-                        + actual;
+                final String message = exp
+                        + " should be in, but is missing in " + actual;
                 fail(message);
             }
         }
@@ -101,11 +101,11 @@ public class TunnelFilterTestCase extends TestCase {
     }
 
     void assertLanguages(Language... languages) {
-        assertEqualSet(accLanguages, languages);
+        assertEqualSet(this.accLanguages, languages);
     }
 
     void assertMediaTypes(MediaType... mediaTypes) {
-        assertEqualSet(accMediaTypes, mediaTypes);
+        assertEqualSet(this.accMediaTypes, mediaTypes);
     }
 
     /**
@@ -113,10 +113,10 @@ public class TunnelFilterTestCase extends TestCase {
      * @param expectedExtensions
      */
     private void check(String expectedCut, String expectedExtensions) {
-        Reference resourceRef = request.getResourceRef();
+        final Reference resourceRef = this.request.getResourceRef();
         assertEquals(expectedCut, resourceRef.toString());
 
-        Reference originalRef = request.getOriginalRef();
+        final Reference originalRef = this.request.getOriginalRef();
         assertEquals(originalRef, new Reference(this.lastCreatedReference));
         assertEquals(expectedCut, resourceRef.toString());
         assertEquals(expectedExtensions, resourceRef.getExtensions());
@@ -125,17 +125,18 @@ public class TunnelFilterTestCase extends TestCase {
     /**
      * 
      * @param expectedSubPathCut
-     *                if null, the same as subPathOrig
+     *            if null, the same as subPathOrig
      * @param expectedExtension
-     *                if null, then same as "" for this test
+     *            if null, then same as "" for this test
      */
     private void checkFromPath(String expectedSubPathCut,
             String expectedExtension) {
-        if (expectedSubPathCut == null)
+        if (expectedSubPathCut == null) {
             check(this.lastCreatedReference, expectedExtension);
-        else
+        } else {
             check(START_REF_FOR_PATH_TEST + expectedSubPathCut,
                     expectedExtension);
+        }
     }
 
     /**
@@ -169,13 +170,13 @@ public class TunnelFilterTestCase extends TestCase {
     void createRequest(Method method, String reference) {
         this.request = new Request(method, reference);
         this.request.setOriginalRef(new Reference(reference));
-        this.response = new Response(request);
+        this.response = new Response(this.request);
         this.lastCreatedReference = reference;
         setPrefs();
     }
 
     private void extensionTunnelOff() {
-        Application application = tunnelFilter.getApplication();
+        final Application application = this.tunnelFilter.getApplication();
         application.getTunnelService().setExtensionsTunnel(false);
     }
 
@@ -183,20 +184,22 @@ public class TunnelFilterTestCase extends TestCase {
      * Call this method to filter the current request
      */
     private void filter() {
-        tunnelFilter.beforeHandle(request, response);
+        this.tunnelFilter.beforeHandle(this.request, this.response);
         setPrefs();
     }
 
     private void setPrefs() {
-        this.accMediaTypes = request.getClientInfo().getAcceptedMediaTypes();
-        this.accLanguages = request.getClientInfo().getAcceptedLanguages();
-        this.accCharsets = request.getClientInfo().getAcceptedCharacterSets();
-        this.accEncodings = request.getClientInfo().getAcceptedEncodings();
+        this.accMediaTypes = this.request.getClientInfo()
+                .getAcceptedMediaTypes();
+        this.accLanguages = this.request.getClientInfo().getAcceptedLanguages();
+        this.accCharsets = this.request.getClientInfo()
+                .getAcceptedCharacterSets();
+        this.accEncodings = this.request.getClientInfo().getAcceptedEncodings();
     }
 
     @Override
     public void setUp() {
-        Application app = new Application(new Context());
+        final Application app = new Application(new Context());
         Application.setCurrent(app);
         this.tunnelFilter = new TunnelFilter(app.getContext());
         this.tunnelFilter.getApplication().getTunnelService()
@@ -206,11 +209,12 @@ public class TunnelFilterTestCase extends TestCase {
     public void testExtMappingOff1() {
         extensionTunnelOff();
         createGet(UNEFFECTED);
-        accLanguages.add(new Preference<Language>(Language.valueOf("ajh")));
-        accMediaTypes.add(new Preference<MediaType>(
+        this.accLanguages
+                .add(new Preference<Language>(Language.valueOf("ajh")));
+        this.accMediaTypes.add(new Preference<MediaType>(
                 MediaType.APPLICATION_STUFFIT));
         filter();
-        assertEquals(UNEFFECTED, request.getResourceRef().toString());
+        assertEquals(UNEFFECTED, this.request.getResourceRef().toString());
         assertLanguages(Language.valueOf("ajh"));
         assertMediaTypes(MediaType.APPLICATION_STUFFIT);
         assertCharSets();
@@ -220,11 +224,12 @@ public class TunnelFilterTestCase extends TestCase {
     public void testExtMappingOff2() {
         extensionTunnelOff();
         createGet(EFFECTED);
-        accLanguages.add(new Preference<Language>(Language.valueOf("ajh")));
-        accMediaTypes.add(new Preference<MediaType>(
+        this.accLanguages
+                .add(new Preference<Language>(Language.valueOf("ajh")));
+        this.accMediaTypes.add(new Preference<MediaType>(
                 MediaType.APPLICATION_STUFFIT));
         filter();
-        assertEquals(EFFECTED, request.getResourceRef().toString());
+        assertEquals(EFFECTED, this.request.getResourceRef().toString());
         assertLanguages(Language.valueOf("ajh"));
         assertMediaTypes(MediaType.APPLICATION_STUFFIT);
         assertCharSets();
@@ -251,7 +256,7 @@ public class TunnelFilterTestCase extends TestCase {
         createGetFromPath("afhhh");
         filter();
         checkFromPath(null, null);
-        assertEqualSet(accMediaTypes);
+        assertEqualSet(this.accMediaTypes);
         assertLanguages();
         assertEncodings();
         assertCharSets();

@@ -33,20 +33,20 @@ import org.restlet.test.jaxrs.util.TestUtils;
 public class ThrowWebAppExcProviderTest extends JaxRsTestCase {
 
     @Override
-    protected Class<?> getRootResourceClass() {
-        return SimpleResource.class;
-    }
-
-    @Override
     @SuppressWarnings("unchecked")
     protected Set<Class<?>> getProvClasses() {
         return (Set) TestUtils.createSet(ThrowWebAppExcProvider.class);
     }
 
+    @Override
+    protected Class<?> getRootResourceClass() {
+        return SimpleResource.class;
+    }
+
     public void testPost() {
-        Response response = post(new StringRepresentation("jgjhsdhbf"));
+        final Response response = post(new StringRepresentation("jgjhsdhbf"));
         sysOutEntityIfError(response);
-        int statusCode = response.getStatus().getCode();
+        final int statusCode = response.getStatus().getCode();
         assertEquals(ThrowWebAppExcProvider.STATUS_READ, statusCode);
     }
 }

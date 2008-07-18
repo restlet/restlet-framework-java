@@ -42,9 +42,24 @@ public class ThrowWebAppExcProvider implements MessageBodyReader<Object>,
     public static final int STATUS_WRITE = 5678;
 
     /**
+     * @see MessageBodyWriter#getSize(java.lang.Object)
+     */
+    public long getSize(Object t) {
+        return -1;
+    }
+
+    /**
      * @see MessageBodyReader#isReadable(Class, Type, Annotation[])
      */
     public boolean isReadable(Class<?> type, Type genericType,
+            Annotation[] annotations) {
+        return true;
+    }
+
+    /**
+     * @see MessageBodyWriter#isWriteable(Class, Type, Annotation[])
+     */
+    public boolean isWriteable(Class<?> type, Type genericType,
             Annotation[] annotations) {
         return true;
     }
@@ -58,21 +73,6 @@ public class ThrowWebAppExcProvider implements MessageBodyReader<Object>,
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException, WebApplicationException {
         throw new WebApplicationException(STATUS_READ);
-    }
-
-    /**
-     * @see MessageBodyWriter#getSize(java.lang.Object)
-     */
-    public long getSize(Object t) {
-        return -1;
-    }
-
-    /**
-     * @see MessageBodyWriter#isWriteable(Class, Type, Annotation[])
-     */
-    public boolean isWriteable(Class<?> type, Type genericType,
-            Annotation[] annotations) {
-        return true;
     }
 
     /**

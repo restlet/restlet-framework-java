@@ -40,7 +40,7 @@ public class MatchingResult {
      * Creates a new MatchingResult
      * 
      * @param matched
-     *                The matched uri part
+     *            The matched uri part
      * @param variables
      * @param finalCapturingGroup
      * @param numberOfCapturingGroups
@@ -54,30 +54,12 @@ public class MatchingResult {
     }
 
     /**
-     * Returns the variables found in the given &#64;{@link Path}
-     * 
-     * @return Returns the variables found in the given &#64;{@link Path}
-     */
-    public Map<String, String> getVariables() {
-        return variables;
-    }
-
-    /**
      * Returns the final capturing group. Starts ever with a slash.
      * 
      * @return Returns the final capturing group.
      */
     public RemainingPath getFinalCapturingGroup() {
-        return finalCapturingGroup;
-    }
-
-    /**
-     * Returns the number of capturing groups.
-     * 
-     * @return Returns the number of capturing groups.
-     */
-    public int getNumberOfCapturingGroups() {
-        return numberOfCapturingGroups;
+        return this.finalCapturingGroup;
     }
 
     /**
@@ -87,5 +69,23 @@ public class MatchingResult {
      */
     public String getMatched() {
         return this.matched;
+    }
+
+    /**
+     * Returns the number of capturing groups.
+     * 
+     * @return Returns the number of capturing groups.
+     */
+    public int getNumberOfCapturingGroups() {
+        return this.numberOfCapturingGroups;
+    }
+
+    /**
+     * Returns the variables found in the given &#64;{@link Path}
+     * 
+     * @return Returns the variables found in the given &#64;{@link Path}
+     */
+    public Map<String, String> getVariables() {
+        return this.variables;
     }
 }

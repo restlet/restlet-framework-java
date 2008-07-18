@@ -30,9 +30,9 @@ public class MissingConstructorException extends JaxRsException {
 
     /**
      * @param jaxRsClass
-     *                the root resource or provider class.
+     *            the root resource or provider class.
      * @param rrcOrProvider
-     *                "root resource class" or "provider"
+     *            "root resource class" or "provider"
      */
     public MissingConstructorException(Class<?> jaxRsClass, String rrcOrProvider) {
         super("the " + rrcOrProvider + " " + jaxRsClass.getName()

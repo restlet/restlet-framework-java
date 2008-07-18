@@ -47,25 +47,26 @@ import org.restlet.test.jaxrs.services.tests.MatrixParamTest2;
 public class MatrixParamTestService2 {
 
     @GET
-    @Produces("text/plain")
-    public String get(@MatrixParam("firstname") String firstname,
-            @MatrixParam("lastname") String lastname, @Context UriInfo uriInfo) {
-        List<PathSegment> pathSegents = uriInfo.getPathSegments();
-        PathSegment lastPathSegm = pathSegents.get(0);
-        MultivaluedMap<String, String> mp = lastPathSegm.getMatrixParameters();
-        if(mp.isEmpty()) {
-            ResponseBuilder rb = Response.status(Status.NOT_FOUND);
-            rb.entity("matrix parameters are empty");
-            throw new WebApplicationException(rb.build());
-        }
-        return firstname + " " + lastname;
-    }
-
-    @GET
     @Produces(MediaType.TEXT_PLAIN)
     @Path("encodedWithDefault")
     public String encodedList(
             @Encoded @DefaultValue("default") @MatrixParam("m") List<String> cc) {
         return cc.toString();
+    }
+
+    @GET
+    @Produces("text/plain")
+    public String get(@MatrixParam("firstname") String firstname,
+            @MatrixParam("lastname") String lastname, @Context UriInfo uriInfo) {
+        final List<PathSegment> pathSegents = uriInfo.getPathSegments();
+        final PathSegment lastPathSegm = pathSegents.get(0);
+        final MultivaluedMap<String, String> mp = lastPathSegm
+                .getMatrixParameters();
+        if (mp.isEmpty()) {
+            final ResponseBuilder rb = Response.status(Status.NOT_FOUND);
+            rb.entity("matrix parameters are empty");
+            throw new WebApplicationException(rb.build());
+        }
+        return firstname + " " + lastname;
     }
 }

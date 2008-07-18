@@ -28,8 +28,8 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 
 /**
- * Client code that can be used to test the application developed in the
- * chapter 7 of the book and converted to Restlets in the chapter 13.
+ * Client code that can be used to test the application developed in the chapter
+ * 7 of the book and converted to Restlets in the chapter 13.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
@@ -39,16 +39,16 @@ public class ApplicationTest {
 
     public static void deleteBookmark(String userName, String password,
             String uri) {
-        Request request = getAuthenticatedRequest(Method.DELETE,
+        final Request request = getAuthenticatedRequest(Method.DELETE,
                 getBookmarkUri(userName, uri), userName, password);
-        Response resp = new Client(Protocol.HTTP).handle(request);
+        final Response resp = new Client(Protocol.HTTP).handle(request);
         System.out.println(resp.getStatus() + " : " + resp.getLocationRef());
     }
 
     public static void deleteUser(String userName, String password) {
-        Request request = getAuthenticatedRequest(Method.DELETE,
+        final Request request = getAuthenticatedRequest(Method.DELETE,
                 getUserUri(userName), userName, password);
-        Response resp = new Client(Protocol.HTTP).handle(request);
+        final Response resp = new Client(Protocol.HTTP).handle(request);
         System.out.println(resp.getStatus() + " : " + resp.getLocationRef());
     }
 
@@ -67,7 +67,7 @@ public class ApplicationTest {
      */
     public static Request getAuthenticatedRequest(Method method, String uri,
             String login, String password) {
-        Request request = new Request(method, uri);
+        final Request request = new Request(method, uri);
         request.setChallengeResponse(new ChallengeResponse(
                 ChallengeScheme.HTTP_BASIC, login, password));
         return request;
@@ -112,31 +112,31 @@ public class ApplicationTest {
     public static void putBookmark(String userName, String password,
             String uri, String shortDescription, String longDescription,
             boolean restrict) {
-        Form form = new Form();
+        final Form form = new Form();
         form.add("bookmark[short_description]", shortDescription);
         form.add("bookmark[long_description]", longDescription);
         form.add("bookmark[restrict]", Boolean.toString(restrict));
 
         // Create an authenticated request as a bookmark is in
         // the user's private area
-        Request request = getAuthenticatedRequest(Method.PUT, getBookmarkUri(
-                userName, uri), userName, password);
+        final Request request = getAuthenticatedRequest(Method.PUT,
+                getBookmarkUri(userName, uri), userName, password);
         request.setEntity(form.getWebRepresentation());
 
         // Invoke the client HTTP connector
-        Response resp = new Client(Protocol.HTTP).handle(request);
+        final Response resp = new Client(Protocol.HTTP).handle(request);
         System.out.println(resp.getStatus());
     }
 
     public static void putUser(String userName, String password,
             String fullName, String email) {
-        Form form = new Form();
+        final Form form = new Form();
         form.add("user[password]", password);
         form.add("user[full_name]", fullName);
         form.add("user[email]", email);
 
-        Response resp = new Client(Protocol.HTTP).put(getUserUri(userName),
-                form.getWebRepresentation());
+        final Response resp = new Client(Protocol.HTTP).put(
+                getUserUri(userName), form.getWebRepresentation());
         System.out.println(resp.getStatus());
     }
 

@@ -60,7 +60,7 @@ public class TemplateFilter extends Filter {
      * Constructor.
      * 
      * @param context
-     *                The context.
+     *            The context.
      */
     public TemplateFilter(Context context) {
         super(context);
@@ -71,9 +71,9 @@ public class TemplateFilter extends Filter {
      * Constructor.
      * 
      * @param context
-     *                The context.
+     *            The context.
      * @param next
-     *                The next Restlet.
+     *            The next Restlet.
      */
     public TemplateFilter(Context context, Restlet next) {
         super(context, next);
@@ -84,11 +84,11 @@ public class TemplateFilter extends Filter {
      * Constructor.
      * 
      * @param context
-     *                The context.
+     *            The context.
      * @param next
-     *                The next Restlet.
+     *            The next Restlet.
      * @param dataModel
-     *                The filter's data model.
+     *            The filter's data model.
      */
     public TemplateFilter(Context context, Restlet next, Object dataModel) {
         this(context, next);
@@ -99,11 +99,11 @@ public class TemplateFilter extends Filter {
      * Constructor.
      * 
      * @param context
-     *                The context.
+     *            The context.
      * @param next
-     *                The next Restlet.
+     *            The next Restlet.
      * @param dataModel
-     *                The filter's data model.
+     *            The filter's data model.
      */
     public TemplateFilter(Context context, Restlet next,
             Resolver<Object> dataModel) {
@@ -116,14 +116,14 @@ public class TemplateFilter extends Filter {
         if (response.isEntityAvailable()
                 && response.getEntity().getEncodings().contains(
                         Encoding.FREEMARKER)) {
-            TemplateRepresentation representation = new TemplateRepresentation(
-                    response.getEntity(), configuration, response.getEntity()
-                            .getMediaType());
+            final TemplateRepresentation representation = new TemplateRepresentation(
+                    response.getEntity(), this.configuration, response
+                            .getEntity().getMediaType());
 
             if (this.dataModel == null) {
                 representation.setDataModel(request, response);
             } else {
-                representation.setDataModel(dataModel);
+                representation.setDataModel(this.dataModel);
             }
 
             response.setEntity(representation);
@@ -136,14 +136,14 @@ public class TemplateFilter extends Filter {
      * @return The FreeMarker configuration.
      */
     public Configuration getConfiguration() {
-        return configuration;
+        return this.configuration;
     }
 
     /**
      * Sets the FreeMarker configuration.
      * 
      * @param config
-     *                FreeMarker configuration.
+     *            FreeMarker configuration.
      */
     public void setConfiguration(Configuration config) {
         this.configuration = config;

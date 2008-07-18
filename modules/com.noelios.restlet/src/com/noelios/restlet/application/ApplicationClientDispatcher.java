@@ -39,32 +39,24 @@ public class ApplicationClientDispatcher extends TemplateDispatcher {
      * Constructor.
      * 
      * @param applicationContext
-     *                The application context.
+     *            The application context.
      */
     public ApplicationClientDispatcher(ApplicationContext applicationContext) {
         super(applicationContext);
     }
 
-    /**
-     * Returns the application context.
-     * 
-     * @return The application context.
-     */
-    private ApplicationContext getApplicationContext() {
-        return (ApplicationContext) getContext();
-    }
-
     @Override
     public void doHandle(Request request, Response response) {
         super.doHandle(request, response);
-        Protocol protocol = request.getProtocol();
+        final Protocol protocol = request.getProtocol();
 
         if (protocol.equals(Protocol.RIAP)) {
             // Consider that the request is confidential
             request.setConfidential(true);
 
             // Let's dispatch it
-            LocalReference cr = new LocalReference(request.getResourceRef());
+            final LocalReference cr = new LocalReference(request
+                    .getResourceRef());
 
             if (cr.getRiapAuthorityType() == LocalReference.RIAP_APPLICATION) {
                 request.getResourceRef().setBaseRef(
@@ -97,12 +89,21 @@ public class ApplicationClientDispatcher extends TemplateDispatcher {
     }
 
     /**
+     * Returns the application context.
+     * 
+     * @return The application context.
+     */
+    private ApplicationContext getApplicationContext() {
+        return (ApplicationContext) getContext();
+    }
+
+    /**
      * Asks to the parent component to handle the call.
      * 
      * @param request
-     *                The request to handle.
+     *            The request to handle.
      * @param response
-     *                The response to update.
+     *            The response to update.
      */
     private void parentHandle(Request request, Response response) {
         if (getApplicationContext() != null) {

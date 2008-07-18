@@ -38,24 +38,6 @@ import org.restlet.data.Protocol;
  */
 public class HttpServerHelper extends JxtaServerHelper {
 
-    public HttpServerHelper(Server server) {
-        super(server);
-        getProtocols().add(Protocol.HTTP);
-    }
-
-    @Override
-    protected ServerSocketChannel createServerSocket() throws IOException {
-        ServerSocket serverSocket = new JxtaServerSocket(getPeerGroup(),
-                getPipeAdvertisement());
-        serverSocket.setSoTimeout(0);
-        return new ServerSocketChannelWrapper(serverSocket);
-    }
-
-    @Override
-    protected SocketAddress createSocketAddress() throws IOException {
-        return null;
-    }
-
     private static class ServerSocketChannelWrapper extends ServerSocketChannel {
 
         private final ServerSocket socket;
@@ -67,22 +49,22 @@ public class HttpServerHelper extends JxtaServerHelper {
 
         @Override
         public SocketChannel accept() throws IOException {
-            return new SocketChannelWrapper(socket.accept());
-        }
-
-        @Override
-        public ServerSocket socket() {
-            return socket;
+            return new SocketChannelWrapper(this.socket.accept());
         }
 
         @Override
         protected void implCloseSelectableChannel() throws IOException {
-            socket.close();
+            this.socket.close();
         }
 
         @Override
         protected void implConfigureBlocking(boolean block) throws IOException {
 
+        }
+
+        @Override
+        public ServerSocket socket() {
+            return this.socket;
         }
     }
 
@@ -95,16 +77,6 @@ public class HttpServerHelper extends JxtaServerHelper {
         }
 
         @Override
-        public Socket socket() {
-            return this.socket;
-        }
-
-        @Override
-        protected void implCloseSelectableChannel() throws IOException {
-            socket.close();
-        }
-
-        @Override
         public boolean connect(SocketAddress remote) throws IOException {
             return false;
         }
@@ -112,6 +84,15 @@ public class HttpServerHelper extends JxtaServerHelper {
         @Override
         public boolean finishConnect() throws IOException {
             return false;
+        }
+
+        @Override
+        protected void implCloseSelectableChannel() throws IOException {
+            this.socket.close();
+        }
+
+        @Override
+        protected void implConfigureBlocking(boolean block) throws IOException {
         }
 
         @Override
@@ -136,6 +117,11 @@ public class HttpServerHelper extends JxtaServerHelper {
         }
 
         @Override
+        public Socket socket() {
+            return this.socket;
+        }
+
+        @Override
         public int write(ByteBuffer src) throws IOException {
             return 0;
         }
@@ -145,9 +131,23 @@ public class HttpServerHelper extends JxtaServerHelper {
                 throws IOException {
             return 0;
         }
+    }
 
-        @Override
-        protected void implConfigureBlocking(boolean block) throws IOException {
-        }
+    public HttpServerHelper(Server server) {
+        super(server);
+        getProtocols().add(Protocol.HTTP);
+    }
+
+    @Override
+    protected ServerSocketChannel createServerSocket() throws IOException {
+        final ServerSocket serverSocket = new JxtaServerSocket(getPeerGroup(),
+                getPipeAdvertisement());
+        serverSocket.setSoTimeout(0);
+        return new ServerSocketChannelWrapper(serverSocket);
+    }
+
+    @Override
+    protected SocketAddress createSocketAddress() throws IOException {
+        return null;
     }
 }

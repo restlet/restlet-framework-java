@@ -44,7 +44,7 @@ public class PersonsTest extends JaxRsTestCase {
         return new ApplicationConfig() {
             @Override
             public Set<Class<?>> getResourceClasses() {
-                Set<Class<?>> rrcs = new HashSet<Class<?>>(2);
+                final Set<Class<?>> rrcs = new HashSet<Class<?>>(2);
                 rrcs.add(PersonResource.class);
                 rrcs.add(PersonsResource.class);
                 return rrcs;
@@ -57,37 +57,41 @@ public class PersonsTest extends JaxRsTestCase {
         return PersonsResource.class;
     }
 
-    public void testGetList() throws Exception {
-        Response response = get();
-        sysOutEntityIfError(response);
-        JaxbRepresentation<PersonList> personListRepr = new JaxbRepresentation<PersonList>(response.getEntity(), PersonList.class);
-        List<Person> persons = personListRepr.getObject().getPersons();
-        assertEquals(3, persons.size());
-        assertEquals("Angela", persons.get(0).getFirstname());
-        assertEquals("Olmert", persons.get(1).getLastname());
-        assertEquals("George U.", persons.get(2).getFirstname());
-    }
-
     /**
      * @throws Exception
      * @see PersonsResource#addPerson(Person)
      * @see PersonResource#get(int)
      */
     public void testCreate() throws Exception {
-        if(usesTcp())
+        if (usesTcp()) {
             return;
-        Person newPerson = new Person("Kurt", "Beck");
-        Response response1 = post(new JaxbRepresentation<Person>(newPerson));
+        }
+        final Person newPerson = new Person("Kurt", "Beck");
+        final Response response1 = post(new JaxbRepresentation<Person>(
+                newPerson));
         sysOutEntityIfError(response1);
         assertEquals(Status.SUCCESS_CREATED, response1.getStatus());
-        Reference newLocation = response1.getLocationRef();
-        
-        Response response2 = get(newLocation, MediaType.TEXT_XML);
+        final Reference newLocation = response1.getLocationRef();
+
+        final Response response2 = get(newLocation, MediaType.TEXT_XML);
         sysOutEntityIfError(response2);
         assertEquals(Status.SUCCESS_OK, response2.getStatus());
-        JaxbRepresentation<Person> repr = new JaxbRepresentation<Person>(response2.getEntity(), Person.class);
-        Person person = repr.getObject();
+        final JaxbRepresentation<Person> repr = new JaxbRepresentation<Person>(
+                response2.getEntity(), Person.class);
+        final Person person = repr.getObject();
         assertTrue(person.getFirstname().startsWith("firstname"));
         assertEquals("lastname", person.getLastname());
+    }
+
+    public void testGetList() throws Exception {
+        final Response response = get();
+        sysOutEntityIfError(response);
+        final JaxbRepresentation<PersonList> personListRepr = new JaxbRepresentation<PersonList>(
+                response.getEntity(), PersonList.class);
+        final List<Person> persons = personListRepr.getObject().getPersons();
+        assertEquals(3, persons.size());
+        assertEquals("Angela", persons.get(0).getFirstname());
+        assertEquals("Olmert", persons.get(1).getLastname());
+        assertEquals("George U.", persons.get(2).getFirstname());
     }
 }

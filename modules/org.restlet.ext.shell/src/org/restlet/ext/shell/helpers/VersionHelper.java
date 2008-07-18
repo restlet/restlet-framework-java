@@ -1,7 +1,6 @@
 package org.restlet.ext.shell.helpers;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.Properties;
 
@@ -9,17 +8,15 @@ public class VersionHelper {
 
     private static String version = null;
 
-    private VersionHelper() {
-    }
-
     public static String getVersion() {
         if (version == null) {
-            Properties manifestProperties = new Properties();
-            URL url = ClassLoader.getSystemResource("META-INF/MANIFEST.MF");
+            final Properties manifestProperties = new Properties();
+            final URL url = ClassLoader
+                    .getSystemResource("META-INF/MANIFEST.MF");
 
             try {
-                 manifestProperties.load(url.openStream());
-            } catch (IOException ex) {
+                manifestProperties.load(url.openStream());
+            } catch (final IOException ex) {
                 version = "unknown";
             }
 
@@ -27,5 +24,8 @@ public class VersionHelper {
         }
 
         return version;
+    }
+
+    private VersionHelper() {
     }
 }

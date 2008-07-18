@@ -42,6 +42,45 @@ import net.jxta.rendezvous.RendezvousEvent;
  */
 public class NetworkHandler {
 
+    private class NetworkListener implements
+            net.jxta.ext.network.NetworkListener {
+
+        public void notify(NetworkEvent ne) {
+            final StringBuffer msg = new StringBuffer();
+            PeerGroup pg = ne.getPeerGroup();
+
+            msg.append("NetworkEvent: ").append(pg.getPeerGroupName()).append(
+                    " ");
+
+            final EventObject cause = ne.getCause();
+
+            if (cause != null) {
+                msg.append(cause.getClass().getName()).append(" ");
+
+                if (cause instanceof RendezvousEvent) {
+                    final RendezvousEvent re = (RendezvousEvent) cause;
+                    final String p = re.getPeer();
+                    final String pid = re.getPeerID().toString();
+                    final int t = re.getType();
+
+                    pg = ne.getPeerGroup();
+
+                    msg.append(pg.getPeerGroupName()).append(" ").append(p)
+                            .append(" ").append(pid).append(" ").append(t);
+                } else if (cause instanceof GroupEvent) {
+                    final GroupEvent ge = (GroupEvent) cause;
+                    final int t = ge.getType();
+
+                    pg = ge.getPeerGroup();
+
+                    msg.append(pg.getPeerGroupName()).append(" ").append(t);
+                }
+            }
+
+            System.out.println(msg);
+        }
+    }
+
     public static final String JXTA_HOME = "JXTA_HOME";
 
     public static final String PROFILE = "PROFILE";
@@ -68,16 +107,16 @@ public class NetworkHandler {
     }
 
     public Network getNetwork() {
-        return network;
+        return this.network;
     }
 
     public void start() throws NetworkException {
-        if (network != null) {
+        if (this.network != null) {
             return;
         }
 
         try {
-            network = new Network(new AbstractConfigurator(HOME, Profile
+            this.network = new Network(new AbstractConfigurator(HOME, Profile
                     .get(getClass().getResource(PROFILE_RESOURCE).toURI())) {
                 @Override
                 public PlatformConfig createPlatformConfig(Configurator c)
@@ -87,10 +126,10 @@ public class NetworkHandler {
 
                     return c.getPlatformConfig();
                 }
-            }, listener);
+            }, this.listener);
 
-            network.start();
-        } catch (URISyntaxException use) {
+            this.network.start();
+        } catch (final URISyntaxException use) {
             throw new NetworkException("invalid uri: "
                     + getClass().getResource(PROFILE_RESOURCE), use);
         }
@@ -106,51 +145,12 @@ public class NetworkHandler {
     }
 
     public void stop() {
-        if (network == null) {
+        if (this.network == null) {
             return;
         }
 
-        network.stop();
+        this.network.stop();
 
-        network = null;
-    }
-
-    private class NetworkListener implements
-            net.jxta.ext.network.NetworkListener {
-
-        public void notify(NetworkEvent ne) {
-            StringBuffer msg = new StringBuffer();
-            PeerGroup pg = ne.getPeerGroup();
-
-            msg.append("NetworkEvent: ").append(pg.getPeerGroupName()).append(
-                    " ");
-
-            EventObject cause = ne.getCause();
-
-            if (cause != null) {
-                msg.append(cause.getClass().getName()).append(" ");
-
-                if (cause instanceof RendezvousEvent) {
-                    RendezvousEvent re = (RendezvousEvent) cause;
-                    String p = re.getPeer();
-                    String pid = re.getPeerID().toString();
-                    int t = re.getType();
-
-                    pg = ne.getPeerGroup();
-
-                    msg.append(pg.getPeerGroupName()).append(" ").append(p)
-                            .append(" ").append(pid).append(" ").append(t);
-                } else if (cause instanceof GroupEvent) {
-                    GroupEvent ge = (GroupEvent) cause;
-                    int t = ge.getType();
-
-                    pg = ge.getPeerGroup();
-
-                    msg.append(pg.getPeerGroupName()).append(" ").append(t);
-                }
-            }
-
-            System.out.println(msg);
-        }
+        this.network = null;
     }
 }

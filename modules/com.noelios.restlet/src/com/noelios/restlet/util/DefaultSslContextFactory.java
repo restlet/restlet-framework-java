@@ -42,9 +42,9 @@ import org.restlet.util.Series;
  * following the behaviour described in the JSSE reference guide.
  * </p>
  * <p>
- * There is more information in the <a
- * href="http://java.sun.com/j2se/1.5.0/docs/guide/security/jsse/JSSERefGuide.html">JSSE
- * Reference Guide</a>.
+ * There is more information in the <a href=
+ * "http://java.sun.com/j2se/1.5.0/docs/guide/security/jsse/JSSERefGuide.html"
+ * >JSSE Reference Guide</a>.
  * </p>
  * 
  * @author Bruno Harbulot (Bruno.Harbulot@manchester.ac.uk)
@@ -136,14 +136,27 @@ public class DefaultSslContextFactory implements SslContextFactory {
             "javax.net.ssl.trustStoreType", "JKS");
 
     /**
+     * This class is likely to contain sensitive information; cloning is
+     * therefore not allowed.
+     */
+    @Override
+    protected final DefaultSslContextFactory clone()
+            throws CloneNotSupportedException {
+        throw new CloneNotSupportedException();
+    }
+
+    /**
      * Creates a configured and initialised SSLContext from the values set via
      * the various setters of this class. If <code>keyStorePath</code>,
      * <code>keyStoreProvider</code>, <code>keyStoreType</code> are all
      * <code>null</code>, the SSLContext will be initialised with a
      * <code>null</core> array of <code>KeyManager</code>s. Similarly, if
-     * <code>trustStorePath</code>, <code>trustStoreProvider</code>, <code>trustStoreType</code> are all <code>null</code>,
-     * a <code>null</code> array of <code>TrustManager</code>s will be used.
-     * @see SSLContext#init(javax.net.ssl.KeyManager[], javax.net.ssl.TrustManager[], SecureRandom)
+     * <code>trustStorePath</code>, <code>trustStoreProvider</code>,
+     * <code>trustStoreType</code> are all <code>null</code>, a
+     * <code>null</code> array of <code>TrustManager</code>s will be used.
+     * 
+     * @see SSLContext#init(javax.net.ssl.KeyManager[],
+     *      javax.net.ssl.TrustManager[], SecureRandom)
      */
     public SSLContext createSslContext() throws Exception {
 
@@ -153,7 +166,7 @@ public class DefaultSslContextFactory implements SslContextFactory {
             /*
              * Loads the key store.
              */
-            KeyStore keyStore = (this.keyStoreProvider != null) ? KeyStore
+            final KeyStore keyStore = (this.keyStoreProvider != null) ? KeyStore
                     .getInstance(this.keyStoreType, this.keyStoreProvider)
                     : KeyStore.getInstance(this.keyStoreType);
             FileInputStream keyStoreInputStream = null;
@@ -181,7 +194,7 @@ public class DefaultSslContextFactory implements SslContextFactory {
             /*
              * Loads the trust store.
              */
-            KeyStore trustStore = (this.trustStoreProvider != null) ? KeyStore
+            final KeyStore trustStore = (this.trustStoreProvider != null) ? KeyStore
                     .getInstance(this.trustStoreType, this.trustStoreProvider)
                     : KeyStore.getInstance(this.trustStoreType);
 
@@ -207,7 +220,7 @@ public class DefaultSslContextFactory implements SslContextFactory {
         /*
          * Creates the SSLContext.
          */
-        SSLContext sslContext = SSLContext
+        final SSLContext sslContext = SSLContext
                 .getInstance(this.secureSocketProtocol);
         SecureRandom sr = null;
         if (this.secureRandomAlgorithm != null) {
@@ -217,16 +230,6 @@ public class DefaultSslContextFactory implements SslContextFactory {
                 tmf != null ? tmf.getTrustManagers() : null, sr);
 
         return sslContext;
-    }
-
-    /**
-     * This class is likely to contain sensitive information; cloning is
-     * therefore not allowed.
-     */
-    @Override
-    protected final DefaultSslContextFactory clone()
-            throws CloneNotSupportedException {
-        throw new CloneNotSupportedException();
     }
 
     /**
@@ -240,7 +243,8 @@ public class DefaultSslContextFactory implements SslContextFactory {
 
     /**
      * Sets the following options according to parameters that may have been set
-     * up directly in the HttpsServerHelper parameters. <table>
+     * up directly in the HttpsServerHelper parameters.
+     * <table>
      * <tr>
      * <th>Setter of this class</th>
      * <th>Parameter name</th>
@@ -293,8 +297,8 @@ public class DefaultSslContextFactory implements SslContextFactory {
      * </table>
      * 
      * @param helperParameters
-     *                typically, the parameters that would have been obtained
-     *                from HttpsServerHelper.getParameters()
+     *            typically, the parameters that would have been obtained from
+     *            HttpsServerHelper.getParameters()
      * 
      */
     public void init(Series<Parameter> helperParameters) {
@@ -314,11 +318,11 @@ public class DefaultSslContextFactory implements SslContextFactory {
 
     /**
      * Sets the KeyManager algorithm. The default value is that of the
-     * <i>ssl.KeyManagerFactory.algorithm</i> system property, or <i>"SunX509"</i>
-     * if the system property has not been set up.
+     * <i>ssl.KeyManagerFactory.algorithm</i> system property, or
+     * <i>"SunX509"</i> if the system property has not been set up.
      * 
      * @param keyManagerAlgorithm
-     *                the KeyManager algorithm.
+     *            the KeyManager algorithm.
      */
     public void setKeyManagerAlgorithm(String keyManagerAlgorithm) {
         this.keyManagerAlgorithm = keyManagerAlgorithm;
@@ -331,7 +335,7 @@ public class DefaultSslContextFactory implements SslContextFactory {
      * standard.
      * 
      * @param keyStoreKeyPassword
-     *                the password of the key in the keystore.
+     *            the password of the key in the keystore.
      */
     public final void setKeyStoreKeyPassword(char[] keyStoreKeyPassword) {
         this.keyStoreKeyPassword = keyStoreKeyPassword;
@@ -344,7 +348,7 @@ public class DefaultSslContextFactory implements SslContextFactory {
      * standard.
      * 
      * @param keyStoreKeyPassword
-     *                the password of the key in the keystore.
+     *            the password of the key in the keystore.
      */
     public final void setKeyStoreKeyPassword(String keyStoreKeyPassword) {
         this.keyStoreKeyPassword = (keyStoreKeyPassword != null) ? keyStoreKeyPassword
@@ -357,7 +361,7 @@ public class DefaultSslContextFactory implements SslContextFactory {
      * <i>javax.net.ssl.keyStorePassword</i> system property.
      * 
      * @param keyStorePassword
-     *                Sets the keystore password.
+     *            Sets the keystore password.
      */
     public final void setKeyStorePassword(char[] keyStorePassword) {
         this.keyStorePassword = keyStorePassword;
@@ -368,7 +372,7 @@ public class DefaultSslContextFactory implements SslContextFactory {
      * <i>javax.net.ssl.keyStorePassword</i> system property.
      * 
      * @param keyStorePassword
-     *                Sets the keystore password.
+     *            Sets the keystore password.
      */
     public final void setKeyStorePassword(String keyStorePassword) {
         this.keyStorePassword = (keyStorePassword != null) ? keyStorePassword
@@ -380,7 +384,7 @@ public class DefaultSslContextFactory implements SslContextFactory {
      * <i>javax.net.ssl.keyStore</i> system property.
      * 
      * @param keyStorePath
-     *                the path to the keystore file.
+     *            the path to the keystore file.
      */
     public final void setKeyStorePath(String keyStorePath) {
         this.keyStorePath = keyStorePath;
@@ -391,7 +395,7 @@ public class DefaultSslContextFactory implements SslContextFactory {
      * <i>javax.net.ssl.keyStoreProvider</i> system property.
      * 
      * @param keyStoreProvider
-     *                the name of the keystore provider.
+     *            the name of the keystore provider.
      */
     public void setKeyStoreProvider(String keyStoreProvider) {
         this.keyStoreProvider = keyStoreProvider;
@@ -402,7 +406,7 @@ public class DefaultSslContextFactory implements SslContextFactory {
      * <i>javax.net.ssl.keyStoreType</i> system property.
      * 
      * @param keyStoreType
-     *                the KeyStore type of the keystore.
+     *            the KeyStore type of the keystore.
      */
     public final void setKeyStoreType(String keyStoreType) {
         this.keyStoreType = keyStoreType;
@@ -413,7 +417,7 @@ public class DefaultSslContextFactory implements SslContextFactory {
      * which case the default SecureRandom would be used.
      * 
      * @param secureRandomAlgorithm
-     *                the SecureRandom algorithm.
+     *            the SecureRandom algorithm.
      */
     public void setSecureRandomAlgorithm(String secureRandomAlgorithm) {
         this.secureRandomAlgorithm = secureRandomAlgorithm;
@@ -425,7 +429,7 @@ public class DefaultSslContextFactory implements SslContextFactory {
      * the SSLContext.
      * 
      * @param secureSocketProtocol
-     *                name of the secure socket protocol to use.
+     *            name of the secure socket protocol to use.
      */
     public void setSecureSocketProtocol(String secureSocketProtocol) {
         this.secureSocketProtocol = secureSocketProtocol;
@@ -437,7 +441,7 @@ public class DefaultSslContextFactory implements SslContextFactory {
      * <i>"SunX509"</i> if the system property has not been set up.
      * 
      * @param trustManagerAlgorithm
-     *                the TrustManager algorithm.
+     *            the TrustManager algorithm.
      */
     public void setTrustManagerAlgorithm(String trustManagerAlgorithm) {
         this.trustManagerAlgorithm = trustManagerAlgorithm;
@@ -448,7 +452,7 @@ public class DefaultSslContextFactory implements SslContextFactory {
      * of the <i>javax.net.ssl.trustStorePassword</i> system property.
      * 
      * @param trustStorePassword
-     *                the password of the trust store KeyStore.
+     *            the password of the trust store KeyStore.
      */
     public final void setTrustStorePassword(char[] trustStorePassword) {
         this.trustStorePassword = trustStorePassword;
@@ -459,7 +463,7 @@ public class DefaultSslContextFactory implements SslContextFactory {
      * of the <i>javax.net.ssl.trustStorePassword</i> system property.
      * 
      * @param trustStorePassword
-     *                the password of the trust store KeyStore.
+     *            the password of the trust store KeyStore.
      */
     public final void setTrustStorePassword(String trustStorePassword) {
         this.trustStorePassword = (trustStorePassword != null) ? trustStorePassword
@@ -472,7 +476,7 @@ public class DefaultSslContextFactory implements SslContextFactory {
      * the <i>javax.net.ssl.trustStore</i> system property.
      * 
      * @param trustStorePath
-     *                the trustStorePath to set
+     *            the trustStorePath to set
      */
     public final void setTrustStorePath(String trustStorePath) {
         this.trustStorePath = trustStorePath;
@@ -483,7 +487,7 @@ public class DefaultSslContextFactory implements SslContextFactory {
      * the <i>javax.net.ssl.trustStoreProvider</i> system property.
      * 
      * @param trustStoreProvider
-     *                the name of the trust store provider.
+     *            the name of the trust store provider.
      */
     public final void setTrustStoreProvider(String trustStoreProvider) {
         this.trustStoreProvider = trustStoreProvider;
@@ -494,7 +498,7 @@ public class DefaultSslContextFactory implements SslContextFactory {
      * the <i>javax.net.ssl.trustStoreType</i> system property.
      * 
      * @param trustStoreType
-     *                the KeyStore type of the trust store.
+     *            the KeyStore type of the trust store.
      */
     public final void setTrustStoreType(String trustStoreType) {
         this.trustStoreType = trustStoreType;

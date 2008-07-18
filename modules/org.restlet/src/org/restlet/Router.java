@@ -207,7 +207,7 @@ public class Router extends Restlet {
      * @return The created route.
      */
     public Route attach(String uriPattern, Restlet target) {
-        Route result = createRoute(uriPattern, target);
+        final Route result = createRoute(uriPattern, target);
         getRoutes().add(result);
         return result;
     }
@@ -235,7 +235,7 @@ public class Router extends Restlet {
      * @return The created route.
      */
     public Route attachDefault(Restlet defaultTarget) {
-        Route result = new Route(this, "", defaultTarget);
+        final Route result = new Route(this, "", defaultTarget);
         setDefaultRoute(result);
         return result;
     }
@@ -252,13 +252,13 @@ public class Router extends Restlet {
 
         if (getFinderClass() != null) {
             try {
-                Constructor<? extends Finder> constructor = getFinderClass()
+                final Constructor<? extends Finder> constructor = getFinderClass()
                         .getConstructor(Context.class, Class.class);
 
                 if (constructor != null) {
                     result = constructor.newInstance(getContext(), targetClass);
                 }
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 getLogger().log(Level.WARNING,
                         "Exception while instantiating the finder.", e);
             }
@@ -278,9 +278,9 @@ public class Router extends Restlet {
      * @return The created route.
      */
     protected Route createRoute(String uriPattern, Restlet target) {
-        Route result = new Route(this, uriPattern, target);
+        final Route result = new Route(this, uriPattern, target);
         result.getTemplate().setMatchingMode(getDefaultMatchingMode());
-        result.setMatchQuery(defaultMatchQuery);
+        result.setMatchQuery(this.defaultMatchQuery);
         return result;
     }
 
@@ -295,8 +295,9 @@ public class Router extends Restlet {
     public void detach(Restlet target) {
         getRoutes().removeAll(target);
         if ((getDefaultRoute() != null)
-                && (getDefaultRoute().getNext() == target))
+                && (getDefaultRoute().getNext() == target)) {
             setDefaultRoute(null);
+        }
     }
 
     /**
@@ -321,7 +322,7 @@ public class Router extends Restlet {
      * @return The default matching mode.
      */
     public int getDefaultMatchingMode() {
-        return defaultMatchingMode;
+        return this.defaultMatchingMode;
     }
 
     /**
@@ -332,7 +333,7 @@ public class Router extends Restlet {
      *         URIs with or without taking into account query string.
      */
     public boolean getDefaultMatchQuery() {
-        return defaultMatchQuery;
+        return this.defaultMatchQuery;
     }
 
     /**
@@ -385,7 +386,7 @@ public class Router extends Restlet {
                 // sleep during the "retryDelay" set.
                 try {
                     Thread.sleep(getRetryDelay());
-                } catch (InterruptedException e) {
+                } catch (final InterruptedException e) {
                 }
             }
 
@@ -489,7 +490,7 @@ public class Router extends Restlet {
     public void handle(Request request, Response response) {
         super.handle(request, response);
 
-        Restlet next = getNext(request, response);
+        final Restlet next = getNext(request, response);
         if (next != null) {
             next.handle(request, response);
         } else {

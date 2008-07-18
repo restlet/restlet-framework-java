@@ -20,8 +20,8 @@ package org.restlet.ext.jaxrs.internal.exceptions;
 import java.util.Collection;
 
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.Variant;
+import javax.ws.rs.core.Response.Status;
 
 /**
  * The resource identified by the request is only capable of generating response
@@ -29,8 +29,8 @@ import javax.ws.rs.core.Variant;
  * accept headers sent in the request.
  * 
  * @author Stephan Koops
- * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.4.7">RFC 2616,
- *      Section 10.4.7, "406 Not Acceptable"</a>
+ * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.4.7">RFC 2616, *
+ *      Section 10.4.7, "406 Not Acceptable"< /a>
  */
 public class NotAcceptableWebAppException extends WebApplicationException {
 
@@ -40,13 +40,14 @@ public class NotAcceptableWebAppException extends WebApplicationException {
 
     /**
      * @param supported
-     *                the supported variants, selectable by the accept headers.
+     *            the supported variants, selectable by the accept headers.
      */
     public NotAcceptableWebAppException(Collection<Variant> supported) {
         super(Status.NOT_ACCEPTABLE);
-        if (supported == null)
+        if (supported == null) {
             throw new IllegalArgumentException(
                     "The allowed variants must not be null");
+        }
         this.supported = supported;
     }
 

@@ -40,9 +40,29 @@ import org.restlet.ext.jaxrs.internal.wrappers.WrapperFactory;
 @SuppressWarnings("all")
 public class WrapperClassesTests extends TestCase {
 
-    private static final WrapperFactory wrapperFactory = new WrapperFactory(
-            new ThreadLocalizedContext(), null, null, null, Logger
-                    .getAnonymousLogger());
+    @Path("abc")
+    static class IllegalMethPathRrc {
+        public IllegalMethPathRrc() {
+        }
+
+        @GET
+        @Path(";a=b")
+        public String get() {
+            return "resource value for matrix parameter a=b";
+        }
+
+        @GET
+        @Path("abc")
+        public String getAbc() {
+            return "sub resource value for abc without matrix parameters";
+        }
+
+        @GET
+        @Path("subpath;a=b")
+        public String getSubPath() {
+            return "sub resource value for subpath matrix parameter a";
+        }
+    }
 
     /**
      * This root resource class contains an illegal path (matrix parameter)
@@ -60,47 +80,27 @@ public class WrapperClassesTests extends TestCase {
         }
     }
 
-    @Path("abc")
-    static class IllegalMethPathRrc {
-        public IllegalMethPathRrc() {
-        }
-
-        @GET
-        @Path("subpath;a=b")
-        public String getSubPath() {
-            return "sub resource value for subpath matrix parameter a";
-        }
-
-        @GET
-        @Path(";a=b")
-        public String get() {
-            return "resource value for matrix parameter a=b";
-        }
-
-        @GET
-        @Path("abc")
-        public String getAbc() {
-            return "sub resource value for abc without matrix parameters";
-        }
-    }
-
-    public void testIllegalRrcPath() throws Exception {
-        try {
-            RootResourceClass rrc = wrapperFactory
-                    .getRootResourceClass(IllegalRrcPathRrc.class);
-            fail("must fail");
-        } catch (IllegalPathOnClassException iae) {
-            // good
-        }
-    }
+    private static final WrapperFactory wrapperFactory = new WrapperFactory(
+            new ThreadLocalizedContext(), null, null, null, Logger
+                    .getAnonymousLogger());
 
     public void testIllegalMethodPath() throws Exception {
-        RootResourceClass rrc = wrapperFactory
+        final RootResourceClass rrc = wrapperFactory
                 .getRootResourceClass(IllegalMethPathRrc.class);
         @SuppressWarnings("unused")
         Collection<ResourceMethod> rms;
         rms = rrc.getMethodsForPath(new RemainingPath("abc"));
         rms = rrc.getMethodsForPath(new RemainingPath(""));
         rms = rrc.getMethodsForPath(new RemainingPath("subpath"));
+    }
+
+    public void testIllegalRrcPath() throws Exception {
+        try {
+            final RootResourceClass rrc = wrapperFactory
+                    .getRootResourceClass(IllegalRrcPathRrc.class);
+            fail("must fail");
+        } catch (final IllegalPathOnClassException iae) {
+            // good
+        }
     }
 }

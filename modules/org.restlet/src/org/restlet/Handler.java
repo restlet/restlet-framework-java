@@ -88,11 +88,11 @@ public abstract class Handler {
      * Normal constructor.
      * 
      * @param context
-     *                The parent context.
+     *            The parent context.
      * @param request
-     *                The request to handle.
+     *            The request to handle.
      * @param response
-     *                The response to return.
+     *            The response to return.
      */
     public Handler(Context context, Request request, Response response) {
         this.context = context;
@@ -161,11 +161,11 @@ public abstract class Handler {
      * using the resource's request and response properties.
      * 
      * @param uriTemplate
-     *                The URI template to use for generation.
+     *            The URI template to use for generation.
      * @return The generated reference.
      */
     public Reference generateRef(String uriTemplate) {
-        Template tplt = new Template(getLogger(), uriTemplate);
+        final Template tplt = new Template(getLogger(), uriTemplate);
         return new Reference(tplt.format(getRequest(), getResponse()));
     }
 
@@ -175,7 +175,7 @@ public abstract class Handler {
      * @return The set of allowed methods.
      */
     public Set<Method> getAllowedMethods() {
-        Set<Method> result = new HashSet<Method>();
+        final Set<Method> result = new HashSet<Method>();
         updateAllowedMethods(result);
         return result;
     }
@@ -195,8 +195,9 @@ public abstract class Handler {
      * @return The context.
      */
     public Context getContext() {
-        if (this.context == null)
+        if (this.context == null) {
             this.context = new Context(getClass().getCanonicalName());
+        }
         return this.context;
     }
 
@@ -296,11 +297,11 @@ public abstract class Handler {
      * your Resource won't behave properly.
      * 
      * @param context
-     *                The parent context.
+     *            The parent context.
      * @param request
-     *                The request to handle.
+     *            The request to handle.
      * @param response
-     *                The response to return.
+     *            The response to return.
      */
     public void init(Context context, Request request, Response response) {
         this.context = context;
@@ -312,9 +313,9 @@ public abstract class Handler {
      * Invokes a method with the given arguments.
      * 
      * @param method
-     *                The method to invoke.
+     *            The method to invoke.
      * @param args
-     *                The arguments to pass.
+     *            The arguments to pass.
      * @return Invocation result.
      */
     private Object invoke(java.lang.reflect.Method method, Object... args) {
@@ -323,7 +324,7 @@ public abstract class Handler {
         if (method != null) {
             try {
                 result = method.invoke(this, args);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 getLogger().log(
                         Level.WARNING,
                         "Couldn't invoke the handle method for \"" + method
@@ -338,7 +339,7 @@ public abstract class Handler {
      * Sets the parent context.
      * 
      * @param context
-     *                The parent context.
+     *            The parent context.
      */
     public void setContext(Context context) {
         this.context = context;
@@ -348,7 +349,7 @@ public abstract class Handler {
      * Sets the request to handle.
      * 
      * @param request
-     *                The request to handle.
+     *            The request to handle.
      */
     public void setRequest(Request request) {
         this.request = request;
@@ -358,7 +359,7 @@ public abstract class Handler {
      * Sets the response to update.
      * 
      * @param response
-     *                The response to update.
+     *            The response to update.
      */
     public void setResponse(Response response) {
         this.response = response;
@@ -376,15 +377,16 @@ public abstract class Handler {
      * instance.
      * 
      * @param allowedMethods
-     *                The set to update.
+     *            The set to update.
      */
     private void updateAllowedMethods(Set<Method> allowedMethods) {
-        for (java.lang.reflect.Method classMethod : getClass().getMethods()) {
+        for (final java.lang.reflect.Method classMethod : getClass()
+                .getMethods()) {
             if (classMethod.getName().startsWith("allow")
                     && (classMethod.getParameterTypes().length == 0)) {
                 if ((Boolean) invoke(classMethod)) {
-                    Method allowedMethod = Method.valueOf(classMethod.getName()
-                            .substring(5));
+                    final Method allowedMethod = Method.valueOf(classMethod
+                            .getName().substring(5));
                     allowedMethods.add(allowedMethod);
                 }
             }

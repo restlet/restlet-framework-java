@@ -42,6 +42,17 @@ import org.restlet.test.jaxrs.services.resources.SecurityContextService;
 public class SecurityContextTest extends JaxRsTestCase {
     private static final Class<SecurityContextService> SEC_CONT_SERV = SecurityContextService.class;
 
+    // TESTEN create extra TestCase: DigestAuth does not work.
+    public void _testAuthenticationSchemeDigest() throws Exception {
+        startServer(ChallengeScheme.HTTP_DIGEST, RoleChecker.ALLOW_ALL);
+        final ChallengeResponse cr = new ChallengeResponse(
+                ChallengeScheme.HTTP_DIGEST, "alice", "alicesSecret");
+        final Response response = get("authenticationScheme", cr);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        final String entity = response.getEntity().getText();
+        assertEquals(SecurityContext.DIGEST_AUTH, entity);
+    }
+
     @Override
     protected Class<?> getRootResourceClass() {
         return SEC_CONT_SERV;
@@ -67,8 +78,9 @@ public class SecurityContextTest extends JaxRsTestCase {
      * @throws Exception
      */
     public void test2() throws Exception {
-        if (!startServer(RoleChecker.FORBID_ALL))
+        if (!startServer(RoleChecker.FORBID_ALL)) {
             return;
+        }
         Response response = get();
         assertEquals(Status.CLIENT_ERROR_UNAUTHORIZED, response.getStatus());
 
@@ -77,17 +89,19 @@ public class SecurityContextTest extends JaxRsTestCase {
     }
 
     public void test3() throws Exception {
-        if (!startServer(RoleChecker.FORBID_ALL))
+        if (!startServer(RoleChecker.FORBID_ALL)) {
             return;
-        Response response = getAuth(null, "admin", "adminPW");
+        }
+        final Response response = getAuth(null, "admin", "adminPW");
         sysOutEntityIfNotStatus(Status.CLIENT_ERROR_FORBIDDEN, response);
         assertEquals(Status.CLIENT_ERROR_FORBIDDEN, response.getStatus());
     }
 
     public void test4() throws Exception {
-        if (!startServer(RoleChecker.FORBID_ALL))
+        if (!startServer(RoleChecker.FORBID_ALL)) {
             return;
-        Response response = post(null, new Form().getWebRepresentation(),
+        }
+        final Response response = post(null, new Form().getWebRepresentation(),
                 new ChallengeResponse(ChallengeScheme.HTTP_BASIC, "alice",
                         "alicesSecret"));
         sysOutEntityIfNotStatus(Status.CLIENT_ERROR_FORBIDDEN, response);
@@ -95,12 +109,14 @@ public class SecurityContextTest extends JaxRsTestCase {
     }
 
     public void test5() throws Exception {
-        if (!startServer(RoleChecker.FORBID_ALL))
+        if (!startServer(RoleChecker.FORBID_ALL)) {
             return;
-        Representation postEntity = new Form("abc=def").getWebRepresentation();
-        ChallengeResponse cr = new ChallengeResponse(
+        }
+        final Representation postEntity = new Form("abc=def")
+                .getWebRepresentation();
+        final ChallengeResponse cr = new ChallengeResponse(
                 ChallengeScheme.HTTP_BASIC, "bob", "bobsSecret");
-        Response response = post(null, postEntity, cr);
+        final Response response = post(null, postEntity, cr);
         sysOutEntityIfNotStatus(Status.CLIENT_ERROR_FORBIDDEN, response);
         assertEquals(Status.CLIENT_ERROR_FORBIDDEN, response.getStatus());
     }
@@ -111,9 +127,10 @@ public class SecurityContextTest extends JaxRsTestCase {
      * @throws Exception
      */
     public void testAllowAll() throws Exception {
-        if (!startServer(RoleChecker.ALLOW_ALL)) // no authorization
+        if (!startServer(RoleChecker.ALLOW_ALL)) {
             return;
-        ChallengeResponse cr = new ChallengeResponse(
+        }
+        final ChallengeResponse cr = new ChallengeResponse(
                 ChallengeScheme.HTTP_BASIC, "bob", "bobsSecret");
         Response response = get(null, cr);
         sysOutEntityIfError(response);
@@ -122,7 +139,7 @@ public class SecurityContextTest extends JaxRsTestCase {
         response = post(null, new Form("abc=def").getWebRepresentation(), cr);
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_CREATED, response.getStatus());
-        Reference expecretLocation = createReference(SEC_CONT_SERV, null);
+        final Reference expecretLocation = createReference(SEC_CONT_SERV, null);
         assertTrue("The location must start with " + expecretLocation
                 + "; it is " + response.getLocationRef(), response
                 .getLocationRef().toString().startsWith(
@@ -130,30 +147,21 @@ public class SecurityContextTest extends JaxRsTestCase {
     }
 
     public void testAuthenticationSchemeBasic() throws Exception {
-        if (!startServer(RoleChecker.ALLOW_ALL))
+        if (!startServer(RoleChecker.ALLOW_ALL)) {
             return;
-        ChallengeResponse cr = new ChallengeResponse(
+        }
+        final ChallengeResponse cr = new ChallengeResponse(
                 ChallengeScheme.HTTP_BASIC, "bob", "bobsSecret");
-        Response response = get("authenticationScheme", cr);
+        final Response response = get("authenticationScheme", cr);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        String entity = response.getEntity().getText();
+        final String entity = response.getEntity().getText();
         assertEquals(SecurityContext.BASIC_AUTH, entity);
     }
 
-    // TESTEN create extra TestCase: DigestAuth does not work.
-    public void _testAuthenticationSchemeDigest() throws Exception {
-        startServer(ChallengeScheme.HTTP_DIGEST, RoleChecker.ALLOW_ALL);
-        ChallengeResponse cr = new ChallengeResponse(
-                ChallengeScheme.HTTP_DIGEST, "alice", "alicesSecret");
-        Response response = get("authenticationScheme", cr);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
-        String entity = response.getEntity().getText();
-        assertEquals(SecurityContext.DIGEST_AUTH, entity);
-    }
-
     public void testForbidAll() throws Exception {
-        if (!startServer(RoleChecker.FORBID_ALL))
+        if (!startServer(RoleChecker.FORBID_ALL)) {
             return;
+        }
         Response response = get();
         assertEquals(Status.CLIENT_ERROR_UNAUTHORIZED, response.getStatus());
 
@@ -165,24 +173,28 @@ public class SecurityContextTest extends JaxRsTestCase {
      * @throws Exception
      */
     public void testNoRoles() throws Exception {
-        RoleChecker exampleAuthorizator = new RoleChecker() {
+        final RoleChecker exampleAuthorizator = new RoleChecker() {
             /**
              * @return true, if the role name and the username starts with the
              *         same char.
              * @see RoleChecker#isUserInRole(String)
              */
             public boolean isInRole(Principal principal, String role) {
-                if (principal == null)
+                if (principal == null) {
                     throw new IllegalArgumentException("No principal given");
-                if (role == null)
+                }
+                if (role == null) {
                     throw new IllegalArgumentException("No role given");
-                if (role.charAt(0) == principal.getName().charAt(0))
+                }
+                if (role.charAt(0) == principal.getName().charAt(0)) {
                     return true;
+                }
                 return false;
             }
         };
-        if (!startServer(exampleAuthorizator))
+        if (!startServer(exampleAuthorizator)) {
             return;
+        }
         Response response = getAuth(null, "fsdf", "xyz");
         assertEquals(Status.CLIENT_ERROR_UNAUTHORIZED, response.getStatus());
 
@@ -212,24 +224,18 @@ public class SecurityContextTest extends JaxRsTestCase {
 
     public void testSecure() throws Exception {
         startServer();
-        Reference reference = createReference(getRootResourceClass(), "secure");
-        Response response = get(reference);
+        final Reference reference = createReference(getRootResourceClass(),
+                "secure");
+        final Response response = get(reference);
         assertEquals(Status.REDIRECTION_PERMANENT, response.getStatus());
         reference.setScheme("https");
         assertEquals(reference, response.getLocationRef());
     }
 
-    public void testUserPrincipalNotAuth() throws Exception {
-        startServer();
-        Response response = get("userPrincipal");
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
-        String entity = response.getEntity().getText();
-        assertEquals("no principal found", entity);
-    }
-
     public void testUserPrincipalAuth() throws Exception {
-        if (!startServer(RoleChecker.ALLOW_ALL))
+        if (!startServer(RoleChecker.ALLOW_ALL)) {
             return;
+        }
         Response response = getAuth("userPrincipal", "alice", "alicesSecret");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         String entity = response.getEntity().getText();
@@ -239,5 +245,13 @@ public class SecurityContextTest extends JaxRsTestCase {
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         entity = response.getEntity().getText();
         assertEquals("bob", entity);
+    }
+
+    public void testUserPrincipalNotAuth() throws Exception {
+        startServer();
+        final Response response = get("userPrincipal");
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        final String entity = response.getEntity().getText();
+        assertEquals("no principal found", entity);
     }
 }

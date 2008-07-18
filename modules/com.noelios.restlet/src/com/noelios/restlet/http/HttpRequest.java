@@ -72,10 +72,9 @@ public class HttpRequest extends Request {
      * Constructor.
      * 
      * @param context
-     *                The context of the HTTP server connector that issued the
-     *                call.
+     *            The context of the HTTP server connector that issued the call.
      * @param httpCall
-     *                The low-level HTTP server call.
+     *            The low-level HTTP server call.
      */
     public HttpRequest(Context context, HttpServerCall httpCall) {
         this.context = context;
@@ -99,7 +98,7 @@ public class HttpRequest extends Request {
         }
 
         // Set the host reference
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         sb.append(httpCall.getProtocol().getSchemeName()).append("://");
         sb.append(httpCall.getHostDomain());
         if ((httpCall.getHostPort() != -1)
@@ -136,8 +135,8 @@ public class HttpRequest extends Request {
 
         if (!this.securityAdded) {
             // Extract the header value
-            String authorization = getHttpCall().getRequestHeaders().getValues(
-                    HttpConstants.HEADER_AUTHORIZATION);
+            final String authorization = getHttpCall().getRequestHeaders()
+                    .getValues(HttpConstants.HEADER_AUTHORIZATION);
 
             // Set the challenge response
             result = AuthenticationUtils.parseAuthorizationHeader(this,
@@ -156,17 +155,17 @@ public class HttpRequest extends Request {
      */
     @Override
     public ClientInfo getClientInfo() {
-        ClientInfo result = super.getClientInfo();
+        final ClientInfo result = super.getClientInfo();
 
         if (!this.clientAdded) {
             // Extract the header values
-            String acceptCharset = getHttpCall().getRequestHeaders().getValues(
-                    HttpConstants.HEADER_ACCEPT_CHARSET);
-            String acceptEncoding = getHttpCall().getRequestHeaders()
+            final String acceptCharset = getHttpCall().getRequestHeaders()
+                    .getValues(HttpConstants.HEADER_ACCEPT_CHARSET);
+            final String acceptEncoding = getHttpCall().getRequestHeaders()
                     .getValues(HttpConstants.HEADER_ACCEPT_ENCODING);
-            String acceptLanguage = getHttpCall().getRequestHeaders()
+            final String acceptLanguage = getHttpCall().getRequestHeaders()
                     .getValues(HttpConstants.HEADER_ACCEPT_LANGUAGE);
-            String acceptMediaType = getHttpCall().getRequestHeaders()
+            final String acceptMediaType = getHttpCall().getRequestHeaders()
                     .getValues(HttpConstants.HEADER_ACCEPT);
 
             // Parse the headers and update the call preferences
@@ -176,22 +175,22 @@ public class HttpRequest extends Request {
             // headers.
             try {
                 PreferenceUtils.parseCharacterSets(acceptCharset, result);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 this.context.getLogger().log(Level.INFO, e.getMessage());
             }
             try {
                 PreferenceUtils.parseEncodings(acceptEncoding, result);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 this.context.getLogger().log(Level.INFO, e.getMessage());
             }
             try {
                 PreferenceUtils.parseLanguages(acceptLanguage, result);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 this.context.getLogger().log(Level.INFO, e.getMessage());
             }
             try {
                 PreferenceUtils.parseMediaTypes(acceptMediaType, result);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 this.context.getLogger().log(Level.INFO, e.getMessage());
             }
 
@@ -203,9 +202,9 @@ public class HttpRequest extends Request {
 
             // Special handling for the non standard but common
             // "X-Forwarded-For" header.
-            boolean useForwardedForHeader = Boolean.parseBoolean(this.context
-                    .getParameters().getFirstValue("useForwardedForHeader",
-                            false));
+            final boolean useForwardedForHeader = Boolean
+                    .parseBoolean(this.context.getParameters().getFirstValue(
+                            "useForwardedForHeader", false));
             if (useForwardedForHeader) {
                 // Lookup the "X-Forwarded-For" header supported by popular
                 // proxies and caches.
@@ -213,10 +212,10 @@ public class HttpRequest extends Request {
                 // within your local network.
                 // Other addresses could easily be changed by setting a fake
                 // header and should not be trusted for serious security checks.
-                String header = getHttpCall().getRequestHeaders().getValues(
-                        HttpConstants.HEADER_X_FORWARDED_FOR);
+                final String header = getHttpCall().getRequestHeaders()
+                        .getValues(HttpConstants.HEADER_X_FORWARDED_FOR);
                 if (header != null) {
-                    String[] addresses = header.split(",");
+                    final String[] addresses = header.split(",");
                     for (int i = addresses.length - 1; i >= 0; i--) {
                         result.getAddresses().add(addresses[i].trim());
                     }
@@ -236,18 +235,18 @@ public class HttpRequest extends Request {
      */
     @Override
     public Conditions getConditions() {
-        Conditions result = super.getConditions();
+        final Conditions result = super.getConditions();
 
         if (!this.conditionAdded) {
             // Extract the header values
-            String ifMatchHeader = getHttpCall().getRequestHeaders().getValues(
-                    HttpConstants.HEADER_IF_MATCH);
-            String ifNoneMatchHeader = getHttpCall().getRequestHeaders()
+            final String ifMatchHeader = getHttpCall().getRequestHeaders()
+                    .getValues(HttpConstants.HEADER_IF_MATCH);
+            final String ifNoneMatchHeader = getHttpCall().getRequestHeaders()
                     .getValues(HttpConstants.HEADER_IF_NONE_MATCH);
             Date ifModifiedSince = null;
             Date ifUnmodifiedSince = null;
 
-            for (Parameter header : getHttpCall().getRequestHeaders()) {
+            for (final Parameter header : getHttpCall().getRequestHeaders()) {
                 if (header.getName().equalsIgnoreCase(
                         HttpConstants.HEADER_IF_MODIFIED_SINCE)) {
                     ifModifiedSince = HttpCall.parseDate(header.getValue(),
@@ -275,7 +274,7 @@ public class HttpRequest extends Request {
             Tag current = null;
             if (ifMatchHeader != null) {
                 try {
-                    HeaderReader hr = new HeaderReader(ifMatchHeader);
+                    final HeaderReader hr = new HeaderReader(ifMatchHeader);
                     String value = hr.readValue();
                     while (value != null) {
                         current = Tag.parse(value);
@@ -292,7 +291,7 @@ public class HttpRequest extends Request {
                         // Read the next token
                         value = hr.readValue();
                     }
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     this.context.getLogger().log(
                             Level.INFO,
                             "Unable to process the if-match header: "
@@ -304,7 +303,7 @@ public class HttpRequest extends Request {
             List<Tag> noneMatch = null;
             if (ifNoneMatchHeader != null) {
                 try {
-                    HeaderReader hr = new HeaderReader(ifNoneMatchHeader);
+                    final HeaderReader hr = new HeaderReader(ifNoneMatchHeader);
                     String value = hr.readValue();
                     while (value != null) {
                         current = Tag.parse(value);
@@ -320,7 +319,7 @@ public class HttpRequest extends Request {
                         // Read the next token
                         value = hr.readValue();
                     }
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     this.context.getLogger().log(
                             Level.INFO,
                             "Unable to process the if-none-match header: "
@@ -341,22 +340,22 @@ public class HttpRequest extends Request {
      */
     @Override
     public Series<Cookie> getCookies() {
-        Series<Cookie> result = super.getCookies();
+        final Series<Cookie> result = super.getCookies();
 
-        if (!cookiesAdded) {
-            String cookiesValue = getHttpCall().getRequestHeaders().getValues(
-                    HttpConstants.HEADER_COOKIE);
+        if (!this.cookiesAdded) {
+            final String cookiesValue = getHttpCall().getRequestHeaders()
+                    .getValues(HttpConstants.HEADER_COOKIE);
 
             if (cookiesValue != null) {
                 try {
-                    CookieReader cr = new CookieReader(
-                            this.context.getLogger(), cookiesValue);
+                    final CookieReader cr = new CookieReader(this.context
+                            .getLogger(), cookiesValue);
                     Cookie current = cr.readCookie();
                     while (current != null) {
                         result.add(current);
                         current = cr.readCookie();
                     }
-                } catch (Exception e) {
+                } catch (final Exception e) {
                     this.context.getLogger().log(
                             Level.WARNING,
                             "An exception occurred during cookies parsing. Headers value: "
@@ -402,8 +401,8 @@ public class HttpRequest extends Request {
     @Override
     public Reference getReferrerRef() {
         if (!this.referrerAdded) {
-            String referrerValue = getHttpCall().getRequestHeaders().getValues(
-                    HttpConstants.HEADER_REFERRER);
+            final String referrerValue = getHttpCall().getRequestHeaders()
+                    .getValues(HttpConstants.HEADER_REFERRER);
             if (referrerValue != null) {
                 setReferrerRef(new Reference(referrerValue));
             }

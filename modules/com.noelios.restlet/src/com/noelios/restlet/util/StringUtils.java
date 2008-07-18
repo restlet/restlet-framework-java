@@ -28,9 +28,9 @@ public class StringUtils {
      * Strips a delimiter character from both ends of the source string.
      * 
      * @param source
-     *                The source string to strip.
+     *            The source string to strip.
      * @param delimiter
-     *                The character to remove.
+     *            The character to remove.
      * @return The stripped string.
      */
     public static String strip(String source, char delimiter) {
@@ -41,13 +41,13 @@ public class StringUtils {
      * Strips a delimiter character from a source string.
      * 
      * @param source
-     *                The source string to strip.
+     *            The source string to strip.
      * @param delimiter
-     *                The character to remove.
+     *            The character to remove.
      * @param start
-     *                Indicates if start of source should be stripped.
+     *            Indicates if start of source should be stripped.
      * @param end
-     *                Indicates if end of source should be stripped.
+     *            Indicates if end of source should be stripped.
      * @return The stripped source string.
      */
     public static String strip(String source, char delimiter, boolean start,

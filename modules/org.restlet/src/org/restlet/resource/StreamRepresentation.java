@@ -38,7 +38,7 @@ public abstract class StreamRepresentation extends Representation {
      * Constructor.
      * 
      * @param mediaType
-     *                The media type.
+     *            The media type.
      */
     public StreamRepresentation(MediaType mediaType) {
         super(mediaType);

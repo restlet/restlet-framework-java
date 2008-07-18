@@ -75,7 +75,7 @@ public abstract class Filter extends Restlet {
      * Constructor.
      * 
      * @param context
-     *                The context.
+     *            The context.
      */
     public Filter(Context context) {
         this(context, null);
@@ -85,9 +85,9 @@ public abstract class Filter extends Restlet {
      * Constructor.
      * 
      * @param context
-     *                The context.
+     *            The context.
      * @param next
-     *                The next Restlet.
+     *            The next Restlet.
      */
     public Filter(Context context, Restlet next) {
         super(context);
@@ -99,9 +99,9 @@ public abstract class Filter extends Restlet {
      * default.
      * 
      * @param request
-     *                The request to handle.
+     *            The request to handle.
      * @param response
-     *                The response to update.
+     *            The response to update.
      */
     protected void afterHandle(Request request, Response response) {
         // To be overriden
@@ -112,9 +112,9 @@ public abstract class Filter extends Restlet {
      * {@link #CONTINUE} by default.
      * 
      * @param request
-     *                The request to handle.
+     *            The request to handle.
      * @param response
-     *                The response to update.
+     *            The response to update.
      * @return The continuation status. Either {@link #CONTINUE} or
      *         {@link #SKIP} or {@link #STOP}.
      */
@@ -128,14 +128,14 @@ public abstract class Filter extends Restlet {
      * Returns {@link #CONTINUE} by default.
      * 
      * @param request
-     *                The request to handle.
+     *            The request to handle.
      * @param response
-     *                The response to update.
+     *            The response to update.
      * @return The continuation status. Either {@link #CONTINUE} or
      *         {@link #STOP}.
      */
     protected int doHandle(Request request, Response response) {
-        int result = CONTINUE;
+        final int result = CONTINUE;
 
         if (getNext() != null) {
             getNext().handle(request, response);
@@ -171,9 +171,9 @@ public abstract class Filter extends Restlet {
      * afterHandle() method for post-filtering.
      * 
      * @param request
-     *                The request to handle.
+     *            The request to handle.
      * @param response
-     *                The response to update.
+     *            The response to update.
      */
     @Override
     public final void handle(Request request, Response response) {
@@ -218,7 +218,7 @@ public abstract class Filter extends Restlet {
      * class will be created and will actually handle the request.
      * 
      * @param targetClass
-     *                The target Resource class to attach.
+     *            The target Resource class to attach.
      */
     public void setNext(Class<? extends Resource> targetClass) {
         setNext(new Finder(getContext(), targetClass));
@@ -228,7 +228,7 @@ public abstract class Filter extends Restlet {
      * Sets the next Restlet.
      * 
      * @param next
-     *                The next Restlet.
+     *            The next Restlet.
      */
     public void setNext(Restlet next) {
         this.next = next;

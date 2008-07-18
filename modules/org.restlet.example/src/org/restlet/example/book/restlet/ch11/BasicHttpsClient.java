@@ -12,18 +12,18 @@ import org.restlet.data.Response;
 public class BasicHttpsClient {
     public static void main(String[] args) {
         // Instantiates a client according to a protocol
-        Client client = new Client(Protocol.HTTPS);
+        final Client client = new Client(Protocol.HTTPS);
         // Instantiates a request with a method and the resource's URI
-        Request request = new Request(Method.GET,
+        final Request request = new Request(Method.GET,
                 "https://localhost:8182/helloWorld");
 
-        File keystoreFile = new File("d:\\temp\\certificats",
+        final File keystoreFile = new File("d:\\temp\\certificats",
                 "myClientKeystore");
         System.setProperty("javax.net.ssl.trustStore", keystoreFile
                 .getAbsolutePath());
 
         // Sends the request and gets the response
-        Response response = client.handle(request);
+        final Response response = client.handle(request);
 
         // Prints the status of the response
         System.out.println(response.getStatus());
@@ -32,7 +32,7 @@ public class BasicHttpsClient {
         if (response.isEntityAvailable()) {
             try {
                 response.getEntity().write(System.out);
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 e.printStackTrace();
             }
         }

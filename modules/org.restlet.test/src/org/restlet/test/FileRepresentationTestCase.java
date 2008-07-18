@@ -33,9 +33,9 @@ import org.restlet.resource.FileRepresentation;
 public class FileRepresentationTestCase extends TestCase {
 
     public void testConstructors() {
-        File file = new File("test.txt");
+        final File file = new File("test.txt");
 
-        FileRepresentation r = new FileRepresentation(file,
+        final FileRepresentation r = new FileRepresentation(file,
                 MediaType.TEXT_PLAIN);
 
         assertEquals("test.txt", r.getDownloadName());

@@ -58,29 +58,29 @@ public class IntoRrcInjector extends ContextInjector {
      * @param tlContext
      * @param leaveClassEncoded
      * @param mbWorkers
-     *                all entity providers.
+     *            all entity providers.
      * @param allResolvers
-     *                all available {@link ContextResolver}s.
+     *            all available {@link ContextResolver}s.
      * @param extensionBackwardMapping
-     * @throws IllegalBeanSetterTypeException 
-     * @throws IllegalFieldTypeException 
+     * @throws IllegalBeanSetterTypeException
+     * @throws IllegalFieldTypeException
      */
     public IntoRrcInjector(Class<?> jaxRsClass,
             ThreadLocalizedContext tlContext, boolean leaveClassEncoded,
-            Providers mbWorkers,
-            Collection<ContextResolver<?>> allResolvers,
-            ExtensionBackwardMapping extensionBackwardMapping) throws IllegalFieldTypeException, IllegalBeanSetterTypeException {
+            Providers mbWorkers, Collection<ContextResolver<?>> allResolvers,
+            ExtensionBackwardMapping extensionBackwardMapping)
+            throws IllegalFieldTypeException, IllegalBeanSetterTypeException {
         super(jaxRsClass, tlContext, mbWorkers, allResolvers,
                 extensionBackwardMapping);
-        this.init(jaxRsClass, tlContext, leaveClassEncoded);
+        init(jaxRsClass, tlContext, leaveClassEncoded);
     }
 
     private Type getConvGenTo(AccessibleObject fieldOrBeanSetter) {
         if (fieldOrBeanSetter instanceof Field) {
-            Field field = ((Field) fieldOrBeanSetter);
+            final Field field = ((Field) fieldOrBeanSetter);
             return field.getGenericType();
         } else if (fieldOrBeanSetter instanceof Method) {
-            Method beanSetter = ((Method) fieldOrBeanSetter);
+            final Method beanSetter = ((Method) fieldOrBeanSetter);
             return beanSetter.getGenericParameterTypes()[0];
         } else {
             throw new IllegalArgumentException(
@@ -90,10 +90,10 @@ public class IntoRrcInjector extends ContextInjector {
 
     private Class<?> getConvTo(AccessibleObject fieldOrBeanSetter) {
         if (fieldOrBeanSetter instanceof Field) {
-            Field field = ((Field) fieldOrBeanSetter);
+            final Field field = ((Field) fieldOrBeanSetter);
             return field.getType();
         } else if (fieldOrBeanSetter instanceof Method) {
-            Method beanSetter = ((Method) fieldOrBeanSetter);
+            final Method beanSetter = ((Method) fieldOrBeanSetter);
             return beanSetter.getParameterTypes()[0];
         } else {
             throw new IllegalArgumentException(
@@ -105,34 +105,36 @@ public class IntoRrcInjector extends ContextInjector {
      * initiates the fields to cache the fields that needs injection.
      * 
      * @param lcEnc
-     *                leave class encoded
+     *            leave class encoded
      */
     private void init(Class<?> jaxRsClass, ThreadLocalizedContext tlContext,
             boolean lcEnc) {
         do {
-            for (Field field : jaxRsClass.getDeclaredFields()) {
-                if (field.isAnnotationPresent(PathParam.class))
+            for (final Field field : jaxRsClass.getDeclaredFields()) {
+                if (field.isAnnotationPresent(PathParam.class)) {
                     add(field, newPathParamGetter(field, tlContext, lcEnc));
-                else if (field.isAnnotationPresent(CookieParam.class))
+                } else if (field.isAnnotationPresent(CookieParam.class)) {
                     add(field, newCookieParamGetter(field, tlContext, lcEnc));
-                else if (field.isAnnotationPresent(HeaderParam.class))
+                } else if (field.isAnnotationPresent(HeaderParam.class)) {
                     add(field, newHeaderParamGetter(field, tlContext, lcEnc));
-                else if (field.isAnnotationPresent(MatrixParam.class))
+                } else if (field.isAnnotationPresent(MatrixParam.class)) {
                     add(field, newMatrixParamGetter(field, tlContext, lcEnc));
-                else if (field.isAnnotationPresent(QueryParam.class))
+                } else if (field.isAnnotationPresent(QueryParam.class)) {
                     add(field, newQueryParamGetter(field, tlContext, lcEnc));
+                }
             }
-            for (Method method : jaxRsClass.getDeclaredMethods()) {
-                if (isBeanSetter(method, PathParam.class))
+            for (final Method method : jaxRsClass.getDeclaredMethods()) {
+                if (isBeanSetter(method, PathParam.class)) {
                     add(method, newPathParamGetter(method, tlContext, lcEnc));
-                else if (isBeanSetter(method, CookieParam.class))
+                } else if (isBeanSetter(method, CookieParam.class)) {
                     add(method, newCookieParamGetter(method, tlContext, lcEnc));
-                else if (isBeanSetter(method, HeaderParam.class))
+                } else if (isBeanSetter(method, HeaderParam.class)) {
                     add(method, newHeaderParamGetter(method, tlContext, lcEnc));
-                else if (isBeanSetter(method, MatrixParam.class))
+                } else if (isBeanSetter(method, MatrixParam.class)) {
                     add(method, newMatrixParamGetter(method, tlContext, lcEnc));
-                else if (isBeanSetter(method, QueryParam.class))
+                } else if (isBeanSetter(method, QueryParam.class)) {
                     add(method, newQueryParamGetter(method, tlContext, lcEnc));
+                }
             }
             jaxRsClass = jaxRsClass.getSuperclass();
         } while (jaxRsClass != null);

@@ -1,26 +1,29 @@
 package org.restlet.ext.shell.connectors;
 
 import javax.script.ScriptEngine;
+
 import org.restlet.Restlet;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
 public class InteractiveRestlet extends Restlet {
 
-    private Shell shell;
+    private final Shell shell;
 
     public InteractiveRestlet(ScriptEngine scriptEngine, String prompt) {
-        shell = new Shell(scriptEngine, prompt);
+        this.shell = new Shell(scriptEngine, prompt);
     }
 
     @Override
     public void handle(Request request, Response response) {
-        shell.put("request", request);
-        shell.put("response", response);
-        shell.writeLine("a request is available in a variable called 'request'");
-        shell.writeLine("a response is available in a variable called 'response'");
-        shell.loop();
+        this.shell.put("request", request);
+        this.shell.put("response", response);
+        this.shell
+                .writeLine("a request is available in a variable called 'request'");
+        this.shell
+                .writeLine("a response is available in a variable called 'response'");
+        this.shell.loop();
         super.handle(request, response);
-        shell.writeLine("\nlistening...");
+        this.shell.writeLine("\nlistening...");
     }
 }

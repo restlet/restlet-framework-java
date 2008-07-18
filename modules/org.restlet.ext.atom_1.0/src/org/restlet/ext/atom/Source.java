@@ -101,8 +101,9 @@ public class Source {
         if (a == null) {
             synchronized (this) {
                 a = this.authors;
-                if (a == null)
+                if (a == null) {
                     this.authors = a = new ArrayList<Person>();
+                }
             }
         }
         return a;
@@ -119,8 +120,9 @@ public class Source {
         if (c == null) {
             synchronized (this) {
                 c = this.categories;
-                if (c == null)
+                if (c == null) {
                     this.categories = c = new ArrayList<Category>();
+                }
             }
         }
         return c;
@@ -137,8 +139,9 @@ public class Source {
         if (c == null) {
             synchronized (this) {
                 c = this.contributors;
-                if (c == null)
+                if (c == null) {
                     this.contributors = c = new ArrayList<Person>();
+                }
             }
         }
         return c;
@@ -182,8 +185,9 @@ public class Source {
         if (l == null) {
             synchronized (this) {
                 l = this.links;
-                if (l == null)
+                if (l == null) {
                     this.links = l = new ArrayList<Link>();
+                }
             }
         }
         return l;
@@ -240,7 +244,7 @@ public class Source {
      * Sets the agent used to generate a feed.
      * 
      * @param generator
-     *                The agent used to generate a feed.
+     *            The agent used to generate a feed.
      */
     public void setGenerator(Generator generator) {
         this.generator = generator;
@@ -250,8 +254,8 @@ public class Source {
      * Sets the image that provides iconic visual identification for a feed.
      * 
      * @param icon
-     *                The image that provides iconic visual identification for a
-     *                feed.
+     *            The image that provides iconic visual identification for a
+     *            feed.
      */
     public void setIcon(Reference icon) {
         this.icon = icon;
@@ -261,8 +265,7 @@ public class Source {
      * Sets the permanent, universally unique identifier for the entry.
      * 
      * @param id
-     *                The permanent, universally unique identifier for the
-     *                entry.
+     *            The permanent, universally unique identifier for the entry.
      */
     public void setId(String id) {
         this.id = id;
@@ -272,7 +275,7 @@ public class Source {
      * Sets the image that provides visual identification for a feed.
      * 
      * @param logo
-     *                The image that provides visual identification for a feed.
+     *            The image that provides visual identification for a feed.
      */
     public void setLogo(Reference logo) {
         this.logo = logo;
@@ -282,7 +285,7 @@ public class Source {
      * Sets the information about rights held in and over an entry.
      * 
      * @param rights
-     *                The information about rights held in and over an entry.
+     *            The information about rights held in and over an entry.
      */
     public void setRights(Text rights) {
         this.rights = rights;
@@ -292,7 +295,7 @@ public class Source {
      * Sets the short summary, abstract, or excerpt of an entry.
      * 
      * @param subtitle
-     *                The short summary, abstract, or excerpt of an entry.
+     *            The short summary, abstract, or excerpt of an entry.
      */
     public void setSubtitle(Text subtitle) {
         this.subtitle = subtitle;
@@ -302,7 +305,7 @@ public class Source {
      * Sets the human-readable title for the entry.
      * 
      * @param title
-     *                The human-readable title for the entry.
+     *            The human-readable title for the entry.
      */
     public void setTitle(Text title) {
         this.title = title;
@@ -313,8 +316,8 @@ public class Source {
      * way.
      * 
      * @param updated
-     *                The most recent moment when the entry was modified in a
-     *                significant way.
+     *            The most recent moment when the entry was modified in a
+     *            significant way.
      */
     public void setUpdated(Date updated) {
         this.updated = DateUtils.unmodifiable(updated);
@@ -324,24 +327,24 @@ public class Source {
      * Writes the current object as an XML element using the given SAX writer.
      * 
      * @param writer
-     *                The SAX writer.
+     *            The SAX writer.
      * @throws SAXException
      */
     public void writeElement(XmlWriter writer) throws SAXException {
         writer.startElement(ATOM_NAMESPACE, "source");
         if (getAuthors() != null) {
-            for (Person person : getAuthors()) {
+            for (final Person person : getAuthors()) {
                 person.writeElement(writer, "author");
             }
         }
 
         if (getCategories() != null) {
-            for (Category category : getCategories()) {
+            for (final Category category : getCategories()) {
                 category.writeElement(writer);
             }
         }
         if (getContributors() != null) {
-            for (Person person : getContributors()) {
+            for (final Person person : getContributors()) {
                 person.writeElement(writer, "contributor");
             }
         }
@@ -350,7 +353,7 @@ public class Source {
             getGenerator().writeElement(writer);
         }
 
-        if (getIcon() != null && getIcon().toString() != null) {
+        if ((getIcon() != null) && (getIcon().toString() != null)) {
             writer.dataElement(ATOM_NAMESPACE, "icon", getIcon().toString());
         }
         if (getId() != null) {
@@ -358,11 +361,11 @@ public class Source {
         }
 
         if (getLinks() != null) {
-            for (Link link : getLinks()) {
+            for (final Link link : getLinks()) {
                 link.writeElement(writer);
             }
         }
-        if (getLogo() != null && getLogo().toString() != null) {
+        if ((getLogo() != null) && (getLogo().toString() != null)) {
             writer.dataElement(ATOM_NAMESPACE, "logo", getLogo().toString());
         }
 

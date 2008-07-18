@@ -49,10 +49,10 @@ public class HttpBasicHelper extends AuthenticationHelper {
             ChallengeResponse challenge, Request request,
             Series<Parameter> httpHeaders) {
         try {
-            String credentials = challenge.getIdentifier() + ':'
+            final String credentials = challenge.getIdentifier() + ':'
                     + new String(challenge.getSecret());
             sb.append(Base64.encode(credentials.getBytes("US-ASCII"), false));
-        } catch (UnsupportedEncodingException e) {
+        } catch (final UnsupportedEncodingException e) {
             throw new RuntimeException(
                     "Unsupported encoding, unable to encode credentials");
         }
@@ -62,14 +62,16 @@ public class HttpBasicHelper extends AuthenticationHelper {
     public void parseResponse(ChallengeResponse cr, Request request,
             Logger logger) {
         try {
-            byte[] credentialsEncoded = Base64.decode(cr.getCredentials());
+            final byte[] credentialsEncoded = Base64
+                    .decode(cr.getCredentials());
             if (credentialsEncoded == null) {
                 logger.warning("Cannot decode credentials: "
                         + cr.getCredentials());
             }
 
-            String credentials = new String(credentialsEncoded, "US-ASCII");
-            int separator = credentials.indexOf(':');
+            final String credentials = new String(credentialsEncoded,
+                    "US-ASCII");
+            final int separator = credentials.indexOf(':');
 
             if (separator == -1) {
                 // Log the blocking
@@ -80,7 +82,7 @@ public class HttpBasicHelper extends AuthenticationHelper {
                 cr.setIdentifier(credentials.substring(0, separator));
                 cr.setSecret(credentials.substring(separator + 1));
             }
-        } catch (UnsupportedEncodingException e) {
+        } catch (final UnsupportedEncodingException e) {
             logger.log(Level.WARNING, "Unsupported encoding error", e);
         }
     }

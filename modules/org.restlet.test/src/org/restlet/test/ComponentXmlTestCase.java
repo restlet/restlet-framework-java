@@ -37,27 +37,52 @@ import org.restlet.data.Response;
  */
 public class ComponentXmlTestCase extends TestCase {
 
-    private int port = 8182;
+    private final int port = 8182;
 
-    private int port2 = 8183;
+    private final int port2 = 8183;
+
+    /**
+     * Recursively delete a directory.
+     * 
+     * @param dir
+     *            The directory to delete.
+     */
+    private void deleteDir(File dir) {
+        if (dir.exists()) {
+            final File[] entries = dir.listFiles();
+
+            for (final File entrie : entries) {
+                if (entrie.isDirectory()) {
+                    deleteDir(entrie);
+                }
+
+                entrie.delete();
+            }
+        }
+
+        dir.delete();
+    }
 
     public void testComponentXMLConfig() throws Exception {
 
-        File testDir = new File(System.getProperty("java.io.tmpdir"), this
-                .getClass().getName());
+        final File testDir = new File(System.getProperty("java.io.tmpdir"),
+                this.getClass().getName());
         deleteDir(testDir);
         testDir.mkdir();
-        File file = new File(testDir, "component.xml");
-        BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+        final File file = new File(testDir, "component.xml");
+        final BufferedWriter writer = new BufferedWriter(new FileWriter(file));
         writer.append("<?xml version=\"1.0\"?>");
         writer.append("<component>");
-        writer.append("<server protocol=\"HTTP\" port=\"" + port + "\" />");
-        writer.append("<server protocol=\"HTTP\" port=\"" + port2 + "\" />");
-        writer.append("<defaultHost hostPort=\"" + port2 + "\">");
+        writer
+                .append("<server protocol=\"HTTP\" port=\"" + this.port
+                        + "\" />");
+        writer.append("<server protocol=\"HTTP\" port=\"" + this.port2
+                + "\" />");
+        writer.append("<defaultHost hostPort=\"" + this.port2 + "\">");
         writer
                 .append("<attach uriPattern=\"/abcd\" targetClass=\"org.restlet.test.HelloWorldApplication\" /> ");
         writer.append("</defaultHost>");
-        writer.append("<host hostPort=\"" + port + "\">");
+        writer.append("<host hostPort=\"" + this.port + "\">");
         writer
                 .append("<attach uriPattern=\"/efgh\" targetClass=\"org.restlet.test.HelloWorldApplication\" /> ");
         writer.append("</host>");
@@ -67,48 +92,27 @@ public class ComponentXmlTestCase extends TestCase {
         writer.flush();
         writer.close();
 
-        Component component = new Component(LocalReference
+        final Component component = new Component(LocalReference
                 .createFileReference(file.getCanonicalPath()));
         component.start();
 
-        Client client = new Client(Protocol.HTTP);
-        
-        Response response = client.get("http://localhost:" + port + "/efgh");
+        final Client client = new Client(Protocol.HTTP);
+
+        Response response = client.get("http://localhost:" + this.port
+                + "/efgh");
         assertTrue(response.getStatus().isSuccess());
         assertTrue(response.isEntityAvailable());
-        response = client.get("http://localhost:" + port + "/abcd");
+        response = client.get("http://localhost:" + this.port + "/abcd");
         assertTrue(response.getStatus().isClientError());
 
-        response = client.get("http://localhost:" + port2 + "/abcd");
+        response = client.get("http://localhost:" + this.port2 + "/abcd");
         assertTrue(response.getStatus().isSuccess());
         assertTrue(response.isEntityAvailable());
-        response = client.get("http://localhost:" + port2 + "/efgh");
+        response = client.get("http://localhost:" + this.port2 + "/efgh");
         assertTrue(response.getStatus().isClientError());
 
         component.stop();
         deleteDir(testDir);
-    }
-
-    /**
-     * Recursively delete a directory.
-     * 
-     * @param dir
-     *                The directory to delete.
-     */
-    private void deleteDir(File dir) {
-        if (dir.exists()) {
-            File[] entries = dir.listFiles();
-
-            for (int i = 0; i < entries.length; i++) {
-                if (entries[i].isDirectory()) {
-                    deleteDir(entries[i]);
-                }
-
-                entries[i].delete();
-            }
-        }
-
-        dir.delete();
     }
 
 }

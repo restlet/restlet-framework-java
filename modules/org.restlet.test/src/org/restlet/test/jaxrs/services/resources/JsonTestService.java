@@ -44,7 +44,7 @@ public class JsonTestService {
     @Path("JSONObject")
     @Produces(APPLICATION_JSON)
     public JSONObject getJsonObject() throws Exception {
-        JSONObject jsonObject = new JSONObject();
+        final JSONObject jsonObject = new JSONObject();
         jsonObject.put("name1", "value1");
         jsonObject.put("name2", "value2");
         return jsonObject;
@@ -53,9 +53,8 @@ public class JsonTestService {
     @GET
     @Path("person")
     @Produces( { TEXT_XML, APPLICATION_XML, APPLICATION_JSON })
-    public Person getPerson(@QueryParam("firstname")
-    String firstname, @QueryParam("lastname")
-    String lastname) {
+    public Person getPerson(@QueryParam("firstname") String firstname,
+            @QueryParam("lastname") String lastname) {
         return new Person(firstname, lastname);
     }
 

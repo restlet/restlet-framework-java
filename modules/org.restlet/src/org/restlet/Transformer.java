@@ -85,9 +85,9 @@ public class Transformer extends Filter {
      * Constructor.
      * 
      * @param mode
-     *                The transformation mode.
+     *            The transformation mode.
      * @param transformSheet
-     *                The XSLT transform sheet to apply to message entities.
+     *            The XSLT transform sheet to apply to message entities.
      */
     public Transformer(int mode, Representation transformSheet) {
         this.mode = mode;
@@ -142,8 +142,9 @@ public class Transformer extends Filter {
         if (re == null) {
             synchronized (this) {
                 re = this.resultEncodings;
-                if (re == null)
+                if (re == null) {
                     this.resultEncodings = re = new CopyOnWriteArrayList<Encoding>();
+                }
             }
         }
         return re;
@@ -160,8 +161,9 @@ public class Transformer extends Filter {
         if (v == null) {
             synchronized (this) {
                 v = this.resultLanguages;
-                if (v == null)
+                if (v == null) {
                     this.resultLanguages = v = new CopyOnWriteArrayList<Language>();
+                }
             }
         }
         return v;
@@ -190,7 +192,7 @@ public class Transformer extends Filter {
      * Sets the transformation mode. See MODE_* constants.
      * 
      * @param mode
-     *                The transformation mode.
+     *            The transformation mode.
      */
     public void setMode(int mode) {
         this.mode = mode;
@@ -200,7 +202,7 @@ public class Transformer extends Filter {
      * Sets the character set of the result representation.
      * 
      * @param resultCharacterSet
-     *                The character set of the result representation.
+     *            The character set of the result representation.
      */
     public void setResultCharacterSet(CharacterSet resultCharacterSet) {
         this.resultCharacterSet = resultCharacterSet;
@@ -210,7 +212,7 @@ public class Transformer extends Filter {
      * Sets the encodings of the result representation.
      * 
      * @param resultEncodings
-     *                The encodings of the result representation.
+     *            The encodings of the result representation.
      */
     public void setResultEncodings(List<Encoding> resultEncodings) {
         this.resultEncodings = resultEncodings;
@@ -220,7 +222,7 @@ public class Transformer extends Filter {
      * Sets the languages of the result representation.
      * 
      * @param resultLanguages
-     *                The languages of the result representation.
+     *            The languages of the result representation.
      */
     public void setResultLanguages(List<Language> resultLanguages) {
         this.resultLanguages = resultLanguages;
@@ -230,7 +232,7 @@ public class Transformer extends Filter {
      * Sets the media type of the result representation.
      * 
      * @param resultMediaType
-     *                The media type of the result representation.
+     *            The media type of the result representation.
      */
     public void setResultMediaType(MediaType resultMediaType) {
         this.resultMediaType = resultMediaType;
@@ -240,7 +242,7 @@ public class Transformer extends Filter {
      * Sets the XSLT transform sheet to apply to message entities.
      * 
      * @param transformSheet
-     *                The XSLT transform sheet to apply to message entities.
+     *            The XSLT transform sheet to apply to message entities.
      */
     public void setTransformSheet(Representation transformSheet) {
         this.transformSheet = transformSheet;
@@ -251,11 +253,11 @@ public class Transformer extends Filter {
      * sheet to it.
      * 
      * @param source
-     *                The source XML representation.
+     *            The source XML representation.
      * @return The generated result representation.
      */
     public Representation transform(Representation source) {
-        Representation result = new TransformRepresentation(getContext(),
+        final Representation result = new TransformRepresentation(getContext(),
                 source, getTransformSheet());
 
         if (this.resultLanguages != null) {

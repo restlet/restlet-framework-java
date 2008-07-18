@@ -58,27 +58,27 @@ public class Person implements Serializable {
      * @return the firstname
      */
     public String getFirstname() {
-        return firstname;
-    }
-
-    /**
-     * @param firstname
-     *                the firstname to set
-     */
-    public void setFirstname(String firstname) {
-        this.firstname = firstname;
+        return this.firstname;
     }
 
     /**
      * @return the lastname
      */
     public String getLastname() {
-        return lastname;
+        return this.lastname;
+    }
+
+    /**
+     * @param firstname
+     *            the firstname to set
+     */
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
     }
 
     /**
      * @param lastname
-     *                the lastname to set
+     *            the lastname to set
      */
     public void setLastname(String lastname) {
         this.lastname = lastname;
@@ -86,6 +86,6 @@ public class Person implements Serializable {
 
     @Override
     public String toString() {
-        return firstname + " " + lastname;
+        return this.firstname + " " + this.lastname;
     }
 }

@@ -23,10 +23,10 @@ import org.w3c.dom.Document;
  * An XML representation based on JIBX that provides easy translation between
  * XML representations and Java objects with JIBX bindings.
  * 
- * @see <a href="http://jibx.sourceforge.net/">JiBX project</a>
+ * @see <a href="http://jibx.sourceforge.net/">JiBX project< /a>
  * @author Florian Schwarz
  * @param <T>
- *                The type to wrap.
+ *            The type to wrap.
  */
 public class JibxRepresentation<T> extends XmlRepresentation {
 
@@ -41,9 +41,9 @@ public class JibxRepresentation<T> extends XmlRepresentation {
      * Get a cached binding factory.
      * 
      * @param bindingName
-     *                The name of the binding to use.
+     *            The name of the binding to use.
      * @param bindingClass
-     *                Target class for binding.
+     *            Target class for binding.
      * @return A binding factory.
      * @throws JiBXException
      */
@@ -93,10 +93,10 @@ public class JibxRepresentation<T> extends XmlRepresentation {
      * translation from a Java object to a XML representation.
      * 
      * @param mediaType
-     *                The representation's media type (usually
-     *                MediaType.APPLICATION_XML or MediaType.TEXT_XML).
+     *            The representation's media type (usually
+     *            MediaType.APPLICATION_XML or MediaType.TEXT_XML).
      * @param object
-     *                The Java object.
+     *            The Java object.
      */
     public JibxRepresentation(MediaType mediaType, T object) {
         this(mediaType, object, null);
@@ -107,12 +107,12 @@ public class JibxRepresentation<T> extends XmlRepresentation {
      * translation from a Java object to a XML representation.
      * 
      * @param mediaType
-     *                The representation's media type (usually
-     *                MediaType.APPLICATION_XML or MediaType.TEXT_XML).
+     *            The representation's media type (usually
+     *            MediaType.APPLICATION_XML or MediaType.TEXT_XML).
      * @param object
-     *                The Java object.
+     *            The Java object.
      * @param bindingName
-     *                The name of the JIBX binding to use.
+     *            The name of the JIBX binding to use.
      */
     public JibxRepresentation(MediaType mediaType, T object, String bindingName) {
         super(mediaType);
@@ -126,9 +126,9 @@ public class JibxRepresentation<T> extends XmlRepresentation {
      * XML into a Java object. The XML is not validated.
      * 
      * @param xmlRepresentation
-     *                The XML wrapped in a representation.
+     *            The XML wrapped in a representation.
      * @param bindingClass
-     *                The Target Java class for binding.
+     *            The Target Java class for binding.
      */
     @SuppressWarnings("unchecked")
     public JibxRepresentation(Representation xmlRepresentation,
@@ -141,11 +141,11 @@ public class JibxRepresentation<T> extends XmlRepresentation {
      * XML into a Java object. The XML is not validated.
      * 
      * @param xmlRepresentation
-     *                The XML wrapped in a representation.
+     *            The XML wrapped in a representation.
      * @param bindingClass
-     *                The Target Java class for binding.
+     *            The Target Java class for binding.
      * @param bindingName
-     *                The name of the JIBX binding to use.
+     *            The name of the JIBX binding to use.
      */
     @SuppressWarnings("unchecked")
     public JibxRepresentation(Representation xmlRepresentation,
@@ -160,10 +160,10 @@ public class JibxRepresentation<T> extends XmlRepresentation {
     public Object evaluate(String expression, QName returnType)
             throws Exception {
         Object result = null;
-        XPath xpath = XPathFactory.newInstance().newXPath();
+        final XPath xpath = XPathFactory.newInstance().newXPath();
         xpath.setNamespaceContext(this);
 
-        Document xmlDocument = getDocumentBuilder().parse(
+        final Document xmlDocument = getDocumentBuilder().parse(
                 this.xmlRepresentation.getStream());
 
         if (xmlDocument != null) {
@@ -191,20 +191,21 @@ public class JibxRepresentation<T> extends XmlRepresentation {
      * 
      * @return The wrapped Java object.
      * @throws JiBXException
-     *                 If unmarshalling XML with JIBX fails.
+     *             If unmarshalling XML with JIBX fails.
      * @throws IOException
-     *                 If any error occurs attempting to get the stream of the
-     *                 xmlRepresentation.
+     *             If any error occurs attempting to get the stream of the
+     *             xmlRepresentation.
      */
     @SuppressWarnings("unchecked")
     public T getObject() throws JiBXException, IOException {
         if ((this.object == null) && (this.xmlRepresentation != null)) {
             // Try to unmarshal the wrapped XML representation
-            IBindingFactory jibxBFact = JibxRepresentation.getBindingFactory(
-                    bindingName, bindingClass);
-            IUnmarshallingContext uctx = jibxBFact.createUnmarshallingContext();
-            return (T) uctx.unmarshalDocument(xmlRepresentation.getStream(),
-                    null);
+            final IBindingFactory jibxBFact = JibxRepresentation
+                    .getBindingFactory(this.bindingName, this.bindingClass);
+            final IUnmarshallingContext uctx = jibxBFact
+                    .createUnmarshallingContext();
+            return (T) uctx.unmarshalDocument(this.xmlRepresentation
+                    .getStream(), null);
         }
         return this.object;
     }
@@ -217,7 +218,7 @@ public class JibxRepresentation<T> extends XmlRepresentation {
      * Sets the wrapped Java object.
      * 
      * @param object
-     *                The Java object to set.
+     *            The Java object to set.
      */
     public void setObject(T object) {
         this.object = object;
@@ -227,18 +228,21 @@ public class JibxRepresentation<T> extends XmlRepresentation {
      * Marshals the document and writes the representation to a byte stream.
      * 
      * @param outputStream
-     *                The output stream.
+     *            The output stream.
      * @throws IOException
-     *                 If any error occurs attempting to write the stream.
+     *             If any error occurs attempting to write the stream.
      */
     @Override
     public void write(OutputStream outputStream) throws IOException {
         try {
-            IBindingFactory jibxBFact = JibxRepresentation.getBindingFactory(
-                    bindingName, bindingClass);
-            IMarshallingContext mctx = jibxBFact.createMarshallingContext();
-            mctx.marshalDocument(getObject(), encoding, null, outputStream);
-        } catch (JiBXException e) {
+            final IBindingFactory jibxBFact = JibxRepresentation
+                    .getBindingFactory(this.bindingName, this.bindingClass);
+            final IMarshallingContext mctx = jibxBFact
+                    .createMarshallingContext();
+            mctx
+                    .marshalDocument(getObject(), this.encoding, null,
+                            outputStream);
+        } catch (final JiBXException e) {
             throw new IOException(e.getMessage());
         }
     }

@@ -31,16 +31,16 @@ import org.restlet.test.jaxrs.services.tests.DeterminingMediaTypeTest;
 public class DeterminingMediaTypeTestService {
 
     @GET
+    @Path("htmlPlainGif")
+    @Produces( { "text/html", "text/plain", "image/gif" })
+    public byte[] getHtmlPlainGif() {
+        return "gkjlgk".getBytes();
+    }
+
+    @GET
     @Path("textStar")
     @Produces("text/*")
     public String getTextStar() {
         return "isfhl";
-    }
-
-    @GET
-    @Path("htmlPlainGif")
-    @Produces({"text/html", "text/plain", "image/gif"})
-    public byte[] getHtmlPlainGif() {
-        return "gkjlgk".getBytes();
     }
 }

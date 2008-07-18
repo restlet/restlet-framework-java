@@ -35,6 +35,20 @@ public class MatrixParamTest2 extends JaxRsTestCase {
         return MatrixParamTestService2.class;
     }
 
+    public void testEncodedWithDefault() throws Exception {
+        Response response = get("encodedWithDefault;m=1;m=2;x=3");
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("[1, 2]", response.getEntity().getText());
+
+        response = get("encodedWithDefault;m=1;i=2;x=3");
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("[1]", response.getEntity().getText());
+
+        response = get("encodedWithDefault;a=1;i=2;x=3");
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("[default]", response.getEntity().getText());
+    }
+
     public void testWithoutPath() throws Exception {
         Response response = get(";firstname=Angela;lastname=Merkel");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
@@ -51,19 +65,5 @@ public class MatrixParamTest2 extends JaxRsTestCase {
         response = get(";lastname=Goofy");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("null Goofy", response.getEntity().getText());
-    }
-
-    public void testEncodedWithDefault() throws Exception {
-        Response response = get("encodedWithDefault;m=1;m=2;x=3");
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEquals("[1, 2]", response.getEntity().getText());
-
-        response = get("encodedWithDefault;m=1;i=2;x=3");
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEquals("[1]", response.getEntity().getText());
-
-        response = get("encodedWithDefault;a=1;i=2;x=3");
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEquals("[default]", response.getEntity().getText());
     }
 }

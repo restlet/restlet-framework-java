@@ -35,26 +35,28 @@ public class SpringTestCase extends TestCase {
 
     public void testSpring() throws Exception {
         // Load the Spring container
-        ClassPathResource resource = new ClassPathResource(
+        final ClassPathResource resource = new ClassPathResource(
                 "org/restlet/test/SpringTestCase.xml");
-        BeanFactory factory = new XmlBeanFactory(resource);
+        final BeanFactory factory = new XmlBeanFactory(resource);
 
         // Start the Restlet component
-        Component component = (Component) factory.getBean("component");
+        final Component component = (Component) factory.getBean("component");
         component.start();
         Thread.sleep(500);
         component.stop();
     }
 
     public void testSpringServerProperties() {
-        ClassPathResource resource = new ClassPathResource(
+        final ClassPathResource resource = new ClassPathResource(
                 "org/restlet/test/SpringTestCase.xml");
-        BeanFactory factory = new XmlBeanFactory(resource);
+        final BeanFactory factory = new XmlBeanFactory(resource);
 
-        Server server = (Server) factory.getBean("server");
+        final Server server = (Server) factory.getBean("server");
 
-        assertEquals("value1", server.getContext().getParameters().getFirstValue("key1"));
-        assertEquals("value2", server.getContext().getParameters().getFirstValue("key2"));
+        assertEquals("value1", server.getContext().getParameters()
+                .getFirstValue("key1"));
+        assertEquals("value2", server.getContext().getParameters()
+                .getFirstValue("key2"));
 
     }
 

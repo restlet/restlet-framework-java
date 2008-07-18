@@ -89,14 +89,14 @@ public class QueryParamTest extends JaxRsTestCase {
     }
 
     public void testDecoded() throws IOException {
-        Response response = get("qpDecoded?firstname=George%20U.&lastname=Bush");
+        final Response response = get("qpDecoded?firstname=George%20U.&lastname=Bush");
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("George U. Bush", response.getEntity().getText());
     }
 
     public void testEncodedA() throws IOException {
-        Response response = get("encodedA?firstname=George%20U.&lastname=Bush");
+        final Response response = get("encodedA?firstname=George%20U.&lastname=Bush");
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("George%20U. Bush", response.getEntity().getText());
@@ -104,12 +104,12 @@ public class QueryParamTest extends JaxRsTestCase {
 
     /** @see QueryParamTestService#getDecoded() */
     public void testFieldDecoded() throws Exception {
-        Response response1 = get("decoded?decoded=abc");
+        final Response response1 = get("decoded?decoded=abc");
         sysOutEntityIfError(response1);
         assertEquals(Status.SUCCESS_OK, response1.getStatus());
         assertEquals("abc", response1.getEntity().getText());
 
-        Response response2 = get("decoded?decoded=%20");
+        final Response response2 = get("decoded?decoded=%20");
         sysOutEntityIfError(response2);
         assertEquals(Status.SUCCESS_OK, response2.getStatus());
         assertEquals(" ", response2.getEntity().getText());
@@ -117,12 +117,12 @@ public class QueryParamTest extends JaxRsTestCase {
 
     /** @see QueryParamTestService#getEncoded() */
     public void testFieldEncoded() throws Exception {
-        Response response1 = get("encoded?encoded=abc");
+        final Response response1 = get("encoded?encoded=abc");
         sysOutEntityIfError(response1);
         assertEquals(Status.SUCCESS_OK, response1.getStatus());
         assertEquals("abc", response1.getEntity().getText());
 
-        Response response2 = get("encoded?encoded=%20");
+        final Response response2 = get("encoded?encoded=%20");
         sysOutEntityIfError(response2);
         assertEquals(Status.SUCCESS_OK, response2.getStatus());
         assertEquals("%20", response2.getEntity().getText());
@@ -132,30 +132,30 @@ public class QueryParamTest extends JaxRsTestCase {
      * @see QueryParamTestService#getInt(int, int, int)
      */
     public void testInt() throws Exception {
-        Response response1 = get("int?n1=1&n2=2&n3=3");
+        final Response response1 = get("int?n1=1&n2=2&n3=3");
         sysOutEntityIfError(response1);
         assertEquals(Status.SUCCESS_OK, response1.getStatus());
         assertEquals("1 2 3", response1.getEntity().getText());
 
-        Response response2 = get("int?n1=1&n2=2");
+        final Response response2 = get("int?n1=1&n2=2");
         sysOutEntityIfError(response2);
         assertEquals(Status.SUCCESS_OK, response2.getStatus());
         assertEquals("1 2 99", response2.getEntity().getText());
 
-        Response response5 = get("int?n2=2&n3=3");
+        final Response response5 = get("int?n2=2&n3=3");
         sysOutEntityIfError(response5);
         assertEquals(Status.SUCCESS_OK, response5.getStatus());
         assertEquals("0 2 3", response5.getEntity().getText());
 
-        Response response4 = get("int?n1=1&n2=2&n3=");
+        final Response response4 = get("int?n1=1&n2=2&n3=");
         sysOutEntityIfError(response4);
         assertEquals(Status.SUCCESS_OK, response4.getStatus());
         assertEquals("1 2 99", response4.getEntity().getText());
 
-        Response response6 = get("int?n1=1&n3=3");
+        final Response response6 = get("int?n1=1&n3=3");
         assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response6.getStatus());
 
-        Response response3 = get("int?n1=1&n2=2&n3");
+        final Response response3 = get("int?n1=1&n2=2&n3");
         sysOutEntityIfError(response3);
         assertEquals(Status.SUCCESS_OK, response3.getStatus());
         assertEquals("1 2 99", response3.getEntity().getText());
@@ -165,35 +165,35 @@ public class QueryParamTest extends JaxRsTestCase {
      * @see QueryParamTestService#getInteger(Integer, Integer, Integer)
      */
     public void testInteger() throws Exception {
-        Response response1 = get("Integer?n1=1&n2=2&n3=3");
+        final Response response1 = get("Integer?n1=1&n2=2&n3=3");
         sysOutEntityIfError(response1);
         assertEquals(Status.SUCCESS_OK, response1.getStatus());
         assertEquals("1 2 3", response1.getEntity().getText());
 
-        Response response2 = get("Integer?n1=1&n2=2");
+        final Response response2 = get("Integer?n1=1&n2=2");
         sysOutEntityIfError(response2);
         assertEquals(Status.SUCCESS_OK, response2.getStatus());
         assertEquals("1 2 99", response2.getEntity().getText());
 
-        Response response5 = get("Integer?n2=2&n3=3");
+        final Response response5 = get("Integer?n2=2&n3=3");
         sysOutEntityIfError(response5);
         assertEquals(Status.SUCCESS_OK, response5.getStatus());
         assertEquals("null 2 3", response5.getEntity().getText());
 
-        Response response4 = get("Integer?n1=1&n2=2&n3=");
+        final Response response4 = get("Integer?n1=1&n2=2&n3=");
         sysOutEntityIfError(response4);
         assertEquals(Status.SUCCESS_OK, response4.getStatus());
         assertEquals("1 2 99", response4.getEntity().getText());
 
-        Response response6 = get("Integer?n1=1&n3=3");
+        final Response response6 = get("Integer?n1=1&n3=3");
         assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response6.getStatus());
 
-        Response response3 = get("Integer?n1=1&n2=2&n3");
+        final Response response3 = get("Integer?n1=1&n2=2&n3");
         sysOutEntityIfError(response3);
         assertEquals(Status.SUCCESS_OK, response3.getStatus());
         assertEquals("1 2 99", response3.getEntity().getText());
     }
-    
+
     public void testMult1() throws Exception {
         checkMult("array", "[null]", "[1]", "[1, 2]");
         checkMult("arrayWithDefault", "[qv]", "[1]", "[1, 2]");
@@ -201,30 +201,30 @@ public class QueryParamTest extends JaxRsTestCase {
         checkMult("list", "[null]", "[1]", "[1, 2]");
         checkMult("listWithDefault", "[qv]", "[1]", "[1, 2]");
     }
-    
+
     public void testOne1() throws Exception {
-        Response response = get("one?name");
+        final Response response = get("one?name");
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("[empty]", response.getEntity().getText());
     }
 
     public void testOne2() throws Exception {
-        Response response = get("one?name=");
+        final Response response = get("one?name=");
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("[empty]", response.getEntity().getText());
     }
 
     public void testOne3() throws Exception {
-        Response response = get("one?name=x");
+        final Response response = get("one?name=x");
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("x", response.getEntity().getText());
     }
 
     public void testOne4() throws Exception {
-        Response response = get("one?name2=sdf");
+        final Response response = get("one?name2=sdf");
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("[null]", response.getEntity().getText());

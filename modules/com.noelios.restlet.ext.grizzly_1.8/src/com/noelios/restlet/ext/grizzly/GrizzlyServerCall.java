@@ -68,13 +68,13 @@ public class GrizzlyServerCall extends HttpServerCall {
      * Constructor.
      * 
      * @param server
-     *                The parent server.
+     *            The parent server.
      * @param byteBuffer
-     *                The NIO byte buffer.
+     *            The NIO byte buffer.
      * @param key
-     *                The NIO selection key.
+     *            The NIO selection key.
      * @param confidential
-     *                Indicates if the call is confidential.
+     *            Indicates if the call is confidential.
      */
     public GrizzlyServerCall(Server server, ByteBuffer byteBuffer,
             SelectionKey key, boolean confidential) {
@@ -87,12 +87,12 @@ public class GrizzlyServerCall extends HttpServerCall {
         this.requestStream.setByteBuffer(byteBuffer);
         this.socketChannel = (SocketChannel) key.channel();
 
-        this.getRequestHeaders().clear();
+        getRequestHeaders().clear();
 
         try {
             // Read the request header
-            readRequestHead(requestStream);
-        } catch (IOException ioe) {
+            readRequestHead(this.requestStream);
+        } catch (final IOException ioe) {
             getLogger().log(Level.WARNING, "Unable to parse the HTTP request",
                     ioe);
         }
@@ -180,10 +180,10 @@ public class GrizzlyServerCall extends HttpServerCall {
 
     @Override
     public String getSslCipherSuite() {
-        Socket socket = getSocket();
+        final Socket socket = getSocket();
         if (socket instanceof SSLSocket) {
-            SSLSocket sslSocket = (SSLSocket) socket;
-            SSLSession sslSession = sslSocket.getSession();
+            final SSLSocket sslSocket = (SSLSocket) socket;
+            final SSLSession sslSession = sslSocket.getSession();
             if (sslSession != null) {
                 return sslSession.getCipherSuite();
             }
@@ -193,17 +193,17 @@ public class GrizzlyServerCall extends HttpServerCall {
 
     @Override
     public List<Certificate> getSslClientCertificates() {
-        Socket socket = getSocket();
+        final Socket socket = getSocket();
         if (socket instanceof SSLSocket) {
-            SSLSocket sslSocket = (SSLSocket) socket;
-            SSLSession sslSession = sslSocket.getSession();
+            final SSLSocket sslSocket = (SSLSocket) socket;
+            final SSLSession sslSession = sslSocket.getSession();
             if (sslSession != null) {
                 try {
-                    List<Certificate> clientCertificates = Arrays
+                    final List<Certificate> clientCertificates = Arrays
                             .asList(sslSession.getPeerCertificates());
 
                     return clientCertificates;
-                } catch (SSLPeerUnverifiedException e) {
+                } catch (final SSLPeerUnverifiedException e) {
                     getLogger().log(Level.FINE,
                             "Can't get the client certificates.", e);
                 }
@@ -229,7 +229,7 @@ public class GrizzlyServerCall extends HttpServerCall {
                 }
 
                 public int write(ByteBuffer src) throws IOException {
-                    int nWrite = src.limit();
+                    final int nWrite = src.limit();
                     SSLOutputWriter.flushChannel(getSocketChannel(), src);
                     return nWrite;
                 }
@@ -241,9 +241,9 @@ public class GrizzlyServerCall extends HttpServerCall {
 
     @Override
     public void writeResponseHead(Response response) throws IOException {
-        ByteArrayOutputStream headStream = new ByteArrayOutputStream(8192);
+        final ByteArrayOutputStream headStream = new ByteArrayOutputStream(8192);
         writeResponseHead(response, headStream);
-        ByteBuffer buffer = ByteBuffer.wrap(headStream.toByteArray());
+        final ByteBuffer buffer = ByteBuffer.wrap(headStream.toByteArray());
 
         if (isConfidential()) {
             SSLOutputWriter.flushChannel(getSocketChannel(), buffer);

@@ -44,48 +44,11 @@ public class CarTest extends JaxRsTestCase {
     }
 
     public void testDelete() throws Exception {
-        Response response = accessServer(Method.DELETE, CarListResource.class,
-                null, null);
+        final Response response = accessServer(Method.DELETE,
+                CarListResource.class, null, null);
         assertTrue(response.getStatus().isClientError());
         assertEquals(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED, response
                 .getStatus());
-    }
-
-    public void testGetCar() throws Exception {
-        String carNumber = "57";
-
-        Response response = get(carNumber);
-        Representation entity = response.getEntity();
-        sysOutEntityIfError(response);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEquals(CarResource.createTextRepr(carNumber), entity.getText());
-        assertEqualMediaType(MediaType.TEXT_PLAIN, entity.getMediaType());
-    }
-
-    public void testGetHtmlText() throws Exception {
-        Response response = get(MediaType.TEXT_HTML);
-        assertTrue(response.getStatus().isClientError());
-        assertEquals(Status.CLIENT_ERROR_NOT_ACCEPTABLE, response.getStatus());
-    }
-
-    public void testGetOffers() throws Exception {
-        Response response = get("offers");
-        Representation representation = response.getEntity();
-        sysOutEntityIfError(response);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEquals(CarListResource.OFFERS, representation.getText());
-        MediaType actualMediaType = representation.getMediaType();
-        assertEqualMediaType(MediaType.TEXT_PLAIN, actualMediaType);
-    }
-
-    public void testGetPlainText() throws Exception {
-        Response response = get(MediaType.TEXT_PLAIN);
-        Status status = response.getStatus();
-        assertTrue("Status should be 2xx, but is " + status, status.isSuccess());
-        Representation representation = response.getEntity();
-        assertEquals(CarListResource.DUMMY_CAR_LIST, representation.getText());
-        assertEqualMediaType(MediaType.TEXT_PLAIN, representation
-                .getMediaType());
     }
 
     /**
@@ -95,12 +58,49 @@ public class CarTest extends JaxRsTestCase {
      * @throws Exception
      */
     public void testEngine() throws Exception {
-        Response response = get("4711/engine");
+        final Response response = get("4711/engine");
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        Representation entity = response.getEntity();
+        final Representation entity = response.getEntity();
         assertEqualMediaType(MediaType.TEXT_PLAIN, entity.getMediaType());
         assertEquals(EngineResource.getPlainRepr(4711), entity.getText());
+    }
+
+    public void testGetCar() throws Exception {
+        final String carNumber = "57";
+
+        final Response response = get(carNumber);
+        final Representation entity = response.getEntity();
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals(CarResource.createTextRepr(carNumber), entity.getText());
+        assertEqualMediaType(MediaType.TEXT_PLAIN, entity.getMediaType());
+    }
+
+    public void testGetHtmlText() throws Exception {
+        final Response response = get(MediaType.TEXT_HTML);
+        assertTrue(response.getStatus().isClientError());
+        assertEquals(Status.CLIENT_ERROR_NOT_ACCEPTABLE, response.getStatus());
+    }
+
+    public void testGetOffers() throws Exception {
+        final Response response = get("offers");
+        final Representation representation = response.getEntity();
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals(CarListResource.OFFERS, representation.getText());
+        final MediaType actualMediaType = representation.getMediaType();
+        assertEqualMediaType(MediaType.TEXT_PLAIN, actualMediaType);
+    }
+
+    public void testGetPlainText() throws Exception {
+        final Response response = get(MediaType.TEXT_PLAIN);
+        final Status status = response.getStatus();
+        assertTrue("Status should be 2xx, but is " + status, status.isSuccess());
+        final Representation representation = response.getEntity();
+        assertEquals(CarListResource.DUMMY_CAR_LIST, representation.getText());
+        assertEqualMediaType(MediaType.TEXT_PLAIN, representation
+                .getMediaType());
     }
 
     public void testOptions() throws Exception {

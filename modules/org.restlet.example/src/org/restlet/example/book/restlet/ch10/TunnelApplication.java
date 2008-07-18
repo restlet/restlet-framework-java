@@ -16,21 +16,22 @@ public class TunnelApplication extends Application {
     public TunnelApplication(Context parentContext) {
         super(parentContext);
         // Update the default value of the method parameter
-        this.getTunnelService().setMethodParameter("_method");
+        getTunnelService().setMethodParameter("_method");
     }
 
     @Override
     public Restlet createRoot() {
-        Restlet restlet = new Restlet() {
+        final Restlet restlet = new Restlet() {
             @Override
             public void handle(Request request, Response response) {
-                StringBuilder builder = new StringBuilder();
+                final StringBuilder builder = new StringBuilder();
                 builder.append("<html><body>");
 
                 if (Method.GET.equals(request.getMethod())) {
                     // Append a new "method" parameter to the query part of the
                     // resource's reference
-                    Reference ref = new Reference(request.getResourceRef());
+                    final Reference ref = new Reference(request
+                            .getResourceRef());
                     ref.addQueryParameter("_method", "put");
 
                     // Build a POST form with the updated action

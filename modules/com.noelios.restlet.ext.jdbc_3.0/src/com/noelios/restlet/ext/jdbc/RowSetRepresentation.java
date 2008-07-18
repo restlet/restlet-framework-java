@@ -37,9 +37,9 @@ import com.sun.rowset.WebRowSetImpl;
  * Give access to the JdbcResult instance and to the WebRowSet for retrieval of
  * the connected ResultSet in the same JVM (for advanced use cases).
  * 
- * @see <a
- *      href="http://java.sun.com/j2se/1.5.0/docs/api/javax/sql/rowset/WebRowSet.html">WebRowSet
- *      Interface</a>
+ * @see <a * href=
+ *      "http://java.sun.com/j2se/1.5.0/docs/api/javax/sql/rowset/WebRowSet.html"
+ *      >WebRowSet * Interface< /a>
  * @author Thierry Boileau
  * @author Jerome Louvel (contact@noelios.com)
  */
@@ -48,12 +48,12 @@ public class RowSetRepresentation extends OutputRepresentation {
      * Creates a WebRowSet from a ResultSet.
      * 
      * @param resultSet
-     *                The result set to use to populate the Web row set.
+     *            The result set to use to populate the Web row set.
      * @return A WebRowSet from a ResultSet.
      * @throws SQLException
      */
     private static WebRowSet create(ResultSet resultSet) throws SQLException {
-        WebRowSet result = new WebRowSetImpl();
+        final WebRowSet result = new WebRowSetImpl();
 
         if (resultSet != null) {
             result.populate(resultSet);
@@ -72,7 +72,7 @@ public class RowSetRepresentation extends OutputRepresentation {
      * Constructor.
      * 
      * @param jdbcResult
-     *                The inner JdbcResult.
+     *            The inner JdbcResult.
      * @throws SQLException
      */
     public RowSetRepresentation(JdbcResult jdbcResult) throws SQLException {
@@ -84,7 +84,7 @@ public class RowSetRepresentation extends OutputRepresentation {
      * Constructor.
      * 
      * @param resultSet
-     *                The result set to use to populate the Web row set.
+     *            The result set to use to populate the Web row set.
      * @throws SQLException
      */
     public RowSetRepresentation(ResultSet resultSet) throws SQLException {
@@ -95,7 +95,7 @@ public class RowSetRepresentation extends OutputRepresentation {
      * Constructor.
      * 
      * @param webRowSet
-     *                The inner WebRowSet.
+     *            The inner WebRowSet.
      */
     public RowSetRepresentation(WebRowSet webRowSet) {
         super(MediaType.TEXT_XML);
@@ -108,7 +108,7 @@ public class RowSetRepresentation extends OutputRepresentation {
      * @return The inner JdbcResult instance or null.
      */
     public JdbcResult getJdbcResult() {
-        return jdbcResult;
+        return this.jdbcResult;
     }
 
     /**
@@ -123,8 +123,8 @@ public class RowSetRepresentation extends OutputRepresentation {
     @Override
     public void write(OutputStream outputStream) throws IOException {
         try {
-            webRowSet.writeXml(outputStream);
-        } catch (SQLException se) {
+            this.webRowSet.writeXml(outputStream);
+        } catch (final SQLException se) {
             throw new IOException(se.getMessage());
         }
 
@@ -132,7 +132,7 @@ public class RowSetRepresentation extends OutputRepresentation {
             if (this.jdbcResult != null) {
                 this.jdbcResult.release();
             }
-        } catch (SQLException se) {
+        } catch (final SQLException se) {
             throw new IOException(
                     "SQL exception while releasing the JdbcResult instance after writing the representation. "
                             + se.getMessage());
@@ -143,7 +143,7 @@ public class RowSetRepresentation extends OutputRepresentation {
                 this.webRowSet.release();
                 this.webRowSet.close();
             }
-        } catch (SQLException se) {
+        } catch (final SQLException se) {
             throw new IOException(
                     "Error while releasing the WebRowSet instance after writing the representation. "
                             + se.getMessage());

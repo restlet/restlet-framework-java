@@ -60,13 +60,13 @@ public class ContactsResource extends BaseResource {
             setModifiable(true);
             // Get the parent mailbox thanks to its ID taken from the resource's
             // URI.
-            String mailboxId = Reference.decode((String) request
+            final String mailboxId = Reference.decode((String) request
                     .getAttributes().get("mailboxId"));
-            mailbox = getObjectsFacade().getMailboxById(mailboxId);
+            this.mailbox = getObjectsFacade().getMailboxById(mailboxId);
 
-            if (mailbox != null) {
-                contacts = mailbox.getContacts();
-                hostedMailboxes = getObjectsFacade().getMailboxes();
+            if (this.mailbox != null) {
+                this.contacts = this.mailbox.getContacts();
+                this.hostedMailboxes = getObjectsFacade().getMailboxes();
                 getVariants().add(new Variant(MediaType.TEXT_HTML));
             }
         } else {
@@ -81,12 +81,12 @@ public class ContactsResource extends BaseResource {
     @Override
     public void acceptRepresentation(Representation entity)
             throws ResourceException {
-        Form form = new Form(entity);
+        final Form form = new Form(entity);
         Contact contact = new Contact();
         contact.setMailAddress(form.getFirstValue("mailAddress"));
         contact.setName(form.getFirstValue("name"));
 
-        contact = getObjectsFacade().createContact(mailbox, contact);
+        contact = getObjectsFacade().createContact(this.mailbox, contact);
 
         getResponse().redirectSeeOther(
                 getChildReference(getRequest().getResourceRef(), contact
@@ -103,13 +103,13 @@ public class ContactsResource extends BaseResource {
      */
     @Override
     public Representation represent(Variant variant) throws ResourceException {
-        Map<String, Object> dataModel = new TreeMap<String, Object>();
+        final Map<String, Object> dataModel = new TreeMap<String, Object>();
         dataModel.put("currentUser", getCurrentUser());
-        dataModel.put("mailbox", mailbox);
-        dataModel.put("contacts", contacts);
+        dataModel.put("mailbox", this.mailbox);
+        dataModel.put("contacts", this.contacts);
         dataModel.put("resourceRef", getRequest().getResourceRef());
         dataModel.put("rootRef", getRequest().getRootRef());
-        dataModel.put("hostedMailboxes", hostedMailboxes);
+        dataModel.put("hostedMailboxes", this.hostedMailboxes);
 
         return getHTMLTemplateRepresentation("contacts.html", dataModel);
     }

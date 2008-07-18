@@ -62,11 +62,11 @@ public class Collection {
      * Constructor.
      * 
      * @param workspace
-     *                The parent workspace.
+     *            The parent workspace.
      * @param title
-     *                The title.
+     *            The title.
      * @param href
-     *                The hypertext reference.
+     *            The hypertext reference.
      */
     public Collection(Workspace workspace, String title, String href) {
         this.workspace = workspace;
@@ -82,15 +82,15 @@ public class Collection {
      * @throws Exception
      */
     public Feed getFeed() throws Exception {
-        Reference feedRef = getHref();
+        final Reference feedRef = getHref();
 
         if (feedRef.isRelative()) {
             feedRef.setBaseRef(getWorkspace().getService().getReference());
         }
 
-        Request request = new Request(Method.GET, feedRef.getTargetRef());
-        Response response = getWorkspace().getService().getClientDispatcher()
-                .handle(request);
+        final Request request = new Request(Method.GET, feedRef.getTargetRef());
+        final Response response = getWorkspace().getService()
+                .getClientDispatcher().handle(request);
 
         if (response.getStatus().equals(Status.SUCCESS_OK)) {
             return new Feed(response.getEntity());
@@ -142,14 +142,14 @@ public class Collection {
      * resource.
      * 
      * @param member
-     *                The member representation to post.
+     *            The member representation to post.
      * @return The reference of the new resource.
      * @throws Exception
      */
     public Reference postMember(Representation member) throws Exception {
-        Request request = new Request(Method.POST, getHref(), member);
-        Response response = getWorkspace().getService().getClientDispatcher()
-                .handle(request);
+        final Request request = new Request(Method.POST, getHref(), member);
+        final Response response = getWorkspace().getService()
+                .getClientDispatcher().handle(request);
 
         if (response.getStatus().equals(Status.SUCCESS_CREATED)) {
             return response.getLocationRef();
@@ -164,7 +164,7 @@ public class Collection {
      * Sets the hypertext reference.
      * 
      * @param href
-     *                The hypertext reference.
+     *            The hypertext reference.
      */
     public void setHref(Reference href) {
         this.href = href;
@@ -174,7 +174,7 @@ public class Collection {
      * Sets the type of members.
      * 
      * @param memberType
-     *                The type of members.
+     *            The type of members.
      */
     public void setMemberType(MemberType memberType) {
         this.memberType = memberType;
@@ -184,7 +184,7 @@ public class Collection {
      * Sets the title.
      * 
      * @param title
-     *                The title.
+     *            The title.
      */
     public void setTitle(String title) {
         this.title = title;
@@ -194,7 +194,7 @@ public class Collection {
      * Sets the parent workspace.
      * 
      * @param workspace
-     *                The parent workspace.
+     *            The parent workspace.
      */
     public void setWorkspace(Workspace workspace) {
         this.workspace = workspace;
@@ -204,15 +204,15 @@ public class Collection {
      * Writes the current object as an XML element using the given SAX writer.
      * 
      * @param writer
-     *                The SAX writer.
+     *            The SAX writer.
      * @throws SAXException
      */
     public void writeElement(XmlWriter writer) throws SAXException {
 
-        AttributesImpl attributes = new AttributesImpl();
-        if (getHref() != null && getHref().toString() != null) {
-            attributes.addAttribute("", "href", null, "atomURI",
-                    getHref().toString());
+        final AttributesImpl attributes = new AttributesImpl();
+        if ((getHref() != null) && (getHref().toString() != null)) {
+            attributes.addAttribute("", "href", null, "atomURI", getHref()
+                    .toString());
         }
 
         writer.startElement(APP_NAMESPACE, "collection", null, attributes);
@@ -230,7 +230,7 @@ public class Collection {
             if (getFeed() != null) {
                 getFeed().writeElement(writer);
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
 

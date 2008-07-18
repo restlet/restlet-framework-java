@@ -52,7 +52,7 @@ public class ByteArrayProvider extends AbstractProvider<byte[]> {
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         Util.copyStream(entityStream, baos);
         return baos.toByteArray();
     }

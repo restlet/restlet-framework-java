@@ -32,41 +32,41 @@ import org.restlet.test.jaxrs.services.resources.ExcMapperTestResource;
  */
 public class ExcMapperTest extends JaxRsTestCase {
 
-    @Override
-    protected Class<?> getRootResourceClass() {
-        return ExcMapperTestResource.class;
+    /**
+     * @param accMediaType
+     * @param expMediaType
+     */
+    private void check(MediaType accMediaType, MediaType expMediaType) {
+        final Response response = get(accMediaType);
+        sysOutEntityIfError(response);
+        assertEquals(IllegalArgExcMapper.STATUS, response.getStatus().getCode());
+        assertEqualMediaType(expMediaType, response);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     protected Set<Class<?>> getProvClasses() {
-        return (Set)Collections.singleton(IllegalArgExcMapper.class);
+        return (Set) Collections.singleton(IllegalArgExcMapper.class);
     }
 
-    public void testPlain() {
-        check(MediaType.TEXT_PLAIN, MediaType.TEXT_PLAIN);
+    @Override
+    protected Class<?> getRootResourceClass() {
+        return ExcMapperTestResource.class;
     }
 
     public void testHtml() {
         check(MediaType.TEXT_HTML, MediaType.TEXT_HTML);
     }
 
-    public void testXml() {
-        check(MediaType.TEXT_XML, MediaType.TEXT_PLAIN);
-    }
-
     public void testImage() {
         check(MediaType.IMAGE_BMP, MediaType.TEXT_PLAIN);
     }
 
-    /**
-     * @param accMediaType
-     * @param expMediaType
-     */
-    private void check(MediaType accMediaType, MediaType expMediaType) {
-        Response response = get(accMediaType);
-        sysOutEntityIfError(response);
-        assertEquals(IllegalArgExcMapper.STATUS, response.getStatus().getCode());
-        assertEqualMediaType(expMediaType, response);
+    public void testPlain() {
+        check(MediaType.TEXT_PLAIN, MediaType.TEXT_PLAIN);
+    }
+
+    public void testXml() {
+        check(MediaType.TEXT_XML, MediaType.TEXT_PLAIN);
     }
 }

@@ -26,19 +26,20 @@ public class BasicSmtpClient {
 
     public static void main(String[] args) {
 
-        Representation mail = new StringRepresentation(MAIL, MediaType.TEXT_XML);
+        final Representation mail = new StringRepresentation(MAIL,
+                MediaType.TEXT_XML);
 
         // Sends the request and gets the response
-        Request request = new Request(new Method("POST"),
+        final Request request = new Request(new Method("POST"),
                 "smtp://smtp.mail.yahoo.com", mail);
-        ChallengeResponse challengeResponse = new ChallengeResponse(
+        final ChallengeResponse challengeResponse = new ChallengeResponse(
                 ChallengeScheme.SMTP_PLAIN, "restlet.testfr", "saya08");
         request.setChallengeResponse(challengeResponse);
 
         // Instantiates a client according to a protocol
-        Client client = new Client(Protocol.SMTP);
+        final Client client = new Client(Protocol.SMTP);
         // Sends the request
-        Response response = client.handle(request);
+        final Response response = client.handle(request);
 
         // Prints the status of the response
         System.out.println(response.getStatus());

@@ -71,8 +71,9 @@ public class ResourceInfo {
         if (r == null) {
             synchronized (this) {
                 r = this.childResources;
-                if (r == null)
+                if (r == null) {
                     this.childResources = r = new ArrayList<ResourceInfo>();
+                }
             }
         }
         return r;
@@ -89,8 +90,9 @@ public class ResourceInfo {
         if (d == null) {
             synchronized (this) {
                 d = this.documentations;
-                if (d == null)
+                if (d == null) {
                     this.documentations = d = new ArrayList<DocumentationInfo>();
+                }
             }
         }
         return d;
@@ -102,7 +104,7 @@ public class ResourceInfo {
      * @return The identifier for that element.
      */
     public String getIdentifier() {
-        return identifier;
+        return this.identifier;
     }
 
     /**
@@ -116,8 +118,9 @@ public class ResourceInfo {
         if (m == null) {
             synchronized (this) {
                 m = this.methods;
-                if (m == null)
+                if (m == null) {
                     this.methods = m = new ArrayList<MethodInfo>();
+                }
             }
         }
         return m;
@@ -134,8 +137,9 @@ public class ResourceInfo {
         if (p == null) {
             synchronized (this) {
                 p = this.parameters;
-                if (p == null)
+                if (p == null) {
                     this.parameters = p = new ArrayList<ParameterInfo>();
+                }
             }
         }
         return p;
@@ -147,7 +151,7 @@ public class ResourceInfo {
      * @return The URI template for the identifier of the resource.
      */
     public String getPath() {
-        return path;
+        return this.path;
     }
 
     /**
@@ -156,7 +160,7 @@ public class ResourceInfo {
      * @return The media type for the query component of the resource URI.
      */
     public MediaType getQueryType() {
-        return queryType;
+        return this.queryType;
     }
 
     /**
@@ -170,8 +174,9 @@ public class ResourceInfo {
         if (t == null) {
             synchronized (this) {
                 t = this.type;
-                if (t == null)
+                if (t == null) {
                     this.type = t = new ArrayList<Reference>();
+                }
             }
         }
         return t;
@@ -265,12 +270,12 @@ public class ResourceInfo {
      * @throws SAXException
      */
     public void writeElement(XmlWriter writer) throws SAXException {
-        AttributesImpl attributes = new AttributesImpl();
-        if (getIdentifier() != null && !getIdentifier().equals("")) {
+        final AttributesImpl attributes = new AttributesImpl();
+        if ((getIdentifier() != null) && !getIdentifier().equals("")) {
             attributes.addAttribute("", "id", null, "xs:ID", getIdentifier());
         }
 
-        if (getPath() != null && !getPath().equals("")) {
+        if ((getPath() != null) && !getPath().equals("")) {
             attributes.addAttribute("", "path", null, "xs:string", getPath());
         }
 
@@ -278,11 +283,11 @@ public class ResourceInfo {
             attributes.addAttribute("", "queryType", null, "xs:string",
                     getQueryType().getMainType());
         }
-        if (getType() != null && !getType().isEmpty()) {
-            StringBuilder builder = new StringBuilder();
-            for (Iterator<Reference> iterator = getType().iterator(); iterator
+        if ((getType() != null) && !getType().isEmpty()) {
+            final StringBuilder builder = new StringBuilder();
+            for (final Iterator<Reference> iterator = getType().iterator(); iterator
                     .hasNext();) {
-                Reference reference = iterator.next();
+                final Reference reference = iterator.next();
                 builder.append(reference.toString());
                 if (iterator.hasNext()) {
                     builder.append(" ");
@@ -298,19 +303,19 @@ public class ResourceInfo {
         } else {
             writer.startElement(APP_NAMESPACE, "resource", null, attributes);
 
-            for (ResourceInfo resourceInfo : getChildResources()) {
+            for (final ResourceInfo resourceInfo : getChildResources()) {
                 resourceInfo.writeElement(writer);
             }
 
-            for (DocumentationInfo documentationInfo : getDocumentations()) {
+            for (final DocumentationInfo documentationInfo : getDocumentations()) {
                 documentationInfo.writeElement(writer);
             }
 
-            for (MethodInfo methodInfo : getMethods()) {
+            for (final MethodInfo methodInfo : getMethods()) {
                 methodInfo.writeElement(writer);
             }
 
-            for (ParameterInfo parameterInfo : getParameters()) {
+            for (final ParameterInfo parameterInfo : getParameters()) {
                 parameterInfo.writeElement(writer);
             }
 

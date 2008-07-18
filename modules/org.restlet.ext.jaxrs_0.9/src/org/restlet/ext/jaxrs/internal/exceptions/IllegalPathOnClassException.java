@@ -35,6 +35,6 @@ public class IllegalPathOnClassException extends IllegalPathException {
      */
     public IllegalPathOnClassException(IllegalPathException ipe) {
         super(ipe.getPath(), ipe.getMessage());
-        this.setStackTrace(ipe.getStackTrace());
+        setStackTrace(ipe.getStackTrace());
     }
 }

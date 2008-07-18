@@ -53,7 +53,7 @@ public class Workspace {
      * Constructor.
      * 
      * @param service
-     *                The parent service.
+     *            The parent service.
      */
     public Workspace(Service service) {
         this(service, null);
@@ -63,9 +63,9 @@ public class Workspace {
      * Constructor.
      * 
      * @param service
-     *                The parent service.
+     *            The parent service.
      * @param title
-     *                The title.
+     *            The title.
      */
     public Workspace(Service service, String title) {
         this.service = service;
@@ -107,7 +107,7 @@ public class Workspace {
      * Sets the parent service.
      * 
      * @param service
-     *                The parent service.
+     *            The parent service.
      */
     public void setService(Service service) {
         this.service = service;
@@ -117,7 +117,7 @@ public class Workspace {
      * Sets the title.
      * 
      * @param title
-     *                The title.
+     *            The title.
      */
     public void setTitle(String title) {
         this.title = title;
@@ -127,7 +127,7 @@ public class Workspace {
      * Writes the current object as an XML element using the given SAX writer.
      * 
      * @param writer
-     *                The SAX writer.
+     *            The SAX writer.
      * @throws SAXException
      */
     public void writeElement(XmlWriter writer) throws SAXException {
@@ -137,7 +137,7 @@ public class Workspace {
             writer.dataElement(ATOM_NAMESPACE, "title", getTitle());
         }
 
-        for (Collection collection : getCollections()) {
+        for (final Collection collection : getCollections()) {
             collection.writeElement(writer);
         }
 

@@ -60,15 +60,16 @@ public class MailResource extends BaseResource {
         if (getCurrentUser() != null) {
             // Authenticated access.
             setModifiable(true);
-            String mailboxId = Reference.decode((String) request
+            final String mailboxId = Reference.decode((String) request
                     .getAttributes().get("mailboxId"));
-            mailbox = getObjectsFacade().getMailboxById(mailboxId);
+            this.mailbox = getObjectsFacade().getMailboxById(mailboxId);
 
-            if (mailbox != null) {
-                String mailId = (String) request.getAttributes().get("mailId");
-                mail = getObjectsFacade().getMailById(mailId);
+            if (this.mailbox != null) {
+                final String mailId = (String) request.getAttributes().get(
+                        "mailId");
+                this.mail = getObjectsFacade().getMailById(mailId);
 
-                if (mail != null) {
+                if (this.mail != null) {
                     getVariants().add(new Variant(MediaType.TEXT_HTML));
                 }
             }
@@ -83,7 +84,7 @@ public class MailResource extends BaseResource {
      */
     @Override
     public void removeRepresentations() throws ResourceException {
-        getObjectsFacade().deleteMail(mailbox, mail);
+        getObjectsFacade().deleteMail(this.mailbox, this.mail);
         getResponse().redirectSeeOther(
                 getRequest().getResourceRef().getParentRef());
     }
@@ -93,15 +94,15 @@ public class MailResource extends BaseResource {
      */
     @Override
     public Representation represent(Variant variant) throws ResourceException {
-        Map<String, Object> dataModel = new TreeMap<String, Object>();
+        final Map<String, Object> dataModel = new TreeMap<String, Object>();
         dataModel.put("currentUser", getCurrentUser());
-        dataModel.put("mailbox", mailbox);
-        dataModel.put("mail", mail);
+        dataModel.put("mailbox", this.mailbox);
+        dataModel.put("mail", this.mail);
 
-        List<Contact> contacts = new ArrayList<Contact>();
-        contacts.addAll(mailbox.getContacts());
-        if (mail.getRecipients() != null) {
-            for (Contact contact : mail.getRecipients()) {
+        final List<Contact> contacts = new ArrayList<Contact>();
+        contacts.addAll(this.mailbox.getContacts());
+        if (this.mail.getRecipients() != null) {
+            for (final Contact contact : this.mail.getRecipients()) {
                 if (contact.getId() == null) {
                     contacts.add(contact);
                 }
@@ -112,7 +113,7 @@ public class MailResource extends BaseResource {
         dataModel.put("resourceRef", getRequest().getResourceRef());
         dataModel.put("rootRef", getRequest().getRootRef());
 
-        return getHTMLTemplateRepresentation("mail_" + mail.getStatus()
+        return getHTMLTemplateRepresentation("mail_" + this.mail.getStatus()
                 + ".html", dataModel);
     }
 
@@ -123,10 +124,10 @@ public class MailResource extends BaseResource {
     @Override
     public void storeRepresentation(Representation entity)
             throws ResourceException {
-        Form form = new Form(entity);
-        List<String> mailAddresses = new ArrayList<String>();
+        final Form form = new Form(entity);
+        final List<String> mailAddresses = new ArrayList<String>();
 
-        for (Parameter parameter : form.subList("recipients")) {
+        for (final Parameter parameter : form.subList("recipients")) {
             mailAddresses.add(parameter.getValue());
         }
 
@@ -136,39 +137,39 @@ public class MailResource extends BaseResource {
                     "tags").split(" ")));
         }
 
-        getObjectsFacade().updateMail(mailbox, mail,
+        getObjectsFacade().updateMail(this.mailbox, this.mail,
                 form.getFirstValue("status"), form.getFirstValue("subject"),
                 form.getFirstValue("message"), mailAddresses, tags);
 
         // Detect if the mail is to be sent.
-        if (Mail.STATUS_SENDING.equalsIgnoreCase(mail.getStatus())) {
-            mail.setSendingDate(new Date());
+        if (Mail.STATUS_SENDING.equalsIgnoreCase(this.mail.getStatus())) {
+            this.mail.setSendingDate(new Date());
             // Loop on the list of recipients and post to their mailbox.
             boolean success = true;
-            if (mail.getRecipients() != null) {
-                Client client = new Client(Protocol.HTTP);
-                Form form2 = new Form();
+            if (this.mail.getRecipients() != null) {
+                final Client client = new Client(Protocol.HTTP);
+                final Form form2 = new Form();
                 form2.add("status", Mail.STATUS_RECEIVING);
                 form2.add("senderAddress", getRequest().getRootRef()
-                        + "/mailboxes/" + mailbox.getId());
-                form2.add("senderName", mailbox.getSenderName());
+                        + "/mailboxes/" + this.mailbox.getId());
+                form2.add("senderName", this.mailbox.getSenderName());
 
-                form2.add("subject", mail.getSubject());
-                form2.add("message", mail.getMessage());
-                form2.add("sendingDate", mail.getSendingDate().toString());
-                for (Contact recipient : mail.getRecipients()) {
+                form2.add("subject", this.mail.getSubject());
+                form2.add("message", this.mail.getMessage());
+                form2.add("sendingDate", this.mail.getSendingDate().toString());
+                for (final Contact recipient : this.mail.getRecipients()) {
                     form2.add("recipient", recipient.getMailAddress() + "$"
                             + recipient.getName());
                 }
 
                 // Send the mail to every recipient
-                StringBuilder builder = new StringBuilder();
+                final StringBuilder builder = new StringBuilder();
                 Response response;
-                Request request = new Request();
+                final Request request = new Request();
                 request.setMethod(Method.POST);
                 request.setEntity(form2.getWebRepresentation());
 
-                for (Contact contact : mail.getRecipients()) {
+                for (final Contact contact : this.mail.getRecipients()) {
                     request.setResourceRef(contact.getMailAddress());
                     response = client.handle(request);
                     // Error when sending the mail.
@@ -182,27 +183,28 @@ public class MailResource extends BaseResource {
                 if (success) {
                     // if the mail has been successfully sent to every
                     // recipient.
-                    mail.setStatus(Mail.STATUS_SENT);
-                    getObjectsFacade().updateMail(mailbox, mail);
+                    this.mail.setStatus(Mail.STATUS_SENT);
+                    getObjectsFacade().updateMail(this.mailbox, this.mail);
                     getResponse().redirectSeeOther(
                             getRequest().getResourceRef());
                 } else {
                     // At least one error has been encountered.
-                    Map<String, Object> dataModel = new TreeMap<String, Object>();
+                    final Map<String, Object> dataModel = new TreeMap<String, Object>();
                     dataModel.put("currentUser", getCurrentUser());
-                    dataModel.put("mailbox", mailbox);
-                    dataModel.put("mail", mail);
+                    dataModel.put("mailbox", this.mailbox);
+                    dataModel.put("mail", this.mail);
                     dataModel.put("resourceRef", getRequest().getResourceRef());
                     dataModel.put("rootRef", getRequest().getRootRef());
                     dataModel.put("message", builder.toString());
                     getResponse().setEntity(
                             getHTMLTemplateRepresentation("mail_"
-                                    + mail.getStatus() + ".html", dataModel));
+                                    + this.mail.getStatus() + ".html",
+                                    dataModel));
                 }
             } else {
                 // Still a draft
-                mail.setStatus(Mail.STATUS_DRAFT);
-                getObjectsFacade().updateMail(mailbox, mail);
+                this.mail.setStatus(Mail.STATUS_DRAFT);
+                getObjectsFacade().updateMail(this.mailbox, this.mail);
                 getResponse().redirectSeeOther(getRequest().getResourceRef());
             }
         } else {

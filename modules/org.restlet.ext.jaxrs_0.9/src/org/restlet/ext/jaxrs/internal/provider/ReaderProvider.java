@@ -54,21 +54,22 @@ public class ReaderProvider extends AbstractProvider<Reader> {
      * UTF-8 if no character set was given or if it is not available
      */
     static Reader getReader(InputStream entityStream) {
-        Representation entity = Request.getCurrent().getEntity();
+        final Representation entity = Request.getCurrent().getEntity();
         CharacterSet cs;
         if (entity != null) {
             cs = entity.getCharacterSet();
-            if (cs == null)
+            if (cs == null) {
                 cs = Util.JAX_RS_DEFAULT_CHARACTER_SET;
+            }
         } else {
             cs = Util.JAX_RS_DEFAULT_CHARACTER_SET;
         }
         try {
             return ByteUtils.getReader(entityStream, cs);
-        } catch (UnsupportedEncodingException e) {
+        } catch (final UnsupportedEncodingException e) {
             try {
                 return ByteUtils.getReader(entityStream, null);
-            } catch (UnsupportedEncodingException e2) {
+            } catch (final UnsupportedEncodingException e2) {
                 throw new WebApplicationException(500);
             }
         }
@@ -108,7 +109,8 @@ public class ReaderProvider extends AbstractProvider<Reader> {
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
-        CharacterSet cs = Response.getCurrent().getEntity().getCharacterSet();
+        final CharacterSet cs = Response.getCurrent().getEntity()
+                .getCharacterSet();
         Util.copyStream(ByteUtils.getStream(reader, cs), entityStream);
         // NICE testen charset for ReaderProvider.writeTo(..) ?
     }

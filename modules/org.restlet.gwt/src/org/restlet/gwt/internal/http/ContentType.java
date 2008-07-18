@@ -18,6 +18,8 @@
 
 package org.restlet.gwt.internal.http;
 
+import java.io.IOException;
+
 import org.restlet.gwt.data.CharacterSet;
 import org.restlet.gwt.data.MediaType;
 import org.restlet.gwt.data.Preference;
@@ -28,6 +30,21 @@ import org.restlet.gwt.data.Preference;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class ContentType {
+    /**
+     * Parses the Content Type.
+     * 
+     * @param headerValue
+     * @return MediaType
+     * @throws IOException
+     */
+    public static MediaType parseContentType(String headerValue)
+            throws Exception {
+        final PreferenceReader<MediaType> pr = new PreferenceReader<MediaType>(
+                PreferenceReader.TYPE_MEDIA_TYPE, headerValue);
+        final Preference<MediaType> pref = pr.readPreference();
+        return pref.getMetadata();
+    }
+
     /**
      * The content media type.
      */
@@ -42,44 +59,20 @@ public class ContentType {
      * Constructor.
      * 
      * @param headerValue
-     *                The "Content-type" header to parse.
+     *            The "Content-type" header to parse.
      */
     public ContentType(String headerValue) {
         try {
             this.mediaType = parseContentType(headerValue);
-            String charSet = this.mediaType.getParameters().getFirstValue(
-                    "charset");
+            final String charSet = this.mediaType.getParameters()
+                    .getFirstValue("charset");
             if (charSet != null) {
                 this.characterSet = new CharacterSet(charSet);
             }
-        } catch (Exception ioe) {
+        } catch (final Exception ioe) {
             ioe.printStackTrace();
             // TODO IllegalArgumentException? remove line after think about :-)
         }
-    }
-
-    /**
-     * Parses the Content Type.
-     * 
-     * @param headerValue
-     * @return MediaType
-     * @throws IOException
-     */
-    public static MediaType parseContentType(String headerValue)
-            throws Exception {
-        PreferenceReader<MediaType> pr = new PreferenceReader<MediaType>(
-                PreferenceReader.TYPE_MEDIA_TYPE, headerValue);
-        Preference<MediaType> pref = pr.readPreference();
-        return pref.getMetadata();
-    }
-
-    /**
-     * Returns the media type.
-     * 
-     * @return The media type.
-     */
-    public MediaType getMediaType() {
-        return mediaType;
     }
 
     /**
@@ -88,6 +81,15 @@ public class ContentType {
      * @return The character set.
      */
     public CharacterSet getCharacterSet() {
-        return characterSet;
+        return this.characterSet;
+    }
+
+    /**
+     * Returns the media type.
+     * 
+     * @return The media type.
+     */
+    public MediaType getMediaType() {
+        return this.mediaType;
     }
 }

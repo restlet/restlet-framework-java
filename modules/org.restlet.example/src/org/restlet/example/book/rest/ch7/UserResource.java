@@ -45,33 +45,33 @@ import com.db4o.query.Predicate;
  */
 public class UserResource extends Resource {
 
-    private String login;
+    private final String login;
 
-    private String password;
+    private final String password;
 
     private User user;
 
-    private String userName;
+    private final String userName;
 
     /**
      * Constructor.
      * 
      * @param context
-     *                The parent context.
+     *            The parent context.
      * @param request
-     *                The request to handle.
+     *            The request to handle.
      * @param response
-     *                The response to return.
+     *            The response to return.
      */
     public UserResource(Context context, Request request, Response response) {
         super(context, request, response);
         this.userName = (String) request.getAttributes().get("username");
-        ChallengeResponse cr = request.getChallengeResponse();
+        final ChallengeResponse cr = request.getChallengeResponse();
         this.login = (cr != null) ? cr.getIdentifier() : null;
         this.password = (cr != null) ? new String(cr.getSecret()) : null;
         this.user = findUser();
 
-        if (user != null) {
+        if (this.user != null) {
             getVariants().add(new Variant(MediaType.TEXT_PLAIN));
         }
 
@@ -110,33 +110,6 @@ public class UserResource extends Resource {
         return result;
     }
 
-    @Override
-    public void removeRepresentations() throws ResourceException {
-        switch (checkAuthorization()) {
-        case 1:
-            // Delete all associated bookmarks
-            for (Bookmark bookmark : this.user.getBookmarks()) {
-                getContainer().delete(bookmark);
-            }
-
-            // Delete the parent user
-            getContainer().delete(this.user);
-
-            // Commit the changes
-            getContainer().commit();
-            getResponse().setStatus(Status.SUCCESS_OK);
-            break;
-        case 0:
-            // No authentication provided
-            challenge();
-            break;
-        case -1:
-            // Wrong authenticaiton provided
-            getResponse().setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
-            break;
-        }
-    }
-
     /**
      * Finds the associated user.
      * 
@@ -145,19 +118,20 @@ public class UserResource extends Resource {
     public User findUser() {
         User result = null;
 
-        if (userName != null) {
+        if (this.userName != null) {
             // Create the query predicate
-            Predicate<User> predicate = new Predicate<User>() {
+            final Predicate<User> predicate = new Predicate<User>() {
                 private static final long serialVersionUID = 1L;
 
                 @Override
                 public boolean match(User candidate) {
-                    return userName.equals(candidate.getName());
+                    return UserResource.this.userName.equals(candidate
+                            .getName());
                 }
             };
 
             // Query the database and get the first result
-            List<User> users = getContainer().query(predicate);
+            final List<User> users = getContainer().query(predicate);
             if ((users != null) && (users.size() > 0)) {
                 result = users.get(0);
             }
@@ -185,6 +159,42 @@ public class UserResource extends Resource {
         return getApplication().getContainer();
     }
 
+    /**
+     * Returns the associated user.
+     * 
+     * @return The associated user.
+     */
+    public User getUser() {
+        return this.user;
+    }
+
+    @Override
+    public void removeRepresentations() throws ResourceException {
+        switch (checkAuthorization()) {
+        case 1:
+            // Delete all associated bookmarks
+            for (final Bookmark bookmark : this.user.getBookmarks()) {
+                getContainer().delete(bookmark);
+            }
+
+            // Delete the parent user
+            getContainer().delete(this.user);
+
+            // Commit the changes
+            getContainer().commit();
+            getResponse().setStatus(Status.SUCCESS_OK);
+            break;
+        case 0:
+            // No authentication provided
+            challenge();
+            break;
+        case -1:
+            // Wrong authenticaiton provided
+            getResponse().setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
+            break;
+        }
+    }
+
     @Override
     public Representation represent(Variant variant) throws ResourceException {
         Representation result = null;
@@ -192,7 +202,7 @@ public class UserResource extends Resource {
         if ((variant != null)
                 && variant.getMediaType().equals(MediaType.TEXT_PLAIN)) {
             // Creates a text representation
-            StringBuilder sb = new StringBuilder();
+            final StringBuilder sb = new StringBuilder();
             sb.append("------------\n");
             sb.append("User details\n");
             sb.append("------------\n\n");
@@ -205,12 +215,13 @@ public class UserResource extends Resource {
     }
 
     /**
-     * Returns the associated user.
+     * Sets the associated user.
      * 
-     * @return The associated user.
+     * @param user
+     *            The user to set.
      */
-    public User getUser() {
-        return this.user;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Override
@@ -245,7 +256,7 @@ public class UserResource extends Resource {
 
             if (canSet) {
                 // Parse the entity as a web form
-                Form form = new Form(entity);
+                final Form form = new Form(entity);
                 getUser().setEmail(form.getFirstValue("user[email]"));
                 getUser().setFullName(form.getFirstValue("user[full_name]"));
                 getUser().setPassword(form.getFirstValue("user[password]"));
@@ -255,16 +266,6 @@ public class UserResource extends Resource {
                 getContainer().commit();
             }
         }
-    }
-
-    /**
-     * Sets the associated user.
-     * 
-     * @param user
-     *                The user to set.
-     */
-    public void setUser(User user) {
-        this.user = user;
     }
 
 }

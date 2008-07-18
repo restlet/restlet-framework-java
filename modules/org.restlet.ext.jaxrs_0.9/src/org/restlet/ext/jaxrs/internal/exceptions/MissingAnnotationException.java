@@ -35,17 +35,17 @@ public class MissingAnnotationException extends JaxRsException {
     }
 
     /**
-     * @param cause
-     */
-    public MissingAnnotationException(Throwable cause) {
-        super(cause);
-    }
-
-    /**
      * @param message
      * @param cause
      */
     public MissingAnnotationException(String message, Throwable cause) {
         super(message, cause);
+    }
+
+    /**
+     * @param cause
+     */
+    public MissingAnnotationException(Throwable cause) {
+        super(cause);
     }
 }

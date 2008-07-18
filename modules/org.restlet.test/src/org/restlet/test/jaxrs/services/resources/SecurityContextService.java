@@ -44,42 +44,33 @@ import org.restlet.test.jaxrs.services.tests.SecurityContextTest;
 @Path("/SecurityContextTestService")
 public class SecurityContextService {
 
-    @Context private SecurityContext securityContext;
-    
+    @Context
+    private SecurityContext securityContext;
+
     @GET
     @Produces("text/plain")
     public String get() {
-        if (!securityContext.isUserInRole("bad"))
+        if (!this.securityContext.isUserInRole("bad")) {
             throw new WebApplicationException(403);
+        }
         return "das darfst Du";
-    }
-
-    @POST
-    public Response post(MultivaluedMap<String, String> entity, 
-            @Context UriInfo uriInfo) {
-        if (!securityContext.isUserInRole("bat"))
-            throw new WebApplicationException(403);
-        entity.toString(); // typically the entity will be stored in the DB.
-        String id = "4711";
-        URI collectionUri = uriInfo.getRequestUri();
-        URI location = UriBuilder.fromUri(collectionUri).path("{id}").build(id);
-        return Response.created(location).build();
     }
 
     @GET
     @Path("authenticationScheme")
     @Produces("text/plain")
     public String getAuthenticationScheme() {
-        return securityContext.getAuthenticationScheme();
+        return this.securityContext.getAuthenticationScheme();
     }
 
     @GET
     @Path("userPrincipal")
     @Produces("text/plain")
     public String getUserPrincipal() {
-        Principal principal = securityContext.getUserPrincipal();
-        if (principal == null)
+        final Principal principal = this.securityContext.getUserPrincipal();
+        if (principal == null) {
             return "no principal found";
+        }
         return principal.getName();
     }
 
@@ -87,12 +78,27 @@ public class SecurityContextService {
     @Path("secure")
     @Produces("text/plain")
     public String isSecure(@Context UriInfo uriInfo) {
-        if (!securityContext.isSecure()) {
-            ResponseBuilder rb = Response.status(Status.MOVED_PERMANENTLY);
+        if (!this.securityContext.isSecure()) {
+            final ResponseBuilder rb = Response
+                    .status(Status.MOVED_PERMANENTLY);
             rb.entity("You must use a secure connection");
             rb.location(uriInfo.getRequestUriBuilder().scheme("https").build());
             throw new WebApplicationException(rb.build());
         }
         return "wonderful! It's a secure request.";
+    }
+
+    @POST
+    public Response post(MultivaluedMap<String, String> entity,
+            @Context UriInfo uriInfo) {
+        if (!this.securityContext.isUserInRole("bat")) {
+            throw new WebApplicationException(403);
+        }
+        entity.toString(); // typically the entity will be stored in the DB.
+        final String id = "4711";
+        final URI collectionUri = uriInfo.getRequestUri();
+        final URI location = UriBuilder.fromUri(collectionUri).path("{id}")
+                .build(id);
+        return Response.created(location).build();
     }
 }

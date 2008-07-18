@@ -59,14 +59,14 @@ public class ServletCall extends HttpServerCall {
      * request.
      * 
      * @param request
-     *                The Restlet request.
+     *            The Restlet request.
      * @return The Servlet request or null.
      */
     public static HttpServletRequest getRequest(Request request) {
         HttpServletRequest result = null;
 
         if (request instanceof HttpRequest) {
-            HttpCall httpCall = ((HttpRequest) request).getHttpCall();
+            final HttpCall httpCall = ((HttpRequest) request).getHttpCall();
 
             if (httpCall instanceof ServletCall) {
                 result = ((ServletCall) httpCall).getRequest();
@@ -89,15 +89,15 @@ public class ServletCall extends HttpServerCall {
      * Constructor.
      * 
      * @param logger
-     *                The logger.
+     *            The logger.
      * @param serverAddress
-     *                The server IP address.
+     *            The server IP address.
      * @param serverPort
-     *                The server port.
+     *            The server port.
      * @param request
-     *                The Servlet request
+     *            The Servlet request
      * @param response
-     *                The Servlet response.
+     *            The Servlet response.
      */
     public ServletCall(Logger logger, String serverAddress, int serverPort,
             HttpServletRequest request, HttpServletResponse response) {
@@ -110,11 +110,11 @@ public class ServletCall extends HttpServerCall {
      * Constructor.
      * 
      * @param server
-     *                The parent server.
+     *            The parent server.
      * @param request
-     *                The HTTP Servlet request to wrap.
+     *            The HTTP Servlet request to wrap.
      * @param response
-     *                The HTTP Servlet response to wrap.
+     *            The HTTP Servlet response to wrap.
      */
     public ServletCall(Server server, HttpServletRequest request,
             HttpServletResponse response) {
@@ -182,7 +182,7 @@ public class ServletCall extends HttpServerCall {
     public InputStream getRequestEntityStream(long size) {
         try {
             return getRequest().getInputStream();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             return null;
         }
     }
@@ -207,11 +207,11 @@ public class ServletCall extends HttpServerCall {
             // Copy the headers from the request object
             String headerName;
             String headerValue;
-            for (Enumeration<String> names = getRequest().getHeaderNames(); names
-                    .hasMoreElements();) {
+            for (final Enumeration<String> names = getRequest()
+                    .getHeaderNames(); names.hasMoreElements();) {
                 headerName = names.nextElement();
-                for (Enumeration<String> values = getRequest().getHeaders(
-                        headerName); values.hasMoreElements();) {
+                for (final Enumeration<String> values = getRequest()
+                        .getHeaders(headerName); values.hasMoreElements();) {
                     headerValue = values.nextElement();
                     this.requestHeaders.add(new Parameter(headerName,
                             headerValue));
@@ -235,7 +235,7 @@ public class ServletCall extends HttpServerCall {
      */
     @Override
     public String getRequestUri() {
-        String queryString = getRequest().getQueryString();
+        final String queryString = getRequest().getQueryString();
 
         if ((queryString == null) || (queryString.equals(""))) {
             return getRequest().getRequestURI();
@@ -273,7 +273,7 @@ public class ServletCall extends HttpServerCall {
     public OutputStream getResponseEntityStream() {
         try {
             return getResponse().getOutputStream();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             return null;
         }
     }
@@ -307,7 +307,7 @@ public class ServletCall extends HttpServerCall {
 
     @Override
     public List<Certificate> getSslClientCertificates() {
-        Certificate[] certificateArray = (Certificate[]) getRequest()
+        final Certificate[] certificateArray = (Certificate[]) getRequest()
                 .getAttribute("javax.servlet.request.X509Certificate");
         if (certificateArray != null) {
             return Arrays.asList(certificateArray);
@@ -329,7 +329,7 @@ public class ServletCall extends HttpServerCall {
     @Override
     public String getVersion() {
         String result = null;
-        int index = getRequest().getProtocol().indexOf('/');
+        final int index = getRequest().getProtocol().indexOf('/');
 
         if (index != -1) {
             result = getRequest().getProtocol().substring(index + 1);
@@ -353,13 +353,13 @@ public class ServletCall extends HttpServerCall {
      * optional entity and send them on the network.
      * 
      * @param response
-     *                The high-level response.
+     *            The high-level response.
      */
     @Override
     public void sendResponse(Response response) throws IOException {
         // Add the response headers
         Parameter header;
-        for (Iterator<Parameter> iter = getResponseHeaders().iterator(); iter
+        for (final Iterator<Parameter> iter = getResponseHeaders().iterator(); iter
                 .hasNext();) {
             header = iter.next();
             getResponse().addHeader(header.getName(), header.getValue());
@@ -371,7 +371,7 @@ public class ServletCall extends HttpServerCall {
         if (Status.isError(getStatusCode()) && (response.getEntity() == null)) {
             try {
                 getResponse().sendError(getStatusCode(), getReasonPhrase());
-            } catch (IOException ioe) {
+            } catch (final IOException ioe) {
                 getLogger().log(Level.WARNING,
                         "Unable to set the response error status", ioe);
             }

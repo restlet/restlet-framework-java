@@ -55,28 +55,30 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
      * Creates a new wrapper for the given sub resource locator.
      * 
      * @param javaMethod
-     *                The Java method wich creats the sub resource
+     *            The Java method wich creats the sub resource
      * @param annotatedMethod
-     *                the message containing the annotations for this sub
-     *                resource locator.
+     *            the message containing the annotations for this sub resource
+     *            locator.
      * @param resourceClass
-     *                the wrapped resource class.
+     *            the wrapped resource class.
      * @param tlContext
-     *                the {@link ThreadLocalizedContext} of the
-     *                {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
+     *            the {@link ThreadLocalizedContext} of the
+     *            {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
      * @param entityProviders
-     *                all entity providers
+     *            all entity providers
      * @param allCtxResolvers
-     *                all ContextResolvers
+     *            all ContextResolvers
      * @param extensionBackwardMapping
-     *                the extension backward mapping
+     *            the extension backward mapping
      * @param logger
      * @throws IllegalPathOnMethodException
      * @throws MissingAnnotationException
-     * @throws IllegalArgumentException if the annotated method is null
+     * @throws IllegalArgumentException
+     *             if the annotated method is null
      * @throws IllegalTypeException
-     *                 if one of the parameters annotated with &#64;{@link Context}
-     *                 has a type that must not be annotated with &#64;{@link Context}.
+     *             if one of the parameters annotated with &#64;{@link Context}
+     *             has a type that must not be annotated with &#64;
+     *             {@link Context}.
      */
     SubResourceLocator(Method javaMethod, Method annotatedMethod,
             ResourceClass resourceClass, ThreadLocalizedContext tlContext,
@@ -94,11 +96,11 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
      * Creates a sub resource
      * 
      * @param resourceObject
-     *                the wrapped resource object.
+     *            the wrapped resource object.
      * @param wrapperFactory
-     *                factory to create wrappers.
+     *            factory to create wrappers.
      * @param logger
-     *                The logger to use
+     *            The logger to use
      * @return Returns the wrapped sub resource object.
      * @throws InvocationTargetException
      * @throws NoMessageBodyReaderException
@@ -122,15 +124,15 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
         Object subResObj;
         try {
             subResObj = internalInvoke(resourceObject);
-        } catch (IllegalArgumentException e) {
-            throw new InstantiateException(executeMethod, e);
-        } catch (IllegalAccessException e) {
-            throw new InstantiateException(executeMethod, e);
+        } catch (final IllegalArgumentException e) {
+            throw new InstantiateException(this.executeMethod, e);
+        } catch (final IllegalAccessException e) {
+            throw new InstantiateException(this.executeMethod, e);
         }
         if (subResObj == null) {
             logger
                     .warning("The sub resource object is null. That is not allowed");
-            ResponseBuilder rb = javax.ws.rs.core.Response.serverError();
+            final ResponseBuilder rb = javax.ws.rs.core.Response.serverError();
             rb.entity("The sub resource object is null. That is not allowed");
             throw new WebApplicationException(rb.build());
         }

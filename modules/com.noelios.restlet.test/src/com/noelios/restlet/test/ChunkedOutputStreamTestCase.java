@@ -33,83 +33,83 @@ import com.noelios.restlet.http.ChunkedOutputStream;
  */
 public class ChunkedOutputStreamTestCase extends TestCase {
 
-    public void testWrite() throws IOException {
-        String data = "test data";
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        OutputStream chunked = new ChunkedOutputStream(out);
-
-        chunked.write(data.getBytes());
-        chunked.close();
-
-        String result = new String(out.toByteArray());
-
-        assertEquals("9\r\ntest data\r\n0\r\n\r\n", result);
-    }
-
-    public void testEmptyWrite() throws IOException {
-        String data = "";
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        OutputStream chunked = new ChunkedOutputStream(out);
-
-        chunked.write(data.getBytes());
-        chunked.close();
-
-        String result = new String(out.toByteArray());
-
-        assertEquals("0\r\n\r\n", result);
-    }
-
-    public void testNoWrite() throws IOException {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        OutputStream chunked = new ChunkedOutputStream(out);
-
-        chunked.close();
-
-        String result = new String(out.toByteArray());
-
-        assertEquals("0\r\n\r\n", result);
-    }
-
-    public void testWriteSmallBuffer() throws IOException {
-        String data = "test data";
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        OutputStream chunked = new ChunkedOutputStream(out, 2);
-
-        chunked.write(data.getBytes());
-        chunked.close();
-
-        String result = new String(out.toByteArray());
-
-        assertEquals(
-                "2\r\nte\r\n2\r\nst\r\n2\r\n d\r\n2\r\nat\r\n1\r\na\r\n0\r\n\r\n",
-                result);
-    }
-
     public void testCallCloseTwice() throws IOException {
-        String data = "test data";
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        OutputStream chunked = new ChunkedOutputStream(out);
+        final String data = "test data";
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
+        final OutputStream chunked = new ChunkedOutputStream(out);
 
         chunked.write(data.getBytes());
         chunked.close();
         chunked.close();
 
-        String result = new String(out.toByteArray());
+        final String result = new String(out.toByteArray());
 
         assertEquals("9\r\ntest data\r\n0\r\n\r\n", result);
     }
 
     public void testCallFlushAndClose() throws IOException {
-        String data = "test data";
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        OutputStream chunked = new ChunkedOutputStream(out);
+        final String data = "test data";
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
+        final OutputStream chunked = new ChunkedOutputStream(out);
 
         chunked.write(data.getBytes());
         chunked.flush();
         chunked.close();
 
-        String result = new String(out.toByteArray());
+        final String result = new String(out.toByteArray());
 
         assertEquals("9\r\ntest data\r\n0\r\n\r\n", result);
+    }
+
+    public void testEmptyWrite() throws IOException {
+        final String data = "";
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
+        final OutputStream chunked = new ChunkedOutputStream(out);
+
+        chunked.write(data.getBytes());
+        chunked.close();
+
+        final String result = new String(out.toByteArray());
+
+        assertEquals("0\r\n\r\n", result);
+    }
+
+    public void testNoWrite() throws IOException {
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
+        final OutputStream chunked = new ChunkedOutputStream(out);
+
+        chunked.close();
+
+        final String result = new String(out.toByteArray());
+
+        assertEquals("0\r\n\r\n", result);
+    }
+
+    public void testWrite() throws IOException {
+        final String data = "test data";
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
+        final OutputStream chunked = new ChunkedOutputStream(out);
+
+        chunked.write(data.getBytes());
+        chunked.close();
+
+        final String result = new String(out.toByteArray());
+
+        assertEquals("9\r\ntest data\r\n0\r\n\r\n", result);
+    }
+
+    public void testWriteSmallBuffer() throws IOException {
+        final String data = "test data";
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
+        final OutputStream chunked = new ChunkedOutputStream(out, 2);
+
+        chunked.write(data.getBytes());
+        chunked.close();
+
+        final String result = new String(out.toByteArray());
+
+        assertEquals(
+                "2\r\nte\r\n2\r\nst\r\n2\r\n d\r\n2\r\nat\r\n1\r\na\r\n0\r\n\r\n",
+                result);
     }
 }

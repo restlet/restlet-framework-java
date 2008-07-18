@@ -50,9 +50,9 @@ import org.restlet.data.Status;
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
  * 
- * @see <a
- *      href="http://www.restlet.org/documentation/1.1/tutorial#part12">Tutorial:
- *      Reaching target Resources</a>
+ * @see <a *
+ *      href="http://www.restlet.org/documentation/1.1/tutorial#part12">Tutorial
+ *      : * Reaching target Resources< /a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Finder extends Restlet {
@@ -70,7 +70,7 @@ public class Finder extends Restlet {
      * Constructor.
      * 
      * @param context
-     *                The context.
+     *            The context.
      */
     public Finder(Context context) {
         this(context, null);
@@ -80,9 +80,9 @@ public class Finder extends Restlet {
      * Constructor.
      * 
      * @param context
-     *                The context.
+     *            The context.
      * @param targetClass
-     *                The target handler class.
+     *            The target handler class.
      */
     public Finder(Context context, Class<? extends Handler> targetClass) {
         super(context);
@@ -93,9 +93,9 @@ public class Finder extends Restlet {
      * Indicates if a method is allowed on a target handler.
      * 
      * @param method
-     *                The method to test.
+     *            The method to test.
      * @param target
-     *                The target handler.
+     *            The target handler.
      * @return True if a method is allowed on a target handler.
      */
     private boolean allow(Method method, Handler target) {
@@ -117,8 +117,8 @@ public class Finder extends Restlet {
             } else {
                 // Dynamically introspect the target handler to detect a
                 // matching "allow" method.
-                java.lang.reflect.Method allowMethod = getAllowMethod(method,
-                        target);
+                final java.lang.reflect.Method allowMethod = getAllowMethod(
+                        method, target);
                 if (allowMethod != null) {
                     result = (Boolean) invoke(target, allowMethod);
                 }
@@ -135,9 +135,9 @@ public class Finder extends Restlet {
      * property as a parameter.
      * 
      * @param request
-     *                The request to handle.
+     *            The request to handle.
      * @param response
-     *                The response to update.
+     *            The response to update.
      * @return The created handler or null.
      * @deprecated Use the {@link #createTarget(Request, Response)} instead.
      */
@@ -152,9 +152,9 @@ public class Finder extends Restlet {
      * method. Other exception are caught and logged.
      * 
      * @param request
-     *                The request to handle.
+     *            The request to handle.
      * @param response
-     *                The response to update.
+     *            The response to update.
      * @return The created handler or null.
      */
     public Handler createTarget(Class<? extends Handler> targetClass,
@@ -171,7 +171,7 @@ public class Finder extends Restlet {
                             Request.class, Response.class);
                     result = (Handler) constructor.newInstance(getContext(),
                             request, response);
-                } catch (NoSuchMethodException nsme) {
+                } catch (final NoSuchMethodException nsme) {
                     // Invoke the default constructor then the init(Context,
                     // Request, Response) method.
                     constructor = targetClass.getConstructor();
@@ -180,7 +180,7 @@ public class Finder extends Restlet {
                         result.init(getContext(), request, response);
                     }
                 }
-            } catch (InvocationTargetException e) {
+            } catch (final InvocationTargetException e) {
                 if (e.getCause() instanceof Error) {
                     throw (Error) e.getCause();
                 } else if (e.getCause() instanceof RuntimeException) {
@@ -192,7 +192,7 @@ public class Finder extends Restlet {
                                     "Exception while instantiating the target handler.",
                                     e);
                 }
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 getLogger().log(Level.WARNING,
                         "Exception while instantiating the target handler.", e);
             }
@@ -208,9 +208,9 @@ public class Finder extends Restlet {
      * property as a parameter.
      * 
      * @param request
-     *                The request to handle.
+     *            The request to handle.
      * @param response
-     *                The response to update.
+     *            The response to update.
      * @return The created handler or null.
      */
     protected Handler createTarget(Request request, Response response) {
@@ -222,9 +222,9 @@ public class Finder extends Restlet {
      * the {@link #createTarget(Request, Response)} method.
      * 
      * @param request
-     *                The request to handle.
+     *            The request to handle.
      * @param response
-     *                The response to update.
+     *            The response to update.
      * @return The target handler if available or null.
      */
     protected Handler findTarget(Request request, Response response) {
@@ -235,9 +235,9 @@ public class Finder extends Restlet {
      * Returns the allow method matching the given method name.
      * 
      * @param method
-     *                The method to match.
+     *            The method to match.
      * @param target
-     *                The target handler.
+     *            The target handler.
      * @return The allow method matching the given method name.
      */
     private java.lang.reflect.Method getAllowMethod(Method method,
@@ -249,7 +249,7 @@ public class Finder extends Restlet {
      * Returns the handle method matching the given method name.
      * 
      * @param method
-     *                The method to match.
+     *            The method to match.
      * @return The handle method matching the given method name.
      */
     private java.lang.reflect.Method getHandleMethod(Handler target,
@@ -261,16 +261,16 @@ public class Finder extends Restlet {
      * Returns the method matching the given prefix and method name.
      * 
      * @param prefix
-     *                The method prefix to match (ex: "allow" or "handle").
+     *            The method prefix to match (ex: "allow" or "handle").
      * @param method
-     *                The method to match.
+     *            The method to match.
      * @return The method matching the given prefix and method name.
      */
     private java.lang.reflect.Method getMethod(String prefix, Method method,
             Object target, Class<?>... classes) {
         java.lang.reflect.Method result = null;
-        StringBuilder sb = new StringBuilder();
-        String methodName = method.getName().toLowerCase();
+        final StringBuilder sb = new StringBuilder();
+        final String methodName = method.getName().toLowerCase();
 
         if ((methodName != null) && (methodName.length() > 0)) {
             sb.append(prefix);
@@ -280,12 +280,12 @@ public class Finder extends Restlet {
 
         try {
             result = target.getClass().getMethod(sb.toString(), classes);
-        } catch (SecurityException e) {
+        } catch (final SecurityException e) {
             getLogger().log(
                     Level.WARNING,
                     "Couldn't access the " + prefix + " method for \"" + method
                             + "\"", e);
-        } catch (NoSuchMethodException e) {
+        } catch (final NoSuchMethodException e) {
             getLogger().log(
                     Level.INFO,
                     "Couldn't find the " + prefix + " method for \"" + method
@@ -308,16 +308,16 @@ public class Finder extends Restlet {
      * Handles a call.
      * 
      * @param request
-     *                The request to handle.
+     *            The request to handle.
      * @param response
-     *                The response to update.
+     *            The response to update.
      */
     @Override
     public void handle(Request request, Response response) {
         super.handle(request, response);
 
         if (isStarted()) {
-            Handler target = findTarget(request, response);
+            final Handler target = findTarget(request, response);
 
             if (!response.getStatus().equals(Status.SUCCESS_OK)) {
                 // Probably during the instantiation of the target handler, or
@@ -329,7 +329,7 @@ public class Finder extends Restlet {
                 // the response status to 404 (Not Found).
                 response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
             } else {
-                Method method = request.getMethod();
+                final Method method = request.getMethod();
 
                 if (method == null) {
                     response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
@@ -353,7 +353,7 @@ public class Finder extends Restlet {
                         } else if (method.equals(Method.OPTIONS)) {
                             target.handleOptions();
                         } else {
-                            java.lang.reflect.Method handleMethod = getHandleMethod(
+                            final java.lang.reflect.Method handleMethod = getHandleMethod(
                                     target, method);
                             if (handleMethod != null) {
                                 invoke(target, handleMethod);
@@ -372,11 +372,11 @@ public class Finder extends Restlet {
      * Invokes a method with the given arguments.
      * 
      * @param target
-     *                The target object.
+     *            The target object.
      * @param method
-     *                The method to invoke.
+     *            The method to invoke.
      * @param args
-     *                The arguments to pass.
+     *            The arguments to pass.
      * @return Invocation result.
      */
     private Object invoke(Object target, java.lang.reflect.Method method,
@@ -386,7 +386,7 @@ public class Finder extends Restlet {
         if (method != null) {
             try {
                 result = method.invoke(target, args);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 getLogger().log(
                         Level.WARNING,
                         "Couldn't invoke the handle method for \"" + method
@@ -401,7 +401,7 @@ public class Finder extends Restlet {
      * Sets the target Handler class.
      * 
      * @param targetClass
-     *                The target Handler class.
+     *            The target Handler class.
      */
     public void setTargetClass(Class<? extends Handler> targetClass) {
         this.targetClass = targetClass;

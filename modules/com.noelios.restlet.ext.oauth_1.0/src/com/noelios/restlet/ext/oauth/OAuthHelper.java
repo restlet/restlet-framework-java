@@ -46,13 +46,6 @@ import com.noelios.restlet.authentication.AuthenticationHelper;
 public class OAuthHelper extends AuthenticationHelper {
 
     /**
-     * Constructor.
-     */
-    public OAuthHelper() {
-        super(OAuthGuard.SCHEME, false, true);
-    }
-
-    /**
      * Extract the parts of the given request that are relevant to OAuth.
      * Parameters include OAuth Authorization headers and the usual request
      * parameters in the query string and/or form encoded body. The header
@@ -61,11 +54,11 @@ public class OAuthHelper extends AuthenticationHelper {
      * 
      * @param request
      * @param logger
-     *                The context's logger.
+     *            The context's logger.
      * @return message
      */
     public static OAuthMessage getMessage(Request request, Logger logger) {
-        String URL = request.getResourceRef().toString();
+        final String URL = request.getResourceRef().toString();
         return new OAuthMessage(request.getMethod().getName(), URL, OAuthHelper
                 .getParameters(request, logger));
     }
@@ -75,17 +68,17 @@ public class OAuthHelper extends AuthenticationHelper {
      * 
      * @param request
      * @param logger
-     *                The context's logger.
+     *            The context's logger.
      * @return parameters
      */
     public static List<OAuth.Parameter> getParameters(Request request,
             Logger logger) {
-        Set<OAuth.Parameter> parameters = new HashSet<OAuth.Parameter>();
+        final Set<OAuth.Parameter> parameters = new HashSet<OAuth.Parameter>();
 
         // Authorization headers.
-        Form headers = (Form) request.getAttributes().get(
+        final Form headers = (Form) request.getAttributes().get(
                 "org.restlet.http.headers");
-        for (OAuth.Parameter parameter : OAuthMessage
+        for (final OAuth.Parameter parameter : OAuthMessage
                 .decodeAuthorization(headers.getFirstValue("Authorization"))) {
             if (!parameter.getKey().equalsIgnoreCase("realm")) {
                 parameters.add(parameter);
@@ -93,15 +86,15 @@ public class OAuthHelper extends AuthenticationHelper {
         }
 
         // Query parameters.
-        for (org.restlet.data.Parameter p : request.getResourceRef()
+        for (final org.restlet.data.Parameter p : request.getResourceRef()
                 .getQueryAsForm()) {
             parameters.add(new OAuth.Parameter(p.getName(), p.getValue()));
         }
 
         // POST with x-www-urlencoded data
-        if (request.getMethod() == Method.POST
-                && request.getEntity().getMediaType() == MediaType.APPLICATION_WWW_FORM) {
-            for (org.restlet.data.Parameter p : request.getEntityAsForm()) {
+        if ((request.getMethod() == Method.POST)
+                && (request.getEntity().getMediaType() == MediaType.APPLICATION_WWW_FORM)) {
+            for (final org.restlet.data.Parameter p : request.getEntityAsForm()) {
                 parameters.add(new OAuth.Parameter(p.getName(), p.getValue()));
             }
         }
@@ -111,16 +104,25 @@ public class OAuthHelper extends AuthenticationHelper {
         return new ArrayList<OAuth.Parameter>(parameters);
     }
 
+    /**
+     * Constructor.
+     */
+    public OAuthHelper() {
+        super(OAuthGuard.SCHEME, false, true);
+    }
+
     @Override
-    public void parseResponse(ChallengeResponse cr, Request request,
-            Logger logger) {
-        super.parseResponse(cr, request, logger);
+    public void formatCredentials(StringBuilder sb,
+            ChallengeResponse challenge, Request request,
+            Series<Parameter> httpHeaders) {
+        // TODO Auto-generated method stub
+
     }
 
     @Override
     public void formatParameters(StringBuilder sb,
             Series<Parameter> parameters, ChallengeRequest request) {
-        for (Parameter p : parameters) {
+        for (final Parameter p : parameters) {
             sb.append(",");
             sb.append(p.getName());
             sb.append("=\"");
@@ -131,11 +133,9 @@ public class OAuthHelper extends AuthenticationHelper {
     }
 
     @Override
-    public void formatCredentials(StringBuilder sb,
-            ChallengeResponse challenge, Request request,
-            Series<Parameter> httpHeaders) {
-        // TODO Auto-generated method stub
-
+    public void parseResponse(ChallengeResponse cr, Request request,
+            Logger logger) {
+        super.parseResponse(cr, request, logger);
     }
 
 }

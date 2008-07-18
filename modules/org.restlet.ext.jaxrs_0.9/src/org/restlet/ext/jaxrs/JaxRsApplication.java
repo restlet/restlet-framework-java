@@ -52,7 +52,7 @@ import org.restlet.service.TunnelService;
  * <ul>
  * <li>Add your {@link ApplicationConfig}(s) by calling
  * {@link #add(ApplicationConfig)}.</li>
- * <li> If you need authentication, set a {@link Guard} and perhaps an
+ * <li>If you need authentication, set a {@link Guard} and perhaps an
  * {@link RoleChecker}, see {@link #setGuard(Guard)} or
  * {@link #setAuthentication(Guard, RoleChecker)}.</li>
  * </ul>
@@ -102,11 +102,11 @@ public class JaxRsApplication extends Application {
      * {@link #setAuthentication(Guard, RoleChecker)}, to set access control.<br>
      * 
      * @param parentContext
-     *                The parent component context.
+     *            The parent component context.
      */
     public JaxRsApplication(Context parentContext) {
         super(parentContext);
-        this.getTunnelService().setExtensionsTunnel(false);
+        getTunnelService().setExtensionsTunnel(false);
         this.jaxRsRestlet = new JaxRsRestlet(getContext(), getMetadataService());
     }
 
@@ -124,13 +124,13 @@ public class JaxRsApplication extends Application {
      * </p>
      * 
      * @param appConfig
-     *                Contains the classes to load as root resource classes and
-     *                as providers. Invalid root resource classes and provider
-     *                classes are ignored, according to JAX-RS specification.
+     *            Contains the classes to load as root resource classes and as
+     *            providers. Invalid root resource classes and provider classes
+     *            are ignored, according to JAX-RS specification.
      * @return true, if all resource classes and providers could be added, or
      *         false if not.
      * @throws IllegalArgumentException
-     *                 if the appConfig is null.
+     *             if the appConfig is null.
      * @see #add(ApplicationConfig, boolean)
      */
     public boolean add(ApplicationConfig appConfig)
@@ -145,45 +145,47 @@ public class JaxRsApplication extends Application {
      * JaxRsApplication.
      * 
      * @param appConfig
-     *                Contains the classes to load as root resource classes and
-     *                as providers. Invalid root resource classes and provider
-     *                classes are ignored, according to JAX-RS specification.
+     *            Contains the classes to load as root resource classes and as
+     *            providers. Invalid root resource classes and provider classes
+     *            are ignored, according to JAX-RS specification.
      * @param clearMetadataIfFirst
-     *                If this flag is true and the given ApplicationConfig is
-     *                the first attached ApplicationConfig, the default
-     *                extension mappings are remove an replaced by the given,
-     *                see {@link TunnelService}
+     *            If this flag is true and the given ApplicationConfig is the
+     *            first attached ApplicationConfig, the default extension
+     *            mappings are remove an replaced by the given, see
+     *            {@link TunnelService}
      * @return true, if all resource classes and providers could be added, or
      *         false if not.
      * @throws IllegalArgumentException
-     *                 if the appConfig is null.
+     *             if the appConfig is null.
      * @see #add(ApplicationConfig)
      */
     public boolean add(ApplicationConfig appConfig, boolean clearMetadataIfFirst)
             throws IllegalArgumentException {
-        if (appConfig == null)
+        if (appConfig == null) {
             throw new IllegalArgumentException(
                     "The ApplicationConfig must not be null");
-        if (clearMetadataIfFirst && !appConfigAttached) {
-            this.getMetadataService().clearExtensions();
         }
-        this.addExtensionMappings(appConfig);
-        JaxRsRestlet r = this.jaxRsRestlet;
-        Collection<Class<?>> rrcs = appConfig.getResourceClasses();
-        Collection<Class<?>> providerClasses = appConfig.getProviderClasses();
+        if (clearMetadataIfFirst && !this.appConfigAttached) {
+            getMetadataService().clearExtensions();
+        }
+        addExtensionMappings(appConfig);
+        final JaxRsRestlet r = this.jaxRsRestlet;
+        final Collection<Class<?>> rrcs = appConfig.getResourceClasses();
+        final Collection<Class<?>> providerClasses = appConfig
+                .getProviderClasses();
         boolean everythingFine = true;
-        if (rrcs == null || rrcs.isEmpty()) {
+        if ((rrcs == null) || rrcs.isEmpty()) {
             r.getLogger().warning(
                     "The ApplicationConfig " + appConfig.getClass().getName()
                             + " contains no root resource classes.");
             everythingFine = false;
         } else {
-            for (Class<?> rrc : rrcs) {
+            for (final Class<?> rrc : rrcs) {
                 everythingFine &= r.addRootResourceClass(rrc);
             }
         }
         if (providerClasses != null) {
-            for (Class<?> providerClass : providerClasses) {
+            for (final Class<?> providerClass : providerClasses) {
                 everythingFine &= r.addProvider(providerClass);
             }
         }
@@ -197,23 +199,25 @@ public class JaxRsApplication extends Application {
      * {@link Application}.
      * 
      * @param appConfig
-     *                the ApplicationConfig to read the mappings from.
+     *            the ApplicationConfig to read the mappings from.
      */
     private void addExtensionMappings(ApplicationConfig appConfig) {
-        MetadataService metadataService = this.getMetadataService();
-        Map<String, MediaType> mediaTypeMapping = appConfig
+        final MetadataService metadataService = getMetadataService();
+        final Map<String, MediaType> mediaTypeMapping = appConfig
                 .getMediaTypeMappings();
         if (mediaTypeMapping != null) {
-            for (Map.Entry<String, MediaType> e : mediaTypeMapping.entrySet()) {
+            for (final Map.Entry<String, MediaType> e : mediaTypeMapping
+                    .entrySet()) {
                 org.restlet.data.MediaType restletMediaType;
                 restletMediaType = Converter.toRestletMediaType(e.getValue());
                 metadataService.addExtension(e.getKey(), restletMediaType);
             }
         }
-        Map<String, String> languageMapping = appConfig.getLanguageMappings();
+        final Map<String, String> languageMapping = appConfig
+                .getLanguageMappings();
         if (mediaTypeMapping != null) {
-            for (Map.Entry<String, String> e : languageMapping.entrySet()) {
-                Language language = Language.valueOf(e.getValue());
+            for (final Map.Entry<String, String> e : languageMapping.entrySet()) {
+                final Language language = Language.valueOf(e.getValue());
                 metadataService.addExtension(e.getKey(), language);
             }
         }
@@ -224,12 +228,12 @@ public class JaxRsApplication extends Application {
      * method {@link #add(ApplicationConfig)}.
      * 
      * @param appConfig
-     *                Contains the classes to load as root resource classes and
-     *                as providers.
+     *            Contains the classes to load as root resource classes and as
+     *            providers.
      * @return true, if all resource classes and providers could be added, or
      *         false if not.
      * @throws IllegalArgumentException
-     *                 if the appConfig is null.
+     *             if the appConfig is null.
      * @see #add(ApplicationConfig, boolean)
      * @deprecated Use {@link #add(ApplicationConfig)} instead
      */
@@ -244,17 +248,17 @@ public class JaxRsApplication extends Application {
      * method {@link #add(ApplicationConfig, boolean)}.
      * 
      * @param appConfig
-     *                Contains the classes to load as root resource classes and
-     *                as providers.
+     *            Contains the classes to load as root resource classes and as
+     *            providers.
      * @param clearMetadataIfFirst
-     *                If this flag is true and the given ApplicationConfig is
-     *                the first attached ApplicationConfig, the default
-     *                extension mappings are remove an replaced by the given,
-     *                see {@link TunnelService}
+     *            If this flag is true and the given ApplicationConfig is the
+     *            first attached ApplicationConfig, the default extension
+     *            mappings are remove an replaced by the given, see
+     *            {@link TunnelService}
      * @return true, if all resource classes and providers could be added, or
      *         false if not.
      * @throws IllegalArgumentException
-     *                 if the appConfig is null.
+     *             if the appConfig is null.
      * @see #add(ApplicationConfig)
      * @deprecated Use {@link #add(ApplicationConfig,boolean)} instead
      */
@@ -267,14 +271,14 @@ public class JaxRsApplication extends Application {
     @Override
     public Restlet createRoot() {
 
-        Restlet restlet = jaxRsRestlet;
+        Restlet restlet = this.jaxRsRestlet;
 
         if (this.guard != null) {
             this.guard.setNext(restlet);
             restlet = this.guard;
         }
 
-        TunnelFilter tunnelFilter = new TunnelFilter(getContext());
+        final TunnelFilter tunnelFilter = new TunnelFilter(getContext());
         tunnelFilter.setNext(restlet);
         restlet = tunnelFilter;
 
@@ -355,15 +359,15 @@ public class JaxRsApplication extends Application {
      * role management for the JAX-RS extension.
      * 
      * @param guard
-     *                the Guard to use.
+     *            the Guard to use.
      * @param roleChecker
-     *                the RoleChecker to use
+     *            the RoleChecker to use
      * @see #setGuard(Guard)
      * @see #setRoleChecker(RoleChecker)
      */
     public void setAuthentication(Guard guard, RoleChecker roleChecker) {
-        this.setGuard(guard);
-        this.setRoleChecker(roleChecker);
+        setGuard(guard);
+        setRoleChecker(roleChecker);
     }
 
     /**
@@ -373,7 +377,7 @@ public class JaxRsApplication extends Application {
      * {@link #createRoot()}.
      * 
      * @param guard
-     *                the Guard to use.
+     *            the Guard to use.
      * @see #setAuthentication(Guard, RoleChecker)
      */
     public void setGuard(Guard guard) {
@@ -385,8 +389,8 @@ public class JaxRsApplication extends Application {
      * instantiation.
      * 
      * @param objectFactory
-     *                the ObjectFactory for root resource class and provider
-     *                instantiation.
+     *            the ObjectFactory for root resource class and provider
+     *            instantiation.
      */
     public void setObjectFactory(ObjectFactory objectFactory) {
         this.jaxRsRestlet.setObjectFactory(objectFactory);

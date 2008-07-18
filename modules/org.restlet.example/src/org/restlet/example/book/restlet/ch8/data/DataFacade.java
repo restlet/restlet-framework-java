@@ -19,87 +19,108 @@ public abstract class DataFacade {
      * Add a new Contact object in the database.
      * 
      * @param contact
-     *                new Contact object to be added.
+     *            new Contact object to be added.
      * @return the contact object completed with its identfiant.
      */
     public abstract Contact createContact(Contact contact);
 
     /**
-     * Get a contact by its id.
-     * 
-     * @param contactId
-     *                the contact's id.
-     * @return a Contact object or null if no contact has been found.
-     */
-    public abstract Contact getContactById(String contactId);
-
-    /**
-     * Update a contact.
-     * 
-     * @param mailbox
-     *                the parent mailbox.
-     * @param contact
-     *                the contact to be update.
-     */
-    public abstract void updateContact(Contact contact);
-
-    /**
-     * Delete a contact.
-     * 
-     * @param contact
-     *                the contact to be deleted.
-     */
-    public abstract void deleteContact(Contact contact);
-
-    /**
      * Add a new Feed object in the database.
      * 
      * @param feed
-     *                new Feed object to be added.
+     *            new Feed object to be added.
      * @return the feed object completed with its identfiant.
      */
     public abstract Feed createFeed(Feed feed);
 
     /**
-     * Get a feed by its id.
+     * Add a new Mail object in the database.
      * 
-     * @param feedId
-     *                the feed's id.
-     * @return a Feed object or null if no feed has been found.
+     * @param mail
+     *            new Mail object to be added.
+     * @return the mail object completed with its identfiant.
      */
-    public abstract Feed getFeedById(String feedId);
-
-    /**
-     * Update a feed.
-     * 
-     * @param mailbox
-     *                the parent mailbox.
-     * @param feed
-     *                the feed to be updated.
-     */
-    public abstract void updateFeed(Feed feed);
-
-    /**
-     * Delete a feed.
-     * 
-     * @param feed
-     *                the feed to be deleted.
-     */
-    public abstract void deleteFeed(Feed feed);
+    public abstract Mail createMail(Mail mail);
 
     /**
      * Add a new Mailbox object in the database.
      * 
      * @param mailbox
-     *                new Mailbox object to be added.
+     *            new Mailbox object to be added.
      */
     public abstract void createMailbox(Mailbox mailbox);
+
+    /**
+     * Add a new User object in the database.
+     * 
+     * @param user
+     *            new User object to be added.
+     */
+    public abstract void createUser(User user);
+
+    /**
+     * Delete a contact.
+     * 
+     * @param contact
+     *            the contact to be deleted.
+     */
+    public abstract void deleteContact(Contact contact);
+
+    /**
+     * Delete a feed.
+     * 
+     * @param feed
+     *            the feed to be deleted.
+     */
+    public abstract void deleteFeed(Feed feed);
+
+    /**
+     * Delete a mail.
+     * 
+     * @param mail
+     *            the mail to be deleted.
+     */
+    public abstract void deleteMail(Mail mail);
+
+    /**
+     * Delete a mailbox.
+     * 
+     * @param maibox
+     *            the mailbox to be deleted.
+     */
+    public abstract void deleteMailbox(Mailbox mailbox);
+
+    /**
+     * Delete a user.
+     * 
+     * @param user
+     *            the user to be deleted.
+     */
+    public abstract void deleteUser(User user);
+
+    /**
+     * Get a contact by its id.
+     * 
+     * @param contactId
+     *            the contact's id.
+     * @return a Contact object or null if no contact has been found.
+     */
+    public abstract Contact getContactById(String contactId);
+
+    /**
+     * Get a feed by its id.
+     * 
+     * @param feedId
+     *            the feed's id.
+     * @return a Feed object or null if no feed has been found.
+     */
+    public abstract Feed getFeedById(String feedId);
 
     /**
      * Get a mailbox by its id.
      * 
      * @param mailboxId
-     *                the mailbox's id.
+     *            the mailbox's id.
      * @return a Mailbox object or null if no mailbox has been found.
      */
     public abstract Mailbox getMailboxById(String mailboxId);
@@ -112,89 +133,42 @@ public abstract class DataFacade {
     public abstract List<Mailbox> getMailboxes();
 
     /**
-     * Update a mailbox.
+     * Get the list of mailboxes owned by a given user.
      * 
-     * @param maibox
-     *                the mailbox to be updated.
+     * @param user
+     *            the owner.
+     * @return the list of mailboxes owned by this user.
      */
-    public abstract void updateMailbox(Mailbox mailbox);
-
-    /**
-     * Delete a mailbox.
-     * 
-     * @param maibox
-     *                the mailbox to be deleted.
-     */
-    public abstract void deleteMailbox(Mailbox mailbox);
-
-    /**
-     * Add a new Mail object in the database.
-     * 
-     * @param mail
-     *                new Mail object to be added.
-     * @return the mail object completed with its identfiant.
-     */
-    public abstract Mail createMail(Mail mail);
+    public abstract List<Mailbox> getMailboxes(User user);
 
     /**
      * Get a mail by its id.
      * 
      * @param mailId
-     *                the mail's id.
+     *            the mail's id.
      * @return a Mail object or null if no mail has been found.
      */
     public abstract Mail getMailById(String mailId);
 
     /**
-     * Update a mail.
+     * Get a user by its id.
      * 
-     * @param mail
-     *                the mail to be updated.
+     * @param userId
+     *            the user's id.
+     * @return a User object or null if no user has been found.
      */
-    public abstract void updateMail(Mail mail);
-
-    /**
-     * Delete a mail.
-     * 
-     * @param mail
-     *                the mail to be deleted.
-     */
-    public abstract void deleteMail(Mail mail);
-
-    /**
-     * Check that at least one administrator is declared in the database.
-     * Otherwise add a new one.
-     * 
-     */
-    public abstract void initAdmin();
-
-    /**
-     * Add a new User object in the database.
-     * 
-     * @param user
-     *                new User object to be added.
-     */
-    public abstract void createUser(User user);
+    public abstract User getUserById(String userId);
 
     /**
      * Get a user by its login and password.
      * 
      * @param login
-     *                the user's id.
+     *            the user's id.
      * @param password
-     *                the user's password.
+     *            the user's password.
      * @return a User object or null if no user has been found.
      */
     public abstract User getUserByLoginPwd(String login, char[] password);
-
-    /**
-     * Get a user by its id.
-     * 
-     * @param userId
-     *                the user's id.
-     * @return a User object or null if no user has been found.
-     */
-    public abstract User getUserById(String userId);
 
     /**
      * Get the list of all users.
@@ -204,28 +178,54 @@ public abstract class DataFacade {
     public abstract List<User> getUsers();
 
     /**
-     * Delete a user.
+     * Check that at least one administrator is declared in the database.
+     * Otherwise add a new one.
      * 
-     * @param user
-     *                the user to be deleted.
      */
-    public abstract void deleteUser(User user);
+    public abstract void initAdmin();
+
+    /**
+     * Update a contact.
+     * 
+     * @param mailbox
+     *            the parent mailbox.
+     * @param contact
+     *            the contact to be update.
+     */
+    public abstract void updateContact(Contact contact);
+
+    /**
+     * Update a feed.
+     * 
+     * @param mailbox
+     *            the parent mailbox.
+     * @param feed
+     *            the feed to be updated.
+     */
+    public abstract void updateFeed(Feed feed);
+
+    /**
+     * Update a mail.
+     * 
+     * @param mail
+     *            the mail to be updated.
+     */
+    public abstract void updateMail(Mail mail);
+
+    /**
+     * Update a mailbox.
+     * 
+     * @param maibox
+     *            the mailbox to be updated.
+     */
+    public abstract void updateMailbox(Mailbox mailbox);
 
     /**
      * Update a user.
      * 
      * @param user
-     *                the user to be upated.
+     *            the user to be upated.
      */
     public abstract void updateUser(User user);
-
-    /**
-     * Get the list of mailboxes owned by a given user.
-     * 
-     * @param user
-     *                the owner.
-     * @return the list of mailboxes owned by this user.
-     */
-    public abstract List<Mailbox> getMailboxes(User user);
 
 }

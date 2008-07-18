@@ -35,17 +35,18 @@ import org.restlet.data.Status;
 public class Part09b {
     public static void main(String[] args) throws Exception {
         // Prepare the request
-        Request request = new Request(Method.GET, "http://localhost:8182/");
+        final Request request = new Request(Method.GET,
+                "http://localhost:8182/");
 
         // Add the client authentication to the call
-        ChallengeScheme scheme = ChallengeScheme.HTTP_BASIC;
-        ChallengeResponse authentication = new ChallengeResponse(scheme,
+        final ChallengeScheme scheme = ChallengeScheme.HTTP_BASIC;
+        final ChallengeResponse authentication = new ChallengeResponse(scheme,
                 "scott", "tiger");
         request.setChallengeResponse(authentication);
 
         // Ask to the HTTP client connector to handle the call
-        Client client = new Client(Protocol.HTTP);
-        Response response = client.handle(request);
+        final Client client = new Client(Protocol.HTTP);
+        final Response response = client.handle(request);
 
         if (response.getStatus().isSuccess()) {
             // Output the response entity on the JVM console

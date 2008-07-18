@@ -43,22 +43,12 @@ import org.w3c.dom.NodeList;
 public class RepresentationMessage extends MimeMessage {
 
     /**
-     * Constructor.
-     * 
-     * @param session
-     *                The current JavaMail session.
-     */
-    public RepresentationMessage(Session session) {
-        super(session);
-    }
-
-    /**
      * Creates a JavaMail message by parsing an XML representation.
      * 
      * @param xmlMessage
-     *                The XML message to parse.
+     *            The XML message to parse.
      * @param session
-     *                The current JavaMail session.
+     *            The current JavaMail session.
      * @throws IOException
      * @throws AddressException
      * @throws MessagingException
@@ -66,48 +56,50 @@ public class RepresentationMessage extends MimeMessage {
     public RepresentationMessage(Representation xmlMessage, Session session)
             throws IOException, AddressException, MessagingException {
         super(session);
-        DomRepresentation dom = new DomRepresentation(xmlMessage);
-        Document email = dom.getDocument();
-        Element root = (Element) email.getElementsByTagName("email").item(0);
-        Element header = (Element) root.getElementsByTagName("head").item(0);
-        String subject = header.getElementsByTagName("subject").item(0)
+        final DomRepresentation dom = new DomRepresentation(xmlMessage);
+        final Document email = dom.getDocument();
+        final Element root = (Element) email.getElementsByTagName("email")
+                .item(0);
+        final Element header = (Element) root.getElementsByTagName("head")
+                .item(0);
+        final String subject = header.getElementsByTagName("subject").item(0)
                 .getTextContent();
-        String from = header.getElementsByTagName("from").item(0)
+        final String from = header.getElementsByTagName("from").item(0)
                 .getTextContent();
 
-        NodeList toList = header.getElementsByTagName("to");
-        String[] to = new String[toList.getLength()];
+        final NodeList toList = header.getElementsByTagName("to");
+        final String[] to = new String[toList.getLength()];
         for (int i = 0; i < toList.getLength(); i++) {
             to[i] = toList.item(i).getTextContent();
         }
 
-        NodeList ccList = header.getElementsByTagName("cc");
-        String[] cc = new String[ccList.getLength()];
+        final NodeList ccList = header.getElementsByTagName("cc");
+        final String[] cc = new String[ccList.getLength()];
         for (int i = 0; i < ccList.getLength(); i++) {
             cc[i] = ccList.item(i).getTextContent();
         }
 
-        NodeList bccList = header.getElementsByTagName("bcc");
-        String[] bcc = new String[bccList.getLength()];
+        final NodeList bccList = header.getElementsByTagName("bcc");
+        final String[] bcc = new String[bccList.getLength()];
         for (int i = 0; i < bccList.getLength(); i++) {
             bcc[i] = bccList.item(i).getTextContent();
         }
 
-        String text = root.getElementsByTagName("body").item(0)
+        final String text = root.getElementsByTagName("body").item(0)
                 .getTextContent();
 
         // Set the FROM and TO fields
         setFrom(new InternetAddress(from));
 
-        for (String element : to) {
+        for (final String element : to) {
             addRecipient(Message.RecipientType.TO, new InternetAddress(element));
         }
 
-        for (String element : cc) {
+        for (final String element : cc) {
             addRecipient(Message.RecipientType.CC, new InternetAddress(element));
         }
 
-        for (String element : bcc) {
+        for (final String element : bcc) {
             addRecipient(Message.RecipientType.BCC,
                     new InternetAddress(element));
         }
@@ -117,6 +109,16 @@ public class RepresentationMessage extends MimeMessage {
         setText(text);
         setSentDate(new Date());
         saveChanges();
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param session
+     *            The current JavaMail session.
+     */
+    public RepresentationMessage(Session session) {
+        super(session);
     }
 
 }

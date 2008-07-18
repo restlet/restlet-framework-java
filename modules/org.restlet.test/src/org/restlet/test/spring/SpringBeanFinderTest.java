@@ -1,6 +1,7 @@
 package org.restlet.test.spring;
 
 import junit.framework.TestCase;
+
 import org.restlet.ext.spring.SpringBeanFinder;
 import org.restlet.resource.Resource;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -10,37 +11,44 @@ import org.springframework.beans.factory.support.RootBeanDefinition;
  * @author Rhett Sutphin
  */
 public class SpringBeanFinderTest extends TestCase {
+    private static class SomeResource extends Resource {
+    }
+
     private static final String BEAN_NAME = "fish";
 
     private SpringBeanFinder finder;
+
     private DefaultListableBeanFactory beanFactory;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        beanFactory = new DefaultListableBeanFactory();
-        finder = new SpringBeanFinder(beanFactory, BEAN_NAME);
-    }
-
-    public void testReturnsCorrectBeanWhenExists() throws Exception {
-        beanFactory.registerBeanDefinition(BEAN_NAME, new RootBeanDefinition(SomeResource.class));
-
-        Resource actual = finder.createResource();
-
-        assertNotNull("Resource not found",  actual);
-        assertTrue("Resource not the correct type", actual instanceof SomeResource);
+        this.beanFactory = new DefaultListableBeanFactory();
+        this.finder = new SpringBeanFinder(this.beanFactory, BEAN_NAME);
     }
 
     public void testExceptionWhenBeanIsWrongType() throws Exception {
-        beanFactory.registerBeanDefinition(BEAN_NAME, new RootBeanDefinition(String.class));
+        this.beanFactory.registerBeanDefinition(BEAN_NAME,
+                new RootBeanDefinition(String.class));
 
         try {
-            finder.createResource();
+            this.finder.createResource();
             fail("Exception not thrown");
-        } catch (ClassCastException cce) {
-            assertEquals("fish does not resolve to an instance of org.restlet.resource.Resource", cce.getMessage());
+        } catch (final ClassCastException cce) {
+            assertEquals(
+                    "fish does not resolve to an instance of org.restlet.resource.Resource",
+                    cce.getMessage());
         }
     }
 
-    private static class SomeResource extends Resource { }
+    public void testReturnsCorrectBeanWhenExists() throws Exception {
+        this.beanFactory.registerBeanDefinition(BEAN_NAME,
+                new RootBeanDefinition(SomeResource.class));
+
+        final Resource actual = this.finder.createResource();
+
+        assertNotNull("Resource not found", actual);
+        assertTrue("Resource not the correct type",
+                actual instanceof SomeResource);
+    }
 }

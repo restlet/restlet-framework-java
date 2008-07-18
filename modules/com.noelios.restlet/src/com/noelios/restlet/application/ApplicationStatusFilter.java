@@ -40,7 +40,7 @@ public class ApplicationStatusFilter extends StatusFilter {
      * Constructor.
      * 
      * @param application
-     *                The application.
+     *            The application.
      */
     public ApplicationStatusFilter(Application application) {
         super(application.getContext(), application.getStatusService()
@@ -53,8 +53,9 @@ public class ApplicationStatusFilter extends StatusFilter {
             Response response) {
         Representation result = getApplication().getStatusService()
                 .getRepresentation(status, request, response);
-        if (result == null)
+        if (result == null) {
             result = super.getRepresentation(status, request, response);
+        }
         return result;
     }
 
@@ -63,8 +64,9 @@ public class ApplicationStatusFilter extends StatusFilter {
             Response response) {
         Status result = getApplication().getStatusService().getStatus(
                 throwable, request, response);
-        if (result == null)
+        if (result == null) {
             result = super.getStatus(throwable, request, response);
+        }
         return result;
     }
 

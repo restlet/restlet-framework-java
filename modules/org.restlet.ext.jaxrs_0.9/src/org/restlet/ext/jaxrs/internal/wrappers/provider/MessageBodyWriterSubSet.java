@@ -52,13 +52,13 @@ public class MessageBodyWriterSubSet {
      * 
      * @return a list of all producible media types. If this set is not empty,
      *         this result is not empty. '*<!---->/*' is returned for a message
-     *         body writer with no &#64;{@link javax.ws.rs.Produces}
-     *         annotation.
+     *         body writer with no &#64;{@link javax.ws.rs.Produces} annotation.
      */
     public Collection<MediaType> getAllProducibleMediaTypes() {
-        List<MediaType> p = new ArrayList<MediaType>();
-        for (MessageBodyWriter<?> messageBodyWriter : mbws)
+        final List<MediaType> p = new ArrayList<MediaType>();
+        for (final MessageBodyWriter<?> messageBodyWriter : this.mbws) {
             p.addAll(messageBodyWriter.getProducedMimes());
+        }
         return p;
     }
 
@@ -67,11 +67,11 @@ public class MessageBodyWriterSubSet {
      * types of the response method and of the accepted {@link MediaType}s.
      * 
      * @param determinedResponseMediaType
-     *                The {@link MediaType}s of the response, declared by the
-     *                resource methods or given by the
-     *                {@link javax.ws.rs.core.Response}.
+     *            The {@link MediaType}s of the response, declared by the
+     *            resource methods or given by the
+     *            {@link javax.ws.rs.core.Response}.
      * @param accMediaTypes
-     *                the accepted media types.
+     *            the accepted media types.
      * @return A {@link MessageBodyWriter} that best matches the given accepted.
      *         Returns null, if no adequate {@link MessageBodyWriter} could be
      *         found in this set.
@@ -79,15 +79,19 @@ public class MessageBodyWriterSubSet {
     public MessageBodyWriter<?> getBestWriter(
             MediaType determinedResponseMediaType,
             SortedMetadata<MediaType> accMediaTypes) {
-        List<MessageBodyWriter<?>> mbws = new ArrayList<MessageBodyWriter<?>>();
-        for (MessageBodyWriter<?> mbw : this.mbws) {
-            if (mbw.supportsWrite(determinedResponseMediaType))
+        final List<MessageBodyWriter<?>> mbws = new ArrayList<MessageBodyWriter<?>>();
+        for (final MessageBodyWriter<?> mbw : this.mbws) {
+            if (mbw.supportsWrite(determinedResponseMediaType)) {
                 mbws.add(mbw);
+            }
         }
-        for (Iterable<MediaType> amts : accMediaTypes.listOfColls())
-            for (MessageBodyWriter<?> mbw : mbws)
-                if (mbw.supportsWrite(amts))
+        for (final Iterable<MediaType> amts : accMediaTypes.listOfColls()) {
+            for (final MessageBodyWriter<?> mbw : mbws) {
+                if (mbw.supportsWrite(amts)) {
                     return mbw;
+                }
+            }
+        }
         return null;
     }
 

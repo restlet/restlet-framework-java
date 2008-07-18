@@ -41,7 +41,6 @@ import org.restlet.resource.ReadableRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.service.ConnectorService;
 
-
 /**
  * Abstract HTTP server connector call.
  * 
@@ -56,16 +55,16 @@ public abstract class HttpServerCall extends HttpCall {
      * Extract the SSL key size of a given cipher suite.
      * 
      * @param sslCipherSuite
-     *                The SSL cipher suite.
+     *            The SSL cipher suite.
      * @return The SSL key size.
      */
     protected static Integer extractKeySize(String sslCipherSuite) {
         Integer keySize = keySizesCache.get(sslCipherSuite);
 
         if (keySize == null) {
-            int encAlgorithmIndex = sslCipherSuite.indexOf("WITH_");
+            final int encAlgorithmIndex = sslCipherSuite.indexOf("WITH_");
             if (encAlgorithmIndex >= 0) {
-                String encAlgorithm = sslCipherSuite
+                final String encAlgorithm = sslCipherSuite
                         .substring(encAlgorithmIndex + 5);
 
                 /*
@@ -74,9 +73,9 @@ public abstract class HttpServerCall extends HttpCall {
                  * Key Expanded Effective IV Block Cipher Type Material Key
                  * Material Key Bits Size Size
                  * 
-                 * NULL * Stream 0 0 0 0 N/A IDEA_CBC Block 16 16 128 8 8
-                 * RC2_CBC_40 * Block 5 16 40 8 8 RC4_40 * Stream 5 16 40 0 N/A
-                 * RC4_128 Stream 16 16 128 0 N/A DES40_CBC * Block 5 8 40 8 8
+                 * NULL Stream 0 0 0 0 N/A IDEA_CBC Block 16 16 128 8 8
+                 * RC2_CBC_40 Block 5 16 40 8 8 RC4_40 Stream 5 16 40 0 N/A
+                 * RC4_128 Stream 16 16 128 0 N/A DES40_CBC Block 5 8 40 8 8
                  * DES_CBC Block 8 8 56 8 8 3DES_EDE_CBC Block 24 24 168 8 8
                  */
                 if (encAlgorithm != null) {
@@ -97,14 +96,14 @@ public abstract class HttpServerCall extends HttpCall {
                     } else if (encAlgorithm.startsWith("3DES_EDE_CBC_")) {
                         keySize = Integer.valueOf(168);
                     } else {
-                        StringTokenizer st = new StringTokenizer(encAlgorithm,
-                                "_");
+                        final StringTokenizer st = new StringTokenizer(
+                                encAlgorithm, "_");
 
                         while (st.hasMoreTokens()) {
                             try {
                                 keySize = Integer.valueOf(st.nextToken());
                                 break;
-                            } catch (NumberFormatException e) {
+                            } catch (final NumberFormatException e) {
                                 // Tokens that are not integers are ignored.
                             }
                         }
@@ -124,11 +123,11 @@ public abstract class HttpServerCall extends HttpCall {
      * Format {@code fileName} as a Content-Disposition header value
      * 
      * @param fileName
-     *                Filename to format
+     *            Filename to format
      * @return {@code fileName} formatted
      */
     public static String formatContentDisposition(String fileName) {
-        StringBuilder b = new StringBuilder("attachment; filename=\"");
+        final StringBuilder b = new StringBuilder("attachment; filename=\"");
 
         if (fileName != null) {
             b.append(fileName);
@@ -146,11 +145,11 @@ public abstract class HttpServerCall extends HttpCall {
      * Constructor.
      * 
      * @param logger
-     *                The logger.
+     *            The logger.
      * @param serverAddress
-     *                The server IP address.
+     *            The server IP address.
      * @param serverPort
-     *                The server port.
+     *            The server port.
      */
     public HttpServerCall(Logger logger, String serverAddress, int serverPort) {
         setLogger(logger);
@@ -163,7 +162,7 @@ public abstract class HttpServerCall extends HttpCall {
      * Constructor.
      * 
      * @param server
-     *                The parent server connector.
+     *            The parent server connector.
      */
     public HttpServerCall(Server server) {
         this(server.getLogger(), server.getAddress(), server.getPort());
@@ -193,8 +192,9 @@ public abstract class HttpServerCall extends HttpCall {
      */
     @Override
     public String getHostDomain() {
-        if (!hostParsed)
+        if (!this.hostParsed) {
             parseHost();
+        }
         return super.getHostDomain();
     }
 
@@ -205,8 +205,9 @@ public abstract class HttpServerCall extends HttpCall {
      */
     @Override
     public int getHostPort() {
-        if (!hostParsed)
+        if (!this.hostParsed) {
             parseHost();
+        }
         return super.getHostPort();
     }
 
@@ -217,11 +218,11 @@ public abstract class HttpServerCall extends HttpCall {
      */
     public Representation getRequestEntity() {
         Representation result = null;
-        long contentLength = getContentLength();
+        final long contentLength = getContentLength();
 
         // Create the result representation
-        InputStream requestStream = getRequestEntityStream(contentLength);
-        ReadableByteChannel requestChannel = getRequestEntityChannel(contentLength);
+        final InputStream requestStream = getRequestEntityStream(contentLength);
+        final ReadableByteChannel requestChannel = getRequestEntityChannel(contentLength);
 
         if (requestStream != null) {
             result = new InputRepresentation(requestStream, null, contentLength);
@@ -234,13 +235,13 @@ public abstract class HttpServerCall extends HttpCall {
         result.setSize(contentLength);
 
         // Extract some interesting header values
-        for (Parameter header : getRequestHeaders()) {
+        for (final Parameter header : getRequestHeaders()) {
             if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_CONTENT_ENCODING)) {
-                HeaderReader hr = new HeaderReader(header.getValue());
+                final HeaderReader hr = new HeaderReader(header.getValue());
                 String value = hr.readValue();
                 while (value != null) {
-                    Encoding encoding = Encoding.valueOf(value);
+                    final Encoding encoding = Encoding.valueOf(value);
                     if (!encoding.equals(Encoding.IDENTITY)) {
                         result.getEncodings().add(encoding);
                     }
@@ -248,7 +249,7 @@ public abstract class HttpServerCall extends HttpCall {
                 }
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_CONTENT_LANGUAGE)) {
-                HeaderReader hr = new HeaderReader(header.getValue());
+                final HeaderReader hr = new HeaderReader(header.getValue());
                 String value = hr.readValue();
                 while (value != null) {
                     result.getLanguages().add(Language.valueOf(value));
@@ -256,7 +257,8 @@ public abstract class HttpServerCall extends HttpCall {
                 }
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_CONTENT_TYPE)) {
-                ContentType contentType = new ContentType(header.getValue());
+                final ContentType contentType = new ContentType(header
+                        .getValue());
                 result.setMediaType(contentType.getMediaType());
                 result.setCharacterSet(contentType.getCharacterSet());
             }
@@ -269,7 +271,7 @@ public abstract class HttpServerCall extends HttpCall {
      * Returns the request entity channel if it exists.
      * 
      * @param size
-     *                The expected entity size or -1 if unknown.
+     *            The expected entity size or -1 if unknown.
      * 
      * @return The request entity channel if it exists.
      */
@@ -279,7 +281,7 @@ public abstract class HttpServerCall extends HttpCall {
      * Returns the request entity stream if it exists.
      * 
      * @param size
-     *                The expected entity size or -1 if unknown.
+     *            The expected entity size or -1 if unknown.
      * 
      * @return The request entity stream if it exists.
      */
@@ -338,7 +340,7 @@ public abstract class HttpServerCall extends HttpCall {
      */
     public Integer getSslKeySize() {
         Integer keySize = null;
-        String sslCipherSuite = getSslCipherSuite();
+        final String sslCipherSuite = getSslCipherSuite();
 
         if (sslCipherSuite != null) {
             keySize = extractKeySize(sslCipherSuite);
@@ -349,7 +351,7 @@ public abstract class HttpServerCall extends HttpCall {
 
     @Override
     protected boolean isClientKeepAlive() {
-        String header = getRequestHeaders().getFirstValue(
+        final String header = getRequestHeaders().getFirstValue(
                 HttpConstants.HEADER_CONNECTION, true);
         return (header == null) || !header.equalsIgnoreCase("close");
     }
@@ -363,10 +365,10 @@ public abstract class HttpServerCall extends HttpCall {
      * Parses the "host" header to set the server host and port properties.
      */
     private void parseHost() {
-        String host = getRequestHeaders().getFirstValue(
+        final String host = getRequestHeaders().getFirstValue(
                 HttpConstants.HEADER_HOST, true);
         if (host != null) {
-            int colonIndex = host.indexOf(':');
+            final int colonIndex = host.indexOf(':');
 
             if (colonIndex != -1) {
                 super.setHostDomain(host.substring(0, colonIndex));
@@ -390,7 +392,7 @@ public abstract class HttpServerCall extends HttpCall {
      * @throws IOException
      */
     protected void readRequestHead(InputStream headStream) throws IOException {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
 
         // Parse the request method
         int next = headStream.read();
@@ -460,37 +462,39 @@ public abstract class HttpServerCall extends HttpCall {
      * status.
      * 
      * @param response
-     *                The high-level response.
+     *            The high-level response.
      * @throws IOException
-     *                 if the Response could not be written to the network.
+     *             if the Response could not be written to the network.
      */
     public void sendResponse(Response response) throws IOException {
         if (response != null) {
 
             try {
                 writeResponseHead(response);
-                Representation entity = response.getEntity();
+                final Representation entity = response.getEntity();
 
                 if (entity != null) {
                     // Get the connector service to callback
-                    ConnectorService connectorService = getConnectorService(response
+                    final ConnectorService connectorService = getConnectorService(response
                             .getRequest());
-                    if (connectorService != null)
+                    if (connectorService != null) {
                         connectorService.beforeSend(entity);
+                    }
 
-                    WritableByteChannel responseEntityChannel = getResponseEntityChannel();
-                    OutputStream responseEntityStream = getResponseEntityStream();
+                    final WritableByteChannel responseEntityChannel = getResponseEntityChannel();
+                    final OutputStream responseEntityStream = getResponseEntityStream();
                     writeResponseBody(entity, responseEntityChannel,
                             responseEntityStream);
 
-                    if (connectorService != null)
+                    if (connectorService != null) {
                         connectorService.afterSend(entity);
+                    }
 
                     if (responseEntityStream != null) {
                         try {
                             responseEntityStream.flush();
                             responseEntityStream.close();
-                        } catch (IOException ioe) {
+                        } catch (final IOException ioe) {
                             // The stream was probably already closed by the
                             // connector. Probably ok, low message priority.
                             getLogger()
@@ -502,7 +506,7 @@ public abstract class HttpServerCall extends HttpCall {
                     }
                 }
             } finally {
-                Representation entity = response.getEntity();
+                final Representation entity = response.getEntity();
                 if (entity != null) {
                     entity.release();
                 }
@@ -515,12 +519,12 @@ public abstract class HttpServerCall extends HttpCall {
      * unknown.
      * 
      * @param response
-     *                The response to analyze.
+     *            The response to analyze.
      * @return True if the response should be chunked.
      */
     protected boolean shouldResponseBeChunked(Response response) {
-        return response.getEntity() != null
-                && response.getEntity().getSize() == Representation.UNKNOWN_SIZE;
+        return (response.getEntity() != null)
+                && (response.getEntity().getSize() == Representation.UNKNOWN_SIZE);
     }
 
     /**
@@ -529,11 +533,11 @@ public abstract class HttpServerCall extends HttpCall {
      * response stream by default.
      * 
      * @param entity
-     *                The representation to write as entity of the body.
+     *            The representation to write as entity of the body.
      * @param responseEntityChannel
-     *                The response entity channel or null if a stream is used.
+     *            The response entity channel or null if a stream is used.
      * @param responseEntityStream
-     *                The response entity stream or null if a channel is used.
+     *            The response entity stream or null if a channel is used.
      * @throws IOException
      */
     public void writeResponseBody(Representation entity,
@@ -551,7 +555,7 @@ public abstract class HttpServerCall extends HttpCall {
      * Writes the response status line and headers. Does nothing by default.
      * 
      * @param response
-     *                The response.
+     *            The response.
      * @throws IOException
      */
     public void writeResponseHead(Response response) throws IOException {
@@ -562,15 +566,15 @@ public abstract class HttpServerCall extends HttpCall {
      * Writes the response head to the given output stream.
      * 
      * @param response
-     *                The response.
+     *            The response.
      * @param headStream
-     *                The output stream to write to.
+     *            The output stream to write to.
      * @throws IOException
      */
     protected void writeResponseHead(Response response, OutputStream headStream)
             throws IOException {
         // Write the status line
-        String version = (getVersion() == null) ? "1.1" : getVersion();
+        final String version = (getVersion() == null) ? "1.1" : getVersion();
         headStream.write(version.getBytes());
         headStream.write(' ');
         headStream.write(Integer.toString(getStatusCode()).getBytes());
@@ -596,7 +600,7 @@ public abstract class HttpServerCall extends HttpCall {
         }
 
         // Write the response headers
-        for (Parameter header : getResponseHeaders()) {
+        for (final Parameter header : getResponseHeaders()) {
             HttpUtils.writeHeader(header, headStream);
         }
 

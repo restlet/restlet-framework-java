@@ -94,7 +94,7 @@ public class Variant {
      * Constructor.
      * 
      * @param mediaType
-     *                The media type.
+     *            The media type.
      */
     public Variant(MediaType mediaType) {
         this.characterSet = null;
@@ -127,7 +127,7 @@ public class Variant {
      */
     public List<Encoding> getEncodings() {
         if (this.encodings == null) {
-            encodings = new WrapperList<Encoding>() {
+            this.encodings = new WrapperList<Encoding>() {
 
                 @Override
                 public boolean add(Encoding element) {
@@ -153,7 +153,7 @@ public class Variant {
                 public boolean addAll(Collection<? extends Encoding> elements) {
                     boolean addNull = (elements == null);
                     if (!addNull) {
-                        for (Iterator<? extends Encoding> iterator = elements
+                        for (final Iterator<? extends Encoding> iterator = elements
                                 .iterator(); !addNull && iterator.hasNext();) {
                             addNull = (iterator.next() == null);
                         }
@@ -171,7 +171,7 @@ public class Variant {
                         Collection<? extends Encoding> elements) {
                     boolean addNull = (elements == null);
                     if (!addNull) {
-                        for (Iterator<? extends Encoding> iterator = elements
+                        for (final Iterator<? extends Encoding> iterator = elements
                                 .iterator(); !addNull && iterator.hasNext();) {
                             addNull = (iterator.next() == null);
                         }
@@ -221,8 +221,8 @@ public class Variant {
      * @return The list of languages.
      */
     public List<Language> getLanguages() {
-        if (languages == null)
-            languages = new WrapperList<Language>() {
+        if (this.languages == null) {
+            this.languages = new WrapperList<Language>() {
 
                 @Override
                 public void add(int index, Language element) {
@@ -248,7 +248,7 @@ public class Variant {
                 public boolean addAll(Collection<? extends Language> elements) {
                     boolean addNull = (elements == null);
                     if (!addNull) {
-                        for (Iterator<? extends Language> iterator = elements
+                        for (final Iterator<? extends Language> iterator = elements
                                 .iterator(); !addNull && iterator.hasNext();) {
                             addNull = (iterator.next() == null);
                         }
@@ -266,7 +266,7 @@ public class Variant {
                         Collection<? extends Language> elements) {
                     boolean addNull = (elements == null);
                     if (!addNull) {
-                        for (Iterator<? extends Language> iterator = elements
+                        for (final Iterator<? extends Language> iterator = elements
                                 .iterator(); !addNull && iterator.hasNext();) {
                             addNull = (iterator.next() == null);
                         }
@@ -280,6 +280,7 @@ public class Variant {
                 }
 
             };
+        }
         return this.languages;
     }
 
@@ -331,7 +332,7 @@ public class Variant {
      * Sets the character set or null if not applicable.
      * 
      * @param characterSet
-     *                The character set or null if not applicable.
+     *            The character set or null if not applicable.
      */
     public void setCharacterSet(CharacterSet characterSet) {
         this.characterSet = characterSet;
@@ -341,7 +342,7 @@ public class Variant {
      * Sets the list of encodings applied to the entity-body.
      * 
      * @param encodings
-     *                The list of encodings applied to the entity-body.
+     *            The list of encodings applied to the entity-body.
      */
     public void setEncodings(List<Encoding> encodings) {
         this.encodings = encodings;
@@ -352,7 +353,7 @@ public class Variant {
      * is not known, pass null.
      * 
      * @param expirationDate
-     *                The expiration date.
+     *            The expiration date.
      * @deprecated Use the {@link Representation#setExpirationDate(Date)} method
      *             instead.
      */
@@ -367,7 +368,7 @@ public class Variant {
      * URI, for example when content negotiation occurs.
      * 
      * @param identifier
-     *                The identifier.
+     *            The identifier.
      */
     public void setIdentifier(Reference identifier) {
         this.identifier = identifier;
@@ -377,7 +378,7 @@ public class Variant {
      * Sets the identifier from a URI string.
      * 
      * @param identifierUri
-     *                The identifier to parse.
+     *            The identifier to parse.
      */
     public void setIdentifier(String identifierUri) {
         setIdentifier(new Reference(identifierUri));
@@ -387,7 +388,7 @@ public class Variant {
      * Sets the list of languages.
      * 
      * @param languages
-     *                The list of languages.
+     *            The list of languages.
      */
     public void setLanguages(List<Language> languages) {
         this.languages = languages;
@@ -397,7 +398,7 @@ public class Variant {
      * Sets the media type.
      * 
      * @param mediaType
-     *                The media type.
+     *            The media type.
      */
     public void setMediaType(MediaType mediaType) {
         this.mediaType = mediaType;
@@ -408,7 +409,7 @@ public class Variant {
      * information is not known, pass null.
      * 
      * @param modificationDate
-     *                The modification date.
+     *            The modification date.
      * @deprecated Use the {@link Representation#setModificationDate(Date)}
      *             method instead.
      */
@@ -421,7 +422,7 @@ public class Variant {
      * Sets the expected size in bytes if known, -1 otherwise.
      * 
      * @param expectedSize
-     *                The expected size in bytes if known, -1 otherwise.
+     *            The expected size in bytes if known, -1 otherwise.
      * @deprecated Use the {@link Representation#setSize(long)} method instead.
      */
     @Deprecated
@@ -433,7 +434,7 @@ public class Variant {
      * Sets the tag.
      * 
      * @param tag
-     *                The tag.
+     *            The tag.
      * @deprecated Use the {@link Representation#setTag(Tag)} method instead.
      */
     @Deprecated

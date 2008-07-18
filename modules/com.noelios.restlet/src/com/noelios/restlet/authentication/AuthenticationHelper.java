@@ -50,11 +50,11 @@ public abstract class AuthenticationHelper {
      * Constructor.
      * 
      * @param challengeScheme
-     *                The supported challenge scheme.
+     *            The supported challenge scheme.
      * @param clientSide
-     *                Indicates if client side authentication is supported.
+     *            Indicates if client side authentication is supported.
      * @param serverSide
-     *                Indicates if server side authentication is supported.
+     *            Indicates if server side authentication is supported.
      */
     public AuthenticationHelper(ChallengeScheme challengeScheme,
             boolean clientSide, boolean serverSide) {
@@ -69,11 +69,11 @@ public abstract class AuthenticationHelper {
      * supported by the plugin.
      * 
      * @param cr
-     *                The challenge response in the request.
+     *            The challenge response in the request.
      * @param request
-     *                The request to authenticate.
+     *            The request to authenticate.
      * @param guard
-     *                The associated guard to callback.
+     *            The associated guard to callback.
      * @return -1 if the given credentials were invalid, 0 if no credentials
      *         were found and 1 otherwise.
      * @see Guard#checkSecret(Request, String, char[])
@@ -82,8 +82,8 @@ public abstract class AuthenticationHelper {
         int result = Guard.AUTHENTICATION_MISSING;
 
         // The challenge schemes are compatible
-        String identifier = cr.getIdentifier();
-        char[] secret = cr.getSecret();
+        final String identifier = cr.getIdentifier();
+        final char[] secret = cr.getSecret();
 
         // Check the credentials
         if ((identifier != null) && (secret != null)) {
@@ -99,11 +99,11 @@ public abstract class AuthenticationHelper {
      * by setting the status to CLIENT_ERROR_UNAUTHORIZED.
      * 
      * @param response
-     *                The response to update.
+     *            The response to update.
      * @param stale
-     *                Indicates if the new challenge is due to a stale response.
+     *            Indicates if the new challenge is due to a stale response.
      * @param guard
-     *                The associated guard to callback.
+     *            The associated guard to callback.
      */
     public void challenge(Response response, boolean stale, Guard guard) {
         response.setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
@@ -115,11 +115,11 @@ public abstract class AuthenticationHelper {
      * Formats a challenge request as a HTTP header value.
      * 
      * @param request
-     *                The challenge request to format.
+     *            The challenge request to format.
      * @return The authenticate header value.
      */
     public String format(ChallengeRequest request) {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         sb.append(request.getScheme().getTechnicalName());
 
         if (request.getRealm() != null) {
@@ -134,16 +134,16 @@ public abstract class AuthenticationHelper {
      * Formats a challenge response as raw credentials.
      * 
      * @param challenge
-     *                The challenge response to format.
+     *            The challenge response to format.
      * @param request
-     *                The parent request.
+     *            The parent request.
      * @param httpHeaders
-     *                The current request HTTP headers.
+     *            The current request HTTP headers.
      * @return The authorization header value.
      */
     public String format(ChallengeResponse challenge, Request request,
             Series<Parameter> httpHeaders) {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         sb.append(challenge.getScheme().getTechnicalName()).append(' ');
 
         if (challenge.getCredentials() != null) {
@@ -159,13 +159,13 @@ public abstract class AuthenticationHelper {
      * Formats a challenge response as raw credentials.
      * 
      * @param sb
-     *                The String builder to update.
+     *            The String builder to update.
      * @param challenge
-     *                The challenge response to format.
+     *            The challenge response to format.
      * @param request
-     *                The parent request.
+     *            The parent request.
      * @param httpHeaders
-     *                The current request HTTP headers.
+     *            The current request HTTP headers.
      */
     public abstract void formatCredentials(StringBuilder sb,
             ChallengeResponse challenge, Request request,
@@ -176,11 +176,11 @@ public abstract class AuthenticationHelper {
      * scheme technical name and realm.
      * 
      * @param sb
-     *                The string builder to update.
+     *            The string builder to update.
      * @param parameters
-     *                The parameters to format.
+     *            The parameters to format.
      * @param request
-     *                The challenger request.
+     *            The challenger request.
      */
     public void formatParameters(StringBuilder sb,
             Series<Parameter> parameters, ChallengeRequest request) {
@@ -192,7 +192,7 @@ public abstract class AuthenticationHelper {
      * @return The supported challenge scheme.
      */
     public ChallengeScheme getChallengeScheme() {
-        return challengeScheme;
+        return this.challengeScheme;
     }
 
     /**
@@ -217,7 +217,7 @@ public abstract class AuthenticationHelper {
      * Parses an authenticate header into a challenge request.
      * 
      * @param header
-     *                The HTTP header value to parse.
+     *            The HTTP header value to parse.
      */
     public void parseRequest(ChallengeRequest cr, String header) {
     }
@@ -226,9 +226,9 @@ public abstract class AuthenticationHelper {
      * Parses an authorization header into a challenge response.
      * 
      * @param request
-     *                The request.
+     *            The request.
      * @param logger
-     *                The logger to use.
+     *            The logger to use.
      */
     public void parseResponse(ChallengeResponse cr, Request request,
             Logger logger) {
@@ -238,7 +238,7 @@ public abstract class AuthenticationHelper {
      * Sets the supported challenge scheme.
      * 
      * @param challengeScheme
-     *                The supported challenge scheme.
+     *            The supported challenge scheme.
      */
     public void setChallengeScheme(ChallengeScheme challengeScheme) {
         this.challengeScheme = challengeScheme;
@@ -248,7 +248,7 @@ public abstract class AuthenticationHelper {
      * Indicates if client side authentication is supported.
      * 
      * @param clientSide
-     *                True if client side authentication is supported.
+     *            True if client side authentication is supported.
      */
     public void setClientSide(boolean clientSide) {
         this.clientSide = clientSide;
@@ -258,7 +258,7 @@ public abstract class AuthenticationHelper {
      * Indicates if server side authentication is supported.
      * 
      * @param serverSide
-     *                True if server side authentication is supported.
+     *            True if server side authentication is supported.
      */
     public void setServerSide(boolean serverSide) {
         this.serverSide = serverSide;

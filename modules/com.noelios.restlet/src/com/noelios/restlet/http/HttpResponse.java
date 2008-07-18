@@ -41,9 +41,9 @@ public class HttpResponse extends Response {
      * Constructor.
      * 
      * @param httpCall
-     *                The low-level HTTP server call.
+     *            The low-level HTTP server call.
      * @param request
-     *                The associated high-level request.
+     *            The associated high-level request.
      */
     public HttpResponse(HttpServerCall httpCall, Request request) {
         super(request);
@@ -70,12 +70,12 @@ public class HttpResponse extends Response {
      */
     @Override
     public ServerInfo getServerInfo() {
-        ServerInfo result = super.getServerInfo();
+        final ServerInfo result = super.getServerInfo();
 
         if (!this.serverAdded) {
-            result.setAddress(httpCall.getServerAddress());
+            result.setAddress(this.httpCall.getServerAddress());
             result.setAgent(Engine.VERSION_HEADER);
-            result.setPort(httpCall.getServerPort());
+            result.setPort(this.httpCall.getServerPort());
             this.serverAdded = true;
         }
 

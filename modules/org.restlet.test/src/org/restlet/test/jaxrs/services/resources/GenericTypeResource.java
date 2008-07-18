@@ -40,10 +40,12 @@ public class GenericTypeResource {
     @GET
     @Produces("text/plain")
     public Response getStrings() {
-        List<String> strings = new ArrayList<String>();
+        final List<String> strings = new ArrayList<String>();
         strings.add("abc");
         strings.add("def");
-        GenericEntity<List<String>> entity = new GenericEntity<List<String>>(strings) {};
+        final GenericEntity<List<String>> entity = new GenericEntity<List<String>>(
+                strings) {
+        };
         return Response.ok(entity).build();
     }
 }

@@ -66,7 +66,7 @@ public class CrazyTypeProvider implements MessageBodyWriter<Person> {
         entityStream.write(' ');
         entityStream.write(person.getLastname().getBytes());
         entityStream.write(" is crazy.".getBytes());
-        Object h1v = responseHeaders.getFirst("h1");
+        final Object h1v = responseHeaders.getFirst("h1");
         if (h1v != null) {
             entityStream.write("\nHeader value for name h1 is ".getBytes());
             entityStream.write(h1v.toString().getBytes());

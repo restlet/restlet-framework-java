@@ -38,7 +38,7 @@ public class SimpleServer {
     public static void main(String[] args) {
         try {
             // Create a new Restlet component
-            Component component = new Component();
+            final Component component = new Component();
 
             // Create the HTTP server connector, then add it as a server
             // connector to the Restlet component. Note that the component
@@ -46,18 +46,18 @@ public class SimpleServer {
             component.getServers().add(Protocol.HTTP, 9876);
 
             // Prepare and attach a test Handler
-            Restlet handler = new Restlet(component.getContext()) {
+            final Restlet handler = new Restlet(component.getContext()) {
                 @Override
                 public void handle(Request request, Response response) {
                     if (request.getMethod().equals(Method.PUT)) {
                         System.out.println("Handling the call...");
                         System.out
                                 .println("Trying to get the entity as a form...");
-                        Form form = request.getEntityAsForm();
+                        final Form form = request.getEntityAsForm();
 
                         System.out.println("Trying to getParameters...");
-                        StringBuffer sb = new StringBuffer("foo");
-                        for (Parameter p : form) {
+                        final StringBuffer sb = new StringBuffer("foo");
+                        for (final Parameter p : form) {
                             System.out.println(p);
 
                             sb.append("field name = ");
@@ -80,7 +80,7 @@ public class SimpleServer {
 
             // Now, start the component
             component.start();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
     }

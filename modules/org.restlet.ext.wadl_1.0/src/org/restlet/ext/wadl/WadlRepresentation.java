@@ -53,10 +53,6 @@ import org.xml.sax.helpers.DefaultHandler;
  */
 public class WadlRepresentation extends SaxRepresentation {
 
-    /** Obtain a suitable logger. */
-    private static Logger logger = Logger.getLogger(WadlRepresentation.class
-            .getCanonicalName());
-
     // -------------------
     // Content reader part
     // -------------------
@@ -106,7 +102,7 @@ public class WadlRepresentation extends SaxRepresentation {
         private ResourcesInfo currentResources;
 
         /** The list of the current parsed "resource" tags. */
-        private List<ResourceInfo> currentResourcesList;
+        private final List<ResourceInfo> currentResourcesList;
 
         /** The current parsed "resource_type" tag. */
         private ResourceTypeInfo currentResourceType;
@@ -115,10 +111,10 @@ public class WadlRepresentation extends SaxRepresentation {
         private ResponseInfo currentResponse;
 
         /** The stack of parser states. */
-        private List<State> states;
+        private final List<State> states;
 
         /** The WadlRepresentation instance that represents the parsed document. */
-        private WadlRepresentation wadlRepresentation;
+        private final WadlRepresentation wadlRepresentation;
 
         /**
          * Constructor
@@ -161,7 +157,7 @@ public class WadlRepresentation extends SaxRepresentation {
         @Override
         public void characters(char[] ch, int start, int length)
                 throws SAXException {
-            contentBuffer.append(ch, start, length);
+            this.contentBuffer.append(ch, start, length);
         }
 
         public void comment(char[] ch, int start, int length)
@@ -170,7 +166,7 @@ public class WadlRepresentation extends SaxRepresentation {
 
         public void endCDATA() throws SAXException {
             if (getState() == State.DOCUMENTATION) {
-                contentBuffer.append("]]>");
+                this.contentBuffer.append("]]>");
             }
         }
 
@@ -181,7 +177,7 @@ public class WadlRepresentation extends SaxRepresentation {
         public void endDocument() throws SAXException {
             popState();
             this.contentBuffer = null;
-            wadlRepresentation.setApplication(this.currentApplication);
+            this.wadlRepresentation.setApplication(this.currentApplication);
         }
 
         public void endDTD() throws SAXException {
@@ -209,7 +205,7 @@ public class WadlRepresentation extends SaxRepresentation {
                     popState();
                 } else if (localName.equals("doc")) {
                     // Get the current text.
-                    this.currentDocumentation.setTextContent(contentBuffer
+                    this.currentDocumentation.setTextContent(this.contentBuffer
                             .toString());
                     popState();
                 } else if (localName.equals("fault")) {
@@ -276,7 +272,7 @@ public class WadlRepresentation extends SaxRepresentation {
          * @return
          */
         private State getState() {
-            State result = this.states.get(0);
+            final State result = this.states.get(0);
             return result;
         }
 
@@ -300,7 +296,7 @@ public class WadlRepresentation extends SaxRepresentation {
 
         public void startCDATA() throws SAXException {
             if (getState() == State.DOCUMENTATION) {
-                contentBuffer.append("<![CDATA[");
+                this.contentBuffer.append("<![CDATA[");
             }
         }
 
@@ -419,16 +415,17 @@ public class WadlRepresentation extends SaxRepresentation {
                                 .getValue("element"));
                     }
                     if (attrs.getIndex("profile") != -1) {
-                        String[] profiles = attrs.getValue("profile")
+                        final String[] profiles = attrs.getValue("profile")
                                 .split(" ");
-                        for (String string : profiles) {
+                        for (final String string : profiles) {
                             this.currentFault.getProfiles().add(
                                     new Reference(string));
                         }
                     }
                     if (attrs.getIndex("status") != -1) {
-                        String[] statuses = attrs.getValue("status").split(" ");
-                        for (String string : statuses) {
+                        final String[] statuses = attrs.getValue("status")
+                                .split(" ");
+                        for (final String string : statuses) {
                             this.currentFault.getStatuses().add(
                                     Status.valueOf(Integer.parseInt(string)));
                         }
@@ -583,16 +580,17 @@ public class WadlRepresentation extends SaxRepresentation {
                                 .getValue("element"));
                     }
                     if (attrs.getIndex("profile") != -1) {
-                        String[] profiles = attrs.getValue("profile")
+                        final String[] profiles = attrs.getValue("profile")
                                 .split(" ");
-                        for (String string : profiles) {
+                        for (final String string : profiles) {
                             this.currentRepresentation.getProfiles().add(
                                     new Reference(string));
                         }
                     }
                     if (attrs.getIndex("status") != -1) {
-                        String[] statuses = attrs.getValue("status").split(" ");
-                        for (String string : statuses) {
+                        final String[] statuses = attrs.getValue("status")
+                                .split(" ");
+                        for (final String string : statuses) {
                             this.currentRepresentation.getStatuses().add(
                                     Status.valueOf(Integer.parseInt(string)));
                         }
@@ -616,7 +614,7 @@ public class WadlRepresentation extends SaxRepresentation {
                     }
                     pushState(State.REQUEST);
                 } else if (localName.equals("resource")) {
-                    ResourceInfo resourceInfo = new ResourceInfo();
+                    final ResourceInfo resourceInfo = new ResourceInfo();
                     if (attrs.getIndex("id") != -1) {
                         resourceInfo.setIdentifier(attrs.getValue("id"));
                     }
@@ -628,8 +626,8 @@ public class WadlRepresentation extends SaxRepresentation {
                                 .getValue("queryType")));
                     }
                     if (attrs.getIndex("type") != -1) {
-                        String[] type = attrs.getValue("type").split(" ");
-                        for (String string : type) {
+                        final String[] type = attrs.getValue("type").split(" ");
+                        for (final String string : type) {
                             resourceInfo.getType().add(new Reference(string));
                         }
                     }
@@ -680,6 +678,10 @@ public class WadlRepresentation extends SaxRepresentation {
         }
     }
 
+    /** Obtain a suitable logger. */
+    private static Logger logger = Logger.getLogger(WadlRepresentation.class
+            .getCanonicalName());
+
     /** Web Application Description Language namespace. */
     public static final String APP_NAMESPACE = "http://research.sun.com/wadl/2006/10";
 
@@ -707,6 +709,23 @@ public class WadlRepresentation extends SaxRepresentation {
     /**
      * Constructor.
      * 
+     * @param xmlRepresentation
+     *            The XML WADL document.
+     * @throws IOException
+     */
+    public WadlRepresentation(Representation xmlRepresentation)
+            throws IOException {
+        super(xmlRepresentation);
+        setMediaType(MediaType.APPLICATION_WADL_XML);
+
+        // Parse the given document using SAX to produce an ApplicationInfo
+        // instance.
+        parse(new ContentReader(this));
+    }
+
+    /**
+     * Constructor.
+     * 
      * @param resource
      *            The root element of the WADL document.
      */
@@ -715,26 +734,9 @@ public class WadlRepresentation extends SaxRepresentation {
 
         this.application = new ApplicationInfo();
 
-        ResourcesInfo resources = new ResourcesInfo();
+        final ResourcesInfo resources = new ResourcesInfo();
         this.application.setResources(resources);
         resources.getResources().add(resource);
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param xmlRepresentation
-     *            The XML WADL document.
-     * @throws IOException
-     */
-    public WadlRepresentation(Representation xmlRepresentation)
-            throws IOException {
-        super(xmlRepresentation);
-        this.setMediaType(MediaType.APPLICATION_WADL_XML);
-
-        // Parse the given document using SAX to produce an ApplicationInfo
-        // instance.
-        parse(new ContentReader(this));
     }
 
     @Override
@@ -749,7 +751,7 @@ public class WadlRepresentation extends SaxRepresentation {
      * @return The root element of the WADL document.
      */
     public ApplicationInfo getApplication() {
-        return application;
+        return this.application;
     }
 
     /**
@@ -759,16 +761,16 @@ public class WadlRepresentation extends SaxRepresentation {
      */
     public Representation getHtmlRepresentation() {
         Representation representation = null;
-        URL wadlHtmlXsltUrl = Engine.getClassLoader().getResource(
+        final URL wadlHtmlXsltUrl = Engine.getClassLoader().getResource(
                 "org/restlet/ext/wadl/htmlConvert.xsl");
         if (wadlHtmlXsltUrl != null) {
             try {
-                setSaxSource(new SAXSource(new InputSource(this.getStream())));
-                InputRepresentation xslRep = new InputRepresentation(
+                setSaxSource(new SAXSource(new InputSource(getStream())));
+                final InputRepresentation xslRep = new InputRepresentation(
                         wadlHtmlXsltUrl.openStream(),
                         MediaType.APPLICATION_W3C_XSLT);
                 representation = new TransformRepresentation(this, xslRep);
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 e.printStackTrace();
             }
         }
@@ -790,7 +792,7 @@ public class WadlRepresentation extends SaxRepresentation {
     public void write(OutputStream outputStream) throws IOException {
         // Convert the attached ApplicationInfo instance into an equivalent WADL
         // XML document.
-        XmlWriter writer = new XmlWriter(outputStream, "UTF-8");
+        final XmlWriter writer = new XmlWriter(outputStream, "UTF-8");
         try {
             writer.forceNSDecl(APP_NAMESPACE, "");
             writer.setDataFormat(true);
@@ -798,7 +800,7 @@ public class WadlRepresentation extends SaxRepresentation {
             writer.startDocument();
             this.application.writeElement(writer);
             writer.endDocument();
-        } catch (SAXException e) {
+        } catch (final SAXException e) {
             logger.log(Level.SEVERE,
                     "Error when writing the WADL Representation.", e);
         }

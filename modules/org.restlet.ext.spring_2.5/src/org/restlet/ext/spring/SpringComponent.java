@@ -65,7 +65,7 @@ import org.restlet.data.Protocol;
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
  * 
- * @see <a href="http://www.springframework.org/">Spring home page</a>
+ * @see <a href="http://www.springframework.org/">Spring home page< /a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class SpringComponent extends org.restlet.Component {
@@ -75,10 +75,10 @@ public class SpringComponent extends org.restlet.Component {
      * protocol name, a Protocol instance or a Client instance.
      * 
      * @param clientInfo
-     *                The client info.
+     *            The client info.
      */
     public void setClient(Object clientInfo) {
-        List<Object> clients = new ArrayList<Object>();
+        final List<Object> clients = new ArrayList<Object>();
         clients.add(clientInfo);
         setClientsList(clients);
     }
@@ -88,10 +88,10 @@ public class SpringComponent extends org.restlet.Component {
      * Client instances.
      * 
      * @param clients
-     *                The list of clients.
+     *            The list of clients.
      */
     public synchronized void setClientsList(List<Object> clients) {
-        for (Object client : clients) {
+        for (final Object client : clients) {
             if (client instanceof String) {
                 getClients().add(Protocol.valueOf((String) client));
             } else if (client instanceof Protocol) {
@@ -110,7 +110,7 @@ public class SpringComponent extends org.restlet.Component {
      * Attaches a target Restlet to the default host.
      * 
      * @param target
-     *                The target Restlet.
+     *            The target Restlet.
      */
     public void setDefaultTarget(Restlet target) {
         getDefaultHost().attach(target);
@@ -121,10 +121,10 @@ public class SpringComponent extends org.restlet.Component {
      * protocol name, a Protocol instance or a Server instance.
      * 
      * @param serverInfo
-     *                The server info.
+     *            The server info.
      */
     public void setServer(Object serverInfo) {
-        List<Object> servers = new ArrayList<Object>();
+        final List<Object> servers = new ArrayList<Object>();
         servers.add(serverInfo);
         setServersList(servers);
     }
@@ -134,16 +134,16 @@ public class SpringComponent extends org.restlet.Component {
      * Server instances.
      * 
      * @param serversInfo
-     *                The list of servers.
+     *            The list of servers.
      */
     public void setServersList(List<Object> serversInfo) {
-        for (Object serverInfo : serversInfo) {
+        for (final Object serverInfo : serversInfo) {
             if (serverInfo instanceof String) {
                 getServers().add(Protocol.valueOf((String) serverInfo));
             } else if (serverInfo instanceof Protocol) {
                 getServers().add((Protocol) serverInfo);
             } else if (serverInfo instanceof Server) {
-                Server server = (Server) serverInfo;
+                final Server server = (Server) serverInfo;
                 server.setContext(getContext());
                 getServers().add(server);
             } else {

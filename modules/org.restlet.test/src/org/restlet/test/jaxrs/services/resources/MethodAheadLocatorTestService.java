@@ -34,10 +34,26 @@ import org.restlet.test.jaxrs.services.tests.MethodAheadLocatorTest;
 @Path("/methodsAheadLocatorsTest")
 public class MethodAheadLocatorTestService {
 
+    class SubResource {
+        @GET
+        @Produces("text/plain")
+        public String get() {
+            return "locator";
+        }
+    }
+
     @GET
     @Path("p1")
     @Produces("text/plain")
     public String get1() {
+        return "method";
+        // do nothing
+    }
+
+    @GET
+    @Path("p2")
+    @Produces("text/plain")
+    public String get2() {
         return "method";
         // do nothing
     }
@@ -50,21 +66,5 @@ public class MethodAheadLocatorTestService {
     @Path("p2")
     public String locator2() {
         return null;
-    }
-
-    @GET
-    @Path("p2")
-    @Produces("text/plain")
-    public String get2() {
-        return "method";
-        // do nothing
-    }
-
-    class SubResource {
-        @GET
-        @Produces("text/plain")
-        public String get() {
-            return "locator";
-        }
     }
 }

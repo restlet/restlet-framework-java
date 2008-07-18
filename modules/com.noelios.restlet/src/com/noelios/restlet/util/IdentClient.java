@@ -49,11 +49,11 @@ public class IdentClient {
      * Constructor.
      * 
      * @param clientAddress
-     *                The client IP address.
+     *            The client IP address.
      * @param clientPort
-     *                The client port (remote).
+     *            The client port (remote).
      * @param serverPort
-     *                The server port (local).
+     *            The server port (local).
      */
     public IdentClient(Logger logger, String clientAddress, int clientPort,
             int serverPort) {
@@ -64,10 +64,10 @@ public class IdentClient {
             BufferedReader in = null;
             try {
                 // Compose the IDENT request
-                StringBuilder sb = new StringBuilder();
+                final StringBuilder sb = new StringBuilder();
                 sb.append(clientPort).append(" , ").append(serverPort).append(
                         "\r\n");
-                String request = sb.toString();
+                final String request = sb.toString();
 
                 // Send the request to the remote server
                 socket = new Socket();
@@ -79,20 +79,21 @@ public class IdentClient {
                 // Read the response
                 in = new BufferedReader(new InputStreamReader(socket
                         .getInputStream()));
-                String response = in.readLine();
+                final String response = in.readLine();
 
                 // Parse the response
                 if (response != null) {
-                    StringTokenizer st = new StringTokenizer(response, ":");
+                    final StringTokenizer st = new StringTokenizer(response,
+                            ":");
 
                     if (st.countTokens() >= 3) {
                         // Skip the first token
                         st.nextToken();
 
                         // Get the command
-                        String command = st.nextToken().trim();
+                        final String command = st.nextToken().trim();
                         if (command.equalsIgnoreCase("USERID")
-                                && st.countTokens() >= 2) {
+                                && (st.countTokens() >= 2)) {
                             // Get the host type
                             this.hostType = st.nextToken().trim();
 
@@ -101,15 +102,16 @@ public class IdentClient {
                         }
                     }
                 }
-            } catch (IOException ioe) {
+            } catch (final IOException ioe) {
                 logger.log(Level.FINE, "Unable to complete the IDENT request",
                         ioe);
             } finally {
                 try {
                     // Always attempt to close the reader, therefore the socket
-                    if (in != null)
+                    if (in != null) {
                         in.close();
-                } catch (IOException ioe) {
+                    }
+                } catch (final IOException ioe) {
                     logger.log(Level.FINE, "Unable to close the socket", ioe);
                 }
             }

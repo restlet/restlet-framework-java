@@ -69,21 +69,23 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
      * 
      * @param optionsResponse
      * @param methods
-     *                The methods that must be allowed. If GET is included, a
-     *                check for HEAD is automaticly done. But it is no problem
-     *                to add the HEAD method.
+     *            The methods that must be allowed. If GET is included, a check
+     *            for HEAD is automaticly done. But it is no problem to add the
+     *            HEAD method.
      */
     public static void assertAllowedMethod(Response optionsResponse,
             Method... methods) {
-        if (optionsResponse.getStatus().isError())
+        if (optionsResponse.getStatus().isError()) {
             assertEquals(Status.SUCCESS_OK, optionsResponse.getStatus());
-        Set<Method> expectedMethods = new HashSet<Method>(Arrays
+        }
+        final Set<Method> expectedMethods = new HashSet<Method>(Arrays
                 .asList(methods));
-        if (expectedMethods.contains(Method.GET))
+        if (expectedMethods.contains(Method.GET)) {
             expectedMethods.add(Method.HEAD);
-        List<Method> allowedMethods = new ArrayList<Method>(optionsResponse
-                .getAllowedMethods());
-        for (Method method : methods) {
+        }
+        final List<Method> allowedMethods = new ArrayList<Method>(
+                optionsResponse.getAllowedMethods());
+        for (final Method method : methods) {
             assertTrue("allowedMethod must contain " + method, allowedMethods
                     .contains(method));
         }
@@ -96,8 +98,9 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
      * @throws IOException
      */
     public static void assertEmptyEntity(Response response) throws IOException {
-        if (response.getEntity() != null)
+        if (response.getEntity() != null) {
             assertEquals(null, response.getEntity().getText());
+        }
     }
 
     /**
@@ -114,25 +117,26 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
     }
 
     public static void assertEqualMediaType(MediaType expected,
-            Response actualResponse) {
-        assertEqualMediaType(expected, actualResponse.getEntity());
+            Representation actualEntity) {
+        assertEqualMediaType(expected, actualEntity.getMediaType());
     }
 
     public static void assertEqualMediaType(MediaType expected,
-            Representation actualEntity) {
-        assertEqualMediaType(expected, actualEntity.getMediaType());
+            Response actualResponse) {
+        assertEqualMediaType(expected, actualResponse.getEntity());
     }
 
     /**
      * @param accMediaType
      * @param mediaTypeQuality
-     *                default is 1.
+     *            default is 1.
      * @return
      */
     public static Collection<Preference<MediaType>> createPrefColl(
             MediaType accMediaType, float mediaTypeQuality) {
-        if (accMediaType == null)
+        if (accMediaType == null) {
             return Collections.emptyList();
+        }
         return Collections.singleton(new Preference<MediaType>(accMediaType,
                 mediaTypeQuality));
     }
@@ -145,9 +149,9 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
      * Year is 2008
      * 
      * @param dayOfMonth
-     *                1-31
+     *            1-31
      * @param month
-     *                1-12
+     *            1-12
      * @return true, if this workspace seems not to be JAX-RS implementors
      *         workspace.
      */
@@ -157,81 +161,46 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
 
     /**
      * @param dayOfMonth
-     *                1-31
+     *            1-31
      * @param month
-     *                1-12
+     *            1-12
      * @param year
-     *                e.g. 2008
+     *            e.g. 2008
      * @return true, if this workspace seems not to be JAX-RS implementors
      *         workspace.
      * @see #jaxRxImplementorAndAfter(int, int)
      */
     public static boolean jaxRxImplementorCheck(int dayOfMonth, int month,
             int year) {
-        Date afterDate = new Date(year - 1900, month - 1, dayOfMonth);
+        final Date afterDate = new Date(year - 1900, month - 1, dayOfMonth);
         if (new Date().after(afterDate)) {
-            String userHome = System.getProperty("user.home");
-            if (userHome == null)
+            final String userHome = System.getProperty("user.home");
+            if (userHome == null) {
                 return true;
+            }
             if (userHome.equals("C:\\Dokumente und Einstellungen\\Stephan")) {
-                String javaClassPath = System.getProperty("java.class.path");
-                if (javaClassPath == null)
+                final String javaClassPath = System
+                        .getProperty("java.class.path");
+                if (javaClassPath == null) {
                     return true;
-                if (javaClassPath.startsWith("D:\\eclipse-workspaces\\Mastera"))
+                }
+                if (javaClassPath.startsWith("D:\\eclipse-workspaces\\Mastera")) {
                     return false;
+                }
             }
         }
         return true;
     }
 
     /**
-     * starts the Server for the given JaxRsTestCase, waits for an input from
-     * {@link System#in} and then stops the server.
-     * 
-     * @param jaxRsTestCase
-     * @throws Exception
-     */
-    public void runServerUntilKeyPressed() throws Exception {
-        setUseTcp(true);
-        startServer(this.createApplication());
-        runServerAfterStart();
-        System.out.println("press key to stop . . .");
-        System.in.read();
-        this.stopServer();
-        System.out.println("server stopped");
-    }
-
-    /**
-     * 
-     */
-    protected void runServerAfterStart() {
-        ApplicationConfig appConfig = this.getAppConfig();
-        Collection<Class<?>> rrcs = appConfig.getResourceClasses();
-        System.out
-                .println("the root resource classes are available under the following pathes:");
-        for (Class<?> rrc : rrcs) {
-            try {
-                System.out.print("http://localhost:" + this.getServerPort());
-                String path = rrc.getAnnotation(Path.class).value();
-                if (!path.startsWith("/"))
-                    System.out.print("/");
-                System.out.println(path);
-            } catch (RuntimeException e) {
-                e.printStackTrace(System.out);
-            }
-        }
-    }
-
-    /**
      * @param httpMethod
      * @param klasse
      * @param mediaTypePrefs
-     *                Collection with Preference&lt;MediaType&gt; and/or
-     *                MediaType.
+     *            Collection with Preference&lt;MediaType&gt; and/or MediaType.
      * @return
      * @throws IllegalArgumentException
-     *                 If an element in the mediaTypes is neither a
-     *                 Preference&lt;MediaType&gt; or a MediaType object.
+     *             If an element in the mediaTypes is neither a
+     *             Preference&lt;MediaType&gt; or a MediaType object.
      */
     @SuppressWarnings("unchecked")
     public Response accessServer(Method httpMethod, Class<?> klasse,
@@ -251,7 +220,7 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
     public Response accessServer(Method httpMethod, Class<?> klasse,
             String subPath, Collection accMediaTypes,
             ChallengeResponse challengeResponse) {
-        Reference reference = createReference(klasse, subPath);
+        final Reference reference = createReference(klasse, subPath);
         return accessServer(httpMethod, reference, accMediaTypes, null,
                 challengeResponse, null, null, null);
     }
@@ -265,20 +234,23 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
      */
     public Response accessServer(Method httpMethod, Class<?> klasse,
             String subPath, Conditions conditions, ClientInfo clientInfo) {
-        Reference reference = createReference(klasse, subPath);
-        Request request = new Request(httpMethod, reference);
-        if (conditions != null)
+        final Reference reference = createReference(klasse, subPath);
+        final Request request = new Request(httpMethod, reference);
+        if (conditions != null) {
             request.setConditions(conditions);
-        if (clientInfo != null)
+        }
+        if (clientInfo != null) {
             request.setClientInfo(clientInfo);
+        }
         return accessServer(request);
     }
 
     public Response accessServer(Method httpMethod, Class<?> klasse,
             String subPath, MediaType accMediaType) {
         Collection<MediaType> mediaTypes = null;
-        if (accMediaType != null)
+        if (accMediaType != null) {
             mediaTypes = Collections.singleton(accMediaType);
+        }
         return accessServer(httpMethod, klasse, subPath, mediaTypes, null);
     }
 
@@ -291,19 +263,20 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
      * Creates a {@link JaxRsApplication}
      * 
      * @param appConfig
-     *                the applicationConfi to use
+     *            the applicationConfi to use
      * @param challengeScheme
-     *                the challengeScheme to use, if a RoleChecker is given.
+     *            the challengeScheme to use, if a RoleChecker is given.
      * @param roleChecker
-     *                the RoleChecer to use.
+     *            the RoleChecer to use.
      * @return
      */
     public JaxRsApplication createApplication(ApplicationConfig appConfig,
             ChallengeScheme challengeScheme, RoleChecker roleChecker) {
-        JaxRsApplication application = new JaxRsApplication();
+        final JaxRsApplication application = new JaxRsApplication();
         if (roleChecker != null) {
             application.setRoleChecker(roleChecker);
-            Guard guard = createGuard(application.getContext(), challengeScheme);
+            final Guard guard = createGuard(application.getContext(),
+                    challengeScheme);
             application.setGuard(guard);
         }
         application.add(appConfig);
@@ -315,7 +288,8 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
      * @return
      */
     protected Request createGetRequest(String subPath) {
-        Reference reference = createReference(getRootResourceClass(), subPath);
+        final Reference reference = createReference(getRootResourceClass(),
+                subPath);
         return new Request(Method.GET, reference);
     }
 
@@ -326,7 +300,7 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
      * 
      * @param jaxRsClass
      * @param subPath
-     *                darf null sein
+     *            darf null sein
      * @return
      * @see #createReference(String, String)
      */
@@ -334,9 +308,9 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
         String path;
         try {
             path = Util.getPathTemplate(jaxRsClass);
-        } catch (RuntimeException e) {
+        } catch (final RuntimeException e) {
             throw e;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException(e);
         }
         return createReference(path, subPath);
@@ -349,18 +323,20 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
      * @see #createReference(Class, String)
      */
     public Reference createReference(String path, String subPath) {
-        Reference reference = createBaseRef();
+        final Reference reference = createBaseRef();
         reference.setBaseRef(createBaseRef());
-        if (!path.startsWith("/"))
+        if (!path.startsWith("/")) {
             path = "/" + path;
+        }
         if (subPath != null) {
             if (subPath.startsWith(";")) {
                 path += subPath;
             } else if (subPath.length() > 0) {
-                if (path.endsWith("/") || subPath.startsWith("/"))
+                if (path.endsWith("/") || subPath.startsWith("/")) {
                     path += subPath;
-                else
+                } else {
                     path += "/" + subPath;
+                }
             }
         }
         reference.setPath(path);
@@ -428,7 +404,7 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
      * @return
      */
     protected ApplicationConfig getAppConfig() {
-        ApplicationConfig appConfig = new ApplicationConfig() {
+        final ApplicationConfig appConfig = new ApplicationConfig() {
             @Override
             public Set<Class<?>> getProviderClasses() {
                 return (Set) getProvClasses();
@@ -527,29 +503,68 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
     }
 
     /**
+     * 
+     */
+    protected void runServerAfterStart() {
+        final ApplicationConfig appConfig = getAppConfig();
+        final Collection<Class<?>> rrcs = appConfig.getResourceClasses();
+        System.out
+                .println("the root resource classes are available under the following pathes:");
+        for (final Class<?> rrc : rrcs) {
+            try {
+                System.out.print("http://localhost:" + getServerPort());
+                final String path = rrc.getAnnotation(Path.class).value();
+                if (!path.startsWith("/")) {
+                    System.out.print("/");
+                }
+                System.out.println(path);
+            } catch (final RuntimeException e) {
+                e.printStackTrace(System.out);
+            }
+        }
+    }
+
+    /**
+     * starts the Server for the given JaxRsTestCase, waits for an input from
+     * {@link System#in} and then stops the server.
+     * 
+     * @param jaxRsTestCase
+     * @throws Exception
+     */
+    public void runServerUntilKeyPressed() throws Exception {
+        setUseTcp(true);
+        startServer(this.createApplication());
+        runServerAfterStart();
+        System.out.println("press key to stop . . .");
+        System.in.read();
+        stopServer();
+        System.out.println("server stopped");
+    }
+
+    /**
      * @param protocol
      * @param challengeScheme
      * @param roleChecker
-     *                the {@link RoleChecker} to use.
+     *            the {@link RoleChecker} to use.
      * @param rootResourceClasses
      * @throws Exception
      */
     private void startServer(ApplicationConfig appConfig, Protocol protocol,
             final ChallengeScheme challengeScheme, RoleChecker roleChecker)
             throws Exception {
-        Application jaxRsApplication = createApplication(appConfig,
+        final Application jaxRsApplication = createApplication(appConfig,
                 challengeScheme, roleChecker);
         startServer(jaxRsApplication, protocol);
     }
 
     /**
      * @param roleChecker
-     *                the {@link RoleChecker} to use.
+     *            the {@link RoleChecker} to use.
      * @throws Exception
      */
     protected void startServer(ChallengeScheme challengeScheme,
             RoleChecker roleChecker) throws Exception {
-        ApplicationConfig appConfig = getAppConfig();
+        final ApplicationConfig appConfig = getAppConfig();
         startServer(appConfig, Protocol.HTTP, challengeScheme, roleChecker);
     }
 }

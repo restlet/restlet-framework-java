@@ -42,9 +42,9 @@ public final class ServerList extends WrapperList<Server> {
      * Constructor.
      * 
      * @param context
-     *                The context.
+     *            The context.
      * @param target
-     *                The target Restlet of added servers.
+     *            The target Restlet of added servers.
      */
     public ServerList(Context context, Restlet target) {
         super(new CopyOnWriteArrayList<Server>());
@@ -56,11 +56,11 @@ public final class ServerList extends WrapperList<Server> {
      * Adds a new server connector in the map supporting the given protocol.
      * 
      * @param protocol
-     *                The connector protocol.
+     *            The connector protocol.
      * @return The added server.
      */
     public Server add(Protocol protocol) {
-        Server result = new Server(getContext(), protocol, null, protocol
+        final Server result = new Server(getContext(), protocol, null, protocol
                 .getDefaultPort(), getTarget());
         add(result);
         return result;
@@ -71,13 +71,13 @@ public final class ServerList extends WrapperList<Server> {
      * the specified port.
      * 
      * @param protocol
-     *                The connector protocol.
+     *            The connector protocol.
      * @param port
-     *                The listening port.
+     *            The listening port.
      * @return The added server.
      */
     public Server add(Protocol protocol, int port) {
-        Server result = new Server(getContext(), protocol, null, port,
+        final Server result = new Server(getContext(), protocol, null, port,
                 getTarget());
         add(result);
         return result;
@@ -88,16 +88,16 @@ public final class ServerList extends WrapperList<Server> {
      * the specified IP address and port.
      * 
      * @param protocol
-     *                The connector protocol.
+     *            The connector protocol.
      * @param address
-     *                The optional listening IP address (useful if multiple IP
-     *                addresses available).
+     *            The optional listening IP address (useful if multiple IP
+     *            addresses available).
      * @param port
-     *                The listening port.
+     *            The listening port.
      * @return The added server.
      */
     public Server add(Protocol protocol, String address, int port) {
-        Server result = new Server(getContext(), protocol, address, port,
+        final Server result = new Server(getContext(), protocol, address, port,
                 getTarget());
         add(result);
         return result;
@@ -136,7 +136,7 @@ public final class ServerList extends WrapperList<Server> {
      * Sets the context.
      * 
      * @param context
-     *                The context.
+     *            The context.
      */
     public void setContext(Context context) {
         this.context = context;
@@ -146,7 +146,7 @@ public final class ServerList extends WrapperList<Server> {
      * Sets the target Restlet.
      * 
      * @param target
-     *                The target Restlet.
+     *            The target Restlet.
      */
     public void setTarget(Restlet target) {
         this.target = target;

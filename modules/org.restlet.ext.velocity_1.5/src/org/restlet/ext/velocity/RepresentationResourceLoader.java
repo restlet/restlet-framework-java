@@ -44,13 +44,13 @@ public class RepresentationResourceLoader extends ResourceLoader {
     }
 
     /** The default representation to load. */
-    private Representation defaultRepresentation;
+    private final Representation defaultRepresentation;
 
     /**
      * Constructeur.
      * 
      * @param defaultRepresentation
-     *                The default representation to use.
+     *            The default representation to use.
      */
     public RepresentationResourceLoader(Representation defaultRepresentation) {
         this.defaultRepresentation = defaultRepresentation;
@@ -58,7 +58,7 @@ public class RepresentationResourceLoader extends ResourceLoader {
 
     @Override
     public long getLastModified(Resource resource) {
-        Representation original = getStore().get(resource.getName());
+        final Representation original = getStore().get(resource.getName());
         return (original != null) ? original.getModificationDate().getTime()
                 : 0;
     }
@@ -83,7 +83,7 @@ public class RepresentationResourceLoader extends ResourceLoader {
             } else {
                 result = resultRepresentation.getStream();
             }
-        } catch (IOException ioe) {
+        } catch (final IOException ioe) {
             throw new ResourceNotFoundException(ioe);
         }
 

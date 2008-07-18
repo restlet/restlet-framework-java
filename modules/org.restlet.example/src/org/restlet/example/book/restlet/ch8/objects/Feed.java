@@ -26,7 +26,7 @@ import java.util.List;
  * 
  */
 public class Feed extends BaseObject {
-    
+
     /** List of mails of the feed. */
     private List<Mail> mails;
 
@@ -35,7 +35,7 @@ public class Feed extends BaseObject {
 
     /** Set of tags of the feed. */
     private List<String> tags;
-    
+
     public Feed() {
         super();
         this.mails = new ArrayList<Mail>();
@@ -43,15 +43,15 @@ public class Feed extends BaseObject {
     }
 
     public List<Mail> getMails() {
-        return mails;
+        return this.mails;
     }
 
     public String getNickname() {
-        return nickname;
+        return this.nickname;
     }
 
     public List<String> getTags() {
-        return tags;
+        return this.tags;
     }
 
     public void setMails(List<Mail> mails) {

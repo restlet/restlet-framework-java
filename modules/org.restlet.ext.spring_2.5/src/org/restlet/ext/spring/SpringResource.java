@@ -29,7 +29,7 @@ import org.springframework.core.io.AbstractResource;
  * Spring's notion of Resource is different from Restlet's one, actually it's
  * closer to Restlet's Representations.
  * 
- * @see <a href="http://www.springframework.org/">Spring home page</a>
+ * @see <a href="http://www.springframework.org/">Spring home page< /a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class SpringResource extends AbstractResource {
@@ -46,7 +46,7 @@ public class SpringResource extends AbstractResource {
      * Constructor.
      * 
      * @param representation
-     *                The description.
+     *            The description.
      */
     public SpringResource(Representation representation) {
         this(representation, "Restlet Representation");
@@ -56,9 +56,9 @@ public class SpringResource extends AbstractResource {
      * Constructor.
      * 
      * @param representation
-     *                The description.
+     *            The description.
      * @param description
-     *                The description.
+     *            The description.
      */
     public SpringResource(Representation representation, String description) {
         if (representation == null) {
@@ -75,7 +75,7 @@ public class SpringResource extends AbstractResource {
      */
     @Override
     public boolean equals(Object obj) {
-        return (obj == this || (obj instanceof SpringResource && ((SpringResource) obj).representation
+        return ((obj == this) || ((obj instanceof SpringResource) && ((SpringResource) obj).representation
                 .equals(this.representation)));
     }
 

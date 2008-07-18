@@ -17,11 +17,24 @@
  */
 package org.restlet.example.jaxrs.employees;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.net.URI;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriBuilderException;
+import javax.ws.rs.core.UriInfo;
 
 /**
  * This resource class represents one employee.
@@ -31,46 +44,6 @@ import javax.ws.rs.core.*;
  */
 public class EmployeeResource {
 
-    private EmployeeMgr employeeMgr = EmployeeMgr.get();
-
-    private int staffNo;
-
-    EmployeeResource(int persNr) {
-        this.staffNo = persNr;
-    }
-
-    @GET
-    @Consumes( { "application/xml", "text/xml", "application/json" })
-    public Employee get(@Context UriInfo uriInfo) {
-        // load employee with requested id
-        Employee employee = employeeMgr.getFull(staffNo);
-
-        // set department uri
-        UriBuilder departmentUB = uriInfo.getBaseUriBuilder();
-        departmentUB.path("departments", "{depId}");
-        // LATER departmentUB.extension(uriInfo.getPathExtension());
-        String department = employee.getDepartment();
-        employee.setDepartmentUri(departmentUB.build(department));
-
-        return employee;
-    }
-
-    @PUT
-    @Consumes( { "application/xml", "text/xml", "application/json" })
-    public void update(Employee employee) {
-        employeeMgr.update(staffNo, employee);
-    }
-
-    @DELETE
-    public Object delete(@Context HttpHeaders httpHeaders,
-            @Context UriInfo uriInfo) {
-        employeeMgr.remove(staffNo);
-        if (httpHeaders.getAcceptableMediaTypes().contains(
-                MediaType.TEXT_HTML_TYPE))
-            return Response.seeOther(createEmployeesUri(uriInfo));
-        return null;
-    }
-
     /**
      * @param uriInfo
      * @return
@@ -78,11 +51,46 @@ public class EmployeeResource {
      * @throws UriBuilderException
      */
     private static URI createEmployeesUri(final UriInfo uriInfo) {
-        UriBuilder employeesUri = uriInfo.getBaseUriBuilder();
+        final UriBuilder employeesUri = uriInfo.getBaseUriBuilder();
         employeesUri.path(uriInfo.getAncestorResourceURIs().get(0));
         employeesUri.extension(uriInfo.getConnegExtension());
-        URI build = employeesUri.build();
+        final URI build = employeesUri.build();
         return build;
+    }
+
+    private final EmployeeMgr employeeMgr = EmployeeMgr.get();
+
+    private final int staffNo;
+
+    EmployeeResource(int persNr) {
+        this.staffNo = persNr;
+    }
+
+    @DELETE
+    public Object delete(@Context HttpHeaders httpHeaders,
+            @Context UriInfo uriInfo) {
+        this.employeeMgr.remove(this.staffNo);
+        if (httpHeaders.getAcceptableMediaTypes().contains(
+                MediaType.TEXT_HTML_TYPE)) {
+            return Response.seeOther(createEmployeesUri(uriInfo));
+        }
+        return null;
+    }
+
+    @GET
+    @Consumes( { "application/xml", "text/xml", "application/json" })
+    public Employee get(@Context UriInfo uriInfo) {
+        // load employee with requested id
+        final Employee employee = this.employeeMgr.getFull(this.staffNo);
+
+        // set department uri
+        final UriBuilder departmentUB = uriInfo.getBaseUriBuilder();
+        departmentUB.path("departments", "{depId}");
+        // LATER departmentUB.extension(uriInfo.getPathExtension());
+        final String department = employee.getDepartment();
+        employee.setDepartmentUri(departmentUB.build(department));
+
+        return employee;
     }
 
     @GET
@@ -92,7 +100,7 @@ public class EmployeeResource {
         final URI employeesUri = createEmployeesUri(uriInfo);
         return new StreamingOutput() {
             public void write(OutputStream output) throws IOException {
-                PrintStream ps = new PrintStream(output);
+                final PrintStream ps = new PrintStream(output);
                 ps.println("<html><head>");
                 ps.println("<title>Employee</title>");
                 ps.println("</head></body>");
@@ -128,7 +136,8 @@ public class EmployeeResource {
                 ps.print("<form action=\"");
                 ps.print(uriInfo.getAbsolutePath());
                 ps.println("?method=DELETE\" method=\"POST\">");
-                ps.println("<input type=\"submit\" value=\"Delete employee\" />");
+                ps
+                        .println("<input type=\"submit\" value=\"Delete employee\" />");
                 ps.println("</form>");
                 ps.print("<hr><a href=\"");
                 ps.print(employeesUri);
@@ -136,5 +145,11 @@ public class EmployeeResource {
                 ps.println("</body></html>");
             }
         };
+    }
+
+    @PUT
+    @Consumes( { "application/xml", "text/xml", "application/json" })
+    public void update(Employee employee) {
+        this.employeeMgr.update(this.staffNo, employee);
     }
 }

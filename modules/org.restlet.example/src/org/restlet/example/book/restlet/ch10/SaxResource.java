@@ -23,7 +23,7 @@ public class SaxResource extends Resource {
     public Representation represent(Variant variant) throws ResourceException {
         Representation rep = null;
 
-        XmlWriter w = new XmlWriter();
+        final XmlWriter w = new XmlWriter();
         w.setDataFormat(true);
         w.setIndentStep(2);
         try {
@@ -35,7 +35,7 @@ public class SaxResource extends Resource {
             w.endElement("Person");
             w.endDocument();
             rep = new SaxRepresentation(MediaType.TEXT_XML);
-        } catch (SAXException e) {
+        } catch (final SAXException e) {
             e.printStackTrace();
         }
 

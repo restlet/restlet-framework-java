@@ -48,19 +48,20 @@ public class PathParamTestService {
     }
 
     @GET
-    @Path("array/{var1}")
-    @Produces(MediaType.TEXT_PLAIN)
-    public String getVar1(@PathParam("var1") String[] vars) {
-        String result = "var1=";
-        for (String var : vars)
-            result += "\n" + var;
-        return result;
-    }
-
-    @GET
     @Path("st/{var1}")
     @Produces(MediaType.TEXT_PLAIN)
     public String getVar1(@PathParam("var1") String var1) {
         return var1;
+    }
+
+    @GET
+    @Path("array/{var1}")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String getVar1(@PathParam("var1") String[] vars) {
+        String result = "var1=";
+        for (final String var : vars) {
+            result += "\n" + var;
+        }
+        return result;
     }
 }

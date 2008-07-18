@@ -64,9 +64,10 @@ public class WrappedRequestForHttpHeaders implements
      */
     public WrappedRequestForHttpHeaders(Response restletResponse,
             MultivaluedMap<String, Object> jaxRsRespHeaders, Logger logger) {
-        if (restletResponse == null)
+        if (restletResponse == null) {
             throw new IllegalArgumentException(
                     "The Restlet Response must not be null");
+        }
         this.restletResponse = restletResponse;
         this.jaxRsRespHeaders = jaxRsRespHeaders;
         this.logger = logger;
@@ -76,31 +77,28 @@ public class WrappedRequestForHttpHeaders implements
         unsupported();
     }
 
-    private UnsupportedOperationException unsupported()
-            throws UnsupportedOperationException {
-        throw new UnsupportedOperationException(
-                "The changing of the http headers is not supported by this runtime environment.");
-    }
-
     /**
      * @return
      */
     private MultivaluedMap<String, Object> allToJaxRsHeaders() {
-        MultivaluedMap<String, Object> jaxRsRespHeaders = getJaxRsRespHeaders();
-        Series<Parameter> headers = getHeaders();
+        final MultivaluedMap<String, Object> jaxRsRespHeaders = getJaxRsRespHeaders();
+        final Series<Parameter> headers = getHeaders();
         if (headers != null) {
-            for (Parameter p : headers) {
-                String name = p.getName();
-                String value = p.getValue();
-                List<Object> values = jaxRsRespHeaders.get(name);
+            for (final Parameter p : headers) {
+                final String name = p.getName();
+                final String value = p.getValue();
+                final List<Object> values = jaxRsRespHeaders.get(name);
                 boolean contained = false;
                 if (values != null) {
-                    for (Object v : values)
-                        if (v != null && v.toString().equals(value))
+                    for (final Object v : values) {
+                        if ((v != null) && v.toString().equals(value)) {
                             contained = true;
+                        }
+                    }
                 }
-                if (!contained)
+                if (!contained) {
                     jaxRsRespHeaders.add(name, value);
+                }
             }
             this.headers = null;
         }
@@ -112,33 +110,44 @@ public class WrappedRequestForHttpHeaders implements
     }
 
     public boolean containsKey(Object headerName) {
-        if (headerName == null)
+        if (headerName == null) {
             return false;
-        if (jaxRsRespHeaders != null)
-            if (jaxRsRespHeaders.containsKey(headerName))
+        }
+        if (this.jaxRsRespHeaders != null) {
+            if (this.jaxRsRespHeaders.containsKey(headerName)) {
                 return true;
-        Series<Parameter> headers = getHeaders();
-        if (headers != null)
-            for (Parameter p : headers)
-                if (headerName.equals(p.getName()))
+            }
+        }
+        final Series<Parameter> headers = getHeaders();
+        if (headers != null) {
+            for (final Parameter p : headers) {
+                if (headerName.equals(p.getName())) {
                     return true;
+                }
+            }
+        }
         return false;
     }
 
     public boolean containsValue(Object headerValue) {
-        if (jaxRsRespHeaders != null)
-            if (jaxRsRespHeaders.containsValue(headerValue))
+        if (this.jaxRsRespHeaders != null) {
+            if (this.jaxRsRespHeaders.containsValue(headerValue)) {
                 return true;
-        Series<Parameter> headers = getHeaders();
-        if (headers != null)
-            for (Parameter p : headers)
-                if (headerValue.equals(p.getValue()))
+            }
+        }
+        final Series<Parameter> headers = getHeaders();
+        if (headers != null) {
+            for (final Parameter p : headers) {
+                if (headerValue.equals(p.getValue())) {
                     return true;
+                }
+            }
+        }
         return false;
     }
 
     public Set<java.util.Map.Entry<String, List<Object>>> entrySet() {
-        MultivaluedMap<String, Object> jaxRsRespHeaders = allToJaxRsHeaders();
+        final MultivaluedMap<String, Object> jaxRsRespHeaders = allToJaxRsHeaders();
         return jaxRsRespHeaders.entrySet();
     }
 
@@ -147,16 +156,18 @@ public class WrappedRequestForHttpHeaders implements
     }
 
     public Object getFirst(String headerName) {
-        if (jaxRsRespHeaders != null) {
-            Object rt = jaxRsRespHeaders.getFirst(headerName);
-            if (rt != null)
+        if (this.jaxRsRespHeaders != null) {
+            final Object rt = this.jaxRsRespHeaders.getFirst(headerName);
+            if (rt != null) {
                 return rt;
+            }
         }
-        Series<Parameter> headers = getHeaders();
+        final Series<Parameter> headers = getHeaders();
         if (headers != null) {
-            Parameter first = headers.getFirst(headerName);
-            if (first == null)
+            final Parameter first = headers.getFirst(headerName);
+            if (first == null) {
                 return null;
+            }
             return first.getValue();
         }
         return null;
@@ -170,25 +181,29 @@ public class WrappedRequestForHttpHeaders implements
      * @return
      */
     private Series<Parameter> getHeaders() {
-        if (this.headers == null && restletResponse != null) {
-            this.headers = Util.copyResponseHeaders(restletResponse, logger);
+        if ((this.headers == null) && (this.restletResponse != null)) {
+            this.headers = Util.copyResponseHeaders(this.restletResponse,
+                    this.logger);
             this.restletResponse = null;
         }
         return this.headers;
     }
 
     private MultivaluedMap<String, Object> getJaxRsRespHeaders() {
-        if (this.jaxRsRespHeaders == null)
+        if (this.jaxRsRespHeaders == null) {
             this.jaxRsRespHeaders = new MultivaluedMapImpl<String, Object>();
+        }
         return this.jaxRsRespHeaders;
     }
 
     public boolean isEmpty() {
-        if (jaxRsRespHeaders != null && !jaxRsRespHeaders.isEmpty())
+        if ((this.jaxRsRespHeaders != null) && !this.jaxRsRespHeaders.isEmpty()) {
             return false;
-        Series<Parameter> headers = getHeaders();
-        if (headers != null)
+        }
+        final Series<Parameter> headers = getHeaders();
+        if (headers != null) {
             return headers.isEmpty();
+        }
         return true;
     }
 
@@ -214,12 +229,20 @@ public class WrappedRequestForHttpHeaders implements
 
     public int size() {
         int size = 0;
-        if (jaxRsRespHeaders != null)
-            size = jaxRsRespHeaders.size();
-        Series<Parameter> headers = getHeaders();
-        if (headers != null)
+        if (this.jaxRsRespHeaders != null) {
+            size = this.jaxRsRespHeaders.size();
+        }
+        final Series<Parameter> headers = getHeaders();
+        if (headers != null) {
             size += headers.size();
+        }
         return size;
+    }
+
+    private UnsupportedOperationException unsupported()
+            throws UnsupportedOperationException {
+        throw new UnsupportedOperationException(
+                "The changing of the http headers is not supported by this runtime environment.");
     }
 
     public Collection<List<Object>> values() {

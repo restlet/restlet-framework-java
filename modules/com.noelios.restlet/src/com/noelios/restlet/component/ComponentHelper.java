@@ -50,7 +50,7 @@ public class ComponentHelper extends ChainHelper<Component> {
      * Constructor.
      * 
      * @param component
-     *                The helper component.
+     *            The helper component.
      */
     public ComponentHelper(Component component) {
         super(component);
@@ -62,7 +62,7 @@ public class ComponentHelper extends ChainHelper<Component> {
      * Check the applications attached to a virtual host.
      * 
      * @param host
-     *                The parent virtual host.
+     *            The parent virtual host.
      * @return True if the check succeeded.
      * @throws Exception
      */
@@ -70,21 +70,22 @@ public class ComponentHelper extends ChainHelper<Component> {
         boolean result = true;
 
         if (host != null) {
-            for (Route route : host.getRoutes()) {
-                Restlet next = route.getNext();
+            for (final Route route : host.getRoutes()) {
+                final Restlet next = route.getNext();
 
                 if (next instanceof Application) {
-                    Application application = (Application) next;
+                    final Application application = (Application) next;
 
-                    for (Protocol clientProtocol : application
+                    for (final Protocol clientProtocol : application
                             .getConnectorService().getClientProtocols()) {
                         boolean clientFound = false;
 
                         // Try to find a client connector matching the client
                         // protocol
                         Client client;
-                        for (Iterator<Client> iter = getHelped().getClients()
-                                .iterator(); !clientFound && iter.hasNext();) {
+                        for (final Iterator<Client> iter = getHelped()
+                                .getClients().iterator(); !clientFound
+                                && iter.hasNext();) {
                             client = iter.next();
                             clientFound = client.getProtocols().contains(
                                     clientProtocol);
@@ -103,15 +104,16 @@ public class ComponentHelper extends ChainHelper<Component> {
                         }
                     }
 
-                    for (Protocol serverProtocol : application
+                    for (final Protocol serverProtocol : application
                             .getConnectorService().getServerProtocols()) {
                         boolean serverFound = false;
 
                         // Try to find a server connector matching the server
                         // protocol
                         Server server;
-                        for (Iterator<Server> iter = getHelped().getServers()
-                                .iterator(); !serverFound && iter.hasNext();) {
+                        for (final Iterator<Server> iter = getHelped()
+                                .getServers().iterator(); !serverFound
+                                && iter.hasNext();) {
                             server = iter.next();
                             serverFound = server.getProtocols().contains(
                                     serverProtocol);
@@ -149,7 +151,7 @@ public class ComponentHelper extends ChainHelper<Component> {
      * Creates a new status filter. Allows overriding.
      * 
      * @param component
-     *                The parent component.
+     *            The parent component.
      * @return The new status filter.
      */
     protected StatusFilter createStatusFilter(Component component) {
@@ -178,7 +180,7 @@ public class ComponentHelper extends ChainHelper<Component> {
      * Sets the internal server router.
      * 
      * @param serverRouter
-     *                The internal host router.
+     *            The internal host router.
      */
     public void setServerRouter(ServerRouter serverRouter) {
         this.serverRouter = serverRouter;
@@ -189,7 +191,7 @@ public class ComponentHelper extends ChainHelper<Component> {
         // Checking if all applications have proper connectors
         boolean success = checkVirtualHost(getHelped().getDefaultHost());
         if (success) {
-            for (VirtualHost host : getHelped().getHosts()) {
+            for (final VirtualHost host : getHelped().getHosts()) {
                 success = success && checkVirtualHost(host);
             }
         }
@@ -221,7 +223,7 @@ public class ComponentHelper extends ChainHelper<Component> {
 
         // Stop all applications
         stopVirtualHostApplications(getHelped().getDefaultHost());
-        for (VirtualHost host : getHelped().getHosts()) {
+        for (final VirtualHost host : getHelped().getHosts()) {
             stopVirtualHostApplications(host);
         }
     }
@@ -233,7 +235,7 @@ public class ComponentHelper extends ChainHelper<Component> {
      * @throws Exception
      */
     private void stopVirtualHostApplications(VirtualHost host) throws Exception {
-        for (Route route : host.getRoutes()) {
+        for (final Route route : host.getRoutes()) {
             if (route.getNext().isStarted()) {
                 route.getNext().stop();
             }
@@ -243,7 +245,7 @@ public class ComponentHelper extends ChainHelper<Component> {
     @Override
     public void update() throws Exception {
         // Note the old router to be able to stop it at the end
-        ServerRouter oldRouter = getServerRouter();
+        final ServerRouter oldRouter = getServerRouter();
 
         // Set the new server router that will compute the new routes when the
         // first request will be received (automatic start).

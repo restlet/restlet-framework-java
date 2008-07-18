@@ -65,14 +65,14 @@ public class DecodeRepresentation extends WrapperRepresentation {
      * Constructor.
      * 
      * @param wrappedRepresentation
-     *                The wrapped representation.
+     *            The wrapped representation.
      */
     public DecodeRepresentation(Representation wrappedRepresentation) {
         super(wrappedRepresentation);
         this.canDecode = getSupportedEncodings().containsAll(
                 wrappedRepresentation.getEncodings());
-        wrappedEncodings = new ArrayList<Encoding>();
-        wrappedEncodings.addAll(wrappedRepresentation.getEncodings());
+        this.wrappedEncodings = new ArrayList<Encoding>();
+        this.wrappedEncodings.addAll(wrappedRepresentation.getEncodings());
     }
 
     /**
@@ -103,9 +103,9 @@ public class DecodeRepresentation extends WrapperRepresentation {
      * Returns a decoded stream for a given encoding and coded stream.
      * 
      * @param encoding
-     *                The encoding to use.
+     *            The encoding to use.
      * @param encodedStream
-     *                The encoded stream.
+     *            The encoded stream.
      * @return The decoded stream.
      * @throws IOException
      */
@@ -118,7 +118,7 @@ public class DecodeRepresentation extends WrapperRepresentation {
         } else if (encoding.equals(Encoding.DEFLATE)) {
             result = new InflaterInputStream(encodedStream);
         } else if (encoding.equals(Encoding.ZIP)) {
-            ZipInputStream stream = new ZipInputStream(encodedStream);
+            final ZipInputStream stream = new ZipInputStream(encodedStream);
             if (stream.getNextEntry() != null) {
                 result = stream;
             }
@@ -140,7 +140,7 @@ public class DecodeRepresentation extends WrapperRepresentation {
             return new ArrayList<Encoding>();
         }
 
-        return wrappedEncodings;
+        return this.wrappedEncodings;
     }
 
     /**
@@ -155,7 +155,7 @@ public class DecodeRepresentation extends WrapperRepresentation {
 
         if (canDecode()) {
             boolean identity = true;
-            for (Iterator<Encoding> iter = getEncodings().iterator(); identity
+            for (final Iterator<Encoding> iter = getEncodings().iterator(); identity
                     && iter.hasNext();) {
                 identity = (iter.next().equals(Encoding.IDENTITY));
             }
@@ -180,9 +180,10 @@ public class DecodeRepresentation extends WrapperRepresentation {
 
         if (canDecode()) {
             result = getWrappedRepresentation().getStream();
-            for (int i = wrappedEncodings.size() - 1; i >= 0; i--) {
-                if (!wrappedEncodings.get(i).equals(Encoding.IDENTITY)) {
-                    result = getDecodedStream(wrappedEncodings.get(i), result);
+            for (int i = this.wrappedEncodings.size() - 1; i >= 0; i--) {
+                if (!this.wrappedEncodings.get(i).equals(Encoding.IDENTITY)) {
+                    result = getDecodedStream(this.wrappedEncodings.get(i),
+                            result);
                 }
             }
         }
@@ -214,7 +215,7 @@ public class DecodeRepresentation extends WrapperRepresentation {
      * Writes the representation to a byte stream.
      * 
      * @param outputStream
-     *                The output stream.
+     *            The output stream.
      */
     @Override
     public void write(OutputStream outputStream) throws IOException {
@@ -229,7 +230,7 @@ public class DecodeRepresentation extends WrapperRepresentation {
      * Writes the representation to a byte channel.
      * 
      * @param writableChannel
-     *                A writable byte channel.
+     *            A writable byte channel.
      */
     @Override
     public void write(WritableByteChannel writableChannel) throws IOException {

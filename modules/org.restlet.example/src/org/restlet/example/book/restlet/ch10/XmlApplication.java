@@ -15,9 +15,9 @@ public class XmlApplication extends Application {
 
     @Override
     public Restlet createRoot() {
-        Router router = new Router(getContext());
+        final Router router = new Router(getContext());
         router.attach("/dom", DomResource.class);
-        Directory dir = new Directory(
+        final Directory dir = new Directory(
                 getContext(),
                 LocalReference
                         .createFileReference("D:\\workspace\\restlet-1.1\\BouquinApress\\src\\chapter7"));

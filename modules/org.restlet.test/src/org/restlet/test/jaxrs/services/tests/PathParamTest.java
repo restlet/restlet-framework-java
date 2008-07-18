@@ -35,48 +35,48 @@ import org.restlet.test.jaxrs.services.resources.PathParamTestService;
  */
 public class PathParamTest extends JaxRsTestCase {
 
+    /**
+     * @param subPath
+     *            without beginning '/'
+     * @return
+     */
+    private Reference createReference(String subPath) {
+        final String baseRef = createBaseRef() + "/pathParamTest/" + subPath;
+        return new Reference(createBaseRef(), baseRef);
+    }
+
     @Override
     protected Class<?> getRootResourceClass() {
         return PathParamTestService.class;
     }
 
-    /**
-     * @param subPath
-     *                without beginning '/'
-     * @return
-     */
-    private Reference createReference(String subPath) {
-        String baseRef = createBaseRef() + "/pathParamTest/" + subPath;
-        return new Reference(createBaseRef(), baseRef);
-    }
-
     public void testGet1() throws IOException {
-        Response response = get(createReference("4711"));
+        final Response response = get(createReference("4711"));
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("4711", response.getEntity().getText());
     }
 
     public void testGet2() throws IOException {
-        Response response = get(createReference("4711/abc/677/def"));
+        final Response response = get(createReference("4711/abc/677/def"));
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("4711\n677", response.getEntity().getText());
     }
 
     public void testGet3() throws IOException {
-        Response response = get(createReference("abc/array/def"));
+        final Response response = get(createReference("abc/array/def"));
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        String entity = response.getEntity().getText();
+        final String entity = response.getEntity().getText();
         try {
             assertEquals("var1=\nabc\ndef", entity);
-        } catch (AssertionFailedError afe) {
+        } catch (final AssertionFailedError afe) {
             // LATER test: @PathParam bug for colls; not yet for PathSegment
             assertEquals("var1=\nabc\ndef\ndef", entity);
         }
     }
 
     public void testGet4() throws IOException {
-        Response response = get(createReference("12/st/34"));
+        final Response response = get(createReference("12/st/34"));
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("34", response.getEntity().getText());
     }

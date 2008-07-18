@@ -42,18 +42,14 @@ public class S3Bucket extends S3Authorized {
     }
 
     /**
-     * Stores this bucket on S3. Analagous to ActiveRecord::Base#save, which
-     * stores an object in the database.
-     */
-    public Status save() {
-        return authorizedPut(getUri(), null).getStatus();
-    }
-
-    /**
      * Deletes this bucket.
      */
     public Status delete() {
         return authorizedDelete(getUri()).getStatus();
+    }
+
+    public String getName() {
+        return this.name;
     }
 
     /**
@@ -70,10 +66,10 @@ public class S3Bucket extends S3Authorized {
      */
     public List<S3Object> getObjects(String prefix, String marker,
             String delimiter, Integer maxKeys) {
-        List<S3Object> result = new ArrayList<S3Object>();
+        final List<S3Object> result = new ArrayList<S3Object>();
 
         // Construct the request URI by appending optional listing keys
-        StringBuilder uri = new StringBuilder().append(getUri());
+        final StringBuilder uri = new StringBuilder().append(getUri());
         String suffix = "?";
         if (prefix != null) {
             uri.append(suffix).append("prefix=").append(prefix);
@@ -93,31 +89,35 @@ public class S3Bucket extends S3Authorized {
         }
 
         // Make the request and parse the document.
-        Response response = authorizedGet(uri.toString());
-        DomRepresentation document = response.getEntityAsDom();
+        final Response response = authorizedGet(uri.toString());
+        final DomRepresentation document = response.getEntityAsDom();
 
         // Update the truncated flag
         this.truncated = document.getNodes("//IsTruncated").get(0)
                 .getTextContent().equals("true");
 
         // Browse the list of object keys
-        for (Node node : document.getNodes("//Contents/Key")) {
+        for (final Node node : document.getNodes("//Contents/Key")) {
             result.add(new S3Object(this, node.getTextContent()));
         }
 
         return result;
     }
 
-    public boolean isTruncated() {
-        return this.truncated;
-    }
-
     public String getUri() {
         return HOST + getName();
     }
 
-    public String getName() {
-        return this.name;
+    public boolean isTruncated() {
+        return this.truncated;
+    }
+
+    /**
+     * Stores this bucket on S3. Analagous to ActiveRecord::Base#save, which
+     * stores an object in the database.
+     */
+    public Status save() {
+        return authorizedPut(getUri(), null).getStatus();
     }
 
     public void setName(String name) {

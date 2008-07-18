@@ -18,6 +18,7 @@
 
 package org.restlet.gwt.internal.http;
 
+import java.io.IOException;
 import java.util.Date;
 
 import org.restlet.gwt.data.Cookie;
@@ -69,7 +70,7 @@ public class CookieReader extends HeaderReader {
      * Constructor.
      * 
      * @param header
-     *                The header to read.
+     *            The header to read.
      */
     public CookieReader(String header) {
         super(header);
@@ -174,7 +175,7 @@ public class CookieReader extends HeaderReader {
             } else if (pair.getName().equalsIgnoreCase(NAME_SET_DISCARD)) {
                 result.setMaxAge(-1);
             } else if (pair.getName().equalsIgnoreCase(NAME_SET_EXPIRES)) {
-                Date current = new Date(System.currentTimeMillis());
+                final Date current = new Date(System.currentTimeMillis());
                 Date expires = DateUtils.parse(pair.getValue(),
                         DateUtils.FORMAT_RFC_1036);
 
@@ -239,15 +240,15 @@ public class CookieReader extends HeaderReader {
     private Parameter readPair() throws Exception {
         Parameter result = null;
 
-        if (cachedPair != null) {
-            result = cachedPair;
-            cachedPair = null;
+        if (this.cachedPair != null) {
+            result = this.cachedPair;
+            this.cachedPair = null;
         } else {
             try {
                 boolean readingName = true;
                 boolean readingValue = false;
-                StringBuilder nameBuffer = new StringBuilder();
-                StringBuilder valueBuffer = new StringBuilder();
+                final StringBuilder nameBuffer = new StringBuilder();
+                final StringBuilder valueBuffer = new StringBuilder();
 
                 int nextChar = 0;
                 while ((result == null) && (nextChar != -1)) {
@@ -299,7 +300,7 @@ public class CookieReader extends HeaderReader {
                         }
                     }
                 }
-            } catch (Exception uee) {
+            } catch (final Exception uee) {
                 throw new Exception(
                         "Unsupported encoding. Please contact the administrator");
             }

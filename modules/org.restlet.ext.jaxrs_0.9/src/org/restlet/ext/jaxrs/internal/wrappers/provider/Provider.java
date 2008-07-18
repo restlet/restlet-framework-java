@@ -66,7 +66,7 @@ import org.restlet.ext.jaxrs.internal.wrappers.params.ParameterList;
  * 
  * @author Stephan Koops
  * @param <T>
- *                the java type to convert.
+ *            the java type to convert.
  * @see javax.ws.rs.ext.Provider
  */
 public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
@@ -105,31 +105,31 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * thrown.
      * 
      * @param jaxRsProviderClass
-     *                the JAX-RS provider class.
+     *            the JAX-RS provider class.
      * @param objectFactory
-     *                The object factory is responsible for the provider
-     *                instantiation, if given.
+     *            The object factory is responsible for the provider
+     *            instantiation, if given.
      * @param tlContext
-     *                The tread local wrapped call context
+     *            The tread local wrapped call context
      * @param mbWorkers
-     *                all entity providers.
+     *            all entity providers.
      * @param allResolvers
-     *                all available {@link ContextResolver}s.
+     *            all available {@link ContextResolver}s.
      * @param extensionBackwardMapping
-     *                the extension backward mapping
+     *            the extension backward mapping
      * @param logger
-     *                the logger to use.
+     *            the logger to use.
      * @throws IllegalArgumentException
-     *                 if the class is not a valid provider, may not be
-     *                 instantiated or what ever.
+     *             if the class is not a valid provider, may not be instantiated
+     *             or what ever.
      * @throws InvocationTargetException
-     *                 if the constructor throws an Throwable
+     *             if the constructor throws an Throwable
      * @throws MissingConstructorException
-     *                 if no valid constructor could be found
+     *             if no valid constructor could be found
      * @throws InstantiateException
      * @throws WebApplicationException
      * @throws MissingAnnotationException
-     * @throws IllegalConstrParamTypeException 
+     * @throws IllegalConstrParamTypeException
      * @see javax.ws.rs.ext.MessageBodyReader
      * @see javax.ws.rs.ext.MessageBodyWriter
      * @see javax.ws.rs.ext.ContextResolver
@@ -143,15 +143,17 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
             MissingConstructorException, InstantiateException,
             MissingAnnotationException, WebApplicationException,
             IllegalConstrParamTypeException {
-        if (jaxRsProviderClass == null)
+        if (jaxRsProviderClass == null) {
             throw new IllegalArgumentException(
                     "The JAX-RS provider class must not be null");
+        }
         Util.checkClassConcrete(jaxRsProviderClass, "provider");
         Object jaxRsProvider = null;
-        if (objectFactory != null)
+        if (objectFactory != null) {
             jaxRsProvider = objectFactory.getInstance(jaxRsProviderClass);
+        }
         if (jaxRsProvider == null) {
-            Constructor<?> providerConstructor = WrapperUtil
+            final Constructor<?> providerConstructor = WrapperUtil
                     .findJaxRsConstructor(jaxRsProviderClass, "provider");
             jaxRsProvider = createInstance(providerConstructor,
                     jaxRsProviderClass, tlContext, mbWorkers, allResolvers,
@@ -189,14 +191,15 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
                             + jaxRsProviderClass
                             + " is neither a MessageBodyWriter nor a MessageBodyReader nor a ContextResolver nor an ExceptionMapper");
         }
-        Consumes pm = jaxRsProvider.getClass().getAnnotation(
+        final Consumes pm = jaxRsProvider.getClass().getAnnotation(
                 Consumes.class);
-        if (pm != null)
+        if (pm != null) {
             this.consumedMimes = WrapperUtil.convertToMediaTypes(pm.value());
-        else
+        } else {
             this.consumedMimes = Collections.singletonList(MediaType.ALL);
+        }
 
-        Produces cm = jaxRsProvider.getClass().getAnnotation(
+        final Produces cm = jaxRsProvider.getClass().getAnnotation(
                 Produces.class);
         if (cm != null) {
             this.producedMimes = WrapperUtil.convertToMediaTypes(cm.value());
@@ -207,28 +210,29 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
 
     /**
      * @param providerConstructor
-     *                the constructor to use.
+     *            the constructor to use.
      * @param jaxRsProviderClass
-     *                class for exception message.
+     *            class for exception message.
      * @param tlContext
-     *                The tread local wrapped call context
+     *            The tread local wrapped call context
      * @param mbWorkers
-     *                all entity providers.
+     *            all entity providers.
      * @param allResolvers
-     *                all available {@link ContextResolver}s.
+     *            all available {@link ContextResolver}s.
      * @param extensionBackwardMapping
-     *                the extension backward mapping
+     *            the extension backward mapping
      * @param logger
-     *                the logger to use
+     *            the logger to use
      * @throws IllegalArgumentException
      * @throws InvocationTargetException
-     *                 if the constructor throws an Throwable
+     *             if the constructor throws an Throwable
      * @throws InstantiateException
      * @throws MissingAnnotationException
      * @throws WebApplicationException
      * @throws IllegalConstrParamTypeException
-     *                 if one of the fields or bean setters annotated with &#64;{@link Context}
-     *                 has a type that must not be annotated with &#64;{@link Context}.
+     *             if one of the fields or bean setters annotated with &#64;
+     *             {@link Context} has a type that must not be annotated with
+     *             &#64;{@link Context}.
      */
     private Object createInstance(Constructor<?> providerConstructor,
             Class<?> jaxRsProviderClass, ThreadLocalizedContext tlContext,
@@ -242,44 +246,44 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
         try {
             parameters = new ParameterList(providerConstructor, tlContext,
                     false, mbWorkers, allResolvers, extensionBackwardMapping,
-                    false, logger, !singelton);
-        } catch (IllegalTypeException ite) {
+                    false, logger, !this.singelton);
+        } catch (final IllegalTypeException ite) {
             throw new IllegalConstrParamTypeException(ite);
         }
         try {
-            Object[] args = parameters.get();
+            final Object[] args = parameters.get();
             return WrapperUtil.createInstance(providerConstructor, args);
-        } catch (NoMessageBodyReaderException e) {
+        } catch (final NoMessageBodyReaderException e) {
             // should be not possible here
             throw new IllegalArgumentException(
                     "Could not instantiate the Provider, class "
                             + jaxRsProviderClass.getName(), e);
-        } catch (ConvertRepresentationException e) {
+        } catch (final ConvertRepresentationException e) {
             // should be not possible here
             throw new IllegalArgumentException(
                     "Could not instantiate the Provider, class "
                             + jaxRsProviderClass.getName(), e);
-        } catch (ConvertHeaderParamException e) {
+        } catch (final ConvertHeaderParamException e) {
             // should be not possible here
             throw new IllegalArgumentException(
                     "Could not instantiate the Provider, class "
                             + jaxRsProviderClass.getName(), e);
-        } catch (ConvertPathParamException e) {
+        } catch (final ConvertPathParamException e) {
             // should be not possible here
             throw new IllegalArgumentException(
                     "Could not instantiate the Provider, class "
                             + jaxRsProviderClass.getName(), e);
-        } catch (ConvertMatrixParamException e) {
+        } catch (final ConvertMatrixParamException e) {
             // should be not possible here
             throw new IllegalArgumentException(
                     "Could not instantiate the Provider, class "
                             + jaxRsProviderClass.getName(), e);
-        } catch (ConvertQueryParamException e) {
+        } catch (final ConvertQueryParamException e) {
             // should be not possible here
             throw new IllegalArgumentException(
                     "Could not instantiate the Provider, class "
                             + jaxRsProviderClass.getName(), e);
-        } catch (ConvertCookieParamException e) {
+        } catch (final ConvertCookieParamException e) {
             // should be not possible here
             throw new IllegalArgumentException(
                     "Could not instantiate the Provider, class "
@@ -289,10 +293,12 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
 
     @Override
     public final boolean equals(Object otherProvider) {
-        if (this == otherProvider)
+        if (this == otherProvider) {
             return true;
-        if (!(otherProvider instanceof Provider))
+        }
+        if (!(otherProvider instanceof Provider)) {
             return false;
+        }
         return this.jaxRsProvider.getClass().equals(
                 ((Provider<?>) otherProvider).jaxRsProvider.getClass());
     }
@@ -304,7 +310,7 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * @return List of produced {@link MediaType}s.
      */
     public List<MediaType> getConsumedMimes() {
-        return consumedMimes;
+        return this.consumedMimes;
     }
 
     /**
@@ -323,7 +329,7 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      */
     @SuppressWarnings("unchecked")
     public ExceptionMapper<? extends Throwable> getExcMapper() {
-        return (ExceptionMapper) excMapper;
+        return (ExceptionMapper) this.excMapper;
     }
 
     /**
@@ -349,7 +355,7 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      *         returned.
      */
     public List<MediaType> getProducedMimes() {
-        return producedMimes;
+        return this.producedMimes;
     }
 
     /**
@@ -358,12 +364,12 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * used in a HTTP <code>Content-Length</code> header.
      * 
      * @param t
-     *                the type
+     *            the type
      * @return length in bytes or -1 if the length cannot be determined in
      *         advance
      */
     public long getSize(T t) {
-        return writer.getSize(t);
+        return this.writer.getSize(t);
     }
 
     @Override
@@ -376,22 +382,21 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * method annotated with &#64;{@link PostConstruct}.
      * 
      * @param tlContext
-     *                The thread local wrapped {@link CallContext}
+     *            The thread local wrapped {@link CallContext}
      * @param mbWorkers
-     *                all entity providers.
+     *            all entity providers.
      * @param allResolvers
-     *                all available {@link ContextResolver}s.
+     *            all available {@link ContextResolver}s.
      * @param extensionBackwardMapping
-     *                the extension backward mapping
+     *            the extension backward mapping
      * @throws InjectException
      * @throws InvocationTargetException
-     *                 if a bean setter throws an exception
+     *             if a bean setter throws an exception
      * @throws IllegalTypeException
-     *                 if the given class is not valid to be annotated with
-     *                 &#64;{@link Context}.
+     *             if the given class is not valid to be annotated with &#64;
+     *             {@link Context}.
      */
-    public void init(ThreadLocalizedContext tlContext,
-            Providers mbWorkers,
+    public void init(ThreadLocalizedContext tlContext, Providers mbWorkers,
             Collection<ContextResolver<?>> allResolvers,
             ExtensionBackwardMapping extensionBackwardMapping)
             throws InjectException, InvocationTargetException,
@@ -404,36 +409,36 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * Inject the values fields for &#64;{@link Context}.
      * 
      * @param tlContext
-     *                The thread local wrapped {@link CallContext}
+     *            The thread local wrapped {@link CallContext}
      * @param mbWorkers
-     *                all entity providers.
+     *            all entity providers.
      * @param allResolvers
-     *                all available {@link ContextResolver}s.
+     *            all available {@link ContextResolver}s.
      * @param extensionBackwardMapping
-     *                the extension backward mapping
+     *            the extension backward mapping
      * @throws InjectException
      * @throws InvocationTargetException
-     *                 if a bean setter throws an exception
+     *             if a bean setter throws an exception
      * @throws IllegalTypeException
      * @throws IllegalTypeException
-     *                 if the given class is not valid to be annotated with
-     *                 &#64;{@link Context}.
+     *             if the given class is not valid to be annotated with &#64;
+     *             {@link Context}.
      */
     private void injectContexts(ThreadLocalizedContext tlContext,
-            Providers mbWorkers,
-            Collection<ContextResolver<?>> allResolvers,
+            Providers mbWorkers, Collection<ContextResolver<?>> allResolvers,
             ExtensionBackwardMapping extensionBackwardMapping)
             throws InjectException, InvocationTargetException,
             IllegalTypeException {
-        Class<? extends Object> providerClass = this.jaxRsProvider.getClass();
-        ContextInjector iph = new ContextInjector(providerClass, tlContext,
-                mbWorkers, allResolvers, extensionBackwardMapping);
+        final Class<? extends Object> providerClass = this.jaxRsProvider
+                .getClass();
+        final ContextInjector iph = new ContextInjector(providerClass,
+                tlContext, mbWorkers, allResolvers, extensionBackwardMapping);
         iph.injectInto(this.jaxRsProvider, !this.singelton);
     }
 
     // TODO before a call of a message body reader or writer the current state
     // of the matched resources and URIs must be stored fpr the current thread.
-    
+
     /**
      * Returns true, if this Provider is also a
      * {@link javax.ws.rs.ext.ContextResolver}, otherwise false.
@@ -448,11 +453,11 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
     /**
      * Checks, if this provider represents an {@link ExceptionMapper}.
      * 
-     * @return true, if this provider is an {@link ExceptionMapper}, or false
-     *         if not.
+     * @return true, if this provider is an {@link ExceptionMapper}, or false if
+     *         not.
      */
     public boolean isExceptionMapper() {
-        return excMapper != null;
+        return this.excMapper != null;
     }
 
     /**
@@ -467,7 +472,7 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      */
     public boolean isReadable(Class<?> type, Type genericType,
             Annotation[] annotations) {
-        return reader.isReadable(type, genericType, annotations);
+        return this.reader.isReadable(type, genericType, annotations);
     }
 
     /**
@@ -492,7 +497,7 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      */
     public boolean isWriteable(Class<?> type, Type genericType,
             Annotation[] annotations) {
-        return writer.isWriteable(type, genericType, annotations);
+        return this.writer.isWriteable(type, genericType, annotations);
     }
 
     /**
@@ -510,9 +515,9 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * 
      * @param type
      * @param genericType
-     *                The generic {@link Type} to convert to.
+     *            The generic {@link Type} to convert to.
      * @param annotations
-     *                the annotations of the artefact to convert to
+     *            the annotations of the artefact to convert to
      * @param mediaType
      * @param httpHeaders
      * @param entityStream
@@ -537,27 +542,9 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * @return
      */
     public boolean supportsRead(MediaType mediaType) {
-        for (MediaType cm : getConsumedMimes()) {
-            if (cm.isCompatible(mediaType))
+        for (final MediaType cm : getConsumedMimes()) {
+            if (cm.isCompatible(mediaType)) {
                 return true;
-        }
-        return false;
-    }
-
-    /**
-     * Checks, if the wrapped MessageBodyWriter supports at least one of the
-     * requested {@link MediaType}s.
-     * 
-     * @param mediaTypes
-     *                the {@link MediaType}s
-     * @return true, if at least one of the requested {@link MediaType}s is
-     *         supported, otherwise false.
-     */
-    public boolean supportsWrite(Iterable<MediaType> mediaTypes) {
-        for (MediaType produced : getProducedMimes()) {
-            for (MediaType requested : mediaTypes) {
-                if (requested.isCompatible(produced))
-                    return true;
             }
         }
         return false;
@@ -568,14 +555,35 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * requested {@link MediaType}s.
      * 
      * @param mediaTypes
-     *                the {@link MediaType}s
+     *            the {@link MediaType}s
+     * @return true, if at least one of the requested {@link MediaType}s is
+     *         supported, otherwise false.
+     */
+    public boolean supportsWrite(Iterable<MediaType> mediaTypes) {
+        for (final MediaType produced : getProducedMimes()) {
+            for (final MediaType requested : mediaTypes) {
+                if (requested.isCompatible(produced)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks, if the wrapped MessageBodyWriter supports at least one of the
+     * requested {@link MediaType}s.
+     * 
+     * @param mediaTypes
+     *            the {@link MediaType}s
      * @return true, if at least one of the requested {@link MediaType}s is
      *         supported, otherwise false.
      */
     public boolean supportsWrite(MediaType requested) {
-        for (MediaType produced : getProducedMimes()) {
-            if (requested.isCompatible(produced))
+        for (final MediaType produced : getProducedMimes()) {
+            if (requested.isCompatible(produced)) {
                 return true;
+            }
         }
         return false;
     }
@@ -584,7 +592,7 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * @see javax.ws.rs.ext.ExceptionMapper#toResponse(java.lang.Object)
      */
     public Response toResponse(T exception) {
-        return excMapper.toResponse(exception);
+        return this.excMapper.toResponse(exception);
     }
 
     @Override
@@ -598,20 +606,20 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * headers will be flushed prior to writing the response body.
      * 
      * @param genericType
-     *                The generic {@link Type} to convert to.
+     *            The generic {@link Type} to convert to.
      * @param annotations
-     *                the annotations of the artefact to convert to
+     *            the annotations of the artefact to convert to
      * @param mediaType
-     *                the media type of the HTTP entity.
+     *            the media type of the HTTP entity.
      * @param httpHeaders
-     *                a mutable map of the HTTP response headers.
+     *            a mutable map of the HTTP response headers.
      * @param entityStream
-     *                the {@link OutputStream} for the HTTP entity.
+     *            the {@link OutputStream} for the HTTP entity.
      * @param object
-     *                the object to write.
+     *            the object to write.
      * 
      * @throws java.io.IOException
-     *                 if an IO error arises
+     *             if an IO error arises
      * @see javax.ws.rs.ext.MessageBodyWriter#writeTo(Object, Type,
      *      Annotation[], javax.ws.rs.core.MediaType, MultivaluedMap,
      *      OutputStream)
@@ -620,7 +628,7 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
             Annotation[] annotations, javax.ws.rs.core.MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
-        writer.writeTo(object, type, genericType, annotations, mediaType,
+        this.writer.writeTo(object, type, genericType, annotations, mediaType,
                 httpHeaders, entityStream);
     }
 }

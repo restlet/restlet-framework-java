@@ -17,28 +17,16 @@
  */
 package org.restlet.test.jaxrs.util;
 
-import static org.restlet.ext.jaxrs.internal.util.Converter.*;
+import static org.restlet.ext.jaxrs.internal.util.Converter.getMediaTypeWithoutParams;
+import static org.restlet.ext.jaxrs.internal.util.Converter.toLanguage;
+import static org.restlet.ext.jaxrs.internal.util.Converter.toLocale;
 
 import java.util.Locale;
 
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
-
 import junit.framework.TestCase;
 
-import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
-import org.restlet.ext.jaxrs.internal.core.MultivaluedMapImpl;
-import org.restlet.ext.jaxrs.internal.core.ResponseBuilderImpl;
-import org.restlet.ext.jaxrs.internal.util.Converter;
-import org.restlet.ext.jaxrs.internal.util.MatchingResult;
 import org.restlet.ext.jaxrs.internal.util.PathRegExp;
-import org.restlet.ext.jaxrs.internal.util.RemainingPath;
-import org.restlet.ext.jaxrs.internal.util.Util;
-
-import com.noelios.restlet.util.StringUtils;
 
 /**
  * @author Stephan Koops
@@ -47,6 +35,10 @@ import com.noelios.restlet.util.StringUtils;
 @SuppressWarnings("all")
 public class ConverterTests extends TestCase {
 
+    private void checkToLanguageToLocale(Locale locale) {
+        assertEquals(locale, toLocale(toLanguage(locale)));
+    }
+
     public void testGetMediaTypeWitoutParams1() {
         assertEquals(null, getMediaTypeWithoutParams((MediaType) null));
         assertEquals(MediaType.TEXT_HTML,
@@ -54,13 +46,9 @@ public class ConverterTests extends TestCase {
     }
 
     public void testGetMediaTypeWitoutParams2() {
-        MediaType mt = new MediaType("a/b");
+        final MediaType mt = new MediaType("a/b");
         mt.getParameters().add("abc", "def");
         assertEquals("a/b", getMediaTypeWithoutParams(mt).toString());
-    }
-
-    private void checkToLanguageToLocale(Locale locale) {
-        assertEquals(locale, toLocale(toLanguage(locale)));
     }
 
     public void testToLanguageToLocale() {

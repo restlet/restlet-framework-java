@@ -36,6 +36,34 @@ import com.noelios.restlet.http.ChunkedOutputStream;
  */
 public class ChunkedInputStreamTestCase extends TestCase {
 
+    private String read(InputStream input) throws IOException {
+        final byte[] buffer = new byte[1024];
+        final StringBuilder result = new StringBuilder();
+
+        int bytesRead = input.read(buffer);
+        while (bytesRead != -1) {
+            result.append(new String(buffer, 0, bytesRead));
+            bytesRead = input.read(buffer);
+        }
+        return result.toString();
+    }
+
+    public void testClose() throws IOException {
+        final String data = "test data";
+        InputStream input = write(data);
+        InputStream chunked = new ChunkedInputStream(input);
+
+        assertEquals('t', chunked.read());
+        chunked.close();
+        assertEquals(-1, chunked.read());
+
+        input = write(data);
+        chunked = new ChunkedInputStream(input);
+
+        chunked.close();
+        assertEquals(-1, chunked.read());
+    }
+
     public void testRead() throws IOException {
         String data = "test data";
         InputStream input = write(data);
@@ -93,41 +121,13 @@ public class ChunkedInputStreamTestCase extends TestCase {
         assertEquals("test data", read(chunked));
     }
 
-    public void testClose() throws IOException {
-        String data = "test data";
-        InputStream input = write(data);
-        InputStream chunked = new ChunkedInputStream(input);
-
-        assertEquals('t', chunked.read());
-        chunked.close();
-        assertEquals(-1, chunked.read());
-
-        input = write(data);
-        chunked = new ChunkedInputStream(input);
-
-        chunked.close();
-        assertEquals(-1, chunked.read());
-    }
-
     private InputStream write(String data) throws IOException {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        OutputStream chunked = new ChunkedOutputStream(out, 2);
+        final ByteArrayOutputStream out = new ByteArrayOutputStream();
+        final OutputStream chunked = new ChunkedOutputStream(out, 2);
 
         chunked.write(data.getBytes());
         chunked.close();
 
         return new ByteArrayInputStream(out.toByteArray());
-    }
-
-    private String read(InputStream input) throws IOException {
-        byte[] buffer = new byte[1024];
-        StringBuilder result = new StringBuilder();
-
-        int bytesRead = input.read(buffer);
-        while (bytesRead != -1) {
-            result.append(new String(buffer, 0, bytesRead));
-            bytesRead = input.read(buffer);
-        }
-        return result.toString();
     }
 }

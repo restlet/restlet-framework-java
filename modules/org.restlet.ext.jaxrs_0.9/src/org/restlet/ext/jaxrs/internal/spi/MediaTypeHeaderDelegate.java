@@ -43,18 +43,18 @@ public class MediaTypeHeaderDelegate implements HeaderDelegate<MediaType> {
      * Parse the supplied value and create an instance of <code>T</code>.
      * 
      * @param contentType
-     *                the contentType
+     *            the contentType
      * @return the newly created instance of <code>T</code>
      * @throws IllegalArgumentException
-     *                 if the supplied string cannot be parsed
+     *             if the supplied string cannot be parsed
      * @see javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate#fromString(java.lang.String)
      */
     public MediaType fromString(String contentType)
             throws IllegalArgumentException {
         // if(true)
         // throw new NotYetImplementedException("waiting for an Engine patch");
-        org.restlet.data.MediaType restletMediaType = Engine.getInstance()
-                .parseContentType(contentType);
+        final org.restlet.data.MediaType restletMediaType = Engine
+                .getInstance().parseContentType(contentType);
         return Converter.toJaxRsMediaType(restletMediaType, null);
     }
 
@@ -62,10 +62,10 @@ public class MediaTypeHeaderDelegate implements HeaderDelegate<MediaType> {
      * Convert the supplied value to a String.
      * 
      * @param value
-     *                the value of type <code>T</code>
+     *            the value of type <code>T</code>
      * @return a String representation of the value
      * @throws IllegalArgumentException
-     *                 if the supplied object cannot be serialized
+     *             if the supplied object cannot be serialized
      * @see javax.ws.rs.ext.RuntimeDelegate.HeaderDelegate#toString(java.lang.Object)
      */
     public String toString(MediaType jaxRsMediaType) {

@@ -53,27 +53,27 @@ public class Mailbox extends BaseObject {
     }
 
     public List<Contact> getContacts() {
-        return contacts;
+        return this.contacts;
     }
 
     public List<Feed> getFeeds() {
-        return feeds;
+        return this.feeds;
     }
 
     public List<Mail> getMails() {
-        return mails;
+        return this.mails;
     }
 
     public String getNickname() {
-        return nickname;
+        return this.nickname;
     }
 
     public User getOwner() {
-        return owner;
+        return this.owner;
     }
 
     public String getSenderName() {
-        return senderName;
+        return this.senderName;
     }
 
     public void setContacts(List<Contact> contacts) {

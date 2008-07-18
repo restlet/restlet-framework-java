@@ -10,7 +10,7 @@ import org.restlet.data.Response;
 public class SimpleHttpServerWithComponent {
     public static void main(String[] args) {
         // Creates a Restlet whose response to each request is "Hello, world".
-        Restlet restlet = new Restlet() {
+        final Restlet restlet = new Restlet() {
             @Override
             public void handle(Request request, Response response) {
                 response.setEntity("hello, world", MediaType.TEXT_PLAIN);
@@ -18,13 +18,13 @@ public class SimpleHttpServerWithComponent {
         };
 
         // Component declaring only one HTTP server connector.
-        Component component = new Component();
+        final Component component = new Component();
         component.getServers().add(Protocol.FILE);
         component.getServers().add(Protocol.HTTP);
         component.getDefaultHost().attach("/helloWorld", restlet);
         try {
             component.start();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
     }

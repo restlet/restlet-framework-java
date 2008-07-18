@@ -24,10 +24,10 @@ import java.util.NoSuchElementException;
  * Iterator without any elements.
  * 
  * @author Stephan Koops
- * @param <T> 
+ * @param <T>
  */
 public final class EmptyIterator<T> implements Iterator<T> {
-    
+
     /**
      * Iterator without any element.
      */
@@ -62,7 +62,7 @@ public final class EmptyIterator<T> implements Iterator<T> {
     /**
      * @see java.util.Iterator#next()
      * @throws NoSuchElementException
-     *                 immer, weil der EmptyIterator keine Werte hat
+     *             immer, weil der EmptyIterator keine Werte hat
      */
     public T next() throws NoSuchElementException {
         throw new NoSuchElementException("The EmptyIterator has no values");

@@ -39,11 +39,11 @@ public class BookmarksResource extends UserResource {
      * Constructor.
      * 
      * @param context
-     *                The parent context.
+     *            The parent context.
      * @param request
-     *                The request to handle.
+     *            The request to handle.
      * @param response
-     *                The response to return.
+     *            The response to return.
      */
     public BookmarksResource(Context context, Request request, Response response) {
         super(context, request, response);
@@ -54,16 +54,30 @@ public class BookmarksResource extends UserResource {
     }
 
     @Override
+    public void handleGet() {
+        // Make sure that the Uri ends with a "/" without changing the query.
+        // This is helpful when exposing the list of relative references of the
+        // bookmarks.
+        final Reference ref = getRequest().getResourceRef();
+        if (!ref.getPath().endsWith("/")) {
+            ref.setPath(ref.getPath() + "/");
+            getResponse().redirectPermanent(ref);
+        } else {
+            super.handleGet();
+        }
+    }
+
+    @Override
     public Representation represent(Variant variant) throws ResourceException {
         Representation result = null;
 
         if (variant.getMediaType().equals(MediaType.TEXT_HTML)) {
-            int code = checkAuthorization();
-            ReferenceList rl = new ReferenceList();
+            final int code = checkAuthorization();
+            final ReferenceList rl = new ReferenceList();
 
             // Copy the bookmark URIs into a reference list. Make sure that we
             // only expose public bookmarks if the client isn't the owner.
-            for (Bookmark bookmark : getUser().getBookmarks()) {
+            for (final Bookmark bookmark : getUser().getBookmarks()) {
                 if (!bookmark.isRestrict() || (code == 1)) {
                     rl.add(bookmark.getUri());
                 }
@@ -73,20 +87,6 @@ public class BookmarksResource extends UserResource {
         }
 
         return result;
-    }
-
-    @Override
-    public void handleGet() {
-        // Make sure that the Uri ends with a "/" without changing the query.
-        // This is helpful when exposing the list of relative references of the
-        // bookmarks.
-        Reference ref = getRequest().getResourceRef();
-        if (!ref.getPath().endsWith("/")) {
-            ref.setPath(ref.getPath() + "/");
-            getResponse().redirectPermanent(ref);
-        } else {
-            super.handleGet();
-        }
     }
 
 }

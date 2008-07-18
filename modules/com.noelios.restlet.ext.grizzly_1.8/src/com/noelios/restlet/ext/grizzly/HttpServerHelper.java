@@ -41,7 +41,7 @@ public class HttpServerHelper extends GrizzlyServerHelper {
      * Constructor.
      * 
      * @param server
-     *                The helped server.
+     *            The helped server.
      */
     public HttpServerHelper(Server server) {
         super(server);
@@ -51,7 +51,7 @@ public class HttpServerHelper extends GrizzlyServerHelper {
     @Override
     protected void configure(Controller controller) throws Exception {
         // Create and configure a select handler
-        TCPSelectorHandler selectorHandler = new TCPSelectorHandler();
+        final TCPSelectorHandler selectorHandler = new TCPSelectorHandler();
         selectorHandler.setPort(getHelped().getPort());
         if (getHelped().getAddress() != null) {
             selectorHandler.setInet(InetAddress.getByName(getHelped()
@@ -68,7 +68,8 @@ public class HttpServerHelper extends GrizzlyServerHelper {
                 .setProtocolChainInstanceHandler(new DefaultProtocolChainInstanceHandler() {
                     @Override
                     public ProtocolChain poll() {
-                        ProtocolChain protocolChain = protocolChains.poll();
+                        ProtocolChain protocolChain = this.protocolChains
+                                .poll();
                         if (protocolChain == null) {
                             protocolChain = new DefaultProtocolChain();
                             protocolChain.addFilter(readFilter);

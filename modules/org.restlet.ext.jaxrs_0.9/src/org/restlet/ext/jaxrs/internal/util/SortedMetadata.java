@@ -37,49 +37,69 @@ import org.restlet.data.Preference;
  * 
  * @author Stephan Koops
  * @param <T>
- *                the Metadata type the instance contains.
+ *            the Metadata type the instance contains.
  */
 public class SortedMetadata<T extends Metadata> implements Iterable<T> {
 
-    private final List<Collection<T>> metadatas;
+    @SuppressWarnings("hiding")
+    private class IteratorIterator<T extends Metadata> implements Iterator<T> {
+        private final Iterator<Iterable<T>> iterIter;
 
-    /**
-     * Creates a new SortedMetadata from the given Metadata.
-     * 
-     * @param preferences
-     */
-    @SuppressWarnings("unchecked")
-    private SortedMetadata(Collection<Preference<T>> preferences) {
-        SortedMap<Float, Collection<T>> map = new TreeMap<Float, Collection<T>>(
-                Collections.reverseOrder());
-        for (Preference<T> preference : preferences) {
-            Float quality = preference.getQuality();
-            Collection<T> metadatas = map.get(quality);
-            if (metadatas == null) {
-                metadatas = new ArrayList<T>(2);
-                map.put(quality, metadatas);
-            }
-            metadatas.add(preference.getMetadata());
+        private Iterator<T> iter;
+
+        IteratorIterator(Iterator<Iterable<T>> iterIter) {
+            this.iterIter = iterIter;
         }
-        Collection<Collection<T>> values = map.values();
-        this.metadatas = Collections.unmodifiableList(new ArrayList(values));
+
+        public boolean hasNext() {
+            if ((this.iter != null) && this.iter.hasNext()) {
+                return true;
+            }
+            while (this.iterIter.hasNext()) {
+                final Iterable<T> iterable = this.iterIter.next();
+                if (iterable != null) {
+                    this.iter = iterable.iterator();
+                    if (this.iter.hasNext()) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        public T next() {
+            if (this.hasNext()) {
+                return this.iter.next();
+            }
+            throw new NoSuchElementException();
+        }
+
+        /**
+         * 
+         * @see java.util.Iterator#remove()
+         */
+        public void remove() throws UnsupportedOperationException {
+            throw new UnsupportedOperationException();
+        }
     }
 
     /**
-     * Creates a new {@link SortedMetadata} for {@link MediaType}s. If the
-     * given Collection is empty, {@link MediaType#ALL} is returned.
-     * 
-     * @param preferences
+     * @param respMediaType
      * @return
      */
-    public static SortedMetadata<MediaType> getForMediaTypes(
-            Collection<Preference<MediaType>> preferences) {
-        if (preferences.isEmpty())
-            return new SortedMetadata<MediaType>(Collections
-                    .singletonList((Collection<MediaType>) Collections
-                            .singletonList(MediaType.ALL)));
-        else
-            return new SortedMetadata<MediaType>(preferences);
+    public static SortedMetadata<MediaType> get(MediaType respMediaType) {
+        return new SortedMetadata<MediaType>(Collections
+                .singleton(new Preference<MediaType>(respMediaType)));
+    }
+
+    /**
+     * Returns an empty SortedMetadata
+     * 
+     * @return an empty SortedMetadata
+     */
+    public static SortedMetadata<MediaType> getEmptyMediaTypes() {
+        return new SortedMetadata<MediaType>(
+                new ArrayList<Collection<MediaType>>());
     }
 
     /**
@@ -94,95 +114,26 @@ public class SortedMetadata<T extends Metadata> implements Iterable<T> {
     }
 
     /**
-     * Creates a new SortedMetadata from the sorted Metadata.
+     * Creates a new {@link SortedMetadata} for {@link MediaType}s. If the given
+     * Collection is empty, {@link MediaType#ALL} is returned.
      * 
-     * @param metadatas
-     */
-    private SortedMetadata(List<Collection<T>> metadatas) {
-        this.metadatas = metadatas;
-    }
-
-    /**
-     * Iterates over all the sorted Metadata.
-     * 
-     * @see java.lang.Iterable#iterator()
-     */
-    @SuppressWarnings("unchecked")
-    public Iterator<T> iterator() {
-        return new IteratorIterator(metadatas.iterator());
-    }
-
-    @SuppressWarnings("hiding")
-    private class IteratorIterator<T extends Metadata> implements Iterator<T> {
-        private Iterator<Iterable<T>> iterIter;
-
-        private Iterator<T> iter;
-
-        IteratorIterator(Iterator<Iterable<T>> iterIter) {
-            this.iterIter = iterIter;
-        }
-
-        public boolean hasNext() {
-            if (iter != null && iter.hasNext())
-                return true;
-            while (iterIter.hasNext()) {
-                Iterable<T> iterable = iterIter.next();
-                if (iterable != null) {
-                    iter = iterable.iterator();
-                    if (iter.hasNext())
-                        return true;
-                }
-            }
-            return false;
-        }
-
-        public T next() {
-            if (this.hasNext())
-                return iter.next();
-            throw new NoSuchElementException();
-        }
-
-        /**
-         * 
-         * @see java.util.Iterator#remove()
-         */
-        public void remove() throws UnsupportedOperationException {
-            throw new UnsupportedOperationException();
-        }
-    }
-
-    /**
-     * Returns the list of collections as {@link Iterable} of {@link Iterable}s.
-     * 
-     * @return the list of collections as {@link Iterable} of {@link Iterable}s.
-     */
-    @SuppressWarnings("unchecked")
-    public Iterable<Iterable<T>> listOfColls() {
-        return (Iterable) this.metadatas;
-    }
-
-    /**
-     * Checks, if this SortedMetadata is empty
-     * 
+     * @param preferences
      * @return
-     * @see Collection#isEmpty()
      */
-    public boolean isEmpty() {
-        return this.metadatas.isEmpty();
+    public static SortedMetadata<MediaType> getForMediaTypes(
+            Collection<Preference<MediaType>> preferences) {
+        if (preferences.isEmpty()) {
+            return new SortedMetadata<MediaType>(Collections
+                    .singletonList((Collection<MediaType>) Collections
+                            .singletonList(MediaType.ALL)));
+        } else {
+            return new SortedMetadata<MediaType>(preferences);
+        }
     }
 
     /**
-     * Returns an empty SortedMetadata
-     * 
-     * @return an empty SortedMetadata
-     */
-    public static SortedMetadata<MediaType> getEmptyMediaTypes() {
-        return new SortedMetadata<MediaType>(
-                new ArrayList<Collection<MediaType>>());
-    }
-
-    /**
-     * Creates a SortedMetadata collection with exactly the {@link MediaType} '*<!---->/*''
+     * Creates a SortedMetadata collection with exactly the {@link MediaType} 
+     * '*<!---->/*''
      * 
      * @return
      * @see MediaType#ALL
@@ -203,17 +154,71 @@ public class SortedMetadata<T extends Metadata> implements Iterable<T> {
                 .createColl(mediaType)));
     }
 
-    @Override
-    public String toString() {
-        return this.metadatas.toString();
+    private final List<Collection<T>> metadatas;
+
+    /**
+     * Creates a new SortedMetadata from the given Metadata.
+     * 
+     * @param preferences
+     */
+    @SuppressWarnings("unchecked")
+    private SortedMetadata(Collection<Preference<T>> preferences) {
+        final SortedMap<Float, Collection<T>> map = new TreeMap<Float, Collection<T>>(
+                Collections.reverseOrder());
+        for (final Preference<T> preference : preferences) {
+            final Float quality = preference.getQuality();
+            Collection<T> metadatas = map.get(quality);
+            if (metadatas == null) {
+                metadatas = new ArrayList<T>(2);
+                map.put(quality, metadatas);
+            }
+            metadatas.add(preference.getMetadata());
+        }
+        final Collection<Collection<T>> values = map.values();
+        this.metadatas = Collections.unmodifiableList(new ArrayList(values));
     }
 
     /**
-     * @param respMediaType
-     * @return
+     * Creates a new SortedMetadata from the sorted Metadata.
+     * 
+     * @param metadatas
      */
-    public static SortedMetadata<MediaType> get(MediaType respMediaType) {
-        return new SortedMetadata<MediaType>(Collections
-                .singleton(new Preference<MediaType>(respMediaType)));
+    private SortedMetadata(List<Collection<T>> metadatas) {
+        this.metadatas = metadatas;
+    }
+
+    /**
+     * Checks, if this SortedMetadata is empty
+     * 
+     * @return
+     * @see Collection#isEmpty()
+     */
+    public boolean isEmpty() {
+        return this.metadatas.isEmpty();
+    }
+
+    /**
+     * Iterates over all the sorted Metadata.
+     * 
+     * @see java.lang.Iterable#iterator()
+     */
+    @SuppressWarnings("unchecked")
+    public Iterator<T> iterator() {
+        return new IteratorIterator(this.metadatas.iterator());
+    }
+
+    /**
+     * Returns the list of collections as {@link Iterable} of {@link Iterable}s.
+     * 
+     * @return the list of collections as {@link Iterable} of {@link Iterable}s.
+     */
+    @SuppressWarnings("unchecked")
+    public Iterable<Iterable<T>> listOfColls() {
+        return (Iterable) this.metadatas;
+    }
+
+    @Override
+    public String toString() {
+        return this.metadatas.toString();
     }
 }

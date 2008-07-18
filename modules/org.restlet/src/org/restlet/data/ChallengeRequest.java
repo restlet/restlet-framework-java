@@ -40,9 +40,9 @@ public final class ChallengeRequest {
      * Constructor.
      * 
      * @param scheme
-     *                The challenge scheme.
+     *            The challenge scheme.
      * @param realm
-     *                The authentication realm.
+     *            The authentication realm.
      */
     public ChallengeRequest(ChallengeScheme scheme, String realm) {
         this.scheme = scheme;
@@ -60,8 +60,8 @@ public final class ChallengeRequest {
             // if obj isn't a challenge request or is null don't evaluate
             // further
             if (obj instanceof ChallengeRequest) {
-                ChallengeRequest that = (ChallengeRequest) obj;
-                result = (this.getParameters().equals(that.getParameters()));
+                final ChallengeRequest that = (ChallengeRequest) obj;
+                result = (getParameters().equals(that.getParameters()));
 
                 if (result) {
                     if (getRealm() != null) {
@@ -96,8 +96,9 @@ public final class ChallengeRequest {
         if (p == null) {
             synchronized (this) {
                 p = this.parameters;
-                if (p == null)
+                if (p == null) {
                     this.parameters = p = new Form();
+                }
             }
         }
         return p;
@@ -131,7 +132,7 @@ public final class ChallengeRequest {
      * Sets the modifiable series of scheme parameters.
      * 
      * @param parameters
-     *                The modifiable series of scheme parameters.
+     *            The modifiable series of scheme parameters.
      */
     public void setParameters(Series<Parameter> parameters) {
         this.parameters = parameters;
@@ -141,7 +142,7 @@ public final class ChallengeRequest {
      * Sets the realm name.
      * 
      * @param realm
-     *                The realm name.
+     *            The realm name.
      */
     public void setRealm(String realm) {
         this.realm = realm;
@@ -151,7 +152,7 @@ public final class ChallengeRequest {
      * Sets the scheme used.
      * 
      * @param scheme
-     *                The scheme used.
+     *            The scheme used.
      */
     public void setScheme(ChallengeScheme scheme) {
         this.scheme = scheme;

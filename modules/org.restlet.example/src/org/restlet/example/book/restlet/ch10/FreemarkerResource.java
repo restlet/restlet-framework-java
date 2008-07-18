@@ -19,14 +19,14 @@ import org.restlet.resource.Variant;
 public class FreemarkerResource extends Resource {
 
     // List of items
-    private List<String> items;
+    private final List<String> items;
 
     public FreemarkerResource(Context context, Request request,
             Response response) {
         super(context, request, response);
         // This resource is able to generate one kind of representations, then
         // turn off content negotiation.
-        this.setNegotiateContent(false);
+        setNegotiateContent(false);
         getVariants().add(new Variant(MediaType.TEXT_PLAIN));
 
         // Collect data
@@ -42,13 +42,13 @@ public class FreemarkerResource extends Resource {
 
         try {
             // Parent's application
-            DynamicApplication application = (DynamicApplication) getApplication();
+            final DynamicApplication application = (DynamicApplication) getApplication();
 
-            Map<String, Object> map = new TreeMap<String, Object>();
-            map.put("items", items);
+            final Map<String, Object> map = new TreeMap<String, Object>();
+            map.put("items", this.items);
             representation = new TemplateRepresentation("items.ftl",
                     application.getFmc(), map, MediaType.TEXT_PLAIN);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             System.out.println(e.getMessage());
             getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e);
         }

@@ -29,17 +29,22 @@ public class InstantiateException extends JaxRsException {
     private static final long serialVersionUID = 951579935427584482L;
 
     /**
+     * Use this constructor, if a resource class could not be instantiated.
+     * 
+     * @param executeMethod
+     *            the resource method that should create the resource object.
+     * @param cause
+     */
+    public InstantiateException(Method executeMethod, Throwable cause) {
+        super("The method " + executeMethod
+                + " could not instantiate a resource class", cause);
+    }
+
+    /**
      * @param message
      */
     public InstantiateException(String message) {
         super(message);
-    }
-
-    /**
-     * @param cause
-     */
-    public InstantiateException(Throwable cause) {
-        super(cause);
     }
 
     /**
@@ -51,15 +56,9 @@ public class InstantiateException extends JaxRsException {
     }
 
     /**
-     * Use this constructor, if a resource class could not be instantiated.
-     * 
-     * @param executeMethod
-     *                the resource method that should create the resource
-     *                object.
      * @param cause
      */
-    public InstantiateException(Method executeMethod, Throwable cause) {
-        super("The method " + executeMethod
-                + " could not instantiate a resource class", cause);
+    public InstantiateException(Throwable cause) {
+        super(cause);
     }
 }

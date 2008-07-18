@@ -26,28 +26,6 @@ public class ConvertRepresentationException extends JaxRsException {
     private static final long serialVersionUID = 951579935427584482L;
 
     /**
-     * @param message
-     */
-    private ConvertRepresentationException(String message) {
-        super(message);
-    }
-
-    /**
-     * @param cause
-     */
-    private ConvertRepresentationException(Throwable cause) {
-        super(cause);
-    }
-
-    /**
-     * @param message
-     * @param cause
-     */
-    private ConvertRepresentationException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    /**
      * Throws a message, that the given String value could not be converted to a
      * primitive.
      * 
@@ -62,5 +40,27 @@ public class ConvertRepresentationException extends JaxRsException {
             throws ConvertRepresentationException {
         throw new ConvertRepresentationException("Could not convert "
                 + unparseableValue + " to a " + paramType.getName(), cause);
+    }
+
+    /**
+     * @param message
+     */
+    private ConvertRepresentationException(String message) {
+        super(message);
+    }
+
+    /**
+     * @param message
+     * @param cause
+     */
+    private ConvertRepresentationException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    /**
+     * @param cause
+     */
+    private ConvertRepresentationException(Throwable cause) {
+        super(cause);
     }
 }

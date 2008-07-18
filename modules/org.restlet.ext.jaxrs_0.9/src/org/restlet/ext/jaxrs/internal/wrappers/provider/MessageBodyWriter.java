@@ -26,7 +26,7 @@ import org.restlet.data.MediaType;
  * 
  * @author Stephan Koops
  * @param <T>
- *                the java type to convert.
+ *            the java type to convert.
  */
 public interface MessageBodyWriter<T> extends
         javax.ws.rs.ext.MessageBodyWriter<T> {
@@ -43,8 +43,8 @@ public interface MessageBodyWriter<T> extends
      * {@link javax.ws.rs.ext.MessageBodyWriter}.
      * 
      * @return List of produced {@link MediaType}s. If the entity provider is
-     *         not annotated with &#64; {@link javax.ws.rs.Produces}, '*<!---->/*'
-     *         is returned.
+     *         not annotated with &#64; {@link javax.ws.rs.Produces},
+     *         '*<!---->/*' is returned.
      */
     public List<MediaType> getProducedMimes();
 
@@ -54,7 +54,7 @@ public interface MessageBodyWriter<T> extends
      * used in a HTTP <code>Content-Length</code> header.
      * 
      * @param t
-     *                the type
+     *            the type
      * @return length in bytes or -1 if the length cannot be determined in
      *         advance
      */
@@ -65,7 +65,7 @@ public interface MessageBodyWriter<T> extends
      * given {@link MediaType}s.
      * 
      * @param mediaTypes
-     *                the {@link MediaType}s
+     *            the {@link MediaType}s
      * @return true, if at least one of the requested {@link MediaType}s is
      *         supported, otherwise false.
      */
@@ -76,7 +76,7 @@ public interface MessageBodyWriter<T> extends
      * {@link MediaType}.
      * 
      * @param mediaType
-     *                the {@link MediaType}
+     *            the {@link MediaType}
      * @return true, if the requested {@link MediaType} is supported, otherwise
      *         false.
      */

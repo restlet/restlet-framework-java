@@ -36,18 +36,18 @@ import org.restlet.test.jaxrs.services.tests.PathParamTest2;
 @Path("pathParamTest2/")
 public class PathParamTestService2 {
 
+    @GET
+    @Produces("text/plain")
+    @Path("decoded/{string}")
+    public String decoded(@PathParam("string") String string) {
+        return string;
+    }
+
     @Encoded
     @GET
     @Produces("text/plain")
     @Path("encoded/{string}")
     public String encoded(@PathParam("string") String string) {
-        return string;
-    }
-
-    @GET
-    @Produces("text/plain")
-    @Path("decoded/{string}")
-    public String decoded(@PathParam("string") String string) {
         return string;
     }
 
@@ -101,8 +101,7 @@ public class PathParamTestService2 {
 
     @GET
     @Path("a{bcd}ef/{12}34")
-    public String getX2(@PathParam("bcd") String bcd,
-            @PathParam("12") String tt) {
-        return bcd+"\n"+tt;
+    public String getX2(@PathParam("bcd") String bcd, @PathParam("12") String tt) {
+        return bcd + "\n" + tt;
     }
 }

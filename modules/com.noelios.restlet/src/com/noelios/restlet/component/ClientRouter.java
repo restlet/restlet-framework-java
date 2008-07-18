@@ -40,21 +40,11 @@ public class ClientRouter extends Router {
      * Constructor.
      * 
      * @param component
-     *                The parent component.
+     *            The parent component.
      */
     public ClientRouter(Component component) {
         super((component == null) ? null : component.getContext());
         this.component = component;
-    }
-
-    /** Starts the Restlet. */
-    @Override
-    public synchronized void start() throws Exception {
-        for (Client client : getComponent().getClients()) {
-            getRoutes().add(new ClientRoute(this, client));
-        }
-
-        super.start();
     }
 
     /**
@@ -64,5 +54,15 @@ public class ClientRouter extends Router {
      */
     private Component getComponent() {
         return this.component;
+    }
+
+    /** Starts the Restlet. */
+    @Override
+    public synchronized void start() throws Exception {
+        for (final Client client : getComponent().getClients()) {
+            getRoutes().add(new ClientRoute(this, client));
+        }
+
+        super.start();
     }
 }

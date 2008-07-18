@@ -30,12 +30,25 @@ public class IllegalPathException extends JaxRsException {
 
     private static final long serialVersionUID = 6796414811480666857L;
 
+    private static String createMessage(IllegalArgumentException iae, Path path) {
+        if (iae != null) {
+            final Throwable cause = iae.getCause();
+            if (cause != null) {
+                final String message = cause.getMessage();
+                if ((message == null) || (message.length() == 0)) {
+                    return "The given path (" + path + ") is invalid";
+                }
+            }
+        }
+        return null;
+    }
+
     private final Path path;
 
     /**
      * 
      * @param path
-     *                the invalid path
+     *            the invalid path
      * @param iae
      */
     public IllegalPathException(Path path, IllegalArgumentException iae) {
@@ -57,25 +70,12 @@ public class IllegalPathException extends JaxRsException {
      * 
      * @param path
      * @param message
-     * @param iae 
+     * @param iae
      */
     public IllegalPathException(Path path, String message,
             IllegalArgumentException iae) {
         super(message, iae);
         this.path = path;
-    }
-
-    private static String createMessage(IllegalArgumentException iae, Path path) {
-        if (iae != null) {
-            Throwable cause = iae.getCause();
-            if (cause != null) {
-                String message = cause.getMessage();
-                if (message == null || message.length() == 0) {
-                    return "The given path (" + path + ") is invalid";
-                }
-            }
-        }
-        return null;
     }
 
     /**
@@ -86,13 +86,15 @@ public class IllegalPathException extends JaxRsException {
      */
     @Override
     public IllegalArgumentException getCause() {
-        Throwable cause = super.getCause();
-        if (cause instanceof IllegalArgumentException)
+        final Throwable cause = super.getCause();
+        if (cause instanceof IllegalArgumentException) {
             return (IllegalArgumentException) cause;
-        IllegalArgumentException iae = new IllegalArgumentException(this
-                .getMessage());
-        if(cause != null)
+        }
+        final IllegalArgumentException iae = new IllegalArgumentException(
+                getMessage());
+        if (cause != null) {
             iae.setStackTrace(cause.getStackTrace());
+        }
         return iae;
     }
 
@@ -102,6 +104,6 @@ public class IllegalPathException extends JaxRsException {
      * @return the Illegal Path.
      */
     public Path getPath() {
-        return path;
+        return this.path;
     }
 }

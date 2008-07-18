@@ -25,7 +25,7 @@ import org.xml.sax.helpers.DefaultHandler;
 public class SampleComponent {
 
     public static void main(String[] args) throws Exception {
-        Component component = new Component();
+        final Component component = new Component();
         // Add a new HTTP server connector
         component.getServers().add(Protocol.HTTP, 8182);
         // Add a new FILE client connector
@@ -48,15 +48,15 @@ public class SampleComponent {
         component.start();
 
         // Request the XML file
-        Client client = new Client(Protocol.HTTP);
+        final Client client = new Client(Protocol.HTTP);
         Response response = client
                 .get("http://localhost:8182/xmlApplication/xml/mail.xml");
         if (response.getStatus().isSuccess() && response.isEntityAvailable()) {
             // Get the entity as a DOM representation.
-            DomRepresentation domRep = response.getEntityAsDom();
+            final DomRepresentation domRep = response.getEntityAsDom();
             // Evaluate an XPath expression and get the list of nodes
-            NodeSet nodes = domRep.getNodes("/mail/recipients/to/text()");
-            for (Node node : nodes) {
+            final NodeSet nodes = domRep.getNodes("/mail/recipients/to/text()");
+            for (final Node node : nodes) {
                 System.out.println(node.getNodeValue());
             }
             // Get the schema
@@ -74,9 +74,9 @@ public class SampleComponent {
 
         if (response.getStatus().isSuccess() && response.isEntityAvailable()) {
             // Get the entity as a SAX representation.
-            SaxRepresentation saxRep = response.getEntityAsSax();
+            final SaxRepresentation saxRep = response.getEntityAsSax();
             // In-line simple content handler.
-            ContentHandler contentHandler = new DefaultHandler() {
+            final ContentHandler contentHandler = new DefaultHandler() {
                 @Override
                 public void startElement(String uri, String localName,
                         String name, Attributes attributes) throws SAXException {
@@ -89,7 +89,7 @@ public class SampleComponent {
 
         response = client.get("http://localhost:8182/cookiesRestlet");
         // Get the cookies sent by the server
-        for (CookieSetting cookieSetting : response.getCookieSettings()) {
+        for (final CookieSetting cookieSetting : response.getCookieSettings()) {
             System.out.print("[");
             System.out.print(cookieSetting.getName());
             System.out.print("/");

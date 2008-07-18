@@ -46,7 +46,7 @@ public abstract class JxtaServerHelper extends StreamServerHelper {
      * Constructor.
      * 
      * @param server
-     *                The parent server connector.
+     *            The parent server connector.
      */
     public JxtaServerHelper(Server server) {
         super(server);

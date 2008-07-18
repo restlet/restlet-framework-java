@@ -52,20 +52,21 @@ public class ThreadLocalizedUriInfo implements UriInfo {
      * @return the AncestorInfo with the current data from the
      *         {@link CallContext}.
      * @throws IllegalStateException
-     *                 if no CallContext could be loaded.
+     *             if no CallContext could be loaded.
      */
     private AncestorInfo createAncestorInfo() throws IllegalStateException {
-        CallContext callContext = getCallContext();
+        final CallContext callContext = getCallContext();
         return new AncestorInfo(callContext.getAncestorResourceURIs(),
                 callContext.getAncestorResources());
     }
 
     private AncestorInfo get() throws IllegalStateException {
-        AncestorInfo ancestorInfo = ancestorInfos.get();
-        if (ancestorInfo != null)
+        AncestorInfo ancestorInfo = this.ancestorInfos.get();
+        if (ancestorInfo != null) {
             return ancestorInfo;
+        }
         ancestorInfo = createAncestorInfo();
-        ancestorInfos.set(ancestorInfo);
+        this.ancestorInfos.set(ancestorInfo);
         return ancestorInfo;
     }
 
@@ -93,7 +94,7 @@ public class ThreadLocalizedUriInfo implements UriInfo {
      * @see UriInfo#getAncestorResources()
      */
     public List<Object> getAncestorResources() {
-        return this.get().getResources();
+        return get().getResources();
     }
 
     /**
@@ -101,7 +102,7 @@ public class ThreadLocalizedUriInfo implements UriInfo {
      * @see UriInfo#getAncestorResourceURIs()
      */
     public List<String> getAncestorResourceURIs() {
-        return this.get().getUris(true);
+        return get().getUris(true);
     }
 
     /**
@@ -111,7 +112,7 @@ public class ThreadLocalizedUriInfo implements UriInfo {
      * @see UriInfo#getAncestorResourceURIs(boolean)
      */
     public List<String> getAncestorResourceURIs(boolean decode) {
-        return this.get().getUris(decode);
+        return get().getUris(decode);
     }
 
     /**
@@ -138,6 +139,15 @@ public class ThreadLocalizedUriInfo implements UriInfo {
 
     /**
      * @return
+     * @see JaxRsUriInfo#getConnegExtension()
+     * @see UriInfo#getConnegExtension()
+     */
+    public String getConnegExtension() {
+        return getCallContext().getConnegExtension();
+    }
+
+    /**
+     * @return
      * @see JaxRsUriInfo#getPath()
      * @see UriInfo#getPath()
      */
@@ -153,15 +163,6 @@ public class ThreadLocalizedUriInfo implements UriInfo {
      */
     public String getPath(boolean decode) {
         return getCallContext().getPath(decode);
-    }
-
-    /**
-     * @return
-     * @see JaxRsUriInfo#getConnegExtension()
-     * @see UriInfo#getConnegExtension()
-     */
-    public String getConnegExtension() {
-        return getCallContext().getConnegExtension();
     }
 
     /**
@@ -251,15 +252,15 @@ public class ThreadLocalizedUriInfo implements UriInfo {
      * thread.
      * 
      * @param saveState
-     *                if true, the current state is save for the current thread
-     *                from the current {@link CallContext}; if false (for
-     *                singeltons), the saved object for the current thread is
-     *                removed.
+     *            if true, the current state is save for the current thread from
+     *            the current {@link CallContext}; if false (for singeltons),
+     *            the saved object for the current thread is removed.
      */
     public void saveStateForCurrentThread(boolean saveState) {
-        if (saveState)
+        if (saveState) {
             this.ancestorInfos.set(createAncestorInfo());
-        else
-            this.reset();
+        } else {
+            reset();
+        }
     }
 }

@@ -34,9 +34,9 @@ import org.restlet.util.ByteUtils;
 public class ByteUtilsTestCase extends TestCase {
 
     public void testGetStream() throws IOException {
-        StringWriter writer = new StringWriter();
+        final StringWriter writer = new StringWriter();
 
-        OutputStream out = ByteUtils.getStream(writer);
+        final OutputStream out = ByteUtils.getStream(writer);
 
         out.write("test".getBytes());
         out.flush();

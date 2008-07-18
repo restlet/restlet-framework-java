@@ -41,19 +41,19 @@ public abstract class BaseConnectorsTestCase extends TestCase {
 
     private Component component;
 
-    private boolean enableApacheClient = true;
+    private final boolean enableApacheClient = true;
 
-    private boolean enableGrizzlyServer = true;
+    private final boolean enableGrizzlyServer = true;
 
-    private boolean enableInternalClient = true;
+    private final boolean enableInternalClient = true;
 
-    private boolean enableInternalServer = true;
+    private final boolean enableInternalServer = true;
 
-    private boolean enableJdkNetClient = true;
+    private final boolean enableJdkNetClient = true;
 
-    private boolean enableJettyServer = true;
+    private final boolean enableJettyServer = true;
 
-    private boolean enableSimpleServer = true;
+    private final boolean enableSimpleServer = true;
 
     protected abstract void call(String uri) throws Exception;
 
@@ -62,12 +62,12 @@ public abstract class BaseConnectorsTestCase extends TestCase {
     // Helper methods
     private void runTest(ServerHelper server, ClientHelper client)
             throws Exception {
-        Engine nre = new Engine(false);
+        final Engine nre = new Engine(false);
         nre.getRegisteredServers().add(server);
         nre.getRegisteredClients().add(client);
         org.restlet.util.Engine.setInstance(nre);
 
-        String uri = start();
+        final String uri = start();
         try {
             call(uri);
         } finally {
@@ -80,24 +80,24 @@ public abstract class BaseConnectorsTestCase extends TestCase {
     }
 
     private String start() throws Exception {
-        component = new Component();
-        Server server = component.getServers().add(Protocol.HTTP, 0);
-        Application application = createApplication(component);
+        this.component = new Component();
+        final Server server = this.component.getServers().add(Protocol.HTTP, 0);
+        final Application application = createApplication(this.component);
 
-        component.getDefaultHost().attach(application);
-        component.start();
+        this.component.getDefaultHost().attach(application);
+        this.component.start();
 
         return "http://localhost:" + server.getEphemeralPort() + "/test";
     }
 
     private void stop() throws Exception {
-        if (component != null && component.isStarted()) {
-            component.stop();
+        if ((this.component != null) && this.component.isStarted()) {
+            this.component.stop();
         }
     }
 
     public void testGrizzlyAndApache() throws Exception {
-        if (enableGrizzlyServer && enableApacheClient) {
+        if (this.enableGrizzlyServer && this.enableApacheClient) {
             runTest(new com.noelios.restlet.ext.grizzly.HttpServerHelper(null),
                     new com.noelios.restlet.ext.httpclient.HttpClientHelper(
                             null));
@@ -105,21 +105,21 @@ public abstract class BaseConnectorsTestCase extends TestCase {
     }
 
     public void testGrizzlyAndInternal() throws Exception {
-        if (enableGrizzlyServer && enableInternalClient) {
+        if (this.enableGrizzlyServer && this.enableInternalClient) {
             runTest(new com.noelios.restlet.ext.grizzly.HttpServerHelper(null),
                     new StreamClientHelper(null));
         }
     }
 
     public void testGrizzlyAndJdkNet() throws Exception {
-        if (enableGrizzlyServer && enableJdkNetClient) {
+        if (this.enableGrizzlyServer && this.enableJdkNetClient) {
             runTest(new com.noelios.restlet.ext.grizzly.HttpServerHelper(null),
                     new com.noelios.restlet.ext.net.HttpClientHelper(null));
         }
     }
 
     public void testInternalAndApache() throws Exception {
-        if (enableInternalServer && enableApacheClient) {
+        if (this.enableInternalServer && this.enableApacheClient) {
             runTest(new StreamServerHelper(null),
                     new com.noelios.restlet.ext.httpclient.HttpClientHelper(
                             null));
@@ -127,20 +127,20 @@ public abstract class BaseConnectorsTestCase extends TestCase {
     }
 
     public void testInternalAndInternal() throws Exception {
-        if (enableInternalServer && enableInternalClient) {
+        if (this.enableInternalServer && this.enableInternalClient) {
             runTest(new StreamServerHelper(null), new StreamClientHelper(null));
         }
     }
 
     public void testInternalAndJdkNet() throws Exception {
-        if (enableInternalServer && enableJdkNetClient) {
+        if (this.enableInternalServer && this.enableJdkNetClient) {
             runTest(new StreamServerHelper(null),
                     new com.noelios.restlet.ext.net.HttpClientHelper(null));
         }
     }
 
     public void testJettyAndApache() throws Exception {
-        if (enableJettyServer && enableApacheClient) {
+        if (this.enableJettyServer && this.enableApacheClient) {
             runTest(new com.noelios.restlet.ext.jetty.HttpServerHelper(null),
                     new com.noelios.restlet.ext.httpclient.HttpClientHelper(
                             null));
@@ -148,21 +148,21 @@ public abstract class BaseConnectorsTestCase extends TestCase {
     }
 
     public void testJettyAndInternal() throws Exception {
-        if (enableJettyServer && enableInternalClient) {
+        if (this.enableJettyServer && this.enableInternalClient) {
             runTest(new com.noelios.restlet.ext.jetty.HttpServerHelper(null),
                     new StreamClientHelper(null));
         }
     }
 
     public void testJettyAndJdkNet() throws Exception {
-        if (enableJettyServer && enableJdkNetClient) {
+        if (this.enableJettyServer && this.enableJdkNetClient) {
             runTest(new com.noelios.restlet.ext.jetty.HttpServerHelper(null),
                     new com.noelios.restlet.ext.net.HttpClientHelper(null));
         }
     }
 
     public void testSimpleAndApache() throws Exception {
-        if (enableSimpleServer && enableApacheClient) {
+        if (this.enableSimpleServer && this.enableApacheClient) {
             runTest(new com.noelios.restlet.ext.simple.HttpServerHelper(null),
                     new com.noelios.restlet.ext.httpclient.HttpClientHelper(
                             null));
@@ -170,14 +170,14 @@ public abstract class BaseConnectorsTestCase extends TestCase {
     }
 
     public void testSimpleAndInternal() throws Exception {
-        if (enableSimpleServer && enableInternalClient) {
+        if (this.enableSimpleServer && this.enableInternalClient) {
             runTest(new com.noelios.restlet.ext.simple.HttpServerHelper(null),
                     new StreamClientHelper(null));
         }
     }
 
     public void testSimpleAndJdkNet() throws Exception {
-        if (enableSimpleServer && enableJdkNetClient) {
+        if (this.enableSimpleServer && this.enableJdkNetClient) {
             runTest(new com.noelios.restlet.ext.simple.HttpServerHelper(null),
                     new com.noelios.restlet.ext.net.HttpClientHelper(null));
         }

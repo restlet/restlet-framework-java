@@ -11,10 +11,10 @@ import org.restlet.ext.jaxb.JaxbRepresentation;
 
 public class XmlTest {
     public static void main(String[] args) throws Exception {
-        Restlet jaxbRestlet = new Restlet() {
+        final Restlet jaxbRestlet = new Restlet() {
             @Override
             public void handle(Request request, Response response) {
-                Customer customer = new Customer();
+                final Customer customer = new Customer();
                 customer.setCity("city_value");
                 customer.setPhone("phone_value");
                 customer.setState("state_value");
@@ -26,17 +26,17 @@ public class XmlTest {
             }
         };
 
-        Server server = new Server(Protocol.HTTP, 8182, jaxbRestlet);
+        final Server server = new Server(Protocol.HTTP, 8182, jaxbRestlet);
 
         try {
             server.start();
 
-            Client client = new Client(Protocol.HTTP);
-            Response response = client.get("http://localhost:8182/");
+            final Client client = new Client(Protocol.HTTP);
+            final Response response = client.get("http://localhost:8182/");
             if (response.isEntityAvailable()) {
-                JaxbRepresentation<Customer> representation = new JaxbRepresentation<Customer>(
+                final JaxbRepresentation<Customer> representation = new JaxbRepresentation<Customer>(
                         response.getEntity(), Customer.class);
-                Customer customer = representation.getObject();
+                final Customer customer = representation.getObject();
                 System.out.println(customer.getCity());
                 System.out.println(customer.getPhone());
                 System.out.println(customer.getState());
@@ -45,12 +45,12 @@ public class XmlTest {
             } else {
                 System.err.println("No entity");
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         } finally {
             try {
                 server.stop();
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 e.printStackTrace();
             }
         }

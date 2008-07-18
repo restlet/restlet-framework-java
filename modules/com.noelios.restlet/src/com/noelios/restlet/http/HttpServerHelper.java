@@ -28,7 +28,8 @@ import com.noelios.restlet.ServerHelper;
 
 /**
  * Base HTTP server connector. Here is the list of parameters that are
- * supported: <table>
+ * supported:
+ * <table>
  * <tr>
  * <th>Parameter name</th>
  * <th>Value type</th>
@@ -73,34 +74,11 @@ public class HttpServerHelper extends ServerHelper {
      * Constructor.
      * 
      * @param server
-     *                The server to help.
+     *            The server to help.
      */
     public HttpServerHelper(Server server) {
         super(server);
         this.converter = null;
-    }
-
-    /**
-     * Handles the connector call.<br>
-     * The default behavior is to create an REST call and delegate it to the
-     * attached Restlet.
-     * 
-     * @param httpCall
-     *                The HTTP server call.
-     */
-    public void handle(HttpServerCall httpCall) {
-        try {
-            HttpRequest request = getConverter().toRequest(httpCall);
-            HttpResponse response = new HttpResponse(httpCall, request);
-            handle(request, response);
-            getConverter().commit(response);
-        } catch (Exception e) {
-            getLogger().log(Level.WARNING,
-                    "Error while handling an HTTP server call: ",
-                    e.getMessage());
-            getLogger().log(Level.INFO,
-                    "Error while handling an HTTP server call", e);
-        }
     }
 
     /**
@@ -111,31 +89,31 @@ public class HttpServerHelper extends ServerHelper {
     public HttpServerConverter getConverter() {
         if (this.converter == null) {
             try {
-                String converterClass = getParameters().getFirstValue(
+                final String converterClass = getParameters().getFirstValue(
                         "converter",
                         "com.noelios.restlet.http.HttpServerConverter");
                 this.converter = (HttpServerConverter) Class.forName(
                         converterClass).getConstructor(Context.class)
                         .newInstance(getContext());
-            } catch (IllegalArgumentException e) {
+            } catch (final IllegalArgumentException e) {
                 getLogger().log(Level.SEVERE,
                         "Unable to create the HTTP server converter", e);
-            } catch (SecurityException e) {
+            } catch (final SecurityException e) {
                 getLogger().log(Level.SEVERE,
                         "Unable to create the HTTP server converter", e);
-            } catch (InstantiationException e) {
+            } catch (final InstantiationException e) {
                 getLogger().log(Level.SEVERE,
                         "Unable to create the HTTP server converter", e);
-            } catch (IllegalAccessException e) {
+            } catch (final IllegalAccessException e) {
                 getLogger().log(Level.SEVERE,
                         "Unable to create the HTTP server converter", e);
-            } catch (InvocationTargetException e) {
+            } catch (final InvocationTargetException e) {
                 getLogger().log(Level.SEVERE,
                         "Unable to create the HTTP server converter", e);
-            } catch (NoSuchMethodException e) {
+            } catch (final NoSuchMethodException e) {
                 getLogger().log(Level.SEVERE,
                         "Unable to create the HTTP server converter", e);
-            } catch (ClassNotFoundException e) {
+            } catch (final ClassNotFoundException e) {
                 getLogger().log(Level.SEVERE,
                         "Unable to create the HTTP server converter", e);
             }
@@ -145,10 +123,33 @@ public class HttpServerHelper extends ServerHelper {
     }
 
     /**
+     * Handles the connector call.<br>
+     * The default behavior is to create an REST call and delegate it to the
+     * attached Restlet.
+     * 
+     * @param httpCall
+     *            The HTTP server call.
+     */
+    public void handle(HttpServerCall httpCall) {
+        try {
+            final HttpRequest request = getConverter().toRequest(httpCall);
+            final HttpResponse response = new HttpResponse(httpCall, request);
+            handle(request, response);
+            getConverter().commit(response);
+        } catch (final Exception e) {
+            getLogger().log(Level.WARNING,
+                    "Error while handling an HTTP server call: ",
+                    e.getMessage());
+            getLogger().log(Level.INFO,
+                    "Error while handling an HTTP server call", e);
+        }
+    }
+
+    /**
      * Sets the converter from HTTP calls to uniform calls.
      * 
      * @param converter
-     *                The converter to set.
+     *            The converter to set.
      */
     public void setConverter(HttpServerConverter converter) {
         this.converter = converter;

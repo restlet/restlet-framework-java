@@ -39,9 +39,9 @@ public class EmployeeMgr {
     }
 
     /** contains the employees */
-    private Map<Integer, Employee> employees = new HashMap<Integer, Employee>();
+    private final Map<Integer, Employee> employees = new HashMap<Integer, Employee>();
     {
-        Employee employee1 = new Employee();
+        final Employee employee1 = new Employee();
         employee1.setStaffNo(1234);
         employee1.setFirstname("Lucy");
         employee1.setLastname("Smith");
@@ -49,7 +49,7 @@ public class EmployeeMgr {
         employee1.setDepartment("research");
         this.employees.put(employee1.getStaffNo(), employee1);
 
-        Employee employee2 = new Employee();
+        final Employee employee2 = new Employee();
         employee2.setStaffNo(3210);
         employee2.setFirstname("Jack");
         employee2.setLastname("Jonson");
@@ -59,10 +59,45 @@ public class EmployeeMgr {
     }
 
     /**
+     * @return the staffNo of the created employee
+     */
+    public synchronized int createEmployee(Employee employee) {
+        final int staffNo = createNewStaffNo();
+        employee.setStaffNo(staffNo);
+        this.employees.put(employee.getStaffNo(), employee);
+        return staffNo;
+    }
+
+    /**
+     * Creates and return a staff number to be used for a new employee to
+     * create.
+     */
+    private synchronized int createNewStaffNo() {
+        int newStaffNo = 3456;
+        for (;;) {
+            if (!exists(newStaffNo)) {
+                return newStaffNo;
+            }
+            newStaffNo++;
+        }
+    }
+
+    /**
+     * Creates a {@link SmallEmployee} from the given {@link Employee}.
+     */
+    private synchronized SmallEmployee createSmall(Employee employee) {
+        final SmallEmployee smallEmployee = new SmallEmployee();
+        smallEmployee.setStaffNo(employee.getStaffNo());
+        smallEmployee.setFirstname(employee.getFirstname());
+        smallEmployee.setLastname(employee.getLastname());
+        return smallEmployee;
+    }
+
+    /**
      * Checks, if an employee with the given staff number exists.
      * 
      * @param staffNo
-     *                the number of the employee to check for availability.
+     *            the number of the employee to check for availability.
      * @return true, if there is an employee with the given staffNo, or false if
      *         not.
      */
@@ -76,34 +111,11 @@ public class EmployeeMgr {
      * @return a list of all available employees.
      */
     public synchronized EmployeeList getAll() {
-        EmployeeList employees = new EmployeeList();
-        for (Employee employee : this.employees.values())
+        final EmployeeList employees = new EmployeeList();
+        for (final Employee employee : this.employees.values()) {
             employees.add(createSmall(employee));
+        }
         return employees;
-    }
-
-    /**
-     * Returns a little amount of information about the employee with the given
-     * staff number.
-     * 
-     * @param staffNo
-     *                the number of the employee to get.
-     * @return the employee data.
-     */
-    public synchronized SmallEmployee getSmall(int staffNo) {
-        Employee employee = getFull(staffNo);
-        return createSmall(employee);
-    }
-
-    /**
-     * Creates a {@link SmallEmployee} from the given {@link Employee}.
-     */
-    private synchronized SmallEmployee createSmall(Employee employee) {
-        SmallEmployee smallEmployee = new SmallEmployee();
-        smallEmployee.setStaffNo(employee.getStaffNo());
-        smallEmployee.setFirstname(employee.getFirstname());
-        smallEmployee.setLastname(employee.getLastname());
-        return smallEmployee;
     }
 
     /**
@@ -115,34 +127,24 @@ public class EmployeeMgr {
     }
 
     /**
-     * @return the staffNo of the created employee
+     * Returns a little amount of information about the employee with the given
+     * staff number.
+     * 
+     * @param staffNo
+     *            the number of the employee to get.
+     * @return the employee data.
      */
-    public synchronized int createEmployee(Employee employee) {
-        int staffNo = createNewStaffNo();
-        employee.setStaffNo(staffNo);
-        this.employees.put(employee.getStaffNo(), employee);
-        return staffNo;
+    public synchronized SmallEmployee getSmall(int staffNo) {
+        final Employee employee = getFull(staffNo);
+        return createSmall(employee);
     }
 
-    /**
-     * Creates and return a staff number to be used for a new employee to
-     * create.
-     */
-    private synchronized int createNewStaffNo() {
-        int newStaffNo = 3456;
-        for (;;) {
-            if (!this.exists(newStaffNo))
-                return newStaffNo;
-            newStaffNo++;
-        }
+    public synchronized void remove(int staffNo) {
+        this.employees.remove(staffNo);
     }
 
     public synchronized void update(int staffNo, Employee employee) {
         employee.setStaffNo(staffNo);
         this.employees.put(staffNo, employee);
-    }
-
-    public synchronized void remove(int staffNo) {
-        this.employees.remove(staffNo);
     }
 }

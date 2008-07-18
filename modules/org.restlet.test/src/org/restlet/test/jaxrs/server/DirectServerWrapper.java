@@ -37,9 +37,10 @@ public class DirectServerWrapper implements ServerWrapper {
     }
 
     public Restlet getClientConnector() {
-        if (connector == null)
+        if (this.connector == null) {
             throw new IllegalStateException("The Server is not yet started");
-        return connector;
+        }
+        return this.connector;
     }
 
     public int getServerPort() {
@@ -49,7 +50,7 @@ public class DirectServerWrapper implements ServerWrapper {
 
     public void startServer(Application application, Protocol protocol)
             throws Exception {
-        connector = application;
+        this.connector = application;
     }
 
     public void stopServer() throws Exception {

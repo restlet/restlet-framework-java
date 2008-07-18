@@ -31,8 +31,7 @@ import org.restlet.test.jaxrs.services.tests.PersonsTest;
 @Path("persons/{id}")
 public class PersonResource {
     @GET
-    public Person get(@PathParam("id") int id)
-    {
-        return new Person("firstname"+id, "lastname");
+    public Person get(@PathParam("id") int id) {
+        return new Person("firstname" + id, "lastname");
     }
 }

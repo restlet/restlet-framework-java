@@ -67,7 +67,7 @@ public class LocalClientHelper extends ClientHelper {
      * extensions is added, see the addCommonExtensions() method.
      * 
      * @param client
-     *                The client to help.
+     *            The client to help.
      */
     public LocalClientHelper(Client client) {
         super(client);
@@ -88,12 +88,12 @@ public class LocalClientHelper extends ClientHelper {
      * Returns the metadata service associated to a request.
      * 
      * @param request
-     *                The request to lookup.
+     *            The request to lookup.
      * @return The metadata service associated to a request.
      */
     public MetadataService getMetadataService(Request request) {
         MetadataService result = null;
-        Application application = Application.getCurrent();
+        final Application application = Application.getCurrent();
 
         if (application != null) {
             result = application.getMetadataService();
@@ -122,16 +122,16 @@ public class LocalClientHelper extends ClientHelper {
      * extensions.
      * 
      * @param metadataService
-     *                The parent metadata service.
+     *            The parent metadata service.
      * @param entryName
-     *                The entry name with extensions.
+     *            The entry name with extensions.
      * @param variant
-     *                The variant to update.
+     *            The variant to update.
      */
     public void updateMetadata(MetadataService metadataService,
             String entryName, Variant variant) {
         if (variant != null) {
-            String[] tokens = entryName.split("\\.");
+            final String[] tokens = entryName.split("\\.");
             Metadata current;
 
             // We found a potential variant
@@ -150,22 +150,25 @@ public class LocalClientHelper extends ClientHelper {
                     }
                 }
 
-                int dashIndex = tokens[j].indexOf('-');
+                final int dashIndex = tokens[j].indexOf('-');
                 if (dashIndex != -1) {
                     // We found a language extension with a region area
                     // specified
                     // Try to find a language matching the primary part of the
                     // extension
-                    String primaryPart = tokens[j].substring(0, dashIndex);
+                    final String primaryPart = tokens[j]
+                            .substring(0, dashIndex);
                     current = metadataService.getMetadata(primaryPart);
-                    if (current instanceof Language)
+                    if (current instanceof Language) {
                         variant.getLanguages().add((Language) current);
+                    }
                 }
             }
 
             // If no language is defined, take the default one
             if (variant.getLanguages().isEmpty()) {
-                Language defaultLanguage = metadataService.getDefaultLanguage();
+                final Language defaultLanguage = metadataService
+                        .getDefaultLanguage();
 
                 if ((defaultLanguage != null)
                         && !defaultLanguage.equals(Language.ALL)) {
@@ -175,7 +178,7 @@ public class LocalClientHelper extends ClientHelper {
 
             // If no media type is defined, take the default one
             if (variant.getMediaType() == null) {
-                MediaType defaultMediaType = metadataService
+                final MediaType defaultMediaType = metadataService
                         .getDefaultMediaType();
 
                 if ((defaultMediaType != null)

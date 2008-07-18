@@ -13,7 +13,7 @@ public class NonStandardMethodsApplication extends Application {
 
     @Override
     public Restlet createRoot() {
-        Router router = new Router(getContext());
+        final Router router = new Router(getContext());
         router.attachDefault(NonStandardMethodsResource.class);
         return router;
     }

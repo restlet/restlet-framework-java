@@ -30,8 +30,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 
-import org.mortbay.jetty.HttpConnection;
 import org.mortbay.jetty.EofException;
+import org.mortbay.jetty.HttpConnection;
 import org.restlet.Server;
 import org.restlet.data.Parameter;
 import org.restlet.data.Response;
@@ -56,9 +56,9 @@ public class JettyCall extends HttpServerCall {
      * Constructor.
      * 
      * @param server
-     *                The parent server.
+     *            The parent server.
      * @param connection
-     *                The wrapped Jetty HTTP connection.
+     *            The wrapped Jetty HTTP connection.
      */
     public JettyCall(Server server, HttpConnection connection) {
         super(server);
@@ -72,7 +72,7 @@ public class JettyCall extends HttpServerCall {
             // Fully complete and commit the response
             this.connection.flushResponse();
             this.connection.completeResponse();
-        } catch (IOException ex) {
+        } catch (final IOException ex) {
             getLogger().log(Level.WARNING,
                     "Unable to complete or commit the response", ex);
         }
@@ -116,7 +116,7 @@ public class JettyCall extends HttpServerCall {
     public InputStream getRequestEntityStream(long size) {
         try {
             return getConnection().getRequest().getInputStream();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             getLogger().log(Level.WARNING,
                     "Unable to get request entity stream", e);
             return null;
@@ -137,16 +137,17 @@ public class JettyCall extends HttpServerCall {
     @Override
     @SuppressWarnings("unchecked")
     public Series<Parameter> getRequestHeaders() {
-        Series<Parameter> result = super.getRequestHeaders();
+        final Series<Parameter> result = super.getRequestHeaders();
 
-        if (!requestHeadersAdded) {
+        if (!this.requestHeadersAdded) {
             // Copy the headers from the request object
             String headerName;
             String headerValue;
-            for (Enumeration<String> names = getConnection().getRequestFields()
-                    .getFieldNames(); names.hasMoreElements();) {
+            for (final Enumeration<String> names = getConnection()
+                    .getRequestFields().getFieldNames(); names
+                    .hasMoreElements();) {
                 headerName = names.nextElement();
-                for (Enumeration<String> values = getConnection()
+                for (final Enumeration<String> values = getConnection()
                         .getRequestFields().getValues(headerName); values
                         .hasMoreElements();) {
                     headerValue = values.nextElement();
@@ -154,7 +155,7 @@ public class JettyCall extends HttpServerCall {
                 }
             }
 
-            requestHeadersAdded = true;
+            this.requestHeadersAdded = true;
         }
 
         return result;
@@ -196,7 +197,7 @@ public class JettyCall extends HttpServerCall {
     public OutputStream getResponseEntityStream() {
         try {
             return getConnection().getResponse().getOutputStream();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             getLogger().log(Level.WARNING,
                     "Unable to get response entity stream", e);
             return null;
@@ -222,7 +223,7 @@ public class JettyCall extends HttpServerCall {
 
     @Override
     public List<Certificate> getSslClientCertificates() {
-        Certificate[] certificateArray = (Certificate[]) getConnection()
+        final Certificate[] certificateArray = (Certificate[]) getConnection()
                 .getRequest().getAttribute(
                         "javax.servlet.request.X509Certificate");
         if (certificateArray != null) {
@@ -254,14 +255,15 @@ public class JettyCall extends HttpServerCall {
 
     @Override
     public boolean isConnectionBroken(Exception exception) {
-        return exception instanceof EofException || super.isConnectionBroken(exception);
+        return (exception instanceof EofException)
+                || super.isConnectionBroken(exception);
     }
 
     @Override
     public void sendResponse(Response response) throws IOException {
         // Add call headers
         Parameter header;
-        for (Iterator<Parameter> iter = getResponseHeaders().iterator(); iter
+        for (final Iterator<Parameter> iter = getResponseHeaders().iterator(); iter
                 .hasNext();) {
             header = iter.next();
             getConnection().getResponse().addHeader(header.getName(),
@@ -275,7 +277,7 @@ public class JettyCall extends HttpServerCall {
             try {
                 getConnection().getResponse().sendError(getStatusCode(),
                         getReasonPhrase());
-            } catch (IOException ioe) {
+            } catch (final IOException ioe) {
                 getLogger().log(Level.WARNING,
                         "Unable to set the response error status", ioe);
             }

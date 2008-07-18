@@ -19,22 +19,15 @@ package org.restlet.test.jaxrs.util;
 
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
 
 import junit.framework.TestCase;
 
 import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.ext.jaxrs.internal.core.MultivaluedMapImpl;
-import org.restlet.ext.jaxrs.internal.core.ResponseBuilderImpl;
 import org.restlet.ext.jaxrs.internal.util.Converter;
-import org.restlet.ext.jaxrs.internal.util.MatchingResult;
 import org.restlet.ext.jaxrs.internal.util.PathRegExp;
-import org.restlet.ext.jaxrs.internal.util.RemainingPath;
 import org.restlet.ext.jaxrs.internal.util.Util;
-
-import com.noelios.restlet.util.StringUtils;
 
 /**
  * @author Stephan Koops
@@ -49,16 +42,17 @@ public class UtilTests extends TestCase {
      * @return the {@link CharacterSet} as String
      */
     private String getCss() {
-        return Util.getCharsetName(httpHeaders, null);
+        return Util.getCharsetName(this.httpHeaders, null);
     }
 
     /**
      * @return the {@link MediaType} without any parameter
      */
     private MediaType getMt() {
-        MediaType mediaType = Util.getMediaType(httpHeaders);
-        if(mediaType == null)
+        final MediaType mediaType = Util.getMediaType(this.httpHeaders);
+        if (mediaType == null) {
             return null;
+        }
         return Converter.getMediaTypeWithoutParams(mediaType);
     }
 
@@ -66,24 +60,26 @@ public class UtilTests extends TestCase {
      * @return the {@link MediaType} without any parameter as String
      */
     private String getMts() {
-        MediaType mediaType = getMt();
-        if(mediaType == null)
+        final MediaType mediaType = getMt();
+        if (mediaType == null) {
             return null;
+        }
         return mediaType.toString();
     }
 
     private void setContentType(MediaType mediaType, CharacterSet characterSet) {
-        if (characterSet != null)
+        if (characterSet != null) {
             mediaType.getParameters().add("charset", characterSet.getName());
+        }
         setContentType(mediaType.toString());
     }
 
     private void setContentType(String contentType) {
-        httpHeaders.add(HttpHeaders.CONTENT_TYPE, contentType);
+        this.httpHeaders.add(HttpHeaders.CONTENT_TYPE, contentType);
     }
 
     public void setUp() {
-        httpHeaders = new MultivaluedMapImpl<String, Object>();
+        this.httpHeaders = new MultivaluedMapImpl<String, Object>();
     }
 
     public void testGetOfContentType0() {

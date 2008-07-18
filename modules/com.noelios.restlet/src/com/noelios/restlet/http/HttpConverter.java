@@ -37,42 +37,24 @@ public class HttpConverter {
      * Constructor.
      * 
      * @param context
-     *                The context to use.
+     *            The context to use.
      */
     public HttpConverter(Context context) {
         this.context = context;
     }
 
     /**
-     * Returns the context.
-     * 
-     * @return The context.
-     */
-    public Context getContext() {
-        return this.context;
-    }
-
-    /**
-     * Returns the context's logger.
-     * 
-     * @return The context's logger.
-     */
-    public Logger getLogger() {
-        return getContext().getLogger();
-    }
-
-    /**
      * Adds additional headers if they are non-standard headers.
      * 
      * @param existingHeaders
-     *                The headers to update.
+     *            The headers to update.
      * @param additionalHeaders
-     *                The headers to add.
+     *            The headers to add.
      */
     public void addAdditionalHeaders(Series<Parameter> existingHeaders,
             Series<Parameter> additionalHeaders) {
         if (additionalHeaders != null) {
-            for (Parameter param : additionalHeaders) {
+            for (final Parameter param : additionalHeaders) {
                 if (param.getName().equalsIgnoreCase(
                         HttpConstants.HEADER_ACCEPT)
                         || param.getName().equalsIgnoreCase(
@@ -191,6 +173,24 @@ public class HttpConverter {
                 }
             }
         }
+    }
+
+    /**
+     * Returns the context.
+     * 
+     * @return The context.
+     */
+    public Context getContext() {
+        return this.context;
+    }
+
+    /**
+     * Returns the context's logger.
+     * 
+     * @return The context's logger.
+     */
+    public Logger getLogger() {
+        return getContext().getLogger();
     }
 
 }

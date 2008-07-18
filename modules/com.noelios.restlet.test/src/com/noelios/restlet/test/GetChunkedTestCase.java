@@ -43,29 +43,6 @@ import org.restlet.resource.Variant;
  */
 public class GetChunkedTestCase extends BaseConnectorsTestCase {
 
-    @Override
-    protected Application createApplication(Component component) {
-        Application application = new Application(component.getContext()) {
-            @Override
-            public Restlet createRoot() {
-                Router router = new Router(getContext());
-                router.attach("/test", GetChunkedTestResource.class);
-                return router;
-            }
-        };
-
-        return application;
-    }
-
-    @Override
-    protected void call(String uri) throws Exception {
-        Request request = new Request(Method.GET, uri);
-        Response r = new Client(Protocol.HTTP).handle(request);
-        assertEquals(r.getStatus().getDescription(), Status.SUCCESS_OK, r
-                .getStatus());
-        assertEquals("Hello world", r.getEntity().getText());
-    }
-
     public static class GetChunkedTestResource extends Resource {
 
         public GetChunkedTestResource(Context ctx, Request request,
@@ -77,11 +54,11 @@ public class GetChunkedTestCase extends BaseConnectorsTestCase {
         @Override
         public Representation represent(Variant variant) {
             // Get the source XML
-            Representation source = new StringRepresentation(
+            final Representation source = new StringRepresentation(
                     "<?xml version='1.0'?><mail>Hello world</mail>",
                     MediaType.APPLICATION_XML);
 
-            StringBuilder builder = new StringBuilder();
+            final StringBuilder builder = new StringBuilder();
             builder
                     .append("<xsl:stylesheet xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\" version=\"1.0\">");
             builder.append("<xsl:output method=\"text\"/>");
@@ -89,11 +66,11 @@ public class GetChunkedTestCase extends BaseConnectorsTestCase {
             builder.append("<xsl:apply-templates />");
             builder.append("</xsl:template>");
             builder.append("</xsl:stylesheet>");
-            Representation transformSheet = new StringRepresentation(builder
-                    .toString(), MediaType.TEXT_XML);
+            final Representation transformSheet = new StringRepresentation(
+                    builder.toString(), MediaType.TEXT_XML);
 
             // Instantiates the representation with both source and stylesheet.
-            Representation representation = new TransformRepresentation(
+            final Representation representation = new TransformRepresentation(
                     getContext(), source, transformSheet);
             // Set the right media-type
             representation.setMediaType(variant.getMediaType());
@@ -101,5 +78,28 @@ public class GetChunkedTestCase extends BaseConnectorsTestCase {
             return representation;
 
         }
+    }
+
+    @Override
+    protected void call(String uri) throws Exception {
+        final Request request = new Request(Method.GET, uri);
+        final Response r = new Client(Protocol.HTTP).handle(request);
+        assertEquals(r.getStatus().getDescription(), Status.SUCCESS_OK, r
+                .getStatus());
+        assertEquals("Hello world", r.getEntity().getText());
+    }
+
+    @Override
+    protected Application createApplication(Component component) {
+        final Application application = new Application(component.getContext()) {
+            @Override
+            public Restlet createRoot() {
+                final Router router = new Router(getContext());
+                router.attach("/test", GetChunkedTestResource.class);
+                return router;
+            }
+        };
+
+        return application;
     }
 }

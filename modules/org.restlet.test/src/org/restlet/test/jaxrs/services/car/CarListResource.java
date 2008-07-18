@@ -60,63 +60,17 @@ public class CarListResource {
     }
 
     /**
-     * <p>
-     * Diese Methode ist ein <b>sub-resource-method</b>, weil sie mit einer
-     * Http-Methoden annotiert ist. Sie behandelt die Anfrage selber.
-     * </p>
-     * <p>
-     * Alle Parameter bis auf einen von Resource-Methods mussen &#64;{@link MatrixParam},
-     * &#64;{@link QueryParam}, &#64;{@link UriParam}, &#64;{@link HttpContext}
-     * oder &#64;{@link HeaderParam} annotiert sein. Ein ggf. nicht annotierte
-     * Parameter bekommt die Entity ubergeben. Alle Parameterklassen auber &#64;{@link HttpContext}
-     * mussen Strings verstehen konnen (Konstruktor oder static valueOf(String)
-     * mit genau einem String-Parameter).<br>
-     * Wenn &#64;HttpContext: Klasse muss {@link UriInfo}, PrecoditionEvaluator
-     * (inzwischen umbenannt, zu Provider?) oder {@link HttpHeaders}
-     * </p>
-     * <p>
-     * Ruckgabetypen:
-     * <ul>
-     * <li>void: leerer Entity-Body</li>
-     * <li>instanceof {@link Response}</li>
-     * verwendet. Dafur kann bspw. der {@link Response.Builder} verwendet werden</li>
-     * <li>sonst: gemappt von ? (fruher EntityProvider, Abschnitt 3.1 der Spec)</li>
-     * </ul>
-     * </p>
+     * Diese Methode ist ein <b>sub-resource-locator</b>, weil sie nicht mit
+     * einer Http-Methoden annotiert ist. Anfragen werden von der
+     * zuruckgegebenen Resource behandelt.
      * 
+     * @param id
      * @return
-     * 
-     * @throws WebApplicationException
-     *                 Muss gefangen werden. Sie kann einen Request enthalten.
      */
-    @GET
-    @Path(OFFERS_PATH)
-    @Produces("text/plain")
-    public String getOffers() throws WebApplicationException {
-        return OFFERS;
-    }
-
-    /**
-     * This method is available for OPTIONS-test.
-     */
-    @POST
-    @Path(OFFERS_PATH)
-    public Response newCarOffer() {
-        try {
-            return Response.created(new URI("../5")).build();
-        } catch (URISyntaxException e) {
-            throw new WebApplicationException(e);
-        }
-    }
-
-    /**
-     * This method do so, if it adds a new car to the car list.
-     */
-    @POST
-    public Response newCar(@Context UriInfo uriInfo) {
-        int newId = 47; // from business logic.
-        URI newUri = uriInfo.getAbsolutePathBuilder().path("{id}").build(newId);
-        return Response.created(newUri).build();
+    @Path("{id}")
+    @Encoded
+    public CarResource findCar(@javax.ws.rs.PathParam("id") int id) {
+        return new CarResource(id);
     }
 
     /**
@@ -131,16 +85,65 @@ public class CarListResource {
     }
 
     /**
-     * Diese Methode ist ein <b>sub-resource-locator</b>, weil sie nicht mit
-     * einer Http-Methoden annotiert ist. Anfragen werden von der
-     * zuruckgegebenen Resource behandelt.
+     * <p>
+     * Diese Methode ist ein <b>sub-resource-method</b>, weil sie mit einer
+     * Http-Methoden annotiert ist. Sie behandelt die Anfrage selber.
+     * </p>
+     * <p>
+     * Alle Parameter bis auf einen von Resource-Methods mussen &#64;
+     * {@link MatrixParam}, &#64;{@link QueryParam}, &#64;{@link UriParam},
+     * &#64;{@link HttpContext} oder &#64;{@link HeaderParam} annotiert sein.
+     * Ein ggf. nicht annotierte Parameter bekommt die Entity ubergeben. Alle
+     * Parameterklassen auber &#64;{@link HttpContext} mussen Strings verstehen
+     * konnen (Konstruktor oder static valueOf(String) mit genau einem
+     * String-Parameter).<br>
+     * Wenn &#64;HttpContext: Klasse muss {@link UriInfo}, PrecoditionEvaluator
+     * (inzwischen umbenannt, zu Provider?) oder {@link HttpHeaders}
+     * </p>
+     * <p>
+     * Ruckgabetypen:
+     * <ul>
+     * <li>void: leerer Entity-Body</li>
+     * <li>instanceof {@link Response}</li>
+     * verwendet. Dafur kann bspw. der {@link Response.Builder} verwendet
+     * werden</li>
+     * <li>sonst: gemappt von ? (fruher EntityProvider, Abschnitt 3.1 der Spec)</li>
+     * </ul>
+     * </p>
      * 
-     * @param id
      * @return
+     * 
+     * @throws WebApplicationException
+     *             Muss gefangen werden. Sie kann einen Request enthalten.
      */
-    @Path("{id}")
-    @Encoded
-    public CarResource findCar(@javax.ws.rs.PathParam("id") int id) {
-        return new CarResource(id);
+    @GET
+    @Path(OFFERS_PATH)
+    @Produces("text/plain")
+    public String getOffers() throws WebApplicationException {
+        return OFFERS;
+    }
+
+    /**
+     * This method do so, if it adds a new car to the car list.
+     */
+    @POST
+    public Response newCar(@Context UriInfo uriInfo) {
+        final int newId = 47; // from business logic.
+        final URI newUri = uriInfo.getAbsolutePathBuilder().path("{id}").build(
+                newId);
+        return Response.created(newUri).build();
+    }
+
+    /**
+     * This method is available for OPTIONS-test.
+     */
+    @POST
+    @Path(OFFERS_PATH)
+    public Response newCarOffer() {
+        try {
+            return Response.created(new URI("../5")).build();
+        } catch (final URISyntaxException e) {
+            throw new WebApplicationException(e);
+        }
     }
 }

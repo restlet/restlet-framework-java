@@ -66,7 +66,8 @@ public class Context {
      * In addition, this map is a shared space between the developer and the
      * Restlet implementation. For this purpose, all attribute names starting
      * with "org.restlet" are reserved. Currently the following attributes are
-     * used: <table>
+     * used:
+     * <table>
      * <tr>
      * <th>Attribute name</th>
      * <th>Class name</th>
@@ -75,9 +76,10 @@ public class Context {
      * <tr>
      * <td>org.restlet.application</td>
      * <td>org.restlet.Application</td>
-     * <td>The parent application providing this context, if any. </td>
+     * <td>The parent application providing this context, if any.</td>
      * </tr>
-     * </table></td>
+     * </table>
+     * </td>
      * 
      * @return The modifiable attributes map.
      */
@@ -131,7 +133,7 @@ public class Context {
      * Sets the modifiable map of attributes.
      * 
      * @param attributes
-     *                The modifiable map of attributes.
+     *            The modifiable map of attributes.
      */
     public void setAttributes(Map<String, Object> attributes) {
         if (attributes instanceof HashMap) {
@@ -145,7 +147,7 @@ public class Context {
      * Sets the modifiable series of parameters.
      * 
      * @param parameters
-     *                The modifiable series of parameters.
+     *            The modifiable series of parameters.
      */
     public void setParameters(Series<Parameter> parameters) {
         this.parameters = parameters;

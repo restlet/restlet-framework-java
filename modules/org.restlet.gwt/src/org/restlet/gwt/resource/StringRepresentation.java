@@ -38,7 +38,7 @@ public class StringRepresentation extends Representation {
      * media type, no language and the ISO-8859-1 character set.
      * 
      * @param text
-     *                The string value.
+     *            The string value.
      */
     public StringRepresentation(String text) {
         this(text, MediaType.TEXT_PLAIN);
@@ -49,9 +49,9 @@ public class StringRepresentation extends Representation {
      * media type, no language and the ISO-8859-1 character set.
      * 
      * @param text
-     *                The string value.
+     *            The string value.
      * @param language
-     *                The language.
+     *            The language.
      */
     public StringRepresentation(String text, Language language) {
         this(text, MediaType.TEXT_PLAIN, language);
@@ -62,9 +62,9 @@ public class StringRepresentation extends Representation {
      * the ISO-8859-1 character set.
      * 
      * @param text
-     *                The string value.
+     *            The string value.
      * @param mediaType
-     *                The media type.
+     *            The media type.
      */
     public StringRepresentation(String text, MediaType mediaType) {
         this(text, mediaType, null);
@@ -75,11 +75,11 @@ public class StringRepresentation extends Representation {
      * character set.
      * 
      * @param text
-     *                The string value.
+     *            The string value.
      * @param mediaType
-     *                The media type.
+     *            The media type.
      * @param language
-     *                The language.
+     *            The language.
      */
     public StringRepresentation(String text, MediaType mediaType,
             Language language) {
@@ -90,13 +90,13 @@ public class StringRepresentation extends Representation {
      * Constructor.
      * 
      * @param text
-     *                The string value.
+     *            The string value.
      * @param mediaType
-     *                The media type.
+     *            The media type.
      * @param language
-     *                The language.
+     *            The language.
      * @param characterSet
-     *                The character set.
+     *            The character set.
      */
     public StringRepresentation(String text, MediaType mediaType,
             Language language, CharacterSet characterSet) {
@@ -125,20 +125,20 @@ public class StringRepresentation extends Representation {
         super.release();
     }
 
+    @Override
+    public void setCharacterSet(CharacterSet characterSet) {
+        super.setCharacterSet(characterSet);
+        updateSize();
+    }
+
     /**
      * Sets the string value.
      * 
      * @param text
-     *                The string value.
+     *            The string value.
      */
     public void setText(String text) {
         this.text = text;
-        updateSize();
-    }
-
-    @Override
-    public void setCharacterSet(CharacterSet characterSet) {
-        super.setCharacterSet(characterSet);
         updateSize();
     }
 
@@ -149,7 +149,7 @@ public class StringRepresentation extends Representation {
         if (getText() != null) {
             try {
                 setSize(getText().length());
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 setSize(UNKNOWN_SIZE);
             }
         } else {

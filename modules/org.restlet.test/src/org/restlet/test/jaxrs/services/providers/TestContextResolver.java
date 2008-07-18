@@ -34,8 +34,9 @@ public class TestContextResolver implements ContextResolver<BaseUriContext> {
      * @see javax.ws.rs.ext.ContextResolver#getContext(java.lang.Class)
      */
     public BaseUriContext getContext(Class<?> type) {
-        if (Person.class.isAssignableFrom(type))
+        if (Person.class.isAssignableFrom(type)) {
             return new BaseUriContext();
+        }
         return null;
     }
 }

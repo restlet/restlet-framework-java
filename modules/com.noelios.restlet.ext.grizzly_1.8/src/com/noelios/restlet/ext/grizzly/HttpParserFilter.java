@@ -40,7 +40,7 @@ public class HttpParserFilter implements ProtocolFilter {
      * Constructor.
      * 
      * @param helper
-     *                The parent HTTP server helper.
+     *            The parent HTTP server helper.
      */
     public HttpParserFilter(GrizzlyServerHelper helper) {
         this.helper = helper;
@@ -50,19 +50,19 @@ public class HttpParserFilter implements ProtocolFilter {
      * Execute a call.
      * 
      * @param context
-     *                The call's context.
+     *            The call's context.
      */
     public boolean execute(Context context) throws IOException {
         // Create the HTTP call
-        ByteBuffer byteBuffer = ((WorkerThread) Thread.currentThread())
+        final ByteBuffer byteBuffer = ((WorkerThread) Thread.currentThread())
                 .getByteBuffer();
         byteBuffer.flip();
-        SelectionKey key = context.getSelectionKey();
-        GrizzlyServerCall serverCall = new GrizzlyServerCall(this.helper
+        final SelectionKey key = context.getSelectionKey();
+        final GrizzlyServerCall serverCall = new GrizzlyServerCall(this.helper
                 .getHelped(), byteBuffer, key,
-                (helper instanceof HttpsServerHelper));
+                (this.helper instanceof HttpsServerHelper));
 
-        boolean keepAlive = false;
+        final boolean keepAlive = false;
 
         // Handle the call
         this.helper.handle(serverCall);
@@ -78,7 +78,8 @@ public class HttpParserFilter implements ProtocolFilter {
             // ends up with Connection reset errors or other connection
             // related side effects:
             //
-            // context.setKeyRegistrationState(Context.KeyRegistrationState.CANCEL);
+            //context.setKeyRegistrationState(Context.KeyRegistrationState.CANCEL
+            // );
         }
 
         // Clean up

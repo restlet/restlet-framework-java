@@ -39,18 +39,18 @@ public abstract class Resolver<T> {
      */
     private static class CallResolver extends Resolver<String> {
         /** The request to use as a model. */
-        private Request request;
+        private final Request request;
 
         /** The response to use as a model. */
-        private Response response;
+        private final Response response;
 
         /**
          * Constructor.
          * 
          * @param request
-         *                The request to use as a model.
+         *            The request to use as a model.
          * @param response
-         *                The response to use as a model.
+         *            The response to use as a model.
          */
         public CallResolver(Request request, Response response) {
             this.request = request;
@@ -61,9 +61,9 @@ public abstract class Resolver<T> {
          * Returns the content corresponding to a reference property.
          * 
          * @param partName
-         *                The variable sub-part name.
+         *            The variable sub-part name.
          * @param reference
-         *                The reference to use as a model.
+         *            The reference to use as a model.
          * @return The content corresponding to a reference property.
          */
         private String getReferenceContent(String partName, Reference reference) {
@@ -100,208 +100,222 @@ public abstract class Resolver<T> {
             String result = null;
 
             // Check for a matching request attribute
-            if (request != null) {
-                Object variable = request.getAttributes().get(variableName);
+            if (this.request != null) {
+                final Object variable = this.request.getAttributes().get(
+                        variableName);
                 if (variable != null) {
                     result = variable.toString();
                 }
             }
 
             // Check for a matching response attribute
-            if ((result == null) && (response != null)
-                    && response.getAttributes().containsKey(variableName)) {
-                result = response.getAttributes().get(variableName).toString();
+            if ((result == null) && (this.response != null)
+                    && this.response.getAttributes().containsKey(variableName)) {
+                result = this.response.getAttributes().get(variableName)
+                        .toString();
             }
 
             // Check for a matching request or response property
             if (result == null) {
-                if (request != null) {
+                if (this.request != null) {
                     if (variableName.equals("c")) {
-                        result = Boolean.toString(request.isConfidential());
+                        result = Boolean
+                                .toString(this.request.isConfidential());
                     } else if (variableName.equals("cia")) {
-                        result = request.getClientInfo().getAddress();
+                        result = this.request.getClientInfo().getAddress();
                     } else if (variableName.equals("cig")) {
-                        result = request.getClientInfo().getAgent();
+                        result = this.request.getClientInfo().getAgent();
                     } else if (variableName.equals("cri")) {
-                        result = request.getChallengeResponse().getIdentifier();
+                        result = this.request.getChallengeResponse()
+                                .getIdentifier();
                     } else if (variableName.equals("crs")) {
-                        if (request.getChallengeResponse().getScheme() != null) {
-                            result = request.getChallengeResponse().getScheme()
-                                    .getTechnicalName();
+                        if (this.request.getChallengeResponse().getScheme() != null) {
+                            result = this.request.getChallengeResponse()
+                                    .getScheme().getTechnicalName();
                         }
                     } else if (variableName.equals("d")) {
                         result = DateUtils.format(new Date(),
                                 DateUtils.FORMAT_RFC_1123.get(0));
                     } else if (variableName.equals("ecs")) {
-                        if ((request.getEntity() != null)
-                                && (request.getEntity().getCharacterSet() != null)) {
-                            result = request.getEntity().getCharacterSet()
+                        if ((this.request.getEntity() != null)
+                                && (this.request.getEntity().getCharacterSet() != null)) {
+                            result = this.request.getEntity().getCharacterSet()
                                     .getName();
                         }
                     } else if (variableName.equals("ee")) {
-                        if ((request.getEntity() != null)
-                                && (!request.getEntity().getEncodings()
+                        if ((this.request.getEntity() != null)
+                                && (!this.request.getEntity().getEncodings()
                                         .isEmpty())) {
-                            StringBuilder value = new StringBuilder();
-                            for (int i = 0; i < request.getEntity()
+                            final StringBuilder value = new StringBuilder();
+                            for (int i = 0; i < this.request.getEntity()
                                     .getEncodings().size(); i++) {
-                                if (i > 0)
+                                if (i > 0) {
                                     value.append(", ");
-                                value.append(request.getEntity().getEncodings()
-                                        .get(i).getName());
+                                }
+                                value.append(this.request.getEntity()
+                                        .getEncodings().get(i).getName());
                             }
                             result = value.toString();
                         }
                     } else if (variableName.equals("eed")) {
-                        if ((request.getEntity() != null)
-                                && (request.getEntity().getExpirationDate() != null)) {
-                            result = DateUtils.format(request.getEntity()
+                        if ((this.request.getEntity() != null)
+                                && (this.request.getEntity()
+                                        .getExpirationDate() != null)) {
+                            result = DateUtils.format(this.request.getEntity()
                                     .getExpirationDate(),
                                     DateUtils.FORMAT_RFC_1123.get(0));
                         }
                     } else if (variableName.equals("el")) {
-                        if ((request.getEntity() != null)
-                                && (!request.getEntity().getLanguages()
+                        if ((this.request.getEntity() != null)
+                                && (!this.request.getEntity().getLanguages()
                                         .isEmpty())) {
-                            StringBuilder value = new StringBuilder();
-                            for (int i = 0; i < request.getEntity()
+                            final StringBuilder value = new StringBuilder();
+                            for (int i = 0; i < this.request.getEntity()
                                     .getLanguages().size(); i++) {
-                                if (i > 0)
+                                if (i > 0) {
                                     value.append(", ");
-                                value.append(request.getEntity().getLanguages()
-                                        .get(i).getName());
+                                }
+                                value.append(this.request.getEntity()
+                                        .getLanguages().get(i).getName());
                             }
                             result = value.toString();
                         }
                     } else if (variableName.equals("emd")) {
-                        if ((request.getEntity() != null)
-                                && (request.getEntity().getModificationDate() != null)) {
-                            result = DateUtils.format(request.getEntity()
+                        if ((this.request.getEntity() != null)
+                                && (this.request.getEntity()
+                                        .getModificationDate() != null)) {
+                            result = DateUtils.format(this.request.getEntity()
                                     .getModificationDate(),
                                     DateUtils.FORMAT_RFC_1123.get(0));
                         }
                     } else if (variableName.equals("emt")) {
-                        if ((request.getEntity() != null)
-                                && (request.getEntity().getMediaType() != null)) {
-                            result = request.getEntity().getMediaType()
+                        if ((this.request.getEntity() != null)
+                                && (this.request.getEntity().getMediaType() != null)) {
+                            result = this.request.getEntity().getMediaType()
                                     .getName();
                         }
                     } else if (variableName.equals("es")) {
-                        if ((request.getEntity() != null)
-                                && (request.getEntity().getSize() != -1)) {
-                            result = Long.toString(request.getEntity()
+                        if ((this.request.getEntity() != null)
+                                && (this.request.getEntity().getSize() != -1)) {
+                            result = Long.toString(this.request.getEntity()
                                     .getSize());
                         }
                     } else if (variableName.equals("et")) {
-                        if ((request.getEntity() != null)
-                                && (request.getEntity().getTag() != null)) {
-                            result = request.getEntity().getTag().getName();
+                        if ((this.request.getEntity() != null)
+                                && (this.request.getEntity().getTag() != null)) {
+                            result = this.request.getEntity().getTag()
+                                    .getName();
                         }
                     } else if (variableName.startsWith("f")) {
                         result = getReferenceContent(variableName.substring(1),
-                                request.getReferrerRef());
+                                this.request.getReferrerRef());
                     } else if (variableName.startsWith("h")) {
                         result = getReferenceContent(variableName.substring(1),
-                                request.getHostRef());
+                                this.request.getHostRef());
                     } else if (variableName.equals("m")) {
-                        if (request.getMethod() != null) {
-                            result = request.getMethod().getName();
+                        if (this.request.getMethod() != null) {
+                            result = this.request.getMethod().getName();
                         }
                     } else if (variableName.startsWith("o")) {
                         result = getReferenceContent(variableName.substring(1),
-                                request.getRootRef());
+                                this.request.getRootRef());
                     } else if (variableName.equals("p")) {
-                        if (request.getProtocol() != null) {
-                            result = request.getProtocol().getName();
+                        if (this.request.getProtocol() != null) {
+                            result = this.request.getProtocol().getName();
                         }
                     } else if (variableName.startsWith("r")) {
                         result = getReferenceContent(variableName.substring(1),
-                                request.getResourceRef());
+                                this.request.getResourceRef());
                     }
                 }
 
-                if ((result == null) && (response != null)) {
+                if ((result == null) && (this.response != null)) {
                     if (variableName.equals("ECS")) {
-                        if ((response.getEntity() != null)
-                                && (response.getEntity().getCharacterSet() != null)) {
-                            result = response.getEntity().getCharacterSet()
-                                    .getName();
+                        if ((this.response.getEntity() != null)
+                                && (this.response.getEntity().getCharacterSet() != null)) {
+                            result = this.response.getEntity()
+                                    .getCharacterSet().getName();
                         }
                     } else if (variableName.equals("EE")) {
-                        if ((response.getEntity() != null)
-                                && (!response.getEntity().getEncodings()
+                        if ((this.response.getEntity() != null)
+                                && (!this.response.getEntity().getEncodings()
                                         .isEmpty())) {
-                            StringBuilder value = new StringBuilder();
-                            for (int i = 0; i < response.getEntity()
+                            final StringBuilder value = new StringBuilder();
+                            for (int i = 0; i < this.response.getEntity()
                                     .getEncodings().size(); i++) {
-                                if (i > 0)
+                                if (i > 0) {
                                     value.append(", ");
-                                value.append(response.getEntity()
+                                }
+                                value.append(this.response.getEntity()
                                         .getEncodings().get(i).getName());
                             }
                             result = value.toString();
                         }
                     } else if (variableName.equals("EED")) {
-                        if ((response.getEntity() != null)
-                                && (response.getEntity().getExpirationDate() != null)) {
-                            result = DateUtils.format(response.getEntity()
+                        if ((this.response.getEntity() != null)
+                                && (this.response.getEntity()
+                                        .getExpirationDate() != null)) {
+                            result = DateUtils.format(this.response.getEntity()
                                     .getExpirationDate(),
                                     DateUtils.FORMAT_RFC_1123.get(0));
                         }
                     } else if (variableName.equals("EL")) {
-                        if ((response.getEntity() != null)
-                                && (!response.getEntity().getLanguages()
+                        if ((this.response.getEntity() != null)
+                                && (!this.response.getEntity().getLanguages()
                                         .isEmpty())) {
-                            StringBuilder value = new StringBuilder();
-                            for (int i = 0; i < response.getEntity()
+                            final StringBuilder value = new StringBuilder();
+                            for (int i = 0; i < this.response.getEntity()
                                     .getLanguages().size(); i++) {
-                                if (i > 0)
+                                if (i > 0) {
                                     value.append(", ");
-                                value.append(response.getEntity()
+                                }
+                                value.append(this.response.getEntity()
                                         .getLanguages().get(i).getName());
                             }
                             result = value.toString();
                         }
                     } else if (variableName.equals("EMD")) {
-                        if ((response.getEntity() != null)
-                                && (response.getEntity().getModificationDate() != null)) {
-                            result = DateUtils.format(response.getEntity()
+                        if ((this.response.getEntity() != null)
+                                && (this.response.getEntity()
+                                        .getModificationDate() != null)) {
+                            result = DateUtils.format(this.response.getEntity()
                                     .getModificationDate(),
                                     DateUtils.FORMAT_RFC_1123.get(0));
                         }
                     } else if (variableName.equals("EMT")) {
-                        if ((response.getEntity() != null)
-                                && (response.getEntity().getMediaType() != null)) {
-                            result = response.getEntity().getMediaType()
+                        if ((this.response.getEntity() != null)
+                                && (this.response.getEntity().getMediaType() != null)) {
+                            result = this.response.getEntity().getMediaType()
                                     .getName();
                         }
                     } else if (variableName.equals("ES")) {
-                        if ((response.getEntity() != null)
-                                && (response.getEntity().getSize() != -1)) {
-                            result = Long.toString(response.getEntity()
+                        if ((this.response.getEntity() != null)
+                                && (this.response.getEntity().getSize() != -1)) {
+                            result = Long.toString(this.response.getEntity()
                                     .getSize());
                         }
                     } else if (variableName.equals("ET")) {
-                        if ((response.getEntity() != null)
-                                && (response.getEntity().getTag() != null)) {
-                            result = response.getEntity().getTag().getName();
+                        if ((this.response.getEntity() != null)
+                                && (this.response.getEntity().getTag() != null)) {
+                            result = this.response.getEntity().getTag()
+                                    .getName();
                         }
                     } else if (variableName.startsWith("R")) {
                         result = getReferenceContent(variableName.substring(1),
-                                response.getLocationRef());
+                                this.response.getLocationRef());
                     } else if (variableName.equals("S")) {
-                        if (response.getStatus() != null) {
-                            result = Integer.toString(response.getStatus()
+                        if (this.response.getStatus() != null) {
+                            result = Integer.toString(this.response.getStatus()
                                     .getCode());
                         }
                     } else if (variableName.equals("SIA")) {
-                        result = response.getServerInfo().getAddress();
+                        result = this.response.getServerInfo().getAddress();
                     } else if (variableName.equals("SIG")) {
-                        result = response.getServerInfo().getAgent();
+                        result = this.response.getServerInfo().getAgent();
                     } else if (variableName.equals("SIP")) {
-                        if (response.getServerInfo().getPort() != -1) {
-                            result = Integer.toString(response.getServerInfo()
-                                    .getPort());
+                        if (this.response.getServerInfo().getPort() != -1) {
+                            result = Integer.toString(this.response
+                                    .getServerInfo().getPort());
                         }
                     }
                 }
@@ -318,13 +332,13 @@ public abstract class Resolver<T> {
      */
     private static class MapResolver extends Resolver<String> {
         /** The variables to use when formatting. */
-        private Map<String, ?> map;
+        private final Map<String, ?> map;
 
         /**
          * Constructor.
          * 
          * @param map
-         *                The variables to use when formatting.
+         *            The variables to use when formatting.
          */
         public MapResolver(Map<String, ?> map) {
             this.map = map;
@@ -332,7 +346,7 @@ public abstract class Resolver<T> {
 
         @Override
         public String resolve(String variableName) {
-            Object value = this.map.get(variableName);
+            final Object value = this.map.get(variableName);
             return (value == null) ? null : value.toString();
         }
     }
@@ -341,14 +355,14 @@ public abstract class Resolver<T> {
      * Creates a resolver that is based on a given map.
      * 
      * @param map
-     *                Map between names and values.
+     *            Map between names and values.
      * @return The map resolver.
      */
     public static Resolver<String> createResolver(Map<String, ?> map) {
         return new MapResolver(map);
     }
 
-    /**
+/**
      * Creates a resolver that is based on a call (request, response couple).
      * 
      * <table>
@@ -596,7 +610,7 @@ public abstract class Resolver<T> {
      * Resolves a name into a value.
      * 
      * @param name
-     *                The name to resolve.
+     *            The name to resolve.
      * @return The resolved value.
      */
     public abstract T resolve(String name);

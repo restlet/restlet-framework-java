@@ -52,9 +52,9 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader {
      * Constructor.
      * 
      * @param type
-     *                The type of metadata read.
+     *            The type of metadata read.
      * @param header
-     *                The header to read.
+     *            The header to read.
      */
     public PreferenceReader(int type, String header) {
         super(header);
@@ -65,9 +65,9 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader {
      * Creates a new preference.
      * 
      * @param metadata
-     *                The metadata name.
+     *            The metadata name.
      * @param parameters
-     *                The parameters list.
+     *            The parameters list.
      * @return The new preference.
      */
     @SuppressWarnings("unchecked")
@@ -78,7 +78,7 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader {
         if (parameters == null) {
             result = new Preference<T>();
 
-            switch (type) {
+            switch (this.type) {
             case TYPE_CHARACTER_SET:
                 result.setMetadata((T) CharacterSet
                         .valueOf(metadata.toString()));
@@ -97,11 +97,11 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader {
                 break;
             }
         } else {
-            Series<Parameter> mediaParams = extractMediaParams(parameters);
-            float quality = extractQuality(parameters);
+            final Series<Parameter> mediaParams = extractMediaParams(parameters);
+            final float quality = extractQuality(parameters);
             result = new Preference<T>(null, quality, parameters);
 
-            switch (type) {
+            switch (this.type) {
             case TYPE_CHARACTER_SET:
                 result.setMetadata((T) new CharacterSet(metadata.toString()));
                 break;
@@ -129,7 +129,7 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader {
      * found. Modifies the parameters list.
      * 
      * @param parameters
-     *                All the preference parameters.
+     *            All the preference parameters.
      * @return The media parameters.
      */
     protected Series<Parameter> extractMediaParams(Series<Parameter> parameters) {
@@ -140,7 +140,7 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader {
         if (parameters != null) {
             result = new Form();
 
-            for (Iterator<Parameter> iter = parameters.iterator(); !qualityFound
+            for (final Iterator<Parameter> iter = parameters.iterator(); !qualityFound
                     && iter.hasNext();) {
                 param = iter.next();
 
@@ -160,7 +160,7 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader {
      * Extract the quality value. If the value is not found, 1 is returned.
      * 
      * @param parameters
-     *                The preference parameters.
+     *            The preference parameters.
      * @return The quality value.
      */
     protected float extractQuality(Series<Parameter> parameters) {
@@ -169,7 +169,7 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader {
 
         if (parameters != null) {
             Parameter param = null;
-            for (Iterator<Parameter> iter = parameters.iterator(); !found
+            for (final Iterator<Parameter> iter = parameters.iterator(); !found
                     && iter.hasNext();) {
                 param = iter.next();
                 if (param.getName().equals("q")) {
@@ -198,13 +198,13 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader {
         boolean readingParamName = false;
         boolean readingParamValue = false;
 
-        StringBuilder metadataBuffer = new StringBuilder();
+        final StringBuilder metadataBuffer = new StringBuilder();
         StringBuilder paramNameBuffer = null;
         StringBuilder paramValueBuffer = null;
 
         Series<Parameter> parameters = null;
 
-        String nextValue = readValue();
+        final String nextValue = readValue();
         int nextIndex = 0;
 
         if (nextValue != null) {
@@ -230,8 +230,7 @@ public class PreferenceReader<T extends Metadata> extends HeaderReader {
                             paramNameBuffer = new StringBuilder();
                             parameters = new Form();
                         } else {
-                            throw new Exception(
-                                    "Empty metadata name detected.");
+                            throw new Exception("Empty metadata name detected.");
                         }
                     } else if (HttpUtils.isSpace(nextChar)) {
                         // Ignore spaces

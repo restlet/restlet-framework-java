@@ -51,11 +51,12 @@ public class ContextResolverTest extends JaxRsTestCase {
      * @see TestContextResolver
      */
     public void test1() throws Exception {
-        Response response = get(MediaType.TEXT_HTML);
-        String entity = response.getEntity().getText();
+        final Response response = get(MediaType.TEXT_HTML);
+        final String entity = response.getEntity().getText();
         System.out.println(entity);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEqualMediaType(MediaType.TEXT_HTML, response.getEntity().getMediaType());
+        assertEqualMediaType(MediaType.TEXT_HTML, response.getEntity()
+                .getMediaType());
         assertEquals(
                 "<html><head></head><body>\nThe virtual presence of <b>Helmut Kohl</b> is: <a href=\"http://www.restlet.org/persons/Kohl/Helmut\">http://www.restlet.org/persons/Kohl/Helmut</a></html>",
                 entity);

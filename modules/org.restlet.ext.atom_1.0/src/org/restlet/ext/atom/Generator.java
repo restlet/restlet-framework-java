@@ -82,7 +82,7 @@ public class Generator {
      * Sets the human-readable name for the generating agent.
      * 
      * @param name
-     *                The human-readable name for the generating agent.
+     *            The human-readable name for the generating agent.
      */
     public void setName(String name) {
         this.name = name;
@@ -92,7 +92,7 @@ public class Generator {
      * Sets the reference of the generating agent.
      * 
      * @param uri
-     *                The reference of the generating agent.
+     *            The reference of the generating agent.
      */
     public void setUri(Reference uri) {
         this.uri = uri;
@@ -102,7 +102,7 @@ public class Generator {
      * Sets the version of the generating agent.
      * 
      * @param version
-     *                The version of the generating agent.
+     *            The version of the generating agent.
      */
     public void setVersion(String version) {
         this.version = version;
@@ -112,13 +112,13 @@ public class Generator {
      * Writes the current object as an XML element using the given SAX writer.
      * 
      * @param writer
-     *                The SAX writer.
+     *            The SAX writer.
      * @throws SAXException
      */
     public void writeElement(XmlWriter writer) throws SAXException {
-        AttributesImpl attributes = new AttributesImpl();
+        final AttributesImpl attributes = new AttributesImpl();
 
-        if (getUri() != null && getUri().toString() != null) {
+        if ((getUri() != null) && (getUri().toString() != null)) {
             attributes.addAttribute("", "uri", null, "atomURI", getUri()
                     .toString());
         }

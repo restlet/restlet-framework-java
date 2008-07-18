@@ -40,11 +40,11 @@ public class Text {
      * Writes the current object as an XML element using the given SAX writer.
      * 
      * @param writer
-     *                The SAX writer.
+     *            The SAX writer.
      * @param namespace
-     *                The element namespace URI.
+     *            The element namespace URI.
      * @param localName
-     *                The local name of the element.
+     *            The local name of the element.
      * @throws SAXException
      */
     public static void writeElement(XmlWriter writer, Date date,
@@ -52,7 +52,7 @@ public class Text {
         writer.startElement(namespace, localName);
 
         if (date != null) {
-            SimpleDateFormat dateFormat = new SimpleDateFormat(
+            final SimpleDateFormat dateFormat = new SimpleDateFormat(
                     "yyyy-MM-dd'T'hh:mm:ssZ");
             writer.characters(dateFormat.format(date));
         }
@@ -74,7 +74,7 @@ public class Text {
      * Constructor.
      * 
      * @param type
-     *                The content type.
+     *            The content type.
      */
     public Text(MediaType type) {
         this(type, null);
@@ -84,9 +84,9 @@ public class Text {
      * Constructor.
      * 
      * @param type
-     *                The content type.
+     *            The content type.
      * @param content
-     *                The content.
+     *            The content.
      */
     public Text(MediaType type, String content) {
         this.type = type;
@@ -115,7 +115,7 @@ public class Text {
      * Sets the content.
      * 
      * @param content
-     *                The content.
+     *            The content.
      */
     public void setContent(String content) {
         this.content = content;
@@ -125,7 +125,7 @@ public class Text {
      * Sets the content type.
      * 
      * @param type
-     *                The content type.
+     *            The content type.
      */
     public void setType(MediaType type) {
         this.type = type;
@@ -135,17 +135,17 @@ public class Text {
      * Writes the current object as an XML element using the given SAX writer.
      * 
      * @param writer
-     *                The SAX writer.
+     *            The SAX writer.
      * @param localName
-     *                The local name of the element.
+     *            The local name of the element.
      * @throws SAXException
      */
     public void writeElement(XmlWriter writer, String localName)
             throws SAXException {
-        AttributesImpl attributes = new AttributesImpl();
+        final AttributesImpl attributes = new AttributesImpl();
         String type = null;
 
-        if (getType() != null && getType().getSubType() != null) {
+        if ((getType() != null) && (getType().getSubType() != null)) {
             if (getType().getSubType().contains("xhtml")) {
                 type = "xhtml";
             } else if (getType().getSubType().contains("html")) {

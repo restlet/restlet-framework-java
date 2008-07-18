@@ -41,29 +41,31 @@ public abstract class SslBaseConnectorsTestCase extends TestCase {
 
     private Component component;
 
-    private boolean enableApacheClient = true;
+    private final boolean enableApacheClient = true;
 
-    private boolean enableGrizzlyServer = true;
+    private final boolean enableGrizzlyServer = true;
 
-    private boolean enableJdkNetClient = true;
+    private final boolean enableJdkNetClient = true;
 
-    private boolean enableJettyServer = true;
+    private final boolean enableJettyServer = true;
 
-    private boolean enableSimpleServer = true;
+    private final boolean enableSimpleServer = true;
 
     protected abstract void call(String uri) throws Exception;
+
+    protected abstract void configureSslParameters(Context context);
 
     protected abstract Application createApplication(Component component);
 
     // Helper methods
     private void runTest(ServerHelper server, ClientHelper client)
             throws Exception {
-        Engine nre = new Engine(false);
+        final Engine nre = new Engine(false);
         nre.getRegisteredServers().add(server);
         nre.getRegisteredClients().add(client);
         org.restlet.util.Engine.setInstance(nre);
 
-        String uri = start();
+        final String uri = start();
         try {
             call(uri);
         } finally {
@@ -75,8 +77,6 @@ public abstract class SslBaseConnectorsTestCase extends TestCase {
     public void setUp() {
     }
 
-    protected abstract void configureSslParameters(Context context);
-
     private String start() throws Exception {
         System.setProperty("javax.net.ssl.keyStorePassword", System
                 .getProperty("javax.net.ssl.keyStorePassword", "testtest"));
@@ -87,26 +87,27 @@ public abstract class SslBaseConnectorsTestCase extends TestCase {
         System.setProperty("javax.net.ssl.trustStore", System.getProperty(
                 "javax.net.ssl.trustStore", "dummy.jks"));
 
-        component = new Component();
-        configureSslParameters(component.getContext());
+        this.component = new Component();
+        configureSslParameters(this.component.getContext());
 
-        Server server = component.getServers().add(Protocol.HTTPS, 0);
-        Application application = createApplication(component);
+        final Server server = this.component.getServers()
+                .add(Protocol.HTTPS, 0);
+        final Application application = createApplication(this.component);
 
-        component.getDefaultHost().attach(application);
-        component.start();
+        this.component.getDefaultHost().attach(application);
+        this.component.start();
 
         return "https://localhost:" + server.getEphemeralPort() + "/test";
     }
 
     private void stop() throws Exception {
-        if (component != null && component.isStarted()) {
-            component.stop();
+        if ((this.component != null) && this.component.isStarted()) {
+            this.component.stop();
         }
     }
 
     public void testSslGrizzlyAndApache() throws Exception {
-        if (enableGrizzlyServer && enableApacheClient) {
+        if (this.enableGrizzlyServer && this.enableApacheClient) {
             runTest(
                     new com.noelios.restlet.ext.grizzly.HttpsServerHelper(null),
                     new com.noelios.restlet.ext.httpclient.HttpClientHelper(
@@ -115,7 +116,7 @@ public abstract class SslBaseConnectorsTestCase extends TestCase {
     }
 
     public void testSslGrizzlyAndJdkNet() throws Exception {
-        if (enableGrizzlyServer && enableJdkNetClient) {
+        if (this.enableGrizzlyServer && this.enableJdkNetClient) {
             runTest(
                     new com.noelios.restlet.ext.grizzly.HttpsServerHelper(null),
                     new com.noelios.restlet.ext.net.HttpClientHelper(null));
@@ -123,7 +124,7 @@ public abstract class SslBaseConnectorsTestCase extends TestCase {
     }
 
     public void testSslJettyAndApache() throws Exception {
-        if (enableJettyServer && enableApacheClient) {
+        if (this.enableJettyServer && this.enableApacheClient) {
             runTest(new com.noelios.restlet.ext.jetty.HttpsServerHelper(null),
                     new com.noelios.restlet.ext.httpclient.HttpClientHelper(
                             null));
@@ -131,14 +132,14 @@ public abstract class SslBaseConnectorsTestCase extends TestCase {
     }
 
     public void testSslJettyAndJdkNet() throws Exception {
-        if (enableJettyServer && enableJdkNetClient) {
+        if (this.enableJettyServer && this.enableJdkNetClient) {
             runTest(new com.noelios.restlet.ext.jetty.HttpsServerHelper(null),
                     new com.noelios.restlet.ext.net.HttpClientHelper(null));
         }
     }
 
     public void testSslSimpleAndApache() throws Exception {
-        if (enableSimpleServer && enableApacheClient) {
+        if (this.enableSimpleServer && this.enableApacheClient) {
             runTest(new com.noelios.restlet.ext.simple.HttpsServerHelper(null),
                     new com.noelios.restlet.ext.httpclient.HttpClientHelper(
                             null));
@@ -146,7 +147,7 @@ public abstract class SslBaseConnectorsTestCase extends TestCase {
     }
 
     public void testSslSimpleAndJdkNet() throws Exception {
-        if (enableSimpleServer && enableJdkNetClient) {
+        if (this.enableSimpleServer && this.enableJdkNetClient) {
             runTest(new com.noelios.restlet.ext.simple.HttpsServerHelper(null),
                     new com.noelios.restlet.ext.net.HttpClientHelper(null));
         }

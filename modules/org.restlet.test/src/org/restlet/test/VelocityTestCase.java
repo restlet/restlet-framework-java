@@ -40,27 +40,28 @@ import org.restlet.resource.Representation;
  */
 public class VelocityTestCase extends TestCase {
 
-    public void testStandardTemplate() throws Exception {
+    public void testRepresentationTemplate() throws Exception {
         // Create a temporary directory for the tests
-        File testDir = new File(System.getProperty("java.io.tmpdir"),
+        final File testDir = new File(System.getProperty("java.io.tmpdir"),
                 "VelocityTestCase");
         testDir.mkdir();
 
         // Create a temporary template file
-        File testFile = File.createTempFile("test", ".vm", testDir);
-        FileWriter fw = new FileWriter(testFile);
+        final File testFile = File.createTempFile("test", ".vm", testDir);
+        final FileWriter fw = new FileWriter(testFile);
         fw.write("Value=$value");
         fw.close();
 
-        Map<String, Object> map = new TreeMap<String, Object>();
+        final Map<String, Object> map = new TreeMap<String, Object>();
         map.put("value", "myValue");
 
-        // Standard approach
-        TemplateRepresentation tr = new TemplateRepresentation(testFile
-                .getName(), map, MediaType.TEXT_PLAIN);
-        tr.getEngine().setProperty("file.resource.loader.path",
-                testDir.getAbsolutePath());
-        String result = tr.getText();
+        // Representation approach
+        final Client client = new Client(Protocol.FILE);
+        final Reference ref = LocalReference.createFileReference(testFile);
+        final Representation templateFile = client.get(ref).getEntity();
+        final TemplateRepresentation tr = new TemplateRepresentation(
+                templateFile, map, MediaType.TEXT_PLAIN);
+        final String result = tr.getText();
         assertEquals("Value=myValue", result);
 
         // Clean-up
@@ -68,28 +69,27 @@ public class VelocityTestCase extends TestCase {
         testDir.delete();
     }
 
-    public void testRepresentationTemplate() throws Exception {
+    public void testStandardTemplate() throws Exception {
         // Create a temporary directory for the tests
-        File testDir = new File(System.getProperty("java.io.tmpdir"),
+        final File testDir = new File(System.getProperty("java.io.tmpdir"),
                 "VelocityTestCase");
         testDir.mkdir();
 
         // Create a temporary template file
-        File testFile = File.createTempFile("test", ".vm", testDir);
-        FileWriter fw = new FileWriter(testFile);
+        final File testFile = File.createTempFile("test", ".vm", testDir);
+        final FileWriter fw = new FileWriter(testFile);
         fw.write("Value=$value");
         fw.close();
 
-        Map<String, Object> map = new TreeMap<String, Object>();
+        final Map<String, Object> map = new TreeMap<String, Object>();
         map.put("value", "myValue");
 
-        // Representation approach
-        Client client = new Client(Protocol.FILE);
-        Reference ref = LocalReference.createFileReference(testFile);
-        Representation templateFile = client.get(ref).getEntity();
-        TemplateRepresentation tr = new TemplateRepresentation(templateFile,
-                map, MediaType.TEXT_PLAIN);
-        String result = tr.getText();
+        // Standard approach
+        final TemplateRepresentation tr = new TemplateRepresentation(testFile
+                .getName(), map, MediaType.TEXT_PLAIN);
+        tr.getEngine().setProperty("file.resource.loader.path",
+                testDir.getAbsolutePath());
+        final String result = tr.getText();
         assertEquals("Value=myValue", result);
 
         // Clean-up

@@ -25,10 +25,10 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
-import org.restlet.test.jaxrs.services.others.Person;
 import org.restlet.ext.jaxb.JaxbRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
+import org.restlet.test.jaxrs.services.others.Person;
 import org.restlet.test.jaxrs.services.tests.RepresentationTest;
 
 import com.noelios.restlet.application.DecodeRepresentation;
@@ -61,8 +61,8 @@ public class RepresentationTestService {
     @POST
     @Path("repr")
     public Response post(Representation representation) throws IOException {
-        String type = representation.getMediaType().toString();
-        String entity = representation.getText();
+        final String type = representation.getMediaType().toString();
+        final String entity = representation.getText();
         return Response.ok(entity).type(type).build();
     }
 
@@ -70,16 +70,17 @@ public class RepresentationTestService {
     @Path("reprDecode")
     public Response postDecode(DecodeRepresentation representation)
             throws IOException {
-        String type = representation.getMediaType().toString();
-        String entity = representation.getText();
+        final String type = representation.getMediaType().toString();
+        final String entity = representation.getText();
         return Response.ok(entity).type(type).build();
     }
 
     @POST
     @Path("jaxb")
     public String postJaxb(JaxbRepresentation<Person> personRepr) {
-        if(personRepr == null)
+        if (personRepr == null) {
             return "null";
+        }
         return personRepr.getContextPath();
     }
 }

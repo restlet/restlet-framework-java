@@ -43,7 +43,7 @@ public class ComponentClientDispatcher extends TemplateDispatcher {
      * Constructor.
      * 
      * @param componentContext
-     *                The component context.
+     *            The component context.
      */
     public ComponentClientDispatcher(ComponentContext componentContext) {
         super(componentContext);
@@ -52,15 +52,16 @@ public class ComponentClientDispatcher extends TemplateDispatcher {
     @Override
     protected void doHandle(Request request, Response response) {
         super.doHandle(request, response);
-        Protocol protocol = request.getProtocol();
+        final Protocol protocol = request.getProtocol();
 
         if (protocol.equals(Protocol.RIAP)) {
             // Consider that the request is confidential
             request.setConfidential(true);
 
             // Let's dispatch it
-            LocalReference cr = new LocalReference(request.getResourceRef());
-            Component component = getComponent();
+            final LocalReference cr = new LocalReference(request
+                    .getResourceRef());
+            final Component component = getComponent();
 
             if (component != null) {
                 if (cr.getRiapAuthorityType() == LocalReference.RIAP_COMPONENT) {
@@ -75,10 +76,10 @@ public class ComponentClientDispatcher extends TemplateDispatcher {
                 } else if (cr.getRiapAuthorityType() == LocalReference.RIAP_HOST) {
                     VirtualHost host = null;
                     VirtualHost currentHost = null;
-                    Integer hostHashCode = VirtualHost.getCurrent();
+                    final Integer hostHashCode = VirtualHost.getCurrent();
 
                     // Lookup the virtual host
-                    for (Iterator<VirtualHost> hostIter = getComponent()
+                    for (final Iterator<VirtualHost> hostIter = getComponent()
                             .getHosts().iterator(); (host == null)
                             && hostIter.hasNext();) {
                         currentHost = hostIter.next();

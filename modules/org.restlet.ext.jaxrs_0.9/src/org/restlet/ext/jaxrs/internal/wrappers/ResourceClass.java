@@ -119,7 +119,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
         super();
         this.leaveEncoded = jaxRsClass.isAnnotationPresent(Encoded.class);
         this.jaxRsClass = jaxRsClass;
-        this.initResourceMethodsAndLocators(tlContext, entityProviders,
+        initResourceMethodsAndLocators(tlContext, entityProviders,
                 allCtxResolvers, extensionBackwardMapping, logger);
     }
 
@@ -155,7 +155,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
         super(PathRegExp.createForClass(jaxRsClass));
         this.leaveEncoded = jaxRsClass.isAnnotationPresent(Encoded.class);
         this.jaxRsClass = jaxRsClass;
-        this.initResourceMethodsAndLocators(tlContext, entityProviders,
+        initResourceMethodsAndLocators(tlContext, entityProviders,
                 allCtxResolvers, extensionBackwardMapping, logger);
     }
 
@@ -166,8 +166,8 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * @param logger
      */
     private void checkForPrimitiveParameters(Method execMethod, Logger logger) {
-        Class<?>[] paramTypes = execMethod.getParameterTypes();
-        for (Class<?> paramType : paramTypes) {
+        final Class<?>[] paramTypes = execMethod.getParameterTypes();
+        for (final Class<?> paramType : paramTypes) {
             if (paramType.isPrimitive()) {
                 logger.config("The method " + execMethod
                         + " contains a primitive parameter " + paramType + ".");
@@ -180,11 +180,13 @@ public class ResourceClass extends AbstractJaxRsWrapper {
 
     @Override
     public boolean equals(Object anotherObject) {
-        if (this == anotherObject)
+        if (this == anotherObject) {
             return true;
-        if (!(anotherObject instanceof ResourceClass))
+        }
+        if (!(anotherObject instanceof ResourceClass)) {
             return false;
-        ResourceClass otherResourceClass = (ResourceClass) anotherObject;
+        }
+        final ResourceClass otherResourceClass = (ResourceClass) anotherObject;
         return this.jaxRsClass.equals(otherResourceClass.jaxRsClass);
     }
 
@@ -200,15 +202,19 @@ public class ResourceClass extends AbstractJaxRsWrapper {
             RemainingPath remainingPath) {
         Set<org.restlet.data.Method> allowedMethods = this.allowedMethods
                 .get(remainingPath);
-        if (allowedMethods != null)
+        if (allowedMethods != null) {
             return allowedMethods;
+        }
         allowedMethods = new HashSet<org.restlet.data.Method>(6);
-        for (ResourceMethod rm : getMethodsForPath(remainingPath))
+        for (final ResourceMethod rm : getMethodsForPath(remainingPath)) {
             allowedMethods.add(rm.getHttpMethod());
-        if (!allowedMethods.isEmpty())
-            if (allowedMethods.contains(org.restlet.data.Method.GET))
+        }
+        if (!allowedMethods.isEmpty()) {
+            if (allowedMethods.contains(org.restlet.data.Method.GET)) {
                 allowedMethods.add(org.restlet.data.Method.HEAD);
-        Set<org.restlet.data.Method> unmodifiable = Collections
+            }
+        }
+        final Set<org.restlet.data.Method> unmodifiable = Collections
                 .unmodifiableSet(allowedMethods);
         this.allowedMethods.put(remainingPath, unmodifiable);
         return unmodifiable;
@@ -227,23 +233,27 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      *         found. Returns also null, if null was given.
      */
     private Method getAnnotatedJavaMethod(Method javaMethod) {
-        if (javaMethod == null)
+        if (javaMethod == null) {
             return null;
-        boolean useMethod = checkForJaxRsAnnotations(javaMethod);
-        if (useMethod)
+        }
+        final boolean useMethod = checkForJaxRsAnnotations(javaMethod);
+        if (useMethod) {
             return javaMethod;
-        Class<?> methodClass = javaMethod.getDeclaringClass();
-        Class<?> superclass = methodClass.getSuperclass();
-        Method scMethod = getMethodFromClass(superclass, javaMethod);
+        }
+        final Class<?> methodClass = javaMethod.getDeclaringClass();
+        final Class<?> superclass = methodClass.getSuperclass();
+        final Method scMethod = getMethodFromClass(superclass, javaMethod);
         Method annotatedMeth = getAnnotatedJavaMethod(scMethod);
-        if (annotatedMeth != null)
+        if (annotatedMeth != null) {
             return annotatedMeth;
-        Class<?>[] interfaces = methodClass.getInterfaces();
-        for (Class<?> interfaze : interfaces) {
-            Method ifMethod = getMethodFromClass(interfaze, javaMethod);
+        }
+        final Class<?>[] interfaces = methodClass.getInterfaces();
+        for (final Class<?> interfaze : interfaces) {
+            final Method ifMethod = getMethodFromClass(interfaze, javaMethod);
             annotatedMeth = getAnnotatedJavaMethod(ifMethod);
-            if (annotatedMeth != null)
+            if (annotatedMeth != null) {
                 return annotatedMeth;
+            }
         }
         return null;
     }
@@ -252,7 +262,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * @return Returns the wrapped root resource class.
      */
     public final Class<?> getJaxRsClass() {
-        return jaxRsClass;
+        return this.jaxRsClass;
     }
 
     /**
@@ -268,13 +278,14 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      *         null, if the given class is null.
      */
     private Method getMethodFromClass(Class<?> clazz, Method subClassMethod) {
-        if (clazz == null)
+        if (clazz == null) {
             return null;
-        String methodName = subClassMethod.getName();
-        Class<?>[] parameterTypes = subClassMethod.getParameterTypes();
+        }
+        final String methodName = subClassMethod.getName();
+        final Class<?>[] parameterTypes = subClassMethod.getParameterTypes();
         try {
             return clazz.getMethod(methodName, parameterTypes);
-        } catch (NoSuchMethodException e) {
+        } catch (final NoSuchMethodException e) {
             return null;
         }
     }
@@ -293,15 +304,17 @@ public class ResourceClass extends AbstractJaxRsWrapper {
             RemainingPath remainingPath) {
         // NICE results may be chached, if any method is returned.
         // The 404 case will be called rarely and produce a lot of cached data.
-        List<ResourceMethod> resourceMethods = new ArrayList<ResourceMethod>();
-        for (ResourceMethod method : this.resourceMethods) {
-            PathRegExp methodPath = method.getPathRegExp();
+        final List<ResourceMethod> resourceMethods = new ArrayList<ResourceMethod>();
+        for (final ResourceMethod method : this.resourceMethods) {
+            final PathRegExp methodPath = method.getPathRegExp();
             if (remainingPath.isEmptyOrSlash()) {
-                if (methodPath.isEmptyOrSlash())
+                if (methodPath.isEmptyOrSlash()) {
                     resourceMethods.add(method);
+                }
             } else {
-                if (methodPath.matchesWithEmpty(remainingPath))
+                if (methodPath.matchesWithEmpty(remainingPath)) {
                     resourceMethods.add(method);
+                }
             }
         }
         return resourceMethods;
@@ -332,7 +345,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * @return Returns the sub resource locators of the given class.
      */
     public final Iterable<SubResourceLocator> getSubResourceLocators() {
-        return subResourceLocators;
+        return this.subResourceLocators;
     }
 
     @Override
@@ -353,24 +366,26 @@ public class ResourceClass extends AbstractJaxRsWrapper {
             Collection<ContextResolver<?>> allCtxResolvers,
             ExtensionBackwardMapping extensionBackwardMapping, Logger logger)
             throws IllegalArgumentException, MissingAnnotationException {
-        for (Method execMethod : jaxRsClass.getMethods()) {
-            Method annotatedMethod = getAnnotatedJavaMethod(execMethod);
-            if (annotatedMethod == null)
+        for (final Method execMethod : this.jaxRsClass.getMethods()) {
+            final Method annotatedMethod = getAnnotatedJavaMethod(execMethod);
+            if (annotatedMethod == null) {
                 continue;
-            Path path = annotatedMethod.getAnnotation(Path.class);
+            }
+            final Path path = annotatedMethod.getAnnotation(Path.class);
             org.restlet.data.Method httpMethod;
             httpMethod = getHttpMethod(annotatedMethod);
             try {
                 if (httpMethod != null) {
-                    if (isVolatile(execMethod))
+                    if (isVolatile(execMethod)) {
                         continue;
+                    }
                     ResourceMethod subResMeth;
                     try {
                         subResMeth = new ResourceMethod(execMethod,
                                 annotatedMethod, this, httpMethod, tlContext,
                                 entityProviders, allCtxResolvers,
                                 extensionBackwardMapping, logger);
-                    } catch (IllegalMethodParamTypeException e) {
+                    } catch (final IllegalMethodParamTypeException e) {
                         Logger.getAnonymousLogger().log(
                                 Level.WARNING,
                                 "An annotated parameter of the resource method "
@@ -383,15 +398,16 @@ public class ResourceClass extends AbstractJaxRsWrapper {
                     checkForPrimitiveParameters(execMethod, logger);
                 } else {
                     if (path != null) {
-                        if (isVolatile(execMethod))
+                        if (isVolatile(execMethod)) {
                             continue;
+                        }
                         SubResourceLocator subResLoc;
                         try {
                             subResLoc = new SubResourceLocator(execMethod,
                                     annotatedMethod, this, tlContext,
                                     entityProviders, allCtxResolvers,
                                     extensionBackwardMapping, logger);
-                        } catch (IllegalMethodParamTypeException e) {
+                        } catch (final IllegalMethodParamTypeException e) {
                             Logger.getAnonymousLogger().log(
                                     Level.WARNING,
                                     "An annotated parameter of the resource method "
@@ -406,7 +422,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
                 }
                 // NICE warn, if @Consumes, @Produces or another
                 // non-useful annotation is available on a method to ignore.
-            } catch (IllegalPathOnMethodException e) {
+            } catch (final IllegalPathOnMethodException e) {
                 logger.warning("The method " + annotatedMethod
                         + " is annotated with an illegal path: " + e.getPath()
                         + ". Ignoring this method. (" + e.getMessage() + ")");

@@ -60,31 +60,15 @@ public class UserResource extends Resource {
     public UserResource() {
     }
 
-    @Override
-    public void init(Context context, Request request, Response response) {
-        super.init(context, request, response);
-        this.userName = (String) getRequest().getAttributes().get("username");
-        ChallengeResponse cr = getRequest().getChallengeResponse();
-        this.login = (cr != null) ? cr.getIdentifier() : null;
-        this.password = (cr != null) ? new String(cr.getSecret()) : null;
-        this.user = findUser();
-
-        if (user != null) {
-            getVariants().add(new Variant(MediaType.TEXT_PLAIN));
-        }
-
-        setModifiable(true);
-    }
-
     /**
      * Constructor.
      * 
      * @param context
-     *                The parent context.
+     *            The parent context.
      * @param request
-     *                The request to handle.
+     *            The request to handle.
      * @param response
-     *                The response to return.
+     *            The response to return.
      */
     public UserResource(Context context, Request request, Response response) {
         super(context, request, response);
@@ -123,12 +107,76 @@ public class UserResource extends Resource {
         return result;
     }
 
+    /**
+     * Finds the associated user.
+     * 
+     * @return The user found or null.
+     */
+    public User findUser() {
+        User result = null;
+
+        if (this.userName != null) {
+            // Create the query predicate
+            final Predicate<User> predicate = new Predicate<User>() {
+                private static final long serialVersionUID = 1L;
+
+                @Override
+                public boolean match(User candidate) {
+                    return UserResource.this.userName.equals(candidate
+                            .getName());
+                }
+            };
+
+            // Query the database and get the first result
+            final List<User> users = getContainer().query(predicate);
+            if ((users != null) && (users.size() > 0)) {
+                result = users.get(0);
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the database container.
+     * 
+     * @return the database container.
+     */
+    public ObjectContainer getContainer() {
+        return this.container;
+    }
+
+    /**
+     * Returns the associated user.
+     * 
+     * @return The associated user.
+     */
+    public User getUser() {
+        return this.user;
+    }
+
+    @Override
+    public void init(Context context, Request request, Response response) {
+        super.init(context, request, response);
+        this.userName = (String) getRequest().getAttributes().get("username");
+        final ChallengeResponse cr = getRequest().getChallengeResponse();
+        this.login = (cr != null) ? cr.getIdentifier() : null;
+        this.password = (cr != null) ? new String(cr.getSecret()) : null;
+        this.user = findUser();
+
+        if (this.user != null) {
+            getVariants().add(new Variant(MediaType.TEXT_PLAIN));
+        }
+
+        setModifiable(true);
+    }
+
     @Override
     public void removeRepresentations() {
         switch (checkAuthorization()) {
         case 1:
             // Delete all associated bookmarks
-            for (Bookmark bookmark : this.user.getBookmarks()) {
+            for (final Bookmark bookmark : this.user.getBookmarks()) {
                 getContainer().delete(bookmark);
             }
 
@@ -150,54 +198,6 @@ public class UserResource extends Resource {
         }
     }
 
-    /**
-     * Finds the associated user.
-     * 
-     * @return The user found or null.
-     */
-    public User findUser() {
-        User result = null;
-
-        if (userName != null) {
-            // Create the query predicate
-            Predicate<User> predicate = new Predicate<User>() {
-                private static final long serialVersionUID = 1L;
-
-                @Override
-                public boolean match(User candidate) {
-                    return userName.equals(candidate.getName());
-                }
-            };
-
-            // Query the database and get the first result
-            List<User> users = getContainer().query(predicate);
-            if ((users != null) && (users.size() > 0)) {
-                result = users.get(0);
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Returns the database container.
-     * 
-     * @return the database container.
-     */
-    public ObjectContainer getContainer() {
-        return container;
-    }
-
-    /**
-     * Injects the database container.
-     * 
-     * @param container
-     *                the database container.
-     */
-    public void setContainer(ObjectContainer container) {
-        this.container = container;
-    }
-
     @Override
     public Representation represent(Variant variant) {
         Representation result = null;
@@ -205,7 +205,7 @@ public class UserResource extends Resource {
         if ((variant != null)
                 && variant.getMediaType().equals(MediaType.TEXT_PLAIN)) {
             // Creates a text representation
-            StringBuilder sb = new StringBuilder();
+            final StringBuilder sb = new StringBuilder();
             sb.append("------------\n");
             sb.append("User details\n");
             sb.append("------------\n\n");
@@ -218,12 +218,23 @@ public class UserResource extends Resource {
     }
 
     /**
-     * Returns the associated user.
+     * Injects the database container.
      * 
-     * @return The associated user.
+     * @param container
+     *            the database container.
      */
-    public User getUser() {
-        return this.user;
+    public void setContainer(ObjectContainer container) {
+        this.container = container;
+    }
+
+    /**
+     * Sets the associated user.
+     * 
+     * @param user
+     *            The user to set.
+     */
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Override
@@ -257,7 +268,7 @@ public class UserResource extends Resource {
 
             if (canSet) {
                 // Parse the entity as a web form
-                Form form = new Form(entity);
+                final Form form = new Form(entity);
                 getUser().setEmail(form.getFirstValue("user[email]"));
                 getUser().setFullName(form.getFirstValue("user[full_name]"));
                 getUser().setPassword(form.getFirstValue("user[password]"));
@@ -267,15 +278,5 @@ public class UserResource extends Resource {
                 getContainer().commit();
             }
         }
-    }
-
-    /**
-     * Sets the associated user.
-     * 
-     * @param user
-     *                The user to set.
-     */
-    public void setUser(User user) {
-        this.user = user;
     }
 }

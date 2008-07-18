@@ -31,15 +31,15 @@ import org.restlet.test.jaxrs.services.resources.ThrowExceptionResource;
  */
 public class ThrowExceptionTest extends JaxRsTestCase {
 
-    @Override
-    protected Class<?> getRootResourceClass() {
-        return ThrowExceptionResource.class;
-    }
-
     @SuppressWarnings("unchecked")
     @Override
     protected Set<Class<?>> getProvClasses() {
         return (Set) Util.createSet(SqlExceptionMapper.class);
+    }
+
+    @Override
+    protected Class<?> getRootResourceClass() {
+        return ThrowExceptionResource.class;
     }
 
     /**
@@ -47,12 +47,12 @@ public class ThrowExceptionTest extends JaxRsTestCase {
      * @see ThrowExceptionResource
      */
     public void testIoe() {
-        Response response = get("IOException");
+        final Response response = get("IOException");
         assertEquals(Status.SERVER_ERROR_INTERNAL, response.getStatus());
     }
 
     public void testSqlExc() throws Exception {
-        Response response = get("sqlExc");
+        final Response response = get("sqlExc");
         assertEquals(Status.SERVER_ERROR_INTERNAL, response.getStatus());
         assertEquals(SqlExceptionMapper.MESSAGE, response.getEntity().getText());
     }
@@ -61,13 +61,13 @@ public class ThrowExceptionTest extends JaxRsTestCase {
      * @see ThrowExceptionResource#getWebAppExc()
      */
     public void testWebAppExc() {
-        Response response = get("WebAppExc");
-        int actStatus = response.getStatus().getCode();
+        final Response response = get("WebAppExc");
+        final int actStatus = response.getStatus().getCode();
         assertEquals(ThrowExceptionResource.WEB_APP_EXC_STATUS, actStatus);
     }
 
     public void testWebAppExcNullStatus() {
-        Response response = get("WebAppExcNullStatus");
+        final Response response = get("WebAppExcNullStatus");
         assertEquals(Status.SERVER_ERROR_INTERNAL, response.getStatus());
     }
 }

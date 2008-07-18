@@ -34,17 +34,17 @@ public abstract class JaxRsException extends Exception {
     }
 
     /**
-     * @param cause
-     */
-    public JaxRsException(Throwable cause) {
-        super(cause);
-    }
-
-    /**
      * @param message
      * @param cause
      */
     public JaxRsException(String message, Throwable cause) {
         super(message, cause);
+    }
+
+    /**
+     * @param cause
+     */
+    public JaxRsException(Throwable cause) {
+        super(cause);
     }
 }

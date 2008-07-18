@@ -34,12 +34,12 @@ public class NoProviderTest extends JaxRsTestCase {
     }
 
     public void testNoMediaType() throws Exception {
-        Response response = get("no-mbw");
+        final Response response = get("no-mbw");
         assertEquals(Status.CLIENT_ERROR_NOT_ACCEPTABLE, response.getStatus());
     }
 
     public void testTextPlain() throws Exception {
-        Response response = get("text-plain");
+        final Response response = get("text-plain");
         assertEquals(Status.CLIENT_ERROR_NOT_ACCEPTABLE, response.getStatus());
     }
 }

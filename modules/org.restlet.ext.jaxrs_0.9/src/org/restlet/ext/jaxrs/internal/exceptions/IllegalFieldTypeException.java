@@ -32,6 +32,6 @@ public class IllegalFieldTypeException extends IllegalTypeException {
      */
     public IllegalFieldTypeException(IllegalTypeException ite) {
         super(ite.getMessage());
-        this.setStackTrace(ite.getStackTrace());
+        setStackTrace(ite.getStackTrace());
     }
 }

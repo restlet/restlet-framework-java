@@ -50,41 +50,46 @@ public class RiapTestCase extends TestCase {
 
     private static final String ECHO_TEST_MSG = JUST_SOME_OBJ.toString();
 
+    private String buildAggregate(String echoMessage, String echoCopy) {
+        return "ORIGINAL: " + echoMessage + "\n" + "ECHOCOPY: " + echoCopy
+                + "\n";
+    }
+
     @SuppressWarnings("unchecked")
     public void testRiap() throws Exception {
-        Component comp = new Component();
-        Application localOnly = new Application(comp.getContext()) {
+        final Component comp = new Component();
+        final Application localOnly = new Application(comp.getContext()) {
             @Override
             public Restlet createRoot() {
                 return new Restlet(getContext()) {
                     @Override
                     public void handle(Request request, Response response) {
                         final String selfBase = "riap://application";
-                        Reference ref = request.getResourceRef();
-                        String remainder = ref.getRemainingPart();
+                        final Reference ref = request.getResourceRef();
+                        final String remainder = ref.getRemainingPart();
 
                         Representation result = new StringRepresentation(
                                 DEFAULT_MSG);
 
-                        if (remainder.startsWith("/echo/"))
+                        if (remainder.startsWith("/echo/")) {
                             result = new StringRepresentation(remainder
                                     .substring(6));
-                        else if (remainder.equals("/object"))
+                        } else if (remainder.equals("/object")) {
                             result = new ObjectRepresentation(JUST_SOME_OBJ);
-                        else if (remainder.equals("/null"))
+                        } else if (remainder.equals("/null")) {
                             result = new ObjectRepresentation(
                                     (Serializable) null);
-                        else if (remainder.equals("/self-aggregated")) {
-                            String echoMessage = ECHO_TEST_MSG;
-                            Reference echoRef = new LocalReference(selfBase
-                                    + "/echo/" + echoMessage);
+                        } else if (remainder.equals("/self-aggregated")) {
+                            final String echoMessage = ECHO_TEST_MSG;
+                            final Reference echoRef = new LocalReference(
+                                    selfBase + "/echo/" + echoMessage);
                             String echoCopy = null;
                             try {
                                 final Response respo = getContext()
                                         .getClientDispatcher().get(echoRef);
                                 final Representation entity = respo.getEntity();
                                 echoCopy = entity.getText();
-                            } catch (Exception e) {
+                            } catch (final Exception e) {
                                 e.printStackTrace();
                                 fail("Error getting internal reference to "
                                         + echoRef);
@@ -103,7 +108,7 @@ public class RiapTestCase extends TestCase {
         comp.getInternalRouter().attach("/local", localOnly);
         final String localBase = "riap://component/local";
 
-        Uniform dispatcher = comp.getContext().getClientDispatcher();
+        final Uniform dispatcher = comp.getContext().getClientDispatcher();
 
         final String msg = "this%20message";
         final String echoURI = localBase + "/echo/" + msg;
@@ -131,10 +136,5 @@ public class RiapTestCase extends TestCase {
                 ECHO_TEST_MSG);
         assertEquals("expected specific aggregated message", expectedResult,
                 aggRep.getText());
-    }
-
-    private String buildAggregate(String echoMessage, String echoCopy) {
-        return "ORIGINAL: " + echoMessage + "\n" + "ECHOCOPY: " + echoCopy
-                + "\n";
     }
 }

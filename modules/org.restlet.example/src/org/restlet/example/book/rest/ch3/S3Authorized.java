@@ -39,28 +39,28 @@ public class S3Authorized {
 
     public final static String HOST = "https://s3.amazonaws.com/";
 
-    private static Response handleAuthorized(Method method, String uri,
-            Representation entity) {
-        // Send an authenticated request
-        Request request = new Request(method, uri, entity);
-        request.setChallengeResponse(new ChallengeResponse(
-                ChallengeScheme.HTTP_AWS_S3, PUBLIC_KEY, PRIVATE_KEY));
-        return new Client(Protocol.HTTPS).handle(request);
-    }
-
-    public static Response authorizedHead(String uri) {
-        return handleAuthorized(Method.HEAD, uri, null);
+    public static Response authorizedDelete(String uri) {
+        return handleAuthorized(Method.DELETE, uri, null);
     }
 
     public static Response authorizedGet(String uri) {
         return handleAuthorized(Method.GET, uri, null);
     }
 
+    public static Response authorizedHead(String uri) {
+        return handleAuthorized(Method.HEAD, uri, null);
+    }
+
     public static Response authorizedPut(String uri, Representation entity) {
         return handleAuthorized(Method.PUT, uri, entity);
     }
 
-    public static Response authorizedDelete(String uri) {
-        return handleAuthorized(Method.DELETE, uri, null);
+    private static Response handleAuthorized(Method method, String uri,
+            Representation entity) {
+        // Send an authenticated request
+        final Request request = new Request(method, uri, entity);
+        request.setChallengeResponse(new ChallengeResponse(
+                ChallengeScheme.HTTP_AWS_S3, PUBLIC_KEY, PRIVATE_KEY));
+        return new Client(Protocol.HTTPS).handle(request);
     }
 }

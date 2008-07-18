@@ -49,23 +49,24 @@ public class AncestorTestService {
      * @throws InvocationTargetException
      */
     private static Object getAttribute(UriInfo uriInfo, String attribute) {
-        String getterName = "get" + attribute.substring(0, 1).toUpperCase()
+        final String getterName = "get"
+                + attribute.substring(0, 1).toUpperCase()
                 + attribute.substring(1);
         Method subMethod;
         try {
             subMethod = uriInfo.getClass().getMethod(getterName);
-        } catch (SecurityException e) {
+        } catch (final SecurityException e) {
             throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
-        } catch (NoSuchMethodException e) {
+        } catch (final NoSuchMethodException e) {
             throw new WebApplicationException(Status.NOT_FOUND);
         }
         try {
             return subMethod.invoke(uriInfo);
-        } catch (IllegalArgumentException e) {
+        } catch (final IllegalArgumentException e) {
             throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
-        } catch (IllegalAccessException e) {
+        } catch (final IllegalAccessException e) {
             throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
-        } catch (InvocationTargetException e) {
+        } catch (final InvocationTargetException e) {
             throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
         }
     }
@@ -76,8 +77,8 @@ public class AncestorTestService {
     @GET
     @Produces("text/plain")
     public String get(@Context UriInfo uriInfo) {
-        int uriSize = uriInfo.getAncestorResourceURIs().size();
-        int resourcesSize = uriInfo.getAncestorResources().size();
+        final int uriSize = uriInfo.getAncestorResourceURIs().size();
+        final int resourcesSize = uriInfo.getAncestorResources().size();
         return uriSize + "\n" + resourcesSize;
     }
 
@@ -85,10 +86,10 @@ public class AncestorTestService {
     @Produces("text/plain")
     @Path("resourceClassNames")
     public String getResources(@Context UriInfo uriInfo) {
-        StringBuilder stb = new StringBuilder();
-        List<Object> resources = uriInfo.getAncestorResources();
+        final StringBuilder stb = new StringBuilder();
+        final List<Object> resources = uriInfo.getAncestorResources();
         stb.append(resources.size());
-        for (Object resource : resources) {
+        for (final Object resource : resources) {
             stb.append('\n');
             stb.append(resource.getClass().getName());
         }
@@ -102,7 +103,7 @@ public class AncestorTestService {
 
     @Path("sub")
     public AncestorTestService getSub() {
-        AncestorTestService sub = new AncestorTestService();
+        final AncestorTestService sub = new AncestorTestService();
         sub.mainUriInfo = this.mainUriInfo;
         return sub;
     }
@@ -112,8 +113,8 @@ public class AncestorTestService {
     @Path("uriInfo/{attribute}")
     public String getUriInfoAttribute(@Context UriInfo subUriInfo,
             @PathParam("attribute") String attribute) {
-        Object mainAttrValue = getAttribute(mainUriInfo, attribute);
-        Object subAttrValue = getAttribute(subUriInfo, attribute);
+        final Object mainAttrValue = getAttribute(this.mainUriInfo, attribute);
+        final Object subAttrValue = getAttribute(subUriInfo, attribute);
         return mainAttrValue + "\n" + subAttrValue;
     }
 
@@ -121,10 +122,10 @@ public class AncestorTestService {
     @Produces("text/plain")
     @Path("uris")
     public String getUris(@Context UriInfo uriInfo) {
-        StringBuilder stb = new StringBuilder();
-        List<String> uris = uriInfo.getAncestorResourceURIs();
+        final StringBuilder stb = new StringBuilder();
+        final List<String> uris = uriInfo.getAncestorResourceURIs();
         stb.append(uris.size());
-        for (String uri : uris) {
+        for (final String uri : uris) {
             stb.append('\n');
             stb.append(uri);
         }

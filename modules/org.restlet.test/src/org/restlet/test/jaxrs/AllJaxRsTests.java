@@ -26,11 +26,12 @@ import org.restlet.test.jaxrs.services.tests.AllServiceTests;
 
 /**
  * Suite with all JAX-RS unit tests.
+ * 
  * @author Stephan Koops
  */
 public class AllJaxRsTests extends TestCase {
     public static Test suite() {
-        TestSuite mySuite = new TestSuite();
+        final TestSuite mySuite = new TestSuite();
         mySuite.setName("all JaxRs tests");
         mySuite.addTest(AllClassTests.suite());
         mySuite.addTest(AllServiceTests.suite());

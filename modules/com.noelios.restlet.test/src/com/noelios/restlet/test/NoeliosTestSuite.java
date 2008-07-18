@@ -28,6 +28,15 @@ import junit.framework.TestSuite;
  */
 public class NoeliosTestSuite extends TestSuite {
 
+    /**
+     * JUnit constructor.
+     * 
+     * @return The unit test.
+     */
+    public static Test suite() {
+        return new NoeliosTestSuite();
+    }
+
     /** Constructor. */
     public NoeliosTestSuite() {
         addTestSuite(AuthenticationTestCase.class);
@@ -50,14 +59,5 @@ public class NoeliosTestSuite extends TestSuite {
         // addTestSuite(SslGetTestCase.class);
         // addTestSuite(SslContextGetTestCase.class);
         addTestSuite(TunnelFilterTestCase.class);
-    }
-
-    /**
-     * JUnit constructor.
-     * 
-     * @return The unit test.
-     */
-    public static Test suite() {
-        return new NoeliosTestSuite();
     }
 }

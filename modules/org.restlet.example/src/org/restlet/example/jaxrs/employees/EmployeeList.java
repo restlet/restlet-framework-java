@@ -32,15 +32,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "employees")
 public class EmployeeList implements Iterable<SmallEmployee> {
 
-    private List<SmallEmployee> employees = new ArrayList<SmallEmployee>();
-
-    @XmlElement(name = "employee")
-    public List<SmallEmployee> getEmployees() {
-        return employees;
-    }
+    private final List<SmallEmployee> employees = new ArrayList<SmallEmployee>();
 
     public void add(SmallEmployee employees) {
         this.employees.add(employees);
+    }
+
+    @XmlElement(name = "employee")
+    public List<SmallEmployee> getEmployees() {
+        return this.employees;
     }
 
     /**

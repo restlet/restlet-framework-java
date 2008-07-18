@@ -45,11 +45,11 @@ import org.restlet.ext.jaxrs.internal.util.Util;
  * @see MessageBodyWriter
  */
 @Provider
-@Produces({"application/xml", MediaType.TEXT_XML, "application/*+xml"})
-@Consumes({"application/xml", MediaType.TEXT_XML, "application/*+xml"})
+@Produces( { "application/xml", MediaType.TEXT_XML, "application/*+xml" })
+@Consumes( { "application/xml", MediaType.TEXT_XML, "application/*+xml" })
 public class JaxbElementProvider extends AbstractJaxbProvider<JAXBElement<?>> {
 
-    private Logger logger = Logger.getLogger(JaxbElementProvider.class
+    private final Logger logger = Logger.getLogger(JaxbElementProvider.class
             .getName());
 
     @Override
@@ -63,8 +63,9 @@ public class JaxbElementProvider extends AbstractJaxbProvider<JAXBElement<?>> {
     @Override
     public boolean isReadable(Class<?> type, Type genericType,
             Annotation[] annotations) {
-        if (!JAXBElement.class.isAssignableFrom(type))
+        if (!JAXBElement.class.isAssignableFrom(type)) {
             return false;
+        }
         return Util.getGenericClass(genericType) != null;
     }
 
@@ -74,8 +75,9 @@ public class JaxbElementProvider extends AbstractJaxbProvider<JAXBElement<?>> {
     @Override
     public boolean isWriteable(Class<?> type, Type genericType,
             Annotation[] annotations) {
-        if (!type.isAssignableFrom(JAXBElement.class))
+        if (!type.isAssignableFrom(JAXBElement.class)) {
             return false;
+        }
         return Util.getGenericClass(genericType) != null;
     }
 
@@ -89,13 +91,15 @@ public class JaxbElementProvider extends AbstractJaxbProvider<JAXBElement<?>> {
             Type genericType, Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, String> httpResponseHeaders,
             InputStream entityStream) throws IOException {
-        Class<?> clazz = Util.getGenericClass(genericType);
-        if(clazz == null)
+        final Class<?> clazz = Util.getGenericClass(genericType);
+        if (clazz == null) {
             throw new ImplementationException(
                     "The JaxbElement provider has gotten a type it could not unmarshal. Perhaps is the JaxbElementProvider not consistent to itself.");
-        QName qName = new QName("testQName"); // TODO QName for JAXBElement?
-        Class<?> declaredType = clazz;
-        Object value = unmarshal(clazz, entityStream);
+        }
+        final QName qName = new QName("testQName"); // TODO QName for
+                                                    // JAXBElement?
+        final Class<?> declaredType = clazz;
+        final Object value = unmarshal(clazz, entityStream);
         return new JAXBElement(qName, declaredType, value);
     }
 

@@ -103,21 +103,21 @@ public class WadlApplication extends Application {
                 wadlRep = new WadlRepresentation(wadl);
             }
 
-            Router root = new Router(getContext());
+            final Router root = new Router(getContext());
             this.router = root;
             setRoot(root);
 
-            if (wadlRep.getApplication() != null
-                    && wadlRep.getApplication().getResources() != null) {
-                for (ResourceInfo resource : wadlRep.getApplication()
+            if ((wadlRep.getApplication() != null)
+                    && (wadlRep.getApplication().getResources() != null)) {
+                for (final ResourceInfo resource : wadlRep.getApplication()
                         .getResources().getResources()) {
-                    attachResource(resource, null, router);
+                    attachResource(resource, null, this.router);
                 }
             }
 
             // Analyzes the WADL resources base
             setBaseRef(wadlRep.getApplication().getResources().getBaseRef());
-        } catch (Exception e) {
+        } catch (final Exception e) {
             getLogger().log(Level.WARNING,
                     "Error during the attachment of the WADL application", e);
         }
@@ -131,12 +131,12 @@ public class WadlApplication extends Application {
      */
     private void addConnectors(Component component) {
         // Create the server connector
-        Protocol protocol = getBaseRef().getSchemeProtocol();
-        int port = getBaseRef().getHostPort();
+        final Protocol protocol = getBaseRef().getSchemeProtocol();
+        final int port = getBaseRef().getHostPort();
         boolean exists = false;
 
         if (port == -1) {
-            for (Server server : component.getServers()) {
+            for (final Server server : component.getServers()) {
                 if (server.getProtocols().contains(protocol)
                         && (server.getPort() == protocol.getDefaultPort())) {
                     exists = true;
@@ -147,7 +147,7 @@ public class WadlApplication extends Application {
                 component.getServers().add(protocol);
             }
         } else {
-            for (Server server : component.getServers()) {
+            for (final Server server : component.getServers()) {
                 if (server.getProtocols().contains(protocol)
                         && (server.getPort() == port)) {
                     exists = true;
@@ -187,8 +187,8 @@ public class WadlApplication extends Application {
             if (parentResource != null) {
                 String parentUriPattern = parentResource.getPath();
 
-                if (parentUriPattern.endsWith("/") == false
-                        && uriPattern.startsWith("/") == false) {
+                if ((parentUriPattern.endsWith("/") == false)
+                        && (uriPattern.startsWith("/") == false)) {
                     parentUriPattern += "/";
                 }
 
@@ -200,13 +200,14 @@ public class WadlApplication extends Application {
             }
 
             // The "id" attribute conveys the target class name
-            Class targetClass = Class.forName(currentResource.getIdentifier());
+            final Class targetClass = Class.forName(currentResource
+                    .getIdentifier());
 
             // Attach the resource itself
             router.attach(uriPattern, targetClass);
 
             // Attach any children of the resource
-            for (ResourceInfo childResource : currentResource
+            for (final ResourceInfo childResource : currentResource
                     .getChildResources()) {
                 attachResource(childResource, currentResource, router);
             }
@@ -256,7 +257,7 @@ public class WadlApplication extends Application {
     public void attachToHost(VirtualHost host) {
         if (getBaseRef() != null) {
             // TODO Added test on the path that may be null.
-            String path = getBaseRef().getPath();
+            final String path = getBaseRef().getPath();
             if (path == null) {
                 host.attach("", this);
             } else {
@@ -268,6 +269,22 @@ public class WadlApplication extends Application {
                     .warning(
                             "The WADL application has no base reference defined. Unable to guess the virtual host.");
         }
+    }
+
+    /**
+     * Returns a WADL description of the current application. By default, this
+     * method discovers all the resources attached to this application. It can
+     * be overriden to add documentation, list of representations, etc.
+     * 
+     * @return An application description.
+     */
+    protected ApplicationInfo getApplicationInfo() {
+        final ApplicationInfo applicationInfo = new ApplicationInfo();
+        applicationInfo.getResources().setBaseRef(getBaseRef());
+        getResourceInfos(getRouter(), applicationInfo.getResources()
+                .getResources());
+
+        return applicationInfo;
     }
 
     /**
@@ -302,11 +319,11 @@ public class WadlApplication extends Application {
      */
     private void getResourceInfo(ResourceInfo resourceInfo, Finder finder) {
         // The handler instance targeted by this finder.
-        Handler handler = finder.createTarget(finder.getTargetClass(), null,
-                null);
+        final Handler handler = finder.createTarget(finder.getTargetClass(),
+                null, null);
 
         // The set of allowed methods
-        List<Method> methods = new ArrayList<Method>();
+        final List<Method> methods = new ArrayList<Method>();
         methods.addAll(handler.getAllowedMethods());
 
         Collections.sort(methods, new Comparator<Method>() {
@@ -317,20 +334,20 @@ public class WadlApplication extends Application {
 
         if (handler instanceof WadlResource) {
             // This kind of resource gives more information
-            WadlResource resource = (WadlResource) handler;
-            for (Method method : methods) {
+            final WadlResource resource = (WadlResource) handler;
+            for (final Method method : methods) {
                 resourceInfo.getMethods().add(resource.getMethodInfo(method));
             }
         } else if (handler instanceof Resource) {
-            Resource resource = (Resource) handler;
-            for (Method method : methods) {
-                MethodInfo methodInfo = new MethodInfo();
+            final Resource resource = (Resource) handler;
+            for (final Method method : methods) {
+                final MethodInfo methodInfo = new MethodInfo();
                 methodInfo.setName(method);
                 // Can document the list of supported variants.
                 if (Method.GET.equals(method)) {
-                    ResponseInfo responseInfo = new ResponseInfo();
-                    for (Variant variant : resource.getVariants()) {
-                        RepresentationInfo representationInfo = new RepresentationInfo();
+                    final ResponseInfo responseInfo = new ResponseInfo();
+                    for (final Variant variant : resource.getVariants()) {
+                        final RepresentationInfo representationInfo = new RepresentationInfo();
                         representationInfo.setMediaType(variant.getMediaType());
                         responseInfo.getRepresentations().add(
                                 representationInfo);
@@ -342,8 +359,8 @@ public class WadlApplication extends Application {
             }
         } else {
             // Can only give information about the list of allowed methods.
-            for (Method method : methods) {
-                MethodInfo methodInfo = new MethodInfo();
+            for (final Method method : methods) {
+                final MethodInfo methodInfo = new MethodInfo();
                 methodInfo.setName(method);
                 resourceInfo.getMethods().add(methodInfo);
             }
@@ -376,7 +393,7 @@ public class WadlApplication extends Application {
      * @return The WADL data about the given Route instance.
      */
     private ResourceInfo getResourceInfo(Route route) {
-        ResourceInfo result = new ResourceInfo();
+        final ResourceInfo result = new ResourceInfo();
         result.setPath(route.getTemplate().getPattern());
         getResourceInfo(result, route.getNext());
         return result;
@@ -392,7 +409,7 @@ public class WadlApplication extends Application {
      *            The list of ResourceInfo instances to complete.
      */
     private void getResourceInfos(Router router, List<ResourceInfo> list) {
-        for (Route route : getRouter().getRoutes()) {
+        for (final Route route : getRouter().getRoutes()) {
             list.add(getResourceInfo(route));
         }
     }
@@ -417,12 +434,12 @@ public class WadlApplication extends Application {
      */
     private VirtualHost getVirtualHost(Component component) {
         // Create the virtual host if necessary
-        String hostDomain = baseRef.getHostDomain();
-        String hostPort = Integer.toString(baseRef.getHostPort());
-        String hostScheme = baseRef.getScheme();
+        final String hostDomain = this.baseRef.getHostDomain();
+        final String hostPort = Integer.toString(this.baseRef.getHostPort());
+        final String hostScheme = this.baseRef.getScheme();
 
         VirtualHost host = null;
-        for (VirtualHost vh : component.getHosts()) {
+        for (final VirtualHost vh : component.getHosts()) {
             if (vh.getHostDomain().equals(hostDomain)
                     && vh.getHostPort().equals(hostPort)
                     && vh.getHostScheme().equals(hostScheme)) {
@@ -452,22 +469,6 @@ public class WadlApplication extends Application {
         } else {
             super.handle(request, response);
         }
-    }
-
-    /**
-     * Returns a WADL description of the current application. By default, this
-     * method discovers all the resources attached to this application. It can
-     * be overriden to add documentation, list of representations, etc.
-     * 
-     * @return An application description.
-     */
-    protected ApplicationInfo getApplicationInfo() {
-        ApplicationInfo applicationInfo = new ApplicationInfo();
-        applicationInfo.getResources().setBaseRef(this.getBaseRef());
-        getResourceInfos(getRouter(), applicationInfo.getResources()
-                .getResources());
-
-        return applicationInfo;
     }
 
     /**

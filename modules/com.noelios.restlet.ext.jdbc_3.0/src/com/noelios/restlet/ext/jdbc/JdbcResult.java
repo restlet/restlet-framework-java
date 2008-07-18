@@ -39,10 +39,40 @@ public class JdbcResult implements Serializable {
      * Constructor.
      * 
      * @param statement
-     *                The JDBC statement.
+     *            The JDBC statement.
      */
     public JdbcResult(Statement statement) {
         this.statement = statement;
+    }
+
+    /**
+     * Returns the generated keys.
+     * 
+     * @return The generated keys.
+     * @throws SQLException
+     */
+    public ResultSet getGeneratedKeys() throws SQLException {
+        return this.statement.getGeneratedKeys();
+    }
+
+    /**
+     * Returns the result set.
+     * 
+     * @return The result set.
+     * @throws SQLException
+     */
+    public ResultSet getResultSet() throws SQLException {
+        return this.statement.getResultSet();
+    }
+
+    /**
+     * Returns the update count.
+     * 
+     * @return The update count.
+     * @throws SQLException
+     */
+    public int getUpdateCount() throws SQLException {
+        return this.statement.getUpdateCount();
     }
 
     /**
@@ -54,37 +84,7 @@ public class JdbcResult implements Serializable {
         // One connection per jdbcResult
         // releasing the instance means releasing the connection too
         // and not only the statement.
-        statement.getConnection().close();
-    }
-
-    /**
-     * Returns the result set.
-     * 
-     * @return The result set.
-     * @throws SQLException
-     */
-    public ResultSet getResultSet() throws SQLException {
-        return statement.getResultSet();
-    }
-
-    /**
-     * Returns the generated keys.
-     * 
-     * @return The generated keys.
-     * @throws SQLException
-     */
-    public ResultSet getGeneratedKeys() throws SQLException {
-        return statement.getGeneratedKeys();
-    }
-
-    /**
-     * Returns the update count.
-     * 
-     * @return The update count.
-     * @throws SQLException
-     */
-    public int getUpdateCount() throws SQLException {
-        return statement.getUpdateCount();
+        this.statement.getConnection().close();
     }
 
 }

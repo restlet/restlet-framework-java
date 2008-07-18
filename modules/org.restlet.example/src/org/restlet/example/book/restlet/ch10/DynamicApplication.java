@@ -18,11 +18,11 @@ public class DynamicApplication extends Application {
         super(parentContext);
         try {
             // Instantiate the shared configuration manager for Freemarker.
-            File templateDir = new File(
+            final File templateDir = new File(
                     "D:\\alaska\\forge\\build\\swc\\nre\\trunk\\books\\apress\\manuscript\\sample");
-            fmc = new Configuration();
-            fmc.setDirectoryForTemplateLoading(templateDir);
-        } catch (Exception e) {
+            this.fmc = new Configuration();
+            this.fmc.setDirectoryForTemplateLoading(templateDir);
+        } catch (final Exception e) {
             getLogger().severe("Erreur config FreeMarker");
             e.printStackTrace();
         }
@@ -30,7 +30,7 @@ public class DynamicApplication extends Application {
 
     @Override
     public Restlet createRoot() {
-        Router router = new Router(getContext());
+        final Router router = new Router(getContext());
         router.attach("/transformer", TransformerResource.class);
         router.attach("/freemarker", FreemarkerResource.class);
         router.attach("/velocity", VelocityResource.class);
@@ -44,6 +44,6 @@ public class DynamicApplication extends Application {
      * @return the Freemarker configuration object.
      */
     public Configuration getFmc() {
-        return fmc;
+        return this.fmc;
     }
 }

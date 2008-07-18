@@ -34,7 +34,7 @@ public class TestServer {
 
     public static void main(String[] args) throws Exception {
         // Creating a minimal Restlet returning "Hello World"
-        Restlet restlet = new Restlet() {
+        final Restlet restlet = new Restlet() {
             @Override
             public void handle(Request request, Response response) {
                 response.setEntity("Hello World!", MediaType.TEXT_PLAIN);

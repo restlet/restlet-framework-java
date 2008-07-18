@@ -46,6 +46,7 @@ public class IllegalConstructorResource {
      * @param c1
      * @param c2
      */
-    IllegalConstructorResource(@CookieParam("c1") String c1, @CookieParam("c2") String c2) {
+    IllegalConstructorResource(@CookieParam("c1") String c1,
+            @CookieParam("c2") String c2) {
     }
 }

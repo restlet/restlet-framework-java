@@ -41,15 +41,15 @@ public class TransformerTestCase extends TestCase {
         final StringBuffer trackedMessages = new StringBuffer();
 
         void report() {
-            if (!allOk) {
-                fail("TRACKER REPORT: \n" + trackedMessages.toString());
+            if (!this.allOk) {
+                fail("TRACKER REPORT: \n" + this.trackedMessages.toString());
             }
         }
 
         void trackFailure(String message) {
             System.err.println(message);
-            trackedMessages.append(message + "\n");
-            allOk = false;
+            this.trackedMessages.append(message + "\n");
+            this.allOk = false;
         }
 
         void trackFailure(String message, int index, Throwable e) {
@@ -62,7 +62,7 @@ public class TransformerTestCase extends TestCase {
         try {
             new TransformerTestCase().testTransform();
             new TransformerTestCase().parallelTestTransform();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
     }
@@ -92,13 +92,13 @@ public class TransformerTestCase extends TestCase {
      * @throws Exception
      */
     public void parallelTestTransform() throws Exception {
-        Component comp = new Component();
+        final Component comp = new Component();
         final TransformRepresentation tr = new TransformRepresentation(comp
-                .getContext(), source, xslt);
+                .getContext(), this.source, this.xslt);
         final FailureTracker tracker = new FailureTracker();
 
-        int testVolume = 5000;
-        Thread[] parallelTransform = new Thread[testVolume];
+        final int testVolume = 5000;
+        final Thread[] parallelTransform = new Thread[testVolume];
         for (int i = 0; i < parallelTransform.length; i++) {
             final int index = i;
             parallelTransform[i] = new Thread() {
@@ -106,13 +106,13 @@ public class TransformerTestCase extends TestCase {
                 @Override
                 public void run() {
                     try {
-                        ByteArrayOutputStream out = new ByteArrayOutputStream();
+                        final ByteArrayOutputStream out = new ByteArrayOutputStream();
                         tr.write(out);
-                        String result = out.toString();
-                        assertEquals(output, result);
+                        final String result = out.toString();
+                        assertEquals(TransformerTestCase.this.output, result);
                         out.close();
 
-                    } catch (Throwable e) {
+                    } catch (final Throwable e) {
                         tracker.trackFailure(
                                 "Exception during write in thread ", index, e);
                     }
@@ -120,7 +120,7 @@ public class TransformerTestCase extends TestCase {
             };
         }
 
-        for (Thread pt : parallelTransform) {
+        for (final Thread pt : parallelTransform) {
             pt.start();
         }
 
@@ -128,10 +128,10 @@ public class TransformerTestCase extends TestCase {
     }
 
     public void testTransform() throws Exception {
-        Transformer transformer = new Transformer(Transformer.MODE_REQUEST,
-                xslt);
-        String result = transformer.transform(source).getText();
+        final Transformer transformer = new Transformer(
+                Transformer.MODE_REQUEST, this.xslt);
+        final String result = transformer.transform(this.source).getText();
 
-        assertEquals(output, result);
+        assertEquals(this.output, result);
     }
 }

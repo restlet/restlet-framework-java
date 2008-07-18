@@ -35,8 +35,8 @@ import com.noelios.restlet.http.InputEntityStream;
 public class InputEntityStreamTestCase extends TestCase {
 
     public void testRead() {
-        String data = "test data";
-        InputStream input = new ByteArrayInputStream(data.getBytes());
+        final String data = "test data";
+        final InputStream input = new ByteArrayInputStream(data.getBytes());
         assertEquals("test", ByteUtils
                 .toString(new InputEntityStream(input, 4)));
     }

@@ -40,11 +40,12 @@ public abstract class AbstractJaxRsWrapper {
      * Creates a new AbstractJaxRsWrapper with a given {@link PathRegExp}.
      * 
      * @param pathRegExp
-     *                must not be null.
+     *            must not be null.
      */
     AbstractJaxRsWrapper(PathRegExp pathRegExp) throws ImplementationException {
-        if (pathRegExp == null)
+        if (pathRegExp == null) {
             throw new ImplementationException("The PathRegExp must not be null");
+        }
         this.pathRegExp = pathRegExp;
     }
 

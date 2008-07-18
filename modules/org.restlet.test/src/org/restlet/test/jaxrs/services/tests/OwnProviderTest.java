@@ -34,26 +34,26 @@ import org.restlet.test.jaxrs.util.TestUtils;
 public class OwnProviderTest extends JaxRsTestCase {
 
     @Override
-    protected Class<?> getRootResourceClass() {
-        return OwnProviderTestService.class;
-    }
-
-    @Override
     @SuppressWarnings("all")
     public Set<Class<?>> getProvClasses() {
         return (Set) TestUtils.createSet(CrazyTypeProvider.class);
+    }
+
+    @Override
+    protected Class<?> getRootResourceClass() {
+        return OwnProviderTestService.class;
     }
 
     /**
      * @see OwnProviderTestService#get()
      */
     public void test1() throws Exception {
-        Response response = get();
+        final Response response = get();
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEqualMediaType(new MediaType("application/crazyType"), response);
-        String actualEntity = response.getEntity().getText();
-        String expectedEntity = "abc def is crazy.\nHeader value for name h1 is h1v";
+        final String actualEntity = response.getEntity().getText();
+        final String expectedEntity = "abc def is crazy.\nHeader value for name h1 is h1v";
         assertEquals(expectedEntity, actualEntity);
     }
 }

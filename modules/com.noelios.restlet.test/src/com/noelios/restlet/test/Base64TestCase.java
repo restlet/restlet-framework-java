@@ -40,16 +40,16 @@ public class Base64TestCase extends TestCase {
     }
 
     public void test() throws Exception {
-        byte[] b = ("Man is distinguished, not only by his reason, but by this singular passion from "
+        final byte[] b = ("Man is distinguished, not only by his reason, but by this singular passion from "
                 + "other animals, which is a lust of the mind, that by a perseverance of delight "
                 + "in the continued and indefatigable generation of knowledge, exceeds the short "
                 + "vehemence of any carnal pleasure.").getBytes();
-        String s = "TWFuIGlzIGRpc3Rpbmd1aXNoZWQsIG5vdCBvbmx5IGJ5IGhpcyByZWFzb24sIGJ1dCBieSB0aGlz\n"
+        final String s = "TWFuIGlzIGRpc3Rpbmd1aXNoZWQsIG5vdCBvbmx5IGJ5IGhpcyByZWFzb24sIGJ1dCBieSB0aGlz\n"
                 + "IHNpbmd1bGFyIHBhc3Npb24gZnJvbSBvdGhlciBhbmltYWxzLCB3aGljaCBpcyBhIGx1c3Qgb2Yg\n"
                 + "dGhlIG1pbmQsIHRoYXQgYnkgYSBwZXJzZXZlcmFuY2Ugb2YgZGVsaWdodCBpbiB0aGUgY29udGlu\n"
                 + "dWVkIGFuZCBpbmRlZmF0aWdhYmxlIGdlbmVyYXRpb24gb2Yga25vd2xlZGdlLCBleGNlZWRzIHRo\n"
                 + "ZSBzaG9ydCB2ZWhlbWVuY2Ugb2YgYW55IGNhcm5hbCBwbGVhc3VyZS4=";
-        String base64 = Base64.encode(b, true);
+        final String base64 = Base64.encode(b, true);
         assertEquals(s, base64);
         roundTrip(b, true);
         assertEquals(new String(b), new String(Base64.decode(base64)));

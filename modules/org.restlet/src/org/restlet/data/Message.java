@@ -33,43 +33,43 @@ import org.restlet.resource.StringRepresentation;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public abstract class Message {
-	/** The modifiable attributes map. */
-	private volatile Map<String, Object> attributes;
+    /** The modifiable attributes map. */
+    private volatile Map<String, Object> attributes;
 
-	/** The payload of the message. */
-	private volatile Representation entity;
+    /** The payload of the message. */
+    private volatile Representation entity;
 
-	/** The optional cached DOM representation. */
-	private volatile DomRepresentation domRepresentation;
+    /** The optional cached DOM representation. */
+    private volatile DomRepresentation domRepresentation;
 
-	/** The optional cached Form. */
-	private volatile Form form;
+    /** The optional cached Form. */
+    private volatile Form form;
 
-	/** The optional cached SAX representation. */
-	private volatile SaxRepresentation saxRepresentation;
+    /** The optional cached SAX representation. */
+    private volatile SaxRepresentation saxRepresentation;
 
-	/**
-	 * Constructor.
-	 */
-	public Message() {
-		this((Representation) null);
-	}
+    /**
+     * Constructor.
+     */
+    public Message() {
+        this((Representation) null);
+    }
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param entity
-	 *            The payload of the message.
-	 */
-	public Message(Representation entity) {
-		this.attributes = null;
-		this.entity = entity;
-		this.domRepresentation = null;
-		this.form = null;
-		this.saxRepresentation = null;
-	}
+    /**
+     * Constructor.
+     * 
+     * @param entity
+     *            The payload of the message.
+     */
+    public Message(Representation entity) {
+        this.attributes = null;
+        this.entity = entity;
+        this.domRepresentation = null;
+        this.form = null;
+        this.saxRepresentation = null;
+    }
 
-	/**
+/**
 	 * Returns the modifiable map of attributes that can be used by developers
 	 * to save information relative to the message. Creates a new instance if no
 	 * one has been set. This is an easier alternative to the creation of a
@@ -112,195 +112,195 @@ public abstract class Message {
 	 * 
 	 * @return The modifiable attributes map.
 	 */
-	public Map<String, Object> getAttributes() {
-		if (this.attributes == null) {
-			this.attributes = new TreeMap<String, Object>();
-		}
+    public Map<String, Object> getAttributes() {
+        if (this.attributes == null) {
+            this.attributes = new TreeMap<String, Object>();
+        }
 
-		return this.attributes;
-	}
+        return this.attributes;
+    }
 
-	/**
-	 * Returns the converter service.
-	 * 
-	 * @return The converter service.
-	 * @deprecated Since 1.1, the ConverterService is deprecated, with no
-	 *             replacement as it doesn't fit well with content negotiation.
-	 *             Most users prefer to handle those conversion in Resource
-	 *             subclasses.
-	 */
-	@Deprecated
-	private org.restlet.service.ConverterService getConverterService() {
-		org.restlet.service.ConverterService result = null;
-		Application application = Application.getCurrent();
+    /**
+     * Returns the converter service.
+     * 
+     * @return The converter service.
+     * @deprecated Since 1.1, the ConverterService is deprecated, with no
+     *             replacement as it doesn't fit well with content negotiation.
+     *             Most users prefer to handle those conversion in Resource
+     *             subclasses.
+     */
+    @Deprecated
+    private org.restlet.service.ConverterService getConverterService() {
+        org.restlet.service.ConverterService result = null;
+        final Application application = Application.getCurrent();
 
-		if (application != null) {
-			result = application.getConverterService();
-		} else {
-			result = new org.restlet.service.ConverterService();
-		}
+        if (application != null) {
+            result = application.getConverterService();
+        } else {
+            result = new org.restlet.service.ConverterService();
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	/**
-	 * Returns the entity representation.
-	 * 
-	 * @return The entity representation.
-	 */
-	public Representation getEntity() {
-		return this.entity;
-	}
+    /**
+     * Returns the entity representation.
+     * 
+     * @return The entity representation.
+     */
+    public Representation getEntity() {
+        return this.entity;
+    }
 
-	/**
-	 * Returns the entity as a DOM representation.<br>
-	 * This method can be called several times and will always return the same
-	 * representation instance. Note that if the entity is large this method can
-	 * result in important memory consumption. In this case, consider using a
-	 * SAX representation.
-	 * 
-	 * @return The entity as a DOM representation.
-	 */
-	public DomRepresentation getEntityAsDom() {
-		if (this.domRepresentation == null) {
-			this.domRepresentation = (getEntity() == null) ? null
-					: new DomRepresentation(getEntity());
-		}
+    /**
+     * Returns the entity as a DOM representation.<br>
+     * This method can be called several times and will always return the same
+     * representation instance. Note that if the entity is large this method can
+     * result in important memory consumption. In this case, consider using a
+     * SAX representation.
+     * 
+     * @return The entity as a DOM representation.
+     */
+    public DomRepresentation getEntityAsDom() {
+        if (this.domRepresentation == null) {
+            this.domRepresentation = (getEntity() == null) ? null
+                    : new DomRepresentation(getEntity());
+        }
 
-		return this.domRepresentation;
-	}
+        return this.domRepresentation;
+    }
 
-	/**
-	 * Returns the entity as a form.<br>
-	 * This method can be called several times and will always return the same
-	 * form instance. Note that if the entity is large this method can result in
-	 * important memory consumption.
-	 * 
-	 * @return The entity as a form.
-	 */
-	public Form getEntityAsForm() {
-		if (this.form == null) {
-			this.form = new Form(getEntity());
-		}
+    /**
+     * Returns the entity as a form.<br>
+     * This method can be called several times and will always return the same
+     * form instance. Note that if the entity is large this method can result in
+     * important memory consumption.
+     * 
+     * @return The entity as a form.
+     */
+    public Form getEntityAsForm() {
+        if (this.form == null) {
+            this.form = new Form(getEntity());
+        }
 
-		return this.form;
-	}
+        return this.form;
+    }
 
-	/**
-	 * Returns the entity as a higher-level object. This object is created by
-	 * the Application's converter service. In order to use this method to
-	 * facilitate the parsing of entities, you need to set an instance of a
-	 * subclass of ConverterService onto your Restlet Application, overriding
-	 * the toObject(Representation) method. <br>
-	 * Note that this triggers the parsing of the entity.
-	 * 
-	 * @return The entity as a higher-level object.
-	 * @see org.restlet.service.ConverterService
-	 * @deprecated Since 1.1, the ConverterService is deprecated, with no
-	 *             replacement as it doesn't fit well with content negotiation.
-	 *             Most users prefer to handle those conversion in Resource
-	 *             subclasses.
-	 */
-	@Deprecated
-	public Object getEntityAsObject() {
-		return getConverterService().toObject(getEntity());
-	}
+    /**
+     * Returns the entity as a higher-level object. This object is created by
+     * the Application's converter service. In order to use this method to
+     * facilitate the parsing of entities, you need to set an instance of a
+     * subclass of ConverterService onto your Restlet Application, overriding
+     * the toObject(Representation) method. <br>
+     * Note that this triggers the parsing of the entity.
+     * 
+     * @return The entity as a higher-level object.
+     * @see org.restlet.service.ConverterService
+     * @deprecated Since 1.1, the ConverterService is deprecated, with no
+     *             replacement as it doesn't fit well with content negotiation.
+     *             Most users prefer to handle those conversion in Resource
+     *             subclasses.
+     */
+    @Deprecated
+    public Object getEntityAsObject() {
+        return getConverterService().toObject(getEntity());
+    }
 
-	/**
-	 * Returns the entity as a SAX representation.<br>
-	 * This method can be called several times and will always return the same
-	 * representation instance. Note that generally this type of representation
-	 * can only be parsed once. If you evaluate an XPath expression, it can also
-	 * only be done once. If you need to reuse the entity multiple times,
-	 * consider using the getEntityAsDom() method instead.
-	 * 
-	 * @return The entity as a SAX representation.
-	 */
-	public SaxRepresentation getEntityAsSax() {
-		if (this.saxRepresentation == null) {
-			this.saxRepresentation = (getEntity() == null) ? null
-					: new SaxRepresentation(getEntity());
-		}
+    /**
+     * Returns the entity as a SAX representation.<br>
+     * This method can be called several times and will always return the same
+     * representation instance. Note that generally this type of representation
+     * can only be parsed once. If you evaluate an XPath expression, it can also
+     * only be done once. If you need to reuse the entity multiple times,
+     * consider using the getEntityAsDom() method instead.
+     * 
+     * @return The entity as a SAX representation.
+     */
+    public SaxRepresentation getEntityAsSax() {
+        if (this.saxRepresentation == null) {
+            this.saxRepresentation = (getEntity() == null) ? null
+                    : new SaxRepresentation(getEntity());
+        }
 
-		return this.saxRepresentation;
-	}
+        return this.saxRepresentation;
+    }
 
-	/**
-	 * Indicates if a content is available and can be sent. Several conditions
-	 * must be met: the content must exists and have some available data.
-	 * 
-	 * @return True if a content is available and can be sent.
-	 */
-	public boolean isEntityAvailable() {
-		return (getEntity() != null) && (getEntity().getSize() != 0)
-				&& getEntity().isAvailable();
-	}
+    /**
+     * Indicates if a content is available and can be sent. Several conditions
+     * must be met: the content must exists and have some available data.
+     * 
+     * @return True if a content is available and can be sent.
+     */
+    public boolean isEntityAvailable() {
+        return (getEntity() != null) && (getEntity().getSize() != 0)
+                && getEntity().isAvailable();
+    }
 
-	/**
-	 * Releases the message's entity. If the entity is transient and hasn't been
-	 * read yet, all the remaining content will be discarded, any open socket,
-	 * channel, file or similar source of content will be immediately closed.
-	 */
-	public void release() {
-		if (getEntity() != null) {
-			getEntity().release();
-		}
-	}
+    /**
+     * Releases the message's entity. If the entity is transient and hasn't been
+     * read yet, all the remaining content will be discarded, any open socket,
+     * channel, file or similar source of content will be immediately closed.
+     */
+    public void release() {
+        if (getEntity() != null) {
+            getEntity().release();
+        }
+    }
 
-	/**
-	 * Sets the modifiable map of attributes
-	 * 
-	 * @param attributes
-	 *            The modifiable map of attributes
-	 */
-	public void setAttributes(Map<String, Object> attributes) {
-		this.attributes = attributes;
-	}
+    /**
+     * Sets the modifiable map of attributes
+     * 
+     * @param attributes
+     *            The modifiable map of attributes
+     */
+    public void setAttributes(Map<String, Object> attributes) {
+        this.attributes = attributes;
+    }
 
-	/**
-	 * Sets the entity from a higher-level object. This object is converted to a
-	 * representation using the Application's converter service. If you want to
-	 * use this method to facilitate the setting of entities, you need to
-	 * provide a custom implementation of the ConverterService class, overriding
-	 * the toRepresentation(Object) method.
-	 * 
-	 * @param object
-	 *            The higher-level object.
-	 * @see org.restlet.service.ConverterService
-	 * @deprecated Since 1.1, the ConverterService is deprecated, with no
-	 *             replacement as it doesn't fit well with content negotiation.
-	 *             Most users prefer to handle those conversion in Resource
-	 *             subclasses.
-	 */
-	@Deprecated
-	public void setEntity(Object object) {
-		if (object instanceof Representation) {
-			setEntity((Representation) object);
-		} else {
-			setEntity(getConverterService().toRepresentation(object));
-		}
-	}
+    /**
+     * Sets the entity from a higher-level object. This object is converted to a
+     * representation using the Application's converter service. If you want to
+     * use this method to facilitate the setting of entities, you need to
+     * provide a custom implementation of the ConverterService class, overriding
+     * the toRepresentation(Object) method.
+     * 
+     * @param object
+     *            The higher-level object.
+     * @see org.restlet.service.ConverterService
+     * @deprecated Since 1.1, the ConverterService is deprecated, with no
+     *             replacement as it doesn't fit well with content negotiation.
+     *             Most users prefer to handle those conversion in Resource
+     *             subclasses.
+     */
+    @Deprecated
+    public void setEntity(Object object) {
+        if (object instanceof Representation) {
+            setEntity((Representation) object);
+        } else {
+            setEntity(getConverterService().toRepresentation(object));
+        }
+    }
 
-	/**
-	 * Sets the entity representation.
-	 * 
-	 * @param entity
-	 *            The entity representation.
-	 */
-	public void setEntity(Representation entity) {
-		this.entity = entity;
-	}
+    /**
+     * Sets the entity representation.
+     * 
+     * @param entity
+     *            The entity representation.
+     */
+    public void setEntity(Representation entity) {
+        this.entity = entity;
+    }
 
-	/**
-	 * Sets a textual entity.
-	 * 
-	 * @param value
-	 *            The represented string.
-	 * @param mediaType
-	 *            The representation's media type.
-	 */
-	public void setEntity(String value, MediaType mediaType) {
-		setEntity(new StringRepresentation(value, mediaType));
-	}
+    /**
+     * Sets a textual entity.
+     * 
+     * @param value
+     *            The represented string.
+     * @param mediaType
+     *            The representation's media type.
+     */
+    public void setEntity(String value, MediaType mediaType) {
+        setEntity(new StringRepresentation(value, mediaType));
+    }
 
 }

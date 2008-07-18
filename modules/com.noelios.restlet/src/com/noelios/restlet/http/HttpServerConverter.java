@@ -18,12 +18,12 @@
 
 package com.noelios.restlet.http;
 
+import java.io.IOException;
 import java.security.cert.Certificate;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
-import java.io.IOException;
 
 import org.restlet.Context;
 import org.restlet.data.ChallengeRequest;
@@ -66,11 +66,12 @@ public class HttpServerConverter extends HttpConverter {
             }
 
             if (!entity.getEncodings().isEmpty()) {
-                StringBuilder value = new StringBuilder();
-                for (Encoding encoding : entity.getEncodings()) {
+                final StringBuilder value = new StringBuilder();
+                for (final Encoding encoding : entity.getEncodings()) {
                     if (!encoding.equals(Encoding.IDENTITY)) {
-                        if (value.length() > 0)
+                        if (value.length() > 0) {
                             value.append(", ");
+                        }
                         value.append(encoding.getName());
                     }
                     responseHeaders.add(HttpConstants.HEADER_CONTENT_ENCODING,
@@ -79,10 +80,11 @@ public class HttpServerConverter extends HttpConverter {
             }
 
             if (!entity.getLanguages().isEmpty()) {
-                StringBuilder value = new StringBuilder();
+                final StringBuilder value = new StringBuilder();
                 for (int i = 0; i < entity.getLanguages().size(); i++) {
-                    if (i > 0)
+                    if (i > 0) {
                         value.append(", ");
+                    }
                     value.append(entity.getLanguages().get(i).getName());
                 }
                 responseHeaders.add(HttpConstants.HEADER_CONTENT_LANGUAGE,
@@ -90,7 +92,7 @@ public class HttpServerConverter extends HttpConverter {
             }
 
             if (entity.getMediaType() != null) {
-                StringBuilder contentType = new StringBuilder(entity
+                final StringBuilder contentType = new StringBuilder(entity
                         .getMediaType().getName());
 
                 if (entity.getCharacterSet() != null) {
@@ -145,9 +147,9 @@ public class HttpServerConverter extends HttpConverter {
         if (response.getStatus().equals(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED)
                 || Method.OPTIONS.equals(response.getRequest().getMethod())) {
             // Format the "Allow" header
-            StringBuilder sb = new StringBuilder();
+            final StringBuilder sb = new StringBuilder();
             boolean first = true;
-            for (Method method : response.getAllowedMethods()) {
+            for (final Method method : response.getAllowedMethods()) {
                 if (first) {
                     first = false;
                 } else {
@@ -165,7 +167,7 @@ public class HttpServerConverter extends HttpConverter {
                 new Date(), DateUtils.FORMAT_RFC_1123.get(0)));
 
         // Add the cookie settings
-        List<CookieSetting> cookies = response.getCookieSettings();
+        final List<CookieSetting> cookies = response.getCookieSettings();
         for (int i = 0; i < cookies.size(); i++) {
             responseHeaders.add(HttpConstants.HEADER_SET_COOKIE, CookieUtils
                     .format(cookies.get(i)));
@@ -179,7 +181,7 @@ public class HttpServerConverter extends HttpConverter {
 
         // Set the security data
         if (response.getChallengeRequests() != null) {
-            for (ChallengeRequest challengeRequest : response
+            for (final ChallengeRequest challengeRequest : response
                     .getChallengeRequests()) {
                 responseHeaders.add(HttpConstants.HEADER_WWW_AUTHENTICATE,
                         AuthenticationUtils.format(challengeRequest));
@@ -188,13 +190,14 @@ public class HttpServerConverter extends HttpConverter {
 
         // Send the Vary header only to none-MSIE user agents as MSIE seems
         // to support partially and badly this header (cf issue 261).
-        if (!(response.getRequest().getClientInfo().getAgent() != null && response
+        if (!((response.getRequest().getClientInfo().getAgent() != null) && response
                 .getRequest().getClientInfo().getAgent().contains("MSIE"))) {
             // Add the Vary header if content negotiation was used
-            Set<Dimension> dimensions = response.getDimensions();
-            String vary = HttpUtils.createVaryHeader(dimensions);
-            if (vary != null)
+            final Set<Dimension> dimensions = response.getDimensions();
+            final String vary = HttpUtils.createVaryHeader(dimensions);
+            if (vary != null) {
                 responseHeaders.add(HttpConstants.HEADER_VARY, vary);
+            }
         }
     }
 
@@ -215,9 +218,9 @@ public class HttpServerConverter extends HttpConverter {
      *            The response returned.
      */
     protected void addEntityHeaders(HttpResponse response) {
-        Series<Parameter> responseHeaders = response.getHttpCall()
+        final Series<Parameter> responseHeaders = response.getHttpCall()
                 .getResponseHeaders();
-        Representation entity = response.getEntity();
+        final Representation entity = response.getEntity();
         addEntityHeaders(entity, responseHeaders);
     }
 
@@ -230,13 +233,13 @@ public class HttpServerConverter extends HttpConverter {
     @SuppressWarnings("unchecked")
     protected void addResponseHeaders(HttpResponse response) {
         // Add all the necessary response headers
-        Series<Parameter> responseHeaders = response.getHttpCall()
+        final Series<Parameter> responseHeaders = response.getHttpCall()
                 .getResponseHeaders();
         try {
             addResponseHeaders(response, responseHeaders);
 
             // Add user-defined extension headers
-            Series<Parameter> additionalHeaders = (Series<Parameter>) response
+            final Series<Parameter> additionalHeaders = (Series<Parameter>) response
                     .getAttributes().get(HttpConstants.ATTRIBUTE_HEADERS);
             addAdditionalHeaders(responseHeaders, additionalHeaders);
 
@@ -252,7 +255,7 @@ public class HttpServerConverter extends HttpConverter {
                 response.getHttpCall().setReasonPhrase(
                         response.getStatus().getDescription());
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             getLogger().log(Level.INFO,
                     "Exception intercepted while adding the response headers",
                     e);
@@ -348,7 +351,7 @@ public class HttpServerConverter extends HttpConverter {
             // Send the response to the client
             response.getHttpCall().sendResponse(response);
             response.getHttpCall().complete();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             if (response.getHttpCall().isConnectionBroken(e)) {
                 getLogger()
                         .log(
@@ -366,7 +369,7 @@ public class HttpServerConverter extends HttpConverter {
 
                 try {
                     response.getHttpCall().sendResponse(response);
-                } catch (IOException ioe) {
+                } catch (final IOException ioe) {
                     getLogger().log(Level.WARNING,
                             "Unable to send error response", ioe);
                 }
@@ -383,7 +386,7 @@ public class HttpServerConverter extends HttpConverter {
      * @return A new high-level uniform request.
      */
     public HttpRequest toRequest(HttpServerCall httpCall) {
-        HttpRequest result = new HttpRequest(getContext(), httpCall);
+        final HttpRequest result = new HttpRequest(getContext(), httpCall);
         result.getAttributes().put(HttpConstants.ATTRIBUTE_HEADERS,
                 httpCall.getRequestHeaders());
 
@@ -393,7 +396,7 @@ public class HttpServerConverter extends HttpConverter {
         }
 
         if (httpCall.isConfidential()) {
-            List<Certificate> clientCertificates = httpCall
+            final List<Certificate> clientCertificates = httpCall
                     .getSslClientCertificates();
             if (clientCertificates != null) {
                 result.getAttributes().put(
@@ -401,14 +404,14 @@ public class HttpServerConverter extends HttpConverter {
                         clientCertificates);
             }
 
-            String cipherSuite = httpCall.getSslCipherSuite();
+            final String cipherSuite = httpCall.getSslCipherSuite();
             if (cipherSuite != null) {
                 result.getAttributes()
                         .put(HttpConstants.ATTRIBUTE_HTTPS_CIPHER_SUITE,
                                 cipherSuite);
             }
 
-            Integer keySize = httpCall.getSslKeySize();
+            final Integer keySize = httpCall.getSslKeySize();
             if (keySize != null) {
                 result.getAttributes().put(
                         HttpConstants.ATTRIBUTE_HTTPS_KEY_SIZE, keySize);

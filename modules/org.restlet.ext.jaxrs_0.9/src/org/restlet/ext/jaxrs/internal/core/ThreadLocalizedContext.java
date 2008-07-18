@@ -99,15 +99,15 @@ public class ThreadLocalizedContext implements Request, HttpHeaders,
      * @return the wrapped CallContext for the current Thread. Never returns
      *         null.
      * @throws IllegalStateException
-     *                 if no {@link CallContext} was given for the current
-     *                 thread. If this occurs, their is a bug in this JAX-RS
-     *                 implementation.
+     *             if no {@link CallContext} was given for the current thread.
+     *             If this occurs, their is a bug in this JAX-RS implementation.
      * @see #set(CallContext)
      */
     public CallContext get() throws IllegalStateException {
-        Object callContext = getRequestAttributes().get(CALLCONTEXT_KEY);
-        if (callContext == null)
+        final Object callContext = getRequestAttributes().get(CALLCONTEXT_KEY);
+        if (callContext == null) {
             throw new IllegalStateException("No CallContext given until now");
+        }
         return (CallContext) callContext;
     }
 
@@ -174,6 +174,15 @@ public class ThreadLocalizedContext implements Request, HttpHeaders,
 
     /**
      * @return
+     * @see JaxRsUriInfo#getConnegExtension()
+     * @see UriInfo#getConnegExtension()
+     */
+    public String getConnegExtension() {
+        return get().getConnegExtension();
+    }
+
+    /**
+     * @return
      * @see CallContext#getCookies()
      * @see HttpHeaders#getCookies()
      */
@@ -230,15 +239,6 @@ public class ThreadLocalizedContext implements Request, HttpHeaders,
      */
     public String getPath(boolean decode) {
         return get().getPath(decode);
-    }
-
-    /**
-     * @return
-     * @see JaxRsUriInfo#getConnegExtension()
-     * @see UriInfo#getConnegExtension()
-     */
-    public String getConnegExtension() {
-        return get().getConnegExtension();
     }
 
     /**
@@ -399,16 +399,17 @@ public class ThreadLocalizedContext implements Request, HttpHeaders,
      * here before you can get it by {@link #get()}.
      * 
      * @param callContext
-     *                The CallContext for the current request; must not be null.
+     *            The CallContext for the current request; must not be null.
      * @see #reset()
      * @see #get()
      * @throws IllegalArgumentException
-     *                 if null was given.
+     *             if null was given.
      */
     public void set(CallContext callContext) throws IllegalArgumentException {
-        if (callContext == null)
+        if (callContext == null) {
             throw new IllegalArgumentException(
                     "You must give a CallContext here. null is not allowed");
+        }
         getRequestAttributes().put(CALLCONTEXT_KEY, callContext);
     }
 

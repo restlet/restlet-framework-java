@@ -33,9 +33,9 @@ public enum MemberType {
      * Writes the current object as an XML element using the given SAX writer.
      * 
      * @param writer
-     *                The SAX writer.
+     *            The SAX writer.
      * @param namespace
-     *                The element namespace URI.
+     *            The element namespace URI.
      * @throws SAXException
      */
     public void writeElement(XmlWriter writer, String namespace)

@@ -53,10 +53,11 @@ public class MailboxesResource extends BaseResource {
         if (getCurrentUser() != null) {
             // Authenticated access.
             if (getCurrentUser().isAdministrator()) {
-                mailboxes = getObjectsFacade().getMailboxes();
-                users = getObjectsFacade().getUsers();
+                this.mailboxes = getObjectsFacade().getMailboxes();
+                this.users = getObjectsFacade().getUsers();
             } else {
-                mailboxes = getObjectsFacade().getMailboxes(getCurrentUser());
+                this.mailboxes = getObjectsFacade().getMailboxes(
+                        getCurrentUser());
             }
         }
 
@@ -72,23 +73,23 @@ public class MailboxesResource extends BaseResource {
     @Override
     public void acceptRepresentation(Representation entity)
             throws ResourceException {
-        Form form = new Form(entity);
+        final Form form = new Form(entity);
 
         Mailbox mailbox = new Mailbox();
         System.out.println(Reference.decode(form.getFirstValue("nickname")));
         mailbox.setNickname(form.getFirstValue("nickname"));
-        User owner = getObjectsFacade().getUserById(
+        final User owner = getObjectsFacade().getUserById(
                 form.getFirstValue("ownerId"));
         mailbox.setOwner(owner);
         mailbox.setSenderName(owner.getFirstName() + " " + owner.getLastName());
         try {
             mailbox = getObjectsFacade().createMailbox(mailbox);
             getResponse().redirectSeeOther(getRequest().getResourceRef());
-        } catch (ObjectsException e) {
-            Map<String, Object> dataModel = new TreeMap<String, Object>();
+        } catch (final ObjectsException e) {
+            final Map<String, Object> dataModel = new TreeMap<String, Object>();
             dataModel.put("currentUser", getCurrentUser());
-            dataModel.put("mailboxes", mailboxes);
-            dataModel.put("users", users);
+            dataModel.put("mailboxes", this.mailboxes);
+            dataModel.put("users", this.users);
             dataModel.put("resourceRef", getRequest().getResourceRef());
             dataModel.put("rootRef", getRequest().getRootRef());
             dataModel.put("ownerId", form.getFirstValue("ownerId"));
@@ -105,10 +106,10 @@ public class MailboxesResource extends BaseResource {
      */
     @Override
     public Representation represent(Variant variant) throws ResourceException {
-        Map<String, Object> dataModel = new TreeMap<String, Object>();
+        final Map<String, Object> dataModel = new TreeMap<String, Object>();
         dataModel.put("currentUser", getCurrentUser());
-        dataModel.put("mailboxes", mailboxes);
-        dataModel.put("users", users);
+        dataModel.put("mailboxes", this.mailboxes);
+        dataModel.put("users", this.users);
         dataModel.put("resourceRef", getRequest().getResourceRef());
         dataModel.put("rootRef", getRequest().getRootRef());
 

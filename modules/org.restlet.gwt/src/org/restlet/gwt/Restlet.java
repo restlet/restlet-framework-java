@@ -55,7 +55,7 @@ public class Restlet extends Uniform {
      * Constructor.
      * 
      * @param context
-     *                The context.
+     *            The context.
      */
     public Restlet(Context context) {
         if (context == null) {
@@ -86,9 +86,9 @@ public class Restlet extends Uniform {
      * super.handle(request, response) before adding their own logic.
      * 
      * @param request
-     *                The request to handle.
+     *            The request to handle.
      * @param response
-     *                The response to update.
+     *            The response to update.
      */
     @Override
     public void handle(Request request, Response response) {
@@ -96,7 +96,7 @@ public class Restlet extends Uniform {
         if (isStopped()) {
             try {
                 start();
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 // Occurred while starting the Restlet
                 System.err.println(UNABLE_TO_START);
                 response.setStatus(Status.SERVER_ERROR_INTERNAL);
@@ -133,7 +133,7 @@ public class Restlet extends Uniform {
      * Sets the context.
      * 
      * @param context
-     *                The context.
+     *            The context.
      */
     public void setContext(Context context) {
         this.context = context;

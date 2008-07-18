@@ -84,30 +84,30 @@ public class JavaMailTestCase extends TestCase {
 
     private void printMail(Client client, String baseUri, String href)
             throws IOException {
-        Request request = new Request(Method.GET, baseUri + href);
+        final Request request = new Request(Method.GET, baseUri + href);
         request.setChallengeResponse(new ChallengeResponse(
                 ChallengeScheme.POP_BASIC, NOELIOS_LOGIN, NOELIOS_PASSWORD));
 
-        Response response = client.handle(request);
+        final Response response = client.handle(request);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         response.getEntity().write(System.out);
         System.out.println();
     }
 
     private void sendMail(Protocol protocol, Request request, boolean startTls) {
-        Client client = new Client(protocol);
+        final Client client = new Client(protocol);
         client.getContext().getParameters().add("debug", DEBUG);
         client.getContext().getParameters().add("startTls",
                 Boolean.toString(startTls).toLowerCase());
 
         request.setEntity(MAIL, MediaType.APPLICATION_XML);
-        Response response = client.handle(request);
+        final Response response = client.handle(request);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
     }
 
     @Override
     protected void setUp() throws Exception {
-        File keyStoreFile = new File(_TRUSTSTORE);
+        final File keyStoreFile = new File(_TRUSTSTORE);
 
         if (keyStoreFile.exists()) {
             System.setProperty("javax.net.ssl.trustStore", keyStoreFile
@@ -116,11 +116,11 @@ public class JavaMailTestCase extends TestCase {
     }
 
     public void testPop() {
-        Client client = new Client(Protocol.POP);
+        final Client client = new Client(Protocol.POP);
         client.getContext().getParameters().add("debug", DEBUG);
 
         Request request = new Request(Method.GET, YAHOO_POP);
-        ChallengeResponse challengeResponse = new ChallengeResponse(
+        final ChallengeResponse challengeResponse = new ChallengeResponse(
                 ChallengeScheme.POP_BASIC, YAHOO_ID, YAHOO_PASSWORD);
 
         request.setChallengeResponse(challengeResponse);
@@ -133,11 +133,12 @@ public class JavaMailTestCase extends TestCase {
 
         // Try to get then delete the first message, if it exists.
         if (response.isEntityAvailable()) {
-            DomRepresentation representation = response.getEntityAsDom();
-            NodeList nodes = representation.getNodes("/emails/email");
+            final DomRepresentation representation = response.getEntityAsDom();
+            final NodeList nodes = representation.getNodes("/emails/email");
             if (nodes.getLength() > 0) {
-                Node node = representation.getNode("/emails/email[1]/@href");
-                String mailUrl = YAHOO_POP + node.getNodeValue();
+                final Node node = representation
+                        .getNode("/emails/email[1]/@href");
+                final String mailUrl = YAHOO_POP + node.getNodeValue();
                 request = new Request(Method.GET, mailUrl);
                 request.setChallengeResponse(challengeResponse);
                 response = client.handle(request);
@@ -152,43 +153,43 @@ public class JavaMailTestCase extends TestCase {
     }
 
     public void testPops() throws IOException {
-        Client client = new Client(Protocol.POPS);
+        final Client client = new Client(Protocol.POPS);
         client.getContext().getParameters().add("debug", DEBUG);
 
-        String baseUri = NOELIOS_POPS;
-        Request request = new Request(Method.GET, baseUri);
+        final String baseUri = NOELIOS_POPS;
+        final Request request = new Request(Method.GET, baseUri);
         request.setChallengeResponse(new ChallengeResponse(
                 ChallengeScheme.POP_BASIC, NOELIOS_LOGIN, NOELIOS_PASSWORD));
 
-        Response response = client.handle(request);
+        final Response response = client.handle(request);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         response.getEntity().write(System.out);
         System.out.println();
 
-        DomRepresentation dom = response.getEntityAsDom();
-        for (Node node : dom.getNodes("/emails/email")) {
-            NamedNodeMap attrs = node.getAttributes();
-            String href = attrs.getNamedItem("href").getNodeValue();
+        final DomRepresentation dom = response.getEntityAsDom();
+        for (final Node node : dom.getNodes("/emails/email")) {
+            final NamedNodeMap attrs = node.getAttributes();
+            final String href = attrs.getNamedItem("href").getNodeValue();
             printMail(client, baseUri, href);
         }
     }
 
     public void testSmtp() {
-        Request request = new Request(Method.POST, YAHOO_SMTP);
+        final Request request = new Request(Method.POST, YAHOO_SMTP);
         request.setChallengeResponse(new ChallengeResponse(
                 ChallengeScheme.SMTP_PLAIN, YAHOO_ID, YAHOO_PASSWORD));
         sendMail(Protocol.SMTP, request, false);
     }
 
     public void testSmtps() {
-        Request request = new Request(Method.POST, GMAIL_SMTPS);
+        final Request request = new Request(Method.POST, GMAIL_SMTPS);
         request.setChallengeResponse(new ChallengeResponse(
                 ChallengeScheme.SMTP_PLAIN, GMAIL_LOGIN, GMAIL_PASSWORD));
         sendMail(Protocol.SMTPS, request, false);
     }
 
     public void testSmtpStartTls() {
-        Request request = new Request(Method.POST, NOELIOS_SMTP);
+        final Request request = new Request(Method.POST, NOELIOS_SMTP);
         request.setChallengeResponse(new ChallengeResponse(
                 ChallengeScheme.SMTP_PLAIN, NOELIOS_LOGIN, NOELIOS_PASSWORD));
         sendMail(Protocol.SMTP, request, true);

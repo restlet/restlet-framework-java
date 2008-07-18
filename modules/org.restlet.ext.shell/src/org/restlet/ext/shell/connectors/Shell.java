@@ -1,36 +1,50 @@
 package org.restlet.ext.shell.connectors;
 
-import org.restlet.ext.shell.helpers.ConsoleHelper;
-import java.io.InputStreamReader;
 import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.util.TreeSet;
+
 import javax.script.ScriptContext;
-import javax.script.ScriptException;
 import javax.script.ScriptEngine;
+import javax.script.ScriptException;
+
+import org.restlet.ext.shell.helpers.ConsoleHelper;
 
 class Shell {
 
-    private ConsoleHelper console;
-    private ScriptEngine scriptEngine;
-    private String prompt;
+    private final ConsoleHelper console;
+
+    private final ScriptEngine scriptEngine;
+
+    private final String prompt;
 
     public Shell(ScriptEngine aScriptEngine) {
         this(aScriptEngine, "> ");
     }
-    
+
     public Shell(ScriptEngine aScriptEngine, String aPrompt) {
-        scriptEngine = aScriptEngine;
-        prompt = aPrompt;
-        console = new ConsoleHelper();
-        scriptEngine.put("console", console);
+        this.scriptEngine = aScriptEngine;
+        this.prompt = aPrompt;
+        this.console = new ConsoleHelper();
+        this.scriptEngine.put("console", this.console);
+    }
+
+    public void executeScript(String script) {
+        try {
+            this.scriptEngine.eval(new InputStreamReader(new FileInputStream(
+                    script)));
+        } catch (final Exception e) {
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
     public void loop() {
         for (;;) {
             // update completor
-            console.setCandidates(new TreeSet<String>(scriptEngine.getBindings(ScriptContext.ENGINE_SCOPE).keySet()));
+            this.console.setCandidates(new TreeSet<String>(this.scriptEngine
+                    .getBindings(ScriptContext.ENGINE_SCOPE).keySet()));
 
-            String line = console.readLine(prompt);
+            final String line = this.console.readLine(this.prompt);
 
             if (line == null) {
                 break;
@@ -40,34 +54,26 @@ class Shell {
                 continue;
             }
 
-            if (scriptEngine.get(line) != null) {
-                System.out.println(scriptEngine.get(line));
+            if (this.scriptEngine.get(line) != null) {
+                System.out.println(this.scriptEngine.get(line));
             }
 
             try {
-                scriptEngine.eval(line);
-            } catch (ScriptException e) {
+                this.scriptEngine.eval(line);
+            } catch (final ScriptException e) {
                 System.err.println(e.getMessage());
             }
         }
 
-        console.writeLine("");
-    }
-
-    public void executeScript(String script) {
-        try {
-            scriptEngine.eval(new InputStreamReader(new FileInputStream(script)));
-        } catch (Exception e) {
-            throw new RuntimeException(e.getMessage());
-        }
+        this.console.writeLine("");
     }
 
     public void put(String key, Object value) {
-        scriptEngine.put(key, value);
+        this.scriptEngine.put(key, value);
     }
 
     public void writeLine(String line) {
-        console.writeLine(line);
+        this.console.writeLine(line);
     }
 
     public void writeLine(String formatter, Object... args) {

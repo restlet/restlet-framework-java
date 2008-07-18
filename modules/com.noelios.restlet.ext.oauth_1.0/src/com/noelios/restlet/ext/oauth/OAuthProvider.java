@@ -30,6 +30,28 @@ import net.oauth.OAuthMessage;
 public interface OAuthProvider {
 
     /**
+     * Add a consumer.
+     * 
+     * @param key
+     * @param consumer
+     */
+    void addConsumer(String key, OAuthConsumer consumer);
+
+    /**
+     * Generate an access token.
+     * 
+     * @param accessor
+     */
+    void generateAccessToken(OAuthAccessor accessor);
+
+    /**
+     * Generate a request token.
+     * 
+     * @param accessor
+     */
+    void generateRequestToken(OAuthAccessor accessor);
+
+    /**
      * Get the accessor from a request.
      * 
      * @param requestMessage
@@ -44,28 +66,6 @@ public interface OAuthProvider {
      * @return Consumer, null if none found.
      */
     OAuthConsumer getConsumer(OAuthMessage requestMessage);
-
-    /**
-     * Add a consumer.
-     * 
-     * @param key
-     * @param consumer
-     */
-    void addConsumer(String key, OAuthConsumer consumer);
-
-    /**
-     * Generate a request token.
-     * 
-     * @param accessor
-     */
-    void generateRequestToken(OAuthAccessor accessor);
-
-    /**
-     * Generate an access token.
-     * 
-     * @param accessor
-     */
-    void generateAccessToken(OAuthAccessor accessor);
 
     /**
      * Authorize a request token for a user.

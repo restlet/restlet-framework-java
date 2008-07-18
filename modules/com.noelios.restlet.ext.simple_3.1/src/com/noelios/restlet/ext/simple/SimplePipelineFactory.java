@@ -44,7 +44,7 @@ public class SimplePipelineFactory extends BufferedPipelineFactory {
      * Constructor.
      * 
      * @param size
-     *                The size of the output buffer used
+     *            The size of the output buffer used
      */
     public SimplePipelineFactory(int size) {
         super(size);
@@ -52,7 +52,7 @@ public class SimplePipelineFactory extends BufferedPipelineFactory {
 
     @Override
     public Pipeline getInstance(Socket sock) throws IOException {
-        Pipeline result = super.getInstance(sock);
+        final Pipeline result = super.getInstance(sock);
         result.put(PROPERTY_SOCKET, sock);
         return result;
     }

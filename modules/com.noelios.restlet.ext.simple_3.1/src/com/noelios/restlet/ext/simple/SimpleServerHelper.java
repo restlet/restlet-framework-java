@@ -29,7 +29,8 @@ import com.noelios.restlet.http.HttpServerHelper;
 
 /**
  * Abstract Simple Web server connector. Here is the list of parameters that are
- * supported: <table>
+ * supported:
+ * <table>
  * <tr>
  * <th>Parameter name</th>
  * <th>Value type</th>
@@ -97,7 +98,7 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
      * Constructor.
      * 
      * @param server
-     *                The server to help.
+     *            The server to help.
      */
     public SimpleServerHelper(Server server) {
         super(server);
@@ -109,7 +110,7 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
      * @return The Simple connection.
      */
     protected Connection getConnection() {
-        return connection;
+        return this.connection;
     }
 
     /**
@@ -128,7 +129,7 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
      * @return The Simple pipeline handler.
      */
     protected PipelineHandler getHandler() {
-        return handler;
+        return this.handler;
     }
 
     /**
@@ -147,7 +148,7 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
      * @return The server socket this server is listening to.
      */
     protected ServerSocket getSocket() {
-        return socket;
+        return this.socket;
     }
 
     /**
@@ -156,14 +157,14 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
      * @return True if this service is acting in HTTP or HTTPS mode.
      */
     protected boolean isConfidential() {
-        return confidential;
+        return this.confidential;
     }
 
     /**
      * Indicates if this service is acting in HTTP or HTTPS mode.
      * 
      * @param confidential
-     *                True if this service is acting in HTTP or HTTPS mode.
+     *            True if this service is acting in HTTP or HTTPS mode.
      */
     protected void setConfidential(boolean confidential) {
         this.confidential = confidential;
@@ -173,7 +174,7 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
      * Sets the Simple connection.
      * 
      * @param connection
-     *                The Simple connection.
+     *            The Simple connection.
      */
     protected void setConnection(Connection connection) {
         this.connection = connection;
@@ -183,7 +184,7 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
      * Sets the Simple pipeline handler.
      * 
      * @param handler
-     *                The Simple pipeline handler.
+     *            The Simple pipeline handler.
      */
     protected void setHandler(PipelineHandler handler) {
         this.handler = handler;
@@ -193,7 +194,7 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
      * Sets the server socket this server is listening to.
      * 
      * @param socket
-     *                The server socket this server is listening to.
+     *            The server socket this server is listening to.
      */
     protected void setSocket(ServerSocket socket) {
         this.socket = socket;
@@ -210,12 +211,13 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
     public synchronized void stop() throws Exception {
         getSocket().close();
         setSocket(null);
-        this.setHandler(null);
-        this.setConnection(null);
+        setHandler(null);
+        setConnection(null);
 
         // For further information on how to shutdown a Simple
         // server, see
-        // http://sourceforge.net/mailarchive/forum.php?thread_id=10138257&forum_id=38791
+        // http://sourceforge.net/mailarchive/forum.php?thread_id=10138257&
+        // forum_id=38791
         // There seems to be place for improvement in this method.
     }
 

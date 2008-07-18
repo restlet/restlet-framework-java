@@ -47,34 +47,37 @@ public class SimpleTrainTest extends JaxRsTestCase {
     }
 
     public void testGetHtmlText() throws Exception {
-        if (ONLY_M2 || ONLY_TEXT_ALL)
+        if (ONLY_M2 || ONLY_TEXT_ALL) {
             return;
-        Response response = get(MediaType.TEXT_HTML);
+        }
+        final Response response = get(MediaType.TEXT_HTML);
         sysOutEntityIfError(response);
         assertTrue(response.getStatus().isSuccess());
-        Representation entity = response.getEntity();
+        final Representation entity = response.getEntity();
         assertEquals(SimpleTrain.RERP_HTML_TEXT, entity.getText());
         assertEqualMediaType(MediaType.TEXT_HTML, entity.getMediaType());
     }
 
     public void testGetPlainText() throws Exception {
-        if (ONLY_M2 || ONLY_TEXT_ALL)
+        if (ONLY_M2 || ONLY_TEXT_ALL) {
             return;
-        Response response = get(MediaType.TEXT_PLAIN);
+        }
+        final Response response = get(MediaType.TEXT_PLAIN);
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        Representation entity = response.getEntity();
+        final Representation entity = response.getEntity();
         assertEquals(SimpleTrain.RERP_PLAIN_TEXT, entity.getText());
         assertEqualMediaType(MediaType.TEXT_PLAIN, entity.getMediaType());
     }
 
     public void testGetTextAll() throws Exception {
-        if (ONLY_M2)
+        if (ONLY_M2) {
             return;
+        }
         Response response = get(MediaType.TEXT_ALL);
         sysOutEntityIfError(response);
         Representation representation = response.getEntity();
-        MediaType mediaType = representation.getMediaType();
+        final MediaType mediaType = representation.getMediaType();
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertTrue(mediaType.equals(MediaType.TEXT_PLAIN, true)
                 || mediaType.equals(MediaType.TEXT_HTML, true));
@@ -88,44 +91,47 @@ public class SimpleTrainTest extends JaxRsTestCase {
     }
 
     public void testGetTextMultiple1() throws Exception {
-        if (ONLY_M2 || ONLY_TEXT_ALL)
+        if (ONLY_M2 || ONLY_TEXT_ALL) {
             return;
-        Response response = accessServer(Method.GET, SimpleTrain.class,
+        }
+        final Response response = accessServer(Method.GET, SimpleTrain.class,
                 TestUtils.createList(new Object[] { PREF_TEXTPLAIN_QUAL05,
                         MediaType.TEXT_CALENDAR }));
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        Representation entity = response.getEntity();
+        final Representation entity = response.getEntity();
         assertEqualMediaType(MediaType.TEXT_PLAIN, entity.getMediaType());
         assertEquals(SimpleTrain.RERP_PLAIN_TEXT, entity.getText());
     }
 
     public void testGetTextMultiple2() throws Exception {
-        if (ONLY_TEXT_ALL)
+        if (ONLY_TEXT_ALL) {
             return;
-        Response response = accessServer(Method.GET, SimpleTrain.class,
+        }
+        final Response response = accessServer(Method.GET, SimpleTrain.class,
                 TestUtils.createList(new Object[] { PREF_TEXTPLAIN_QUAL05,
                         MediaType.TEXT_HTML }));
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        Representation representation = response.getEntity();
+        final Representation representation = response.getEntity();
         assertEqualMediaType(MediaType.TEXT_HTML, representation.getMediaType());
         assertEquals(SimpleTrain.RERP_HTML_TEXT, representation.getText());
     }
 
     public void testHead() throws Exception {
-        if (ONLY_M2 || ONLY_TEXT_ALL)
+        if (ONLY_M2 || ONLY_TEXT_ALL) {
             return;
-        Response responseHead = accessServer(Method.HEAD, SimpleTrain.class,
-                TestUtils.createList(new Object[] { PREF_TEXTPLAIN_QUAL05,
-                        MediaType.TEXT_HTML }));
-        Response responseGett = accessServer(Method.GET, SimpleTrain.class,
-                TestUtils.createList(new Object[] { PREF_TEXTPLAIN_QUAL05,
-                        MediaType.TEXT_HTML }));
+        }
+        final Response responseHead = accessServer(Method.HEAD,
+                SimpleTrain.class, TestUtils.createList(new Object[] {
+                        PREF_TEXTPLAIN_QUAL05, MediaType.TEXT_HTML }));
+        final Response responseGett = accessServer(Method.GET,
+                SimpleTrain.class, TestUtils.createList(new Object[] {
+                        PREF_TEXTPLAIN_QUAL05, MediaType.TEXT_HTML }));
         assertEquals(Status.SUCCESS_OK, responseHead.getStatus());
         assertEquals(Status.SUCCESS_OK, responseGett.getStatus());
-        Representation entityHead = responseHead.getEntity();
-        Representation entityGett = responseGett.getEntity();
+        final Representation entityHead = responseHead.getEntity();
+        final Representation entityGett = responseGett.getEntity();
         assertNotNull(entityHead);
         assertNotNull(entityGett);
         assertEqualMediaType(MediaType.TEXT_HTML, entityGett.getMediaType());
@@ -133,13 +139,13 @@ public class SimpleTrainTest extends JaxRsTestCase {
     }
 
     public void testOptions() throws Exception {
-        Response response = options();
+        final Response response = options();
         sysOutEntityIfError(response);
         assertAllowedMethod(response, Method.GET);
     }
 
     public void testTemplParamsDecoded() throws Exception {
-        String deEncoded = "decode";
+        final String deEncoded = "decode";
         Response response = get(deEncoded + "/66");
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
@@ -157,7 +163,7 @@ public class SimpleTrainTest extends JaxRsTestCase {
     }
 
     public void testTemplParamsEncoded() throws Exception {
-        String deEncoded = "encode";
+        final String deEncoded = "encode";
         Response response = get(deEncoded + "/66");
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());

@@ -41,7 +41,7 @@ public class MessagesRepresentation extends DomRepresentation {
      * Constructor.
      * 
      * @param messages
-     *                The list of JavaMail messages to format.
+     *            The list of JavaMail messages to format.
      * @throws IOException
      * @throws MessagingException
      */
@@ -50,14 +50,14 @@ public class MessagesRepresentation extends DomRepresentation {
         super(MediaType.APPLICATION_XML);
 
         // Format the list
-        Document dom = getDocument();
-        Element emails = dom.createElement("emails");
+        final Document dom = getDocument();
+        final Element emails = dom.createElement("emails");
         dom.appendChild(emails);
 
         // Retrieve the list of messages
         Element email;
-        for (int i = 0; i < messages.length; i++) {
-            String uid = inbox.getUID(messages[i]);
+        for (final Message message : messages) {
+            final String uid = inbox.getUID(message);
 
             email = dom.createElement("email");
             email.setAttribute("href", "/" + uid);

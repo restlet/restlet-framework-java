@@ -38,42 +38,43 @@ public class RepresentationTest extends JaxRsTestCase {
     }
 
     public void testDecodePost() throws Exception {
-        Representation repr = new StringRepresentation("abcde");
-        Response response = post("reprDecode", repr);
+        final Representation repr = new StringRepresentation("abcde");
+        final Response response = post("reprDecode", repr);
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("abcde", response.getEntity().getText());
-    }
-
-    public void testReprGet() {
-        Response response = get("repr");
-        sysOutEntityIfError(response);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
-    }
-
-    public void testReprPost() throws IOException {
-        Response response = post("repr", new StringRepresentation("abcde"));
-        sysOutEntityIfError(response);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEquals("abcde", response.getEntity().getText());
-    }
-
-    public void testStringGet() {
-        Response response = get("reprString");
-        sysOutEntityIfError(response);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
     }
 
     public void testJaxbPost() throws IOException {
         Response response = post("jaxb", new StringRepresentation("abcdef"));
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        String packageName = Person.class.getPackage().getName();
+        final String packageName = Person.class.getPackage().getName();
         assertEquals(packageName, response.getEntity().getText());
 
         response = post("jaxb", (Representation) null);
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("null", response.getEntity().getText());
+    }
+
+    public void testReprGet() {
+        final Response response = get("repr");
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+    }
+
+    public void testReprPost() throws IOException {
+        final Response response = post("repr",
+                new StringRepresentation("abcde"));
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("abcde", response.getEntity().getText());
+    }
+
+    public void testStringGet() {
+        final Response response = get("reprString");
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
     }
 }

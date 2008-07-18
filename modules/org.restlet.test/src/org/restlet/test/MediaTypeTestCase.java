@@ -42,17 +42,17 @@ public class MediaTypeTestCase extends RestletTestCase {
         assertTrue(mt1.equals(mt2));
         assertEquals(mt1, mt2);
 
-        Series<Parameter> mediaParams1 = new Form();
+        final Series<Parameter> mediaParams1 = new Form();
         mediaParams1.add(new Parameter("charset", "ISO-8859-1"));
-        MediaType mt1Bis = new MediaType("application/xml", mediaParams1);
+        final MediaType mt1Bis = new MediaType("application/xml", mediaParams1);
 
-        Series<Parameter> mediaParams2 = new Form();
+        final Series<Parameter> mediaParams2 = new Form();
         mediaParams2.add(new Parameter("charset", "ISO-8859-1"));
-        MediaType mt2Bis = new MediaType("application/xml", mediaParams2);
+        final MediaType mt2Bis = new MediaType("application/xml", mediaParams2);
 
-        Series<Parameter> mediaParams3 = new Form();
+        final Series<Parameter> mediaParams3 = new Form();
         mediaParams3.add(new Parameter("charset", "ISO-8859-15"));
-        MediaType mt3 = new MediaType("application/xml", mediaParams3);
+        final MediaType mt3 = new MediaType("application/xml", mediaParams3);
 
         assertTrue(mt1Bis.equals(mt2Bis));
         assertEquals(mt1, mt2);
@@ -123,13 +123,13 @@ public class MediaTypeTestCase extends RestletTestCase {
         MediaType mt2 = new MediaType("application/xml2");
         assertFalse(mt1.equals(mt2));
 
-        Series<Parameter> mediaParams1 = new Form();
+        final Series<Parameter> mediaParams1 = new Form();
         mediaParams1.add(new Parameter("charset", "ISO-8859-1"));
-        MediaType mt1Bis = new MediaType("application/xml", mediaParams1);
+        final MediaType mt1Bis = new MediaType("application/xml", mediaParams1);
 
-        Series<Parameter> mediaParams3 = new Form();
+        final Series<Parameter> mediaParams3 = new Form();
         mediaParams3.add(new Parameter("charset", "ISO-8859-15"));
-        MediaType mt3 = new MediaType("application/xml", mediaParams3);
+        final MediaType mt3 = new MediaType("application/xml", mediaParams3);
 
         assertFalse(mt1Bis.equals(mt1));
         assertFalse(mt1Bis.equals(mt3));
@@ -147,7 +147,8 @@ public class MediaTypeTestCase extends RestletTestCase {
         assertSame(MediaType.APPLICATION_XML, MediaType
                 .valueOf("application/xml"));
         assertSame(MediaType.ALL, MediaType.valueOf("*/*"));
-        MediaType newType = MediaType.valueOf("application/x-restlet-test");
+        final MediaType newType = MediaType
+                .valueOf("application/x-restlet-test");
         assertEquals("application", newType.getMainType());
         assertEquals("x-restlet-test", newType.getSubType());
         assertEquals("application/x-restlet-test", newType.getName());
@@ -155,7 +156,7 @@ public class MediaTypeTestCase extends RestletTestCase {
         // Should not have got registered by call to valueOf() alone
         assertNotSame(newType, MediaType.valueOf("application/x-restlet-test"));
 
-        MediaType registeredType = MediaType.register(
+        final MediaType registeredType = MediaType.register(
                 "application/x-restlet-test", "Restlet testcase");
         assertNotSame(newType, registeredType); // didn't touch old value
         assertEquals("application/x-restlet-test", registeredType.getName());

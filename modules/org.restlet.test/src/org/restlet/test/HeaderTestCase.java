@@ -41,9 +41,9 @@ public class HeaderTestCase extends RestletTestCase {
     public static class TestHeaderRestlet extends Restlet {
         @Override
         public void handle(Request request, Response response) {
-            StringBuilder stb = new StringBuilder();
-            Form headers = getHttpHeaders(request);
-            for (Parameter header : headers) {
+            final StringBuilder stb = new StringBuilder();
+            final Form headers = getHttpHeaders(request);
+            for (final Parameter header : headers) {
                 if (header.getName().equals(TEST_HEADER)) {
                     stb.append(header.getValue());
                     stb.append('\n');
@@ -67,7 +67,7 @@ public class HeaderTestCase extends RestletTestCase {
      * Returns the list of http headers of a request as a Form.
      * 
      * @param request
-     *                The request.
+     *            The request.
      * @return The list of headers as a Form object.
      */
     private static Form getHttpHeaders(Request request) {
@@ -86,15 +86,17 @@ public class HeaderTestCase extends RestletTestCase {
      * response object.
      * 
      * @param parameters
-     *                The list of parameters used to build the request.
+     *            The list of parameters used to build the request.
      * @return The response of the request.
      */
     private Response getWithParams(Parameter... parameters) {
-        Client client = new Client(Protocol.HTTP);
-        Request request = new Request(Method.GET, "http://localhost:" + PORT);
-        Form headers = getHttpHeaders(request);
-        for (Parameter p : parameters)
+        final Client client = new Client(Protocol.HTTP);
+        final Request request = new Request(Method.GET, "http://localhost:"
+                + PORT);
+        final Form headers = getHttpHeaders(request);
+        for (final Parameter p : parameters) {
             headers.add(p);
+        }
 
         return client.handle(request);
     }
@@ -104,35 +106,37 @@ public class HeaderTestCase extends RestletTestCase {
         if (this.component == null) {
             this.component = new Component();
             this.component.getServers().add(Protocol.HTTP, PORT);
-            component.getDefaultHost().attachDefault(new TestHeaderRestlet());
+            this.component.getDefaultHost().attachDefault(
+                    new TestHeaderRestlet());
         }
-        if (!component.isStarted()) {
-            component.start();
+        if (!this.component.isStarted()) {
+            this.component.start();
         }
     }
 
     @Override
     public void tearDown() throws Exception {
-        component.stop();
+        this.component.stop();
     }
 
     /** test with no test header */
     public void test0() throws Exception {
-        Response response = getWithParams();
+        final Response response = getWithParams();
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals(null, response.getEntity().getText());
     }
 
     /** test with one test header */
     public void test1() throws Exception {
-        Response response = getWithParams(new Parameter(TEST_HEADER, "a"));
+        final Response response = getWithParams(new Parameter(TEST_HEADER, "a"));
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("a\n", response.getEntity().getText());
     }
 
     /** test with two test headers */
     public void test2() throws Exception {
-        Response response = getWithParams(new Parameter(TEST_HEADER, "a"),
+        final Response response = getWithParams(
+                new Parameter(TEST_HEADER, "a"),
                 new Parameter(TEST_HEADER, "b"));
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("a\nb\n", response.getEntity().getText());

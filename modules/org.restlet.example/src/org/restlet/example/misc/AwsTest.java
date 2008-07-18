@@ -38,14 +38,14 @@ import org.restlet.util.Series;
 public class AwsTest {
     public static void main(String[] args) throws Exception {
         // Prepare the request
-        Request request = new Request(Method.GET,
+        final Request request = new Request(Method.GET,
                 "http://s3.amazonaws.com/quotes/nelson");
         request.setChallengeResponse(new ChallengeResponse(
                 ChallengeScheme.HTTP_AWS_S3, "44CF9590006BF252F707",
                 "OtxrzxIsfpFjA7SwPzILwy8Bw21TLhquhboDYROV"));
 
         // Add some extra headers
-        Series<Parameter> extraHeaders = new Form();
+        final Series<Parameter> extraHeaders = new Form();
         extraHeaders.add("X-Amz-Meta-Author", "foo@bar.com");
         extraHeaders.add("X-Amz-Magic", "abracadabra");
 
@@ -59,11 +59,11 @@ public class AwsTest {
         request.getAttributes().put("org.restlet.http.headers", extraHeaders);
 
         // Handle it using an HTTP client connector
-        Client client = new Client(Protocol.HTTP);
-        Response response = client.handle(request);
+        final Client client = new Client(Protocol.HTTP);
+        final Response response = client.handle(request);
 
         // Write the response entity on the console
-        Representation output = response.getEntity();
+        final Representation output = response.getEntity();
         output.write(System.out);
     }
 

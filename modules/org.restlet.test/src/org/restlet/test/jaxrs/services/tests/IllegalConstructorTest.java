@@ -34,19 +34,19 @@ import org.restlet.test.jaxrs.services.resources.IllegalConstructorResource;
 public class IllegalConstructorTest extends JaxRsTestCase {
 
     @Override
-    protected Class<?> getRootResourceClass() {
-        return IllegalConstructorResource.class;
-    }
-
-    @Override
     @SuppressWarnings("unchecked")
     protected Set<Class<?>> getProvClasses() {
         return Util.createSet(ParamConstructorProvider.class,
                 EntityConstructorProvider.class);
     }
 
+    @Override
+    protected Class<?> getRootResourceClass() {
+        return IllegalConstructorResource.class;
+    }
+
     public void testNullSubResource() throws Exception {
-        Response response = get();
+        final Response response = get();
         assertTrue(response.getStatus().isError());
     }
 }

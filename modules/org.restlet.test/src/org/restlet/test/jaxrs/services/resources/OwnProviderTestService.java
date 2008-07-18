@@ -37,7 +37,7 @@ public class OwnProviderTestService {
     @GET
     @Produces("application/crazyType")
     public Response get() {
-        Person person = new Person("abc", "def");
+        final Person person = new Person("abc", "def");
         return Response.ok(person).header("h1", "h1v").build();
     }
 }

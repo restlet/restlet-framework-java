@@ -12,17 +12,17 @@ import org.restlet.data.Response;
 public class SimpleHttpServerWithApplication {
     public static void main(String[] args) {
 
-        Application application = new Application() {
+        final Application application = new Application() {
 
             @Override
             public synchronized Restlet createRoot() {
                 // TODO note that the router is intantiated with the
                 // application's context.
-                Router router = new Router(getContext());
+                final Router router = new Router(getContext());
 
                 // Creates a Restlet whose response to each request is "Hello,
                 // world".
-                Restlet restlet = new Restlet() {
+                final Restlet restlet = new Restlet() {
                     @Override
                     public void handle(Request request, Response response) {
                         response
@@ -34,12 +34,12 @@ public class SimpleHttpServerWithApplication {
             }
         };
 
-        Component component = new Component();
+        final Component component = new Component();
         component.getServers().add(Protocol.HTTP);
         component.getDefaultHost().attach(application);
         try {
             component.start();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             e.printStackTrace();
         }
     }

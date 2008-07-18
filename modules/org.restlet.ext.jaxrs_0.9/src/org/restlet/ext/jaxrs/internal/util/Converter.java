@@ -60,13 +60,14 @@ public class Converter {
      * Returns the charset of the MediaType as String
      * 
      * @param mediaType
-     *                JaxRs-MediaType
+     *            JaxRs-MediaType
      * @return the charset
      */
     public static String getCharset(MediaType mediaType) {
-        Map<String, String> parameters = mediaType.getParameters();
-        if (parameters == null)
+        final Map<String, String> parameters = mediaType.getParameters();
+        if (parameters == null) {
             return null;
+        }
         return parameters.get(CHARSET_PARAM);
     }
 
@@ -74,15 +75,17 @@ public class Converter {
      * Creates a MediaType without any parameters.
      * 
      * @param mediaType
-     *                A MediaType, perhaps with parameters.
+     *            A MediaType, perhaps with parameters.
      * @return Creates a MediaType without any parameters.
      */
     public static MediaType getMediaTypeWithoutParams(MediaType mediaType) {
-        if (mediaType == null)
+        if (mediaType == null) {
             return null;
-        Map<String, String> parameters = mediaType.getParameters();
-        if (parameters == null || parameters.isEmpty())
+        }
+        final Map<String, String> parameters = mediaType.getParameters();
+        if ((parameters == null) || parameters.isEmpty()) {
             return mediaType;
+        }
         return new MediaType(mediaType.getType(), mediaType.getSubtype());
     }
 
@@ -90,16 +93,18 @@ public class Converter {
      * Creates a MediaType without any parameters.
      * 
      * @param mediaType
-     *                A MediaType, perhaps with parameters.
+     *            A MediaType, perhaps with parameters.
      * @return Creates a MediaType without any parameters.
      */
     public static org.restlet.data.MediaType getMediaTypeWithoutParams(
             org.restlet.data.MediaType mediaType) {
-        if (mediaType == null)
+        if (mediaType == null) {
             return null;
-        Series<Parameter> parameters = mediaType.getParameters();
-        if (parameters == null || parameters.isEmpty())
+        }
+        final Series<Parameter> parameters = mediaType.getParameters();
+        if ((parameters == null) || parameters.isEmpty()) {
             return mediaType;
+        }
         return new org.restlet.data.MediaType(mediaType.getName());
     }
 
@@ -107,13 +112,14 @@ public class Converter {
      * Returns the Charset of the MediaType as String
      * 
      * @param mediaType
-     *                JaxRs-MediaType
+     *            JaxRs-MediaType
      * @return the charset
      */
     public static CharacterSet getRestletCharacterSet(MediaType mediaType) {
-        String charset = getCharset(mediaType);
-        if (charset == null)
+        final String charset = getCharset(mediaType);
+        if (charset == null) {
             return null;
+        }
         return CharacterSet.valueOf(charset);
     }
 
@@ -124,13 +130,15 @@ public class Converter {
      * @return the converted Http headers or null, if null was given.
      */
     public static Form toForm(MultivaluedMap<String, String> mmap) {
-        if (mmap == null)
+        if (mmap == null) {
             return null;
-        Form form = new Form();
-        for (Map.Entry<String, List<String>> entry : mmap.entrySet()) {
-            String name = entry.getKey();
-            for (String value : entry.getValue())
+        }
+        final Form form = new Form();
+        for (final Map.Entry<String, List<String>> entry : mmap.entrySet()) {
+            final String name = entry.getKey();
+            for (final String value : entry.getValue()) {
                 form.add(name, value);
+            }
         }
         return form;
     }
@@ -143,7 +151,7 @@ public class Converter {
      * @return
      */
     public static Form toFormEncoded(String queryString, Logger logger) {
-        Form form = new Form();
+        final Form form = new Form();
         Engine.getInstance().parse(logger, form, queryString, null, false, '&');
         return form;
     }
@@ -152,12 +160,13 @@ public class Converter {
      * Converts a Restlet Cookie to a JAX-RS Cookie
      * 
      * @param restletCookie
-     *                the Restlet Cookie
+     *            the Restlet Cookie
      * @return the JAX-RS Cookie
      */
     public static Cookie toJaxRsCookie(org.restlet.data.Cookie restletCookie) {
-        if (restletCookie == null)
+        if (restletCookie == null) {
             return null;
+        }
         return new Cookie(restletCookie.getName(), restletCookie.getValue(),
                 restletCookie.getPath(), restletCookie.getDomain(),
                 restletCookie.getVersion());
@@ -167,12 +176,13 @@ public class Converter {
      * Converts a Restlet-EntityTag to a JAX-RS-EntityTag
      * 
      * @param restletEntityTag
-     *                the Restlet-EntityTag to convert.
+     *            the Restlet-EntityTag to convert.
      * @return The corresponding JAX-RS-Entity-Tag
      */
     public static EntityTag toJaxRsEntityTag(Tag restletEntityTag) {
-        if (restletEntityTag == null)
+        if (restletEntityTag == null) {
             return null;
+        }
         return new EntityTag(restletEntityTag.getName(), restletEntityTag
                 .isWeak());
     }
@@ -181,9 +191,9 @@ public class Converter {
      * Convert a Restlet MediaType to a JAX-RS MediaType.
      * 
      * @param restletMediaType
-     *                the MediaType to convert.
+     *            the MediaType to convert.
      * @param restletCharacterSet
-     *                the CharacterSet for the MediaType; may be null.
+     *            the CharacterSet for the MediaType; may be null.
      * @return the converted MediaType
      */
     public static MediaType toJaxRsMediaType(
@@ -195,20 +205,23 @@ public class Converter {
      * Convert a Restlet MediaType to a JAX-RS MediaType.
      * 
      * @param restletMediaType
-     *                the MediaType to convert.
+     *            the MediaType to convert.
      * @param restletCharacterSet
-     *                the CharacterSet for the MediaType; may be null.
+     *            the CharacterSet for the MediaType; may be null.
      * @return the converted MediaType
      */
     public static MediaType toJaxRsMediaType(
             org.restlet.data.MediaType restletMediaType,
             org.restlet.data.CharacterSet restletCharacterSet) {
-        if (restletMediaType == null)
+        if (restletMediaType == null) {
             return null;
-        Map<String, String> parameters = toMap(restletMediaType.getParameters());
-        if (restletCharacterSet != null)
+        }
+        final Map<String, String> parameters = toMap(restletMediaType
+                .getParameters());
+        if (restletCharacterSet != null) {
             parameters.put(Converter.CHARSET_PARAM, restletCharacterSet
                     .getName());
+        }
         return new MediaType(restletMediaType.getMainType(), restletMediaType
                 .getSubType(), parameters);
     }
@@ -222,8 +235,9 @@ public class Converter {
      */
     public static NewCookie toJaxRsNewCookie(CookieSetting cookieSetting)
             throws IllegalArgumentException {
-        if (cookieSetting == null)
+        if (cookieSetting == null) {
             return null;
+        }
         return new NewCookie(cookieSetting.getName(), cookieSetting.getValue(),
                 cookieSetting.getPath(), cookieSetting.getDomain(),
                 cookieSetting.getVersion(), cookieSetting.getComment(),
@@ -236,17 +250,17 @@ public class Converter {
      * @param restletVariant
      * @return the JAX-RS Variant
      * @throws IllegalArgumentException
-     *                 If the given Variant does not contain exactly one
-     *                 language and one
+     *             If the given Variant does not contain exactly one language
+     *             and one
      */
     public static javax.ws.rs.core.Variant toJaxRsVariant(
             org.restlet.resource.Variant restletVariant)
             throws IllegalArgumentException {
-        MediaType mediaType = Converter.toJaxRsMediaType(restletVariant
+        final MediaType mediaType = Converter.toJaxRsMediaType(restletVariant
                 .getMediaType(), restletVariant.getCharacterSet());
-        Locale language = toLocale(Util.getOnlyMetadataName(restletVariant
-                .getLanguages()));
-        String encoding = Util.getOnlyMetadataName(restletVariant
+        final Locale language = toLocale(Util
+                .getOnlyMetadataName(restletVariant.getLanguages()));
+        final String encoding = Util.getOnlyMetadataName(restletVariant
                 .getEncodings());
         return new javax.ws.rs.core.Variant(mediaType, language, encoding);
     }
@@ -299,22 +313,27 @@ public class Converter {
      * @see Locale
      */
     public static Locale toLocale(String language) {
-        if (language == null || language.length() == 0)
+        if ((language == null) || (language.length() == 0)) {
             return null;
-        StringTokenizer stt = new StringTokenizer(language, "_", true);
-        String lang = stt.nextToken();
-        if (stt.hasMoreTokens())
+        }
+        final StringTokenizer stt = new StringTokenizer(language, "_", true);
+        final String lang = stt.nextToken();
+        if (stt.hasMoreTokens()) {
             stt.nextToken(); // skip "_"
-        if (!stt.hasMoreTokens())
+        }
+        if (!stt.hasMoreTokens()) {
             return new Locale(lang);
+        }
         String country = stt.nextToken();
-        if(country.equals("_"))
+        if (country.equals("_")) {
             country = "";
-        else if (stt.hasMoreTokens())
+        } else if (stt.hasMoreTokens()) {
             stt.nextToken(); // skip "_"
-        if (!stt.hasMoreTokens())
+        }
+        if (!stt.hasMoreTokens()) {
             return new Locale(lang, country);
-        String variant = stt.nextToken();
+        }
+        final String variant = stt.nextToken();
         return new Locale(lang, country, variant);
     }
 
@@ -323,10 +342,11 @@ public class Converter {
      * @return
      */
     public static Map<String, String> toMap(Series<Parameter> parameters) {
-        if (parameters == null)
+        if (parameters == null) {
             return null;
-        Map<String, String> map = new HashMap<String, String>();
-        for (Parameter parameter : parameters) {
+        }
+        final Map<String, String> map = new HashMap<String, String>();
+        for (final Parameter parameter : parameters) {
             map.put(parameter.getName(), parameter.getValue());
         }
         return map;
@@ -336,12 +356,13 @@ public class Converter {
      * Converts a JAX-RS Cookie to a Restlet Cookie
      * 
      * @param jaxRsCookie
-     *                the JAX-RS Cookie
+     *            the JAX-RS Cookie
      * @return the Restlet Cookie
      */
     public static org.restlet.data.Cookie toRestletCookie(Cookie jaxRsCookie) {
-        if (jaxRsCookie == null)
+        if (jaxRsCookie == null) {
             return null;
+        }
         return new org.restlet.data.Cookie(jaxRsCookie.getVersion(),
                 jaxRsCookie.getName(), jaxRsCookie.getValue(), jaxRsCookie
                         .getPath(), jaxRsCookie.getDomain());
@@ -356,8 +377,9 @@ public class Converter {
      */
     public static CookieSetting toRestletCookieSetting(NewCookie newCookie)
             throws IllegalArgumentException {
-        if (newCookie == null)
+        if (newCookie == null) {
             return null;
+        }
         return new CookieSetting(newCookie.getVersion(), newCookie.getName(),
                 newCookie.getValue(), newCookie.getPath(), newCookie
                         .getDomain(), newCookie.getComment(), newCookie
@@ -372,11 +394,12 @@ public class Converter {
      */
     public static org.restlet.data.MediaType toRestletMediaType(
             MediaType jaxRsMediaType) {
-        if (jaxRsMediaType == null)
+        if (jaxRsMediaType == null) {
             return null;
-        Series<Parameter> parameters = Converter.toRestletSeries(jaxRsMediaType
-                .getParameters());
-        String name = jaxRsMediaType.getType() + "/"
+        }
+        final Series<Parameter> parameters = Converter
+                .toRestletSeries(jaxRsMediaType.getParameters());
+        final String name = jaxRsMediaType.getType() + "/"
                 + jaxRsMediaType.getSubtype();
         return new org.restlet.data.MediaType(name, parameters);
     }
@@ -386,11 +409,13 @@ public class Converter {
      * @return a form with the given parameters. Will never return null.
      */
     public static Form toRestletSeries(Map<String, String> parameters) {
-        Form form = new Form();
-        if (parameters == null)
+        final Form form = new Form();
+        if (parameters == null) {
             return form;
-        for (Map.Entry<String, String> parameter : parameters.entrySet())
+        }
+        for (final Map.Entry<String, String> parameter : parameters.entrySet()) {
             form.add(parameter.getKey(), parameter.getValue());
+        }
         return form;
     }
 
@@ -398,12 +423,13 @@ public class Converter {
      * Converts a JAX-RS-EntityTag to a Restlet-EntityTag
      * 
      * @param jaxRsEntityTag
-     *                the JAX-RS-EntityTag to convert.
+     *            the JAX-RS-EntityTag to convert.
      * @return The corresponding Restlet-Entity-Tag
      */
     public static Tag toRestletTag(EntityTag jaxRsEntityTag) {
-        if (jaxRsEntityTag == null)
+        if (jaxRsEntityTag == null) {
             return null;
+        }
         return new Tag(jaxRsEntityTag.getValue(), jaxRsEntityTag.isWeak());
     }
 
@@ -415,10 +441,10 @@ public class Converter {
      */
     public static List<org.restlet.resource.Variant> toRestletVariants(
             Collection<javax.ws.rs.core.Variant> jaxRsVariants) {
-        List<org.restlet.resource.Variant> restletVariants = new ArrayList<org.restlet.resource.Variant>(
+        final List<org.restlet.resource.Variant> restletVariants = new ArrayList<org.restlet.resource.Variant>(
                 jaxRsVariants.size());
-        for (javax.ws.rs.core.Variant jaxRsVariant : jaxRsVariants) {
-            org.restlet.resource.Variant restletVariant = new org.restlet.resource.Variant();
+        for (final javax.ws.rs.core.Variant jaxRsVariant : jaxRsVariants) {
+            final org.restlet.resource.Variant restletVariant = new org.restlet.resource.Variant();
             restletVariant.setCharacterSet(getRestletCharacterSet(jaxRsVariant
                     .getMediaType()));
             restletVariant.setEncodings(Util.createList(Encoding

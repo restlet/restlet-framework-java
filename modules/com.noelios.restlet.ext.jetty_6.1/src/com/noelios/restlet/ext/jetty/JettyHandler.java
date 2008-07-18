@@ -46,7 +46,7 @@ public class JettyHandler extends AbstractHandler {
      * Constructor for HTTP server connectors.
      * 
      * @param server
-     *                Restlet HTTP server connector.
+     *            Restlet HTTP server connector.
      */
     public JettyHandler(Server server) {
         this(server, false);
@@ -56,9 +56,9 @@ public class JettyHandler extends AbstractHandler {
      * Constructor for HTTP server connectors.
      * 
      * @param server
-     *                Restlet server connector.
+     *            Restlet server connector.
      * @param secure
-     *                Indicates if the server supports HTTP or HTTPS.
+     *            Indicates if the server supports HTTP or HTTPS.
      */
     public JettyHandler(Server server, boolean secure) {
         if (secure) {
@@ -68,39 +68,39 @@ public class JettyHandler extends AbstractHandler {
         }
     }
 
-    /**
-     * Handles a Jetty call by converting it to a Restlet call and giving it for
-     * processing to the Restlet server.
-     * 
-     * @param target
-     *                The target of the request, either a URI or a name.
-     * @param request
-     *                The Jetty request.
-     * @param response
-     *                The Jetty response.
-     * @param dispatch
-     *                The Jetty dispatch mode.
-     */
-    public void handle(String target, HttpServletRequest request,
-            HttpServletResponse response, int dispatch) throws IOException,
-            ServletException {
-        Request baseRequest = (request instanceof Request) ? (Request) request
-                : HttpConnection.getCurrentConnection().getRequest();
-        helper.handle(new JettyCall(helper.getHelped(), HttpConnection
-                .getCurrentConnection()));
-        baseRequest.setHandled(true);
-    }
-
     @Override
     protected void doStart() throws Exception {
         super.doStart();
-        helper.start();
+        this.helper.start();
     }
 
     @Override
     protected void doStop() throws Exception {
         super.doStop();
-        helper.stop();
+        this.helper.stop();
+    }
+
+    /**
+     * Handles a Jetty call by converting it to a Restlet call and giving it for
+     * processing to the Restlet server.
+     * 
+     * @param target
+     *            The target of the request, either a URI or a name.
+     * @param request
+     *            The Jetty request.
+     * @param response
+     *            The Jetty response.
+     * @param dispatch
+     *            The Jetty dispatch mode.
+     */
+    public void handle(String target, HttpServletRequest request,
+            HttpServletResponse response, int dispatch) throws IOException,
+            ServletException {
+        final Request baseRequest = (request instanceof Request) ? (Request) request
+                : HttpConnection.getCurrentConnection().getRequest();
+        this.helper.handle(new JettyCall(this.helper.getHelped(),
+                HttpConnection.getCurrentConnection()));
+        baseRequest.setHandled(true);
     }
 
 }

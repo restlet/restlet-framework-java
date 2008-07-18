@@ -38,9 +38,9 @@ public class ApplicationHelper extends ChainHelper<Application> {
      * Constructor.
      * 
      * @param application
-     *                The application to help.
+     *            The application to help.
      * @param parentContext
-     *                The parent context, typically the component's context.
+     *            The parent context, typically the component's context.
      */
     public ApplicationHelper(Application application, Context parentContext) {
         super(application, parentContext);
@@ -56,7 +56,7 @@ public class ApplicationHelper extends ChainHelper<Application> {
      * Creates a new decoder filter. Allows overriding.
      * 
      * @param application
-     *                The parent application.
+     *            The parent application.
      * @return The new decoder filter.
      */
     protected Filter createDecoderFilter(Application application) {
@@ -67,7 +67,7 @@ public class ApplicationHelper extends ChainHelper<Application> {
      * Creates a new status filter. Allows overriding.
      * 
      * @param application
-     *                The parent application.
+     *            The parent application.
      * @return The new status filter.
      */
     protected Filter createStatusFilter(Application application) {
@@ -78,7 +78,7 @@ public class ApplicationHelper extends ChainHelper<Application> {
      * Creates a new tunnel filter. Allows overriding.
      * 
      * @param context
-     *                The parent context.
+     *            The parent context.
      * @return The new tunnel filter.
      */
     protected Filter createTunnelFilter(Context context) {
@@ -90,9 +90,9 @@ public class ApplicationHelper extends ChainHelper<Application> {
      * instance into the current thread.
      * 
      * @param request
-     *                The request to handle.
+     *            The request to handle.
      * @param response
-     *                The response to update.
+     *            The response to update.
      */
     @Override
     public void handle(Request request, Response response) {

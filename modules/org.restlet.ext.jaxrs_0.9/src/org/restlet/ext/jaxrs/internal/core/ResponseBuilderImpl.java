@@ -69,13 +69,15 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      */
     @Override
     public Response build() {
-        if (this.response == null)
+        if (this.response == null) {
             return new ResponseImpl();
-        Response r = this.response;
+        }
+        final Response r = this.response;
         if (this.newCookies != null) {
-            MultivaluedMap<String, Object> metadata = getMetadata();
-            for (NewCookie cookie : this.newCookies.values())
+            final MultivaluedMap<String, Object> metadata = getMetadata();
+            for (final NewCookie cookie : this.newCookies.values()) {
                 metadata.putSingle(HttpHeaders.SET_COOKIE, cookie);
+            }
             this.newCookies = null;
         }
         this.response = null;
@@ -87,16 +89,17 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      * Set the cache control data on the ResponseBuilder.
      * 
      * @param cacheControl
-     *                the cache control directives
+     *            the cache control directives
      * @return the updated ResponseBuilder
      * @see javax.ws.rs.core.Response.ResponseBuilder#cacheControl(javax.ws.rs.core.CacheControl)
      */
     @Override
     public ResponseBuilder cacheControl(CacheControl cacheControl) {
-        if (cacheControl == null)
+        if (cacheControl == null) {
             getMetadata().remove(HttpHeaders.CACHE_CONTROL);
-        else
+        } else {
             getMetadata().putSingle(HttpHeaders.CACHE_CONTROL, cacheControl);
+        }
         return this;
     }
 
@@ -105,7 +108,7 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      */
     @Override
     public ResponseBuilderImpl clone() {
-        ResponseBuilderImpl newRb = new ResponseBuilderImpl();
+        final ResponseBuilderImpl newRb = new ResponseBuilderImpl();
         newRb.response = this.response.clone();
         newRb.newCookies = new HashMap<String, NewCookie>(this.newCookies);
         // metadatas are read from the response.
@@ -117,17 +120,18 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      * 
      * 
      * @param location
-     *                the content location
+     *            the content location
      * @return the updated ResponseBuilder
      * @see javax.ws.rs.core.Response.ResponseBuilder#contentLocation(java.net.URI)
      */
     @Override
     public ResponseBuilder contentLocation(URI location) {
-        if (location == null)
+        if (location == null) {
             getMetadata().remove(HttpHeaders.CONTENT_LOCATION);
-        else
+        } else {
             getMetadata().putSingle(HttpHeaders.CONTENT_LOCATION,
                     location.toASCIIString());
+        }
         return this;
     }
 
@@ -136,16 +140,17 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      * is supplied, later ones overwrite earlier ones.
      * 
      * @param cookies
-     *                new cookies that will accompany the response.
+     *            new cookies that will accompany the response.
      * @return the updated ResponseBuilder
      * @see javax.ws.rs.core.Response.ResponseBuilder#cookie(javax.ws.rs.core.NewCookie)
      */
     @Override
     public ResponseBuilder cookie(NewCookie... cookies) {
-        Map<String, NewCookie> newCookies = getNewCookies();
-        for (NewCookie cookie : cookies) {
-            if (cookie != null)
+        final Map<String, NewCookie> newCookies = getNewCookies();
+        for (final NewCookie cookie : cookies) {
+            if (cookie != null) {
                 newCookies.put(cookie.getName(), cookie);
+            }
         }
         return this;
     }
@@ -156,14 +161,15 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      * {@link #variant(Variant)}.
      * 
      * @param encoding
-     *                the encoding of the response entity
+     *            the encoding of the response entity
      * @return the updated ResponseBuilder
      */
     public ResponseBuilder encoding(String encoding) {
-        if (encoding == null)
+        if (encoding == null) {
             getMetadata().remove(HttpHeaders.CONTENT_ENCODING);
-        else
+        } else {
             getMetadata().putSingle(HttpHeaders.CONTENT_ENCODING, encoding);
+        }
         return this;
     }
 
@@ -172,32 +178,35 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      * 
      * 
      * @param entity
-     *                the response entity
+     *            the response entity
      * @return the updated ResponseBuilder
      * @see javax.ws.rs.core.Response.ResponseBuilder#entity(java.lang.Object)
      */
     @Override
     public ResponseBuilder entity(Object entity) {
-        this.getResponse().setEntity(entity);
+        getResponse().setEntity(entity);
         return this;
     }
 
     MultivaluedMap<String, Object> getMetadata() {
-        if (this.metadata == null)
+        if (this.metadata == null) {
             this.metadata = getResponse().getMetadata();
-        return metadata;
+        }
+        return this.metadata;
     }
 
     Map<String, NewCookie> getNewCookies() {
-        if (this.newCookies == null)
+        if (this.newCookies == null) {
             this.newCookies = new HashMap<String, NewCookie>();
-        return newCookies;
+        }
+        return this.newCookies;
     }
 
     ResponseImpl getResponse() {
-        if (response == null)
+        if (this.response == null) {
             this.response = new ResponseImpl();
-        return response;
+        }
+        return this.response;
     }
 
     /**
@@ -205,35 +214,38 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      * is null, an previous set value for the given name will be removed.
      * 
      * @param name
-     *                the name of the header
+     *            the name of the header
      * @param value
-     *                the value of the header, the header will be serialized
-     *                using its toString method
+     *            the value of the header, the header will be serialized using
+     *            its toString method
      * @return the updated ResponseBuilder
      * @see javax.ws.rs.core.Response.ResponseBuilder#header(java.lang.String,
      *      java.lang.Object)
      */
     @Override
     public ResponseBuilder header(String name, Object value) {
-        if (name == null)
+        if (name == null) {
             throw new IllegalArgumentException(
                     "You must give a name of the header");
+        }
         if (name.equals(HttpHeaders.SET_COOKIE)) {
-            if (value instanceof NewCookie)
-                this.cookie((NewCookie) value);
-            else if (value instanceof Cookie)
-                this.cookie(new NewCookie((Cookie) value));
-            else if (value instanceof CharSequence)
-                this.cookie(NewCookie.valueOf(value.toString()));
-            // REQUESTED what should happens, if null was given?
-            else
+            if (value instanceof NewCookie) {
+                cookie((NewCookie) value);
+            } else if (value instanceof Cookie) {
+                cookie(new NewCookie((Cookie) value));
+            } else if (value instanceof CharSequence) {
+                cookie(NewCookie.valueOf(value.toString()));
+                // REQUESTED what should happens, if null was given?
+            } else {
                 throw new IllegalArgumentException(
                         "A Cookie must be of type NewCookie or String");
+            }
         } else {
-            if (value == null)
+            if (value == null) {
                 getMetadata().remove(name);
-            else
+            } else {
                 getMetadata().add(name, value);
+            }
         }
         return this;
     }
@@ -243,16 +255,17 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      * 
      * 
      * @param language
-     *                the language of the response entity
+     *            the language of the response entity
      * @return the updated ResponseBuilder
      * @see javax.ws.rs.core.Response.ResponseBuilder#language(java.lang.String)
      */
     @Override
     public ResponseBuilder language(Locale language) {
-        if (language == null)
+        if (language == null) {
             getMetadata().remove(HttpHeaders.CONTENT_LANGUAGE);
-        else
+        } else {
             getMetadata().putSingle(HttpHeaders.CONTENT_LANGUAGE, language);
+        }
         return this;
     }
 
@@ -261,16 +274,17 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      * 
      * 
      * @param language
-     *                the language of the response entity
+     *            the language of the response entity
      * @return the updated ResponseBuilder
      * @see javax.ws.rs.core.Response.ResponseBuilder#language(java.lang.String)
      */
     @Override
     public ResponseBuilder language(String language) {
-        if (language == null)
+        if (language == null) {
             getMetadata().remove(HttpHeaders.CONTENT_LANGUAGE);
-        else
+        } else {
             getMetadata().putSingle(HttpHeaders.CONTENT_LANGUAGE, language);
+        }
         return this;
     }
 
@@ -279,16 +293,17 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      * 
      * 
      * @param lastModified
-     *                the last modified date
+     *            the last modified date
      * @return the updated ResponseBuilder
      * @see javax.ws.rs.core.Response.ResponseBuilder#lastModified(java.util.Date)
      */
     @Override
     public ResponseBuilder lastModified(Date lastModified) {
-        if (lastModified == null)
+        if (lastModified == null) {
             getMetadata().remove(HttpHeaders.LAST_MODIFIED);
-        else
+        } else {
             getMetadata().putSingle(HttpHeaders.LAST_MODIFIED, lastModified);
+        }
         return this;
     }
 
@@ -297,16 +312,17 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      * 
      * 
      * @param location
-     *                the location
+     *            the location
      * @return the updated ResponseBuilder
      * @see javax.ws.rs.core.Response.ResponseBuilder#location(java.net.URI)
      */
     @Override
     public ResponseBuilder location(URI location) {
-        if (location == null)
+        if (location == null) {
             getMetadata().remove(HttpHeaders.LOCATION);
-        else
+        } else {
             getMetadata().putSingle(HttpHeaders.LOCATION, location);
+        }
         return this;
     }
 
@@ -314,16 +330,17 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      * Set the status on the ResponseBuilder.
      * 
      * @param status
-     *                the response status
+     *            the response status
      * @return the updated ResponseBuilder
      * @see javax.ws.rs.core.Response.ResponseBuilder#status(int)
      */
     @Override
     public ResponseBuilder status(int status) {
-        if (this.response == null)
+        if (this.response == null) {
             this.response = new ResponseImpl(status);
-        else
+        } else {
             this.response.setStatus(status);
+        }
         return this;
     }
 
@@ -331,16 +348,17 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      * Set the entity tag on the ResponseBuilder.
      * 
      * @param tag
-     *                the entity tag
+     *            the entity tag
      * @return the updated ResponseBuilder
      * @see javax.ws.rs.core.Response.ResponseBuilder#tag(javax.ws.rs.core.EntityTag)
      */
     @Override
     public ResponseBuilder tag(EntityTag tag) {
-        if (tag == null)
+        if (tag == null) {
             getMetadata().remove(HttpHeaders.ETAG);
-        else
+        } else {
             getMetadata().putSingle(HttpHeaders.ETAG, tag);
+        }
         return this;
     }
 
@@ -349,18 +367,18 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      * <code>tag(new EntityTag(<i>value</i>))</code>.
      * 
      * @param tag
-     *                the string content of a strong entity tag. The JAX-RS
-     *                runtime will quote the supplied value when creating the
-     *                header.
+     *            the string content of a strong entity tag. The JAX-RS runtime
+     *            will quote the supplied value when creating the header.
      * @return the updated ResponseBuilder
      * @see javax.ws.rs.core.Response.ResponseBuilder#tag(java.lang.String)
      */
     @Override
     public ResponseBuilder tag(String tag) {
-        if (tag == null)
+        if (tag == null) {
             tag((EntityTag) null);
-        else
+        } else {
             tag(new EntityTag(tag, false));
+        }
         return this;
     }
 
@@ -371,10 +389,11 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      */
     @Override
     public ResponseBuilder type(MediaType type) {
-        if (type == null)
+        if (type == null) {
             getMetadata().remove(HttpHeaders.CONTENT_TYPE);
-        else
+        } else {
             getMetadata().putSingle(HttpHeaders.CONTENT_TYPE, type);
+        }
         return this;
     }
 
@@ -382,10 +401,10 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      * Set the response media type on the ResponseBuilder.
      * 
      * @param type
-     *                the media type of the response entity
+     *            the media type of the response entity
      * @return the updated ResponseBuilder
      * @throws IllegalArgumentException
-     *                 if type cannot be parsed
+     *             if type cannot be parsed
      * @see javax.ws.rs.core.Response.ResponseBuilder#type(java.lang.String)
      */
     @Override
@@ -397,16 +416,17 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      * Set representation metadata on the ResponseBuilder.
      * 
      * @param variant
-     *                metadata of the response entity
+     *            metadata of the response entity
      * @return the updated ResponseBuilder
      * @see javax.ws.rs.core.Response.ResponseBuilder#variant(javax.ws.rs.core.Variant)
      */
     @Override
     public ResponseBuilder variant(Variant variant) {
-        if (variant == null)
+        if (variant == null) {
             throw new IllegalArgumentException("The variant must not be null");
+        }
         this.language(variant.getLanguage());
-        this.encoding(variant.getEncoding());
+        encoding(variant.getEncoding());
         this.type(variant.getMediaType());
         return this;
     }
@@ -415,7 +435,7 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      * Add a Vary header that lists the available variants.
      * 
      * @param variants
-     *                a list of available representation variants
+     *            a list of available representation variants
      * @return the updated ResponseBuilder
      * @see javax.ws.rs.core.Response.ResponseBuilder#variants(java.util.List)
      */
@@ -423,37 +443,46 @@ public class ResponseBuilderImpl extends ResponseBuilder {
     public ResponseBuilder variants(List<Variant> variants) {
         // NICE add entity header with further information
         // give links, use extension mapping. Was macht Restlet da schon?
-        Set<String> encodings = new HashSet<String>();
-        Set<Locale> languages = new HashSet<Locale>();
-        Set<MediaType> mediaTypes = new HashSet<MediaType>();
-        Set<String> charsets = new HashSet<String>();
-        for (Variant variant : variants) {
-            String encoding = variant.getEncoding();
-            if (encoding != null)
+        final Set<String> encodings = new HashSet<String>();
+        final Set<Locale> languages = new HashSet<Locale>();
+        final Set<MediaType> mediaTypes = new HashSet<MediaType>();
+        final Set<String> charsets = new HashSet<String>();
+        for (final Variant variant : variants) {
+            final String encoding = variant.getEncoding();
+            if (encoding != null) {
                 encodings.add(encoding);
-            Locale language = variant.getLanguage();
-            if (language != null)
+            }
+            final Locale language = variant.getLanguage();
+            if (language != null) {
                 languages.add(language);
-            MediaType mediaType = variant.getMediaType();
-            if (mediaType != null)
+            }
+            final MediaType mediaType = variant.getMediaType();
+            if (mediaType != null) {
                 mediaTypes.add(Converter.getMediaTypeWithoutParams(mediaType));
-            String charset = Converter.getCharset(mediaType);
-            if (charset != null)
+            }
+            final String charset = Converter.getCharset(mediaType);
+            if (charset != null) {
                 charsets.add(charset);
+            }
         }
         Set<Dimension> dimensions;
         dimensions = org.restlet.data.Response.getCurrent().getDimensions();
-        if (encodings.size() > 1)
+        if (encodings.size() > 1) {
             dimensions.add(Dimension.ENCODING);
-        if (languages.size() > 1)
+        }
+        if (languages.size() > 1) {
             dimensions.add(Dimension.LANGUAGE);
-        if (mediaTypes.size() > 1)
+        }
+        if (mediaTypes.size() > 1) {
             dimensions.add(Dimension.MEDIA_TYPE);
-        if (charsets.size() > 1)
+        }
+        if (charsets.size() > 1) {
             dimensions.add(Dimension.CHARACTER_SET);
-        String vary = Util.formatDimensions(dimensions);
-        if (vary != null)
-            this.getMetadata().putSingle(HttpHeaders.VARY, vary);
+        }
+        final String vary = Util.formatDimensions(dimensions);
+        if (vary != null) {
+            getMetadata().putSingle(HttpHeaders.VARY, vary);
+        }
         return this;
     }
 }

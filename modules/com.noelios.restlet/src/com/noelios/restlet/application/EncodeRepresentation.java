@@ -67,9 +67,9 @@ public class EncodeRepresentation extends WrapperRepresentation {
      * Constructor.
      * 
      * @param encoding
-     *                Encoder algorithm.
+     *            Encoder algorithm.
      * @param wrappedRepresentation
-     *                The wrapped representation.
+     *            The wrapped representation.
      */
     public EncodeRepresentation(Encoding encoding,
             Representation wrappedRepresentation) {
@@ -111,7 +111,7 @@ public class EncodeRepresentation extends WrapperRepresentation {
     @Override
     public List<Encoding> getEncodings() {
         if (this.encodings == null) {
-            encodings = new WrapperList<Encoding>() {
+            this.encodings = new WrapperList<Encoding>() {
 
                 @Override
                 public boolean add(Encoding element) {
@@ -137,7 +137,7 @@ public class EncodeRepresentation extends WrapperRepresentation {
                 public boolean addAll(Collection<? extends Encoding> elements) {
                     boolean addNull = (elements == null);
                     if (!addNull) {
-                        for (Iterator<? extends Encoding> iterator = elements
+                        for (final Iterator<? extends Encoding> iterator = elements
                                 .iterator(); !addNull && iterator.hasNext();) {
                             addNull = (iterator.next() == null);
                         }
@@ -155,7 +155,7 @@ public class EncodeRepresentation extends WrapperRepresentation {
                         Collection<? extends Encoding> elements) {
                     boolean addNull = (elements == null);
                     if (!addNull) {
-                        for (Iterator<? extends Encoding> iterator = elements
+                        for (final Iterator<? extends Encoding> iterator = elements
                                 .iterator(); !addNull && iterator.hasNext();) {
                             addNull = (iterator.next() == null);
                         }
@@ -168,9 +168,9 @@ public class EncodeRepresentation extends WrapperRepresentation {
                     return super.addAll(index, elements);
                 }
             };
-            encodings.addAll(getWrappedRepresentation().getEncodings());
+            this.encodings.addAll(getWrappedRepresentation().getEncodings());
             if (canEncode()) {
-                encodings.add(this.encoding);
+                this.encodings.add(this.encoding);
             }
         }
         return this.encodings;
@@ -235,7 +235,7 @@ public class EncodeRepresentation extends WrapperRepresentation {
      * Writes the representation to a byte stream.
      * 
      * @param outputStream
-     *                The output stream.
+     *            The output stream.
      */
     @Override
     public void write(OutputStream outputStream) throws IOException {
@@ -247,7 +247,7 @@ public class EncodeRepresentation extends WrapperRepresentation {
             } else if (this.encoding.equals(Encoding.DEFLATE)) {
                 encoderOutputStream = new DeflaterOutputStream(outputStream);
             } else if (this.encoding.equals(Encoding.ZIP)) {
-                ZipOutputStream stream = new ZipOutputStream(outputStream);
+                final ZipOutputStream stream = new ZipOutputStream(outputStream);
                 if (getWrappedRepresentation().getDownloadName() != null) {
                     stream.putNextEntry(new ZipEntry(getWrappedRepresentation()
                             .getDownloadName()));
@@ -275,7 +275,7 @@ public class EncodeRepresentation extends WrapperRepresentation {
      * Writes the representation to a byte channel.
      * 
      * @param writableChannel
-     *                A writable byte channel.
+     *            A writable byte channel.
      */
     @Override
     public void write(WritableByteChannel writableChannel) throws IOException {

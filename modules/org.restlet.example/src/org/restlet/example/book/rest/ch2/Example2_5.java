@@ -41,20 +41,22 @@ public class Example2_5 {
                     .println("You need to pass your del.icio.us user name and password");
         } else {
             // Create a authenticated request
-            Request request = new Request(Method.GET,
+            final Request request = new Request(Method.GET,
                     "https://api.del.icio.us/v1/posts/recent");
             request.setChallengeResponse(new ChallengeResponse(
                     ChallengeScheme.HTTP_BASIC, args[0], args[1]));
 
             // Fetch a resource: an XML document with your recent posts
-            Response response = new Client(Protocol.HTTPS).handle(request);
-            DomRepresentation document = response.getEntityAsDom();
+            final Response response = new Client(Protocol.HTTPS)
+                    .handle(request);
+            final DomRepresentation document = response.getEntityAsDom();
 
             // Use XPath to find the interesting parts of the data structure
-            for (Node node : document.getNodes("/posts/post")) {
-                NamedNodeMap attrs = node.getAttributes();
-                String desc = attrs.getNamedItem("description").getNodeValue();
-                String href = attrs.getNamedItem("href").getNodeValue();
+            for (final Node node : document.getNodes("/posts/post")) {
+                final NamedNodeMap attrs = node.getAttributes();
+                final String desc = attrs.getNamedItem("description")
+                        .getNodeValue();
+                final String href = attrs.getNamedItem("href").getNodeValue();
                 System.out.println(desc + ": " + href);
             }
         }

@@ -77,26 +77,28 @@ public class EntityGetter implements ParamGetter {
      */
     @SuppressWarnings("unchecked")
     public Object getValue() throws ConvertRepresentationException {
-        Request request = this.tlContext.get().getRequest();
-        Representation entity = request.getEntity();
-        if (entity == null)
+        final Request request = this.tlContext.get().getRequest();
+        final Representation entity = request.getEntity();
+        if (entity == null) {
             return null;
-        MediaType mediaType = entity.getMediaType();
-        MessageBodyReader<?> mbr = mbrs.getBestReader(this.convToCl,
-                this.convToGen, annotations, mediaType);
-        if (mbr == null)
+        }
+        final MediaType mediaType = entity.getMediaType();
+        final MessageBodyReader<?> mbr = this.mbrs.getBestReader(this.convToCl,
+                this.convToGen, this.annotations, mediaType);
+        if (mbr == null) {
             throw new NoMessageBodyReaderException(mediaType, this.convToCl);
-        MultivaluedMap<String, String> httpHeaders = Util
+        }
+        final MultivaluedMap<String, String> httpHeaders = Util
                 .getJaxRsHttpHeaders(request);
         try {
-            javax.ws.rs.core.MediaType jaxRsMediaType = Converter
+            final javax.ws.rs.core.MediaType jaxRsMediaType = Converter
                     .toJaxRsMediaType(mediaType, entity.getCharacterSet());
             return mbr.readFrom((Class) this.convToCl, this.convToGen,
-                    annotations, jaxRsMediaType, httpHeaders, entity
+                    this.annotations, jaxRsMediaType, httpHeaders, entity
                             .getStream());
-        } catch (WebApplicationException wae) {
+        } catch (final WebApplicationException wae) {
             throw wae;
-        } catch (IOException e) {
+        } catch (final IOException e) {
             throw ConvertRepresentationException.object(this.convToCl,
                     "the message body", e);
         } finally {

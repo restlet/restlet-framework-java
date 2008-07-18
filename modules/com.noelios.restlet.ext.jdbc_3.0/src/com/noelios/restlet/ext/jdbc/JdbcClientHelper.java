@@ -75,16 +75,23 @@ import com.noelios.restlet.Engine;
  * &nbsp;&nbsp;{@code <header>}<br>
  * &nbsp;&nbsp;&nbsp;&nbsp;{@code <connection>}<br>
  * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{@code <usePooling>true</usePooling>}<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{@code <property name="user">scott</property >}<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{@code <property name="password">tiger</property >}<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{@code <property name="...">1234</property >}<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{@code <property name="...">true</property >}<br>
+ * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{@code <property
+ * name="user">scott</property >}<br>
+ * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{@code <property
+ * name="password">tiger</property >}<br>
+ * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{@code <property
+ * name="...">1234</property >}<br>
+ * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{@code <property
+ * name="...">true</property >}<br>
  * &nbsp;&nbsp;&nbsp;&nbsp;{@code </connection>}<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;{@code <returnGeneratedKeys>true</returnGeneratedKeys>}<br>
+ * &nbsp;&nbsp;&nbsp;&nbsp;{@code
+ * <returnGeneratedKeys>true</returnGeneratedKeys>}<br>
  * &nbsp;&nbsp;{@code </header>}<br>
  * &nbsp;&nbsp;{@code <body>}<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;{@code <statement>UPDATE myTable SET myField1="value1" </statement>}<br>
- * &nbsp;&nbsp;&nbsp;&nbsp;{@code <statement>SELECT msField1, myField2 FROM myTable</statement>}<br>
+ * &nbsp;&nbsp;&nbsp;&nbsp;{@code <statement>UPDATE myTable SET
+ * myField1="value1" </statement>}<br>
+ * &nbsp;&nbsp;&nbsp;&nbsp;{@code <statement>SELECT msField1, myField2 FROM
+ * myTable</statement>}<br>
  * &nbsp;&nbsp;{@code </body>}<br>
  * {@code </request>}
  * <p>
@@ -111,9 +118,9 @@ public class JdbcClientHelper extends ClientHelper {
          * Constructor.
          * 
          * @param uri
-         *                The connection URI.
+         *            The connection URI.
          * @param properties
-         *                The connection properties.
+         *            The connection properties.
          */
         public ConnectionSource(String uri, Properties properties) {
             super(createConnectionPool(uri, properties));
@@ -127,7 +134,7 @@ public class JdbcClientHelper extends ClientHelper {
          * @return The connection properties.
          */
         public Properties getProperties() {
-            return properties;
+            return this.properties;
         }
 
         /**
@@ -136,7 +143,7 @@ public class JdbcClientHelper extends ClientHelper {
          * @return The connection URI.
          */
         public String getUri() {
-            return uri;
+            return this.uri;
         }
     }
 
@@ -144,13 +151,13 @@ public class JdbcClientHelper extends ClientHelper {
      * Creates an uniform call.
      * 
      * @param jdbcURI
-     *                The database's JDBC URI (ex:
-     *                jdbc:mysql://[hostname]/[database]).
+     *            The database's JDBC URI (ex:
+     *            jdbc:mysql://[hostname]/[database]).
      * @param request
-     *                The request to send (valid XML request).
+     *            The request to send (valid XML request).
      */
     public static Request create(String jdbcURI, Representation request) {
-        Request result = new Request();
+        final Request result = new Request();
         result.getClientInfo().setAgent(Engine.VERSION_HEADER);
         result.setMethod(Method.POST);
         result.setResourceRef(jdbcURI);
@@ -162,26 +169,26 @@ public class JdbcClientHelper extends ClientHelper {
      * Creates a connection pool for a given connection configuration.
      * 
      * @param uri
-     *                The connection URI.
+     *            The connection URI.
      * @param properties
-     *                The connection properties.
+     *            The connection properties.
      * @return The new connection pool.
      */
     protected static ObjectPool createConnectionPool(String uri,
             Properties properties) {
         // Create an ObjectPool that will serve as the actual pool of
         // connections
-        ObjectPool result = new GenericObjectPool(null);
+        final ObjectPool result = new GenericObjectPool(null);
 
         // Create a ConnectionFactory that the pool will use to create
         // Connections
-        ConnectionFactory connectionFactory = new DriverManagerConnectionFactory(
+        final ConnectionFactory connectionFactory = new DriverManagerConnectionFactory(
                 uri, properties);
 
         // Create the PoolableConnectionFactory, which wraps the "real"
         // Connections created by the ConnectionFactory with
         // the classes that implement the pooling functionality.
-        PoolableConnectionFactory poolableConnectionFactory = new PoolableConnectionFactory(
+        final PoolableConnectionFactory poolableConnectionFactory = new PoolableConnectionFactory(
                 connectionFactory, result, null, null, false, false);
 
         // To remove warnings
@@ -194,11 +201,11 @@ public class JdbcClientHelper extends ClientHelper {
      * Escapes quotes in a SQL query.
      * 
      * @param query
-     *                The SQL query to escape.
+     *            The SQL query to escape.
      * @return The escaped SQL query.
      */
     public static String sqlEncode(String query) {
-        StringBuilder result = new StringBuilder(query.length() + 10);
+        final StringBuilder result = new StringBuilder(query.length() + 10);
         char currentChar;
 
         for (int i = 0; i < query.length(); i++) {
@@ -220,7 +227,7 @@ public class JdbcClientHelper extends ClientHelper {
      * Constructor.
      * 
      * @param client
-     *                The client to help.
+     *            The client to help.
      */
     public JdbcClientHelper(Client client) {
         super(client);
@@ -235,11 +242,11 @@ public class JdbcClientHelper extends ClientHelper {
      * Returns a JDBC connection.
      * 
      * @param uri
-     *                The connection URI.
+     *            The connection URI.
      * @param properties
-     *                The connection properties.
+     *            The connection properties.
      * @param usePooling
-     *                Indicates if the connection pooling should be used.
+     *            Indicates if the connection pooling should be used.
      * @return The JDBC connection.
      * @throws SQLException
      */
@@ -248,14 +255,14 @@ public class JdbcClientHelper extends ClientHelper {
         Connection result = null;
 
         if (usePooling) {
-            for (ConnectionSource c : connectionSources) {
+            for (final ConnectionSource c : this.connectionSources) {
                 // Check if the connection URI is identical
                 // and if the same number of properties is present
                 if ((result == null) && c.getUri().equalsIgnoreCase(uri)
                         && (properties.size() == c.getProperties().size())) {
                     // Check that the properties tables are equivalent
                     boolean equal = true;
-                    for (Object key : c.getProperties().keySet()) {
+                    for (final Object key : c.getProperties().keySet()) {
                         if (equal && properties.containsKey(key)) {
                             equal = equal
                                     && (properties.get(key).equals(c
@@ -273,7 +280,8 @@ public class JdbcClientHelper extends ClientHelper {
 
             if (result == null) {
                 // No existing connection source found
-                ConnectionSource cs = new ConnectionSource(uri, properties);
+                final ConnectionSource cs = new ConnectionSource(uri,
+                        properties);
                 this.connectionSources.add(cs);
                 result = cs.getConnection();
             }
@@ -288,9 +296,9 @@ public class JdbcClientHelper extends ClientHelper {
      * Handles a call.
      * 
      * @param request
-     *                The request to handle.
+     *            The request to handle.
      * @param response
-     *                The response to update.
+     *            The response to update.
      */
     @Override
     public void handle(Request request, Response response) {
@@ -299,29 +307,30 @@ public class JdbcClientHelper extends ClientHelper {
         if (request.getMethod().equals(Method.POST)) {
             try {
                 // Parse the JDBC URI
-                String connectionURI = request.getResourceRef().toString();
+                final String connectionURI = request.getResourceRef()
+                        .toString();
 
                 // Parse the request to extract necessary info
-                DocumentBuilder docBuilder = DocumentBuilderFactory
+                final DocumentBuilder docBuilder = DocumentBuilderFactory
                         .newInstance().newDocumentBuilder();
-                Document requestDoc = docBuilder.parse(request.getEntity()
-                        .getStream());
+                final Document requestDoc = docBuilder.parse(request
+                        .getEntity().getStream());
 
-                Element rootElt = (Element) requestDoc.getElementsByTagName(
-                        "request").item(0);
-                Element headerElt = (Element) rootElt.getElementsByTagName(
-                        "header").item(0);
-                Element connectionElt = (Element) headerElt
+                final Element rootElt = (Element) requestDoc
+                        .getElementsByTagName("request").item(0);
+                final Element headerElt = (Element) rootElt
+                        .getElementsByTagName("header").item(0);
+                final Element connectionElt = (Element) headerElt
                         .getElementsByTagName("connection").item(0);
 
                 // Read the connection pooling setting
-                Node usePoolingNode = connectionElt.getElementsByTagName(
+                final Node usePoolingNode = connectionElt.getElementsByTagName(
                         "usePooling").item(0);
-                boolean usePooling = usePoolingNode.getTextContent().equals(
-                        "true") ? true : false;
+                final boolean usePooling = usePoolingNode.getTextContent()
+                        .equals("true") ? true : false;
 
                 // Read the connection properties
-                NodeList propertyNodes = connectionElt
+                final NodeList propertyNodes = connectionElt
                         .getElementsByTagName("property");
                 Node propertyNode = null;
                 Properties properties = null;
@@ -330,50 +339,52 @@ public class JdbcClientHelper extends ClientHelper {
                 for (int i = 0; i < propertyNodes.getLength(); i++) {
                     propertyNode = propertyNodes.item(i);
 
-                    if (properties == null)
+                    if (properties == null) {
                         properties = new Properties();
+                    }
                     name = propertyNode.getAttributes().getNamedItem("name")
                             .getTextContent();
                     value = propertyNode.getTextContent();
                     properties.setProperty(name, value);
                 }
 
-                Node returnGeneratedKeysNode = headerElt.getElementsByTagName(
-                        "returnGeneratedKeys").item(0);
-                boolean returnGeneratedKeys = returnGeneratedKeysNode
+                final Node returnGeneratedKeysNode = headerElt
+                        .getElementsByTagName("returnGeneratedKeys").item(0);
+                final boolean returnGeneratedKeys = returnGeneratedKeysNode
                         .getTextContent().equals("true") ? true : false;
 
                 // Read the SQL body and get the list of sql statements
-                Element bodyElt = (Element) rootElt
-                        .getElementsByTagName("body").item(0);
-                NodeList statementNodes = bodyElt
+                final Element bodyElt = (Element) rootElt.getElementsByTagName(
+                        "body").item(0);
+                final NodeList statementNodes = bodyElt
                         .getElementsByTagName("statement");
-                List<String> sqlRequests = new ArrayList<String>();
+                final List<String> sqlRequests = new ArrayList<String>();
                 for (int i = 0; i < statementNodes.getLength(); i++) {
-                    String sqlRequest = statementNodes.item(i).getTextContent();
+                    final String sqlRequest = statementNodes.item(i)
+                            .getTextContent();
                     sqlRequests.add(sqlRequest);
                 }
 
                 // Execute the List of SQL requests
                 connection = getConnection(connectionURI, properties,
                         usePooling);
-                JdbcResult result = handleSqlRequests(connection,
+                final JdbcResult result = handleSqlRequests(connection,
                         returnGeneratedKeys, sqlRequests);
                 response.setEntity(new RowSetRepresentation(result));
 
-            } catch (SQLException se) {
+            } catch (final SQLException se) {
                 getLogger().log(Level.WARNING,
                         "Error while processing the SQL request", se);
                 response.setStatus(Status.SERVER_ERROR_INTERNAL, se);
-            } catch (ParserConfigurationException pce) {
+            } catch (final ParserConfigurationException pce) {
                 getLogger().log(Level.WARNING,
                         "Error with XML parser configuration", pce);
                 response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST, pce);
-            } catch (SAXException se) {
+            } catch (final SAXException se) {
                 getLogger().log(Level.WARNING,
                         "Error while parsing the XML document", se);
                 response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST, se);
-            } catch (IOException ioe) {
+            } catch (final IOException ioe) {
                 getLogger().log(Level.WARNING, "Input/Output exception", ioe);
                 response.setStatus(Status.SERVER_ERROR_INTERNAL, ioe);
             }
@@ -396,8 +407,8 @@ public class JdbcClientHelper extends ClientHelper {
         JdbcResult result = null;
         try {
             connection.setAutoCommit(true);
-            Statement statement = connection.createStatement();
-            for (String sqlRequest : sqlRequests) {
+            final Statement statement = connection.createStatement();
+            for (final String sqlRequest : sqlRequests) {
                 statement.execute(sqlRequest,
                         returnGeneratedKeys ? Statement.RETURN_GENERATED_KEYS
                                 : Statement.NO_GENERATED_KEYS);
@@ -408,14 +419,14 @@ public class JdbcClientHelper extends ClientHelper {
             if (!connection.getAutoCommit()) {
                 connection.commit();
             }
-        } catch (SQLException se) {
+        } catch (final SQLException se) {
             getLogger().log(Level.WARNING,
                     "Error while processing the SQL requests", se);
             try {
                 if (!connection.getAutoCommit()) {
                     connection.rollback();
                 }
-            } catch (SQLException se2) {
+            } catch (final SQLException se2) {
                 getLogger().log(Level.WARNING,
                         "Error while rollbacking the transaction", se);
             }

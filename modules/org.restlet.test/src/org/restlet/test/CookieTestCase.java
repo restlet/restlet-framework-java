@@ -31,8 +31,8 @@ public class CookieTestCase extends RestletTestCase {
      * Equality tests.
      */
     public void testEquals() throws Exception {
-        Cookie c1 = new Cookie(1, "name1", "value1", "path1", "domain1");
-        Cookie c2 = new Cookie(1, "name1", "value1", "path1", "domain1");
+        final Cookie c1 = new Cookie(1, "name1", "value1", "path1", "domain1");
+        final Cookie c2 = new Cookie(1, "name1", "value1", "path1", "domain1");
 
         assertTrue(c1.equals(c2));
         assertTrue(c1.hashCode() == c2.hashCode());

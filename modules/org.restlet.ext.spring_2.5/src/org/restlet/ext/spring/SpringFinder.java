@@ -45,15 +45,15 @@ import org.restlet.resource.Resource;
  *      &lt;/bean&gt;
  * </pre>
  * 
- * Note that the <a href="http://cglib.sourceforge.net/">Code Generation Library</a>
- * (cglib) will be required in order to use the Spring's lookup method
- * mechanism.
+ * Note that the <a href="http://cglib.sourceforge.net/">Code Generation
+ * Library</a> (cglib) will be required in order to use the Spring's lookup
+ * method mechanism.
  * 
  * Concurrency note: instances of this class or its subclasses can be invoked by
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
  * 
- * @see <a href="http://www.springframework.org/">Spring home page</a>
+ * @see <a href="http://www.springframework.org/">Spring home page< /a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class SpringFinder extends Finder {
@@ -69,7 +69,7 @@ public class SpringFinder extends Finder {
      * Constructor.
      * 
      * @param context
-     *                The context.
+     *            The context.
      */
     public SpringFinder(Context context) {
         super(context);
@@ -79,23 +79,12 @@ public class SpringFinder extends Finder {
      * Constructor.
      * 
      * @param context
-     *                The context.
+     *            The context.
      * @param targetClass
-     *                The target resource class.
+     *            The target resource class.
      */
     public SpringFinder(Context context, Class<? extends Resource> targetClass) {
         super(context, targetClass);
-    }
-
-    @Override
-    public Resource createTarget(Request request, Response response) {
-        Resource result = createResource();
-
-        if (result != null) {
-            result.init(getContext(), request, response);
-        }
-
-        return result;
     }
 
     /**
@@ -115,13 +104,24 @@ public class SpringFinder extends Finder {
             try {
                 // Invoke the default constructor
                 result = (Resource) getTargetClass().newInstance();
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 getLogger()
                         .log(
                                 Level.WARNING,
                                 "Exception while instantiating the target resource.",
                                 e);
             }
+        }
+
+        return result;
+    }
+
+    @Override
+    public Resource createTarget(Request request, Response response) {
+        final Resource result = createResource();
+
+        if (result != null) {
+            result.init(getContext(), request, response);
         }
 
         return result;

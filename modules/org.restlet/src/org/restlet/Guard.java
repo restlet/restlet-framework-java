@@ -53,17 +53,16 @@ import org.restlet.util.Resolver;
  * <li>The authorize() method is called and if authorization is given the
  * accept() method is invoked, which delegates to the attached Restlet or
  * Resource by default. Otherwise, the forbid method is called, which sets the
- * response status to CLIENT_ERROR_FORBIDDEN (403). </li>
+ * response status to CLIENT_ERROR_FORBIDDEN (403).</li>
  * </ol>
  * </li>
- * <li>Missing: no credentials could be found, the challenge() method is
- * invoked which delegates to the matching authenticator helper. </li>
+ * <li>Missing: no credentials could be found, the challenge() method is invoked
+ * which delegates to the matching authenticator helper.</li>
  * <li>Invalid: bad credentials were given such as a wrong password or
  * unsupported scheme was used. If the "rechallenge" property is true, the
- * challenge() method is invoked otherwise, the forbid() method is invoked.
- * </li>
+ * challenge() method is invoked otherwise, the forbid() method is invoked.</li>
  * <li>Stale: the credentials expired and must be renew. Therefore, the
- * challenge() method is invoked. </li>
+ * challenge() method is invoked.</li>
  * </ol>
  * </ol>
  * 
@@ -71,9 +70,9 @@ import org.restlet.util.Resolver;
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
  * 
- * @see <a
- *      href="http://www.restlet.org/documentation/1.1/tutorial#part09">Tutorial:
- *      Guarding access to sensitive resources</a>
+ * @see <a *
+ *      href="http://www.restlet.org/documentation/1.1/tutorial#part09">Tutorial
+ *      : * Guarding access to sensitive resources< /a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Guard extends Filter {
@@ -117,20 +116,22 @@ public class Guard extends Filter {
     /** Map of secrets (login/password combinations). */
     private final ConcurrentMap<String, char[]> secrets;
 
-    /** The secret key known only to server (use for HTTP DIGEST authentication). */
+    /**
+     * The secret key known only to server (use for HTTP DIGEST authentication).
+     */
     private volatile String serverKey = "serverKey";
 
     /**
      * Constructor.
      * 
      * @param context
-     *                The context.
+     *            The context.
      * @param scheme
-     *                The authentication scheme to use.
+     *            The authentication scheme to use.
      * @param realm
-     *                The authentication realm.
+     *            The authentication realm.
      * @throws IllegalArgumentException
-     *                 if the scheme is null
+     *             if the scheme is null
      */
     public Guard(Context context, ChallengeScheme scheme, String realm)
             throws IllegalArgumentException {
@@ -158,13 +159,13 @@ public class Guard extends Filter {
      * Alternate Constructor for HTTP DIGEST authentication scheme.
      * 
      * @param context
-     *                context
+     *            context
      * @param realm
-     *                authentication realm
+     *            authentication realm
      * @param baseUris
-     *                protection domain as a collection of base URIs
+     *            protection domain as a collection of base URIs
      * @param serverKey
-     *                secret key known only to server
+     *            secret key known only to server
      */
     public Guard(Context context, String realm, Collection<String> baseUris,
             String serverKey) {
@@ -179,9 +180,9 @@ public class Guard extends Filter {
      * attached Restlet to handle the call.
      * 
      * @param request
-     *                The request to accept.
+     *            The request to accept.
      * @param response
-     *                The response to accept.
+     *            The response to accept.
      */
     public void accept(Request request, Response response) {
         // Invoke the attached Restlet
@@ -195,7 +196,7 @@ public class Guard extends Filter {
      * called after authentication.
      * 
      * @param request
-     *                The request to authenticate.
+     *            The request to authenticate.
      * @return -1 if the given credentials were invalid, 0 if no credentials
      *         were found and 1 otherwise.
      * @see #checkSecret(String, char[])
@@ -212,7 +213,7 @@ public class Guard extends Filter {
      * could be added by overriding this method.
      * 
      * @param request
-     *                The request to authorize.
+     *            The request to authorize.
      * @return True if the request is authorized.
      */
     public boolean authorize(Request request) {
@@ -225,7 +226,7 @@ public class Guard extends Filter {
      * by setting the status to CLIENT_ERROR_UNAUTHORIZED.
      * 
      * @param response
-     *                The response to update.
+     *            The response to update.
      * @deprecated Use the {@link #challenge(Response, boolean)} method instead.
      */
     @Deprecated
@@ -238,9 +239,9 @@ public class Guard extends Filter {
      * by setting the status to CLIENT_ERROR_UNAUTHORIZED.
      * 
      * @param response
-     *                The response to update.
+     *            The response to update.
      * @param stale
-     *                Indicates if the new challenge is due to a stale response.
+     *            Indicates if the new challenge is due to a stale response.
      */
     public void challenge(Response response, boolean stale) {
         // Delegate processing to the Engine
@@ -253,11 +254,11 @@ public class Guard extends Filter {
      * the findSecret() method.
      * 
      * @param request
-     *                The Request
+     *            The Request
      * @param identifier
-     *                the identifier
+     *            the identifier
      * @param secret
-     *                the identifier's secret
+     *            the identifier's secret
      * @return true if the secret is valid for the given identifier
      */
     public boolean checkSecret(Request request, String identifier, char[] secret) {
@@ -270,9 +271,9 @@ public class Guard extends Filter {
      * the findSecret() method.
      * 
      * @param identifier
-     *                the identifier
+     *            the identifier
      * @param secret
-     *                the identifier's secret
+     *            the identifier's secret
      * @return true if the secret is valid for the given identifier
      * @deprecated Use the {@link #checkSecret(Request, String, char[])} method
      *             instead.
@@ -280,15 +281,15 @@ public class Guard extends Filter {
     @Deprecated
     protected boolean checkSecret(String identifier, char[] secret) {
         boolean result = false;
-        char[] secret2 = findSecret(identifier);
+        final char[] secret2 = findSecret(identifier);
 
-        if (secret == null || secret2 == null) {
+        if ((secret == null) || (secret2 == null)) {
             // check if both are null
             result = (secret == secret2);
         } else {
             if (secret.length == secret2.length) {
                 boolean equals = true;
-                for (int i = 0; i < secret.length && equals; i++) {
+                for (int i = 0; (i < secret.length) && equals; i++) {
                     equals = (secret[i] == secret2[i]);
                 }
                 result = equals;
@@ -302,14 +303,14 @@ public class Guard extends Filter {
      * Handles the call by distributing it to the next Restlet.
      * 
      * @param request
-     *                The request to handle.
+     *            The request to handle.
      * @param response
-     *                The response to update.
+     *            The response to update.
      * @return The continuation status.
      */
     @Override
     public int doHandle(Request request, Response response) {
-        boolean loggable = getLogger().isLoggable(Level.FINE);
+        final boolean loggable = getLogger().isLoggable(Level.FINE);
 
         switch (authenticate(request)) {
         case AUTHENTICATION_VALID:
@@ -383,7 +384,7 @@ public class Guard extends Filter {
      * method.
      * 
      * @param identifier
-     *                The identifier to lookup.
+     *            The identifier to lookup.
      * @return The secret associated to the identifier or null.
      */
     public char[] findSecret(String identifier) {
@@ -398,7 +399,7 @@ public class Guard extends Filter {
      * CLIENT_ERROR_FORBIDDEN.
      * 
      * @param response
-     *                The reject response.
+     *            The reject response.
      */
     public void forbid(Response response) {
         response.setStatus(Status.CLIENT_ERROR_FORBIDDEN);
@@ -486,7 +487,7 @@ public class Guard extends Filter {
      * domains.
      * 
      * @param domainUris
-     *                The URIs of protection domains.
+     *            The URIs of protection domains.
      */
     public void setDomainUris(Collection<String> domainUris) {
         this.domainUris = domainUris;
@@ -496,7 +497,7 @@ public class Guard extends Filter {
      * Sets the number of milliseconds between each mandatory nonce refresh.
      * 
      * @param lifespan
-     *                The nonce lifespan in ms.
+     *            The nonce lifespan in ms.
      */
     public void setNonceLifespan(long lifespan) {
         this.nonceLifespan = lifespan;
@@ -506,7 +507,7 @@ public class Guard extends Filter {
      * Sets the authentication realm.
      * 
      * @param realm
-     *                The authentication realm.
+     *            The authentication realm.
      */
     public void setRealm(String realm) {
         this.realm = realm;
@@ -517,7 +518,7 @@ public class Guard extends Filter {
      * received.
      * 
      * @param rechallengeEnabled
-     *                True if invalid credentials result in a new challenge.
+     *            True if invalid credentials result in a new challenge.
      * @see #isRechallengeEnabled()
      */
     public void setRechallengeEnabled(boolean rechallengeEnabled) {
@@ -528,7 +529,7 @@ public class Guard extends Filter {
      * Sets the authentication challenge scheme.
      * 
      * @param scheme
-     *                The authentication challenge scheme.
+     *            The authentication challenge scheme.
      */
     public void setScheme(ChallengeScheme scheme) {
         this.scheme = scheme;
@@ -538,7 +539,7 @@ public class Guard extends Filter {
      * Sets the secret resolver.
      * 
      * @param secretResolver
-     *                The secret resolver.
+     *            The secret resolver.
      */
     public void setSecretResolver(Resolver<char[]> secretResolver) {
         this.secretResolver = secretResolver;
@@ -549,7 +550,7 @@ public class Guard extends Filter {
      * authentication scheme.
      * 
      * @param serverKey
-     *                The server secret key.
+     *            The server secret key.
      */
     public void setServerKey(String serverKey) {
         this.serverKey = serverKey;

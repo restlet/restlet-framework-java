@@ -5,11 +5,12 @@ package org.restlet.gwt.data;
  * themselves by software name and version.
  * 
  * @author Thierry Boileau (contact@noelios.com)
- * @see <a
- *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.43">User-Agent</a>
- * @see <a
- *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.8">Product
- *      Tokens</a>
+ * @see <a *
+ *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.43"
+ *      >User-Agent< /a>
+ * @see <a *
+ *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.8">
+ *      Product * Tokens< /a>
  */
 public class Product {
 
@@ -26,11 +27,11 @@ public class Product {
      * Constructor.
      * 
      * @param name
-     *                The product name.
+     *            The product name.
      * @param version
-     *                The product version.
+     *            The product version.
      * @param comment
-     *                The product comment.
+     *            The product comment.
      */
     public Product(String name, String version, String comment) {
         super();
@@ -45,7 +46,7 @@ public class Product {
      * @return The facultative comment.
      */
     public String getComment() {
-        return comment;
+        return this.comment;
     }
 
     /**
@@ -54,7 +55,7 @@ public class Product {
      * @return The product name.
      */
     public String getName() {
-        return name;
+        return this.name;
     }
 
     /**
@@ -63,14 +64,14 @@ public class Product {
      * @return The version of the product.
      */
     public String getVersion() {
-        return version;
+        return this.version;
     }
 
     /**
      * Sets the facultative comment.
      * 
      * @param comment
-     *                The facultative comment.
+     *            The facultative comment.
      */
     public void setComment(String comment) {
         this.comment = comment;
@@ -80,7 +81,7 @@ public class Product {
      * Sets the product name.
      * 
      * @param name
-     *                The product name.
+     *            The product name.
      */
     public void setName(String name) {
         this.name = name;
@@ -90,7 +91,7 @@ public class Product {
      * Sets the version of the product.
      * 
      * @param version
-     *                The version of the product.
+     *            The version of the product.
      */
     public void setVersion(String version) {
         this.version = version;

@@ -51,7 +51,7 @@ public class ClapClientHelper extends LocalClientHelper {
      * Constructor.
      * 
      * @param client
-     *                The client to help.
+     *            The client to help.
      */
     public ClapClientHelper(Client client) {
         super(client);
@@ -62,27 +62,28 @@ public class ClapClientHelper extends LocalClientHelper {
      * Handles a call.
      * 
      * @param request
-     *                The request to handle.
+     *            The request to handle.
      * @param response
-     *                The response to update.
+     *            The response to update.
      */
     @Override
     public void handle(Request request, Response response) {
-        String scheme = request.getResourceRef().getScheme();
+        final String scheme = request.getResourceRef().getScheme();
 
         // Ensure that all ".." and "." are normalized into the path
         // to preven unauthorized access to user directories.
         request.getResourceRef().normalize();
 
         if (scheme.equalsIgnoreCase(Protocol.CLAP.getSchemeName())) {
-            LocalReference cr = new LocalReference(request.getResourceRef());
+            final LocalReference cr = new LocalReference(request
+                    .getResourceRef());
             ClassLoader classLoader = null;
 
             if (cr.getClapAuthorityType() == LocalReference.CLAP_CLASS) {
                 // Sometimes, a specific class loader needs to be used,
                 // make sure that it can be provided as a request's attribute
-                Object classLoaderAttribute = request.getAttributes().get(
-                        "org.restlet.clap.classloader");
+                final Object classLoaderAttribute = request.getAttributes()
+                        .get("org.restlet.clap.classloader");
                 if (classLoaderAttribute != null) {
                     classLoader = (ClassLoader) classLoaderAttribute;
                 } else {
@@ -107,13 +108,13 @@ public class ClapClientHelper extends LocalClientHelper {
      * Handles a call with a given class loader.
      * 
      * @param request
-     *                The request to handle.
+     *            The request to handle.
      * @param response
-     *                The response to update.
+     *            The response to update.
      */
     protected void handleClassLoader(Request request, Response response,
             ClassLoader classLoader) {
-        MetadataService metadataService = getMetadataService(request);
+        final MetadataService metadataService = getMetadataService(request);
 
         if (request.getMethod().equals(Method.GET)
                 || request.getMethod().equals(Method.HEAD)) {
@@ -142,7 +143,7 @@ public class ClapClientHelper extends LocalClientHelper {
             // of the CLAP client, so we have to ignore them.
             if (url != null) {
                 if (url.getProtocol().equals("file")) {
-                    File file = new File(url.getFile());
+                    final File file = new File(url.getFile());
                     modificationDate = new Date(file.lastModified());
 
                     if (file.isDirectory()) {
@@ -153,20 +154,21 @@ public class ClapClientHelper extends LocalClientHelper {
 
             if (url != null) {
                 try {
-                    Representation output = new InputRepresentation(url
+                    final Representation output = new InputRepresentation(url
                             .openStream(), metadataService
                             .getDefaultMediaType());
                     output.setIdentifier(request.getResourceRef());
                     output.setModificationDate(modificationDate);
 
                     // Update the metadata based on file extensions
-                    String name = path.substring(path.lastIndexOf('/') + 1);
+                    final String name = path
+                            .substring(path.lastIndexOf('/') + 1);
                     updateMetadata(metadataService, name, output);
 
                     // Update the response
                     response.setEntity(output);
                     response.setStatus(Status.SUCCESS_OK);
-                } catch (IOException ioe) {
+                } catch (final IOException ioe) {
                     getLogger().log(Level.WARNING,
                             "Unable to open the representation's input stream",
                             ioe);

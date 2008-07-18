@@ -30,11 +30,11 @@ public class Contact extends BaseObject {
     private String name;
 
     public String getMailAddress() {
-        return mailAddress;
+        return this.mailAddress;
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public void setMailAddress(String mailAddress) {

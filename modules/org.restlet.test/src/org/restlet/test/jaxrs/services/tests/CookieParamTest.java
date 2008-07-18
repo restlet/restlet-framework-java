@@ -55,57 +55,60 @@ public class CookieParamTest extends JaxRsTestCase {
     }
 
     public void test2() throws IOException {
-        Response response = get();
+        final Response response = get();
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_NO_CONTENT, response.getStatus());
-        Representation entity = response.getEntity();
+        final Representation entity = response.getEntity();
         String text;
-        if (entity != null)
+        if (entity != null) {
             text = entity.getText();
-        else
+        } else {
             text = null;
+        }
         assertEquals(null, text);
     }
 
-    public void testCookieSet() throws Exception {
-        Request request = createGetRequest("Set");
+    public void testCookieArray() throws Exception {
+        final Request request = createGetRequest("array");
         request.getCookies().add(new Cookie("c", "c1"));
         request.getCookies().add(new Cookie("c", "c2"));
         request.getCookies().add(new Cookie("d", "c3"));
-        Response response = accessServer(request);
+        final Response response = accessServer(request);
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        String entity = response.getEntity().getText();
-        String entityWithoutBrackets = entity.substring(1, entity.length() - 1);
+        final String entity = response.getEntity().getText();
+        final String entityWithoutBrackets = entity.substring(1, entity
+                .length() - 1);
+        assertEquals("c1, c2", entityWithoutBrackets);
+    }
+
+    public void testCookieSet() throws Exception {
+        final Request request = createGetRequest("Set");
+        request.getCookies().add(new Cookie("c", "c1"));
+        request.getCookies().add(new Cookie("c", "c2"));
+        request.getCookies().add(new Cookie("d", "c3"));
+        final Response response = accessServer(request);
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        final String entity = response.getEntity().getText();
+        final String entityWithoutBrackets = entity.substring(1, entity
+                .length() - 1);
         try {
             assertEquals("c1, c2", entityWithoutBrackets);
-        } catch (AssertionFailedError afe) {
+        } catch (final AssertionFailedError afe) {
             assertEquals("c2, c1", entityWithoutBrackets);
         }
     }
 
-    public void testCookieArray() throws Exception {
-        Request request = createGetRequest("array");
-        request.getCookies().add(new Cookie("c", "c1"));
-        request.getCookies().add(new Cookie("c", "c2"));
-        request.getCookies().add(new Cookie("d", "c3"));
-        Response response = accessServer(request);
-        sysOutEntityIfError(response);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
-        String entity = response.getEntity().getText();
-        String entityWithoutBrackets = entity.substring(1, entity.length() - 1);
-        assertEquals("c1, c2", entityWithoutBrackets);
-    }
-
     public void testCookieSortedSet() throws Exception {
-        Request request = createGetRequest("SortedSet");
+        final Request request = createGetRequest("SortedSet");
         request.getCookies().add(new Cookie("c", "c1"));
         request.getCookies().add(new Cookie("c", "c2"));
         request.getCookies().add(new Cookie("d", "c3"));
-        Response response = accessServer(request);
+        final Response response = accessServer(request);
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        String entity = response.getEntity().getText();
+        final String entity = response.getEntity().getText();
         assertEquals("c1, c2", entity.substring(1, entity.length() - 1));
     }
 

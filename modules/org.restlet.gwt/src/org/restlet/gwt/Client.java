@@ -47,9 +47,9 @@ public class Client extends Connector {
      * Constructor.
      * 
      * @param context
-     *                The context.
+     *            The context.
      * @param protocols
-     *                The connector protocols.
+     *            The connector protocols.
      */
     public Client(Context context, List<Protocol> protocols) {
         super(context, protocols);
@@ -65,9 +65,9 @@ public class Client extends Connector {
      * Constructor.
      * 
      * @param context
-     *                The context.
+     *            The context.
      * @param protocol
-     *                The connector protocol.
+     *            The connector protocol.
      */
     public Client(Context context, Protocol protocol) {
         this(context, (protocol == null) ? null : Arrays.asList(protocol));
@@ -77,7 +77,7 @@ public class Client extends Connector {
      * Constructor.
      * 
      * @param protocols
-     *                The connector protocols.
+     *            The connector protocols.
      */
     public Client(List<Protocol> protocols) {
         this(null, protocols);
@@ -87,7 +87,7 @@ public class Client extends Connector {
      * Constructor.
      * 
      * @param protocol
-     *                The connector protocol.
+     *            The connector protocol.
      */
     public Client(Protocol protocol) {
         this(null, protocol);
@@ -97,7 +97,7 @@ public class Client extends Connector {
      * Constructor.
      * 
      * @param protocolName
-     *                The connector protocol.
+     *            The connector protocol.
      */
     public Client(String protocolName) {
         this(Protocol.valueOf(protocolName));
@@ -109,7 +109,7 @@ public class Client extends Connector {
      * @return The connection timeout.
      */
     public int getConnectTimeout() {
-        return connectTimeout;
+        return this.connectTimeout;
     }
 
     /**
@@ -125,15 +125,16 @@ public class Client extends Connector {
     public void handle(Request request, Response response) {
         super.handle(request, response);
 
-        if (getHelper() != null)
+        if (getHelper() != null) {
             getHelper().handle(request, response);
+        }
     }
 
     /**
      * Sets the connection timeout.
      * 
      * @param connectTimeout
-     *                The connection timeout.
+     *            The connection timeout.
      */
     public void setConnectTimeout(int connectTimeout) {
         this.connectTimeout = connectTimeout;
@@ -143,16 +144,18 @@ public class Client extends Connector {
     public synchronized void start() throws Exception {
         if (isStopped()) {
             super.start();
-            if (getHelper() != null)
+            if (getHelper() != null) {
                 getHelper().start();
+            }
         }
     }
 
     @Override
     public synchronized void stop() throws Exception {
         if (isStarted()) {
-            if (getHelper() != null)
+            if (getHelper() != null) {
                 getHelper().stop();
+            }
             super.stop();
         }
     }

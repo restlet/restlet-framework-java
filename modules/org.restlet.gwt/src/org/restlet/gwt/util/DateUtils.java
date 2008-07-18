@@ -42,9 +42,8 @@ public final class DateUtils {
      * 
      * @author Piyush Purang (ppurang@gmail.com)
      * @see java.util.Date
-     * @see <a
-     *      href="http://discuss.fogcreek.com/joelonsoftware3/default.asp?cmd=show&ixPost=73959&ixReplies=24">Immutable
-     *      Date</a>
+     * @see <a * href="http://discuss.fogcreek.com/joelonsoftware3/default.asp?cmd=show&ixPost=73959&ixReplies=24"
+     *      >Immutable * Date< /a>
      */
     private static final class ImmutableDate extends Date {
         // TODO Are we serializable?
@@ -54,7 +53,7 @@ public final class DateUtils {
          * Returns an ImmutableDate object wrapping the given date.
          * 
          * @param date
-         *                object to be made immutable
+         *            object to be made immutable
          * @return an immutable date object
          */
         public static ImmutableDate valueOf(Date date) {
@@ -68,7 +67,7 @@ public final class DateUtils {
          * Private constructor. A factory method is provided.
          * 
          * @param date
-         *                date to be made immutable
+         *            date to be made immutable
          */
         private ImmutableDate(Date date) {
             this.delegate = (Date) date.clone();
@@ -77,13 +76,13 @@ public final class DateUtils {
         /** {@inheritDoc} */
         @Override
         public boolean after(Date when) {
-            return delegate.after(when);
+            return this.delegate.after(when);
         }
 
         /** {@inheritDoc} */
         @Override
         public boolean before(Date when) {
-            return delegate.before(when);
+            return this.delegate.before(when);
         }
 
         /** {@inheritDoc} */
@@ -96,31 +95,31 @@ public final class DateUtils {
         /** {@inheritDoc} */
         @Override
         public int compareTo(Date anotherDate) {
-            return delegate.compareTo(anotherDate);
+            return this.delegate.compareTo(anotherDate);
         }
 
         /** {@inheritDoc} */
         @Override
         public boolean equals(Object obj) {
-            return delegate.equals(obj);
+            return this.delegate.equals(obj);
         }
 
         /** {@inheritDoc} */
         @Override
         public long getTime() {
-            return delegate.getTime();
+            return this.delegate.getTime();
         }
 
         /** {@inheritDoc} */
         @Override
         public int hashCode() {
-            return delegate.hashCode();
+            return this.delegate.hashCode();
         }
 
         /** {@inheritDoc} */
         @Override
         public String toString() {
-            return delegate.toString();
+            return this.delegate.toString();
         }
     }
 
@@ -147,9 +146,9 @@ public final class DateUtils {
      * Compares two date with a precision of one second.
      * 
      * @param baseDate
-     *                The base date
+     *            The base date
      * @param afterDate
-     *                The date supposed to be after.
+     *            The date supposed to be after.
      * @return True if the afterDate is indeed after the baseDate.
      */
     public static boolean after(final Date baseDate, final Date afterDate) {
@@ -158,8 +157,8 @@ public final class DateUtils {
                     "Can't compare the dates, at least one of them is null");
         }
 
-        long baseTime = baseDate.getTime() / 1000;
-        long afterTime = afterDate.getTime() / 1000;
+        final long baseTime = baseDate.getTime() / 1000;
+        final long afterTime = afterDate.getTime() / 1000;
         return baseTime < afterTime;
     }
 
@@ -167,9 +166,9 @@ public final class DateUtils {
      * Compares two date with a precision of one second.
      * 
      * @param baseDate
-     *                The base date
+     *            The base date
      * @param beforeDate
-     *                The date supposed to be before.
+     *            The date supposed to be before.
      * @return True if the beforeDate is indeed before the baseDate.
      */
     public static boolean before(final Date baseDate, final Date beforeDate) {
@@ -178,8 +177,8 @@ public final class DateUtils {
                     "Can't compare the dates, at least one of them is null");
         }
 
-        long baseTime = baseDate.getTime() / 1000;
-        long beforeTime = beforeDate.getTime() / 1000;
+        final long baseTime = baseDate.getTime() / 1000;
+        final long beforeTime = beforeDate.getTime() / 1000;
         return beforeTime < baseTime;
     }
 
@@ -187,9 +186,9 @@ public final class DateUtils {
      * Compares two date with a precision of one second.
      * 
      * @param baseDate
-     *                The base date
+     *            The base date
      * @param otherDate
-     *                The other date supposed to be equals.
+     *            The other date supposed to be equals.
      * @return True if both dates are equals.
      */
     public static boolean equals(final Date baseDate, final Date otherDate) {
@@ -198,8 +197,8 @@ public final class DateUtils {
                     "Can't compare the dates, at least one of them is null");
         }
 
-        long baseTime = baseDate.getTime() / 1000;
-        long otherTime = otherDate.getTime() / 1000;
+        final long baseTime = baseDate.getTime() / 1000;
+        final long otherTime = otherDate.getTime() / 1000;
         return otherTime == baseTime;
     }
 
@@ -207,9 +206,9 @@ public final class DateUtils {
      * Formats a Date according to the first format in the array.
      * 
      * @param date
-     *                The date to format.
+     *            The date to format.
      * @param format
-     *                The date format to use.
+     *            The date format to use.
      * @return The formatted date.
      */
     public static String format(final Date date, final String format) {
@@ -225,7 +224,7 @@ public final class DateUtils {
          * Default timezone is GMT unless specified via a GMT:hhmm, GMT:+hhmm,
          * or GMT:-hhmm string.
          */
-        DateTimeFormat formatter = DateTimeFormat.getFormat(format);
+        final DateTimeFormat formatter = DateTimeFormat.getFormat(format);
         return formatter.format(date);
     }
 
@@ -233,9 +232,9 @@ public final class DateUtils {
      * Parses a formatted date into a Date object.
      * 
      * @param date
-     *                The date to parse.
+     *            The date to parse.
      * @param formats
-     *                The date formats to use sorted by completeness.
+     *            The date formats to use sorted by completeness.
      * @return The parsed date.
      */
     public static Date parse(final String date, final List<String> formats) {
@@ -257,11 +256,11 @@ public final class DateUtils {
              * Default timezone is GMT unless specified via a GMT:hhmm,
              * GMT:+hhmm, or GMT:-hhmm string.
              */
-            DateTimeFormat parser = DateTimeFormat.getFormat(format);
+            final DateTimeFormat parser = DateTimeFormat.getFormat(format);
 
             try {
                 result = parser.parse(date);
-            } catch (IllegalArgumentException e) {
+            } catch (final IllegalArgumentException e) {
                 // Ignores error as the next format may work better
             }
         }
@@ -273,7 +272,7 @@ public final class DateUtils {
      * Returns an immutable version of a given date.
      * 
      * @param date
-     *                The modifiable date.
+     *            The modifiable date.
      * @return An immutable version of a given date.
      */
     public static Date unmodifiable(Date date) {
@@ -285,9 +284,9 @@ public final class DateUtils {
      * lists based on arrays.
      * 
      * @param <T>
-     *                Any valid java object
+     *            Any valid java object
      * @param array
-     *                to be converted into an unmodifiable list
+     *            to be converted into an unmodifiable list
      * @return unmodifiable list based on the provided array
      */
     private static <T> List<T> unmodifiableList(final T... array) {

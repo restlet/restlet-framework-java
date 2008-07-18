@@ -43,28 +43,6 @@ import org.restlet.resource.Variant;
  */
 public class RemoteClientAddressTestCase extends BaseConnectorsTestCase {
 
-    @Override
-    protected Application createApplication(Component component) {
-        Application application = new Application(component.getContext()) {
-            @Override
-            public Restlet createRoot() {
-                Router router = new Router(getContext());
-                router.attach("/test", RemoteClientAddressResource.class);
-                return router;
-            }
-        };
-
-        return application;
-    }
-
-    @Override
-    protected void call(String uri) throws Exception {
-        Request request = new Request(Method.GET, uri);
-        Response r = new Client(Protocol.HTTP).handle(request);
-
-        assertEquals(Status.SUCCESS_OK, r.getStatus());
-    }
-
     public static class RemoteClientAddressResource extends Resource {
 
         public RemoteClientAddressResource(Context ctx, Request request,
@@ -81,5 +59,27 @@ public class RemoteClientAddressTestCase extends BaseConnectorsTestCase {
 
             return new StringRepresentation("OK");
         }
+    }
+
+    @Override
+    protected void call(String uri) throws Exception {
+        final Request request = new Request(Method.GET, uri);
+        final Response r = new Client(Protocol.HTTP).handle(request);
+
+        assertEquals(Status.SUCCESS_OK, r.getStatus());
+    }
+
+    @Override
+    protected Application createApplication(Component component) {
+        final Application application = new Application(component.getContext()) {
+            @Override
+            public Restlet createRoot() {
+                final Router router = new Router(getContext());
+                router.attach("/test", RemoteClientAddressResource.class);
+                return router;
+            }
+        };
+
+        return application;
     }
 }

@@ -38,7 +38,7 @@ public final class ClientList extends WrapperList<Client> {
      * Constructor.
      * 
      * @param context
-     *                The context.
+     *            The context.
      */
     public ClientList(Context context) {
         super(new CopyOnWriteArrayList<Client>());
@@ -49,11 +49,11 @@ public final class ClientList extends WrapperList<Client> {
      * Adds a new client connector in the map supporting the given protocol.
      * 
      * @param protocol
-     *                The connector protocol.
+     *            The connector protocol.
      * @return The added client.
      */
     public Client add(Protocol protocol) {
-        Client result = new Client(getContext(), protocol);
+        final Client result = new Client(getContext(), protocol);
         add(result);
         return result;
     }
@@ -71,7 +71,7 @@ public final class ClientList extends WrapperList<Client> {
      * Sets the context.
      * 
      * @param context
-     *                The context.
+     *            The context.
      */
     public void setContext(Context context) {
         this.context = context;

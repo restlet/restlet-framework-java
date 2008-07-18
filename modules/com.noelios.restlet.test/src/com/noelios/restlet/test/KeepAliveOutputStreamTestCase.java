@@ -38,7 +38,7 @@ public class KeepAliveOutputStreamTestCase extends TestCase {
 
         @Override
         public void close() throws IOException {
-            closed = true;
+            this.closed = true;
         }
 
         @Override
@@ -48,8 +48,8 @@ public class KeepAliveOutputStreamTestCase extends TestCase {
     }
 
     public void testClose() throws IOException {
-        MockOutputStream stream = new MockOutputStream();
-        OutputStream out = new KeepAliveOutputStream(stream);
+        final MockOutputStream stream = new MockOutputStream();
+        final OutputStream out = new KeepAliveOutputStream(stream);
         out.close();
 
         assertFalse(stream.closed);
@@ -58,8 +58,8 @@ public class KeepAliveOutputStreamTestCase extends TestCase {
     }
 
     public void testWrite() throws IOException {
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        OutputStream out = new KeepAliveOutputStream(stream);
+        final ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        final OutputStream out = new KeepAliveOutputStream(stream);
 
         out.write('a');
         assertEquals("a", new String(stream.toByteArray()));

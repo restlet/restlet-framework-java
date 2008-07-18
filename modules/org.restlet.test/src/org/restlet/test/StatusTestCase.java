@@ -27,12 +27,19 @@ import org.restlet.data.Status;
  */
 public class StatusTestCase extends RestletTestCase {
 
+    public void testCustomDescription() {
+        final String customDescription = "My custom description";
+        final Status s = new Status(Status.CLIENT_ERROR_NOT_FOUND,
+                customDescription);
+        assertEquals(customDescription, s.getDescription());
+    }
+
     /**
      * Equality tests.
      */
     public void testEquals() throws Exception {
-        Status s1 = new Status(201);
-        Status s2 = Status.SUCCESS_CREATED;
+        final Status s1 = new Status(201);
+        final Status s2 = Status.SUCCESS_CREATED;
 
         assertTrue(s1.equals(s2));
         assertTrue(s1.getCode() == s2.getCode());
@@ -43,34 +50,28 @@ public class StatusTestCase extends RestletTestCase {
     }
 
     /**
+     * Tests for status classes.
+     */
+    public void testStatusClasses() {
+        final Status s1 = new Status(287);
+        assertTrue(s1.isSuccess());
+
+        final Status s2 = Status.CLIENT_ERROR_BAD_REQUEST;
+        assertTrue(s2.isClientError());
+        assertTrue(s2.isError());
+    }
+
+    /**
      * Unequality tests.
      */
     public void testUnEquals() throws Exception {
-        Status s1 = new Status(200);
-        Status s2 = Status.SUCCESS_CREATED;
+        final Status s1 = new Status(200);
+        final Status s2 = Status.SUCCESS_CREATED;
 
         assertFalse(s1.equals(s2));
         assertFalse(s1.getCode() == s2.getCode());
         assertFalse(s1.equals(null));
         assertFalse(s2.equals(null));
-    }
-
-    /**
-     * Tests for status classes.
-     */
-    public void testStatusClasses() {
-        Status s1 = new Status(287);
-        assertTrue(s1.isSuccess());
-
-        Status s2 = Status.CLIENT_ERROR_BAD_REQUEST;
-        assertTrue(s2.isClientError());
-        assertTrue(s2.isError());
-    }
-
-    public void testCustomDescription() {
-        String customDescription = "My custom description";
-        Status s = new Status(Status.CLIENT_ERROR_NOT_FOUND, customDescription);
-        assertEquals(customDescription, s.getDescription());
     }
 
 }

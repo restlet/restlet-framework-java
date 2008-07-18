@@ -35,7 +35,7 @@ import org.restlet.util.Series;
  */
 public class HeadersTest {
     public static void main(String[] args) throws Exception {
-        Restlet restlet = new Restlet() {
+        final Restlet restlet = new Restlet() {
             @SuppressWarnings("unchecked")
             @Override
             public void handle(Request request, Response response) {
@@ -74,7 +74,7 @@ public class HeadersTest {
         };
 
         // Create the HTTP server and listen on port 8182
-        Server server = new Server(Protocol.HTTP, 8182, restlet);
+        final Server server = new Server(Protocol.HTTP, 8182, restlet);
         server.start();
     }
 

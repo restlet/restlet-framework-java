@@ -35,22 +35,22 @@ public class IllegalThingsTest extends JaxRsTestCase {
     }
 
     public void testNullSubResource() throws Exception {
-        Response response = get("nullSubResource");
+        final Response response = get("nullSubResource");
         assertEquals(Status.SERVER_ERROR_INTERNAL, response.getStatus());
     }
 
-    public void testProtected() throws Exception {
-        Response response = get("protected");
-        assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
-    }
-
     public void testPackage() throws Exception {
-        Response response = get("package");
+        final Response response = get("package");
         assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
     }
 
     public void testPrivate() throws Exception {
-        Response response = get("private");
+        final Response response = get("private");
+        assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
+    }
+
+    public void testProtected() throws Exception {
+        final Response response = get("protected");
         assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
     }
 }

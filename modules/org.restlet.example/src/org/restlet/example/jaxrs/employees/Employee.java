@@ -18,27 +18,27 @@ public class Employee extends AbstractEmployee {
 
     private URI departmentUri;
 
-    public String getSex() {
-        return this.sex;
-    }
-
-    public void setSex(String sex) {
-        this.sex = sex;
-    }
-
     public String getDepartment() {
         return this.department;
-    }
-
-    public void setDepartment(String department) {
-        this.department = department;
     }
 
     public URI getDepartmentUri() {
         return this.departmentUri;
     }
 
+    public String getSex() {
+        return this.sex;
+    }
+
+    public void setDepartment(String department) {
+        this.department = department;
+    }
+
     public void setDepartmentUri(URI departmentUri) {
         this.departmentUri = departmentUri;
+    }
+
+    public void setSex(String sex) {
+        this.sex = sex;
     }
 }

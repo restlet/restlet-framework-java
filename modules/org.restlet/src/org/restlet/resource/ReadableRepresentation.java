@@ -44,9 +44,9 @@ public class ReadableRepresentation extends ChannelRepresentation {
      * Constructor.
      * 
      * @param readableChannel
-     *                The representation's channel.
+     *            The representation's channel.
      * @param mediaType
-     *                The representation's media type.
+     *            The representation's media type.
      */
     public ReadableRepresentation(ReadableByteChannel readableChannel,
             MediaType mediaType) {
@@ -57,11 +57,11 @@ public class ReadableRepresentation extends ChannelRepresentation {
      * Constructor.
      * 
      * @param channel
-     *                The representation's channel.
+     *            The representation's channel.
      * @param mediaType
-     *                The representation's media type.
+     *            The representation's media type.
      * @param expectedSize
-     *                The expected stream size.
+     *            The expected stream size.
      */
     public ReadableRepresentation(ReadableByteChannel channel,
             MediaType mediaType, long expectedSize) {
@@ -74,7 +74,7 @@ public class ReadableRepresentation extends ChannelRepresentation {
 
     @Override
     public ReadableByteChannel getChannel() throws IOException {
-        ReadableByteChannel result = this.channel;
+        final ReadableByteChannel result = this.channel;
         this.channel = null;
         setAvailable(false);
         return result;
@@ -88,7 +88,7 @@ public class ReadableRepresentation extends ChannelRepresentation {
         if (this.channel != null) {
             try {
                 this.channel.close();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 logger.log(Level.WARNING,
                         "Error while releasing the representation.", e);
             }
@@ -102,7 +102,7 @@ public class ReadableRepresentation extends ChannelRepresentation {
      * Sets the readable channel.
      * 
      * @param channel
-     *                The readable channel.
+     *            The readable channel.
      */
     public void setChannel(ReadableByteChannel channel) {
         this.channel = channel;

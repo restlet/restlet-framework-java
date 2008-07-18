@@ -48,13 +48,13 @@ public class TransformRepresentation extends OutputRepresentation {
      */
     private final static class ContextResolver implements URIResolver {
         /** The Restlet context. */
-        private Context context;
+        private final Context context;
 
         /**
          * Constructor.
          * 
          * @param context
-         *                The Restlet context.
+         *            The Restlet context.
          */
         public ContextResolver(Context context) {
             this.context = context;
@@ -75,7 +75,7 @@ public class TransformRepresentation extends OutputRepresentation {
 
                 if ((base != null) && !base.equals("")) {
                     // Potentially a relative reference
-                    Reference baseRef = new Reference(base);
+                    final Reference baseRef = new Reference(base);
                     targetRef = new Reference(baseRef, href);
                 } else {
                     // No base, assume "href" is an absolute URI
@@ -83,8 +83,8 @@ public class TransformRepresentation extends OutputRepresentation {
                 }
 
                 final String targetUri = targetRef.getTargetRef().toString();
-                Response response = this.context.getClientDispatcher().get(
-                        targetUri);
+                final Response response = this.context.getClientDispatcher()
+                        .get(targetUri);
                 if (response.getStatus().isSuccess()
                         && response.isEntityAvailable()) {
                     try {
@@ -92,7 +92,7 @@ public class TransformRepresentation extends OutputRepresentation {
                                 .getStream());
                         result.setSystemId(targetUri);
 
-                    } catch (IOException e) {
+                    } catch (final IOException e) {
                         this.context.getLogger().log(Level.WARNING,
                                 "I/O error while getting the response stream",
                                 e);
@@ -127,11 +127,11 @@ public class TransformRepresentation extends OutputRepresentation {
      * the given context.
      * 
      * @param context
-     *                The parent context.
+     *            The parent context.
      * @param source
-     *                The source representation to transform.
+     *            The source representation to transform.
      * @param transformSheet
-     *                The XSLT transform sheet to apply.
+     *            The XSLT transform sheet to apply.
      */
     public TransformRepresentation(Context context, Representation source,
             Representation transformSheet) {
@@ -143,9 +143,9 @@ public class TransformRepresentation extends OutputRepresentation {
      * Default constructor.
      * 
      * @param source
-     *                The source representation to transform.
+     *            The source representation to transform.
      * @param transformSheet
-     *                The XSLT transform sheet to apply.
+     *            The XSLT transform sheet to apply.
      */
     public TransformRepresentation(Representation source,
             Representation transformSheet) {
@@ -157,11 +157,11 @@ public class TransformRepresentation extends OutputRepresentation {
      * the given context.
      * 
      * @param uriResolver
-     *                The JAXP URI resolver.
+     *            The JAXP URI resolver.
      * @param source
-     *                The source representation to transform.
+     *            The source representation to transform.
      * @param transformSheet
-     *                The XSLT transform sheet to apply.
+     *            The XSLT transform sheet to apply.
      */
     public TransformRepresentation(URIResolver uriResolver,
             Representation source, Representation transformSheet) {
@@ -172,11 +172,11 @@ public class TransformRepresentation extends OutputRepresentation {
      * Constructor.
      * 
      * @param uriResolver
-     *                The optional JAXP URI resolver.
+     *            The optional JAXP URI resolver.
      * @param source
-     *                The source representation to transform.
+     *            The source representation to transform.
      * @param templates
-     *                The precompiled JAXP template.
+     *            The precompiled JAXP template.
      */
     private TransformRepresentation(URIResolver uriResolver,
             Representation source, Representation transformSheet,
@@ -194,11 +194,11 @@ public class TransformRepresentation extends OutputRepresentation {
      * Constructor.
      * 
      * @param uriResolver
-     *                The optional JAXP URI resolver.
+     *            The optional JAXP URI resolver.
      * @param source
-     *                The source representation to transform.
+     *            The source representation to transform.
      * @param templates
-     *                The precompiled JAXP template.
+     *            The precompiled JAXP template.
      */
     public TransformRepresentation(URIResolver uriResolver,
             Representation source, Templates templates) {
@@ -236,9 +236,9 @@ public class TransformRepresentation extends OutputRepresentation {
             source = ((XmlRepresentation) getSourceRepresentation())
                     .getSaxSource();
         } else if (getSourceRepresentation() instanceof TransformRepresentation) {
-            TransformRepresentation lastTR = (TransformRepresentation) getSourceRepresentation();
+            final TransformRepresentation lastTR = (TransformRepresentation) getSourceRepresentation();
             TransformRepresentation rootTR = lastTR;
-            XMLFilter lastFilter = lastTR.getXmlFilter();
+            final XMLFilter lastFilter = lastTR.getXmlFilter();
             XMLFilter rootFilter = lastFilter;
             XMLFilter currFilter = null;
 
@@ -283,7 +283,7 @@ public class TransformRepresentation extends OutputRepresentation {
      * @return The default SAX transformer factory.
      */
     private SAXTransformerFactory getSaxTransformerFactory() {
-        SAXTransformerFactory result = (SAXTransformerFactory) TransformerFactory
+        final SAXTransformerFactory result = (SAXTransformerFactory) TransformerFactory
                 .newInstance();
         return result;
     }
@@ -308,7 +308,7 @@ public class TransformRepresentation extends OutputRepresentation {
         if (this.templates == null) {
             try {
                 // Prepare the XSLT transformer documents
-                StreamSource transformSource = new StreamSource(
+                final StreamSource transformSource = new StreamSource(
                         getTransformSheet().getStream());
 
                 if (getTransformSheet().getIdentifier() != null) {
@@ -317,7 +317,7 @@ public class TransformRepresentation extends OutputRepresentation {
                 }
 
                 // Create the transformer factory
-                TransformerFactory transformerFactory = TransformerFactory
+                final TransformerFactory transformerFactory = TransformerFactory
                         .newInstance();
 
                 // Set the URI resolver
@@ -328,7 +328,7 @@ public class TransformRepresentation extends OutputRepresentation {
                 // Create a new transformer
                 this.templates = transformerFactory
                         .newTemplates(transformSource);
-            } catch (TransformerConfigurationException tce) {
+            } catch (final TransformerConfigurationException tce) {
                 throw new IOException("Transformer configuration exception. "
                         + tce.getMessage());
             }
@@ -347,7 +347,7 @@ public class TransformRepresentation extends OutputRepresentation {
         Transformer result = null;
 
         try {
-            Templates templates = getTemplates();
+            final Templates templates = getTemplates();
 
             if (templates != null) {
                 result = templates.newTransformer();
@@ -357,20 +357,20 @@ public class TransformRepresentation extends OutputRepresentation {
                 }
 
                 // Set the parameters
-                for (String name : getParameters().keySet()) {
+                for (final String name : getParameters().keySet()) {
                     result.setParameter(name, getParameters().get(name));
                 }
 
                 // Set the output properties
-                for (String name : getOutputProperties().keySet()) {
+                for (final String name : getOutputProperties().keySet()) {
                     result.setOutputProperty(name, getOutputProperties().get(
                             name));
                 }
             }
-        } catch (TransformerConfigurationException tce) {
+        } catch (final TransformerConfigurationException tce) {
             throw new IOException("Transformer configuration exception. "
                     + tce.getMessage());
-        } catch (TransformerFactoryConfigurationError tfce) {
+        } catch (final TransformerFactoryConfigurationError tfce) {
             throw new IOException(
                     "Transformer factory configuration exception. "
                             + tfce.getMessage());
@@ -387,13 +387,13 @@ public class TransformRepresentation extends OutputRepresentation {
      */
     public TransformerHandler getTransformerHandler() throws IOException {
         TransformerHandler result = null;
-        Templates templates = getTemplates();
+        final Templates templates = getTemplates();
 
         if (templates != null) {
             try {
                 result = getSaxTransformerFactory().newTransformerHandler(
                         templates);
-            } catch (TransformerConfigurationException tce) {
+            } catch (final TransformerConfigurationException tce) {
                 throw new IOException("Transformer configuration exception. "
                         + tce.getMessage());
             }
@@ -439,12 +439,12 @@ public class TransformRepresentation extends OutputRepresentation {
      */
     public XMLFilter getXmlFilter() throws IOException {
         XMLFilter result = null;
-        Templates templates = getTemplates();
+        final Templates templates = getTemplates();
 
         if (templates != null) {
             try {
                 result = getSaxTransformerFactory().newXMLFilter(templates);
-            } catch (TransformerConfigurationException tce) {
+            } catch (final TransformerConfigurationException tce) {
                 throw new IOException("Transformer configuration exception. "
                         + tce.getMessage());
             }
@@ -484,7 +484,7 @@ public class TransformRepresentation extends OutputRepresentation {
      * Sets the modifiable map of JAXP transformer output properties.
      * 
      * @param outputProperties
-     *                The JAXP transformer output properties.
+     *            The JAXP transformer output properties.
      */
     public void setOutputProperties(Map<String, String> outputProperties) {
         this.outputProperties = outputProperties;
@@ -494,7 +494,7 @@ public class TransformRepresentation extends OutputRepresentation {
      * Sets the JAXP transformer parameters.
      * 
      * @param parameters
-     *                The JAXP transformer parameters.
+     *            The JAXP transformer parameters.
      */
     public void setParameters(Map<String, Object> parameters) {
         this.parameters = parameters;
@@ -504,7 +504,7 @@ public class TransformRepresentation extends OutputRepresentation {
      * Sets the source representation to transform.
      * 
      * @param source
-     *                The source representation to transform.
+     *            The source representation to transform.
      */
     public void setSourceRepresentation(Representation source) {
         this.sourceRepresentation = source;
@@ -514,7 +514,7 @@ public class TransformRepresentation extends OutputRepresentation {
      * Sets the templates to be used and reused.
      * 
      * @param templates
-     *                The templates to be used and reused.
+     *            The templates to be used and reused.
      */
     public void setTemplates(Templates templates) {
         this.templates = templates;
@@ -524,7 +524,7 @@ public class TransformRepresentation extends OutputRepresentation {
      * Sets the XSLT transform sheet to apply to message entities.
      * 
      * @param transformSheet
-     *                The XSLT transform sheet to apply to message entities.
+     *            The XSLT transform sheet to apply to message entities.
      */
     public void setTransformSheet(Representation transformSheet) {
         this.transformSheet = transformSheet;
@@ -534,7 +534,7 @@ public class TransformRepresentation extends OutputRepresentation {
      * Sets the URI resolver.
      * 
      * @param uriResolver
-     *                The URI resolver.
+     *            The URI resolver.
      */
     public void setUriResolver(URIResolver uriResolver) {
         this.uriResolver = uriResolver;
@@ -546,7 +546,7 @@ public class TransformRepresentation extends OutputRepresentation {
             // Generates the result of the transformation
             getTransformer().transform(getSaxSource(),
                     new StreamResult(outputStream));
-        } catch (TransformerException te) {
+        } catch (final TransformerException te) {
             throw new IOException("Transformer exception. " + te.getMessage());
         }
     }

@@ -27,7 +27,7 @@ import org.restlet.gwt.util.Series;
 /**
  * Media type used in representations and preferences.
  * 
- * @see <a href="http://en.wikipedia.org/wiki/MIME">MIME types on Wikipedia</a>
+ * @see <a href="http://en.wikipedia.org/wiki/MIME">MIME types on Wikipedia< /a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public final class MediaType extends Metadata {
@@ -290,27 +290,30 @@ public final class MediaType extends Metadata {
      * </ul>
      * 
      * @param mediaTypes
-     *                An array of media types.
+     *            An array of media types.
      * @return The most concrete MediaType.
      * @throws IllegalArgumentException
-     *                 If the array is null or empty.
+     *             If the array is null or empty.
      */
     public static MediaType getMostSpecific(MediaType... mediaTypes)
             throws IllegalArgumentException {
-        if (mediaTypes == null || mediaTypes.length == 0)
+        if ((mediaTypes == null) || (mediaTypes.length == 0)) {
             throw new IllegalArgumentException(
                     "You must give at least one MediaType");
+        }
 
-        if (mediaTypes.length == 1)
+        if (mediaTypes.length == 1) {
             return mediaTypes[0];
+        }
 
         MediaType mostSpecific = mediaTypes[mediaTypes.length - 1];
 
         for (int i = mediaTypes.length - 2; i >= 0; i--) {
-            MediaType mediaType = mediaTypes[i];
+            final MediaType mediaType = mediaTypes[i];
 
-            if (mediaType.getMainType().equals("*"))
+            if (mediaType.getMainType().equals("*")) {
                 continue;
+            }
 
             if (mostSpecific.getMainType().equals("*")) {
                 mostSpecific = mediaType;
@@ -344,16 +347,16 @@ public final class MediaType extends Metadata {
      * is returned, otherwise a new instance is created.
      * 
      * @param name
-     *                The name.
+     *            The name.
      * @param description
-     *                The description.
+     *            The description.
      * @return The registered media type
      */
     public static synchronized MediaType register(String name,
             String description) {
 
         if (!getTypes().containsKey(name)) {
-            MediaType type = new MediaType(name, description);
+            final MediaType type = new MediaType(name, description);
             getTypes().put(name, type);
         }
 
@@ -365,7 +368,7 @@ public final class MediaType extends Metadata {
      * exists then it is returned, otherwise a new instance is created.
      * 
      * @param name
-     *                The name.
+     *            The name.
      * @return The associated media type.
      */
     public static MediaType valueOf(String name) {
@@ -388,7 +391,7 @@ public final class MediaType extends Metadata {
      * Constructor.
      * 
      * @param name
-     *                The name.
+     *            The name.
      */
     public MediaType(String name) {
         this(name, null, "Media type or range of media types");
@@ -398,9 +401,9 @@ public final class MediaType extends Metadata {
      * Constructor.
      * 
      * @param name
-     *                The name.
+     *            The name.
      * @param parameters
-     *                The list of parameters.
+     *            The list of parameters.
      */
     public MediaType(String name, Series<Parameter> parameters) {
         this(name, parameters, "Media type or range of media types");
@@ -410,11 +413,11 @@ public final class MediaType extends Metadata {
      * Constructor.
      * 
      * @param name
-     *                The name.
+     *            The name.
      * @param parameters
-     *                The list of parameters.
+     *            The list of parameters.
      * @param description
-     *                The description.
+     *            The description.
      */
     public MediaType(String name, Series<Parameter> parameters,
             String description) {
@@ -426,9 +429,9 @@ public final class MediaType extends Metadata {
      * Constructor.
      * 
      * @param name
-     *                The name.
+     *            The name.
      * @param description
-     *                The description.
+     *            The description.
      */
     public MediaType(String name, String description) {
         this(name, null, description);
@@ -445,10 +448,9 @@ public final class MediaType extends Metadata {
      * parameters.
      * 
      * @param obj
-     *                The object to compare to.
+     *            The object to compare to.
      * @param ignoreParameters
-     *                Indicates if parameters should be ignored during
-     *                comparison.
+     *            Indicates if parameters should be ignored during comparison.
      * @return True if both media types are equal.
      */
     public boolean equals(Object obj, boolean ignoreParameters) {
@@ -460,10 +462,9 @@ public final class MediaType extends Metadata {
             if (super.equals(obj)) {
                 // if obj isn't a mediatype or is null don't evaluate further
                 if (obj instanceof MediaType) {
-                    MediaType that = (MediaType) obj;
+                    final MediaType that = (MediaType) obj;
                     result = ignoreParameters
-                            || this.getParameters()
-                                    .equals(that.getParameters());
+                            || getParameters().equals(that.getParameters());
                 }
             }
         }
@@ -509,8 +510,9 @@ public final class MediaType extends Metadata {
         if (p == null) {
             synchronized (this) {
                 p = this.parameters;
-                if (p == null)
+                if (p == null) {
                     this.parameters = p = new Form();
+                }
             }
         }
         return p;
@@ -525,13 +527,13 @@ public final class MediaType extends Metadata {
         String result = null;
 
         if (getName() != null) {
-            int slash = getName().indexOf('/');
+            final int slash = getName().indexOf('/');
 
             if (slash == -1) {
                 // No subtype found, assume that all subtypes are accepted
                 result = "*";
             } else {
-                int separator = getName().indexOf(';');
+                final int separator = getName().indexOf(';');
                 if (separator == -1) {
                     result = getName().substring(slash + 1);
                 } else {
@@ -563,23 +565,23 @@ public final class MediaType extends Metadata {
      * </ul>
      * 
      * @param included
-     *                The media type to test for inclusion.
+     *            The media type to test for inclusion.
      * @return True if the given media type is included in the current one.
      * @see #isCompatible(MediaType)
      */
     public boolean includes(MediaType included) {
-        boolean result = equals(ALL) || included == null || equals(included);
+        boolean result = equals(ALL) || (included == null) || equals(included);
 
         if (!result) {
             // Both media types are different
-            if (this.getMainType().equals(included.getMainType())) {
-                if (this.getSubType().equals(included.getSubType())) {
+            if (getMainType().equals(included.getMainType())) {
+                if (getSubType().equals(included.getSubType())) {
                     result = true;
-                } else if (this.getSubType().equals("*")) {
+                } else if (getSubType().equals("*")) {
                     result = true;
-                } else if (this.getSubType().startsWith("*+")
+                } else if (getSubType().startsWith("*+")
                         && included.getSubType().endsWith(
-                                this.getSubType().substring(1))) {
+                                getSubType().substring(1))) {
                     result = true;
                 }
             }
@@ -599,12 +601,12 @@ public final class MediaType extends Metadata {
      * </ul>
      * 
      * @param otherMediaType
-     *                The other media type to compare.
+     *            The other media type to compare.
      * @return True if the media types are compatible.
      * @see #includes(MediaType)
      */
     public boolean isCompatible(MediaType otherMediaType) {
-        return this.includes(otherMediaType) || otherMediaType.includes(this);
+        return includes(otherMediaType) || otherMediaType.includes(this);
     }
 
     /**
@@ -614,17 +616,17 @@ public final class MediaType extends Metadata {
      * @return True if this media type is concrete.
      */
     public boolean isConcrete() {
-        return !this.getName().contains("*");
+        return !getName().contains("*");
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
 
         if (getName() != null) {
             sb.append(getName());
 
-            for (Parameter param : getParameters()) {
+            for (final Parameter param : getParameters()) {
                 sb.append("; ").append(param.getName()).append('=').append(
                         param.getValue());
             }

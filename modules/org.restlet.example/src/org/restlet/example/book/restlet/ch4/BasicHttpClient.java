@@ -1,4 +1,5 @@
 package org.restlet.example.book.restlet.ch4;
+
 import org.restlet.Client;
 import org.restlet.data.Protocol;
 

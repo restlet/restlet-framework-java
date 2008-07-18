@@ -33,10 +33,10 @@ public class RemainingPath implements Comparable<RemainingPath> {
      * @return the given uri path without the matrix parameters.
      */
     public static String removeMatrixParams(String remainingPart) {
-        StringBuilder stb = new StringBuilder(remainingPart);
+        final StringBuilder stb = new StringBuilder(remainingPart);
         int mpEndPos = Integer.MAX_VALUE;
         for (int i = stb.length() - 1; i >= 0; i--) {
-            char character = stb.charAt(i);
+            final char character = stb.charAt(i);
             if (character == '?') {
                 stb.delete(i, Integer.MAX_VALUE);
             } else if (character == ';') {
@@ -67,10 +67,12 @@ public class RemainingPath implements Comparable<RemainingPath> {
 
     @Override
     public boolean equals(Object other) {
-        if (other == this)
+        if (other == this) {
             return true;
-        if (!(other instanceof RemainingPath))
+        }
+        if (!(other instanceof RemainingPath)) {
             return false;
+        }
         return this.remainingPart.equals(other.toString());
     }
 
@@ -94,11 +96,11 @@ public class RemainingPath implements Comparable<RemainingPath> {
      * @return
      */
     public boolean isEmptyOrSlash() {
-        return Util.isEmptyOrSlash(remainingPart);
+        return Util.isEmptyOrSlash(this.remainingPart);
     }
 
     @Override
     public String toString() {
-        return remainingPart;
+        return this.remainingPart;
     }
 }

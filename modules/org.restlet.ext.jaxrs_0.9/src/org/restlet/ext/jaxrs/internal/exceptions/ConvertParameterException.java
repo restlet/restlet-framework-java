@@ -27,25 +27,20 @@ public class ConvertParameterException extends JaxRsException {
     private static final long serialVersionUID = 951579935427584482L;
 
     /**
-     * @param message
-     */
-    private ConvertParameterException(String message) {
-        super(message);
-    }
-
-    /**
+     * Throws a message, that the given String value could not be converted to a
+     * primitive.
+     * 
+     * @param paramType
+     * @param unparseableValue
      * @param cause
+     * @return
+     * @throws ConvertParameterException
      */
-    private ConvertParameterException(Throwable cause) {
-        super(cause);
-    }
-
-    /**
-     * @param message
-     * @param cause
-     */
-    private ConvertParameterException(String message, Throwable cause) {
-        super(message, cause);
+    public static ConvertParameterException object(Class<?> paramType,
+            Object unparseableValue, Throwable cause)
+            throws ConvertParameterException {
+        throw new ConvertParameterException("Could not convert "
+                + unparseableValue + " to a " + paramType.getName(), cause);
     }
 
     /**
@@ -66,19 +61,24 @@ public class ConvertParameterException extends JaxRsException {
     }
 
     /**
-     * Throws a message, that the given String value could not be converted to a
-     * primitive.
-     * 
-     * @param paramType
-     * @param unparseableValue
-     * @param cause
-     * @return
-     * @throws ConvertParameterException
+     * @param message
      */
-    public static ConvertParameterException object(Class<?> paramType,
-            Object unparseableValue, Throwable cause)
-            throws ConvertParameterException {
-        throw new ConvertParameterException("Could not convert "
-                + unparseableValue + " to a " + paramType.getName(), cause);
+    private ConvertParameterException(String message) {
+        super(message);
+    }
+
+    /**
+     * @param message
+     * @param cause
+     */
+    private ConvertParameterException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    /**
+     * @param cause
+     */
+    private ConvertParameterException(Throwable cause) {
+        super(cause);
     }
 }

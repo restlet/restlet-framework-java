@@ -58,28 +58,30 @@ public class AlgorithmUtil {
      * 
      * @param matchResult
      * @param callContext
-     *                Contains the encoded template Parameters, that are read
-     *                from the called URI, the Restlet {@link Request} and the
-     *                Restlet {@link Response}.
+     *            Contains the encoded template Parameters, that are read from
+     *            the called URI, the Restlet {@link Request} and the Restlet
+     *            {@link Response}.
      */
     public static void addPathVarsToMap(MatchingResult matchResult,
             CallContext callContext) {
-        Map<String, String> variables = matchResult.getVariables();
-        for (Map.Entry<String, String> varEntry : variables.entrySet()) {
-            String key = varEntry.getKey();
-            String value = varEntry.getValue();
+        final Map<String, String> variables = matchResult.getVariables();
+        for (final Map.Entry<String, String> varEntry : variables.entrySet()) {
+            final String key = varEntry.getKey();
+            final String value = varEntry.getValue();
             callContext.addPathParamsEnc(key, value);
         }
     }
 
     private static Map<ResourceMethod, List<MediaType>> findMethodsSupportAllTypes(
             Collection<ResourceMethod> resourceMethods, ConsOrProdMime inOut) {
-        Map<ResourceMethod, List<MediaType>> returnMethods = new HashMap<ResourceMethod, List<MediaType>>();
-        for (ResourceMethod resourceMethod : resourceMethods) {
-            List<MediaType> mimes = getConsOrProdMimes(resourceMethod, inOut);
-            for (MediaType resMethMediaType : mimes) {
-                if (resMethMediaType.equals(MediaType.ALL))
+        final Map<ResourceMethod, List<MediaType>> returnMethods = new HashMap<ResourceMethod, List<MediaType>>();
+        for (final ResourceMethod resourceMethod : resourceMethods) {
+            final List<MediaType> mimes = getConsOrProdMimes(resourceMethod,
+                    inOut);
+            for (final MediaType resMethMediaType : mimes) {
+                if (resMethMediaType.equals(MediaType.ALL)) {
                     returnMethods.put(resourceMethod, mimes);
+                }
             }
         }
         return returnMethods;
@@ -88,15 +90,18 @@ public class AlgorithmUtil {
     private static Map<ResourceMethod, List<MediaType>> findMethodsSupportType(
             Collection<ResourceMethod> resourceMethods, ConsOrProdMime inOut,
             SortedMetadata<MediaType> mediaTypes) {
-        Map<ResourceMethod, List<MediaType>> returnMethods = new HashMap<ResourceMethod, List<MediaType>>();
-        for (ResourceMethod resourceMethod : resourceMethods) {
-            List<MediaType> mimes = getConsOrProdMimes(resourceMethod, inOut);
-            for (MediaType resMethMediaType : mimes) {
-                for (MediaType mediaType : mediaTypes) {
-                    String resMethMainType = resMethMediaType.getMainType();
-                    String wishedMainType = mediaType.getMainType();
-                    if (resMethMainType.equals(wishedMainType))
+        final Map<ResourceMethod, List<MediaType>> returnMethods = new HashMap<ResourceMethod, List<MediaType>>();
+        for (final ResourceMethod resourceMethod : resourceMethods) {
+            final List<MediaType> mimes = getConsOrProdMimes(resourceMethod,
+                    inOut);
+            for (final MediaType resMethMediaType : mimes) {
+                for (final MediaType mediaType : mediaTypes) {
+                    final String resMethMainType = resMethMediaType
+                            .getMainType();
+                    final String wishedMainType = mediaType.getMainType();
+                    if (resMethMainType.equals(wishedMainType)) {
                         returnMethods.put(resourceMethod, mimes);
+                    }
                 }
             }
         }
@@ -112,13 +117,16 @@ public class AlgorithmUtil {
     private static Map<ResourceMethod, List<MediaType>> findMethodsSupportTypeAndSubType(
             Collection<ResourceMethod> resourceMethods, ConsOrProdMime inOut,
             SortedMetadata<MediaType> mediaTypes) {
-        Map<ResourceMethod, List<MediaType>> returnMethods = new HashMap<ResourceMethod, List<MediaType>>();
-        for (ResourceMethod resourceMethod : resourceMethods) {
-            List<MediaType> mimes = getConsOrProdMimes(resourceMethod, inOut);
-            for (MediaType resMethMediaType : mimes) {
-                for (MediaType mediaType : mediaTypes)
-                    if (resMethMediaType.equals(mediaType, true))
+        final Map<ResourceMethod, List<MediaType>> returnMethods = new HashMap<ResourceMethod, List<MediaType>>();
+        for (final ResourceMethod resourceMethod : resourceMethods) {
+            final List<MediaType> mimes = getConsOrProdMimes(resourceMethod,
+                    inOut);
+            for (final MediaType resMethMediaType : mimes) {
+                for (final MediaType mediaType : mediaTypes) {
+                    if (resMethMediaType.equals(mediaType, true)) {
                         returnMethods.put(resourceMethod, mimes);
+                    }
+                }
             }
         }
         return returnMethods;
@@ -133,15 +141,17 @@ public class AlgorithmUtil {
     private static Map<ResourceMethod, List<MediaType>> findMethodSupportsMime(
             Collection<ResourceMethod> resourceMethods, ConsOrProdMime inOut,
             SortedMetadata<MediaType> mediaTypes) {
-        if (mediaTypes == null || mediaTypes.isEmpty())
+        if ((mediaTypes == null) || mediaTypes.isEmpty()) {
             return findMethodsSupportAllTypes(resourceMethods, inOut);
+        }
         Map<ResourceMethod, List<MediaType>> mms;
         mms = findMethodsSupportTypeAndSubType(resourceMethods, inOut,
                 mediaTypes);
         if (mms.isEmpty()) {
             mms = findMethodsSupportType(resourceMethods, inOut, mediaTypes);
-            if (mms.isEmpty())
+            if (mms.isEmpty()) {
                 mms = findMethodsSupportAllTypes(resourceMethods, inOut);
+            }
         }
         return mms;
     }
@@ -157,13 +167,13 @@ public class AlgorithmUtil {
      * Never returns null.
      * 
      * @param resourceMethods
-     *                the resourceMethods that provide the required mediaType
+     *            the resourceMethods that provide the required mediaType
      * @param givenMediaType
-     *                The MediaType of the given entity.
+     *            The MediaType of the given entity.
      * @param accMediaTypes
-     *                The accepted MediaTypes
+     *            The accepted MediaTypes
      * @param httpMethod
-     *                The HTTP method of the request.
+     *            The HTTP method of the request.
      * @return Returns the method who best matches the given and accepted media
      *         type in the request, or null
      */
@@ -172,40 +182,45 @@ public class AlgorithmUtil {
             MediaType givenMediaType, SortedMetadata<MediaType> accMediaTypes,
             Method httpMethod) {
         SortedMetadata<MediaType> givenMediaTypes;
-        if (givenMediaType != null)
+        if (givenMediaType != null) {
             givenMediaTypes = SortedMetadata.singleton(givenMediaType);
-        else
+        } else {
             givenMediaTypes = null;
+        }
         // mms = methods that support the given MediaType
         Map<ResourceMethod, List<MediaType>> mms1;
         mms1 = findMethodSupportsMime(resourceMethods,
                 ConsOrProdMime.CONSUME_MIME, givenMediaTypes);
-        if (mms1.isEmpty())
+        if (mms1.isEmpty()) {
             return Util.getFirstElement(resourceMethods);
-        if (mms1.size() == 1)
+        }
+        if (mms1.size() == 1) {
             return Util.getFirstKey(mms1);
+        }
         // check for method with best Produces (secondary key)
         // mms = Methods support given MediaType and requested MediaType
         Map<ResourceMethod, List<MediaType>> mms2;
         mms2 = findMethodSupportsMime(mms1.keySet(),
                 ConsOrProdMime.PRODUCE_MIME, accMediaTypes);
-        if (mms2.isEmpty())
+        if (mms2.isEmpty()) {
             return Util.getFirstKey(mms1);
-        if (mms2.size() == 1)
+        }
+        if (mms2.size() == 1) {
             return Util.getFirstKey(mms2);
-        for (MediaType accMediaType : accMediaTypes) {
+        }
+        for (final MediaType accMediaType : accMediaTypes) {
             ResourceMethod bestMethod = null;
-            for (Map.Entry<ResourceMethod, List<MediaType>> mm : mms2
+            for (final Map.Entry<ResourceMethod, List<MediaType>> mm : mms2
                     .entrySet()) {
-                for (MediaType methodMediaType : mm.getValue()) {
+                for (final MediaType methodMediaType : mm.getValue()) {
                     if (accMediaType.includes(methodMediaType)) {
-                        ResourceMethod currentMethod = mm.getKey();
+                        final ResourceMethod currentMethod = mm.getKey();
                         if (bestMethod == null) {
                             bestMethod = currentMethod;
                         } else {
                             if (httpMethod.equals(Method.HEAD)) {
                                 // special handling for HEAD
-                                Method bestMethodHttp = bestMethod
+                                final Method bestMethodHttp = bestMethod
                                         .getHttpMethod();
                                 if (bestMethodHttp.equals(Method.GET)
                                         && currentMethod.getHttpMethod()
@@ -226,8 +241,9 @@ public class AlgorithmUtil {
                     }
                 }
             }
-            if (bestMethod != null)
+            if (bestMethod != null) {
                 return bestMethod;
+            }
         }
         return Util.getFirstKey(mms2);
     }
@@ -239,11 +255,13 @@ public class AlgorithmUtil {
      */
     private static List<MediaType> getConsOrProdMimes(
             ResourceMethod resourceMethod, ConsOrProdMime inOut) {
-        if (inOut.equals(ConsOrProdMime.CONSUME_MIME))
+        if (inOut.equals(ConsOrProdMime.CONSUME_MIME)) {
             return resourceMethod.getConsumedMimes();
-        List<MediaType> producedMimes = resourceMethod.getProducedMimes();
-        if (producedMimes.isEmpty())
+        }
+        final List<MediaType> producedMimes = resourceMethod.getProducedMimes();
+        if (producedMimes.isEmpty()) {
             return Util.createList(MediaType.ALL);
+        }
         return producedMimes;
     }
 
@@ -252,23 +270,27 @@ public class AlgorithmUtil {
      * 2008-03-11, Section 3.6, Part 2f+2g
      * 
      * @param eWithMethod
-     *                Collection of Sub-ResourceMethods and SubResourceLocators
+     *            Collection of Sub-ResourceMethods and SubResourceLocators
      * @return the resource method or sub resource locator, or null, if the Map
      *         is null or empty.
      */
     public static ResourceMethodOrLocator getFirstMethOrLocByNumberOfLiteralCharactersAndByNumberOfCapturingGroups(
             Collection<ResourceMethodOrLocator> eWithMethod) {
-        if (eWithMethod == null || eWithMethod.isEmpty())
+        if ((eWithMethod == null) || eWithMethod.isEmpty()) {
             return null;
-        Iterator<ResourceMethodOrLocator> srmlIter = eWithMethod.iterator();
+        }
+        final Iterator<ResourceMethodOrLocator> srmlIter = eWithMethod
+                .iterator();
         ResourceMethodOrLocator bestSrml = srmlIter.next();
-        if (eWithMethod.size() == 1)
+        if (eWithMethod.size() == 1) {
             return bestSrml;
+        }
         int bestSrmlChars = Integer.MIN_VALUE;
         int bestSrmlNoCaptGroups = Integer.MIN_VALUE;
-        for (ResourceMethodOrLocator srml : eWithMethod) {
-            int srmlNoLitChars = srml.getPathRegExp().getNumberOfLiteralChars();
-            int srmlNoCaptGroups = srml.getPathRegExp()
+        for (final ResourceMethodOrLocator srml : eWithMethod) {
+            final int srmlNoLitChars = srml.getPathRegExp()
+                    .getNumberOfLiteralChars();
+            final int srmlNoCaptGroups = srml.getPathRegExp()
                     .getNumberOfCapturingGroups();
             if (srmlNoLitChars > bestSrmlChars) {
                 bestSrml = srml;
@@ -304,22 +326,25 @@ public class AlgorithmUtil {
      * 1.e
      * 
      * @param rrcs
-     *                Collection of root resource classes
+     *            Collection of root resource classes
      * @return null, if the Map is null or empty
      */
     public static RootResourceClass getFirstRrcByNumberOfLiteralCharactersAndByNumberOfCapturingGroups(
             Collection<RootResourceClass> rrcs) {
-        if (rrcs == null || rrcs.isEmpty())
+        if ((rrcs == null) || rrcs.isEmpty()) {
             return null;
-        Iterator<RootResourceClass> rrcIter = rrcs.iterator();
+        }
+        final Iterator<RootResourceClass> rrcIter = rrcs.iterator();
         RootResourceClass bestRrc = rrcIter.next();
-        if (rrcs.size() == 1)
+        if (rrcs.size() == 1) {
             return bestRrc;
+        }
         int bestRrcChars = Integer.MIN_VALUE;
         int bestRrcNoCaptGroups = Integer.MIN_VALUE;
-        for (RootResourceClass rrc : rrcs) {
-            int rrcNoLitChars = rrc.getPathRegExp().getNumberOfLiteralChars();
-            int rrcNoCaptGroups = rrc.getPathRegExp()
+        for (final RootResourceClass rrc : rrcs) {
+            final int rrcNoLitChars = rrc.getPathRegExp()
+                    .getNumberOfLiteralChars();
+            final int rrcNoCaptGroups = rrc.getPathRegExp()
                     .getNumberOfCapturingGroups();
             if (rrcNoLitChars > bestRrcChars) {
                 bestRrc = rrc;
@@ -345,22 +370,23 @@ public class AlgorithmUtil {
      * support the given HTTP method.
      * 
      * @param resourceMethods
-     *                the collection of {@link ResourceMethod}s.
+     *            the collection of {@link ResourceMethod}s.
      * @param httpMethod
-     *                the HTTP {@link Method}
+     *            the HTTP {@link Method}
      * @param alsoGet
-     *                if true, also methods suporting GET are included, also if
-     *                another HTTP method is required. It is intended to be used
-     *                for HEAD requests.
+     *            if true, also methods suporting GET are included, also if
+     *            another HTTP method is required. It is intended to be used for
+     *            HEAD requests.
      */
     public static void removeNotSupportedHttpMethod(
             Collection<ResourceMethod> resourceMethods,
             org.restlet.data.Method httpMethod, boolean alsoGet) {
-        Iterator<ResourceMethod> methodIter = resourceMethods.iterator();
+        final Iterator<ResourceMethod> methodIter = resourceMethods.iterator();
         while (methodIter.hasNext()) {
-            ResourceMethod resourceMethod = methodIter.next();
-            if (!resourceMethod.isHttpMethodSupported(httpMethod, alsoGet))
+            final ResourceMethod resourceMethod = methodIter.next();
+            if (!resourceMethod.isHttpMethodSupported(httpMethod, alsoGet)) {
                 methodIter.remove();
+            }
         }
     }
 }

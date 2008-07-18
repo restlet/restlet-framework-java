@@ -149,10 +149,10 @@ public class Application extends Restlet {
                     .createHelper(this, parentContext);
 
             // Compose the logger name
-            String applicationName = (getName() == null) ? Integer
+            final String applicationName = (getName() == null) ? Integer
                     .toString(hashCode()) : getName();
-            String loggerName = Application.class.getCanonicalName() + "."
-                    + applicationName;
+            final String loggerName = Application.class.getCanonicalName()
+                    + "." + applicationName;
 
             // Create the application context
             setContext(this.helper.createContext(loggerName));
@@ -310,8 +310,9 @@ public class Application extends Restlet {
     public void handle(Request request, Response response) {
         super.handle(request, response);
 
-        if (getHelper() != null)
+        if (getHelper() != null) {
             getHelper().handle(request, response);
+        }
     }
 
     /**
@@ -433,16 +434,18 @@ public class Application extends Restlet {
     public synchronized void start() throws Exception {
         if (isStopped()) {
             super.start();
-            if (getHelper() != null)
+            if (getHelper() != null) {
                 getHelper().start();
+            }
         }
     }
 
     @Override
     public synchronized void stop() throws Exception {
         if (isStarted()) {
-            if (getHelper() != null)
+            if (getHelper() != null) {
                 getHelper().stop();
+            }
             super.stop();
         }
     }

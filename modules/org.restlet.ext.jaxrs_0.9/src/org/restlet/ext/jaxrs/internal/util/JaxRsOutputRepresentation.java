@@ -37,7 +37,7 @@ import org.restlet.resource.OutputRepresentation;
  * 
  * @author Stephan Koops
  * @param <T>
- *                type of the object to serialize.
+ *            type of the object to serialize.
  */
 public class JaxRsOutputRepresentation<T> extends OutputRepresentation {
 
@@ -58,26 +58,27 @@ public class JaxRsOutputRepresentation<T> extends OutputRepresentation {
      * Creates a new JaxRsOutputRepresentation.
      * 
      * @param object
-     *                the object to serialize The generic {@link Type} to
-     *                convert to.
+     *            the object to serialize The generic {@link Type} to convert
+     *            to.
      * @param genericType
-     *                The generic {@link Type} to convert to.
+     *            The generic {@link Type} to convert to.
      * @param mediaType
-     *                the MediaType of the object. Must be concrete, see
-     *                {@link MediaType#isConcrete()}.
+     *            the MediaType of the object. Must be concrete, see
+     *            {@link MediaType#isConcrete()}.
      * @param annotations
-     *                the annotations of the artefact to convert to
+     *            the annotations of the artefact to convert to
      * @param mbw
-     *                the MessageBodyWriter which will serialize the object.
+     *            the MessageBodyWriter which will serialize the object.
      * @param httpHeaders
-     *                the mutable Map of HTTP response headers.
+     *            the mutable Map of HTTP response headers.
      */
     public JaxRsOutputRepresentation(T object, Type genericType,
             MediaType mediaType, Annotation[] annotations,
             MessageBodyWriter<T> mbw, MultivaluedMap<String, Object> httpHeaders) {
         super(mediaType, mbw.getSize(object));
-        if (!mediaType.isConcrete())
+        if (!mediaType.isConcrete()) {
             throw new IllegalArgumentException(mediaType + " is not concrete");
+        }
         this.genericType = genericType;
         this.annotations = annotations;
         this.mbw = mbw;
@@ -93,19 +94,20 @@ public class JaxRsOutputRepresentation<T> extends OutputRepresentation {
         try {
             javax.ws.rs.core.MediaType jaxRsMediaType;
             jaxRsMediaType = Converter.toJaxRsMediaType(getMediaType(), null);
-            this.mbw.writeTo(object, object.getClass(), genericType,
-                    annotations, jaxRsMediaType, httpHeaders, outputStream);
-        } catch (WebApplicationException e) {
-            String msg = "The Restlet extension for JAX-RS do not support the throwing of WebApplicationException in a MessageBodyWriter.";
+            this.mbw.writeTo(this.object, this.object.getClass(),
+                    this.genericType, this.annotations, jaxRsMediaType,
+                    this.httpHeaders, outputStream);
+        } catch (final WebApplicationException e) {
+            final String msg = "The Restlet extension for JAX-RS do not support the throwing of WebApplicationException in a MessageBodyWriter.";
             LOGGER.config(msg);
             outputStream.close();
             throw e;
-        } catch (UnsupportedOperationException e) {
+        } catch (final UnsupportedOperationException e) {
             LOGGER.log(Level.CONFIG, "operation not supported", e);
             outputStream.close();
             throw e;
-        } catch (RuntimeException e) {
-            String msg = e.getClass().getName()
+        } catch (final RuntimeException e) {
+            final String msg = e.getClass().getName()
                     + " while running MessageOutputWriter:";
             LOGGER.log(Level.CONFIG, msg, e);
             outputStream.close();

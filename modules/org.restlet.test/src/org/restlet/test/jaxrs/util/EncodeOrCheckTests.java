@@ -68,23 +68,22 @@ public class EncodeOrCheckTests extends TestCase {
             SCHEME = EncodeOrCheck.class.getMethod("scheme", String.class);
             USER_INFO = EncodeOrCheck.class.getMethod("userInfo",
                     CharSequence.class, Boolean.TYPE);
-        } catch (SecurityException e) {
+        } catch (final SecurityException e) {
             throw new RuntimeException(e);
-        } catch (NoSuchMethodException e) {
+        } catch (final NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
     }
 
     /**
      * @param method
-     *                static method. The in value is the first parameter. If the
-     *                method has two or three parameters, the second is the
-     *                encode value. If it has three arguments, a generic error
-     *                message is used for it.
+     *            static method. The in value is the first parameter. If the
+     *            method has two or three parameters, the second is the encode
+     *            value. If it has three arguments, a generic error message is
+     *            used for it.
      * @param in
      * @param encode
-     *                must not be null, if the method has more than one
-     *                argument.
+     *            must not be null, if the method has more than one argument.
      * @param out
      * @throws IllegalAccessException
      * @throws IllegalArgumentException
@@ -93,28 +92,31 @@ public class EncodeOrCheckTests extends TestCase {
     private void check(Method method, String in, Boolean encode, String out) {
         Object result;
         try {
-            int paramCount = method.getParameterTypes().length;
-            if (paramCount == 0)
+            final int paramCount = method.getParameterTypes().length;
+            if (paramCount == 0) {
                 throw new AssertionFailedError(
                         ("The method " + method + " must have between 1 and 3 parameters"));
-            else if (paramCount == 1)
+            } else if (paramCount == 1) {
                 result = method.invoke(null, in);
-            else if (paramCount == 2 && encode != null)
+            } else if ((paramCount == 2) && (encode != null)) {
                 result = method.invoke(null, in, encode);
-            else if (paramCount == 3 && encode != null)
+            } else if ((paramCount == 3) && (encode != null)) {
                 result = method.invoke(null, in, encode,
                         "{generic test error message}");
-            else
+            } else {
                 throw new AssertionFailedError(
                         ("The method " + method + " has to much parameters"));
-            if (out == null)
+            }
+            if (out == null) {
                 fail("must throw an IllegalArgumentException for \"" + in
                         + "\" and encode = " + encode);
+            }
             assertEquals(out, result != null ? result.toString() : null);
-        } catch (InvocationTargetException e) {
-            if (!(e.getCause() instanceof IllegalArgumentException))
+        } catch (final InvocationTargetException e) {
+            if (!(e.getCause() instanceof IllegalArgumentException)) {
                 throw (RuntimeException) e.getCause();
-        } catch (IllegalAccessException e) {
+            }
+        } catch (final IllegalAccessException e) {
             throw new RuntimeException(e);
         }
     }
@@ -130,7 +132,7 @@ public class EncodeOrCheckTests extends TestCase {
             EncodeOrCheck.checkForInvalidUriChars(uriPart, -1, "");
             fail("\"" + uriPart
                     + "\" contains an invalid char. The test must fail");
-        } catch (IllegalArgumentException e) {
+        } catch (final IllegalArgumentException e) {
             // wonderful
         }
     }
@@ -152,7 +154,7 @@ public class EncodeOrCheckTests extends TestCase {
     }
 
     public void testCheckForInvalidUriChars() {
-        String allowed = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890{}";
+        final String allowed = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890{}";
         EncodeOrCheck.checkForInvalidUriChars(allowed, -1, "");
         EncodeOrCheck.checkForInvalidUriChars("aaaaa", -1, "");
         EncodeOrCheck.checkForInvalidUriChars("\\\\\\", -1, "");
@@ -210,10 +212,12 @@ public class EncodeOrCheckTests extends TestCase {
         checkNoEncode(NAME_OR_VALUE, "sdf");
         checkNoEncode(NAME_OR_VALUE, "sdf%20hfdf");
         checkEncoding(NAME_OR_VALUE, "abc def", "abc%20def");
-        StringBuilder reservedEnc = new StringBuilder();
-        for(int i=0; i<EncodeOrCheck.RESERVED.length(); i++)
+        final StringBuilder reservedEnc = new StringBuilder();
+        for (int i = 0; i < EncodeOrCheck.RESERVED.length(); i++) {
             EncodeOrCheck.toHex(EncodeOrCheck.RESERVED.charAt(i), reservedEnc);
-        checkEncoding(NAME_OR_VALUE, EncodeOrCheck.RESERVED, reservedEnc.toString());
+        }
+        checkEncoding(NAME_OR_VALUE, EncodeOrCheck.RESERVED, reservedEnc
+                .toString());
     }
 
     public void testPathSegmentWithMatrix() {
@@ -241,13 +245,14 @@ public class EncodeOrCheckTests extends TestCase {
 
     /**
      * @param delim
-     *                ';' or '&'
+     *            ';' or '&'
      * @param nonDelim
-     *                '&' or ';'
+     *            '&' or ';'
      */
     private void xtestFullQueryOrMatrix(Method method, char delim, char nonDelim) {
         final String nonDelimStr = (nonDelim == ';' ? "%3B" : "%26");
-        String str = "jshfk=kzi" + delim + "hk=" + delim + "k" + delim + delim;
+        final String str = "jshfk=kzi" + delim + "hk=" + delim + "k" + delim
+                + delim;
         checkNoEncode(method, str);
         checkEncoding(method, str + nonDelim, str + nonDelimStr);
         checkNoEncode(method, "");

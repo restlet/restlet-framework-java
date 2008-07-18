@@ -42,13 +42,6 @@ public class HeadOptionsTestService {
         // do nothing
     }
 
-    @HEAD
-    @Path("headTest1")
-    @Produces("text/html")
-    public String headTest1() {
-        return null;
-    }
-
     @GET
     @Path("headTest1")
     @Produces("text/html")
@@ -60,19 +53,6 @@ public class HeadOptionsTestService {
     @Path("headTest1")
     @Produces("text/plain")
     public String getTest1a() {
-        return "4711";
-    }
-
-    @POST
-    @Path("headTest1")
-    public void post() {
-        // do nothing yet
-    }
-
-    @HEAD
-    @Path("headTest2")
-    @Produces("text/html")
-    public String headTest2() {
         return "4711";
     }
 
@@ -88,5 +68,25 @@ public class HeadOptionsTestService {
     @Produces("text/plain")
     public String getTest2plain() {
         return "4711";
+    }
+
+    @HEAD
+    @Path("headTest1")
+    @Produces("text/html")
+    public String headTest1() {
+        return null;
+    }
+
+    @HEAD
+    @Path("headTest2")
+    @Produces("text/html")
+    public String headTest2() {
+        return "4711";
+    }
+
+    @POST
+    @Path("headTest1")
+    public void post() {
+        // do nothing yet
     }
 }

@@ -26,7 +26,7 @@ import javax.ws.rs.core.Response.Status;
  * converted.
  * 
  * @author Stephan Koops
- * @see MatrixParam 
+ * @see MatrixParam
  */
 public class ConvertMatrixParamException extends WebApplicationException {
 
@@ -37,6 +37,6 @@ public class ConvertMatrixParamException extends WebApplicationException {
      */
     public ConvertMatrixParamException(ConvertParameterException cpe) {
         super(cpe.getCause(), Status.NOT_FOUND);
-        this.setStackTrace(cpe.getStackTrace());
+        setStackTrace(cpe.getStackTrace());
     }
 }

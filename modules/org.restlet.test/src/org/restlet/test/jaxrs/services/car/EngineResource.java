@@ -25,25 +25,25 @@ import javax.ws.rs.Produces;
  * @see CarResource
  */
 public class EngineResource {
-    public EngineResource(CarResource car) {
-        this.car = car;
-    }
-
-    /** Car, the engine elongs to */
-    private CarResource car;
-
-    @GET
-    @Produces("text/plain")
-    public String getText() {
-        int carId = car.getId();
-        return getPlainRepr(carId);
-    }
-
     /**
      * @param carId
      * @return
      */
     public static String getPlainRepr(int carId) {
         return "This is the engine of car with id " + carId + ".";
+    }
+
+    /** Car, the engine elongs to */
+    private final CarResource car;
+
+    public EngineResource(CarResource car) {
+        this.car = car;
+    }
+
+    @GET
+    @Produces("text/plain")
+    public String getText() {
+        final int carId = this.car.getId();
+        return getPlainRepr(carId);
     }
 }

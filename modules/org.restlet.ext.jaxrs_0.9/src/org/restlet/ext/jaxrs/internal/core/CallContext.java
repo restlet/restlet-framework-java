@@ -67,17 +67,18 @@ import org.restlet.data.Status;
 import org.restlet.data.Tag;
 import org.restlet.ext.jaxrs.RoleChecker;
 import org.restlet.ext.jaxrs.internal.todo.NotYetImplementedException;
-import org.restlet.ext.jaxrs.internal.util.SecurityUtil;
 import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.ext.jaxrs.internal.util.EmptyIterator;
+import org.restlet.ext.jaxrs.internal.util.SecurityUtil;
 import org.restlet.ext.jaxrs.internal.util.SortedMetadata;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.resource.Representation;
 
 /**
- * Contains all request specific data of the interfaces injectable for &#64;{@link Context}.
- * Implemetation of the JAX-RS interfaces {@link HttpHeaders}, {@link UriInfo},
- * {@link javax.ws.rs.core.Request} and {@link SecurityContext}.<br>
+ * Contains all request specific data of the interfaces injectable for &#64;
+ * {@link Context}. Implemetation of the JAX-RS interfaces {@link HttpHeaders},
+ * {@link UriInfo}, {@link javax.ws.rs.core.Request} and {@link SecurityContext}
+ * .<br>
  * This class is not required to be thread safe, because it is only used for one
  * client request in one thread at the same time.
  * 
@@ -113,23 +114,26 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
          * @see java.util.Iterator#hasNext()
          */
         public boolean hasNext() {
-            if (nextMpValue != null)
-                return true;
-            while (mpValueIter != null && mpValueIter.hasNext()) {
-                this.nextMpValue = mpValueIter.next();
+            if (this.nextMpValue != null) {
                 return true;
             }
-            while (matrixParamIter != null && matrixParamIter.hasNext()) {
-                Map.Entry<String, List<String>> entry = matrixParamIter.next();
-                if (entry.getKey().equals(mpName)) {
+            while ((this.mpValueIter != null) && this.mpValueIter.hasNext()) {
+                this.nextMpValue = this.mpValueIter.next();
+                return true;
+            }
+            while ((this.matrixParamIter != null)
+                    && this.matrixParamIter.hasNext()) {
+                final Map.Entry<String, List<String>> entry = this.matrixParamIter
+                        .next();
+                if (entry.getKey().equals(this.mpName)) {
                     this.mpValueIter = entry.getValue().iterator();
-                    return this.hasNext();
+                    return hasNext();
                 }
             }
-            while (pathSegmentIter.hasNext()) {
-                this.matrixParamIter = pathSegmentIter.next()
+            while (this.pathSegmentIter.hasNext()) {
+                this.matrixParamIter = this.pathSegmentIter.next()
                         .getMatrixParameters().entrySet().iterator();
-                return this.hasNext();
+                return hasNext();
             }
             return false;
         }
@@ -138,9 +142,10 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
          * @see java.util.Iterator#next()
          */
         public String next() {
-            if (!this.hasNext())
+            if (!hasNext()) {
                 throw new NoSuchElementException();
-            String nextMpValue = this.nextMpValue;
+            }
+            final String nextMpValue = this.nextMpValue;
             this.nextMpValue = null;
             return nextMpValue;
         }
@@ -168,8 +173,8 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
     private List<Locale> acceptedLanguages;
 
     /**
-     * the unmodifiable List of accepted {@link MediaType}s. Lazy
-     * initialization by getter.
+     * the unmodifiable List of accepted {@link MediaType}s. Lazy initialization
+     * by getter.
      * 
      * @see #getAcceptableMediaTypes()
      */
@@ -178,10 +183,10 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
     private final SortedMetadata<org.restlet.data.MediaType> accMediaTypes;
 
     /** contains the current value of the ancestor resources */
-    private LinkedList<Object> ancestorResources = new LinkedList<Object>();
+    private final LinkedList<Object> ancestorResources = new LinkedList<Object>();
 
     /** contains the current value of the ancestor resource URIs */
-    private LinkedList<String> ancestorResourceURIs = new LinkedList<String>();
+    private final LinkedList<String> ancestorResourceURIs = new LinkedList<String>();
 
     private String baseUri;
 
@@ -225,41 +230,45 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
     /**
      * 
      * @param request
-     *                The Restlet request to wrap. Must not be null.
+     *            The Restlet request to wrap. Must not be null.
      * @param templateParametersEncoded
-     *                The template parameters. Must not be null.
+     *            The template parameters. Must not be null.
      * @param response
-     *                The Restlet response
+     *            The Restlet response
      * @param roleChecker
-     *                The roleChecker is needed to check, if a user is in a
-     *                role, see {@link #isUserInRole(String)}. If null was
-     *                given here and
-     *                {@link SecurityContext#isUserInRole(String)} is called,
-     *                the HTTP client will get an Internal Server Error as
-     *                response.
+     *            The roleChecker is needed to check, if a user is in a role,
+     *            see {@link #isUserInRole(String)}. If null was given here and
+     *            {@link SecurityContext#isUserInRole(String)} is called, the
+     *            HTTP client will get an Internal Server Error as response.
      */
     public CallContext(Request request, org.restlet.data.Response response,
             RoleChecker roleChecker) {
-        if (request == null)
+        if (request == null) {
             throw new IllegalArgumentException(
                     "The Restlet Request must not be null");
-        if (response == null)
+        }
+        if (response == null) {
             throw new IllegalArgumentException(
                     "The Restlet Response must not be null");
-        if (roleChecker == null)
+        }
+        if (roleChecker == null) {
             throw new IllegalArgumentException(
                     "The RoleChecker must not be null.");
-        Reference referenceCut = request.getResourceRef();
-        if (referenceCut == null)
+        }
+        final Reference referenceCut = request.getResourceRef();
+        if (referenceCut == null) {
             throw new IllegalArgumentException(
                     "The request reference must not be null");
-        if (referenceCut.getBaseRef() == null)
+        }
+        if (referenceCut.getBaseRef() == null) {
             throw new IllegalArgumentException(
                     "The request reference must contains a baseRef");
-        Reference referenceOriginal = request.getOriginalRef();
-        if (referenceOriginal == null)
+        }
+        final Reference referenceOriginal = request.getOriginalRef();
+        if (referenceOriginal == null) {
             throw new IllegalArgumentException(
                     "The request.originalRef must not be null");
+        }
         this.referenceCut = referenceCut;
         this.referenceOriginal = referenceOriginal;
         this.readOnly = false;
@@ -280,26 +289,30 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * @see UriInfo#getAncestorResourceURIs()
      */
     public void addForAncestor(Object resourceObject, String newUriPart) {
-        if (resourceObject == null)
+        if (resourceObject == null) {
             throw new IllegalArgumentException(
                     "The resource object must not be null");
-        if (newUriPart == null)
+        }
+        if (newUriPart == null) {
             throw new IllegalArgumentException(
                     "The new URI part must not be null");
-
-        StringBuilder newUri = new StringBuilder();
-
-        if (lastAncestorResourceURI != null) {
-            if (newUriPart.length() == 0)
-                throw new IllegalArgumentException(
-                        "The new URI part must not be empty");
-            ancestorResources.addFirst(lastAncestorResource);
-            ancestorResourceURIs.addFirst(lastAncestorResourceURI);
-            newUri.append(lastAncestorResourceURI);
         }
 
-        if (newUriPart.length() == 0 || newUriPart.charAt(0) != '/')
+        final StringBuilder newUri = new StringBuilder();
+
+        if (this.lastAncestorResourceURI != null) {
+            if (newUriPart.length() == 0) {
+                throw new IllegalArgumentException(
+                        "The new URI part must not be empty");
+            }
+            this.ancestorResources.addFirst(this.lastAncestorResource);
+            this.ancestorResourceURIs.addFirst(this.lastAncestorResourceURI);
+            newUri.append(this.lastAncestorResourceURI);
+        }
+
+        if ((newUriPart.length() == 0) || (newUriPart.charAt(0) != '/')) {
             newUri.append('/');
+        }
         newUri.append(newUriPart);
 
         this.lastAncestorResource = resourceObject;
@@ -322,17 +335,20 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * @throws IllegalStateException
      */
     protected void checkChangeable() throws IllegalStateException {
-        if (!isChangeable())
+        if (!isChangeable()) {
             throw new IllegalStateException(
                     "The CallContext is no longer changeable");
+        }
     }
 
     private boolean checkIfOneMatch(List<Tag> requestETags, Tag entityTag) {
-        if (entityTag.isWeak())
+        if (entityTag.isWeak()) {
             return false;
-        for (Tag requestETag : requestETags) {
-            if (entityTag.equals(requestETag))
+        }
+        for (final Tag requestETag : requestETags) {
+            if (entityTag.equals(requestETag)) {
                 return true;
+            }
         }
         return false;
     }
@@ -341,16 +357,16 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * Creates an unmodifiable List of {@link PathSegment}s.
      * 
      * @param decode
-     *                indicates, if the values should be decoded or not
+     *            indicates, if the values should be decoded or not
      * @return
      */
     private List<PathSegment> createPathSegments(boolean decode) {
         List<String> segmentsEnc;
         segmentsEnc = this.referenceOriginal.getRelativeRef().getSegments();
-        int l = segmentsEnc.size();
-        List<PathSegment> pathSegments = new ArrayList<PathSegment>(l);
+        final int l = segmentsEnc.size();
+        final List<PathSegment> pathSegments = new ArrayList<PathSegment>(l);
         for (int i = 0; i < l; i++) {
-            String segmentEnc = segmentsEnc.get(i);
+            final String segmentEnc = segmentsEnc.get(i);
             pathSegments.add(new JaxRsPathSegment(segmentEnc, decode, i));
         }
         return Collections.unmodifiableList(pathSegments);
@@ -363,7 +379,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      */
     private UriBuilder createUriBuilder(Reference ref) {
         // NICE what happens, if the Reference is invalid for the UriBuilder?
-        UriBuilder b = new JaxRsUriBuilder();
+        final UriBuilder b = new JaxRsUriBuilder();
         b.encode(false);
         b.scheme(ref.getScheme(false));
         b.userInfo(ref.getUserInfo(false));
@@ -378,17 +394,22 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
 
     @Override
     public boolean equals(Object anotherObject) {
-        if (this == anotherObject)
+        if (this == anotherObject) {
             return true;
-        if (!(anotherObject instanceof UriInfo))
+        }
+        if (!(anotherObject instanceof UriInfo)) {
             return false;
-        UriInfo other = (UriInfo) anotherObject;
-        if (!this.getBaseUri().equals(other.getBaseUri()))
+        }
+        final UriInfo other = (UriInfo) anotherObject;
+        if (!getBaseUri().equals(other.getBaseUri())) {
             return false;
-        if (!this.getPathSegments().equals(other.getPathSegments()))
+        }
+        if (!this.getPathSegments().equals(other.getPathSegments())) {
             return false;
-        if (!Util.equals(this.getPathParameters(), other.getPathParameters()))
+        }
+        if (!Util.equals(this.getPathParameters(), other.getPathParameters())) {
             return false;
+        }
         return true;
     }
 
@@ -396,12 +417,11 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * Evaluate request preconditions based on the passed in value.
      * 
      * @param lastModified
-     *                a date that specifies the modification date of the
-     *                resource
+     *            a date that specifies the modification date of the resource
      * @return null if the preconditions are met or a ResponseBuilder set with
      *         the appropriate status if the preconditions are not met.
      * @throws java.lang.IllegalStateException
-     *                 if called outside the scope of a request
+     *             if called outside the scope of a request
      * 
      * @see javax.ws.rs.core.Request#evaluatePreconditions(java.util.Date)
      * @see #evaluatePreconditions(Date, EntityTag)
@@ -414,49 +434,50 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * Evaluate request preconditions based on the passed in value.
      * 
      * @param lastModified
-     *                a date that specifies the modification date of the
-     *                resource
+     *            a date that specifies the modification date of the resource
      * @param entityTag
-     *                an ETag for the current state of the resource
+     *            an ETag for the current state of the resource
      * @return null if the preconditions are met or a ResponseBuilder set with
      *         the appropriate status if the preconditions are not met. A
      *         returned ResponseBuilder will include an ETag header set with the
      *         value of eTag.
      * @throws java.lang.IllegalStateException
-     *                 if called outside the scope of a request
+     *             if called outside the scope of a request
      * 
      * @see javax.ws.rs.core.Request#evaluatePreconditions(java.util.Date,
      *      javax.ws.rs.core.EntityTag)
-     * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.3.5">RFC
-     *      2616, section 10.3.5: Status 304: Not Modiied</a>
-     * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.4.13">RFC
-     *      2616, section 10.4.13: Status 412: Precondition Failed</a>
+     * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.3.5">RFC *
+     *      2616, section 10.3.5: Status 304: Not Modiied< /a>
+     * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.4.13">RFC *
+     *      2616, section 10.4.13: Status 412: Precondition Failed< /a>
      * @see <a href="http://tools.ietf.org/html/rfc2616#section-13.3">RFC 2616,
-     *      section 13.3: (Caching) Validation Model</a>
+     *      * section 13.3: (Caching) Validation Model< /a>
      * @see <a href="http://tools.ietf.org/html/rfc2616#section-14.24">RFC 2616,
-     *      section 14.24: Header "If-Match"</a>
+     *      * section 14.24: Header "If-Match"< /a>
      * @see <a href="http://tools.ietf.org/html/rfc2616#section-14.25">RFC 2616,
-     *      section 14.25: Header "If-Modified-Since"</a>
+     *      * section 14.25: Header "If-Modified-Since"< /a>
      * @see <a href="http://tools.ietf.org/html/rfc2616#section-14.26">RFC 2616,
-     *      section 14.26: Header "If-None-Match"</a>
+     *      * section 14.26: Header "If-None-Match"< /a>
      * @see <a href="http://tools.ietf.org/html/rfc2616#section-14.28">RFC 2616,
-     *      section 14.28: Header "If-Unmodified-Since"</a>
+     *      * section 14.28: Header "If-Unmodified-Since"< /a>
      */
     public ResponseBuilder evaluatePreconditions(Date lastModified,
             EntityTag entityTag) {
-        // NICE Vorbed. werden mit Conditions.getStatus() unterstützt.
-        if (lastModified == null && entityTag == null)
+        // NICE Vorbed. werden mit Conditions.getStatus() unterstï¿½tzt.
+        if ((lastModified == null) && (entityTag == null)) {
             return null;
+        }
         ResponseBuilder rb = null;
-        Method requestMethod = request.getMethod();
-        Conditions conditions = this.request.getConditions();
+        final Method requestMethod = this.request.getMethod();
+        final Conditions conditions = this.request.getConditions();
         if (lastModified != null) {
             // Header "If-Modified-Since"
-            Date modSinceCond = conditions.getModifiedSince();
+            final Date modSinceCond = conditions.getModifiedSince();
             if (modSinceCond != null) {
                 if (modSinceCond.after(lastModified)) {
                     // the Entity was not changed
-                    boolean readRequest = requestMethod.equals(Method.GET)
+                    final boolean readRequest = requestMethod
+                            .equals(Method.GET)
                             || requestMethod.equals(Method.HEAD);
                     if (readRequest) {
                         rb = Response.notModified();
@@ -471,7 +492,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
                 }
             }
             // Header "If-Unmodified-Since"
-            Date unmodSinceCond = conditions.getUnmodifiedSince();
+            final Date unmodSinceCond = conditions.getUnmodifiedSince();
             if (unmodSinceCond != null) {
                 if (unmodSinceCond.after(lastModified)) {
                     // entity was not changed -> Web Service must recalculate it
@@ -484,11 +505,11 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
             }
         }
         if (entityTag != null) {
-            Tag actualEntityTag = Converter.toRestletTag(entityTag);
+            final Tag actualEntityTag = Converter.toRestletTag(entityTag);
             // Header "If-Match"
-            List<Tag> requestMatchETags = conditions.getMatch();
+            final List<Tag> requestMatchETags = conditions.getMatch();
             if (!requestMatchETags.isEmpty()) {
-                boolean match = checkIfOneMatch(requestMatchETags,
+                final boolean match = checkIfOneMatch(requestMatchETags,
                         actualEntityTag);
                 if (!match) {
                     return precFailed("The entity does not match Entity Tag "
@@ -498,9 +519,9 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
                 // default answer to the request
             }
             // Header "If-None-Match"
-            List<Tag> requestNoneMatchETags = conditions.getNoneMatch();
+            final List<Tag> requestNoneMatchETags = conditions.getNoneMatch();
             if (!requestNoneMatchETags.isEmpty()) {
-                boolean match = checkIfOneMatch(requestNoneMatchETags,
+                final boolean match = checkIfOneMatch(requestNoneMatchETags,
                         actualEntityTag);
                 if (match) {
                     return precFailed("The entity matches Entity Tag "
@@ -517,13 +538,13 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * Evaluate request preconditions based on the passed in value.
      * 
      * @param entityTag
-     *                an ETag for the current state of the resource
+     *            an ETag for the current state of the resource
      * @return null if the preconditions are met or a ResponseBuilder set with
      *         the appropriate status if the preconditions are not met. A
      *         returned ResponseBuilder will include an ETag header set with the
      *         value of eTag.
      * @throws java.lang.IllegalStateException
-     *                 if called outside the scope of a request
+     *             if called outside the scope of a request
      * @see javax.ws.rs.core.Request#evaluatePreconditions(javax.ws.rs.core.EntityTag)
      * @see #evaluatePreconditions(Date, EntityTag)
      */
@@ -542,8 +563,8 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      */
     public URI getAbsolutePath() {
         try {
-            return new URI(referenceOriginal.toString(false, false));
-        } catch (URISyntaxException e) {
+            return new URI(this.referenceOriginal.toString(false, false));
+        } catch (final URISyntaxException e) {
             throw wrapUriSyntaxExc(e, unexpectedLogger, "Could not create URI");
         }
     }
@@ -557,7 +578,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * @see UriInfo#getAbsolutePathBuilder()
      */
     public UriBuilder getAbsolutePathBuilder() {
-        return createUriBuilder(referenceOriginal);
+        return createUriBuilder(this.referenceOriginal);
     }
 
     /**
@@ -565,12 +586,13 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      */
     public List<Locale> getAcceptableLanguages() {
         if (this.acceptedLanguages == null) {
-            SortedMetadata<Language> accLangages = SortedMetadata
-                    .getForLanguages(request.getClientInfo()
+            final SortedMetadata<Language> accLangages = SortedMetadata
+                    .getForLanguages(this.request.getClientInfo()
                             .getAcceptedLanguages());
-            List<Locale> accLangs = new ArrayList<Locale>();
-            for (Language language : accLangages)
+            final List<Locale> accLangs = new ArrayList<Locale>();
+            for (final Language language : accLangages) {
                 accLangs.add(Converter.toLocale(language));
+            }
             this.acceptedLanguages = Collections.unmodifiableList(accLangs);
         }
         return this.acceptedLanguages;
@@ -583,9 +605,10 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      */
     public List<MediaType> getAcceptableMediaTypes() {
         if (this.acceptedMediaTypes == null) {
-            List<MediaType> accMediaTypes = new ArrayList<MediaType>();
-            for (org.restlet.data.MediaType mediaType : this.accMediaTypes)
+            final List<MediaType> accMediaTypes = new ArrayList<MediaType>();
+            for (final org.restlet.data.MediaType mediaType : this.accMediaTypes) {
                 accMediaTypes.add(Converter.toJaxRsMediaType(mediaType));
+            }
             this.acceptedMediaTypes = Collections
                     .unmodifiableList(accMediaTypes);
         }
@@ -608,7 +631,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * @see javax.ws.rs.core.UriInfo#getAncestorResources()
      */
     List<Object> getAncestorResources() {
-        return ancestorResources;
+        return this.ancestorResources;
     }
 
     /**
@@ -617,7 +640,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * @see javax.ws.rs.core.UriInfo#getAncestorResourceURIs()
      */
     List<String> getAncestorResourceURIs() {
-        return ancestorResourceURIs;
+        return this.ancestorResourceURIs;
     }
 
     /**
@@ -633,20 +656,27 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * @see SecurityContext#getAuthenticationScheme()
      */
     public String getAuthenticationScheme() {
-        if (SecurityUtil.isSslClientCertAuth(request))
+        if (SecurityUtil.isSslClientCertAuth(this.request)) {
             return SecurityContext.CLIENT_CERT_AUTH;
-        ChallengeResponse challengeResponse = request.getChallengeResponse();
-        if (challengeResponse == null)
+        }
+        final ChallengeResponse challengeResponse = this.request
+                .getChallengeResponse();
+        if (challengeResponse == null) {
             return null;
-        if (!challengeResponse.isAuthenticated())
+        }
+        if (!challengeResponse.isAuthenticated()) {
             return null;
-        ChallengeScheme authScheme = challengeResponse.getScheme();
-        if (authScheme == null)
+        }
+        final ChallengeScheme authScheme = challengeResponse.getScheme();
+        if (authScheme == null) {
             return null;
-        if (authScheme.equals(ChallengeScheme.HTTP_BASIC))
+        }
+        if (authScheme.equals(ChallengeScheme.HTTP_BASIC)) {
             return SecurityContext.BASIC_AUTH;
-        if (authScheme.equals(ChallengeScheme.HTTP_DIGEST))
+        }
+        if (authScheme.equals(ChallengeScheme.HTTP_DIGEST)) {
             return SecurityContext.DIGEST_AUTH;
+        }
         // if (authScheme.equals(ChallengeScheme.HTTPS_CLIENT_CERT))
         // return SecurityContext.CLIENT_CERT_AUTH;
         // if (authScheme.equals(ChallengeScheme.HTTP_SERVLET_FORM))
@@ -664,7 +694,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
     public URI getBaseUri() {
         try {
             return new URI(getBaseUriStr());
-        } catch (URISyntaxException e) {
+        } catch (final URISyntaxException e) {
             throw wrapUriSyntaxExc(e, unexpectedLogger, "Could not create URI");
         }
     }
@@ -684,11 +714,32 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
 
     private String getBaseUriStr() {
         if (this.baseUri == null) {
-            Reference baseRef = this.referenceCut.getBaseRef();
-            if (baseRef != null)
+            final Reference baseRef = this.referenceCut.getBaseRef();
+            if (baseRef != null) {
                 this.baseUri = baseRef.toString(false, false);
+            }
         }
-        return baseUri;
+        return this.baseUri;
+    }
+
+    /**
+     * Get the request URI extension. The returned string includes any
+     * extensions remove during request pre-processing for the purposes of
+     * URI-based content negotiation. E.g. if the request URI was:
+     * 
+     * <pre>
+     * http://example.com/resource.xml.en
+     * </pre>
+     * 
+     * this method would return "xml.en" even if an applications implementation
+     * of {@link ApplicationConfig#getMediaTypeMappings()} returned a map that
+     * included "xml" as a key
+     * 
+     * @return the request URI extension
+     * @see javax.ws.rs.core.UriInfo#getConnegExtension()
+     */
+    public String getConnegExtension() {
+        return this.referenceOriginal.getExtensions();
     }
 
     /**
@@ -699,9 +750,9 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      */
     public Map<String, Cookie> getCookies() {
         if (this.cookies == null) {
-            Map<String, Cookie> cookies = new HashMap<String, Cookie>();
-            for (org.restlet.data.Cookie rc : request.getCookies()) {
-                Cookie cookie = Converter.toJaxRsCookie(rc);
+            final Map<String, Cookie> cookies = new HashMap<String, Cookie>();
+            for (final org.restlet.data.Cookie rc : this.request.getCookies()) {
+                final Cookie cookie = Converter.toJaxRsCookie(rc);
                 cookies.put(cookie.getName(), cookie);
             }
             this.cookies = Collections.unmodifiableMap(cookies);
@@ -722,12 +773,14 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      */
     public Locale getLanguage() {
         if (this.language == null) {
-            Representation entity = request.getEntity();
-            if (entity == null)
+            final Representation entity = this.request.getEntity();
+            if (entity == null) {
                 return null;
-            List<Language> languages = entity.getLanguages();
-            if (languages.isEmpty())
+            }
+            final List<Language> languages = entity.getLanguages();
+            if (languages.isEmpty()) {
                 return null;
+            }
             this.language = Converter.toLocale(Util.getFirstElement(languages));
         }
         return this.language;
@@ -741,16 +794,17 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * @see #matrixParamEncIter(MatrixParam)
      */
     public String getLastMatrixParamEnc(MatrixParam matrixParamAnnot) {
-        String mpName = matrixParamAnnot.value();
-        List<PathSegment> pathSegments = getPathSegments(false);
+        final String mpName = matrixParamAnnot.value();
+        final List<PathSegment> pathSegments = getPathSegments(false);
         for (int i = pathSegments.size() - 1; i >= 0; i--) {
-            PathSegment pathSegment = pathSegments.get(i);
-            List<String> mpValues = pathSegment.getMatrixParameters().get(
-                    mpName);
-            if (mpValues != null && !mpValues.isEmpty()) {
-                String result = Util.getLastElement(mpValues);
-                if (result == null)
+            final PathSegment pathSegment = pathSegments.get(i);
+            final List<String> mpValues = pathSegment.getMatrixParameters()
+                    .get(mpName);
+            if ((mpValues != null) && !mpValues.isEmpty()) {
+                final String result = Util.getLastElement(mpValues);
+                if (result == null) {
                     return "";
+                }
                 return result;
             }
         }
@@ -763,10 +817,11 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * @see #pathParamEncIter(PathParam)
      */
     public String getLastPathParamEnc(PathParam annotation) {
-        String varName = annotation.value();
-        List<String> values = interalGetPathParamsEncoded().get(varName);
-        if (values == null || values.isEmpty())
+        final String varName = annotation.value();
+        final List<String> values = interalGetPathParamsEncoded().get(varName);
+        if ((values == null) || values.isEmpty()) {
             return null;
+        }
         return Util.getLastElement(values);
     }
 
@@ -775,13 +830,15 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * 
      * @return the media type or null if there is no request entity.
      * @throws java.lang.IllegalStateException
-     *                 if called outside the scope of a request
+     *             if called outside the scope of a request
      * @see HttpHeaders#getMediaType()
      */
     public MediaType getMediaType() {
         if (this.mediaType == null) {
-            org.restlet.data.MediaType rmt = request.getEntity().getMediaType();
-            CharacterSet rCharSet = request.getEntity().getCharacterSet();
+            final org.restlet.data.MediaType rmt = this.request.getEntity()
+                    .getMediaType();
+            final CharacterSet rCharSet = this.request.getEntity()
+                    .getCharacterSet();
             this.mediaType = Converter.toJaxRsMediaType(rmt, rCharSet);
         }
         return this.mediaType;
@@ -791,7 +848,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * @see javax.ws.rs.core.Request#getMethod()
      */
     public String getMethod() {
-        return request.getMethod().getName();
+        return this.request.getMethod().getName();
     }
 
     /**
@@ -810,37 +867,18 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * Get the path of the current request relative to the base URI as a string.
      * 
      * @param decode
-     *                controls whether sequences of escaped octets are decoded
-     *                (true) or not (false).
+     *            controls whether sequences of escaped octets are decoded
+     *            (true) or not (false).
      * @return the relative URI path.
      * @see UriInfo#getPath(boolean)
      */
     public String getPath(boolean decode) {
-        String path = this.referenceOriginal.getRelativeRef().toString(true,
-                true);
-        if (!decode)
+        final String path = this.referenceOriginal.getRelativeRef().toString(
+                true, true);
+        if (!decode) {
             return path;
+        }
         return Reference.decode(path);
-    }
-
-    /**
-     * Get the request URI extension. The returned string includes any
-     * extensions remove during request pre-processing for the purposes of
-     * URI-based content negotiation. E.g. if the request URI was:
-     * 
-     * <pre>
-     * http://example.com/resource.xml.en
-     * </pre>
-     * 
-     * this method would return "xml.en" even if an applications implementation
-     * of {@link ApplicationConfig#getMediaTypeMappings()} returned a map that
-     * included "xml" as a key
-     * 
-     * @return the request URI extension
-     * @see javax.ws.rs.core.UriInfo#getConnegExtension()
-     */
-    public String getConnegExtension() {
-        return referenceOriginal.getExtensions();
     }
 
     /**
@@ -850,26 +888,29 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * 
      * @return an unmodifiable map of parameter names and values
      * @throws java.lang.IllegalStateException
-     *                 if called outside the scope of a request
+     *             if called outside the scope of a request
      * @see javax.ws.rs.Path
      * @see UriInfo#getPathParameters()
      */
     public MultivaluedMap<String, String> getPathParameters() {
         if (this.pathParametersDecoded == null) {
-            MultivaluedMapImpl<String, String> pathParamsDec = new MultivaluedMapImpl<String, String>();
-            for (Map.Entry<String, List<String>> entryEnc : this
-                    .interalGetPathParamsEncoded().entrySet()) {
-                String keyDec = Reference.decode(entryEnc.getKey());
-                List<String> valuesEnc = entryEnc.getValue();
-                List<String> valuesDec = new ArrayList<String>(valuesEnc.size());
-                for (String valueEnc : valuesEnc)
+            final MultivaluedMapImpl<String, String> pathParamsDec = new MultivaluedMapImpl<String, String>();
+            for (final Map.Entry<String, List<String>> entryEnc : interalGetPathParamsEncoded()
+                    .entrySet()) {
+                final String keyDec = Reference.decode(entryEnc.getKey());
+                final List<String> valuesEnc = entryEnc.getValue();
+                final List<String> valuesDec = new ArrayList<String>(valuesEnc
+                        .size());
+                for (final String valueEnc : valuesEnc) {
                     valuesDec.add(Reference.decode(valueEnc));
+                }
                 pathParamsDec.put(keyDec, valuesDec);
             }
             UnmodifiableMultivaluedMap<String, String> ppd;
             ppd = UnmodifiableMultivaluedMap.get(pathParamsDec, false);
-            if (isChangeable())
+            if (isChangeable()) {
                 return ppd;
+            }
             this.pathParametersDecoded = ppd;
         }
         return this.pathParametersDecoded;
@@ -879,11 +920,11 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * Get the values of any embedded URI template parameters.
      * 
      * @param decode
-     *                controls whether sequences of escaped octets are decoded
-     *                (true) or not (false).
+     *            controls whether sequences of escaped octets are decoded
+     *            (true) or not (false).
      * @return an unmodifiable map of parameter names and values
      * @throws java.lang.IllegalStateException
-     *                 if called outside the scope of a request
+     *             if called outside the scope of a request
      * @see javax.ws.rs.Path
      * @see UriInfo#getPathParameters(boolean)
      */
@@ -903,10 +944,10 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * All sequences of escaped octets are decoded, equivalent to
      * <code>getPathSegments(true)</code>.
      * 
-     * @return an unmodifiable list of {@link PathSegment}. The matrix
-     *         parameter map of each path segment is also unmodifiable.
+     * @return an unmodifiable list of {@link PathSegment}. The matrix parameter
+     *         map of each path segment is also unmodifiable.
      * @throws java.lang.IllegalStateException
-     *                 if called outside the scope of a request
+     *             if called outside the scope of a request
      * @see PathSegment
      * @see UriInfo#getPathSegments()
      */
@@ -920,24 +961,26 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * parsed, particularly when matrix parameters may be present in the path.
      * 
      * @param decode
-     *                controls whether sequences of escaped octets are decoded
-     *                (true) or not (false).
-     * @return an unmodifiable list of {@link PathSegment}. The matrix
-     *         parameter map of each path segment is also unmodifiable.
+     *            controls whether sequences of escaped octets are decoded
+     *            (true) or not (false).
+     * @return an unmodifiable list of {@link PathSegment}. The matrix parameter
+     *         map of each path segment is also unmodifiable.
      * @throws java.lang.IllegalStateException
-     *                 if called outside the scope of a request
+     *             if called outside the scope of a request
      * @see PathSegment
      * @see UriInfo#getPathSegments(boolean)
      */
     public List<PathSegment> getPathSegments(boolean decode) {
         if (decode) {
-            if (this.pathSegmentsDecoded == null)
+            if (this.pathSegmentsDecoded == null) {
                 this.pathSegmentsDecoded = createPathSegments(true);
-            return pathSegmentsDecoded;
+            }
+            return this.pathSegmentsDecoded;
         } else {
-            if (this.pathSegmentsEncoded == null)
+            if (this.pathSegmentsEncoded == null) {
                 this.pathSegmentsEncoded = createPathSegments(false);
-            return pathSegmentsEncoded;
+            }
+            return this.pathSegmentsEncoded;
         }
     }
 
@@ -948,37 +991,39 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * 
      * @return an unmodifiable map of query parameter names and values
      * @throws java.lang.IllegalStateException
-     *                 if called outside the scope of a request
+     *             if called outside the scope of a request
      * @see UriInfo#getQueryParameters()
      */
     public MultivaluedMap<String, String> getQueryParameters() {
-        if (queryParametersDecoded == null)
-            queryParametersDecoded = UnmodifiableMultivaluedMap.getFromForm(
-                    referenceOriginal.getQueryAsForm(), false);
-        return queryParametersDecoded;
+        if (this.queryParametersDecoded == null) {
+            this.queryParametersDecoded = UnmodifiableMultivaluedMap
+                    .getFromForm(this.referenceOriginal.getQueryAsForm(), false);
+        }
+        return this.queryParametersDecoded;
     }
 
     /**
      * Get the URI query parameters of the current request.
      * 
      * @param decode
-     *                controls whether sequences of escaped octets in parameter
-     *                names and values are decoded (true) or not (false).
+     *            controls whether sequences of escaped octets in parameter
+     *            names and values are decoded (true) or not (false).
      * @return an unmodifiable map of query parameter names and values
      * @throws java.lang.IllegalStateException
-     *                 if called outside the scope of a request
+     *             if called outside the scope of a request
      * @see UriInfo#getQueryParameters(boolean)
      */
     public MultivaluedMap<String, String> getQueryParameters(boolean decode) {
-        if (decode)
+        if (decode) {
             return getQueryParameters();
-        if (queryParametersEncoded == null) {
-            Form queryForm = Converter.toFormEncoded(referenceOriginal
-                    .getQuery(), unexpectedLogger);
-            queryParametersEncoded = UnmodifiableMultivaluedMap.getFromForm(
-                    queryForm, false);
         }
-        return queryParametersEncoded;
+        if (this.queryParametersEncoded == null) {
+            final Form queryForm = Converter.toFormEncoded(
+                    this.referenceOriginal.getQuery(), unexpectedLogger);
+            this.queryParametersEncoded = UnmodifiableMultivaluedMap
+                    .getFromForm(queryForm, false);
+        }
+        return this.queryParametersEncoded;
     }
 
     /**
@@ -987,7 +1032,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * @return the Restlet {@link org.restlet.data.Request}
      */
     public Request getRequest() {
-        return request;
+        return this.request;
     }
 
     /**
@@ -995,7 +1040,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      */
     public List<String> getRequestHeader(String headerName) {
         String[] values;
-        values = Util.getHttpHeaders(request).getValuesArray(headerName);
+        values = Util.getHttpHeaders(this.request).getValuesArray(headerName);
         return Collections.unmodifiableList(Arrays.asList(values));
     }
 
@@ -1005,7 +1050,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
     public MultivaluedMap<String, String> getRequestHeaders() {
         if (this.requestHeaders == null) {
             this.requestHeaders = UnmodifiableMultivaluedMap.getFromForm(Util
-                    .getHttpHeaders(request), false);
+                    .getHttpHeaders(this.request), false);
         }
         return this.requestHeaders;
     }
@@ -1016,8 +1061,8 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      */
     public URI getRequestUri() {
         try {
-            return new URI(referenceOriginal.toString(true, true));
-        } catch (URISyntaxException e) {
+            return new URI(this.referenceOriginal.toString(true, true));
+        } catch (final URISyntaxException e) {
             throw wrapUriSyntaxExc(e, unexpectedLogger, "Could not create URI");
         }
     }
@@ -1038,29 +1083,29 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * @return the Restlet {@link org.restlet.data.Response}
      */
     public org.restlet.data.Response getResponse() {
-        return response;
+        return this.response;
     }
 
     /**
-     * Returns a <code>java.security.Principal</code> object containing the
-     * name of the current authenticated user. If the user has not been
+     * Returns a <code>java.security.Principal</code> object containing the name
+     * of the current authenticated user. If the user has not been
      * authenticated, the method returns null.
      * 
-     * @return a <code>java.security.Principal</code> containing the name of
-     *         the user making this request; null if the user has not been
+     * @return a <code>java.security.Principal</code> containing the name of the
+     *         user making this request; null if the user has not been
      *         authenticated
      * @see SecurityContext#getUserPrincipal()
      */
     public Principal getUserPrincipal() {
-        if (request.getChallengeResponse() != null)
-            return request.getChallengeResponse().getPrincipal();
-        return SecurityUtil.getSslClientCertPrincipal(request);
+        if (this.request.getChallengeResponse() != null) {
+            return this.request.getChallengeResponse().getPrincipal();
+        }
+        return SecurityUtil.getSslClientCertPrincipal(this.request);
     }
 
     @Override
     public int hashCode() {
-        return this.getBaseUriStr().hashCode()
-                ^ this.getPathSegments().hashCode()
+        return getBaseUriStr().hashCode() ^ this.getPathSegments().hashCode()
                 ^ this.getPathParameters().hashCode();
     }
 
@@ -1068,9 +1113,10 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * @return the pathParametersEncoded
      */
     protected MultivaluedMap<String, String> interalGetPathParamsEncoded() {
-        if (pathParametersEncoded == null)
+        if (this.pathParametersEncoded == null) {
             this.pathParametersEncoded = new MultivaluedMapImpl<String, String>();
-        return pathParametersEncoded;
+        }
+        return this.pathParametersEncoded;
     }
 
     protected boolean isChangeable() {
@@ -1081,8 +1127,8 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * Returns a boolean indicating whether this request was made using a secure
      * channel, such as HTTPS.
      * 
-     * @return <code>true</code> if the request was made using a secure
-     *         channel, <code>false</code> otherwise
+     * @return <code>true</code> if the request was made using a secure channel,
+     *         <code>false</code> otherwise
      * @see SecurityContext#isSecure()
      */
     public boolean isSecure() {
@@ -1095,7 +1141,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * the method returns <code>false</code>.
      * 
      * @param role
-     *                a <code>String</code> specifying the name of the role
+     *            a <code>String</code> specifying the name of the role
      * @return a <code>boolean</code> indicating whether the user making the
      *         request belongs to a given role; <code>false</code> if the user
      *         has not been authenticated
@@ -1103,9 +1149,9 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      */
     public boolean isUserInRole(String role) {
         // LATER here ServletRequest.isUserInRole(role)
-        Principal principal = (request.getChallengeResponse() == null) ? null
-                : request.getChallengeResponse().getPrincipal();
-        return roleChecker.isInRole(principal, role);
+        final Principal principal = (this.request.getChallengeResponse() == null) ? null
+                : this.request.getChallengeResponse().getPrincipal();
+        return this.roleChecker.isInRole(principal, role);
     }
 
     /**
@@ -1114,7 +1160,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * @see #getLastMatrixParamEnc(MatrixParam)
      */
     public Iterator<String> matrixParamEncIter(MatrixParam matrixParamAnnot) {
-        String mpName = matrixParamAnnot.value();
+        final String mpName = matrixParamAnnot.value();
         return new MatrixParamEncIter(mpName, getPathSegments(false));
     }
 
@@ -1124,11 +1170,12 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * @see #getLastPathParamEnc(PathParam)
      */
     public Iterator<String> pathParamEncIter(PathParam pathParamAnnot) {
-        String ppName = pathParamAnnot.value();
+        final String ppName = pathParamAnnot.value();
         List<String> pathParamValues;
         pathParamValues = interalGetPathParamsEncoded().get(ppName);
-        if (pathParamValues == null)
+        if (pathParamValues == null) {
             return EmptyIterator.get();
+        }
         return pathParamValues.iterator();
     }
 
@@ -1136,12 +1183,12 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * Creates a response with status 412 (Precondition Failed).
      * 
      * @param entityMessage
-     *                Plain Text error message. Will be returned as entity.
+     *            Plain Text error message. Will be returned as entity.
      * @return Returns a response with status 412 (Precondition Failed) and the
      *         given message as entity.
      */
     private ResponseBuilder precFailed(String entityMessage) {
-        ResponseBuilder rb = Response.status(STATUS_PREC_FAILED);
+        final ResponseBuilder rb = Response.status(STATUS_PREC_FAILED);
         rb.entity(entityMessage);
         rb.language(Language.ENGLISH.getName());
         rb.type(Converter.toJaxRsMediaType(
@@ -1156,32 +1203,37 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * response.
      * 
      * @param variants
-     *                a list of Variant that describe all of the available
-     *                representation variants.
+     *            a list of Variant that describe all of the available
+     *            representation variants.
      * @return the variant that best matches the request.
      * @see Variant.VariantListBuilder
      * @throws IllegalArgumentException
-     *                 if variants is null or empty.
+     *             if variants is null or empty.
      * @see javax.ws.rs.core.Request#selectVariant(List)
      */
     public Variant selectVariant(List<Variant> variants)
             throws IllegalArgumentException {
-        if (variants == null || variants.isEmpty())
+        if ((variants == null) || variants.isEmpty()) {
             throw new IllegalArgumentException();
-        List<org.restlet.resource.Variant> restletVariants = Converter
+        }
+        final List<org.restlet.resource.Variant> restletVariants = Converter
                 .toRestletVariants(variants);
-        org.restlet.resource.Variant bestRestlVar = request.getClientInfo()
-                .getPreferredVariant(restletVariants, null);
-        Variant bestVariant = Converter.toJaxRsVariant(bestRestlVar);
-        Set<Dimension> dimensions = response.getDimensions();
-        if (bestRestlVar.getCharacterSet() != null)
+        final org.restlet.resource.Variant bestRestlVar = this.request
+                .getClientInfo().getPreferredVariant(restletVariants, null);
+        final Variant bestVariant = Converter.toJaxRsVariant(bestRestlVar);
+        final Set<Dimension> dimensions = this.response.getDimensions();
+        if (bestRestlVar.getCharacterSet() != null) {
             dimensions.add(Dimension.CHARACTER_SET);
-        if (bestRestlVar.getEncodings() != null)
+        }
+        if (bestRestlVar.getEncodings() != null) {
             dimensions.add(Dimension.ENCODING);
-        if (bestRestlVar.getLanguages() != null)
+        }
+        if (bestRestlVar.getLanguages() != null) {
             dimensions.add(Dimension.LANGUAGE);
-        if (bestRestlVar.getMediaType() != null)
+        }
+        if (bestRestlVar.getMediaType() != null) {
             dimensions.add(Dimension.MEDIA_TYPE);
+        }
         // NICE add also to JAX-RS-Response, which is possibly not yet
         // generated.
         return bestVariant;
@@ -1206,17 +1258,17 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * where is no planned handling. Logs the exception (warn {@link Level}).
      * 
      * @param exc
-     *                the catched URISyntaxException
+     *            the catched URISyntaxException
      * @param unexpectedLogger
-     *                the unexpectedLogger to log the messade
+     *            the unexpectedLogger to log the messade
      * @param logMessage
-     *                the message to log.
+     *            the message to log.
      * @return Will never return anything, because the generated
      *         WebApplicationException will be thrown. You an formally throw the
      *         returned exception (e.g. in a catch block). So the compiler is
      *         sure, that the method will be left here.
      * @throws WebApplicationException
-     *                 contains the given {@link Exception}
+     *             contains the given {@link Exception}
      */
     private WebApplicationException wrapUriSyntaxExc(URISyntaxException exc,
             Logger logger, String logMessage) throws WebApplicationException {

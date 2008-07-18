@@ -46,6 +46,21 @@ public class BookmarkResource extends UserResource {
     public BookmarkResource() {
     }
 
+    /**
+     * Constructor.
+     * 
+     * @param context
+     *            The parent context.
+     * @param request
+     *            The request to handle.
+     * @param response
+     *            The response to return.
+     */
+    public BookmarkResource(Context context, Request request, Response response) {
+        super(context, request, response);
+        init(context, request, response);
+    }
+
     @Override
     public void init(Context context, Request request, Response response) {
         super.init(context, request, response);
@@ -71,21 +86,6 @@ public class BookmarkResource extends UserResource {
         }
     }
 
-    /**
-     * Constructor.
-     * 
-     * @param context
-     *                The parent context.
-     * @param request
-     *                The request to handle.
-     * @param response
-     *                The response to return.
-     */
-    public BookmarkResource(Context context, Request request, Response response) {
-        super(context, request, response);
-        init(context, request, response);
-    }
-
     @Override
     public void removeRepresentations() {
         if ((this.bookmark != null) && (checkAuthorization() == 1)) {
@@ -107,7 +107,7 @@ public class BookmarkResource extends UserResource {
 
         if (variant.getMediaType().equals(MediaType.TEXT_PLAIN)) {
             // Creates a text representation
-            StringBuilder sb = new StringBuilder();
+            final StringBuilder sb = new StringBuilder();
             sb.append("----------------\n");
             sb.append("Bookmark details\n");
             sb.append("----------------\n\n");
@@ -134,7 +134,7 @@ public class BookmarkResource extends UserResource {
             if (entity.getMediaType().equals(MediaType.APPLICATION_WWW_FORM,
                     true)) {
                 // Parse the entity as a web form
-                Form form = new Form(entity);
+                final Form form = new Form(entity);
 
                 // If the bookmark doesn't exist, create it
                 if (this.bookmark == null) {

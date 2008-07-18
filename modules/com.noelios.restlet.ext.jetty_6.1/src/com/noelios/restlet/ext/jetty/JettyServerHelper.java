@@ -29,7 +29,8 @@ import org.mortbay.thread.BoundedThreadPool;
 
 /**
  * Abstract Jetty Web server connector. Here is the list of parameters that are
- * supported: <table>
+ * supported:
+ * <table>
  * <tr>
  * <th>Parameter name</th>
  * <th>Value type</th>
@@ -65,8 +66,8 @@ import org.mortbay.thread.BoundedThreadPool;
  * <td>lowResourceMaxIdleTimeMs</td>
  * <td>int</td>
  * <td>2500</td>
- * <td>Time in ms that connections will persist if listener is low on
- * resources.</td>
+ * <td>Time in ms that connections will persist if listener is low on resources.
+ * </td>
  * </tr>
  * <tr>
  * <td>acceptorThreads</td>
@@ -129,81 +130,11 @@ import org.mortbay.thread.BoundedThreadPool;
  * </tr>
  * </table>
  * 
- * @see <a href="http://jetty.mortbay.org/">Jetty home page</a>
+ * @see <a href="http://jetty.mortbay.org/">Jetty home page< /a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public abstract class JettyServerHelper extends
         com.noelios.restlet.http.HttpServerHelper {
-    /** The wrapped Jetty server. */
-    private volatile Server wrappedServer;
-
-    /** The internal Jetty connector. */
-    private volatile AbstractConnector connector;
-
-    /**
-     * Constructor.
-     * 
-     * @param server
-     *                The server to help.
-     */
-    public JettyServerHelper(org.restlet.Server server) {
-        super(server);
-        this.connector = null;
-        this.wrappedServer = new WrappedServer(this);
-
-        // Configuring the thread pool
-        BoundedThreadPool btp = new BoundedThreadPool();
-        btp.setLowThreads(getLowThreads());
-        btp.setMaxIdleTimeMs(getThreadMaxIdleTimeMs());
-        btp.setMaxThreads(getMaxThreads());
-        btp.setMinThreads(getMinThreads());
-        getWrappedServer().setThreadPool(btp);
-    }
-
-    @Override
-    public void start() throws Exception {
-        if (this.connector == null) {
-            this.connector = createConnector();
-            configure(this.connector);
-            getWrappedServer().addConnector(connector);
-        }
-
-        getWrappedServer().start();
-        setEphemeralPort(this.connector.getLocalPort());
-    }
-
-    @Override
-    public void stop() throws Exception {
-        getWrappedServer().stop();
-    }
-
-    /**
-     * Creates a new internal Jetty connector.
-     * 
-     * @return A new internal Jetty connector.
-     */
-    protected abstract AbstractConnector createConnector();
-
-    /**
-     * Configures the internal Jetty connector.
-     * 
-     * @param connector
-     *                The internal Jetty connector.
-     */
-    protected void configure(AbstractConnector connector) {
-        if (getHelped().getAddress() != null)
-            connector.setHost(getHelped().getAddress());
-        connector.setPort(getHelped().getPort());
-        connector.setLowResourceMaxIdleTime(getLowResourceMaxIdleTimeMs());
-        connector.setAcceptors(getAcceptorThreads());
-        connector.setAcceptQueueSize(getAcceptQueueSize());
-        connector.setHeaderBufferSize(getHeaderBufferSize());
-        connector.setRequestBufferSize(getRequestBufferSize());
-        connector.setResponseBufferSize(getResponseBufferSize());
-        connector.setMaxIdleTime(getIoMaxIdleTimeMs());
-        connector.setSoLingerTime(getSoLingerTime());
-    }
-
     /**
      * Jetty server wrapped by a parent Restlet HTTP server connector.
      * 
@@ -216,7 +147,7 @@ public abstract class JettyServerHelper extends
          * Constructor.
          * 
          * @param server
-         *                The Jetty HTTP server.
+         *            The Jetty HTTP server.
          */
         public WrappedServer(JettyServerHelper server) {
             this.helper = server;
@@ -226,68 +157,69 @@ public abstract class JettyServerHelper extends
          * Handler method converting a Jetty Connection into a Restlet Call.
          * 
          * @param connection
-         *                The connection to handle.
+         *            The connection to handle.
          */
         @Override
         public void handle(HttpConnection connection) throws IOException,
                 ServletException {
-            helper.handle(new JettyCall(helper.getHelped(), connection));
+            this.helper.handle(new JettyCall(this.helper.getHelped(),
+                    connection));
         }
     }
 
+    /** The wrapped Jetty server. */
+    private volatile Server wrappedServer;
+
+    /** The internal Jetty connector. */
+    private volatile AbstractConnector connector;
+
     /**
-     * Returns the minimum threads waiting to service requests.
+     * Constructor.
      * 
-     * @return The minimum threads waiting to service requests.
+     * @param server
+     *            The server to help.
      */
-    public int getMinThreads() {
-        return Integer.parseInt(getParameters()
-                .getFirstValue("minThreads", "1"));
+    public JettyServerHelper(org.restlet.Server server) {
+        super(server);
+        this.connector = null;
+        this.wrappedServer = new WrappedServer(this);
+
+        // Configuring the thread pool
+        final BoundedThreadPool btp = new BoundedThreadPool();
+        btp.setLowThreads(getLowThreads());
+        btp.setMaxIdleTimeMs(getThreadMaxIdleTimeMs());
+        btp.setMaxThreads(getMaxThreads());
+        btp.setMinThreads(getMinThreads());
+        getWrappedServer().setThreadPool(btp);
     }
 
     /**
-     * Returns the maximum threads that will service requests.
+     * Configures the internal Jetty connector.
      * 
-     * @return The maximum threads that will service requests.
+     * @param connector
+     *            The internal Jetty connector.
      */
-    public int getMaxThreads() {
-        return Integer.parseInt(getParameters().getFirstValue("maxThreads",
-                "255"));
+    protected void configure(AbstractConnector connector) {
+        if (getHelped().getAddress() != null) {
+            connector.setHost(getHelped().getAddress());
+        }
+        connector.setPort(getHelped().getPort());
+        connector.setLowResourceMaxIdleTime(getLowResourceMaxIdleTimeMs());
+        connector.setAcceptors(getAcceptorThreads());
+        connector.setAcceptQueueSize(getAcceptQueueSize());
+        connector.setHeaderBufferSize(getHeaderBufferSize());
+        connector.setRequestBufferSize(getRequestBufferSize());
+        connector.setResponseBufferSize(getResponseBufferSize());
+        connector.setMaxIdleTime(getIoMaxIdleTimeMs());
+        connector.setSoLingerTime(getSoLingerTime());
     }
 
     /**
-     * Returns the time for an idle thread to wait for a request or read.
+     * Creates a new internal Jetty connector.
      * 
-     * @return The time for an idle thread to wait for a request or read.
+     * @return A new internal Jetty connector.
      */
-    public int getThreadMaxIdleTimeMs() {
-        return Integer.parseInt(getParameters().getFirstValue(
-                "threadMaxIdleTimeMs", "60000"));
-    }
-
-    /**
-     * Returns the threshold of remaining threads at which the server is
-     * considered as running low on resources.
-     * 
-     * @return The threshold of remaining threads at which the server is
-     *         considered as running low on resources.
-     */
-    public int getLowThreads() {
-        return Integer.parseInt(getParameters().getFirstValue("lowThreads",
-                "25"));
-    }
-
-    /**
-     * Returns the time in ms that connections will persist if listener is low
-     * on resources.
-     * 
-     * @return The time in ms that connections will persist if listener is low
-     *         on resources.
-     */
-    public int getLowResourceMaxIdleTimeMs() {
-        return Integer.parseInt(getParameters().getFirstValue(
-                "lowResourceMaxIdleTimeMs", "2500"));
-    }
+    protected abstract AbstractConnector createConnector();
 
     /**
      * Returns the number of acceptor threads to set.
@@ -322,6 +254,60 @@ public abstract class JettyServerHelper extends
     }
 
     /**
+     * Returns the maximum time to wait on an idle IO operation.
+     * 
+     * @return The maximum time to wait on an idle IO operation.
+     */
+    public int getIoMaxIdleTimeMs() {
+        return Integer.parseInt(getParameters().getFirstValue(
+                "ioMaxIdleTimeMs", "30000"));
+    }
+
+    /**
+     * Returns the time in ms that connections will persist if listener is low
+     * on resources.
+     * 
+     * @return The time in ms that connections will persist if listener is low
+     *         on resources.
+     */
+    public int getLowResourceMaxIdleTimeMs() {
+        return Integer.parseInt(getParameters().getFirstValue(
+                "lowResourceMaxIdleTimeMs", "2500"));
+    }
+
+    /**
+     * Returns the threshold of remaining threads at which the server is
+     * considered as running low on resources.
+     * 
+     * @return The threshold of remaining threads at which the server is
+     *         considered as running low on resources.
+     */
+    public int getLowThreads() {
+        return Integer.parseInt(getParameters().getFirstValue("lowThreads",
+                "25"));
+    }
+
+    /**
+     * Returns the maximum threads that will service requests.
+     * 
+     * @return The maximum threads that will service requests.
+     */
+    public int getMaxThreads() {
+        return Integer.parseInt(getParameters().getFirstValue("maxThreads",
+                "255"));
+    }
+
+    /**
+     * Returns the minimum threads waiting to service requests.
+     * 
+     * @return The minimum threads waiting to service requests.
+     */
+    public int getMinThreads() {
+        return Integer.parseInt(getParameters()
+                .getFirstValue("minThreads", "1"));
+    }
+
+    /**
      * Returns the size of the content buffer for receiving requests.
      * 
      * @return The size of the content buffer for receiving requests.
@@ -342,16 +328,6 @@ public abstract class JettyServerHelper extends
     }
 
     /**
-     * Returns the maximum time to wait on an idle IO operation.
-     * 
-     * @return The maximum time to wait on an idle IO operation.
-     */
-    public int getIoMaxIdleTimeMs() {
-        return Integer.parseInt(getParameters().getFirstValue(
-                "ioMaxIdleTimeMs", "30000"));
-    }
-
-    /**
      * Returns the SO linger time (see Jetty 6 documentation).
      * 
      * @return The SO linger time (see Jetty 6 documentation).
@@ -362,13 +338,13 @@ public abstract class JettyServerHelper extends
     }
 
     /**
-     * Sets the wrapped Jetty server.
+     * Returns the time for an idle thread to wait for a request or read.
      * 
-     * @param wrappedServer
-     *                The wrapped Jetty server.
+     * @return The time for an idle thread to wait for a request or read.
      */
-    protected void setWrappedServer(Server wrappedServer) {
-        this.wrappedServer = wrappedServer;
+    public int getThreadMaxIdleTimeMs() {
+        return Integer.parseInt(getParameters().getFirstValue(
+                "threadMaxIdleTimeMs", "60000"));
     }
 
     /**
@@ -378,6 +354,33 @@ public abstract class JettyServerHelper extends
      */
     protected Server getWrappedServer() {
         return this.wrappedServer;
+    }
+
+    /**
+     * Sets the wrapped Jetty server.
+     * 
+     * @param wrappedServer
+     *            The wrapped Jetty server.
+     */
+    protected void setWrappedServer(Server wrappedServer) {
+        this.wrappedServer = wrappedServer;
+    }
+
+    @Override
+    public void start() throws Exception {
+        if (this.connector == null) {
+            this.connector = createConnector();
+            configure(this.connector);
+            getWrappedServer().addConnector(this.connector);
+        }
+
+        getWrappedServer().start();
+        setEphemeralPort(this.connector.getLocalPort());
+    }
+
+    @Override
+    public void stop() throws Exception {
+        getWrappedServer().stop();
     }
 
 }

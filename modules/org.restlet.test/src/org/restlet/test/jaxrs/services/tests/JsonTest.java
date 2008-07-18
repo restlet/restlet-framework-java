@@ -50,24 +50,28 @@ import org.restlet.test.jaxrs.services.resources.JsonTestService;
  */
 public class JsonTest extends JaxRsTestCase {
 
-    @Override
-    protected Class<?> getRootResourceClass() {
-        return JsonTestService.class;
-    }
-
     public static void main(String[] args) throws Exception {
         new JsonTest().runServerUntilKeyPressed();
     }
 
+    /**
+     * @param response
+     * @throws JSONException
+     * @throws IOException
+     */
+    private void checkJsonResponse(Response response) throws JSONException,
+            IOException {
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        final JSONObject jsonObject = new JSONObject(response.getEntity()
+                .getText());
+        assertEquals("Angela", jsonObject.get("firstname"));
+        assertEquals("Merkel", jsonObject.get("lastname"));
+    }
+
     @Override
     protected ApplicationConfig getAppConfig() {
-        ApplicationConfig appConfig = new ApplicationConfig() {
-            @Override
-            @SuppressWarnings("unchecked")
-            public Set<Class<?>> getResourceClasses() {
-                return (Set) Collections.singleton(getRootResourceClass());
-            }
-
+        final ApplicationConfig appConfig = new ApplicationConfig() {
             @SuppressWarnings("all")
             public Map<String, javax.ws.rs.core.MediaType> getExtensionMappings() {
                 return getMediaTypeMappings();
@@ -75,23 +79,34 @@ public class JsonTest extends JaxRsTestCase {
 
             @SuppressWarnings("all")
             public Map<String, javax.ws.rs.core.MediaType> getMediaTypeMappings() {
-                Map<String, javax.ws.rs.core.MediaType> mediaMap = new HashMap<String, javax.ws.rs.core.MediaType>();
+                final Map<String, javax.ws.rs.core.MediaType> mediaMap = new HashMap<String, javax.ws.rs.core.MediaType>();
                 mediaMap.put("xml", APPLICATION_XML_TYPE);
                 mediaMap.put("json", APPLICATION_JSON_TYPE);
                 return mediaMap;
+            }
+
+            @Override
+            @SuppressWarnings("unchecked")
+            public Set<Class<?>> getResourceClasses() {
+                return (Set) Collections.singleton(getRootResourceClass());
             }
         };
         return appConfig;
     }
 
+    @Override
+    protected Class<?> getRootResourceClass() {
+        return JsonTestService.class;
+    }
+
     public void testGetJsonObject() throws Exception {
-        Response response = get("JSONObject");
+        final Response response = get("JSONObject");
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        String entity = response.getEntity().getText();
+        final String entity = response.getEntity().getText();
         try {
             assertEquals("{\"name1\":\"value1\",\"name2\":\"value2\"}", entity);
-        } catch (AssertionFailedError afe) {
+        } catch (final AssertionFailedError afe) {
             assertEquals("{\"name2\":\"value2\",\"name1\":\"value1\"}", entity);
         }
     }
@@ -111,17 +126,22 @@ public class JsonTest extends JaxRsTestCase {
     }
 
     /**
-     * @param response
-     * @throws JSONException
+     * This test using JAXB, but shows that you can serialize Objects by JAXb
+     * and by JSON.
+     * 
+     * @param xmlMediaType
      * @throws IOException
      */
-    private void checkJsonResponse(Response response) throws JSONException,
-            IOException {
+    private void testGetPersonXml(MediaType xmlMediaType) throws IOException {
+        final Response response = get(
+                "person?firstname=Angela&lastname=Merkel", xmlMediaType);
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        JSONObject jsonObject = new JSONObject(response.getEntity().getText());
-        assertEquals("Angela", jsonObject.get("firstname"));
-        assertEquals("Merkel", jsonObject.get("lastname"));
+        final JaxbRepresentation<Person> jaxbReprs = new JaxbRepresentation<Person>(
+                response.getEntity(), Person.class);
+        final Person person = jaxbReprs.getObject();
+        assertEquals("Angela", person.getFirstname());
+        assertEquals("Merkel", person.getLastname());
     }
 
     public void testGetPersonXmlA() throws Exception {
@@ -132,29 +152,10 @@ public class JsonTest extends JaxRsTestCase {
         testGetPersonXml(MediaType.TEXT_XML);
     }
 
-    /**
-     * This test using JAXB, but shows that you can serialize Objects by JAXb
-     * and by JSON.
-     * 
-     * @param xmlMediaType
-     * @throws IOException
-     */
-    private void testGetPersonXml(MediaType xmlMediaType) throws IOException {
-        Response response = get("person?firstname=Angela&lastname=Merkel",
-                xmlMediaType);
-        sysOutEntityIfError(response);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
-        JaxbRepresentation<Person> jaxbReprs = new JaxbRepresentation<Person>(
-                response.getEntity(), Person.class);
-        Person person = jaxbReprs.getObject();
-        assertEquals("Angela", person.getFirstname());
-        assertEquals("Merkel", person.getLastname());
-    }
-
     public void testPost() throws Exception {
-        Representation entity = new StringRepresentation("{name:value}",
+        final Representation entity = new StringRepresentation("{name:value}",
                 MediaType.APPLICATION_JSON);
-        Response response = post("JSONObject", entity);
+        final Response response = post("JSONObject", entity);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("value", response.getEntity().getText());
     }
@@ -163,10 +164,10 @@ public class JsonTest extends JaxRsTestCase {
      * @see JsonTestService#getString()
      */
     public void testString() throws Exception {
-        Response response = get("String");
+        final Response response = get("String");
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        Representation entity = response.getEntity();
+        final Representation entity = response.getEntity();
         assertEquals("{name:value}", entity.getText());
     }
 }

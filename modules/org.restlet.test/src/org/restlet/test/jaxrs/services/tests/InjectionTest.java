@@ -40,10 +40,10 @@ public class InjectionTest extends JaxRsTestCase {
      */
     @Override
     protected ApplicationConfig getAppConfig() {
-        ApplicationConfig appConfig = new ApplicationConfig() {
+        final ApplicationConfig appConfig = new ApplicationConfig() {
             @Override
             public Set<Class<?>> getResourceClasses() {
-                Set<Class<?>> rrcs = new HashSet<Class<?>>();
+                final Set<Class<?>> rrcs = new HashSet<Class<?>>();
                 rrcs.add(getRootResourceClass());
                 rrcs.add(InjectionTestService2.class);
                 return rrcs;
@@ -58,7 +58,7 @@ public class InjectionTest extends JaxRsTestCase {
     }
 
     public void testGet() {
-        Response response = get("?qp1=56");
+        final Response response = get("?qp1=56");
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
     }
@@ -74,5 +74,5 @@ public class InjectionTest extends JaxRsTestCase {
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("97", response.getEntity().getText());
-}
+    }
 }

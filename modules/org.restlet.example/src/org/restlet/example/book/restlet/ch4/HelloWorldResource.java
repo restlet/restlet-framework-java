@@ -1,4 +1,5 @@
 package org.restlet.example.book.restlet.ch4;
+
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;

@@ -33,7 +33,7 @@ public class InjectException extends JaxRsException {
      */
     public InjectException(MethodInvokeException mie) {
         super(mie.getMessage(), mie.getCause());
-        this.setStackTrace(mie.getStackTrace());
+        setStackTrace(mie.getStackTrace());
     }
 
     /**

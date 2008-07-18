@@ -44,7 +44,7 @@ public class ConverterService {
      * default.
      * 
      * @param representation
-     *                The representation to convert.
+     *            The representation to convert.
      * @return A higher-level object.
      */
     public Object toObject(Representation representation) {
@@ -56,7 +56,7 @@ public class ConverterService {
      * default.
      * 
      * @param object
-     *                The higher-level object.
+     *            The higher-level object.
      * @return A representation.
      */
     public Representation toRepresentation(Object object) {

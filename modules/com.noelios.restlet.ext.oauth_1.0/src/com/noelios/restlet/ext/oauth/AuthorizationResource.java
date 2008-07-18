@@ -38,9 +38,9 @@ import org.restlet.resource.Variant;
  */
 public abstract class AuthorizationResource extends Resource {
 
-    private OAuthProvider provider;
+    private final OAuthProvider provider;
 
-    private String realm;
+    private final String realm;
 
     /**
      * Constructor.
@@ -53,34 +53,23 @@ public abstract class AuthorizationResource extends Resource {
             Response response) {
         super(context, request, response);
 
-        provider = (OAuthProvider) context.getAttributes()
-                .get("oauth_provider");
-        realm = (String) context.getAttributes().get("realm");
+        this.provider = (OAuthProvider) context.getAttributes().get(
+                "oauth_provider");
+        this.realm = (String) context.getAttributes().get("realm");
 
         getVariants().add(new Variant(MediaType.TEXT_HTML));
     }
 
     @Override
-    public boolean allowPost() {
-        return true;
-    }
-
-    /**
-     * Return a user-accessible page asking if the user wants to authorize the
-     * client.
-     */
-    @Override
-    public abstract Representation represent(Variant variant);
-
-    @Override
     public void acceptRepresentation(Representation entity) {
-        OAuthMessage requestMessage = OAuthHelper.getMessage(getRequest(),
-                getLogger());
-        OAuthAccessor accessor = provider.getAccessor(requestMessage);
+        final OAuthMessage requestMessage = OAuthHelper.getMessage(
+                getRequest(), getLogger());
+        final OAuthAccessor accessor = this.provider
+                .getAccessor(requestMessage);
 
         if (accessor == null) {
-            ChallengeRequest challengeRequest = new ChallengeRequest(
-                    OAuthGuard.SCHEME, realm);
+            final ChallengeRequest challengeRequest = new ChallengeRequest(
+                    OAuthGuard.SCHEME, this.realm);
             getResponse().setChallengeRequest(challengeRequest);
             // TODO: Use OAuthServlet mapping from problem to status.
             getResponse().setStatus(Status.CLIENT_ERROR_UNAUTHORIZED,
@@ -95,12 +84,12 @@ public abstract class AuthorizationResource extends Resource {
             return;
         }
 
-        String userId = "user";
+        final String userId = "user";
 
         // set userId in accessor and mark it as authorized
-        provider.markAsAuthorized(accessor, userId);
+        this.provider.markAsAuthorized(accessor, userId);
 
-        String callback = getRequest().getResourceRef().getQueryAsForm()
+        final String callback = getRequest().getResourceRef().getQueryAsForm()
                 .getFirstValue("oauth_callback");
         if (callback != null) {
             getResponse().setLocationRef(callback);
@@ -111,6 +100,11 @@ public abstract class AuthorizationResource extends Resource {
                             "You have allowed authorization. Please close this browser window and click continue"
                                     + " in the client.", MediaType.TEXT_PLAIN);
         }
+    }
+
+    @Override
+    public boolean allowPost() {
+        return true;
     }
 
     /**
@@ -131,5 +125,12 @@ public abstract class AuthorizationResource extends Resource {
      *         otherwise.
      */
     protected abstract boolean isAuthorized();
+
+    /**
+     * Return a user-accessible page asking if the user wants to authorize the
+     * client.
+     */
+    @Override
+    public abstract Representation represent(Variant variant);
 
 }

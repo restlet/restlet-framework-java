@@ -40,7 +40,7 @@ public class SimpleProtocolHandler implements ProtocolHandler {
      * Constructor.
      * 
      * @param helper
-     *                The delegate Restlet server helper.
+     *            The delegate Restlet server helper.
      */
     public SimpleProtocolHandler(SimpleServerHelper helper) {
         this.helper = helper;
@@ -59,9 +59,9 @@ public class SimpleProtocolHandler implements ProtocolHandler {
      * Handles a Simple request/response transaction.
      * 
      * @param request
-     *                The Simple request.
+     *            The Simple request.
      * @param response
-     *                The Simple response.
+     *            The Simple response.
      */
     public void handle(Request request, Response response) {
         getHelper().handle(
@@ -72,13 +72,13 @@ public class SimpleProtocolHandler implements ProtocolHandler {
             // Once the request is handled, the request input stream must be
             // entirely consumed. Not doing so blocks invariably the transaction
             // managed by the SimpleWeb connector.
-            InputStream in = request.getInputStream();
+            final InputStream in = request.getInputStream();
             if (in != null) {
                 while (in.read() != -1) {
                     // just consume the stream
                 }
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             // This is probably ok, the stream was certainly already
             // closed by the Representation.release() method for
             // example.
@@ -92,7 +92,7 @@ public class SimpleProtocolHandler implements ProtocolHandler {
 
         try {
             response.getOutputStream().close();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             getHelper()
                     .getLogger()
                     .log(

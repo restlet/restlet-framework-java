@@ -55,11 +55,11 @@ public final class CookieSetting extends Cookie {
      * Constructor.
      * 
      * @param version
-     *                The cookie's version.
+     *            The cookie's version.
      * @param name
-     *                The cookie's name.
+     *            The cookie's name.
      * @param value
-     *                The cookie's value.
+     *            The cookie's value.
      */
     public CookieSetting(int version, String name, String value) {
         this(version, name, value, null, null);
@@ -69,15 +69,15 @@ public final class CookieSetting extends Cookie {
      * Constructor.
      * 
      * @param version
-     *                The cookie's version.
+     *            The cookie's version.
      * @param name
-     *                The cookie's name.
+     *            The cookie's name.
      * @param value
-     *                The cookie's value.
+     *            The cookie's value.
      * @param path
-     *                The cookie's path.
+     *            The cookie's path.
      * @param domain
-     *                The cookie's domain name.
+     *            The cookie's domain name.
      */
     public CookieSetting(int version, String name, String value, String path,
             String domain) {
@@ -88,25 +88,25 @@ public final class CookieSetting extends Cookie {
      * Constructor.
      * 
      * @param version
-     *                The cookie's version.
+     *            The cookie's version.
      * @param name
-     *                The cookie's name.
+     *            The cookie's name.
      * @param value
-     *                The cookie's value.
+     *            The cookie's value.
      * @param path
-     *                The cookie's path.
+     *            The cookie's path.
      * @param domain
-     *                The cookie's domain name.
+     *            The cookie's domain name.
      * @param comment
-     *                The cookie's comment.
+     *            The cookie's comment.
      * @param maxAge
-     *                Sets the maximum age in seconds.<br>
-     *                Use 0 to immediately discard an existing cookie.<br>
-     *                Use -1 to discard the cookie at the end of the session
-     *                (default).
+     *            Sets the maximum age in seconds.<br>
+     *            Use 0 to immediately discard an existing cookie.<br>
+     *            Use -1 to discard the cookie at the end of the session
+     *            (default).
      * @param secure
-     *                Indicates if cookie should only be transmitted by secure
-     *                means.
+     *            Indicates if cookie should only be transmitted by secure
+     *            means.
      */
     public CookieSetting(int version, String name, String value, String path,
             String domain, String comment, int maxAge, boolean secure) {
@@ -117,29 +117,29 @@ public final class CookieSetting extends Cookie {
      * Constructor.
      * 
      * @param version
-     *                The cookie's version.
+     *            The cookie's version.
      * @param name
-     *                The cookie's name.
+     *            The cookie's name.
      * @param value
-     *                The cookie's value.
+     *            The cookie's value.
      * @param path
-     *                The cookie's path.
+     *            The cookie's path.
      * @param domain
-     *                The cookie's domain name.
+     *            The cookie's domain name.
      * @param comment
-     *                The cookie's comment.
+     *            The cookie's comment.
      * @param maxAge
-     *                Sets the maximum age in seconds.<br>
-     *                Use 0 to immediately discard an existing cookie.<br>
-     *                Use -1 to discard the cookie at the end of the session
-     *                (default).
+     *            Sets the maximum age in seconds.<br>
+     *            Use 0 to immediately discard an existing cookie.<br>
+     *            Use -1 to discard the cookie at the end of the session
+     *            (default).
      * @param secure
-     *                Indicates if cookie should only be transmitted by secure
-     *                means.
+     *            Indicates if cookie should only be transmitted by secure
+     *            means.
      * @param accessRestricted
-     *                Indicates whether to restrict cookie access to untrusted
-     *                parties. Currently this toggles the non-standard but
-     *                widely supported HttpOnly cookie parameter.
+     *            Indicates whether to restrict cookie access to untrusted
+     *            parties. Currently this toggles the non-standard but widely
+     *            supported HttpOnly cookie parameter.
      */
     public CookieSetting(int version, String name, String value, String path,
             String domain, String comment, int maxAge, boolean secure,
@@ -155,9 +155,9 @@ public final class CookieSetting extends Cookie {
      * Preferred constructor.
      * 
      * @param name
-     *                The cookie's name.
+     *            The cookie's name.
      * @param value
-     *                The cookie's value.
+     *            The cookie's value.
      */
     public CookieSetting(String name, String value) {
         this(0, name, value, null, null);
@@ -175,7 +175,7 @@ public final class CookieSetting extends Cookie {
                 // if obj isn't a cookie setting or is null don't evaluate
                 // further
                 if (obj instanceof CookieSetting) {
-                    CookieSetting that = (CookieSetting) obj;
+                    final CookieSetting that = (CookieSetting) obj;
                     result = (this.maxAge == that.maxAge)
                             && (this.secure == that.secure);
 
@@ -241,7 +241,7 @@ public final class CookieSetting extends Cookie {
      * @return accessRestricted True if cookie access should be restricted
      */
     public boolean isAccessRestricted() {
-        return accessRestricted;
+        return this.accessRestricted;
     }
 
     /**
@@ -259,7 +259,7 @@ public final class CookieSetting extends Cookie {
      * cookie parameter.
      * 
      * @param accessRestricted
-     *                True if cookie access should be restricted
+     *            True if cookie access should be restricted
      */
     public void setAccessRestricted(boolean accessRestricted) {
         this.accessRestricted = accessRestricted;
@@ -269,7 +269,7 @@ public final class CookieSetting extends Cookie {
      * Sets the comment for the user.
      * 
      * @param comment
-     *                The comment for the user.
+     *            The comment for the user.
      */
     public void setComment(String comment) {
         this.comment = comment;
@@ -281,7 +281,7 @@ public final class CookieSetting extends Cookie {
      * Use -1 to discard the cookie at the end of the session (default).
      * 
      * @param maxAge
-     *                The maximum age in seconds.
+     *            The maximum age in seconds.
      */
     public void setMaxAge(int maxAge) {
         this.maxAge = maxAge;
@@ -291,7 +291,7 @@ public final class CookieSetting extends Cookie {
      * Indicates if cookie should only be transmitted by secure means.
      * 
      * @param secure
-     *                True if cookie should only be transmitted by secure means.
+     *            True if cookie should only be transmitted by secure means.
      */
     public void setSecure(boolean secure) {
         this.secure = secure;

@@ -37,7 +37,7 @@ public class ComponentServerDispatcher extends TemplateDispatcher {
      * Constructor.
      * 
      * @param context
-     *                The component context.
+     *            The component context.
      */
     public ComponentServerDispatcher(ComponentContext context) {
         super(context);

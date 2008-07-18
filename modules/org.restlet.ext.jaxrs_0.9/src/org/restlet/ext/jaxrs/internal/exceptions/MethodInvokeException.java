@@ -38,17 +38,17 @@ public class MethodInvokeException extends JaxRsException {
     }
 
     /**
-     * @param cause
-     */
-    public MethodInvokeException(Throwable cause) {
-        super(cause);
-    }
-
-    /**
      * @param message
      * @param cause
      */
     public MethodInvokeException(String message, Throwable cause) {
         super(message, cause);
+    }
+
+    /**
+     * @param cause
+     */
+    public MethodInvokeException(Throwable cause) {
+        super(cause);
     }
 }

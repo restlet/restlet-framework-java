@@ -124,14 +124,16 @@ public class ParameterList {
                 this.collType = (Class) ArrayList.class;
                 this.isArray = true;
             } else if (convToGen instanceof ParameterizedType) {
-                ParameterizedType parametrizedType = (ParameterizedType) convToGen;
-                Type[] argTypes = parametrizedType.getActualTypeArguments();
-                if (argTypes[0] instanceof Class)
+                final ParameterizedType parametrizedType = (ParameterizedType) convToGen;
+                final Type[] argTypes = parametrizedType
+                        .getActualTypeArguments();
+                if (argTypes[0] instanceof Class) {
                     this.convertTo = (Class<?>) argTypes[0];
-                else
+                } else {
                     throw new NotYetImplementedException(
                             "Sorry, only Class is supported, but is "
                                     + argTypes[0]);
+                }
                 // TESTEN @*Param with array/collection and generic parameter
                 this.collType = collType(parametrizedType);
                 this.isArray = false;
@@ -144,7 +146,7 @@ public class ParameterList {
 
         protected Object convertParamValue(String firstHeader)
                 throws ConvertParameterException {
-            return convertParamValue(firstHeader, defaultValue);
+            return convertParamValue(firstHeader, this.defaultValue);
         }
 
         /**
@@ -163,15 +165,18 @@ public class ParameterList {
          */
         protected Object convertParamValue(String paramValue,
                 DefaultValue defaultValue) throws ConvertParameterException {
-            if (decode() && paramValue != null)
+            if (decode() && (paramValue != null)) {
                 paramValue = Reference.decode(paramValue);
-            else if (paramValue == null && defaultValue != null)
+            } else if ((paramValue == null) && (defaultValue != null)) {
                 paramValue = defaultValue.value();
-            if (convertTo.equals(String.class)) // optimization
+            }
+            if (this.convertTo.equals(String.class)) {
                 return paramValue;
-            if (convertTo.isPrimitive()) {
-                if (paramValue != null && paramValue.length() <= 0)
+            }
+            if (this.convertTo.isPrimitive()) {
+                if ((paramValue != null) && (paramValue.length() <= 0)) {
                     paramValue = defaultValue.value();
+                }
                 return getParamValueForPrimitive(paramValue);
             }
             return convertParamValueInner(paramValue, defaultValue);
@@ -185,56 +190,60 @@ public class ParameterList {
          * @return
          * @throws ConvertParameterException
          * @throws WebApplicationException
-         *                 if the conversion method throws an
-         *                 WebApplicationException.
+         *             if the conversion method throws an
+         *             WebApplicationException.
          */
         private Object convertParamValueInner(String paramValue,
                 DefaultValue defaultValue) throws ConvertParameterException,
                 WebApplicationException {
             WebApplicationException constructorWae = null;
             try {
-                Constructor<?> constr = this.convertTo
+                final Constructor<?> constr = this.convertTo
                         .getConstructor(String.class);
                 return constr.newInstance(paramValue);
-            } catch (WebApplicationException wae) {
+            } catch (final WebApplicationException wae) {
                 constructorWae = wae;
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 // try valueOf(String) as next step
             }
             Method valueOf;
             try {
                 valueOf = this.convertTo.getMethod("valueOf", String.class);
-            } catch (SecurityException e) {
+            } catch (final SecurityException e) {
                 throw ConvertParameterException.object(this.convertTo,
                         paramValue, e);
-            } catch (NoSuchMethodException e) {
+            } catch (final NoSuchMethodException e) {
                 throw ConvertParameterException.object(this.convertTo,
                         paramValue, e);
             }
             try {
                 return valueOf.invoke(null, paramValue);
-            } catch (IllegalArgumentException e) {
-                if (constructorWae != null)
+            } catch (final IllegalArgumentException e) {
+                if (constructorWae != null) {
                     throw constructorWae;
+                }
                 throw ConvertParameterException.object(this.convertTo,
                         paramValue, e);
-            } catch (IllegalAccessException e) {
-                if (constructorWae != null)
+            } catch (final IllegalAccessException e) {
+                if (constructorWae != null) {
                     throw constructorWae;
+                }
                 throw ConvertParameterException.object(this.convertTo,
                         paramValue, e);
-            } catch (InvocationTargetException ite) {
-                if (constructorWae != null)
+            } catch (final InvocationTargetException ite) {
+                if (constructorWae != null) {
                     throw constructorWae;
-                Throwable cause = ite.getCause();
-                if (cause instanceof WebApplicationException)
+                }
+                final Throwable cause = ite.getCause();
+                if (cause instanceof WebApplicationException) {
                     throw (WebApplicationException) cause;
-                if ((paramValue == null || paramValue.length() <= 0)
+                }
+                if (((paramValue == null) || (paramValue.length() <= 0))
                         && (ite.getCause() instanceof IllegalArgumentException)) {
-                    if (defaultValue == null)
+                    if (defaultValue == null) {
                         return null;
-                    else {
-                        String dfv = defaultValue.value();
+                    } else {
+                        final String dfv = defaultValue.value();
                         return convertParamValueInner(dfv, null);
                     }
                 }
@@ -245,17 +254,21 @@ public class ParameterList {
 
         protected Object convertParamValues(Iterator<String> paramValueIter)
                 throws ConvertParameterException {
-            Collection<Object> coll = createColl();
+            final Collection<Object> coll = createColl();
             while (paramValueIter.hasNext()) {
-                String queryParamValue = paramValueIter.next();
-                Object convertedValue = convertParamValue(queryParamValue, null);
-                if (convertedValue != null)
+                final String queryParamValue = paramValueIter.next();
+                final Object convertedValue = convertParamValue(
+                        queryParamValue, null);
+                if (convertedValue != null) {
                     coll.add(convertedValue);
+                }
             }
-            if (coll.isEmpty()) // add default value
+            if (coll.isEmpty()) {
                 coll.add(convertParamValue(null));
-            if (isArray)
+            }
+            if (this.isArray) {
                 return Util.toArray(coll, this.convertTo);
+            }
             return coll;
         }
 
@@ -266,13 +279,14 @@ public class ParameterList {
         @SuppressWarnings("unchecked")
         protected <A> Collection<A> createColl() {
             try {
-                if (this.collType != null)
-                    return (Collection) collType.newInstance();
+                if (this.collType != null) {
+                    return (Collection) this.collType.newInstance();
+                }
                 return null;
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 throw new RuntimeException(
-                        "Could not instantiate the collection type " + collType,
-                        e);
+                        "Could not instantiate the collection type "
+                                + this.collType, e);
             }
         }
 
@@ -287,66 +301,78 @@ public class ParameterList {
                 throws ConvertParameterException {
             try {
                 if (this.convertTo == Integer.TYPE) {
-                    if ((paramValue == null || paramValue.length() <= 0))
+                    if (((paramValue == null) || (paramValue.length() <= 0))) {
                         return DEFAULT_INT;
+                    }
                     return new Integer(paramValue);
                 }
                 if (this.convertTo == Double.TYPE) {
-                    if ((paramValue == null || paramValue.length() <= 0))
+                    if (((paramValue == null) || (paramValue.length() <= 0))) {
                         return DEFAULT_DOUBLE;
+                    }
                     return new Double(paramValue);
                 }
                 if (this.convertTo == Float.TYPE) {
-                    if ((paramValue == null || paramValue.length() <= 0))
+                    if (((paramValue == null) || (paramValue.length() <= 0))) {
                         return DEFAULT_FLOAT;
+                    }
                     return new Float(paramValue);
                 }
                 if (this.convertTo == Byte.TYPE) {
-                    if ((paramValue == null || paramValue.length() <= 0))
+                    if (((paramValue == null) || (paramValue.length() <= 0))) {
                         return DEFAULT_BYTE;
+                    }
                     return new Byte(paramValue);
                 }
                 if (this.convertTo == Long.TYPE) {
-                    if ((paramValue == null || paramValue.length() <= 0))
+                    if (((paramValue == null) || (paramValue.length() <= 0))) {
                         return DEFAULT_LONG;
+                    }
                     return new Long(paramValue);
                 }
                 if (this.convertTo == Short.TYPE) {
-                    if ((paramValue == null || paramValue.length() <= 0))
+                    if (((paramValue == null) || (paramValue.length() <= 0))) {
                         return DEFAULT_SHORT;
+                    }
                     return new Short(paramValue);
                 }
                 if (this.convertTo == Character.TYPE) {
-                    if ((paramValue == null || paramValue.length() <= 0))
+                    if (((paramValue == null) || (paramValue.length() <= 0))) {
                         return DEFAULT_CHAR;
-                    if (paramValue.length() == 1)
+                    }
+                    if (paramValue.length() == 1) {
                         return paramValue.charAt(0);
+                    }
                     throw ConvertParameterException.primitive(this.convertTo,
                             paramValue, null);
                 }
                 if (this.convertTo == Boolean.TYPE) {
-                    if ((paramValue == null || paramValue.length() <= 0))
+                    if (((paramValue == null) || (paramValue.length() <= 0))) {
                         return DEFAULT_BOOLEAN;
-                    if (paramValue.equalsIgnoreCase("true"))
+                    }
+                    if (paramValue.equalsIgnoreCase("true")) {
                         return Boolean.TRUE;
-                    if (paramValue.equalsIgnoreCase("false"))
+                    }
+                    if (paramValue.equalsIgnoreCase("false")) {
                         return Boolean.FALSE;
+                    }
                     throw ConvertParameterException.primitive(this.convertTo,
                             paramValue, null);
                 }
-            } catch (IllegalArgumentException e) {
+            } catch (final IllegalArgumentException e) {
                 throw ConvertParameterException.primitive(this.convertTo,
                         paramValue, e);
             }
             String warning;
-            if (this.convertTo == Void.TYPE)
+            if (this.convertTo == Void.TYPE) {
                 warning = "an object should be converted to a void; but this could not be here";
-            else
+            } else {
                 warning = "an object should be converted to a "
                         + this.convertTo
                         + ", but here are only primitives allowed.";
+            }
             localLogger.warning(warning);
-            ResponseBuilder rb = javax.ws.rs.core.Response.serverError();
+            final ResponseBuilder rb = javax.ws.rs.core.Response.serverError();
             rb.entity(warning);
             throw new WebApplicationException(rb.build());
         }
@@ -362,8 +388,8 @@ public class ParameterList {
 
         /**
          * @param annoSaysLeaveClassEncoded
-         *                to check if the annotation is available, but should
-         *                not be.
+         *            to check if the annotation is available, but should not
+         *            be.
          */
         CookieParamGetter(CookieParam cookieParam, DefaultValue defaultValue,
                 Class<?> convToCl, Type convToGen,
@@ -377,38 +403,42 @@ public class ParameterList {
         @Override
         @SuppressWarnings("unchecked")
         public Object getParamValue() {
-            String cookieName = cookieParam.value();
+            final String cookieName = this.cookieParam.value();
             Series<org.restlet.data.Cookie> cookies;
-            cookies = tlContext.get().getRequest().getCookies();
-            if (convertTo.equals(Cookie.class)) {
-                Collection<Cookie> coll = createColl();
-                for (org.restlet.data.Cookie rc : cookies) {
-                    if (!rc.getName().equals(cookieName))
+            cookies = this.tlContext.get().getRequest().getCookies();
+            if (this.convertTo.equals(Cookie.class)) {
+                final Collection<Cookie> coll = createColl();
+                for (final org.restlet.data.Cookie rc : cookies) {
+                    if (!rc.getName().equals(cookieName)) {
                         continue;
-                    Cookie cookie = Converter.toJaxRsCookie(rc);
-                    if (coll == null) // no collection requested
+                    }
+                    final Cookie cookie = Converter.toJaxRsCookie(rc);
+                    if (coll == null) {
                         return cookie;
+                    }
                     coll.add(cookie);
                 }
-                if (coll == null)
+                if (coll == null) {
                     return null;
+                }
                 if (coll.isEmpty()) {
-                    String value = defaultValue.value();
+                    final String value = this.defaultValue.value();
                     coll.add(new Cookie(cookieName, value));
                 }
-                if (isArray)
+                if (this.isArray) {
                     return Util.toArray(coll, Cookie.class);
+                }
                 return coll;
             }
             try {
                 if (this.collType == null) { // no collection parameter
-                    String firstCookieValue = WrapperUtil.getValue(cookies
-                            .getFirst(cookieName));
+                    final String firstCookieValue = WrapperUtil
+                            .getValue(cookies.getFirst(cookieName));
                     return convertParamValue(firstCookieValue);
                 }
                 return convertParamValues(new ParamValueIter((Series) cookies
                         .subList(cookieName)));
-            } catch (ConvertParameterException e) {
+            } catch (final ConvertParameterException e) {
                 throw new ConvertCookieParamException(e);
             }
         }
@@ -416,8 +446,8 @@ public class ParameterList {
 
     /**
      * Abstract super class for access to the entity or to &#64;*Param where
-     * encoded is allowed (&#64;{@link PathParam}, &#64;{@link MatrixParam}
-     * and &#64;{@link QueryParam}).
+     * encoded is allowed (&#64;{@link PathParam}, &#64;{@link MatrixParam} and
+     * &#64;{@link QueryParam}).
      */
     abstract static class EncParamGetter extends AbstractParamGetter {
 
@@ -442,7 +472,7 @@ public class ParameterList {
 
         /**
          * @param annoSaysLeaveClassEncoded
-         *                to check if the annotation is available.
+         *            to check if the annotation is available.
          */
         HeaderParamGetter(HeaderParam headerParam, DefaultValue defaultValue,
                 Class<?> convToCl, Type paramGenericType,
@@ -455,18 +485,18 @@ public class ParameterList {
 
         @Override
         public Object getParamValue() {
-            Form httpHeaders = Util
-                    .getHttpHeaders(tlContext.get().getRequest());
-            String headerName = headerParam.value();
+            final Form httpHeaders = Util.getHttpHeaders(this.tlContext.get()
+                    .getRequest());
+            final String headerName = this.headerParam.value();
             try {
                 if (this.collType == null) { // no collection parameter
-                    String firstHeader = WrapperUtil.getValue(httpHeaders
+                    final String firstHeader = WrapperUtil.getValue(httpHeaders
                             .getFirst(headerName, true));
                     return convertParamValue(firstHeader);
                 }
                 return convertParamValues(new ParamValueIter(httpHeaders
                         .subList(headerName, true)));
-            } catch (ConvertParameterException e) {
+            } catch (final ConvertParameterException e) {
                 throw new ConvertHeaderParamException(e);
             }
         }
@@ -485,17 +515,18 @@ public class ParameterList {
 
         @Override
         public Object getParamValue() {
-            CallContext callContext = tlContext.get();
+            final CallContext callContext = this.tlContext.get();
             try {
                 if (this.collType == null) { // no collection parameter
-                    String matrixParamValue = callContext
-                            .getLastMatrixParamEnc(matrixParam);
+                    final String matrixParamValue = callContext
+                            .getLastMatrixParamEnc(this.matrixParam);
                     return convertParamValue(matrixParamValue);
                 }
                 Iterator<String> matrixParamValues;
-                matrixParamValues = callContext.matrixParamEncIter(matrixParam);
+                matrixParamValues = callContext
+                        .matrixParamEncIter(this.matrixParam);
                 return convertParamValues(matrixParamValues);
-            } catch (ConvertParameterException e) {
+            } catch (final ConvertParameterException e) {
                 throw new ConvertMatrixParamException(e);
             }
         }
@@ -503,14 +534,14 @@ public class ParameterList {
 
     /**
      * Abstract super class for access to the entity or to &#64;*Param where
-     * encoded is allowed (&#64;{@link PathParam}, &#64;{@link MatrixParam}
-     * and &#64;{@link QueryParam}).
+     * encoded is allowed (&#64;{@link PathParam}, &#64;{@link MatrixParam} and
+     * &#64;{@link QueryParam}).
      */
     abstract static class NoEncParamGetter extends AbstractParamGetter {
 
         /**
          * @param annoSaysLeaveEncoded
-         *                to check if the annotation is available.
+         *            to check if the annotation is available.
          */
         NoEncParamGetter(DefaultValue defaultValue, Class<?> convToCl,
                 Type convToGen, ThreadLocalizedContext tlContext,
@@ -533,9 +564,10 @@ public class ParameterList {
          * given field or bean setter. If yes, this method logs a warning.
          */
         void checkForEncodedAnno(boolean annoSaysLeaveEncoded) {
-            if (annoSaysLeaveEncoded)
+            if (annoSaysLeaveEncoded) {
                 localLogger
                         .warning("You should not use @Encoded on a @HeaderParam or @CookieParam. Will ignore it");
+            }
         }
 
         @Override
@@ -571,7 +603,7 @@ public class ParameterList {
 
         @Override
         public Object getParamValue() {
-            CallContext callContext = tlContext.get();
+            final CallContext callContext = this.tlContext.get();
             // LATER @PathParam(...) List<String> (see PathParamTest.testGet3())
             if (this.convertTo.equals(PathSegment.class)) {
                 throw new NotYetImplementedException(
@@ -581,13 +613,14 @@ public class ParameterList {
             try {
                 if (this.collType == null) { // no collection parameter
                     String pathParamValue;
-                    pathParamValue = callContext.getLastPathParamEnc(pathParam);
+                    pathParamValue = callContext
+                            .getLastPathParamEnc(this.pathParam);
                     return convertParamValue(pathParamValue);
                 }
                 Iterator<String> ppvIter;
-                ppvIter = callContext.pathParamEncIter(pathParam);
+                ppvIter = callContext.pathParamEncIter(this.pathParam);
                 return convertParamValues(ppvIter);
-            } catch (ConvertParameterException e) {
+            } catch (final ConvertParameterException e) {
                 throw new ConvertPathParamException(e);
             }
         }
@@ -606,24 +639,24 @@ public class ParameterList {
 
         @Override
         public Object getParamValue() {
-            Reference resourceRef = tlContext.get().getRequest()
+            final Reference resourceRef = this.tlContext.get().getRequest()
                     .getResourceRef();
-            String queryString = resourceRef.getQuery();
-            Form form = Converter.toFormEncoded(queryString, localLogger);
+            final String queryString = resourceRef.getQuery();
+            final Form form = Converter.toFormEncoded(queryString, localLogger);
             // NICE cache Form
-            String paramName = queryParam.value();
-            List<Parameter> parameters = form.subList(paramName);
+            final String paramName = this.queryParam.value();
+            final List<Parameter> parameters = form.subList(paramName);
             try {
                 if (this.collType == null) { // no collection parameter
-                    Parameter firstQueryParam = form.getFirst(paramName);
-                    String queryParamValue = WrapperUtil
+                    final Parameter firstQueryParam = form.getFirst(paramName);
+                    final String queryParamValue = WrapperUtil
                             .getValue(firstQueryParam);
                     return convertParamValue(queryParamValue);
                 }
                 ParamValueIter queryParamValueIter;
                 queryParamValueIter = new ParamValueIter(parameters);
                 return convertParamValues(queryParamValueIter);
-            } catch (ConvertParameterException e) {
+            } catch (final ConvertParameterException e) {
                 throw new ConvertQueryParamException(e);
             }
         }
@@ -647,7 +680,7 @@ public class ParameterList {
 
         public Object getValue() throws InvocationTargetException,
                 ConvertRepresentationException, WebApplicationException {
-            this.uriInfo.saveStateForCurrentThread(allMustBeAvailable);
+            this.uriInfo.saveStateForCurrentThread(this.allMustBeAvailable);
             return this.uriInfo;
         }
     }
@@ -675,21 +708,21 @@ public class ParameterList {
     private static final Collection<Class<? extends Annotation>> VALID_ANNOTATIONS = createValidAnnotations();
 
     /**
-     * @return the collection type for the given
-     *         {@link ParameterizedType parametrized Type}.<br>
+     * @return the collection type for the given {@link ParameterizedType
+     *         parametrized Type}.<br>
      *         If the given type do not represent an collection, null is
      *         returned.
      */
     @SuppressWarnings("unchecked")
     private static Class<Collection<?>> collType(ParameterizedType type) {
-        Type rawType = type.getRawType();
-        if (rawType.equals(List.class))
+        final Type rawType = type.getRawType();
+        if (rawType.equals(List.class)) {
             return (Class) ArrayList.class;
-        else if (rawType.equals(Set.class))
+        } else if (rawType.equals(Set.class)) {
             return (Class) HashSet.class;
-        else if (rawType.equals(SortedSet.class))
+        } else if (rawType.equals(SortedSet.class)) {
             return (Class) TreeSet.class;
-        else if (rawType.equals(Collection.class)) {
+        } else if (rawType.equals(Collection.class)) {
             localLogger.config(ParameterList.COLL_PARAM_NOT_DEFAULT);
             return (Class) ArrayList.class;
         }
@@ -710,10 +743,12 @@ public class ParameterList {
     @SuppressWarnings("unchecked")
     static <A extends Annotation> A getAnno(Annotation[] annotations,
             Class<A> annoType) {
-        for (Annotation annot : annotations) {
-            Class<? extends Annotation> annotationType = annot.annotationType();
-            if (annotationType.equals(annoType))
+        for (final Annotation annot : annotations) {
+            final Class<? extends Annotation> annotationType = annot
+                    .annotationType();
+            if (annotationType.equals(annoType)) {
                 return (A) annot;
+            }
         }
         return null;
     }
@@ -722,10 +757,12 @@ public class ParameterList {
      * Returns true, if one of the annotations is &#64;{@link Encoded}
      */
     static boolean getLeaveEncoded(Annotation[] annotations) {
-        for (Annotation annot : annotations) {
-            Class<? extends Annotation> annotationType = annot.annotationType();
-            if (annotationType.equals(Encoded.class))
+        for (final Annotation annot : annotations) {
+            final Class<? extends Annotation> annotationType = annot
+                    .annotationType();
+            if (annotationType.equals(Encoded.class)) {
                 return true;
+            }
         }
         return false;
     }
@@ -746,19 +783,18 @@ public class ParameterList {
      * @param allCtxResolvers
      * @param extensionBackwardMapping
      * @param paramsAllowed
-     *                true, if &#64;*Params are allowed as parameter, otherwise
-     *                false.
+     *            true, if &#64;*Params are allowed as parameter, otherwise
+     *            false.
      * @param entityAllowed
-     *                true, if the entity is allowed as parameter, otherwise
-     *                false.
+     *            true, if the entity is allowed as parameter, otherwise false.
      * @param logger
      * @param allMustBeAvailable
-     *                if true, all values must be available (for singeltons
-     *                creation it must be false)
+     *            if true, all values must be available (for singeltons creation
+     *            it must be false)
      * @throws MissingAnnotationException
      * @throws IllegalTypeException
-     *                 if the given class is not valid to be annotated with
-     *                 &#64;{@link Context}.
+     *             if the given class is not valid to be annotated with &#64;
+     *             {@link Context}.
      */
     private ParameterList(Class<?>[] parameterTypes, Type[] genParamTypes,
             Annotation[][] paramAnnoss, ThreadLocalizedContext tlContext,
@@ -769,19 +805,19 @@ public class ParameterList {
             boolean allMustBeAvailable) throws MissingAnnotationException,
             IllegalTypeException {
         this.paramCount = parameterTypes.length;
-        this.parameters = new ParamGetter[paramCount];
+        this.parameters = new ParamGetter[this.paramCount];
         boolean entityAlreadyRead = false;
-        for (int i = 0; i < paramCount; i++) {
-            Class<?> parameterType = parameterTypes[i];
-            Type genParamType = genParamTypes[i];
-            Annotation[] paramAnnos = paramAnnoss[i];
-            Context conntextAnno = getAnno(paramAnnos, Context.class);
+        for (int i = 0; i < this.paramCount; i++) {
+            final Class<?> parameterType = parameterTypes[i];
+            final Type genParamType = genParamTypes[i];
+            final Annotation[] paramAnnos = paramAnnoss[i];
+            final Context conntextAnno = getAnno(paramAnnos, Context.class);
             if (conntextAnno != null) {
                 if (parameterType.equals(UriInfo.class)) {
-                    parameters[i] = new UriInfoGetter(tlContext,
+                    this.parameters[i] = new UriInfoGetter(tlContext,
                             allMustBeAvailable);
                 } else {
-                    parameters[i] = new ContextHolder(ContextInjector
+                    this.parameters[i] = new ContextHolder(ContextInjector
                             .getInjectObject(parameterType, genParamType,
                                     tlContext, entityProviders,
                                     allCtxResolvers, extensionBackwardMapping));
@@ -789,36 +825,41 @@ public class ParameterList {
                 continue;
             }
             if (paramsAllowed) {
-                boolean leaveThisEncoded = getLeaveEncoded(paramAnnos);
-                DefaultValue defValue = getAnno(paramAnnos, DefaultValue.class);
-                CookieParam cookieParam = getAnno(paramAnnos, CookieParam.class);
-                HeaderParam headerParam = getAnno(paramAnnos, HeaderParam.class);
-                MatrixParam matrixParam = getAnno(paramAnnos, MatrixParam.class);
-                PathParam pathParam = getAnno(paramAnnos, PathParam.class);
-                QueryParam queryParam = getAnno(paramAnnos, QueryParam.class);
+                final boolean leaveThisEncoded = getLeaveEncoded(paramAnnos);
+                final DefaultValue defValue = getAnno(paramAnnos,
+                        DefaultValue.class);
+                final CookieParam cookieParam = getAnno(paramAnnos,
+                        CookieParam.class);
+                final HeaderParam headerParam = getAnno(paramAnnos,
+                        HeaderParam.class);
+                final MatrixParam matrixParam = getAnno(paramAnnos,
+                        MatrixParam.class);
+                final PathParam pathParam = getAnno(paramAnnos, PathParam.class);
+                final QueryParam queryParam = getAnno(paramAnnos,
+                        QueryParam.class);
                 if (pathParam != null) {
-                    parameters[i] = new PathParamGetter(pathParam, defValue,
-                            parameterType, genParamType, tlContext,
+                    this.parameters[i] = new PathParamGetter(pathParam,
+                            defValue, parameterType, genParamType, tlContext,
                             leaveAllEncoded || leaveThisEncoded);
                     continue;
                 } else if (cookieParam != null) {
-                    parameters[i] = new CookieParamGetter(cookieParam,
+                    this.parameters[i] = new CookieParamGetter(cookieParam,
                             defValue, parameterType, genParamType, tlContext,
                             leaveThisEncoded);
                     continue;
                 } else if (headerParam != null) {
-                    parameters[i] = new HeaderParamGetter(headerParam,
+                    this.parameters[i] = new HeaderParamGetter(headerParam,
                             defValue, parameterType, genParamType, tlContext,
                             leaveThisEncoded);
                     continue;
                 } else if (matrixParam != null) {
-                    parameters[i] = new MatrixParamGetter(matrixParam,
+                    this.parameters[i] = new MatrixParamGetter(matrixParam,
                             defValue, parameterType, genParamType, tlContext,
                             leaveAllEncoded || leaveThisEncoded);
                     continue;
                 } else if (queryParam != null) {
-                    parameters[i] = new QueryParamGetter(queryParam, defValue,
-                            parameterType, genParamType, tlContext,
+                    this.parameters[i] = new QueryParamGetter(queryParam,
+                            defValue, parameterType, genParamType, tlContext,
                             leaveAllEncoded || leaveThisEncoded);
                     continue;
                 }
@@ -829,19 +870,20 @@ public class ParameterList {
                         "All parameters requires one of the following annotations: "
                                 + VALID_ANNOTATIONS);
             }
-            if (entityAlreadyRead)
+            if (entityAlreadyRead) {
                 throw new MissingAnnotationException(
                         "The entity is already read.  The " + i
                                 + ". parameter requires one of "
                                 + "the following annotations: "
                                 + VALID_ANNOTATIONS);
+            }
             if (Representation.class.isAssignableFrom(parameterType)) {
-                parameters[i] = ReprEntityGetter.create(parameterType,
+                this.parameters[i] = ReprEntityGetter.create(parameterType,
                         genParamType, logger);
             }
-            if (parameters[i] == null) {
-                parameters[i] = new EntityGetter(parameterType, genParamType,
-                        tlContext, entityProviders, paramAnnos);
+            if (this.parameters[i] == null) {
+                this.parameters[i] = new EntityGetter(parameterType,
+                        genParamType, tlContext, entityProviders, paramAnnos);
             }
             entityAlreadyRead = true;
         }
@@ -859,8 +901,8 @@ public class ParameterList {
      * @param allMustBeAvailable
      * @throws MissingAnnotationException
      * @throws IllegalTypeException
-     *                 if one of the parameters contains a &#64;{@link Context}
-     *                 on an type that must not be annotated with &#64;{@link Context}.
+     *             if one of the parameters contains a &#64;{@link Context} on
+     *             an type that must not be annotated with &#64;{@link Context}.
      */
     public ParameterList(Constructor<?> constr,
             ThreadLocalizedContext tlContext, boolean leaveEncoded,
@@ -887,8 +929,8 @@ public class ParameterList {
      * @param logger
      * @throws MissingAnnotationException
      * @throws IllegalTypeException
-     *                 if one of the parameters contains a &#64;{@link Context}
-     *                 on an type that must not be annotated with &#64;{@link Context}.
+     *             if one of the parameters contains a &#64;{@link Context} on
+     *             an type that must not be annotated with &#64;{@link Context}.
      */
     public ParameterList(Method executeMethod, Method annotatedMethod,
             ThreadLocalizedContext tlContext, boolean leaveEncoded,
@@ -914,9 +956,9 @@ public class ParameterList {
      */
     public Object[] get() throws ConvertRepresentationException,
             InvocationTargetException, WebApplicationException {
-        Object[] args = new Object[parameters.length];
+        final Object[] args = new Object[this.parameters.length];
         for (int i = 0; i < this.paramCount; i++) {
-            args[i] = parameters[i].getValue();
+            args[i] = this.parameters[i].getValue();
         }
         return args;
     }

@@ -26,8 +26,8 @@ import org.restlet.Guard;
 import org.restlet.Server;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
-import org.restlet.ext.jaxrs.RoleChecker;
 import org.restlet.ext.jaxrs.JaxRsApplication;
+import org.restlet.ext.jaxrs.RoleChecker;
 
 /**
  * <p>
@@ -36,8 +36,8 @@ import org.restlet.ext.jaxrs.JaxRsApplication;
  * <p>
  * Start this class, open a browser and click <a
  * href="http://localhost/easy">easy</a> or <a
- * href="http://localhost/persons">persons</a> with one of the following
- * user / password combinations:
+ * href="http://localhost/persons">persons</a> with one of the following user /
+ * password combinations:
  * <ul>
  * <li>admin / adminPW</li>
  * <li>alice / alicesSecret</li>
@@ -66,11 +66,13 @@ public class GuardedExample {
         public boolean isInRole(Principal principal, String role) {
             // access database or whatever
             // example: user "admin" has all roles
-            if (principal.getName().equalsIgnoreCase("admin"))
+            if (principal.getName().equalsIgnoreCase("admin")) {
                 return true;
+            }
             // example: every authenticatd user could read
-            if (role.equalsIgnoreCase("read"))
+            if (role.equalsIgnoreCase("read")) {
                 return true;
+            }
             // the normal users have no other roles.
             return false;
         }
@@ -78,14 +80,15 @@ public class GuardedExample {
 
     public static void main(String[] args) throws Exception {
         // create Component (as ever for Restlet)
-        Component comp = new Component();
-        Server server = comp.getServers().add(Protocol.HTTP, 80);
+        final Component comp = new Component();
+        final Server server = comp.getServers().add(Protocol.HTTP, 80);
 
         // create JAX-RS runtime environment
-        JaxRsApplication application = new JaxRsApplication(comp.getContext());
+        final JaxRsApplication application = new JaxRsApplication(comp
+                .getContext());
 
         // create a Guard
-        Guard guard = new Guard(application.getContext(),
+        final Guard guard = new Guard(application.getContext(),
                 ChallengeScheme.HTTP_BASIC, "JAX-RS example");
         // set valid users and thier passwords.
         guard.getSecrets().put("admin", "adminPW".toCharArray());
@@ -93,7 +96,7 @@ public class GuardedExample {
         guard.getSecrets().put("bob", "bobsSecret".toCharArray());
 
         // create an RoleChecker (see above)
-        ExampleRoleChecker roleChecker = new ExampleRoleChecker();
+        final ExampleRoleChecker roleChecker = new ExampleRoleChecker();
         // attach Guard and RoleChecker
         application.setAuthentication(guard, roleChecker);
 

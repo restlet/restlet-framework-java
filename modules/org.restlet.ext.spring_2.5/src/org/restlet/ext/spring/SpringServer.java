@@ -18,10 +18,10 @@
 
 package org.restlet.ext.spring;
 
-import org.restlet.data.Protocol;
-
-import java.util.Properties;
 import java.util.Enumeration;
+import java.util.Properties;
+
+import org.restlet.data.Protocol;
 
 /**
  * Server that is easily configurable with Spring. Here is a usage example:
@@ -37,7 +37,7 @@ import java.util.Enumeration;
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
  * 
- * @see <a href="http://www.springframework.org/">Spring home page</a>
+ * @see <a href="http://www.springframework.org/">Spring home page< /a>
  * @author Jerome Louvel (contact@noelios.com)</a>
  */
 public class SpringServer extends org.restlet.Server {
@@ -46,7 +46,7 @@ public class SpringServer extends org.restlet.Server {
      * Constructor.
      * 
      * @param protocol
-     *                The server's protocol such as "HTTP" or "HTTPS".
+     *            The server's protocol such as "HTTP" or "HTTPS".
      */
     public SpringServer(String protocol) {
         super(Protocol.valueOf(protocol), null);
@@ -56,9 +56,9 @@ public class SpringServer extends org.restlet.Server {
      * Constructor.
      * 
      * @param protocol
-     *                The server's protocol such as "HTTP" or "HTTPS".
+     *            The server's protocol such as "HTTP" or "HTTPS".
      * @param port
-     *                The port number.
+     *            The port number.
      */
     public SpringServer(String protocol, int port) {
         super(Protocol.valueOf(protocol), port, null);
@@ -68,11 +68,11 @@ public class SpringServer extends org.restlet.Server {
      * Constructor.
      * 
      * @param protocol
-     *                The server's protocol such as "HTTP" or "HTTPS".
+     *            The server's protocol such as "HTTP" or "HTTPS".
      * @param address
-     *                The IP address.
+     *            The IP address.
      * @param port
-     *                The port number.
+     *            The port number.
      */
     public SpringServer(String protocol, String address, int port) {
         super(Protocol.valueOf(protocol), address, port, null);
@@ -82,12 +82,12 @@ public class SpringServer extends org.restlet.Server {
      * Sets parameters on the server.
      * 
      * @param parameters
-     *                Parameters to set on the server.
+     *            Parameters to set on the server.
      */
     public void setParameters(Properties parameters) {
-        Enumeration<?> names = parameters.propertyNames();
+        final Enumeration<?> names = parameters.propertyNames();
         while (names.hasMoreElements()) {
-            String name = (String) names.nextElement();
+            final String name = (String) names.nextElement();
             getContext().getParameters()
                     .add(name, parameters.getProperty(name));
         }

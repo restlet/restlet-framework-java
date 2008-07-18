@@ -39,45 +39,57 @@ import org.restlet.test.jaxrs.services.tests.InjectionTest;
 @Path("/InjectionTestService")
 public class InjectionTestService {
 
-    @Context private SecurityContext securityContext;
-    
-    @Context private UriInfo uriInfo;
-    
-    @Context private Request request;
-    
-    private HttpHeaders httpHeaders;
-    
-    @Context void setHeaders(HttpHeaders httpHeaders) {
-        this.httpHeaders = httpHeaders;
-    }
-    
-    @HeaderParam("host") private String host;
-    
-    private String qp1;
+    @Context
+    private SecurityContext securityContext;
 
-    @QueryParam("qp1")
-    void setQp1(String qp1) {
-        this.qp1 = qp1;
-    }
+    @Context
+    private UriInfo uriInfo;
+
+    @Context
+    private Request request;
+
+    private HttpHeaders httpHeaders;
+
+    @HeaderParam("host")
+    private String host;
+
+    private String qp1;
 
     @GET
     @Produces("text/plain")
     public Response get() {
         String msg = "";
-        if(securityContext == null)
+        if (this.securityContext == null) {
             msg += "\n* securityContext";
-        if(uriInfo == null)
+        }
+        if (this.uriInfo == null) {
             msg += "\n* uriInfo";
-        if(request == null)
+        }
+        if (this.request == null) {
             msg += "\n* request";
-        if(httpHeaders == null)
+        }
+        if (this.httpHeaders == null) {
             msg += "\n* httpHeaders";
-        if(host == null)
+        }
+        if (this.host == null) {
             msg += "\n* host";
-        if (qp1 == null)
+        }
+        if (this.qp1 == null) {
             msg += "\n* qp1";
-        if(msg.length() > 0)
-            return Response.serverError().entity("missing:"+msg).build();
+        }
+        if (msg.length() > 0) {
+            return Response.serverError().entity("missing:" + msg).build();
+        }
         return Response.ok("ok").build();
+    }
+
+    @Context
+    void setHeaders(HttpHeaders httpHeaders) {
+        this.httpHeaders = httpHeaders;
+    }
+
+    @QueryParam("qp1")
+    void setQp1(String qp1) {
+        this.qp1 = qp1;
     }
 }

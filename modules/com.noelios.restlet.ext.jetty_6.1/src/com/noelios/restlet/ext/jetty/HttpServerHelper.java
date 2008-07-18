@@ -27,7 +27,8 @@ import org.restlet.data.Protocol;
 
 /**
  * Jetty HTTP server connector. Here is the list of additional parameters that
- * are supported: <table>
+ * are supported:
+ * <table>
  * <tr>
  * <th>Parameter name</th>
  * <th>Value type</th>
@@ -45,7 +46,7 @@ import org.restlet.data.Protocol;
  * </tr>
  * </table>
  * 
- * @see <a href="http://jetty.mortbay.org/jetty6/">Jetty home page</a>
+ * @see <a href="http://jetty.mortbay.org/jetty6/">Jetty home page< /a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class HttpServerHelper extends JettyServerHelper {
@@ -53,7 +54,7 @@ public class HttpServerHelper extends JettyServerHelper {
      * Constructor.
      * 
      * @param server
-     *                The server to help.
+     *            The server to help.
      */
     public HttpServerHelper(Server server) {
         super(server);

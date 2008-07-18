@@ -42,25 +42,25 @@ public class SimpleTrain {
 
     public static boolean checkForValidConstructor = true;
 
+    /** Text der ausgegebenen Plain-Text-Representation. */
+    public static final String RERP_PLAIN_TEXT = "This is a simple text train";
+
+    /** Text der ausgegebenen HTML-Text-Representation. */
+    public static final String RERP_HTML_TEXT = "<html><body>This is a simple html train</body></html>";
+
     public SimpleTrain() {
-        if (checkForValidConstructor)
+        if (checkForValidConstructor) {
             throw new RuntimeException(
                     "This Constructor is not allowed, because another constructors has more elements");
+        }
     }
 
     public SimpleTrain(Integer x) {
         "".equals(x);
-        if (checkForValidConstructor)
+        if (checkForValidConstructor) {
             throw new RuntimeException(
                     "This Constructor is not allowed, because the paramters are not correct annotated");
-    }
-
-    public SimpleTrain(String x, @HeaderParam("p") String p) {
-        "".equals(p);
-        "".equals(x);
-        if (checkForValidConstructor)
-            throw new RuntimeException(
-                    "This Constructor is not allowed, because one of the parameters are not correct annotated");
+        }
     }
 
     public SimpleTrain(@HeaderParam("p") String p) {
@@ -68,20 +68,13 @@ public class SimpleTrain {
         // this is a valid constructor
     }
 
-    /** Text der ausgegebenen Plain-Text-Representation. */
-    public static final String RERP_PLAIN_TEXT = "This is a simple text train";
-
-    /** Text der ausgegebenen HTML-Text-Representation. */
-    public static final String RERP_HTML_TEXT = "<html><body>This is a simple html train</body></html>";
-
-    /**
-     * 
-     * @return
-     */
-    @GET
-    @Produces("text/plain")
-    public String getPlainText() {
-        return RERP_PLAIN_TEXT;
+    public SimpleTrain(String x, @HeaderParam("p") String p) {
+        "".equals(p);
+        "".equals(x);
+        if (checkForValidConstructor) {
+            throw new RuntimeException(
+                    "This Constructor is not allowed, because one of the parameters are not correct annotated");
+        }
     }
 
     /**
@@ -94,6 +87,16 @@ public class SimpleTrain {
         return RERP_HTML_TEXT;
     }
 
+    /**
+     * 
+     * @return
+     */
+    @GET
+    @Produces("text/plain")
+    public String getPlainText() {
+        return RERP_PLAIN_TEXT;
+    }
+
     @GET
     @Path("decode/{string}")
     @Produces("text/plain")
@@ -101,7 +104,7 @@ public class SimpleTrain {
         try {
             uriInfo.getPathParameters(true).add("jkghjk", "khlokh");
             return "The Template Parameter MultivaluedMap must be unmodifiable.";
-        } catch (UnsupportedOperationException e) {
+        } catch (final UnsupportedOperationException e) {
             // ok
         }
         return uriInfo.getPathParameters(true).getFirst("string");
@@ -114,7 +117,7 @@ public class SimpleTrain {
         try {
             uriInfo.getPathParameters(false).add("jkghjk", "khlokh");
             return "The Template Parameter MultivaluedMap must be unmodifiable.";
-        } catch (UnsupportedOperationException e) {
+        } catch (final UnsupportedOperationException e) {
             // ok
         }
         return uriInfo.getPathParameters(false).getFirst("string");

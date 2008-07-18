@@ -102,7 +102,8 @@ import com.sun.mail.pop3.POP3Folder;
  * To retrieve an individual email, just add the href attribute at the end of
  * the POP URI, such as: pop://host/1234<br>
  * 
- * Here is the list of parameters that are supported: <table>
+ * Here is the list of parameters that are supported:
+ * <table>
  * <tr>
  * <th>Parameter name</th>
  * <th>Value type</th>
@@ -164,15 +165,15 @@ public class JavaMailClientHelper extends ClientHelper {
      * Creates a high-level request.
      * 
      * @param smtpURI
-     *                The SMTP server's URI (ex: smtp://localhost).
+     *            The SMTP server's URI (ex: smtp://localhost).
      * @param email
-     *                The email to send (valid XML email).
+     *            The email to send (valid XML email).
      * @deprecated With no replacement as it creates an unecessary dependency on
      *             NRE classes.
      */
     @Deprecated
     public static Request create(String smtpURI, Representation email) {
-        Request result = new Request();
+        final Request result = new Request();
         result.setMethod(Method.POST);
         result.setResourceRef(smtpURI);
         result.setEntity(email);
@@ -183,20 +184,20 @@ public class JavaMailClientHelper extends ClientHelper {
      * Creates a high-level request.
      * 
      * @param smtpURI
-     *                The SMTP server's URI (ex: smtp://localhost).
+     *            The SMTP server's URI (ex: smtp://localhost).
      * @param email
-     *                The email to send (valid XML email).
+     *            The email to send (valid XML email).
      * @param login
-     *                Authenticate using this login name.
+     *            Authenticate using this login name.
      * @param password
-     *                Authenticate using this password.
+     *            Authenticate using this password.
      * @deprecated With no replacement as it creates an unecessary dependency on
      *             NRE classes.
      */
     @Deprecated
     public static Request create(String smtpURI, Representation email,
             String login, String password) {
-        Request result = create(smtpURI, email);
+        final Request result = create(smtpURI, email);
         result.getChallengeResponse().setIdentifier(login);
         result.getChallengeResponse().setSecret(password);
         return result;
@@ -206,7 +207,7 @@ public class JavaMailClientHelper extends ClientHelper {
      * Constructor.
      * 
      * @param client
-     *                The client to help.
+     *            The client to help.
      */
     public JavaMailClientHelper(Client client) {
         super(client);
@@ -220,9 +221,9 @@ public class JavaMailClientHelper extends ClientHelper {
      * Creates a JavaMail message by parsing an XML representation.
      * 
      * @param xmlMessage
-     *                The XML message to parse.
+     *            The XML message to parse.
      * @param session
-     *                The current JavaMail session.
+     *            The current JavaMail session.
      * @return The created JavaMail message.
      * @throws IOException
      * @throws AddressException
@@ -231,17 +232,17 @@ public class JavaMailClientHelper extends ClientHelper {
     @SuppressWarnings("unchecked")
     protected Message createMessage(Representation xmlMessage, Session session)
             throws IOException, AddressException, MessagingException {
-        String representationMessageClassName = getRepresentationMessageClass();
+        final String representationMessageClassName = getRepresentationMessageClass();
         if (representationMessageClassName == null) {
             return new RepresentationMessage(xmlMessage, session);
         } else {
             try {
-                Class<? extends RepresentationMessage> representationMessageClass = (Class<? extends RepresentationMessage>) Class
+                final Class<? extends RepresentationMessage> representationMessageClass = (Class<? extends RepresentationMessage>) Class
                         .forName(representationMessageClassName);
                 return representationMessageClass.getConstructor(
                         Representation.class, Session.class).newInstance(
                         xmlMessage, session);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 logger.log(Level.SEVERE, "Unable to create a new instance of "
                         + representationMessageClassName, e);
                 return new RepresentationMessage(xmlMessage, session);
@@ -253,7 +254,7 @@ public class JavaMailClientHelper extends ClientHelper {
      * Creates an XML representation based on a JavaMail message.
      * 
      * @param message
-     *                The JavaMail message to format.
+     *            The JavaMail message to format.
      * @return The XML representation.
      * @throws DOMException
      * @throws IOException
@@ -268,7 +269,7 @@ public class JavaMailClientHelper extends ClientHelper {
      * Creates an XML representation based on a list of JavaMail messages.
      * 
      * @param messages
-     *                The list of JavaMail messages to format.
+     *            The list of JavaMail messages to format.
      * @return The XML representation.
      * @throws IOException
      * @throws MessagingException
@@ -282,11 +283,11 @@ public class JavaMailClientHelper extends ClientHelper {
      * Returns the request login.
      * 
      * @param request
-     *                The high-level request.
+     *            The high-level request.
      * @return The login.
      */
     private String getLogin(Request request) {
-        if (request != null && request.getChallengeResponse() != null) {
+        if ((request != null) && (request.getChallengeResponse() != null)) {
             return request.getChallengeResponse().getIdentifier();
         }
 
@@ -297,11 +298,11 @@ public class JavaMailClientHelper extends ClientHelper {
      * Returns the request password.
      * 
      * @param request
-     *                The high-level request.
+     *            The high-level request.
      * @return The password.
      */
     private String getPassword(Request request) {
-        if (request != null && request.getChallengeResponse() != null) {
+        if ((request != null) && (request.getChallengeResponse() != null)) {
             return new String(request.getChallengeResponse().getSecret());
         }
 
@@ -322,7 +323,7 @@ public class JavaMailClientHelper extends ClientHelper {
     @Override
     public void handle(Request request, Response response) {
         try {
-            Protocol protocol = request.getProtocol();
+            final Protocol protocol = request.getProtocol();
 
             if (Protocol.SMTP.equals(protocol)
                     || Protocol.SMTPS.equals(protocol)) {
@@ -330,16 +331,16 @@ public class JavaMailClientHelper extends ClientHelper {
             } else if (POP.equals(protocol) || POPS.equals(protocol)) {
                 handlePop(request, response);
             }
-        } catch (IOException e) {
+        } catch (final IOException e) {
             getLogger().log(Level.WARNING, "JavaMail client error", e);
             response.setStatus(Status.CONNECTOR_ERROR_INTERNAL, e.getMessage());
-        } catch (NoSuchProviderException e) {
+        } catch (final NoSuchProviderException e) {
             getLogger().log(Level.WARNING, "JavaMail client error", e);
             response.setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
-        } catch (AddressException e) {
+        } catch (final AddressException e) {
             getLogger().log(Level.WARNING, "JavaMail client error", e);
             response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
-        } catch (MessagingException e) {
+        } catch (final MessagingException e) {
             getLogger().log(Level.WARNING, "JavaMail client error", e);
             response.setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
         }
@@ -349,9 +350,9 @@ public class JavaMailClientHelper extends ClientHelper {
      * Handles a POP or POPS request.
      * 
      * @param request
-     *                The request to handle.
+     *            The request to handle.
      * @param response
-     *                The response to update.
+     *            The response to update.
      * @throws IOException
      * @throws MessagingException
      * @throws IOException
@@ -360,9 +361,9 @@ public class JavaMailClientHelper extends ClientHelper {
             throws MessagingException, IOException {
 
         // Parse the POP URI
-        String popHost = request.getResourceRef().getHostDomain();
+        final String popHost = request.getResourceRef().getHostDomain();
         int popPort = request.getResourceRef().getHostPort();
-        String path = request.getResourceRef().getPath();
+        final String path = request.getResourceRef().getPath();
 
         if (popPort == -1) {
             // No port specified, the default one should be used
@@ -374,8 +375,8 @@ public class JavaMailClientHelper extends ClientHelper {
         }
 
         // Check if authentication required
-        boolean authenticate = ((getLogin(request) != null) && (getPassword(request) != null));
-        boolean apop = authenticate
+        final boolean authenticate = ((getLogin(request) != null) && (getPassword(request) != null));
+        final boolean apop = authenticate
                 && (POP_DIGEST.equals(request.getChallengeResponse()
                         .getScheme()));
 
@@ -387,7 +388,7 @@ public class JavaMailClientHelper extends ClientHelper {
             transport = "pop3s";
         }
 
-        Properties props = System.getProperties();
+        final Properties props = System.getProperties();
         props.put("mail." + transport + ".host", popHost);
         props.put("mail." + transport + ".port", Integer.toString(popPort));
         props.put("mail." + transport + ".apop.enable", Boolean.toString(apop));
@@ -396,15 +397,15 @@ public class JavaMailClientHelper extends ClientHelper {
         // messages.
         boolean updateFolder = false;
 
-        Session session = Session.getDefaultInstance(props);
+        final Session session = Session.getDefaultInstance(props);
         session.setDebug(isDebug());
-        Store store = session.getStore(transport);
+        final Store store = session.getStore(transport);
         store.connect(getLogin(request), getPassword(request));
-        POP3Folder inbox = (POP3Folder) store.getFolder("INBOX");
+        final POP3Folder inbox = (POP3Folder) store.getFolder("INBOX");
         inbox.open(Folder.READ_WRITE);
-        FetchProfile profile = new FetchProfile();
+        final FetchProfile profile = new FetchProfile();
         profile.add(UIDFolder.FetchProfileItem.UID);
-        Message[] messages = inbox.getMessages();
+        final Message[] messages = inbox.getMessages();
         inbox.fetch(messages, profile);
 
         if ((path == null) || path.equals("") || path.equals("/")) {
@@ -419,11 +420,11 @@ public class JavaMailClientHelper extends ClientHelper {
             }
         } else if (path.startsWith("/")) {
             // Retrieve the specified message
-            String mailUid = path.substring(1);
+            final String mailUid = path.substring(1);
             Message message = null;
 
             for (int i = 0; (message == null) && (i < messages.length); i++) {
-                String uid = inbox.getUID(messages[i]);
+                final String uid = inbox.getUID(messages[i]);
 
                 if (mailUid.equals(uid)) {
                     message = messages[i];
@@ -459,9 +460,9 @@ public class JavaMailClientHelper extends ClientHelper {
      * Handles a SMTP or SMTPS request.
      * 
      * @param request
-     *                The request to handle.
+     *            The request to handle.
      * @param response
-     *                The response to update.
+     *            The response to update.
      * @throws IOException
      * @throws MessagingException
      */
@@ -472,7 +473,7 @@ public class JavaMailClientHelper extends ClientHelper {
             response.getAllowedMethods().add(Method.POST);
         } else {
             // Parse the SMTP URI
-            String smtpHost = request.getResourceRef().getHostDomain();
+            final String smtpHost = request.getResourceRef().getHostDomain();
             int smtpPort = request.getResourceRef().getHostPort();
 
             if (smtpPort == -1) {
@@ -486,7 +487,7 @@ public class JavaMailClientHelper extends ClientHelper {
             }
 
             // Check if authentication required
-            boolean authenticate = ((getLogin(request) != null) && (getPassword(request) != null));
+            final boolean authenticate = ((getLogin(request) != null) && (getPassword(request) != null));
             String transport = null;
 
             if (Protocol.SMTP.equals(request.getProtocol())) {
@@ -495,7 +496,7 @@ public class JavaMailClientHelper extends ClientHelper {
                 transport = "smtps";
             }
 
-            Properties props = System.getProperties();
+            final Properties props = System.getProperties();
             props.put("mail." + transport + ".host", smtpHost);
             props
                     .put("mail." + transport + ".port", Integer
@@ -506,9 +507,9 @@ public class JavaMailClientHelper extends ClientHelper {
                     .toString(isStartTls()));
 
             // Open the JavaMail session
-            Session session = Session.getDefaultInstance(props);
+            final Session session = Session.getDefaultInstance(props);
             session.setDebug(isDebug());
-            Transport tr = session.getTransport(transport);
+            final Transport tr = session.getTransport(transport);
 
             if (tr != null) {
                 // Check if authentication is needed
@@ -526,7 +527,8 @@ public class JavaMailClientHelper extends ClientHelper {
                                     "JavaMail client connection successfully established. Attempting to send the message");
 
                     // Create the JavaMail message
-                    Message msg = createMessage(request.getEntity(), session);
+                    final Message msg = createMessage(request.getEntity(),
+                            session);
 
                     // Send the message
                     tr.sendMessage(msg, msg.getAllRecipients());

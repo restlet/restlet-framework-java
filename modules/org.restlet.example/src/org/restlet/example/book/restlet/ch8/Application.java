@@ -50,7 +50,7 @@ public class Application extends org.restlet.Application {
 
     public static void main(String... args) throws Exception {
         // Create a component with an HTTP server connector
-        Component component = new Component();
+        final Component component = new Component();
         component.getServers().add(Protocol.HTTP, 8585);
         component.getClients().add(Protocol.FILE);
         component.getClients().add(Protocol.HTTP);
@@ -61,7 +61,7 @@ public class Application extends org.restlet.Application {
     }
 
     /** Facade object for all access to data. */
-    private ObjectsFacade dataFacade;
+    private final ObjectsFacade dataFacade;
 
     /** Freemarker configuration object. */
     private freemarker.template.Configuration fmc;
@@ -69,22 +69,22 @@ public class Application extends org.restlet.Application {
     public Application(Context context) {
         super(context);
         // List of protocols required by the application.
-        this.getConnectorService().getClientProtocols().add(Protocol.FILE);
-        this.getConnectorService().getClientProtocols().add(Protocol.HTTP);
+        getConnectorService().getClientProtocols().add(Protocol.FILE);
+        getConnectorService().getClientProtocols().add(Protocol.HTTP);
 
         /** Create and chain the Objects and Data facades. */
-        dataFacade = new ObjectsFacade(new Db4oFacade(System
+        this.dataFacade = new ObjectsFacade(new Db4oFacade(System
                 .getProperty("user.home")
                 + File.separator + "rmep.dbo"));
         // Check that at least one administrator exists in the database.
         this.dataFacade.initAdmin();
 
         try {
-            File templateDir = new File(
+            final File templateDir = new File(
                     "D:\\alaska\\forge\\build\\swc\\restlet\\trunk\\modules\\org.restlet.example\\src\\org\\restlet\\example\\book\\restlet\\ch8\\web\\tmpl");
-            fmc = new freemarker.template.Configuration();
-            fmc.setDirectoryForTemplateLoading(templateDir);
-        } catch (Exception e) {
+            this.fmc = new freemarker.template.Configuration();
+            this.fmc.setDirectoryForTemplateLoading(templateDir);
+        } catch (final Exception e) {
             getLogger().severe("Erreur config FreeMarker");
             e.printStackTrace();
         }
@@ -95,10 +95,10 @@ public class Application extends org.restlet.Application {
 
     @Override
     public Restlet createRoot() {
-        Router router = new Router(getContext());
+        final Router router = new Router(getContext());
 
-        RmepGuard guard = new RmepGuard(getContext(),
-                ChallengeScheme.HTTP_BASIC, "rmep", dataFacade);
+        final RmepGuard guard = new RmepGuard(getContext(),
+                ChallengeScheme.HTTP_BASIC, "rmep", this.dataFacade);
 
         // Secure the root of the application and only this resource. It allows
         // anonymous access to all other resources and authentication at the top
@@ -110,14 +110,14 @@ public class Application extends org.restlet.Application {
         // Add a route for the MailRoot resource
         router.attachDefault(guard);
 
-        Directory imgDirectory = new Directory(
+        final Directory imgDirectory = new Directory(
                 getContext(),
                 LocalReference
                         .createFileReference("D:\\alaska\\forge\\build\\swc\\restlet\\trunk\\modules\\org.restlet.example\\src\\org\\restlet\\example\\book\\restlet\\ch8\\web\\images"));
         // Add a route for the image resources
         router.attach("/images", imgDirectory);
 
-        Directory cssDirectory = new Directory(
+        final Directory cssDirectory = new Directory(
                 getContext(),
                 LocalReference
                         .createFileReference("D:\\alaska\\forge\\build\\swc\\restlet\\trunk\\modules\\org.restlet.example\\src\\org\\restlet\\example\\book\\restlet\\ch8\\web\\stylesheets"));
@@ -134,7 +134,7 @@ public class Application extends org.restlet.Application {
         router.attach("/mailboxes", MailboxesResource.class);
 
         // Add a router for access to mailbox
-        Router mailboxRouter = new Router(getContext());
+        final Router mailboxRouter = new Router(getContext());
 
         // Add a route for a Mailbox resource
         mailboxRouter.attachDefault(MailboxResource.class);
@@ -164,21 +164,21 @@ public class Application extends org.restlet.Application {
     }
 
     /**
-     * Returns the data facade.
-     * 
-     * @return the data facade.
-     */
-    public ObjectsFacade getObjectsFacade() {
-        return this.dataFacade;
-    }
-
-    /**
      * Returns the freemarker configuration object.
      * 
      * @return the freemarker configuration object.
      */
     public freemarker.template.Configuration getFmc() {
         return this.fmc;
+    }
+
+    /**
+     * Returns the data facade.
+     * 
+     * @return the data facade.
+     */
+    public ObjectsFacade getObjectsFacade() {
+        return this.dataFacade;
     }
 
 }

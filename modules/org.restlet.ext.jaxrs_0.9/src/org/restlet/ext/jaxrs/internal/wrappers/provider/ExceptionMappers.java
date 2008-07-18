@@ -40,12 +40,8 @@ public class ExceptionMappers {
     /**
      * The {@link ExceptionMapper} used for {@link Throwable}s.
      */
-    public static final ServerErrorExcMapper SERVER_ERROR_EXC_MAPPER = new ServerErrorExcMapper();
-
-    /**
-     * The {@link ExceptionMapper} used for {@link Throwable}s.
-     */
-    public static class ServerErrorExcMapper implements ExceptionMapper<Throwable> {
+    public static class ServerErrorExcMapper implements
+            ExceptionMapper<Throwable> {
 
         /**
          * @see javax.ws.rs.ext.ExceptionMapper#toResponse(java.lang.Object)
@@ -53,12 +49,17 @@ public class ExceptionMappers {
         public Response toResponse(Throwable exception) {
             // LATER re-throw errors and unchecked exceptions
             // check, if some other handling is t do before.
-            String msg = "A JAX-RS class throws an unhandled "
+            final String msg = "A JAX-RS class throws an unhandled "
                     + exception.getClass().getName();
             localLogger.log(Level.WARNING, msg, exception);
             return Response.serverError().build();
         }
     }
+
+    /**
+     * The {@link ExceptionMapper} used for {@link Throwable}s.
+     */
+    public static final ServerErrorExcMapper SERVER_ERROR_EXC_MAPPER = new ServerErrorExcMapper();
 
     private static final Logger localLogger = Logger
             .getLogger("ExceptionsMapper");
@@ -78,19 +79,19 @@ public class ExceptionMappers {
      * @return true, if the providers was an ExceptionMapper and added,
      *         otherwise false.
      * @throws NullPointerException
-     *                 if null is given
+     *             if null is given
      */
     public boolean add(ExceptionMapper<? extends Throwable> excMapper) {
         boolean added = false;
-        Type[] gis = excMapper.getClass().getGenericInterfaces();
-        for (Type gi : gis) {
+        final Type[] gis = excMapper.getClass().getGenericInterfaces();
+        for (final Type gi : gis) {
             if (gi instanceof ParameterizedType) {
-                ParameterizedType ifpt = (ParameterizedType) gi;
+                final ParameterizedType ifpt = (ParameterizedType) gi;
                 if (ifpt.getRawType().equals(ExceptionMapper.class)) {
                     @SuppressWarnings("unchecked")
-                    Class<? extends Throwable> excClass = (Class) ifpt
+                    final Class<? extends Throwable> excClass = (Class) ifpt
                             .getActualTypeArguments()[0];
-                    excMappers.put(excClass, excMapper);
+                    this.excMappers.put(excClass, excMapper);
                     added = true;
                 }
             }
@@ -105,11 +106,12 @@ public class ExceptionMappers {
      * @return true, if the providers was an ExceptionMapper and added,
      *         otherwise false.
      * @throws NullPointerException
-     *                 if <code>null</code> is given
+     *             if <code>null</code> is given
      */
     public boolean add(Provider<?> exceptionMapper) {
-        if (!exceptionMapper.isExceptionMapper())
+        if (!exceptionMapper.isExceptionMapper()) {
             return false;
+        }
         return add(exceptionMapper.getExcMapper());
     }
 
@@ -119,29 +121,29 @@ public class ExceptionMappers {
      * Otherwise this method returns an Response with an internal server error.
      * 
      * @param cause
-     *                the thrown exception (was wrapped by an
-     *                {@link InvocationTargetException})
+     *            the thrown exception (was wrapped by an
+     *            {@link InvocationTargetException})
      * @return the created Response
      * @throws NullPointerException
-     *                 if <code>null</code> is given
+     *             if <code>null</code> is given
      */
     public Response convert(Throwable cause) {
-        ExceptionMapper<Throwable> mapper = getMapper(cause.getClass());
+        final ExceptionMapper<Throwable> mapper = getMapper(cause.getClass());
         if (mapper == null) {
-            String entity = "No ExceptionMapper was found, but must be found";
+            final String entity = "No ExceptionMapper was found, but must be found";
             return Response.serverError().entity(entity).type(
                     MediaType.TEXT_PLAIN_TYPE).build();
         }
         Response response;
         try {
             response = mapper.toResponse(cause);
-        } catch (RuntimeException e) {
-            String message = "The ExceptionMapper throws an Exception";
+        } catch (final RuntimeException e) {
+            final String message = "The ExceptionMapper throws an Exception";
             localLogger.log(Level.WARNING, message, e);
             return Response.serverError().entity(message).build();
         }
         if (response == null) {
-            String message = "The ExceptionMapper returned null";
+            final String message = "The ExceptionMapper returned null";
             localLogger.log(Level.WARNING, message);
             return Response.serverError().entity(message).build();
         }
@@ -156,12 +158,13 @@ public class ExceptionMappers {
     @SuppressWarnings("unchecked")
     private ExceptionMapper<Throwable> getMapper(
             Class<? extends Throwable> causeClass) {
-        if (causeClass == null)
+        if (causeClass == null) {
             return SERVER_ERROR_EXC_MAPPER;
+        }
         ExceptionMapper<Throwable> mapper = (ExceptionMapper) this.excMappers
                 .get(causeClass);
         if (mapper == null) {
-            Class superclass = causeClass.getSuperclass();
+            final Class superclass = causeClass.getSuperclass();
             mapper = getMapper(superclass);
             // disabled caching, because adding of new ExceptionMappers could
             // cause trouble.

@@ -48,7 +48,7 @@ public class PathParamTest2 extends JaxRsTestCase {
     }
 
     public void testDecoded2() throws Exception {
-        Response response = get("decoded/%20");
+        final Response response = get("decoded/%20");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals(" ", response.getEntity().getText());
     }
@@ -121,7 +121,7 @@ public class PathParamTest2 extends JaxRsTestCase {
     }
 
     public void testGetWithSlashInUriParam() throws IOException {
-        Response response = get("multSegm/abc/def");
+        final Response response = get("multSegm/abc/def");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("abc/def", response.getEntity().getText());
     }

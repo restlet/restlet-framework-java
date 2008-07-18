@@ -50,14 +50,14 @@ public class BaseResource extends Resource {
         // All access to the root resource is filtered by a Guard which controls
         // the provided login/password, looks for the corresponding user and put
         // this user object in the request's attributes.
-        currentUser = (User) getRequest().getAttributes().get(
+        this.currentUser = (User) getRequest().getAttributes().get(
                 RmepGuard.CURRENT_USER);
-        if (currentUser == null) {
+        if (this.currentUser == null) {
             // This request does not target the root resource.
             // This request may be anonymous or the client may preemptively
             // authenticate it.
             if (getRequest().getChallengeResponse() != null) {
-                currentUser = getObjectsFacade().getUserByLoginPwd(
+                this.currentUser = getObjectsFacade().getUserByLoginPwd(
                         getRequest().getChallengeResponse().getIdentifier(),
                         getRequest().getChallengeResponse().getSecret());
             }
@@ -65,13 +65,31 @@ public class BaseResource extends Resource {
     }
 
     /**
-     * Gives access to the Objects layer.
+     * Returns the reference of a resource according to its id and the reference
+     * of its "parent".
      * 
-     * @return a facade.
+     * @param parentRef
+     *            parent reference.
+     * @param childId
+     *            id of this resource
+     * @return the reference object of the child resource.
      */
-    protected ObjectsFacade getObjectsFacade() {
-        Application application = (Application) getApplication();
-        return application.getObjectsFacade();
+    protected Reference getChildReference(Reference parentRef, String childId) {
+        if (parentRef.getIdentifier().endsWith("/")) {
+            return new Reference(parentRef.getIdentifier() + childId);
+        } else {
+            return new Reference(parentRef.getIdentifier() + "/" + childId);
+        }
+    }
+
+    /**
+     * Returns a User object representing the current user connected or null, if
+     * the access is anonymous.
+     * 
+     * @return the current user connected or null if the access is anonymous.
+     */
+    protected User getCurrentUser() {
+        return this.currentUser;
     }
 
     /**
@@ -81,7 +99,7 @@ public class BaseResource extends Resource {
      * @return the Freemarker's configuration object.
      */
     private Configuration getFmcConfiguration() {
-        Application application = (Application) getApplication();
+        final Application application = (Application) getApplication();
         return application.getFmc();
     }
 
@@ -89,9 +107,9 @@ public class BaseResource extends Resource {
      * Returns a templated representation dedicated to HTML content.
      * 
      * @param templateName
-     *                the name of the template.
+     *            the name of the template.
      * @param dataModel
-     *                the collection of data processed by the template engine.
+     *            the collection of data processed by the template engine.
      * @return the representation.
      */
     protected Representation getHTMLTemplateRepresentation(String templateName,
@@ -102,30 +120,12 @@ public class BaseResource extends Resource {
     }
 
     /**
-     * Returns a User object representing the current user connected or null, if
-     * the access is anonymous.
+     * Gives access to the Objects layer.
      * 
-     * @return the current user connected or null if the access is anonymous.
+     * @return a facade.
      */
-    protected User getCurrentUser() {
-        return currentUser;
-    }
-
-    /**
-     * Returns the reference of a resource according to its id and the reference
-     * of its "parent".
-     * 
-     * @param parentRef
-     *                parent reference.
-     * @param childId
-     *                id of this resource
-     * @return the reference object of the child resource.
-     */
-    protected Reference getChildReference(Reference parentRef, String childId) {
-        if (parentRef.getIdentifier().endsWith("/")) {
-            return new Reference(parentRef.getIdentifier() + childId);
-        } else {
-            return new Reference(parentRef.getIdentifier() + "/" + childId);
-        }
+    protected ObjectsFacade getObjectsFacade() {
+        final Application application = (Application) getApplication();
+        return application.getObjectsFacade();
     }
 }

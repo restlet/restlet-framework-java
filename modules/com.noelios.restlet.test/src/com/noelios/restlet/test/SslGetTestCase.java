@@ -42,6 +42,29 @@ import org.restlet.resource.Variant;
  * @author Bruno Harbulot (Bruno.Harbulot@manchester.ac.uk)
  */
 public class SslGetTestCase extends SslBaseConnectorsTestCase {
+    public static class GetTestResource extends Resource {
+
+        public GetTestResource(Context ctx, Request request, Response response) {
+            super(ctx, request, response);
+            getVariants().add(new Variant(MediaType.TEXT_PLAIN));
+        }
+
+        @Override
+        public Representation represent(Variant variant) {
+            return new StringRepresentation("Hello world", MediaType.TEXT_PLAIN);
+        }
+    }
+
+    @Override
+    protected void call(String uri) throws Exception {
+        final Request request = new Request(Method.GET, uri);
+        final Response r = new Client(Protocol.HTTPS).handle(request);
+
+        assertEquals(r.getStatus().getDescription(), Status.SUCCESS_OK, r
+                .getStatus());
+        assertEquals("Hello world", r.getEntity().getText());
+    }
+
     @Override
     protected void configureSslParameters(Context context) {
         context.getParameters().add("keyPassword",
@@ -54,38 +77,15 @@ public class SslGetTestCase extends SslBaseConnectorsTestCase {
 
     @Override
     protected Application createApplication(Component component) {
-        Application application = new Application(component.getContext()) {
+        final Application application = new Application(component.getContext()) {
             @Override
             public Restlet createRoot() {
-                Router router = new Router(getContext());
+                final Router router = new Router(getContext());
                 router.attach("/test", GetTestResource.class);
                 return router;
             }
         };
 
         return application;
-    }
-
-    @Override
-    protected void call(String uri) throws Exception {
-        Request request = new Request(Method.GET, uri);
-        Response r = new Client(Protocol.HTTPS).handle(request);
-
-        assertEquals(r.getStatus().getDescription(), Status.SUCCESS_OK, r
-                .getStatus());
-        assertEquals("Hello world", r.getEntity().getText());
-    }
-
-    public static class GetTestResource extends Resource {
-
-        public GetTestResource(Context ctx, Request request, Response response) {
-            super(ctx, request, response);
-            getVariants().add(new Variant(MediaType.TEXT_PLAIN));
-        }
-
-        @Override
-        public Representation represent(Variant variant) {
-            return new StringRepresentation("Hello world", MediaType.TEXT_PLAIN);
-        }
     }
 }

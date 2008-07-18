@@ -57,7 +57,7 @@ public final class RouteList extends WrapperList<Route> {
      * Constructor.
      * 
      * @param delegate
-     *                The delegate list.
+     *            The delegate list.
      */
     public RouteList(List<Route> delegate) {
         super(new CopyOnWriteArrayList<Route>(delegate));
@@ -68,18 +68,18 @@ public final class RouteList extends WrapperList<Route> {
      * Returns the best route match for a given call.
      * 
      * @param request
-     *                The request to score.
+     *            The request to score.
      * @param response
-     *                The response to score.
+     *            The response to score.
      * @param requiredScore
-     *                The minimum score required to have a match.
+     *            The minimum score required to have a match.
      * @return The best route match or null.
      */
     public Route getBest(Request request, Response response, float requiredScore) {
         Route result = null;
         float bestScore = 0F;
         float score;
-        for (Route current : this) {
+        for (final Route current : this) {
             score = current.score(request, response);
 
             if ((score > bestScore) && (score >= requiredScore)) {
@@ -95,18 +95,19 @@ public final class RouteList extends WrapperList<Route> {
      * Returns the first route match for a given call.
      * 
      * @param request
-     *                The request to score.
+     *            The request to score.
      * @param response
-     *                The response to score.
+     *            The response to score.
      * @param requiredScore
-     *                The minimum score required to have a match.
+     *            The minimum score required to have a match.
      * @return The first route match or null.
      */
     public Route getFirst(Request request, Response response,
             float requiredScore) {
-        for (Route current : this) {
-            if (current.score(request, response) >= requiredScore)
+        for (final Route current : this) {
+            if (current.score(request, response) >= requiredScore) {
                 return current;
+            }
         }
 
         // No match found
@@ -117,19 +118,20 @@ public final class RouteList extends WrapperList<Route> {
      * Returns the last route match for a given call.
      * 
      * @param request
-     *                The request to score.
+     *            The request to score.
      * @param response
-     *                The response to score.
+     *            The response to score.
      * @param requiredScore
-     *                The minimum score required to have a match.
+     *            The minimum score required to have a match.
      * @return The last route match or null.
      */
     public synchronized Route getLast(Request request, Response response,
             float requiredScore) {
         for (int j = size() - 1; (j >= 0); j--) {
-            Route route = get(j);
-            if (route.score(request, response) >= requiredScore)
+            final Route route = get(j);
+            if (route.score(request, response) >= requiredScore) {
                 return route;
+            }
         }
 
         // No match found
@@ -140,24 +142,25 @@ public final class RouteList extends WrapperList<Route> {
      * Returns a next route match in a round robin mode for a given call.
      * 
      * @param request
-     *                The request to score.
+     *            The request to score.
      * @param response
-     *                The response to score.
+     *            The response to score.
      * @param requiredScore
-     *                The minimum score required to have a match.
+     *            The minimum score required to have a match.
      * @return A next route or null.
      */
     public synchronized Route getNext(Request request, Response response,
             float requiredScore) {
         if (!isEmpty()) {
-            for (int initialIndex = lastIndex++; initialIndex != lastIndex; lastIndex++) {
-                if (lastIndex >= size()) {
-                    lastIndex = 0;
+            for (final int initialIndex = this.lastIndex++; initialIndex != this.lastIndex; this.lastIndex++) {
+                if (this.lastIndex >= size()) {
+                    this.lastIndex = 0;
                 }
 
-                Route route = get(lastIndex);
-                if (route.score(request, response) >= requiredScore)
+                final Route route = get(this.lastIndex);
+                if (route.score(request, response) >= requiredScore) {
                     return route;
+                }
             }
         }
 
@@ -169,32 +172,34 @@ public final class RouteList extends WrapperList<Route> {
      * Returns a random route match for a given call.
      * 
      * @param request
-     *                The request to score.
+     *            The request to score.
      * @param response
-     *                The response to score.
+     *            The response to score.
      * @param requiredScore
-     *                The minimum score required to have a match.
+     *            The minimum score required to have a match.
      * @return A random route or null.
      */
     public synchronized Route getRandom(Request request, Response response,
             float requiredScore) {
-        int length = size();
+        final int length = size();
         if (length > 0) {
             int j = new Random().nextInt(length);
             Route route = get(j);
-            if (route.score(request, response) >= requiredScore)
+            if (route.score(request, response) >= requiredScore) {
                 return route;
+            }
 
             boolean loopedAround = false;
             do {
-                if (j == length && loopedAround == false) {
+                if ((j == length) && (loopedAround == false)) {
                     j = 0;
                     loopedAround = true;
                 }
                 route = get(j++);
-                if (route.score(request, response) >= requiredScore)
+                if (route.score(request, response) >= requiredScore) {
                     return route;
-            } while (j < length || !loopedAround);
+                }
+            } while ((j < length) || !loopedAround);
         }
 
         // No match found
@@ -205,12 +210,13 @@ public final class RouteList extends WrapperList<Route> {
      * Removes all routes routing to a given target.
      * 
      * @param target
-     *                The target Restlet to detach.
+     *            The target Restlet to detach.
      */
     public synchronized void removeAll(Restlet target) {
         for (int i = size() - 1; i >= 0; i--) {
-            if (get(i).getNext() == target)
+            if (get(i).getNext() == target) {
                 remove(i);
+            }
         }
     }
 
@@ -219,9 +225,9 @@ public final class RouteList extends WrapperList<Route> {
      * fromIndex, inclusive, and toIndex, exclusive.
      * 
      * @param fromIndex
-     *                The start position.
+     *            The start position.
      * @param toIndex
-     *                The end position (exclusive).
+     *            The end position (exclusive).
      * @return The sub-list.
      */
     @Override

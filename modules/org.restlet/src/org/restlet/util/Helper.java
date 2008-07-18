@@ -52,7 +52,7 @@ public abstract class Helper<T extends Restlet> {
      * Constructor.
      * 
      * @param helped
-     *                The helped Restlet.
+     *            The helped Restlet.
      */
     public Helper(T helped) {
         this.attributes = new ConcurrentHashMap<String, Object>();
@@ -63,7 +63,7 @@ public abstract class Helper<T extends Restlet> {
      * Creates a new context.
      * 
      * @param loggerName
-     *                The JDK's logger name to use for contextual logging.
+     *            The JDK's logger name to use for contextual logging.
      * @return The new context.
      */
     public abstract Context createContext(String loggerName);
@@ -119,9 +119,9 @@ public abstract class Helper<T extends Restlet> {
      * Handles a call.
      * 
      * @param request
-     *                The request to handle.
+     *            The request to handle.
      * @param response
-     *                The response to update.
+     *            The response to update.
      */
     public void handle(Request request, Response response) {
         // Associate the response to the current thread
@@ -135,7 +135,7 @@ public abstract class Helper<T extends Restlet> {
      * Sets the helped Restlet.
      * 
      * @param helpedRestlet
-     *                The helped Restlet.
+     *            The helped Restlet.
      */
     public void setHelped(T helpedRestlet) {
         this.helped = helpedRestlet;

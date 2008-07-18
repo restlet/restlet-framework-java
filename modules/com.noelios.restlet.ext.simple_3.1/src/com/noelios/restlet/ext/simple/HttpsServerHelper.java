@@ -20,8 +20,8 @@ package com.noelios.restlet.ext.simple;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.security.KeyStore;
 import java.net.InetAddress;
+import java.security.KeyStore;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -31,10 +31,10 @@ import javax.net.ssl.TrustManagerFactory;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 
-import com.noelios.restlet.util.SslContextFactory;
-
 import simple.http.PipelineHandlerFactory;
 import simple.http.connect.ConnectionFactory;
+
+import com.noelios.restlet.util.SslContextFactory;
 
 /**
  * Simple HTTP server connector. Here is the list of additional parameters that
@@ -128,6 +128,91 @@ public class HttpsServerHelper extends SimpleServerHelper {
         getProtocols().add(Protocol.HTTPS);
     }
 
+    /**
+     * Returns the SSL certificate algorithm.
+     * 
+     * @return The SSL certificate algorithm.
+     */
+    public String getCertAlgorithm() {
+        return getParameters().getFirstValue("certAlgorithm", "SunX509");
+    }
+
+    /**
+     * Returns the SSL key password.
+     * 
+     * @return The SSL key password.
+     */
+    public String getKeyPassword() {
+        return getParameters().getFirstValue("keyPassword", "");
+    }
+
+    /**
+     * Returns the SSL keystore password.
+     * 
+     * @return The SSL keystore password.
+     */
+    public String getKeystorePassword() {
+        return getParameters().getFirstValue("keystorePassword", "");
+    }
+
+    /**
+     * Returns the SSL keystore path.
+     * 
+     * @return The SSL keystore path.
+     */
+    public String getKeystorePath() {
+        return getParameters().getFirstValue("keystorePath",
+                System.getProperty("user.home") + File.separator + ".keystore");
+    }
+
+    /**
+     * Returns the SSL keystore type.
+     * 
+     * @return The SSL keystore type.
+     */
+    public String getKeystoreType() {
+        return getParameters().getFirstValue("keystoreType", "JKS");
+    }
+
+    /**
+     * Returns the SSL context factory.
+     * 
+     * @return The SSL context factory.
+     */
+    public SslContextFactory getSslContextFactory() {
+        return (SslContextFactory) getContext().getAttributes().get(
+                "sslContextFactory");
+    }
+
+    /**
+     * Returns the SSL keystore type.
+     * 
+     * @return The SSL keystore type.
+     */
+    public String getSslProtocol() {
+        return getParameters().getFirstValue("sslProtocol", "TLS");
+    }
+
+    /**
+     * Indicates if we require client certificate authentication.
+     * 
+     * @return True if we require client certificate authentication.
+     */
+    public boolean isNeedClientAuthentication() {
+        return Boolean.parseBoolean(getParameters().getFirstValue(
+                "needClientAuthentication", "false"));
+    }
+
+    /**
+     * Indicates if we would like client certificate authentication.
+     * 
+     * @return True if we would like client certificate authentication.
+     */
+    public boolean isWantClientAuthentication() {
+        return Boolean.parseBoolean(getParameters().getFirstValue(
+                "wantClientAuthentication", "false"));
+    }
+
     /** Starts the Restlet. */
     @Override
     public void start() throws Exception {
@@ -140,21 +225,21 @@ public class HttpsServerHelper extends SimpleServerHelper {
          * initialise an SSLContext).
          */
         if (sslContextFactory == null) {
-            KeyStore keyStore = KeyStore.getInstance(getKeystoreType());
-            FileInputStream fis = getKeystorePath() == null ? null
+            final KeyStore keyStore = KeyStore.getInstance(getKeystoreType());
+            final FileInputStream fis = getKeystorePath() == null ? null
                     : new FileInputStream(getKeystorePath());
-            char[] password = getKeystorePassword() == null ? null
+            final char[] password = getKeystorePassword() == null ? null
                     : getKeystorePassword().toCharArray();
             keyStore.load(fis, password);
             if (fis != null) {
                 fis.close();
             }
 
-            KeyManagerFactory keyManagerFactory = KeyManagerFactory
+            final KeyManagerFactory keyManagerFactory = KeyManagerFactory
                     .getInstance(getCertAlgorithm());
             keyManagerFactory.init(keyStore, getKeyPassword().toCharArray());
 
-            TrustManagerFactory trustManagerFactory = TrustManagerFactory
+            final TrustManagerFactory trustManagerFactory = TrustManagerFactory
                     .getInstance(getCertAlgorithm());
             trustManagerFactory.init(keyStore);
 
@@ -167,12 +252,12 @@ public class HttpsServerHelper extends SimpleServerHelper {
 
         // Initialize the socket
         SSLServerSocket serverSocket = null;
-        String addr = getHelped().getAddress();
+        final String addr = getHelped().getAddress();
         if (addr != null) {
             // this call may throw UnknownHostException and otherwise always
             // returns an instance of INetAddress
             // Note: textual representation of inet addresses are supported
-            InetAddress iaddr = InetAddress.getByName(addr);
+            final InetAddress iaddr = InetAddress.getByName(addr);
             // Note: the backlog of 50 is the default
             serverSocket = (SSLServerSocket) sslContext
                     .getServerSocketFactory().createServerSocket(
@@ -201,91 +286,6 @@ public class HttpsServerHelper extends SimpleServerHelper {
                 new SimplePipelineFactory()));
         getConnection().connect(getSocket());
         super.start();
-    }
-
-    /**
-     * Returns the SSL keystore path.
-     * 
-     * @return The SSL keystore path.
-     */
-    public String getKeystorePath() {
-        return getParameters().getFirstValue("keystorePath",
-                System.getProperty("user.home") + File.separator + ".keystore");
-    }
-
-    /**
-     * Returns the SSL keystore password.
-     * 
-     * @return The SSL keystore password.
-     */
-    public String getKeystorePassword() {
-        return getParameters().getFirstValue("keystorePassword", "");
-    }
-
-    /**
-     * Returns the SSL keystore type.
-     * 
-     * @return The SSL keystore type.
-     */
-    public String getKeystoreType() {
-        return getParameters().getFirstValue("keystoreType", "JKS");
-    }
-
-    /**
-     * Returns the SSL key password.
-     * 
-     * @return The SSL key password.
-     */
-    public String getKeyPassword() {
-        return getParameters().getFirstValue("keyPassword", "");
-    }
-
-    /**
-     * Returns the SSL certificate algorithm.
-     * 
-     * @return The SSL certificate algorithm.
-     */
-    public String getCertAlgorithm() {
-        return getParameters().getFirstValue("certAlgorithm", "SunX509");
-    }
-
-    /**
-     * Returns the SSL keystore type.
-     * 
-     * @return The SSL keystore type.
-     */
-    public String getSslProtocol() {
-        return getParameters().getFirstValue("sslProtocol", "TLS");
-    }
-
-    /**
-     * Returns the SSL context factory.
-     * 
-     * @return The SSL context factory.
-     */
-    public SslContextFactory getSslContextFactory() {
-        return (SslContextFactory) getContext().getAttributes().get(
-                "sslContextFactory");
-    }
-
-    /**
-     * Indicates if we require client certificate authentication.
-     * 
-     * @return True if we require client certificate authentication.
-     */
-    public boolean isNeedClientAuthentication() {
-        return Boolean.parseBoolean(getParameters().getFirstValue(
-                "needClientAuthentication", "false"));
-    }
-
-    /**
-     * Indicates if we would like client certificate authentication.
-     * 
-     * @return True if we would like client certificate authentication.
-     */
-    public boolean isWantClientAuthentication() {
-        return Boolean.parseBoolean(getParameters().getFirstValue(
-                "wantClientAuthentication", "false"));
     }
 
 }

@@ -44,7 +44,7 @@ import org.w3c.dom.NodeList;
 public class ProviderTest extends JaxRsTestCase {
 
     private static Form createForm() {
-        Form form = new Form();
+        final Form form = new Form();
         form.add("firstname", "Angela");
         form.add("lastname", "Merkel");
         return form;
@@ -56,13 +56,13 @@ public class ProviderTest extends JaxRsTestCase {
      * @throws DOMException
      */
     private void getAndCheckJaxb(String subPath) throws Exception {
-        Response response = get(subPath);
+        final Response response = get(subPath);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        DomRepresentation entity = response.getEntityAsDom();
-        Node xml = entity.getDocument().getFirstChild();
+        final DomRepresentation entity = response.getEntityAsDom();
+        final Node xml = entity.getDocument().getFirstChild();
         System.out.println(subPath + ": " + entity.getText());
         assertEquals("person", xml.getNodeName());
-        NodeList nodeList = xml.getChildNodes();
+        final NodeList nodeList = xml.getChildNodes();
         Node node = nodeList.item(0);
         assertEquals("firstname", node.getNodeName());
         assertEquals("Angela", node.getFirstChild().getNodeValue());
@@ -77,10 +77,10 @@ public class ProviderTest extends JaxRsTestCase {
      * @throws IOException
      */
     private Response getAndExpectAlphabet(String subPath) throws IOException {
-        Response response = get(subPath);
+        final Response response = get(subPath);
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        Representation entity = response.getEntity();
+        final Representation entity = response.getEntity();
         assertEquals(ProviderTestService.ALPHABET, entity.getText());
         return response;
     }
@@ -95,13 +95,13 @@ public class ProviderTest extends JaxRsTestCase {
      * @throws IOException
      */
     private void postAndCheckXml(String subPath) throws Exception {
-        Representation send = new DomRepresentation(
+        final Representation send = new DomRepresentation(
                 new StringRepresentation(
                         "<person><firstname>Helmut</firstname><lastname>Kohl</lastname></person>\n",
                         MediaType.TEXT_XML));
-        Response response = post(subPath, send);
+        final Response response = post(subPath, send);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        Representation respEntity = response.getEntity();
+        final Representation respEntity = response.getEntity();
         assertEquals("Helmut Kohl", respEntity.getText());
     }
 
@@ -110,7 +110,7 @@ public class ProviderTest extends JaxRsTestCase {
      * @param postEntity
      * @param postMediaType
      * @param responseMediaType
-     *                if null, it will not be testet
+     *            if null, it will not be testet
      * @throws IOException
      */
     private void postAndExceptGiven(String subPath, String postEntity,
@@ -118,13 +118,14 @@ public class ProviderTest extends JaxRsTestCase {
             throws IOException {
         Representation entity = new StringRepresentation(postEntity,
                 postMediaType);
-        Response response = post(subPath, entity);
+        final Response response = post(subPath, entity);
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         entity = response.getEntity();
         assertEquals(postEntity, entity.getText());
-        if (responseMediaType != null)
+        if (responseMediaType != null) {
             assertEqualMediaType(responseMediaType, entity);
+        }
     }
 
     public void testBufferedReaderGet() throws Exception {
@@ -134,7 +135,7 @@ public class ProviderTest extends JaxRsTestCase {
     public void testBufferedReaderPost() throws Exception {
         Representation entity = new StringRepresentation("big test",
                 MediaType.APPLICATION_OCTET_STREAM);
-        Response response = post("BufferedReader", entity);
+        final Response response = post("BufferedReader", entity);
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         entity = response.getEntity();
@@ -146,18 +147,18 @@ public class ProviderTest extends JaxRsTestCase {
     }
 
     public void testByteArrayPost() throws Exception {
-        Representation entity = new StringRepresentation("big test",
+        final Representation entity = new StringRepresentation("big test",
                 MediaType.APPLICATION_OCTET_STREAM);
-        Response response = post("byteArray", entity);
+        final Response response = post("byteArray", entity);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("big test", response.getEntity().getText());
     }
 
     public void testCharSequenceGet() throws Exception {
-        Response response = get("CharSequence");
+        final Response response = get("CharSequence");
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        Representation entity = response.getEntity();
+        final Representation entity = response.getEntity();
         assertEquals(ProviderTestService.createCS(), entity.getText());
     }
 
@@ -171,23 +172,24 @@ public class ProviderTest extends JaxRsTestCase {
     }
 
     public void testFilePost() throws Exception {
-        Response response = post("file", new StringRepresentation("big test",
-                MediaType.APPLICATION_OCTET_STREAM));
+        final Response response = post("file", new StringRepresentation(
+                "big test", MediaType.APPLICATION_OCTET_STREAM));
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("big test", response.getEntity().getText());
     }
 
     public void testFormGet() throws Exception {
-        Response response = get("form");
+        final Response response = get("form");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        Representation entity = response.getEntity();
+        final Representation entity = response.getEntity();
         assertEquals("firstname=Angela&lastname=Merkel", entity.getText());
     }
 
     public void testFormPost() throws Exception {
-        Response response = post("form", createForm().getWebRepresentation());
+        final Response response = post("form", createForm()
+                .getWebRepresentation());
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        String respEntity = response.getEntity().getText();
+        final String respEntity = response.getEntity().getText();
         assertEquals("[firstname: Angela, lastname: Merkel]", respEntity);
     }
 
@@ -198,7 +200,7 @@ public class ProviderTest extends JaxRsTestCase {
     public void testInputStreamPost() throws Exception {
         Representation entity = new StringRepresentation("big test",
                 MediaType.APPLICATION_OCTET_STREAM);
-        Response response = post("InputStream", entity);
+        final Response response = post("InputStream", entity);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         entity = response.getEntity();
         assertEquals("big test", entity.getText());
@@ -217,25 +219,26 @@ public class ProviderTest extends JaxRsTestCase {
     }
 
     public void testJaxbPost() throws Exception {
-        if(usesTcp())
+        if (usesTcp()) {
             return;
+        }
         postAndCheckXml("jaxb");
     }
 
     public void testMultivaluedMapGet() throws Exception {
-        Response response = get("MultivaluedMap");
+        final Response response = get("MultivaluedMap");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        Representation entity = response.getEntity();
+        final Representation entity = response.getEntity();
         assertEquals("lastname=Merkel&firstname=Angela", entity.getText());
     }
 
     public void testMultivaluedMapPost() throws Exception {
-        Response response = post("MultivaluedMap", createForm()
+        final Response response = post("MultivaluedMap", createForm()
                 .getWebRepresentation());
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        MediaType respMediaType = response.getEntity().getMediaType();
+        final MediaType respMediaType = response.getEntity().getMediaType();
         assertEqualMediaType(MediaType.TEXT_PLAIN, respMediaType);
-        String respEntity = response.getEntity().getText();
+        final String respEntity = response.getEntity().getText();
         assertEquals("[lastname: Merkel, firstname: Angela]", respEntity);
     }
 
@@ -262,23 +265,23 @@ public class ProviderTest extends JaxRsTestCase {
     }
 
     public void testSubStringGet() throws Exception {
-        Response response = get("String/substring;start=5;end=9");
+        final Response response = get("String/substring;start=5;end=9");
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("FGHI", response.getEntity().getText());
     }
 
     public void testXmlTransformGet() throws Exception {
-        Response response = get("source");
+        final Response response = get("source");
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        String entity = response.getEntity().getText();
+        final String entity = response.getEntity().getText();
         assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><abc/>", entity);
     }
 
     public void testXmlTransformPost() throws Exception {
-        Response response = post("source", new StringRepresentation("abcdefg",
-                MediaType.TEXT_XML));
+        final Response response = post("source", new StringRepresentation(
+                "abcdefg", MediaType.TEXT_XML));
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("abcdefg", response.getEntity().getText());

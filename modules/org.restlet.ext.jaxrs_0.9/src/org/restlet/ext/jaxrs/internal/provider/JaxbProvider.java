@@ -39,11 +39,12 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author Stephan Koops
  */
 @Provider
-@Produces({"application/xml", MediaType.TEXT_XML, "application/*+xml"})
-@Consumes({"application/xml", MediaType.TEXT_XML, "application/*+xml"})
+@Produces( { "application/xml", MediaType.TEXT_XML, "application/*+xml" })
+@Consumes( { "application/xml", MediaType.TEXT_XML, "application/*+xml" })
 public class JaxbProvider extends AbstractJaxbProvider<Object> {
 
-    private Logger logger = Logger.getLogger(JaxbProvider.class.getName());
+    private final Logger logger = Logger
+            .getLogger(JaxbProvider.class.getName());
 
     @Override
     Logger getLogger() {

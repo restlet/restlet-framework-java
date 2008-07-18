@@ -33,15 +33,16 @@ import org.restlet.resource.Representation;
 public class Part02b {
     public static void main(String[] args) throws Exception {
         // Prepare the request
-        Request request = new Request(Method.GET, "http://www.restlet.org");
+        final Request request = new Request(Method.GET,
+                "http://www.restlet.org");
         request.setReferrerRef("http://www.mysite.org");
 
         // Handle it using an HTTP client connector
-        Client client = new Client(Protocol.HTTP);
-        Response response = client.handle(request);
+        final Client client = new Client(Protocol.HTTP);
+        final Response response = client.handle(request);
 
         // Write the response entity on the console
-        Representation output = response.getEntity();
+        final Representation output = response.getEntity();
         output.write(System.out);
     }
 

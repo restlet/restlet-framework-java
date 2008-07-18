@@ -43,11 +43,11 @@ public class Restlet implements EntryPoint {
 
         button.addClickListener(new ClickListener() {
             public void onClick(Widget sender) {
-                Client client = new Client(Protocol.HTTP);
-                Response response = client.get("/demo/hello.txt");
+                final Client client = new Client(Protocol.HTTP);
+                final Response response = client.get("/demo/hello.txt");
                 try {
                     label.setText(response.getEntity().getText());
-                } catch (Exception ioException) {
+                } catch (final Exception ioException) {
                     GWT.log("Restlet I/O failed", ioException);
                 }
             }

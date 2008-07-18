@@ -33,7 +33,7 @@ import org.restlet.data.Request;
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
  * 
- * @see <a href="http://oauth.net">OAuth</a>
+ * @see <a href="http://oauth.net">OAuth< /a>
  * @author Adam Rosien
  */
 public class OAuthGuard extends Guard {
@@ -59,9 +59,10 @@ public class OAuthGuard extends Guard {
 
     @Override
     public int authenticate(Request request) {
-        OAuthMessage requestMessage = OAuthHelper.getMessage(request,
+        final OAuthMessage requestMessage = OAuthHelper.getMessage(request,
                 getLogger());
-        OAuthAccessor accessor = provider.getAccessor(requestMessage);
+        final OAuthAccessor accessor = this.provider
+                .getAccessor(requestMessage);
 
         if (accessor == null) {
             return Guard.AUTHENTICATION_MISSING;
@@ -69,7 +70,7 @@ public class OAuthGuard extends Guard {
 
         try {
             requestMessage.validateSignature(accessor);
-        } catch (Exception e1) {
+        } catch (final Exception e1) {
             return Guard.AUTHENTICATION_INVALID;
         }
 

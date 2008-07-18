@@ -103,7 +103,7 @@ public class Content {
      * Sets the reference to the external representation.
      * 
      * @param externalRef
-     *                The reference to the external representation.
+     *            The reference to the external representation.
      */
     public void setExternalRef(Reference externalRef) {
         this.externalRef = externalRef;
@@ -113,7 +113,7 @@ public class Content {
      * Sets the expected media type of the external content.
      * 
      * @param externalType
-     *                The expected media type of the external content.
+     *            The expected media type of the external content.
      */
     public void setExternalType(MediaType externalType) {
         this.externalType = externalType;
@@ -123,7 +123,7 @@ public class Content {
      * Sets the representation for inline content.
      * 
      * @param inlineContent
-     *                The representation for inline content.
+     *            The representation for inline content.
      */
     public void setInlineContent(Representation inlineContent) {
         this.inlineContent = inlineContent;
@@ -133,18 +133,18 @@ public class Content {
      * Writes the current object as an XML element using the given SAX writer.
      * 
      * @param writer
-     *                The SAX writer.
+     *            The SAX writer.
      * @throws SAXException
      */
     public void writeElement(XmlWriter writer) throws SAXException {
-        AttributesImpl attributes = new AttributesImpl();
+        final AttributesImpl attributes = new AttributesImpl();
         String strContent = null;
 
         if (getInlineContent() != null) {
-            MediaType mediaType = getInlineContent().getMediaType();
+            final MediaType mediaType = getInlineContent().getMediaType();
             String type = null;
 
-            if (mediaType != null && mediaType.getSubType() != null) {
+            if ((mediaType != null) && (mediaType.getSubType() != null)) {
                 if (mediaType.getSubType().contains("xhtml")) {
                     type = "xhtml";
                 } else if (mediaType.getSubType().contains("html")) {
@@ -160,17 +160,18 @@ public class Content {
 
             try {
                 strContent = getInlineContent().getText();
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 e.printStackTrace();
             }
         } else {
-            if (getExternalType() != null
-                    && getExternalType().toString() != null) {
+            if ((getExternalType() != null)
+                    && (getExternalType().toString() != null)) {
                 attributes.addAttribute("", "type", null, "atomMediaType",
                         getExternalType().toString());
             }
 
-            if (getExternalRef() != null && getExternalRef().toString() != null) {
+            if ((getExternalRef() != null)
+                    && (getExternalRef().toString() != null)) {
                 attributes.addAttribute("", "src", null, "atomURI",
                         getExternalRef().toString());
             }

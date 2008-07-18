@@ -45,7 +45,7 @@ public class FileRepresentation extends Representation {
      * name.
      * 
      * @param path
-     *                The path name or file URI of the represented file.
+     *            The path name or file URI of the represented file.
      * @return The associated File instance.
      */
     private static File createFile(String path) {
@@ -78,11 +78,11 @@ public class FileRepresentation extends Representation {
      * is set.
      * 
      * @param file
-     *                The represented file.
+     *            The represented file.
      * @param mediaType
-     *                The representation's media type.
+     *            The representation's media type.
      * @param timeToLive
-     *                The time to live before it expires (in seconds).
+     *            The time to live before it expires (in seconds).
      */
     public FileRepresentation(File file, MediaType mediaType, int timeToLive) {
         super(mediaType);
@@ -115,11 +115,11 @@ public class FileRepresentation extends Representation {
      * Constructor.
      * 
      * @param path
-     *                The path name or file URI of the represented file.
+     *            The path name or file URI of the represented file.
      * @param mediaType
-     *                The representation's media type.
+     *            The representation's media type.
      * @param timeToLive
-     *                The time to live before it expires (in seconds).
+     *            The time to live before it expires (in seconds).
      * @see java.io.File#File(String)
      */
     public FileRepresentation(String path, MediaType mediaType, int timeToLive) {
@@ -135,8 +135,8 @@ public class FileRepresentation extends Representation {
     @Override
     public FileChannel getChannel() throws IOException {
         try {
-            return new FileInputStream(file).getChannel();
-        } catch (FileNotFoundException fnfe) {
+            return new FileInputStream(this.file).getChannel();
+        } catch (final FileNotFoundException fnfe) {
             throw new IOException("Couldn't get the channel. File not found");
         }
     }
@@ -152,7 +152,7 @@ public class FileRepresentation extends Representation {
 
     @Override
     public Reader getReader() throws IOException {
-        return new FileReader(file);
+        return new FileReader(this.file);
     }
 
     @Override
@@ -167,15 +167,15 @@ public class FileRepresentation extends Representation {
     @Override
     public FileInputStream getStream() throws IOException {
         try {
-            return new FileInputStream(file);
-        } catch (FileNotFoundException fnfe) {
+            return new FileInputStream(this.file);
+        } catch (final FileNotFoundException fnfe) {
             throw new IOException("Couldn't get the stream. File not found");
         }
     }
 
     @Override
     public String getText() throws IOException {
-        return ByteUtils.toString(getStream(), this.getCharacterSet());
+        return ByteUtils.toString(getStream(), getCharacterSet());
     }
 
     /**
@@ -191,7 +191,7 @@ public class FileRepresentation extends Representation {
      * Sets the file handle.
      * 
      * @param file
-     *                The file handle.
+     *            The file handle.
      */
     public void setFile(File file) {
         this.file = file;
@@ -207,11 +207,11 @@ public class FileRepresentation extends Representation {
      * channel transferTo method.
      * 
      * @param writableChannel
-     *                A writable byte channel.
+     *            A writable byte channel.
      */
     @Override
     public void write(WritableByteChannel writableChannel) throws IOException {
-        FileChannel fc = getChannel();
+        final FileChannel fc = getChannel();
         long position = 0;
         long count = fc.size();
         long written = 0;

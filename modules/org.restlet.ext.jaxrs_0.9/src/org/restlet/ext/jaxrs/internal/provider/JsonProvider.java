@@ -62,6 +62,33 @@ public class JsonProvider extends AbstractProvider<Object> {
     }
 
     /**
+     * @see MessageBodyReader#isReadable(Class, Type, Annotation[])
+     */
+    @Override
+    public boolean isReadable(Class<?> type, Type genericType,
+            Annotation[] annotations) {
+        if (JSONObject.class.isAssignableFrom(type)) {
+            return true;
+        }
+        if (JSONArray.class.isAssignableFrom(type)) {
+            return true;
+        }
+        if (JSONString.class.isAssignableFrom(type)) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    /*
+     * @see MessageBodyWriter#isWriteable(Class, Type, Annotation[])
+     */
+    public boolean isWriteable(Class<?> type, Type genericType,
+            Annotation[] annotations) {
+        return true;
+    }
+
+    /**
      * @see MessageBodyReader#readFrom(Class, Type, MediaType, Annotation[],
      *      MultivaluedMap, InputStream)
      */
@@ -73,12 +100,14 @@ public class JsonProvider extends AbstractProvider<Object> {
         final String jsonString;
         jsonString = Util.copyToStringBuilder(entityStream).toString();
         try {
-            if (JSONObject.class.isAssignableFrom(type))
+            if (JSONObject.class.isAssignableFrom(type)) {
                 return new JSONObject(jsonString);
-            if (JSONArray.class.isAssignableFrom(type))
+            }
+            if (JSONArray.class.isAssignableFrom(type)) {
                 return new JSONArray(jsonString);
-        } catch (JSONException e) {
-            IOException ioe = new IOException(e.getMessage());
+            }
+        } catch (final JSONException e) {
+            final IOException ioe = new IOException(e.getMessage());
             ioe.initCause(e);
             throw ioe;
         }
@@ -99,30 +128,6 @@ public class JsonProvider extends AbstractProvider<Object> {
     }
 
     /**
-     * @see MessageBodyReader#isReadable(Class, Type, Annotation[])
-     */
-    @Override
-    public boolean isReadable(Class<?> type, Type genericType,
-            Annotation[] annotations) {
-        if (JSONObject.class.isAssignableFrom(type))
-            return true;
-        if (JSONArray.class.isAssignableFrom(type))
-            return true;
-        if (JSONString.class.isAssignableFrom(type))
-            return true;
-        return false;
-    }
-
-    @Override
-    /**
-     * @see MessageBodyWriter#isWriteable(Class, Type, Annotation[])
-     */
-    public boolean isWriteable(Class<?> type, Type genericType,
-            Annotation[] annotations) {
-        return true;
-    }
-
-    /**
      * @see MessageBodyWriter#writeTo(Object, Class, Type, Annotation[],
      *      MediaType, MultivaluedMap, OutputStream)
      */
@@ -132,28 +137,30 @@ public class JsonProvider extends AbstractProvider<Object> {
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
         try {
-            OutputStreamWriter writer = new OutputStreamWriter(entityStream);
-            if (object instanceof JSONString)
+            final OutputStreamWriter writer = new OutputStreamWriter(
+                    entityStream);
+            if (object instanceof JSONString) {
                 writer.write(((JSONString) object).toJSONString());
-            else if (object instanceof JSONArray)
+            } else if (object instanceof JSONArray) {
                 writer.write(((JSONArray) object).toString());
-            else if (object instanceof CharSequence)
+            } else if (object instanceof CharSequence) {
                 writer.write(object.toString());
-            else {
+            } else {
                 JSONObject jsonObject;
-                if (object instanceof JSONObject)
+                if (object instanceof JSONObject) {
                     jsonObject = (JSONObject) object;
-                else if (object instanceof JSONTokener)
+                } else if (object instanceof JSONTokener) {
                     jsonObject = new JSONObject((JSONTokener) object);
-                else if (object instanceof Map)
+                } else if (object instanceof Map) {
                     jsonObject = new JSONObject((Map<?, ?>) object);
-                else
+                } else {
                     jsonObject = new JSONObject(object);
+                }
                 jsonObject.write(writer);
             }
             writer.flush();
-        } catch (JSONException e) {
-            IOException ioe = new IOException(e.getMessage());
+        } catch (final JSONException e) {
+            final IOException ioe = new IOException(e.getMessage());
             ioe.initCause(e);
             throw ioe;
         }

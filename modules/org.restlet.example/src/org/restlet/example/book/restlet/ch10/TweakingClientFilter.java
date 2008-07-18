@@ -16,11 +16,11 @@ public class TweakingClientFilter extends Filter {
 
     @Override
     protected int beforeHandle(Request request, Response response) {
-        String agent = request.getClientInfo().getAgent();
+        final String agent = request.getClientInfo().getAgent();
 
         if (agent.startsWith("Mozilla/5.0")) {
             // Adjust the client preferences
-            Preference<MediaType> preference = new Preference<MediaType>(
+            final Preference<MediaType> preference = new Preference<MediaType>(
                     MediaType.TEXT_HTML);
             request.getClientInfo().getAcceptedMediaTypes().add(0, preference);
         }

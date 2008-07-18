@@ -44,22 +44,10 @@ public class NoMessageBodyReaderException extends WebApplicationException {
      */
     public NoMessageBodyReaderException(MediaType mediaType, Class<?> paramType) {
         super(Status.UNSUPPORTED_MEDIA_TYPE);
-        // NICE super("No MessageBodyReader found for "+mediaType+" and "+paramType);
+        // NICE
+        // super("No MessageBodyReader found for "+mediaType+" and "+paramType);
         this.mediaType = mediaType;
         this.paramType = paramType;
-    }
-
-    /**
-     * Returns the java parameter type for which (in combination with the media
-     * type, see {@link #getMediaType()}) no {@link MessageBodyReader} was
-     * found.
-     * 
-     * @return the java parameter type for which (in combination with the media
-     *         type, see {@link #getMediaType()}) no {@link MessageBodyReader}
-     *         was found.
-     */
-    public Class<?> getParamType() {
-        return this.paramType;
     }
 
     /**
@@ -73,5 +61,18 @@ public class NoMessageBodyReaderException extends WebApplicationException {
      */
     public MediaType getMediaType() {
         return this.mediaType;
+    }
+
+    /**
+     * Returns the java parameter type for which (in combination with the media
+     * type, see {@link #getMediaType()}) no {@link MessageBodyReader} was
+     * found.
+     * 
+     * @return the java parameter type for which (in combination with the media
+     *         type, see {@link #getMediaType()}) no {@link MessageBodyReader}
+     *         was found.
+     */
+    public Class<?> getParamType() {
+        return this.paramType;
     }
 }

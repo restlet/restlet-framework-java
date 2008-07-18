@@ -66,9 +66,9 @@ public class HttpUrlConnectionCall extends HttpClientCall {
          * Default constructor.
          * 
          * @param wrappedRepresentation
-         *                The wrapped representation.
+         *            The wrapped representation.
          * @param connection
-         *                The parent connection.
+         *            The parent connection.
          */
         public ConnectionClosingRepresentation(
                 Representation wrappedRepresentation,
@@ -79,7 +79,7 @@ public class HttpUrlConnectionCall extends HttpClientCall {
 
         @Override
         public void release() {
-            connection.disconnect();
+            this.connection.disconnect();
             super.release();
         }
 
@@ -95,14 +95,14 @@ public class HttpUrlConnectionCall extends HttpClientCall {
      * Constructor.
      * 
      * @param helper
-     *                The parent HTTP client helper.
+     *            The parent HTTP client helper.
      * @param method
-     *                The method name.
+     *            The method name.
      * @param requestUri
-     *                The request URI.
+     *            The request URI.
      * @param hasEntity
-     *                Indicates if the call will have an entity to send to the
-     *                server.
+     *            Indicates if the call will have an entity to send to the
+     *            server.
      * @throws IOException
      */
     public HttpUrlConnectionCall(HttpClientHelper helper, String method,
@@ -110,15 +110,15 @@ public class HttpUrlConnectionCall extends HttpClientCall {
         super(helper, method, requestUri);
 
         if (requestUri.startsWith("http")) {
-            URL url = new URL(requestUri);
+            final URL url = new URL(requestUri);
             this.connection = (HttpURLConnection) url.openConnection();
 
             // These properties can only be used with Java 1.5 and upper
             // releases
-            int majorVersionNumber = Engine.getJavaMajorVersion();
-            int minorVersionNumber = Engine.getJavaMinorVersion();
+            final int majorVersionNumber = Engine.getJavaMajorVersion();
+            final int minorVersionNumber = Engine.getJavaMinorVersion();
             if ((majorVersionNumber > 1)
-                    || (majorVersionNumber == 1 && minorVersionNumber >= 5)) {
+                    || ((majorVersionNumber == 1) && (minorVersionNumber >= 5))) {
                 this.connection.setConnectTimeout(getHelper()
                         .getConnectTimeout());
                 this.connection.setReadTimeout(getHelper().getReadTimeout());
@@ -134,10 +134,10 @@ public class HttpUrlConnectionCall extends HttpClientCall {
 
             if (this.connection instanceof HttpsURLConnection) {
                 setConfidential(true);
-                HostnameVerifier verifier = helper.getHostnameVerifier();
+                final HostnameVerifier verifier = helper.getHostnameVerifier();
 
                 if (verifier != null) {
-                    HttpsURLConnection https = (HttpsURLConnection) this.connection;
+                    final HttpsURLConnection https = (HttpsURLConnection) this.connection;
                     https.setHostnameVerifier(verifier);
                 }
             }
@@ -175,14 +175,14 @@ public class HttpUrlConnectionCall extends HttpClientCall {
     public String getReasonPhrase() {
         try {
             return getConnection().getResponseMessage();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             return null;
         }
     }
 
     @Override
     protected Representation getRepresentation(InputStream stream) {
-        Representation r = super.getRepresentation(stream);
+        final Representation r = super.getRepresentation(stream);
         return new ConnectionClosingRepresentation(r, getConnection());
     }
 
@@ -209,7 +209,7 @@ public class HttpUrlConnectionCall extends HttpClientCall {
     public OutputStream getRequestStream() {
         try {
             return getConnection().getOutputStream();
-        } catch (IOException ioe) {
+        } catch (final IOException ioe) {
             return null;
         }
     }
@@ -225,7 +225,7 @@ public class HttpUrlConnectionCall extends HttpClientCall {
 
         try {
             result = getConnection().getInputStream();
-        } catch (IOException ioe) {
+        } catch (final IOException ioe) {
             result = getConnection().getErrorStream();
         }
 
@@ -244,7 +244,7 @@ public class HttpUrlConnectionCall extends HttpClientCall {
      */
     @Override
     public Series<Parameter> getResponseHeaders() {
-        Series<Parameter> result = super.getResponseHeaders();
+        final Series<Parameter> result = super.getResponseHeaders();
 
         if (!this.responseHeadersAdded) {
             // Read the response headers
@@ -292,7 +292,7 @@ public class HttpUrlConnectionCall extends HttpClientCall {
      * optional entity and send them over the network.
      * 
      * @param request
-     *                The high-level request.
+     *            The high-level request.
      * @return The result status.
      */
     @Override
@@ -301,14 +301,14 @@ public class HttpUrlConnectionCall extends HttpClientCall {
 
         try {
             if (request.isEntityAvailable()) {
-                Representation entity = request.getEntity();
+                final Representation entity = request.getEntity();
 
                 // These properties can only be used with Java 1.5 and upper
                 // releases
-                int majorVersionNumber = Engine.getJavaMajorVersion();
-                int minorVersionNumber = Engine.getJavaMinorVersion();
+                final int majorVersionNumber = Engine.getJavaMajorVersion();
+                final int minorVersionNumber = Engine.getJavaMinorVersion();
                 if ((majorVersionNumber > 1)
-                        || (majorVersionNumber == 1 && minorVersionNumber >= 5)) {
+                        || ((majorVersionNumber == 1) && (minorVersionNumber >= 5))) {
                     // Adjust the streaming mode
                     if (entity.getSize() > 0) {
                         // The size of the entity is known in advance
@@ -332,7 +332,7 @@ public class HttpUrlConnectionCall extends HttpClientCall {
             getConnection().setRequestMethod(getMethod());
 
             // Set the request headers
-            for (Parameter header : getRequestHeaders()) {
+            for (final Parameter header : getRequestHeaders()) {
                 getConnection().addRequestProperty(header.getName(),
                         header.getValue());
             }
@@ -342,7 +342,7 @@ public class HttpUrlConnectionCall extends HttpClientCall {
 
             // Send the optional entity
             result = super.sendRequest(request);
-        } catch (ConnectException ce) {
+        } catch (final ConnectException ce) {
             getHelper()
                     .getLogger()
                     .log(
@@ -350,7 +350,7 @@ public class HttpUrlConnectionCall extends HttpClientCall {
                             "An error occurred during the connection to the remote HTTP server.",
                             ce);
             result = new Status(Status.CONNECTOR_ERROR_CONNECTION, ce);
-        } catch (SocketTimeoutException ste) {
+        } catch (final SocketTimeoutException ste) {
             getHelper()
                     .getLogger()
                     .log(
@@ -358,7 +358,7 @@ public class HttpUrlConnectionCall extends HttpClientCall {
                             "An timeout error occurred during the communication with the remote HTTP server.",
                             ste);
             result = new Status(Status.CONNECTOR_ERROR_COMMUNICATION, ste);
-        } catch (FileNotFoundException fnfe) {
+        } catch (final FileNotFoundException fnfe) {
             getHelper()
                     .getLogger()
                     .log(
@@ -366,7 +366,7 @@ public class HttpUrlConnectionCall extends HttpClientCall {
                             "An unexpected error occurred during the sending of the HTTP request.",
                             fnfe);
             result = new Status(Status.CONNECTOR_ERROR_INTERNAL, fnfe);
-        } catch (IOException ioe) {
+        } catch (final IOException ioe) {
             getHelper()
                     .getLogger()
                     .log(
@@ -374,7 +374,7 @@ public class HttpUrlConnectionCall extends HttpClientCall {
                             "An error occurred during the communication with the remote HTTP server.",
                             ioe);
             result = new Status(Status.CONNECTOR_ERROR_COMMUNICATION, ioe);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             getHelper()
                     .getLogger()
                     .log(

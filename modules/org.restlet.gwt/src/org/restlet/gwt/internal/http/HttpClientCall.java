@@ -18,6 +18,8 @@
 
 package org.restlet.gwt.internal.http;
 
+import java.util.logging.Logger;
+
 import org.restlet.gwt.data.CharacterSet;
 import org.restlet.gwt.data.Encoding;
 import org.restlet.gwt.data.Language;
@@ -42,9 +44,9 @@ public abstract class HttpClientCall extends HttpCall {
      * representation is returned when at least one entity header is present.
      * 
      * @param responseHeaders
-     *                The headers to copy.
+     *            The headers to copy.
      * @param representation
-     *                The Representation to update.
+     *            The Representation to update.
      * @return a representation with the entity headers of the response or null
      *         if no representation has been provided and the response has not
      *         sent any entity header.
@@ -57,18 +59,20 @@ public abstract class HttpClientCall extends HttpCall {
     public static Representation copyResponseEntityHeaders(
             Iterable<Parameter> responseHeaders, Representation representation)
             throws NumberFormatException {
-        Representation result = (representation == null) ? Representation
+        final Representation result = (representation == null) ? Representation
                 .createEmpty() : representation;
         boolean entityHeaderFound = false;
 
-        for (Parameter header : responseHeaders) {
+        for (final Parameter header : responseHeaders) {
             if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_CONTENT_TYPE)) {
-                ContentType contentType = new ContentType(header.getValue());
+                final ContentType contentType = new ContentType(header
+                        .getValue());
                 result.setMediaType(contentType.getMediaType());
-                CharacterSet characterSet = contentType.getCharacterSet();
-                if (characterSet != null)
+                final CharacterSet characterSet = contentType.getCharacterSet();
+                if (characterSet != null) {
                     result.setCharacterSet(characterSet);
+                }
                 entityHeaderFound = true;
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_CONTENT_LENGTH)) {
@@ -79,10 +83,10 @@ public abstract class HttpClientCall extends HttpCall {
                 entityHeaderFound = true;
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_CONTENT_ENCODING)) {
-                HeaderReader hr = new HeaderReader(header.getValue());
+                final HeaderReader hr = new HeaderReader(header.getValue());
                 String value = hr.readValue();
                 while (value != null) {
-                    Encoding encoding = new Encoding(value);
+                    final Encoding encoding = new Encoding(value);
                     if (!encoding.equals(Encoding.IDENTITY)) {
                         result.getEncodings().add(encoding);
                     }
@@ -91,7 +95,7 @@ public abstract class HttpClientCall extends HttpCall {
                 entityHeaderFound = true;
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_CONTENT_LANGUAGE)) {
-                HeaderReader hr = new HeaderReader(header.getValue());
+                final HeaderReader hr = new HeaderReader(header.getValue());
                 String value = hr.readValue();
                 while (value != null) {
                     result.getLanguages().add(new Language(value));
@@ -129,7 +133,7 @@ public abstract class HttpClientCall extends HttpCall {
      * Parse the Content-Disposition header value
      * 
      * @param value
-     *                Content-disposition header
+     *            Content-disposition header
      * @return Filename
      */
     public static String parseContentDisposition(String value) {
@@ -158,11 +162,11 @@ public abstract class HttpClientCall extends HttpCall {
      * Constructor setting the request address to the local host.
      * 
      * @param helper
-     *                The parent HTTP client helper.
+     *            The parent HTTP client helper.
      * @param method
-     *                The method name.
+     *            The method name.
      * @param requestUri
-     *                The request URI.
+     *            The request URI.
      */
     public HttpClientCall(HttpClientHelper helper, String method,
             String requestUri) {
@@ -196,7 +200,7 @@ public abstract class HttpClientCall extends HttpCall {
      * Returns the representation wrapping the given stream.
      * 
      * @param entity
-     *                The response entity.
+     *            The response entity.
      * @return The wrapping representation.
      */
     protected Representation getRepresentation(String entity) {
@@ -215,7 +219,7 @@ public abstract class HttpClientCall extends HttpCall {
      * associated by default, you have to manually set them from your headers.
      * 
      * @param response
-     *                the Response to get the entity from
+     *            the Response to get the entity from
      * @return The response entity if available.
      */
     public Representation getResponseEntity(Response response) {
@@ -224,10 +228,10 @@ public abstract class HttpClientCall extends HttpCall {
         long size = Representation.UNKNOWN_SIZE;
 
         // Compute the content length
-        Series<Parameter> responseHeaders = getResponseHeaders();
-        String transferEncoding = responseHeaders.getFirstValue(
+        final Series<Parameter> responseHeaders = getResponseHeaders();
+        final String transferEncoding = responseHeaders.getFirstValue(
                 HttpConstants.HEADER_TRANSFER_ENCODING, true);
-        if (transferEncoding != null
+        if ((transferEncoding != null)
                 && !"identity".equalsIgnoreCase(transferEncoding)) {
             size = Representation.UNKNOWN_SIZE;
         } else {
@@ -243,7 +247,7 @@ public abstract class HttpClientCall extends HttpCall {
                 && !response.getStatus().equals(Status.SUCCESS_PARTIAL_CONTENT)) {
             // Make sure that an InputRepresentation will not be instantiated
             // while the stream is closed.
-            String text = getResponseEntityString(size);
+            final String text = getResponseEntityString(size);
             result = getRepresentation(text);
         }
 
@@ -265,7 +269,7 @@ public abstract class HttpClientCall extends HttpCall {
      * Returns the response entity string if it exists.
      * 
      * @param size
-     *                The expected entity size or -1 if unknown.
+     *            The expected entity size or -1 if unknown.
      * @return The response entity stream if it exists.
      */
     public abstract String getResponseEntityString(long size);
@@ -277,7 +281,7 @@ public abstract class HttpClientCall extends HttpCall {
 
     @Override
     protected boolean isServerKeepAlive() {
-        String header = getResponseHeaders().getFirstValue(
+        final String header = getResponseHeaders().getFirstValue(
                 HttpConstants.HEADER_CONNECTION, true);
         return (header == null) || !header.equalsIgnoreCase("close");
     }
@@ -287,7 +291,7 @@ public abstract class HttpClientCall extends HttpCall {
      * optional entity and send them over the network.
      * 
      * @param request
-     *                The high-level request.
+     *            The high-level request.
      */
     public abstract void sendRequest(Request request) throws Exception;
 
@@ -297,7 +301,8 @@ public abstract class HttpClientCall extends HttpCall {
      * @return True if the request should be chunked
      */
     protected boolean shouldRequestBeChunked(Request request) {
-        return request.isEntityAvailable() && request.getEntity() != null
-                && request.getEntity().getSize() == Representation.UNKNOWN_SIZE;
+        return request.isEntityAvailable()
+                && (request.getEntity() != null)
+                && (request.getEntity().getSize() == Representation.UNKNOWN_SIZE);
     }
 }

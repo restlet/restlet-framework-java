@@ -67,9 +67,10 @@ public class ProviderTestService {
      * @return
      */
     public static String createCS() {
-        StringBuilder stb = new StringBuilder();
-        for (char c = 32; c <= CS_LAST_CHAR; c++)
+        final StringBuilder stb = new StringBuilder();
+        for (char c = 32; c <= CS_LAST_CHAR; c++) {
             stb.append(c);
+        }
         return stb.toString();
     }
 
@@ -84,7 +85,7 @@ public class ProviderTestService {
     @Path("BufferedReader")
     @Produces("text/plain")
     public String bufferedReaderPost(BufferedReader reader) throws IOException {
-        StringBuilder stb = new StringBuilder();
+        final StringBuilder stb = new StringBuilder();
         String line;
         while ((line = reader.readLine()) != null) {
             stb.append(line);
@@ -158,7 +159,7 @@ public class ProviderTestService {
     @Consumes("application/octet-stream")
     @Produces("text/plain")
     public String filePost(File file) throws IOException {
-        InputStream inputStream = new FileInputStream(file);
+        final InputStream inputStream = new FileInputStream(file);
         return inputStreamPost(inputStream);
     }
 
@@ -166,7 +167,7 @@ public class ProviderTestService {
     @Path("form")
     @Produces("application/x-www-form-urlencoded")
     public Form formGet() {
-        Form form = new Form();
+        final Form form = new Form();
         form.add("firstname", "Angela");
         form.add("lastname", "Merkel");
         return form;
@@ -191,10 +192,11 @@ public class ProviderTestService {
     @Path("InputStream")
     @Produces("text/plain")
     public String inputStreamPost(InputStream inputStream) throws IOException {
-        StringBuilder stb = new StringBuilder();
+        final StringBuilder stb = new StringBuilder();
         int b;
-        while ((b = inputStream.read()) >= 0)
+        while ((b = inputStream.read()) >= 0) {
             stb.append((char) b);
+        }
         return stb.toString();
     }
 
@@ -229,20 +231,11 @@ public class ProviderTestService {
         return person.toString();
     }
 
-    @POST
-    @Path("multipart/form-data")
-    @Consumes("multipart/form-data")
-    public Object multipartPost(@QueryParam("attrNo") int attrNo,
-            Multipart multipart) throws MessagingException, IOException {
-        BodyPart bodyPart = multipart.getBodyPart(attrNo);
-        return bodyPart.getInputStream();
-    }
-    
     @GET
     @Path("MultivaluedMap")
     @Produces("application/x-www-form-urlencoded")
     public MultivaluedMap<String, String> mMapGet() {
-        MultivaluedMap<String, String> mmap = new MultivaluedMapImpl<String, String>();
+        final MultivaluedMap<String, String> mmap = new MultivaluedMapImpl<String, String>();
         mmap.add("firstname", "Angela");
         mmap.add("lastname", "Merkel");
         return mmap;
@@ -256,6 +249,15 @@ public class ProviderTestService {
         return Converter.toForm(mmap).toString();
     }
 
+    @POST
+    @Path("multipart/form-data")
+    @Consumes("multipart/form-data")
+    public Object multipartPost(@QueryParam("attrNo") int attrNo,
+            Multipart multipart) throws MessagingException, IOException {
+        final BodyPart bodyPart = multipart.getBodyPart(attrNo);
+        return bodyPart.getInputStream();
+    }
+
     @GET
     @Path("Reader")
     @Produces("application/octet-stream")
@@ -267,10 +269,11 @@ public class ProviderTestService {
     @Path("Reader")
     @Produces("text/plain")
     public String readerPost(Reader reader) throws IOException {
-        StringBuilder stb = new StringBuilder();
+        final StringBuilder stb = new StringBuilder();
         int c;
-        while ((c = reader.read()) >= 0)
+        while ((c = reader.read()) >= 0) {
             stb.append((char) c);
+        }
         return stb.toString();
     }
 
@@ -299,10 +302,11 @@ public class ProviderTestService {
     @GET
     @Path("String/substring")
     @Produces("text/plain")
-    public String subStringGet(@MatrixParam("start") int start, 
+    public String subStringGet(@MatrixParam("start") int start,
             @MatrixParam("end") int end) {
-        if(end >= ALPHABET.length())
+        if (end >= ALPHABET.length()) {
             return ALPHABET.substring(start);
+        }
         return ALPHABET.substring(start, end);
     }
 
@@ -318,7 +322,7 @@ public class ProviderTestService {
     @Consumes("text/xml")
     @Produces("text/plain")
     public byte[] xsltPost(Source source) throws IOException {
-        InputSource inputSource = SAXSource.sourceToInputSource(source);
+        final InputSource inputSource = SAXSource.sourceToInputSource(source);
         return TestUtils.getByteArray(inputSource.getByteStream());
     }
 }

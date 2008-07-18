@@ -41,8 +41,8 @@ import org.restlet.Guard;
  * <p>
  * This interface is used by {@link SecurityContext#isUserInRole(String)}. The
  * JAX-RS runtime delegates this method call along with the {@link Principal} of
- * the HTTP request to method {@link #isInRole(Principal, String)}, the
- * only method of this interface.
+ * the HTTP request to method {@link #isInRole(Principal, String)}, the only
+ * method of this interface.
  * </p>
  * <p>
  * If you need user access control, you must give an instance of this inteface
@@ -57,8 +57,7 @@ import org.restlet.Guard;
  * <p>
  * <i>The JAX-RS extension as well as the JAX-RS specification are currently
  * under development. You should use this extension only for experimental
- * purpose.</i>
- * <br>
+ * purpose.</i> <br>
  * For further information see <a href="https://jsr311.dev.java.net/">Java
  * Service Request 311</a>.
  * </p>
@@ -89,14 +88,14 @@ public interface RoleChecker {
     };
 
     /**
-     * An {@link RoleChecker} that throws an WebApplicationExeption with
-     * status 500 (Internal Server Error) for every call on it.
+     * An {@link RoleChecker} that throws an WebApplicationExeption with status
+     * 500 (Internal Server Error) for every call on it.
      */
     public static final RoleChecker REJECT_WITH_ERROR = new RoleChecker() {
         public boolean isInRole(Principal principal, String role)
                 throws WebApplicationException {
-            String message = "No access control defined.";
-            ResponseBuilder rb = Response.serverError();
+            final String message = "No access control defined.";
+            final ResponseBuilder rb = Response.serverError();
             rb.entity(message).language("en").type(MediaType.TEXT_HTML_TYPE);
             throw new WebApplicationException(rb.build());
         }
@@ -107,13 +106,13 @@ public interface RoleChecker {
      * This method is used by the {@link SecurityContext}.
      * 
      * @param principal
-     *                The principal to check.
+     *            The principal to check.
      * @param role
-     *                the role.
+     *            the role.
      * @return true, if the user is in the role, false otherwise.
      * @throws WebApplicationException
-     *                 The developer may handle exceptions by throw a
-     *                 {@link WebApplicationException}.
+     *             The developer may handle exceptions by throw a
+     *             {@link WebApplicationException}.
      * @see SecurityContext#isUserInRole(String)
      */
     public boolean isInRole(Principal principal, String role)

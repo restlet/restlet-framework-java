@@ -36,7 +36,8 @@ import com.noelios.restlet.http.HttpClientCall;
  * surely release the underlying connection. Not doing so may cause future
  * requests to block.
  * 
- * Here is the list of parameters that are supported: <table>
+ * Here is the list of parameters that are supported:
+ * <table>
  * <tr>
  * <th>Parameter name</th>
  * <th>Value type</th>
@@ -54,8 +55,8 @@ import com.noelios.restlet.http.HttpClientCall;
  * <td>maxConnectionsPerHost</td>
  * <td>int</td>
  * <td>2 (uses HttpClient's default)</td>
- * <td>The maximum number of connections that will be created for any
- * particular host.</td>
+ * <td>The maximum number of connections that will be created for any particular
+ * host.</td>
  * </tr>
  * <tr>
  * <td>maxTotalConnections</td>
@@ -74,8 +75,8 @@ import com.noelios.restlet.http.HttpClientCall;
  * <td>stopIdleTimeout</td>
  * <td>int</td>
  * <td>1000</td>
- * <td>The minimum idle time, in milliseconds, for connections to be closed
- * when stopping the connector.</td>
+ * <td>The minimum idle time, in milliseconds, for connections to be closed when
+ * stopping the connector.</td>
  * </tr>
  * <tr>
  * <td>readTimeout</td>
@@ -95,12 +96,12 @@ import com.noelios.restlet.http.HttpClientCall;
  * </tr>
  * </table>
  * 
- * @see <a
- *      href="http://jakarta.apache.org/httpcomponents/httpclient-3.x/tutorial.html">Apache
- *      HTTP Client tutorial</a>
- * @see <a
+ * @see <a * href=
+ *      "http://jakarta.apache.org/httpcomponents/httpclient-3.x/tutorial.html"
+ *      >Apache * HTTP Client tutorial< /a>
+ * @see <a *
  *      href="http://java.sun.com/j2se/1.5.0/docs/guide/net/index.html">Networking
- *      Features</a>
+ *      * Features< /a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper {
@@ -110,7 +111,7 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
      * Constructor.
      * 
      * @param client
-     *                The client to help.
+     *            The client to help.
      */
     public HttpClientHelper(Client client) {
         super(client);
@@ -123,7 +124,7 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
      * Creates a low-level HTTP client call from a high-level uniform call.
      * 
      * @param request
-     *                The high-level request.
+     *            The high-level request.
      * @return A low-level HTTP client call.
      */
     @Override
@@ -134,7 +135,7 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
             result = new HttpMethodCall(this, request.getMethod().toString(),
                     request.getResourceRef().toString(), request
                             .isEntityAvailable());
-        } catch (IOException ioe) {
+        } catch (final IOException ioe) {
             getLogger().log(Level.WARNING,
                     "Unable to create the HTTP client call", ioe);
         }
@@ -230,7 +231,7 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
         super.start();
 
         // Create the multi-threaded connection manager and configure it
-        MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
+        final MultiThreadedHttpConnectionManager connectionManager = new MultiThreadedHttpConnectionManager();
         connectionManager.getParams().setDefaultMaxConnectionsPerHost(
                 getMaxConnectionsPerHost());
         connectionManager.getParams().setMaxTotalConnections(

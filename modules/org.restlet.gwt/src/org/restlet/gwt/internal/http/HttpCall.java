@@ -18,6 +18,7 @@
 
 package org.restlet.gwt.internal.http;
 
+import java.io.IOException;
 import java.util.Date;
 
 import org.restlet.gwt.data.Form;
@@ -38,9 +39,9 @@ public abstract class HttpCall {
      * Formats a date as a header string.
      * 
      * @param date
-     *                The date to format.
+     *            The date to format.
      * @param cookie
-     *                Indicates if the date should be in the cookie format.
+     *            Indicates if the date should be in the cookie format.
      * @return The formatted date.
      */
     public static String formatDate(Date date, boolean cookie) {
@@ -55,9 +56,9 @@ public abstract class HttpCall {
      * Parses a date string.
      * 
      * @param date
-     *                The date string to parse.
+     *            The date string to parse.
      * @param cookie
-     *                Indicates if the date is in the cookie format.
+     *            Indicates if the date is in the cookie format.
      * @return The parsed date.
      */
     public static Date parseDate(String date, boolean cookie) {
@@ -164,12 +165,12 @@ public abstract class HttpCall {
         long contentLength = Representation.UNKNOWN_SIZE;
 
         // Extract the content length header
-        for (Parameter header : headers) {
+        for (final Parameter header : headers) {
             if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_CONTENT_LENGTH)) {
                 try {
                     contentLength = Long.parseLong(header.getValue());
-                } catch (NumberFormatException e) {
+                } catch (final NumberFormatException e) {
                     contentLength = Representation.UNKNOWN_SIZE;
                 }
             }
@@ -211,8 +212,9 @@ public abstract class HttpCall {
      * @return The exact protocol (HTTP or HTTPS).
      */
     public Protocol getProtocol() {
-        if (this.protocol == null)
+        if (this.protocol == null) {
             this.protocol = isConfidential() ? Protocol.HTTPS : Protocol.HTTP;
+        }
         return this.protocol;
     }
 
@@ -323,7 +325,7 @@ public abstract class HttpCall {
      * @return True if the request entity is chunked.
      */
     protected boolean isRequestChunked() {
-        String header = getRequestHeaders().getFirstValue(
+        final String header = getRequestHeaders().getFirstValue(
                 HttpConstants.HEADER_TRANSFER_ENCODING, true);
         return (header != null) && header.equalsIgnoreCase("chunked");
     }
@@ -334,7 +336,7 @@ public abstract class HttpCall {
      * @return True if the response entity is chunked.
      */
     protected boolean isResponseChunked() {
-        String header = getResponseHeaders().getFirstValue(
+        final String header = getResponseHeaders().getFirstValue(
                 HttpConstants.HEADER_TRANSFER_ENCODING, true);
         return (header != null) && header.equalsIgnoreCase("chunked");
     }
@@ -350,7 +352,7 @@ public abstract class HttpCall {
      * Sets the client address.
      * 
      * @param clientAddress
-     *                The client address.
+     *            The client address.
      */
     protected void setClientAddress(String clientAddress) {
         this.clientAddress = clientAddress;
@@ -360,7 +362,7 @@ public abstract class HttpCall {
      * Sets the client port.
      * 
      * @param clientPort
-     *                The client port.
+     *            The client port.
      */
     protected void setClientPort(int clientPort) {
         this.clientPort = clientPort;
@@ -370,8 +372,8 @@ public abstract class HttpCall {
      * Indicates if the confidentiality of the call is ensured (ex: via SSL).
      * 
      * @param confidential
-     *                True if the confidentiality of the call is ensured (ex:
-     *                via SSL).
+     *            True if the confidentiality of the call is ensured (ex: via
+     *            SSL).
      */
     protected void setConfidential(boolean confidential) {
         this.confidential = confidential;
@@ -381,7 +383,7 @@ public abstract class HttpCall {
      * Sets the host domain name.
      * 
      * @param hostDomain
-     *                The baseRef domain name.
+     *            The baseRef domain name.
      */
     public void setHostDomain(String hostDomain) {
         this.hostDomain = hostDomain;
@@ -391,7 +393,7 @@ public abstract class HttpCall {
      * Sets the host port.
      * 
      * @param hostPort
-     *                The host port.
+     *            The host port.
      */
     public void setHostPort(int hostPort) {
         this.hostPort = hostPort;
@@ -401,7 +403,7 @@ public abstract class HttpCall {
      * Sets the request method.
      * 
      * @param method
-     *                The request method.
+     *            The request method.
      */
     protected void setMethod(String method) {
         this.method = method;
@@ -411,7 +413,7 @@ public abstract class HttpCall {
      * Sets the exact protocol used (HTTP or HTTPS).
      * 
      * @param protocol
-     *                The protocol.
+     *            The protocol.
      */
     public void setProtocol(Protocol protocol) {
         this.protocol = protocol;
@@ -421,7 +423,7 @@ public abstract class HttpCall {
      * Sets the reason phrase.
      * 
      * @param reasonPhrase
-     *                The reason phrase.
+     *            The reason phrase.
      */
     public void setReasonPhrase(String reasonPhrase) {
         this.reasonPhrase = reasonPhrase;
@@ -431,7 +433,7 @@ public abstract class HttpCall {
      * Sets the full request URI.
      * 
      * @param requestUri
-     *                The full request URI.
+     *            The full request URI.
      */
     protected void setRequestUri(String requestUri) {
         if ((requestUri == null) || (requestUri.equals(""))) {
@@ -446,7 +448,7 @@ public abstract class HttpCall {
      * Corresponds to the IP address of the responding server.
      * 
      * @param responseAddress
-     *                The response address.
+     *            The response address.
      */
     public void setServerAddress(String responseAddress) {
         this.serverAddress = responseAddress;
@@ -456,7 +458,7 @@ public abstract class HttpCall {
      * Sets the server port.
      * 
      * @param serverPort
-     *                The server port.
+     *            The server port.
      */
     public void setServerPort(int serverPort) {
         this.serverPort = serverPort;
@@ -466,7 +468,7 @@ public abstract class HttpCall {
      * Sets the status code.
      * 
      * @param code
-     *                The status code.
+     *            The status code.
      */
     public void setStatusCode(int code) {
         this.statusCode = code;
@@ -476,7 +478,7 @@ public abstract class HttpCall {
      * Sets the protocol version used.
      * 
      * @param version
-     *                The protocol version used.
+     *            The protocol version used.
      */
     public void setVersion(String version) {
         this.version = version;

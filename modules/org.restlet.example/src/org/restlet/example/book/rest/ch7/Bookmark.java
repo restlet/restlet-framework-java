@@ -56,18 +56,46 @@ public class Bookmark {
     }
 
     /**
+     * @return the longDescription
+     */
+    public String getLongDescription() {
+        return this.longDescription;
+    }
+
+    /**
+     * @return the shortDescription
+     */
+    public String getShortDescription() {
+        return this.shortDescription;
+    }
+
+    /**
+     * @return the uri
+     */
+    public String getUri() {
+        return this.uri;
+    }
+
+    /**
+     * @return the user
+     */
+    public User getUser() {
+        return this.user;
+    }
+
+    /**
+     * @return the restrict
+     */
+    public boolean isRestrict() {
+        return this.restrict;
+    }
+
+    /**
      * @param dateTime
      *            the dateTime to set
      */
     public void setDateTime(Date dateTime) {
         this.dateTime = dateTime;
-    }
-
-    /**
-     * @return the longDescription
-     */
-    public String getLongDescription() {
-        return this.longDescription;
     }
 
     /**
@@ -79,25 +107,11 @@ public class Bookmark {
     }
 
     /**
-     * @return the restrict
-     */
-    public boolean isRestrict() {
-        return this.restrict;
-    }
-
-    /**
      * @param restrict
      *            the restrict to set
      */
     public void setRestrict(boolean restrict) {
         this.restrict = restrict;
-    }
-
-    /**
-     * @return the shortDescription
-     */
-    public String getShortDescription() {
-        return this.shortDescription;
     }
 
     /**
@@ -109,25 +123,11 @@ public class Bookmark {
     }
 
     /**
-     * @return the uri
-     */
-    public String getUri() {
-        return this.uri;
-    }
-
-    /**
      * @param uri
      *            the uri to set
      */
     public void setUri(String uri) {
         this.uri = uri;
-    }
-
-    /**
-     * @return the user
-     */
-    public User getUser() {
-        return this.user;
     }
 
     /**

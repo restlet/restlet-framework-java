@@ -59,31 +59,32 @@ public final class Encoding extends Metadata {
      * then it is returned, otherwise a new instance is created.
      * 
      * @param name
-     *                The name.
+     *            The name.
      * @return The associated encoding.
      */
     public static Encoding valueOf(final String name) {
         Encoding result = null;
 
         if ((name != null) && !name.equals("")) {
-            if (name.equalsIgnoreCase(ALL.getName()))
+            if (name.equalsIgnoreCase(ALL.getName())) {
                 result = ALL;
-            else if (name.equalsIgnoreCase(GZIP.getName()))
+            } else if (name.equalsIgnoreCase(GZIP.getName())) {
                 result = GZIP;
-            else if (name.equalsIgnoreCase(ZIP.getName()))
+            } else if (name.equalsIgnoreCase(ZIP.getName())) {
                 result = ZIP;
-            else if (name.equalsIgnoreCase(COMPRESS.getName()))
+            } else if (name.equalsIgnoreCase(COMPRESS.getName())) {
                 result = COMPRESS;
-            else if (name.equalsIgnoreCase(DEFLATE.getName()))
+            } else if (name.equalsIgnoreCase(DEFLATE.getName())) {
                 result = DEFLATE;
-            else if (name.equalsIgnoreCase(IDENTITY.getName()))
+            } else if (name.equalsIgnoreCase(IDENTITY.getName())) {
                 result = IDENTITY;
-            else if (name.equalsIgnoreCase(FREEMARKER.getName()))
+            } else if (name.equalsIgnoreCase(FREEMARKER.getName())) {
                 result = FREEMARKER;
-            else if (name.equalsIgnoreCase(VELOCITY.getName()))
+            } else if (name.equalsIgnoreCase(VELOCITY.getName())) {
                 result = VELOCITY;
-            else
+            } else {
                 result = new Encoding(name);
+            }
         }
 
         return result;
@@ -93,7 +94,7 @@ public final class Encoding extends Metadata {
      * Constructor.
      * 
      * @param name
-     *                The name.
+     *            The name.
      */
     public Encoding(final String name) {
         this(name, "Encoding applied to a representation");
@@ -103,9 +104,9 @@ public final class Encoding extends Metadata {
      * Constructor.
      * 
      * @param name
-     *                The name.
+     *            The name.
      * @param description
-     *                The description.
+     *            The description.
      */
     public Encoding(final String name, final String description) {
         super(name, description);

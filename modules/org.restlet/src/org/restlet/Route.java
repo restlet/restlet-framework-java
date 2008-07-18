@@ -191,9 +191,10 @@ public class Route extends Filter {
     protected int beforeHandle(Request request, Response response) {
         // 1 - Parse the template variables and adjust the base reference
         if (getTemplate() != null) {
-            String remainingPart = request.getResourceRef().getRemainingPart(
-                    false, getMatchQuery());
-            int matchedLength = getTemplate().parse(remainingPart, request);
+            final String remainingPart = request.getResourceRef()
+                    .getRemainingPart(false, getMatchQuery());
+            final int matchedLength = getTemplate().parse(remainingPart,
+                    request);
 
             if (getLogger().isLoggable(Level.FINER)) {
                 getLogger().finer(
@@ -204,7 +205,8 @@ public class Route extends Filter {
 
             if (matchedLength != -1) {
                 // Updates the context
-                String matchedPart = remainingPart.substring(0, matchedLength);
+                final String matchedPart = remainingPart.substring(0,
+                        matchedLength);
                 Reference baseRef = request.getResourceRef().getBaseRef();
 
                 if (baseRef == null) {
@@ -257,10 +259,10 @@ public class Route extends Filter {
     private void extractAttributes(Request request, Response response) {
         // Extract the query parameters
         if (!getQueryExtracts().isEmpty()) {
-            Form form = request.getResourceRef().getQueryAsForm();
+            final Form form = request.getResourceRef().getQueryAsForm();
 
             if (form != null) {
-                for (ExtractInfo ei : getQueryExtracts()) {
+                for (final ExtractInfo ei : getQueryExtracts()) {
                     if (ei.first) {
                         request.getAttributes().put(ei.attribute,
                                 form.getFirstValue(ei.parameter));
@@ -274,10 +276,10 @@ public class Route extends Filter {
 
         // Extract the request entity parameters
         if (!getEntityExtracts().isEmpty()) {
-            Form form = request.getEntityAsForm();
+            final Form form = request.getEntityAsForm();
 
             if (form != null) {
-                for (ExtractInfo ei : getEntityExtracts()) {
+                for (final ExtractInfo ei : getEntityExtracts()) {
                     if (ei.first) {
                         request.getAttributes().put(ei.attribute,
                                 form.getFirstValue(ei.parameter));
@@ -291,10 +293,10 @@ public class Route extends Filter {
 
         // Extract the cookie parameters
         if (!getCookieExtracts().isEmpty()) {
-            Series<Cookie> cookies = request.getCookies();
+            final Series<Cookie> cookies = request.getCookies();
 
             if (cookies != null) {
-                for (ExtractInfo ei : getCookieExtracts()) {
+                for (final ExtractInfo ei : getCookieExtracts()) {
                     if (ei.first) {
                         request.getAttributes().put(ei.attribute,
                                 cookies.getFirstValue(ei.parameter));
@@ -370,8 +372,9 @@ public class Route extends Filter {
         if (ce == null) {
             synchronized (this) {
                 ce = this.cookieExtracts;
-                if (ce == null)
+                if (ce == null) {
                     this.cookieExtracts = ce = new CopyOnWriteArrayList<ExtractInfo>();
+                }
             }
         }
         return ce;
@@ -388,8 +391,9 @@ public class Route extends Filter {
         if (ee == null) {
             synchronized (this) {
                 ee = this.entityExtracts;
-                if (ee == null)
+                if (ee == null) {
                     this.entityExtracts = ee = new CopyOnWriteArrayList<ExtractInfo>();
+                }
             }
         }
         return ee;
@@ -427,8 +431,9 @@ public class Route extends Filter {
         if (qe == null) {
             synchronized (this) {
                 qe = this.queryExtracts;
-                if (qe == null)
+                if (qe == null) {
                     this.queryExtracts = qe = new CopyOnWriteArrayList<ExtractInfo>();
+                }
             }
         }
         return qe;
@@ -463,8 +468,9 @@ public class Route extends Filter {
         if (v == null) {
             synchronized (this) {
                 v = this.validations;
-                if (v == null)
+                if (v == null) {
                     this.validations = v = new CopyOnWriteArrayList<ValidateInfo>();
+                }
             }
         }
         return v;
@@ -484,13 +490,13 @@ public class Route extends Filter {
 
         if ((getRouter() != null) && (request.getResourceRef() != null)
                 && (getTemplate() != null)) {
-            String remainingPart = request.getResourceRef().getRemainingPart(
-                    false, getMatchQuery());
+            final String remainingPart = request.getResourceRef()
+                    .getRemainingPart(false, getMatchQuery());
             if (remainingPart != null) {
-                int matchedLength = getTemplate().match(remainingPart);
+                final int matchedLength = getTemplate().match(remainingPart);
 
                 if (matchedLength != -1) {
-                    float totalLength = remainingPart.length();
+                    final float totalLength = remainingPart.length();
 
                     if (totalLength > 0.0F) {
                         result = getRouter().getRequiredScore()
@@ -581,7 +587,7 @@ public class Route extends Filter {
      */
     private void validateAttributes(Request request, Response response) {
         if (this.validations != null) {
-            for (ValidateInfo validate : getValidations()) {
+            for (final ValidateInfo validate : getValidations()) {
                 if (validate.required
                         && !request.getAttributes().containsKey(
                                 validate.attribute)) {
@@ -592,7 +598,7 @@ public class Route extends Filter {
                                             + validate.attribute
                                             + "\" attribute in the request. Please check your request.");
                 } else if (validate.format != null) {
-                    Object value = request.getAttributes().get(
+                    final Object value = request.getAttributes().get(
                             validate.attribute);
                     if (value == null) {
                         response

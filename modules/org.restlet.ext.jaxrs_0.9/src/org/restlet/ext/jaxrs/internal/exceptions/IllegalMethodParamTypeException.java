@@ -33,6 +33,6 @@ public class IllegalMethodParamTypeException extends IllegalTypeException {
      */
     public IllegalMethodParamTypeException(IllegalTypeException ite) {
         super(ite.getMessage());
-        this.setStackTrace(ite.getStackTrace());
+        setStackTrace(ite.getStackTrace());
     }
 }

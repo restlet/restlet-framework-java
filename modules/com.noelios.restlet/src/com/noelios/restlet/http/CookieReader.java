@@ -29,7 +29,6 @@ import org.restlet.data.CookieSetting;
 import org.restlet.data.Parameter;
 import org.restlet.util.DateUtils;
 
-
 /**
  * Cookie header reader.
  * 
@@ -77,9 +76,9 @@ public class CookieReader extends HeaderReader {
      * Constructor.
      * 
      * @param logger
-     *                The logger to use.
+     *            The logger to use.
      * @param header
-     *                The header to read.
+     *            The header to read.
      */
     public CookieReader(Logger logger, String header) {
         super(header);
@@ -185,7 +184,7 @@ public class CookieReader extends HeaderReader {
             } else if (pair.getName().equalsIgnoreCase(NAME_SET_DISCARD)) {
                 result.setMaxAge(-1);
             } else if (pair.getName().equalsIgnoreCase(NAME_SET_EXPIRES)) {
-                Date current = new Date(System.currentTimeMillis());
+                final Date current = new Date(System.currentTimeMillis());
                 Date expires = DateUtils.parse(pair.getValue(),
                         DateUtils.FORMAT_RFC_1036);
 
@@ -250,15 +249,15 @@ public class CookieReader extends HeaderReader {
     private Parameter readPair() throws IOException {
         Parameter result = null;
 
-        if (cachedPair != null) {
-            result = cachedPair;
-            cachedPair = null;
+        if (this.cachedPair != null) {
+            result = this.cachedPair;
+            this.cachedPair = null;
         } else {
             try {
                 boolean readingName = true;
                 boolean readingValue = false;
-                StringBuilder nameBuffer = new StringBuilder();
-                StringBuilder valueBuffer = new StringBuilder();
+                final StringBuilder nameBuffer = new StringBuilder();
+                final StringBuilder valueBuffer = new StringBuilder();
 
                 int nextChar = 0;
                 while ((result == null) && (nextChar != -1)) {
@@ -310,7 +309,7 @@ public class CookieReader extends HeaderReader {
                         }
                     }
                 }
-            } catch (UnsupportedEncodingException uee) {
+            } catch (final UnsupportedEncodingException uee) {
                 throw new IOException(
                         "Unsupported encoding. Please contact the administrator");
             }

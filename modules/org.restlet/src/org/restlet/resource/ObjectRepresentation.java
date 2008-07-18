@@ -31,7 +31,7 @@ import org.restlet.data.MediaType;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  * @param <T>
- *                The class to serialize, see {@link Serializable}
+ *            The class to serialize, see {@link Serializable}
  */
 public class ObjectRepresentation<T extends Serializable> extends
         OutputRepresentation {
@@ -44,7 +44,7 @@ public class ObjectRepresentation<T extends Serializable> extends
      * "application/x-java-serialized-object".
      * 
      * @param serializedRepresentation
-     *                The serialized representation.
+     *            The serialized representation.
      * @throws IOException
      * @throws ClassNotFoundException
      * @throws IllegalArgumentException
@@ -56,7 +56,7 @@ public class ObjectRepresentation<T extends Serializable> extends
         super(MediaType.APPLICATION_JAVA_OBJECT);
         if (serializedRepresentation.getMediaType().equals(
                 MediaType.APPLICATION_JAVA_OBJECT)) {
-            ObjectInputStream ois = new ObjectInputStream(
+            final ObjectInputStream ois = new ObjectInputStream(
                     serializedRepresentation.getStream());
             this.object = (T) ois.readObject();
             ois.close();
@@ -71,7 +71,7 @@ public class ObjectRepresentation<T extends Serializable> extends
      * Constructor
      * 
      * @param object
-     *                The serializable object.
+     *            The serializable object.
      */
     public ObjectRepresentation(T object) {
         super(MediaType.APPLICATION_JAVA_OBJECT);
@@ -89,16 +89,6 @@ public class ObjectRepresentation<T extends Serializable> extends
     }
 
     /**
-     * Sets the represented object.
-     * 
-     * @param object
-     *                The represented object.
-     */
-    public void setObject(T object) {
-        this.object = object;
-    }
-
-    /**
      * Releases the represented object.
      */
     @Override
@@ -107,9 +97,19 @@ public class ObjectRepresentation<T extends Serializable> extends
         super.release();
     }
 
+    /**
+     * Sets the represented object.
+     * 
+     * @param object
+     *            The represented object.
+     */
+    public void setObject(T object) {
+        this.object = object;
+    }
+
     @Override
     public void write(OutputStream outputStream) throws IOException {
-        ObjectOutputStream oos = new ObjectOutputStream(outputStream);
+        final ObjectOutputStream oos = new ObjectOutputStream(outputStream);
         oos.writeObject(getObject());
         oos.close();
     }

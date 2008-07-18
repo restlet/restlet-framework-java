@@ -34,7 +34,7 @@ public class KeepAliveOutputStream extends FilterOutputStream {
      * Constructor.
      * 
      * @param source
-     *                The decorated source stream.
+     *            The decorated source stream.
      */
     public KeepAliveOutputStream(OutputStream source) {
         super(source);

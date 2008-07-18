@@ -37,6 +37,33 @@ import com.noelios.restlet.http.PreferenceUtils;
  */
 public class PreferencesTestCase extends TestCase {
     /**
+     * Tests the parsing of a single preference header.
+     * 
+     * @param headerValue
+     *            The preference header.
+     */
+    private void testMediaType(String headerValue, boolean testEquals)
+            throws IOException {
+        final PreferenceReader<MediaType> pr = new PreferenceReader<MediaType>(
+                PreferenceReader.TYPE_MEDIA_TYPE, headerValue);
+        final List<Preference<MediaType>> prefs = new ArrayList<Preference<MediaType>>();
+        Preference<MediaType> pref = pr.readPreference();
+
+        while (pref != null) {
+            prefs.add(pref);
+            pref = pr.readPreference();
+        }
+
+        // Rewrite the header
+        final String newHeaderValue = PreferenceUtils.format(prefs);
+
+        if (testEquals) {
+            // Compare initial and new headers
+            assertEquals(headerValue, newHeaderValue);
+        }
+    }
+
+    /**
      * Tests the preferences parsing.
      */
     public void testParsing() throws IOException {
@@ -46,32 +73,5 @@ public class PreferencesTestCase extends TestCase {
         testMediaType(
                 "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/*,,*/*;q=0.5",
                 false);
-    }
-
-    /**
-     * Tests the parsing of a single preference header.
-     * 
-     * @param headerValue
-     *                The preference header.
-     */
-    private void testMediaType(String headerValue, boolean testEquals)
-            throws IOException {
-        PreferenceReader<MediaType> pr = new PreferenceReader<MediaType>(
-                PreferenceReader.TYPE_MEDIA_TYPE, headerValue);
-        List<Preference<MediaType>> prefs = new ArrayList<Preference<MediaType>>();
-        Preference<MediaType> pref = pr.readPreference();
-
-        while (pref != null) {
-            prefs.add(pref);
-            pref = pr.readPreference();
-        }
-
-        // Rewrite the header
-        String newHeaderValue = PreferenceUtils.format(prefs);
-
-        if (testEquals) {
-            // Compare initial and new headers
-            assertEquals(headerValue, newHeaderValue);
-        }
     }
 }

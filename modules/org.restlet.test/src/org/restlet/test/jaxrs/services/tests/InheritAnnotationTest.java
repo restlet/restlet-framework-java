@@ -50,7 +50,7 @@ public class InheritAnnotationTest extends JaxRsTestCase {
         return new ApplicationConfig() {
             @Override
             public Set<Class<?>> getResourceClasses() {
-                Set<Class<?>> rrcs = new HashSet<Class<?>>(2);
+                final Set<Class<?>> rrcs = new HashSet<Class<?>>(2);
                 rrcs.add(SERVICE_1);
                 rrcs.add(SERVICE_2);
                 return rrcs;
@@ -64,43 +64,45 @@ public class InheritAnnotationTest extends JaxRsTestCase {
     }
 
     public void test1() throws Exception {
-        Reference reference = createReference(SERVICE_1, "getText");
-        Response response = accessServer(Method.GET, reference);
+        final Reference reference = createReference(SERVICE_1, "getText");
+        final Response response = accessServer(Method.GET, reference);
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEqualMediaType(MediaType.TEXT_PLAIN, response);
-        String entityText = response.getEntity().getText();
+        final String entityText = response.getEntity().getText();
         assertEquals(InheritAnnotationTestService1.RETURN_STRING, entityText);
     }
 
     public void test2a() throws Exception {
-        Reference reference = createReference(SERVICE_2, "getText");
-        Response response = accessServer(Method.GET, reference);
+        final Reference reference = createReference(SERVICE_2, "getText");
+        final Response response = accessServer(Method.GET, reference);
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEqualMediaType(MediaType.TEXT_PLAIN, response);
-        String entityText = response.getEntity().getText();
+        final String entityText = response.getEntity().getText();
         assertEquals(InheritAnnotationTestService2.RETURN_STRING, entityText);
     }
 
     public void test2b() throws Exception {
-        Reference reference = createReference(SERVICE_2, "getSubClassText");
-        Response response = accessServer(Method.GET, reference);
+        final Reference reference = createReference(SERVICE_2,
+                "getSubClassText");
+        final Response response = accessServer(Method.GET, reference);
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEqualMediaType(MediaType.TEXT_PLAIN, response);
-        String entityText = response.getEntity().getText();
+        final String entityText = response.getEntity().getText();
         assertEquals(InheritAnnotationTestService2.RETURN_STRING_SUB,
                 entityText);
     }
 
     public void x_test2c() throws Exception {
-        Reference reference = createReference(SERVICE_2, "getSubClassText/sub");
-        Response response = accessServer(Method.GET, reference);
+        final Reference reference = createReference(SERVICE_2,
+                "getSubClassText/sub");
+        final Response response = accessServer(Method.GET, reference);
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEqualMediaType(MediaType.TEXT_PLAIN, response);
-        String entityText = response.getEntity().getText();
+        final String entityText = response.getEntity().getText();
         assertEquals(InheritAnnotationTestService2.RETURN_STRING_SUB2,
                 entityText);
     }

@@ -32,6 +32,6 @@ public class IllegalBeanSetterTypeException extends IllegalTypeException {
      */
     public IllegalBeanSetterTypeException(IllegalTypeException ite) {
         super(ite.getMessage());
-        this.setStackTrace(ite.getStackTrace());
+        setStackTrace(ite.getStackTrace());
     }
 }

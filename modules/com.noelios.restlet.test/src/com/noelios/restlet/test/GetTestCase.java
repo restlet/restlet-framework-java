@@ -42,30 +42,6 @@ import org.restlet.resource.Variant;
  */
 public class GetTestCase extends BaseConnectorsTestCase {
 
-    @Override
-    protected Application createApplication(Component component) {
-        Application application = new Application(component.getContext()) {
-            @Override
-            public Restlet createRoot() {
-                Router router = new Router(getContext());
-                router.attach("/test", GetTestResource.class);
-                return router;
-            }
-        };
-
-        return application;
-    }
-
-    @Override
-    protected void call(String uri) throws Exception {
-        Request request = new Request(Method.GET, uri);
-        Response r = new Client(Protocol.HTTP).handle(request);
-
-        assertEquals(r.getStatus().getDescription(), Status.SUCCESS_OK, r
-                .getStatus());
-        assertEquals("Hello world", r.getEntity().getText());
-    }
-
     public static class GetTestResource extends Resource {
 
         public GetTestResource(Context ctx, Request request, Response response) {
@@ -77,5 +53,29 @@ public class GetTestCase extends BaseConnectorsTestCase {
         public Representation represent(Variant variant) {
             return new StringRepresentation("Hello world", MediaType.TEXT_PLAIN);
         }
+    }
+
+    @Override
+    protected void call(String uri) throws Exception {
+        final Request request = new Request(Method.GET, uri);
+        final Response r = new Client(Protocol.HTTP).handle(request);
+
+        assertEquals(r.getStatus().getDescription(), Status.SUCCESS_OK, r
+                .getStatus());
+        assertEquals("Hello world", r.getEntity().getText());
+    }
+
+    @Override
+    protected Application createApplication(Component component) {
+        final Application application = new Application(component.getContext()) {
+            @Override
+            public Restlet createRoot() {
+                final Router router = new Router(getContext());
+                router.attach("/test", GetTestResource.class);
+                return router;
+            }
+        };
+
+        return application;
     }
 }

@@ -58,11 +58,11 @@ public class Person {
      * Constructor.
      * 
      * @param name
-     *                The name.
+     *            The name.
      * @param uri
-     *                The URI reference.
+     *            The URI reference.
      * @param email
-     *                The email address.
+     *            The email address.
      */
     public Person(String name, Reference uri, String email) {
         this.name = name;
@@ -101,7 +101,7 @@ public class Person {
      * Sets the email address.
      * 
      * @param email
-     *                The email address.
+     *            The email address.
      */
     public void setEmail(String email) {
         this.email = email;
@@ -111,7 +111,7 @@ public class Person {
      * Sets the human-readable name.
      * 
      * @param name
-     *                The human-readable name.
+     *            The human-readable name.
      */
     public void setName(String name) {
         this.name = name;
@@ -121,7 +121,7 @@ public class Person {
      * Sets the IRI associated with the person.
      * 
      * @param uri
-     *                The IRI associated with the person.
+     *            The IRI associated with the person.
      */
     public void setUri(Reference uri) {
         this.uri = uri;
@@ -131,9 +131,9 @@ public class Person {
      * Writes the current object as an XML element using the given SAX writer.
      * 
      * @param writer
-     *                The SAX writer.
+     *            The SAX writer.
      * @param localName
-     *                The local name of the element.
+     *            The local name of the element.
      * @throws SAXException
      */
     public void writeElement(XmlWriter writer, String localName)
@@ -146,7 +146,7 @@ public class Person {
         if (getName() != null) {
             writer.dataElement(ATOM_NAMESPACE, "name", getName());
         }
-        if (getUri() != null && getUri().toString() != null) {
+        if ((getUri() != null) && (getUri().toString() != null)) {
             writer.dataElement(ATOM_NAMESPACE, "uri", getUri().toString());
         }
 

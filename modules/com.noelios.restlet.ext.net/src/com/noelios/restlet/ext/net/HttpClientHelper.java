@@ -31,7 +31,8 @@ import com.noelios.restlet.http.HttpClientCall;
 
 /**
  * HTTP client connector using the HttpUrlConnectionCall. Here is the list of
- * parameters that are supported: <table>
+ * parameters that are supported:
+ * <table>
  * <tr>
  * <th>Parameter name</th>
  * <th>Value type</th>
@@ -88,9 +89,9 @@ import com.noelios.restlet.http.HttpClientCall;
  * the {@link #getHostnameVerifier()} method for details.
  * 
  * @see Client#getConnectTimeout()
- * @see <a
+ * @see <a *
  *      href="http://java.sun.com/j2se/1.5.0/docs/guide/net/index.html">Networking
- *      Features</a>
+ *      * Features< /a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper {
@@ -98,7 +99,7 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
      * Constructor.
      * 
      * @param client
-     *                The client to help.
+     *            The client to help.
      */
     public HttpClientHelper(Client client) {
         super(client);
@@ -110,7 +111,7 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
      * Creates a low-level HTTP client call from a high-level uniform call.
      * 
      * @param request
-     *                The high-level request.
+     *            The high-level request.
      * @return A low-level HTTP client call.
      */
     @Override
@@ -121,7 +122,7 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
             result = new HttpUrlConnectionCall(this, request.getMethod()
                     .toString(), request.getResourceRef().toString(), request
                     .isEntityAvailable());
-        } catch (IOException ioe) {
+        } catch (final IOException ioe) {
             getLogger().log(Level.WARNING,
                     "Unable to create the HTTP client call", ioe);
         }

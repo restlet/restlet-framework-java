@@ -21,7 +21,6 @@ package com.noelios.restlet.http;
 import java.io.IOException;
 import java.io.OutputStream;
 
-
 /**
  * OutputStream to write data in the HTTP chunked encoding format to a
  * destination OutputStream.<br>
@@ -30,7 +29,7 @@ import java.io.OutputStream;
  * 
  * @author <a href="mailto:kevin.a.conaway@gmail.com">Kevin Conaway</a>
  * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html">HTTP/1.1
- *      Protocol</a>
+ *      * Protocol< /a>
  */
 public class ChunkedOutputStream extends OutputStream {
 
@@ -60,9 +59,9 @@ public class ChunkedOutputStream extends OutputStream {
 
     /**
      * @param destination
-     *                Outputstream to write chunked data to
+     *            Outputstream to write chunked data to
      * @param chunkSize
-     *                Chunk size
+     *            Chunk size
      */
     public ChunkedOutputStream(OutputStream destination, int chunkSize) {
         this.destination = destination;
@@ -75,7 +74,7 @@ public class ChunkedOutputStream extends OutputStream {
      * @return True if the current chunk is full.
      */
     private boolean chunkFull() {
-        return bytesWritten == buffer.length;
+        return this.bytesWritten == this.buffer.length;
     }
 
     /**
@@ -84,12 +83,12 @@ public class ChunkedOutputStream extends OutputStream {
      */
     @Override
     public void close() throws IOException {
-        if (!closed) {
+        if (!this.closed) {
             writeChunk();
             writeFinalChunk();
             super.close();
-            closed = true;
-            destination.flush();
+            this.closed = true;
+            this.destination.flush();
         }
     }
 
@@ -99,14 +98,14 @@ public class ChunkedOutputStream extends OutputStream {
     @Override
     public void flush() throws IOException {
         writeChunk();
-        destination.flush();
+        this.destination.flush();
     }
 
     /**
      * Reset the internal buffer.
      */
     private void reset() {
-        bytesWritten = 0;
+        this.bytesWritten = 0;
     }
 
     @Override
@@ -114,7 +113,7 @@ public class ChunkedOutputStream extends OutputStream {
         if (chunkFull()) {
             writeChunk();
         }
-        buffer[bytesWritten++] = (byte) b;
+        this.buffer[this.bytesWritten++] = (byte) b;
     }
 
     /**
@@ -123,8 +122,8 @@ public class ChunkedOutputStream extends OutputStream {
      * @throws IOException
      */
     private void writeBuffer() throws IOException {
-        destination.write(buffer, 0, bytesWritten);
-        HttpUtils.writeCRLF(destination);
+        this.destination.write(this.buffer, 0, this.bytesWritten);
+        HttpUtils.writeCRLF(this.destination);
     }
 
     /**
@@ -133,7 +132,7 @@ public class ChunkedOutputStream extends OutputStream {
      * @throws IOException
      */
     private void writeChunk() throws IOException {
-        if (bytesWritten > 0) {
+        if (this.bytesWritten > 0) {
             writePosition();
             writeBuffer();
             reset();
@@ -146,9 +145,9 @@ public class ChunkedOutputStream extends OutputStream {
      * @throws IOException
      */
     private void writeFinalChunk() throws IOException {
-        destination.write((byte) '0');
-        HttpUtils.writeCRLF(destination);
-        HttpUtils.writeCRLF(destination);
+        this.destination.write((byte) '0');
+        HttpUtils.writeCRLF(this.destination);
+        HttpUtils.writeCRLF(this.destination);
     }
 
     /**
@@ -157,7 +156,8 @@ public class ChunkedOutputStream extends OutputStream {
      * @throws IOException
      */
     private void writePosition() throws IOException {
-        destination.write(Integer.toHexString(bytesWritten).getBytes());
-        HttpUtils.writeCRLF(destination);
+        this.destination.write(Integer.toHexString(this.bytesWritten)
+                .getBytes());
+        HttpUtils.writeCRLF(this.destination);
     }
 }

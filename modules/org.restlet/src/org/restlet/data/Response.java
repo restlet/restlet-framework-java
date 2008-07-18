@@ -66,8 +66,9 @@ public class Response extends Message {
 
         @Override
         public Series<CookieSetting> createSeries(List<CookieSetting> delegate) {
-            if (delegate != null)
+            if (delegate != null) {
                 return new CookieSettingSeries(delegate);
+            }
 
             return new CookieSettingSeries();
         }
@@ -158,8 +159,9 @@ public class Response extends Message {
         if (a == null) {
             synchronized (this) {
                 a = this.allowedMethods;
-                if (a == null)
+                if (a == null) {
                     this.allowedMethods = a = new CopyOnWriteArraySet<Method>();
+                }
             }
         }
         return a;
@@ -173,7 +175,7 @@ public class Response extends Message {
      */
     @Deprecated
     public ChallengeRequest getChallengeRequest() {
-        List<ChallengeRequest> requests = this.challengeRequests;
+        final List<ChallengeRequest> requests = this.challengeRequests;
         if ((requests != null) && (requests.size() > 0)) {
             return requests.get(0);
         } else {
@@ -193,8 +195,9 @@ public class Response extends Message {
         if (cr == null) {
             synchronized (this) {
                 cr = this.challengeRequests;
-                if (cr == null)
+                if (cr == null) {
                     this.challengeRequests = cr = new CopyOnWriteArrayList<ChallengeRequest>();
+                }
             }
         }
         return cr;
@@ -212,8 +215,9 @@ public class Response extends Message {
         if (c == null) {
             synchronized (this) {
                 c = this.cookieSettings;
-                if (c == null)
+                if (c == null) {
                     this.cookieSettings = c = new CookieSettingSeries();
+                }
             }
         }
         return c;
@@ -228,8 +232,9 @@ public class Response extends Message {
      * @return The set of dimensions on which the response entity may vary.
      */
     public Set<Dimension> getDimensions() {
-        if (this.dimensions == null)
+        if (this.dimensions == null) {
             this.dimensions = new CopyOnWriteArraySet<Dimension>();
+        }
         return this.dimensions;
     }
 
@@ -261,7 +266,7 @@ public class Response extends Message {
      * @return The associated request
      */
     public Request getRequest() {
-        return request;
+        return this.request;
     }
 
     /**
@@ -276,8 +281,9 @@ public class Response extends Message {
         if (s == null) {
             synchronized (this) {
                 s = this.serverInfo;
-                if (s == null)
+                if (s == null) {
                     this.serverInfo = s = new ServerInfo();
+                }
             }
         }
         return s;
@@ -402,7 +408,7 @@ public class Response extends Message {
      *            client.
      */
     public void setChallengeRequest(ChallengeRequest request) {
-        List<ChallengeRequest> requests = new CopyOnWriteArrayList<ChallengeRequest>();
+        final List<ChallengeRequest> requests = new CopyOnWriteArrayList<ChallengeRequest>();
         requests.add(request);
         setChallengeRequests(requests);
     }
