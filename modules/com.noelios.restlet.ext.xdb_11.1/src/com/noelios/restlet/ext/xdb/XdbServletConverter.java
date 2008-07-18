@@ -45,8 +45,7 @@ import com.noelios.restlet.http.HttpServerConverter;
  * your Servlet to delegate all those calls to this class's service() method.
  * Remember to set the target Restlet, for example using a Restlet Router
  * instance. You can get the Restlet context directly on instances of this
- * class, it will be based on the parent Servlet's context for logging purpose.
- * <br>
+ * class, it will be based on the parent Servlet's context for logging purpose. <br>
  * <br>
  * This class is especially useful when directly integrating Restlets with
  * Spring managed Web applications. Here is a simple usage example:
@@ -96,7 +95,7 @@ public class XdbServletConverter extends HttpServerConverter {
      * invoking the service() method.
      * 
      * @param context
-     *                The Servlet context.
+     *            The Servlet context.
      */
     public XdbServletConverter(ServletContext context) {
         this(context, null);
@@ -107,9 +106,9 @@ public class XdbServletConverter extends HttpServerConverter {
      * invoking the service() method.
      * 
      * @param context
-     *                The Servlet context.
+     *            The Servlet context.
      * @param target
-     *                The Restlet target.
+     *            The Restlet target.
      */
     public XdbServletConverter(ServletContext context, Restlet target) {
         super(new Context(new ServletLogger(context)));
@@ -145,9 +144,9 @@ public class XdbServletConverter extends HttpServerConverter {
      * "target" Restlet.
      * 
      * @param request
-     *                The HTTP Servlet request.
+     *            The HTTP Servlet request.
      * @param response
-     *                The HTTP Servlet response.
+     *            The HTTP Servlet response.
      * @throws ServletException
      * @throws IOException
      */
@@ -181,7 +180,7 @@ public class XdbServletConverter extends HttpServerConverter {
      * Servlet's request attributes into the Restlet's request attributes map.
      * 
      * @param servletCall
-     *                The low-level Servlet call.
+     *            The low-level Servlet call.
      * @return A new high-level uniform request.
      */
     @SuppressWarnings("unchecked")
@@ -204,7 +203,7 @@ public class XdbServletConverter extends HttpServerConverter {
      * Returns the base reference of new Restlet requests.
      * 
      * @param request
-     *                The Servlet request.
+     *            The Servlet request.
      * @return The base reference of new Restlet requests.
      */
     public Reference getBaseRef(HttpServletRequest request) {
@@ -222,7 +221,7 @@ public class XdbServletConverter extends HttpServerConverter {
      * the result of getBaseRef().
      * 
      * @param request
-     *                The Servlet request.
+     *            The Servlet request.
      * @return The root reference of new Restlet requests.
      */
     public Reference getRootRef(HttpServletRequest request) {
@@ -242,7 +241,7 @@ public class XdbServletConverter extends HttpServerConverter {
      * Sets the target Restlet.
      * 
      * @param target
-     *                The target Restlet.
+     *            The target Restlet.
      */
     public void setTarget(Restlet target) {
         this.target = target;

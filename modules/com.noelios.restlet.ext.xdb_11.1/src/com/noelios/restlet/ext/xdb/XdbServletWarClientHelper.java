@@ -82,11 +82,11 @@ public class XdbServletWarClientHelper extends ServletWarClientHelper {
      * Constructor.
      * 
      * @param client
-     *                The client to help.
+     *            The client to help.
      * @param config
-     *                The Servlet Config
+     *            The Servlet Config
      * @param conn
-     *                The JDBC Connection
+     *            The JDBC Connection
      */
     public XdbServletWarClientHelper(Client client, ServletConfig config,
             Connection conn) {

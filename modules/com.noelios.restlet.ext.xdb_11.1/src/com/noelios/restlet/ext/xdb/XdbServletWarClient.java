@@ -56,11 +56,11 @@ public class XdbServletWarClient extends Client {
      * Constructor.
      * 
      * @param context
-     *                The context.
+     *            The context.
      * @param config
-     *                The Servlet config object.
+     *            The Servlet config object.
      * @param conn
-     *                The JDBC Connection to XMLDB repository.
+     *            The JDBC Connection to XMLDB repository.
      */
     public XdbServletWarClient(Context context, ServletConfig config,
             Connection conn) {

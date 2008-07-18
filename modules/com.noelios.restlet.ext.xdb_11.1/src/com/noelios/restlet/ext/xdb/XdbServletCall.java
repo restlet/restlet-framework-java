@@ -53,7 +53,7 @@ import com.noelios.restlet.util.KeepAliveOutputStream;
 /**
  * Call that is used by the XDB Servlet HTTP connector. This is a downgrade
  * version to Servlet 2.2 of ServletCall class.
- *
+ * 
  * @see com.noelios.restlet.ext.servlet.ServletCall
  * @author Marcelo F. Ochoa (mochoa@ieee.org)
  */
@@ -77,15 +77,15 @@ public class XdbServletCall extends HttpServerCall {
      * Constructor.
      * 
      * @param logger
-     *                The logger.
+     *            The logger.
      * @param serverAddress
-     *                The server IP address.
+     *            The server IP address.
      * @param serverPort
-     *                The server port.
+     *            The server port.
      * @param request
-     *                The Servlet request.
+     *            The Servlet request.
      * @param response
-     *                The Servlet response.
+     *            The Servlet response.
      */
     public XdbServletCall(Logger logger, String serverAddress, int serverPort,
             HttpServletRequest request, HttpServletResponse response) {
@@ -98,11 +98,11 @@ public class XdbServletCall extends HttpServerCall {
      * Constructor.
      * 
      * @param server
-     *                The parent server.
+     *            The parent server.
      * @param request
-     *                The HTTP Servlet request to wrap.
+     *            The HTTP Servlet request to wrap.
      * @param response
-     *                The HTTP Servlet response to wrap.
+     *            The HTTP Servlet response to wrap.
      */
     public XdbServletCall(Server server, HttpServletRequest request,
             HttpServletResponse response) {
@@ -208,11 +208,11 @@ public class XdbServletCall extends HttpServerCall {
         if (responseEntityStream == null)
             try {
                 if (isResponseChunked()) {
-                    responseEntityStream =
-                            new ChunkedOutputStream(getResponse().getOutputStream());
+                    responseEntityStream = new ChunkedOutputStream(
+                            getResponse().getOutputStream());
                 } else {
-                    responseEntityStream =
-                            new KeepAliveOutputStream(getResponse().getOutputStream());
+                    responseEntityStream = new KeepAliveOutputStream(
+                            getResponse().getOutputStream());
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -225,12 +225,11 @@ public class XdbServletCall extends HttpServerCall {
         if (requestEntityStream == null) {
             try {
                 if (isRequestChunked()) {
-                    requestEntityStream =
-                            new ChunkedInputStream(getRequest().getInputStream());
+                    requestEntityStream = new ChunkedInputStream(getRequest()
+                            .getInputStream());
                 } else {
-                    requestEntityStream =
-                            new InputEntityStream(getRequest().getInputStream(),
-                                                  size);
+                    requestEntityStream = new InputEntityStream(getRequest()
+                            .getInputStream(), size);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -288,7 +287,7 @@ public class XdbServletCall extends HttpServerCall {
      * optional entity and send them on the network.
      * 
      * @param response
-     *                The high-level response.
+     *            The high-level response.
      * @throws IOException
      */
     @Override
