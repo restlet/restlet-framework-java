@@ -9,6 +9,8 @@ Changes log
    Reported by Eben.
  - Fixed potential bug when putting representation to a file when another one 
    starts with the same name. Reported by Rémi Dewitte.
+ - Fixed bug with the support of media-type parameters when writing the response. 
+   Reported by Zsolt Czinkos.
 [Enhancements]
  - Updated Jetty to version 6.1.11
  
