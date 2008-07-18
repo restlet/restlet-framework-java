@@ -18,10 +18,6 @@
 
 package com.noelios.restlet.ext.xdb;
 
-import com.noelios.restlet.http.ChunkedInputStream;
-
-import com.noelios.restlet.http.ChunkedOutputStream;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -46,6 +42,8 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.util.Series;
 
+import com.noelios.restlet.http.ChunkedInputStream;
+import com.noelios.restlet.http.ChunkedOutputStream;
 import com.noelios.restlet.http.HttpServerCall;
 import com.noelios.restlet.http.InputEntityStream;
 import com.noelios.restlet.util.KeepAliveOutputStream;
@@ -137,6 +135,24 @@ public class XdbServletCall extends HttpServerCall {
     }
 
     @Override
+    public InputStream getRequestEntityStream(long size) {
+        if (this.requestEntityStream == null) {
+            try {
+                if (isRequestChunked()) {
+                    this.requestEntityStream = new ChunkedInputStream(
+                            getRequest().getInputStream());
+                } else {
+                    this.requestEntityStream = new InputEntityStream(
+                            getRequest().getInputStream(), size);
+                }
+            } catch (final IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return this.requestEntityStream;
+    }
+
+    @Override
     public ReadableByteChannel getRequestHeadChannel() {
         // Not available
         return null;
@@ -151,11 +167,11 @@ public class XdbServletCall extends HttpServerCall {
             // Copy the headers from the request object
             String headerName;
             String headerValue;
-            for (Enumeration<String> names = getRequest().getHeaderNames(); names
-                    .hasMoreElements();) {
+            for (final Enumeration<String> names = getRequest()
+                    .getHeaderNames(); names.hasMoreElements();) {
                 headerName = names.nextElement();
-                for (Enumeration<String> values = getRequest().getHeaders(
-                        headerName); values.hasMoreElements();) {
+                for (final Enumeration<String> values = getRequest()
+                        .getHeaders(headerName); values.hasMoreElements();) {
                     headerValue = values.nextElement();
                     this.requestHeaders.add(new Parameter(headerName,
                             headerValue));
@@ -179,7 +195,7 @@ public class XdbServletCall extends HttpServerCall {
      */
     @Override
     public String getRequestUri() {
-        String queryString = getRequest().getQueryString();
+        final String queryString = getRequest().getQueryString();
 
         if ((queryString == null) || (queryString.equals(""))) {
             return getRequest().getRequestURI();
@@ -205,43 +221,53 @@ public class XdbServletCall extends HttpServerCall {
 
     @Override
     public OutputStream getResponseEntityStream() {
-        if (responseEntityStream == null)
+        if (this.responseEntityStream == null) {
             try {
                 if (isResponseChunked()) {
-                    responseEntityStream = new ChunkedOutputStream(
+                    this.responseEntityStream = new ChunkedOutputStream(
                             getResponse().getOutputStream());
                 } else {
-                    responseEntityStream = new KeepAliveOutputStream(
+                    this.responseEntityStream = new KeepAliveOutputStream(
                             getResponse().getOutputStream());
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        return responseEntityStream;
-    }
-
-    @Override
-    public InputStream getRequestEntityStream(long size) {
-        if (requestEntityStream == null) {
-            try {
-                if (isRequestChunked()) {
-                    requestEntityStream = new ChunkedInputStream(getRequest()
-                            .getInputStream());
-                } else {
-                    requestEntityStream = new InputEntityStream(getRequest()
-                            .getInputStream(), size);
-                }
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 e.printStackTrace();
             }
         }
-        return requestEntityStream;
+        return this.responseEntityStream;
+    }
+
+    @Override
+    public String getSslCipherSuite() {
+        return (String) getRequest().getAttribute(
+                "javax.servlet.request.cipher_suite");
+    }
+
+    @Override
+    public List<Certificate> getSslClientCertificates() {
+        final Certificate[] certificateArray = (Certificate[]) getRequest()
+                .getAttribute("javax.servlet.request.X509Certificate");
+        if (certificateArray != null) {
+            return Arrays.asList(certificateArray);
+        }
+
+        return Arrays.asList(new Certificate[0]);
+    }
+
+    @Override
+    public Integer getSslKeySize() {
+        Integer keySize = (Integer) getRequest().getAttribute(
+                "javax.servlet.request.key_size");
+        if (keySize == null) {
+            keySize = super.getSslKeySize();
+        }
+        return keySize;
     }
 
     @Override
     public String getVersion() {
         String result = null;
-        int index = getRequest().getProtocol().indexOf('/');
+        final int index = getRequest().getProtocol().indexOf('/');
 
         if (index != -1) {
             result = getRequest().getProtocol().substring(index + 1);
@@ -253,33 +279,6 @@ public class XdbServletCall extends HttpServerCall {
     @Override
     public boolean isConfidential() {
         return getRequest().isSecure();
-    }
-
-    @Override
-    public List<Certificate> getSslClientCertificates() {
-        Certificate[] certificateArray = (Certificate[]) getRequest()
-                .getAttribute("javax.servlet.request.X509Certificate");
-        if (certificateArray != null) {
-            return Arrays.asList(certificateArray);
-        }
-
-        return Arrays.asList(new Certificate[0]);
-    }
-
-    @Override
-    public String getSslCipherSuite() {
-        return (String) getRequest().getAttribute(
-                "javax.servlet.request.cipher_suite");
-    }
-
-    @Override
-    public Integer getSslKeySize() {
-        Integer keySize = (Integer) getRequest().getAttribute(
-                "javax.servlet.request.key_size");
-        if (keySize == null) {
-            keySize = super.getSslKeySize();
-        }
-        return keySize;
     }
 
     /**
@@ -294,7 +293,7 @@ public class XdbServletCall extends HttpServerCall {
     public void sendResponse(Response response) throws IOException {
         // Add the response headers
         Parameter header;
-        for (Iterator<Parameter> iter = getResponseHeaders().iterator(); iter
+        for (final Iterator<Parameter> iter = getResponseHeaders().iterator(); iter
                 .hasNext();) {
             header = iter.next();
             getResponse().addHeader(header.getName(), header.getValue());
@@ -306,7 +305,7 @@ public class XdbServletCall extends HttpServerCall {
         if (Status.isError(getStatusCode()) && (response == null)) {
             try {
                 getResponse().sendError(getStatusCode(), getReasonPhrase());
-            } catch (IOException ioe) {
+            } catch (final IOException ioe) {
                 getLogger().log(Level.WARNING,
                         "Unable to set the response error status", ioe);
             }

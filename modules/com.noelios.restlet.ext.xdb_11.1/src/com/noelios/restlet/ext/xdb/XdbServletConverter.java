@@ -115,88 +115,28 @@ public class XdbServletConverter extends HttpServerConverter {
         this.target = target;
         CallableStatement preparedstatement = null;
         try {
-            conn = XdbServerServlet.getConnection();
+            this.conn = XdbServerServlet.getConnection();
             int endPoint = 1;
-            preparedstatement = conn
+            preparedstatement = this.conn
                     .prepareCall("{ call dbms_xdb.getListenerEndPoint(1,?,?,?) }");
             preparedstatement.registerOutParameter(1, Types.VARCHAR);
             preparedstatement.registerOutParameter(2, Types.INTEGER);
             preparedstatement.registerOutParameter(3, Types.INTEGER);
             preparedstatement.execute();
-            localAddress = preparedstatement.getString(1);
-            localPort = preparedstatement.getInt(2);
+            this.localAddress = preparedstatement.getString(1);
+            this.localPort = preparedstatement.getInt(2);
             endPoint = preparedstatement.getInt(3);
-            this.getLogger().info(
+            getLogger().info(
                     "[Noelios Restlet Engine] - The ServerServlet address = "
-                            + localAddress + " port = " + localPort
+                            + this.localAddress + " port = " + this.localPort
                             + " endPoint = " + endPoint);
-        } catch (ServletException e) {
+        } catch (final ServletException e) {
             context.log("Failed to get SQL Connection", e);
-        } catch (SQLException s) {
+        } catch (final SQLException s) {
             context.log("Failed to get Listener Endpoint", s);
         } finally {
             XdbServerServlet.closeDbResources(preparedstatement, null);
         }
-    }
-
-    /**
-     * Services a HTTP Servlet request as a Restlet request handled by the
-     * "target" Restlet.
-     * 
-     * @param request
-     *            The HTTP Servlet request.
-     * @param response
-     *            The HTTP Servlet response.
-     * @throws ServletException
-     * @throws IOException
-     */
-    public void service(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        if (getTarget() != null) {
-            // Convert the Servlet call to a Restlet call
-            XdbServletCall servletCall = new XdbServletCall(getLogger(),
-                    this.localAddress, this.localPort, request, response);
-            HttpRequest httpRequest = toRequest(servletCall);
-            HttpResponse httpResponse = new HttpResponse(servletCall,
-                    httpRequest);
-
-            // Adjust the relative reference
-            httpRequest.getResourceRef().setBaseRef(getBaseRef(request));
-
-            // Adjust the root reference
-            httpRequest.setRootRef(getRootRef(request));
-
-            // Handle the request and commit the response
-            getTarget().handle(httpRequest, httpResponse);
-            commit(httpResponse);
-        } else {
-            getLogger().warning("Unable to find the Restlet target");
-        }
-    }
-
-    /**
-     * Converts a low-level Servlet call into a high-level Restlet request. In
-     * addition to the parent HttpServerConverter class, it also copies the
-     * Servlet's request attributes into the Restlet's request attributes map.
-     * 
-     * @param servletCall
-     *            The low-level Servlet call.
-     * @return A new high-level uniform request.
-     */
-    @SuppressWarnings("unchecked")
-    public HttpRequest toRequest(XdbServletCall servletCall) {
-        HttpRequest result = super.toRequest(servletCall);
-
-        // Copy all Servlet's request attributes
-        String attributeName;
-        for (Enumeration<String> namesEnum = servletCall.getRequest()
-                .getAttributeNames(); namesEnum.hasMoreElements();) {
-            attributeName = namesEnum.nextElement();
-            result.getAttributes().put(attributeName,
-                    servletCall.getRequest().getAttribute(attributeName));
-        }
-
-        return result;
     }
 
     /**
@@ -211,7 +151,8 @@ public class XdbServletConverter extends HttpServerConverter {
 
         // Do not use getContextPath and getRequestURL,
         // because XMLDB allways returns null and is servlet 2.2
-        String requestUrl = request.getServletPath() + request.getRequestURI();
+        final String requestUrl = request.getServletPath()
+                + request.getRequestURI();
         result = new Reference(requestUrl);
         return result;
     }
@@ -238,6 +179,41 @@ public class XdbServletConverter extends HttpServerConverter {
     }
 
     /**
+     * Services a HTTP Servlet request as a Restlet request handled by the
+     * "target" Restlet.
+     * 
+     * @param request
+     *            The HTTP Servlet request.
+     * @param response
+     *            The HTTP Servlet response.
+     * @throws ServletException
+     * @throws IOException
+     */
+    public void service(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        if (getTarget() != null) {
+            // Convert the Servlet call to a Restlet call
+            final XdbServletCall servletCall = new XdbServletCall(getLogger(),
+                    this.localAddress, this.localPort, request, response);
+            final HttpRequest httpRequest = toRequest(servletCall);
+            final HttpResponse httpResponse = new HttpResponse(servletCall,
+                    httpRequest);
+
+            // Adjust the relative reference
+            httpRequest.getResourceRef().setBaseRef(getBaseRef(request));
+
+            // Adjust the root reference
+            httpRequest.setRootRef(getRootRef(request));
+
+            // Handle the request and commit the response
+            getTarget().handle(httpRequest, httpResponse);
+            commit(httpResponse);
+        } else {
+            getLogger().warning("Unable to find the Restlet target");
+        }
+    }
+
+    /**
      * Sets the target Restlet.
      * 
      * @param target
@@ -245,6 +221,31 @@ public class XdbServletConverter extends HttpServerConverter {
      */
     public void setTarget(Restlet target) {
         this.target = target;
+    }
+
+    /**
+     * Converts a low-level Servlet call into a high-level Restlet request. In
+     * addition to the parent HttpServerConverter class, it also copies the
+     * Servlet's request attributes into the Restlet's request attributes map.
+     * 
+     * @param servletCall
+     *            The low-level Servlet call.
+     * @return A new high-level uniform request.
+     */
+    @SuppressWarnings("unchecked")
+    public HttpRequest toRequest(XdbServletCall servletCall) {
+        final HttpRequest result = super.toRequest(servletCall);
+
+        // Copy all Servlet's request attributes
+        String attributeName;
+        for (final Enumeration<String> namesEnum = servletCall.getRequest()
+                .getAttributeNames(); namesEnum.hasMoreElements();) {
+            attributeName = namesEnum.nextElement();
+            result.getAttributes().put(attributeName,
+                    servletCall.getRequest().getAttribute(attributeName));
+        }
+
+        return result;
     }
 
 }

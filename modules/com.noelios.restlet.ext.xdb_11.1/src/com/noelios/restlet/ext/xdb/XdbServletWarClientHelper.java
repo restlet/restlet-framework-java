@@ -111,41 +111,39 @@ public class XdbServletWarClientHelper extends ServletWarClientHelper {
 
         if (request.getMethod().equals(Method.GET)
                 || request.getMethod().equals(Method.HEAD)) {
-            String basePath = request.getResourceRef().getPath();
-            int lastSlashIndex = basePath.lastIndexOf('/');
+            final String basePath = request.getResourceRef().getPath();
+            final int lastSlashIndex = basePath.lastIndexOf('/');
             String entry = (lastSlashIndex == -1) ? basePath : basePath
                     .substring(lastSlashIndex + 1);
             Representation output = null;
-            String xdbResPath = BASE_DIR + connectedUser + DEPLOY_DIR
-                    + this.config.getServletName() + basePath;
+            final String xdbResPath = BASE_DIR + this.connectedUser
+                    + DEPLOY_DIR + this.config.getServletName() + basePath;
 
             if (basePath.endsWith("/")) {
                 // Return the directory listing
                 try {
-                    stmt = conn
+                    stmt = this.conn
                             .prepareStatement("SELECT path(1),extractValue(res,'/Resource/@Container') "
                                     + "FROM resource_view WHERE under_path(res,1,?,1 ) = 1");
-                    this.getLogger()
-                            .info("looking resources at: " + xdbResPath);
+                    getLogger().info("looking resources at: " + xdbResPath);
                     stmt.setString(1, xdbResPath);
                     rset = stmt.executeQuery();
                     if (rset.next()) {
-                        ReferenceList rl = new ReferenceList();
+                        final ReferenceList rl = new ReferenceList();
                         rl.setIdentifier(request.getResourceRef());
 
                         while (rset.next()) {
                             entry = rset.getString(1)
                                     + (("true".equalsIgnoreCase(rset
                                             .getString(2))) ? "/" : "");
-                            this.getLogger().info(
-                                    "Reference: " + basePath + entry);
+                            getLogger().info("Reference: " + basePath + entry);
                             rl.add(new Reference(basePath + entry));
                         }
 
                         output = rl.getTextRepresentation();
                     }
-                } catch (SQLException sqe) {
-                    this.getLogger().throwing("XdbServletWarClientHelper",
+                } catch (final SQLException sqe) {
+                    getLogger().throwing("XdbServletWarClientHelper",
                             "handleWar", sqe);
                     throw new RuntimeException(
                             "Exception querying resource_view - xdbResPath: "
@@ -157,20 +155,19 @@ public class XdbServletWarClientHelper extends ServletWarClientHelper {
                 // Return the entry content
                 try {
                     InputStream is = null;
-                    stmt = conn
+                    stmt = this.conn
                             .prepareStatement("select xdburitype(?).getBlob(),"
                                     + "xdburitype(?).getContentType() "
                                     + "from dual");
                     stmt.setString(1, xdbResPath);
                     stmt.setString(2, xdbResPath);
-                    this.getLogger()
-                            .info("looking resources at: " + xdbResPath);
+                    getLogger().info("looking resources at: " + xdbResPath);
                     rset = stmt.executeQuery();
                     if (rset.next()) {
-                        Blob blob = (Blob) rset.getObject(1);
-                        String mediaType = rset.getString(2);
+                        final Blob blob = (Blob) rset.getObject(1);
+                        final String mediaType = rset.getString(2);
                         is = blob.getBinaryStream();
-                        MetadataService metadataService = getMetadataService(request);
+                        final MetadataService metadataService = getMetadataService(request);
                         output = new InputRepresentation(is, metadataService
                                 .getDefaultMediaType());
                         output.setIdentifier(request.getResourceRef());
@@ -179,12 +176,12 @@ public class XdbServletWarClientHelper extends ServletWarClientHelper {
                         // See if the Servlet context specified
                         // a particular Mime Type
                         if (mediaType != null) {
-                            this.getLogger().info("mediaType: " + mediaType);
+                            getLogger().info("mediaType: " + mediaType);
                             output.setMediaType(new MediaType(mediaType));
                         }
                     }
-                } catch (SQLException sqe) {
-                    this.getLogger().throwing("XdbServletWarClientHelper",
+                } catch (final SQLException sqe) {
+                    getLogger().throwing("XdbServletWarClientHelper",
                             "handleWar", sqe);
                     throw new RuntimeException(
                             "Exception querying xdburitype(?).getBlob() - xdbResPath: "
@@ -209,17 +206,16 @@ public class XdbServletWarClientHelper extends ServletWarClientHelper {
         PreparedStatement stmt = null;
         ResultSet rset = null;
         try {
-            stmt = conn.prepareStatement("select USER from dual");
+            stmt = this.conn.prepareStatement("select USER from dual");
             rset = stmt.executeQuery();
             if (rset.next()) {
-                connectedUser = rset.getString(1);
+                this.connectedUser = rset.getString(1);
             } else {
-                connectedUser = "PUBLIC";
+                this.connectedUser = "PUBLIC";
             }
-            this.getLogger().info("efective user is: " + connectedUser);
-        } catch (SQLException sqe) {
-            this.getLogger()
-                    .throwing("XdbServletWarClientHelper", "start", sqe);
+            getLogger().info("efective user is: " + this.connectedUser);
+        } catch (final SQLException sqe) {
+            getLogger().throwing("XdbServletWarClientHelper", "start", sqe);
             throw new RuntimeException("Exception querying USER from dual ",
                     sqe);
         } finally {
