@@ -16,7 +16,7 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package org.restlet.gwt.util;
+package org.restlet.gwt.internal;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -27,6 +27,7 @@ import org.restlet.gwt.data.Form;
 import org.restlet.gwt.data.Parameter;
 import org.restlet.gwt.data.Request;
 import org.restlet.gwt.data.Response;
+import org.restlet.gwt.util.Series;
 
 /**
  * Delegate used by API classes to get support from the implementation classes.

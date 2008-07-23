@@ -24,8 +24,8 @@ import java.util.List;
 import org.restlet.gwt.data.Protocol;
 import org.restlet.gwt.data.Request;
 import org.restlet.gwt.data.Response;
+import org.restlet.gwt.internal.Helper;
 import org.restlet.gwt.util.Engine;
-import org.restlet.gwt.util.Helper;
 
 /**
  * Connector acting as a generic client. It internally uses one of the available

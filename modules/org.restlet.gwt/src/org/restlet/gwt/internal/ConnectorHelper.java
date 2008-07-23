@@ -24,7 +24,6 @@ import java.util.List;
 import org.restlet.gwt.Connector;
 import org.restlet.gwt.Context;
 import org.restlet.gwt.data.Protocol;
-import org.restlet.gwt.util.Helper;
 
 /**
  * Base connector helper.

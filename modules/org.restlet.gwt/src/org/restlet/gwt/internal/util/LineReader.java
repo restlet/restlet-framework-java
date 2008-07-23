@@ -25,6 +25,8 @@ package org.restlet.gwt.internal.util;
  */
 public class LineReader extends CharacterReader {
 
+    private int savedNextChar;
+
     /**
      * Constructor.
      * 
@@ -33,10 +35,56 @@ public class LineReader extends CharacterReader {
      */
     public LineReader(String text) {
         super(text);
+        this.savedNextChar = -2;
+    }
+
+    private int getNextChar() {
+        int result = -1;
+
+        if (this.savedNextChar != -2) {
+            result = this.savedNextChar;
+            this.savedNextChar = -2;
+        } else {
+            result = read();
+        }
+
+        return result;
     }
 
     public String readLine() {
-        return null;
+        StringBuilder sb = null;
+        boolean eol = false;
+        int nextChar = getNextChar();
+
+        while (!eol && (nextChar != -1)) {
+            if (nextChar == 10) {
+                eol = true;
+            } else if (nextChar == 13) {
+                eol = true;
+
+                // Check if there is a immediate LF following the CR
+                nextChar = getNextChar();
+                if (nextChar != 10) {
+                    setSavedNextChar(nextChar);
+                }
+            }
+
+            if (!eol) {
+                if (sb == null) {
+                    sb = new StringBuilder();
+                }
+
+                sb.append((char) nextChar);
+                nextChar = getNextChar();
+            }
+
+        }
+
+        return (sb == null) ? null : sb.toString();
+    }
+
+    private void setSavedNextChar(int nextChar) {
+        this.savedNextChar = nextChar;
     }
 
 }

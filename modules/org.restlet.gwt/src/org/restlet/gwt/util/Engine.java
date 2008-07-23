@@ -33,6 +33,7 @@ import org.restlet.gwt.data.MediaType;
 import org.restlet.gwt.data.Parameter;
 import org.restlet.gwt.data.Product;
 import org.restlet.gwt.data.Response;
+import org.restlet.gwt.internal.Helper;
 import org.restlet.gwt.resource.Representation;
 import org.restlet.gwt.resource.Variant;
 
