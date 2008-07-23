@@ -44,10 +44,11 @@ public abstract class Uniform {
      * 
      * @param resourceRef
      *            The reference of the resource to delete.
-     * @return The response.
+     * @param callback
+     *            The callback invoked upon request completion.
      */
-    public final Response delete(Reference resourceRef) {
-        return handle(new Request(Method.DELETE, resourceRef));
+    public final void delete(Reference resourceRef, Callback callback) {
+        handle(new Request(Method.DELETE, resourceRef), callback);
     }
 
     /**
@@ -55,10 +56,11 @@ public abstract class Uniform {
      * 
      * @param resourceUri
      *            The URI of the resource to delete.
-     * @return The response.
+     * @param callback
+     *            The callback invoked upon request completion.
      */
-    public final Response delete(String resourceUri) {
-        return handle(new Request(Method.DELETE, resourceUri));
+    public final void delete(String resourceUri, Callback callback) {
+        handle(new Request(Method.DELETE, resourceUri), callback);
     }
 
     /**
@@ -66,10 +68,11 @@ public abstract class Uniform {
      * 
      * @param resourceRef
      *            The reference of the resource to get.
-     * @return The response.
+     * @param callback
+     *            The callback invoked upon request completion.
      */
-    public final Response get(Reference resourceRef) {
-        return handle(new Request(Method.GET, resourceRef));
+    public final void get(Reference resourceRef, Callback callback) {
+        handle(new Request(Method.GET, resourceRef), callback);
     }
 
     /**
@@ -77,10 +80,11 @@ public abstract class Uniform {
      * 
      * @param resourceUri
      *            The URI of the resource to get.
-     * @return The response.
+     * @param callback
+     *            The callback invoked upon request completion.
      */
-    public final Response get(String resourceUri) {
-        return handle(new Request(Method.GET, resourceUri));
+    public final void get(String resourceUri, Callback callback) {
+        handle(new Request(Method.GET, resourceUri), callback);
     }
 
     /**
@@ -88,12 +92,12 @@ public abstract class Uniform {
      * 
      * @param request
      *            The request to handle.
-     * @return The returned response.
+     * @param callback
+     *            The callback invoked upon request completion.
      */
-    public final Response handle(Request request) {
+    public final void handle(Request request, Callback callback) {
         final Response response = new Response(request);
-        handle(request, response);
-        return response;
+        handle(request, response, callback);
     }
 
     /**
@@ -103,18 +107,22 @@ public abstract class Uniform {
      *            The request to handle.
      * @param response
      *            The response to update.
+     * @param callback
+     *            The callback invoked upon request completion.
      */
-    public abstract void handle(Request request, Response response);
+    public abstract void handle(Request request, Response response,
+            Callback callback);
 
     /**
      * Gets the identified resource without its representation's content.
      * 
      * @param resourceRef
      *            The reference of the resource to get.
-     * @return The response.
+     * @param callback
+     *            The callback invoked upon request completion.
      */
-    public final Response head(Reference resourceRef) {
-        return handle(new Request(Method.HEAD, resourceRef));
+    public final void head(Reference resourceRef, Callback callback) {
+        handle(new Request(Method.HEAD, resourceRef), callback);
     }
 
     /**
@@ -122,10 +130,11 @@ public abstract class Uniform {
      * 
      * @param resourceUri
      *            The URI of the resource to get.
-     * @return The response.
+     * @param callback
+     *            The callback invoked upon request completion.
      */
-    public final Response head(String resourceUri) {
-        return handle(new Request(Method.HEAD, resourceUri));
+    public final void head(String resourceUri, Callback callback) {
+        handle(new Request(Method.HEAD, resourceUri), callback);
     }
 
     /**
@@ -133,10 +142,11 @@ public abstract class Uniform {
      * 
      * @param resourceRef
      *            The reference of the resource to get.
-     * @return The response.
+     * @param callback
+     *            The callback invoked upon request completion.
      */
-    public final Response options(Reference resourceRef) {
-        return handle(new Request(Method.OPTIONS, resourceRef));
+    public final void options(Reference resourceRef, Callback callback) {
+        handle(new Request(Method.OPTIONS, resourceRef), callback);
     }
 
     /**
@@ -144,10 +154,11 @@ public abstract class Uniform {
      * 
      * @param resourceUri
      *            The URI of the resource to get.
-     * @return The response.
+     * @param callback
+     *            The callback invoked upon request completion.
      */
-    public final Response options(String resourceUri) {
-        return handle(new Request(Method.OPTIONS, resourceUri));
+    public final void options(String resourceUri, Callback callback) {
+        handle(new Request(Method.OPTIONS, resourceUri), callback);
     }
 
     /**
@@ -157,10 +168,12 @@ public abstract class Uniform {
      *            The reference of the resource to post to.
      * @param entity
      *            The entity to post.
-     * @return The response.
+     * @param callback
+     *            The callback invoked upon request completion.
      */
-    public final Response post(Reference resourceRef, Representation entity) {
-        return handle(new Request(Method.POST, resourceRef, entity));
+    public final void post(Reference resourceRef, Representation entity,
+            Callback callback) {
+        handle(new Request(Method.POST, resourceRef, entity), callback);
     }
 
     /**
@@ -170,10 +183,12 @@ public abstract class Uniform {
      *            The URI of the resource to post to.
      * @param entity
      *            The entity to post.
-     * @return The response.
+     * @param callback
+     *            The callback invoked upon request completion.
      */
-    public final Response post(String resourceUri, Representation entity) {
-        return handle(new Request(Method.POST, resourceUri, entity));
+    public final void post(String resourceUri, Representation entity,
+            Callback callback) {
+        handle(new Request(Method.POST, resourceUri, entity), callback);
     }
 
     /**
@@ -183,10 +198,12 @@ public abstract class Uniform {
      *            The reference of the resource to modify.
      * @param entity
      *            The entity to put.
-     * @return The response.
+     * @param callback
+     *            The callback invoked upon request completion.
      */
-    public final Response put(Reference resourceRef, Representation entity) {
-        return handle(new Request(Method.PUT, resourceRef, entity));
+    public final void put(Reference resourceRef, Representation entity,
+            Callback callback) {
+        handle(new Request(Method.PUT, resourceRef, entity), callback);
     }
 
     /**
@@ -196,10 +213,12 @@ public abstract class Uniform {
      *            The URI of the resource to modify.
      * @param entity
      *            The entity to put.
-     * @return The response.
+     * @param callback
+     *            The callback invoked upon request completion.
      */
-    public final Response put(String resourceUri, Representation entity) {
-        return handle(new Request(Method.PUT, resourceUri, entity));
+    public final void put(String resourceUri, Representation entity,
+            Callback callback) {
+        handle(new Request(Method.PUT, resourceUri, entity), callback);
     }
 
 }

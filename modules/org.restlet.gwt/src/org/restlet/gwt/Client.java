@@ -122,11 +122,11 @@ public class Client extends Connector {
     }
 
     @Override
-    public void handle(Request request, Response response) {
-        super.handle(request, response);
+    public void handle(Request request, Response response, Callback callback) {
+        super.handle(request, response, callback);
 
         if (getHelper() != null) {
-            getHelper().handle(request, response);
+            getHelper().handle(request, response, callback);
         }
     }
 

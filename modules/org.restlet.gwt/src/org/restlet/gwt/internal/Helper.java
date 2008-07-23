@@ -21,6 +21,7 @@ package org.restlet.gwt.internal;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.restlet.gwt.Callback;
 import org.restlet.gwt.Context;
 import org.restlet.gwt.Restlet;
 import org.restlet.gwt.data.Form;
@@ -113,8 +114,10 @@ public abstract class Helper<T extends Restlet> {
      *            The request to handle.
      * @param response
      *            The response to update.
+     * @param callback
+     *            The callback invoked upon request completion.
      */
-    public void handle(Request request, Response response) {
+    public void handle(Request request, Response response, Callback callback) {
 
     }
 

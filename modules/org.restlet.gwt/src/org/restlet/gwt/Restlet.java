@@ -89,9 +89,11 @@ public class Restlet extends Uniform {
      *            The request to handle.
      * @param response
      *            The response to update.
+     * @param callback
+     *            The callback invoked upon request completion.
      */
     @Override
-    public void handle(Request request, Response response) {
+    public void handle(Request request, Response response, Callback callback) {
         // Check if the Restlet was started
         if (isStopped()) {
             try {

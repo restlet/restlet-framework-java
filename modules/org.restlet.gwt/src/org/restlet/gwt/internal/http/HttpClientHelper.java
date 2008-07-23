@@ -18,6 +18,7 @@
 
 package org.restlet.gwt.internal.http;
 
+import org.restlet.gwt.Callback;
 import org.restlet.gwt.Client;
 import org.restlet.gwt.data.Request;
 import org.restlet.gwt.data.Response;
@@ -83,7 +84,7 @@ public abstract class HttpClientHelper extends ClientHelper {
     }
 
     @Override
-    public void handle(Request request, Response response) {
+    public void handle(Request request, Response response, Callback callback) {
         try {
             final HttpClientCall httpCall = getConverter().toSpecific(this,
                     request);
