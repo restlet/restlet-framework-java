@@ -18,8 +18,10 @@
 
 package com.noelios.restlet.ext.gwt.client;
 
+import org.restlet.gwt.Callback;
 import org.restlet.gwt.Client;
 import org.restlet.gwt.data.Protocol;
+import org.restlet.gwt.data.Request;
 import org.restlet.gwt.data.Response;
 
 import com.google.gwt.core.client.EntryPoint;
@@ -43,13 +45,20 @@ public class Restlet implements EntryPoint {
 
         button.addClickListener(new ClickListener() {
             public void onClick(Widget sender) {
-                final Client client = new Client(Protocol.HTTP);
-                final Response response = client.get("/demo/hello.txt");
-                try {
-                    label.setText(response.getEntity().getText());
-                } catch (final Exception ioException) {
-                    GWT.log("Restlet I/O failed", ioException);
-                }
+                new Client(Protocol.HTTP).get("/demo/hello.txt",
+                        new Callback() {
+                            @Override
+                            public void onEvent(Request request,
+                                    Response response) {
+                                try {
+                                    label.setText(response.getEntity()
+                                            .getText());
+                                } catch (final Exception ioException) {
+                                    GWT.log("Restlet I/O failed", ioException);
+                                }
+                            }
+
+                        });
             }
         });
 

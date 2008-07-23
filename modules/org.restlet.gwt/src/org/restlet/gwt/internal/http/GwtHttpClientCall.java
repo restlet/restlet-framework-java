@@ -18,6 +18,7 @@
 
 package org.restlet.gwt.internal.http;
 
+import org.restlet.gwt.Callback;
 import org.restlet.gwt.data.Parameter;
 import org.restlet.gwt.data.Reference;
 import org.restlet.gwt.data.Request;
@@ -168,7 +169,8 @@ public class GwtHttpClientCall extends HttpClientCall implements
     }
 
     @Override
-    public void sendRequest(Request request) throws Exception {
+    public void sendRequest(Request request, Callback callback)
+            throws Exception {
         final Representation entity = request.isEntityAvailable() ? request
                 .getEntity() : null;
         if (entity != null) {

@@ -20,6 +20,7 @@ package org.restlet.gwt.internal.http;
 
 import java.util.logging.Logger;
 
+import org.restlet.gwt.Callback;
 import org.restlet.gwt.data.CharacterSet;
 import org.restlet.gwt.data.Encoding;
 import org.restlet.gwt.data.Language;
@@ -292,8 +293,11 @@ public abstract class HttpClientCall extends HttpCall {
      * 
      * @param request
      *            The high-level request.
+     * @param callback
+     *            The callback invoked upon request completion.
      */
-    public abstract void sendRequest(Request request) throws Exception;
+    public abstract void sendRequest(Request request, Callback callback)
+            throws Exception;
 
     /**
      * Indicates if the request entity should be chunked.

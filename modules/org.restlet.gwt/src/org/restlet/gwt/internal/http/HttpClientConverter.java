@@ -21,6 +21,7 @@ package org.restlet.gwt.internal.http;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import org.restlet.gwt.Callback;
 import org.restlet.gwt.Context;
 import org.restlet.gwt.data.ClientInfo;
 import org.restlet.gwt.data.Conditions;
@@ -351,51 +352,67 @@ public class HttpClientConverter extends HttpConverter {
      *            The high-level request.
      * @param response
      *            The high-level response.
+     * @param callback
+     *            The callback invoked upon request completion.
      * @throws Exception
      */
-    public void commit(HttpClientCall httpCall, Request request,
-            Response response) throws Exception {
+    public void commit(final HttpClientCall httpCall, Request request,
+            Response response, final Callback callback) throws Exception {
         if (httpCall != null) {
             // Send the request to the client
-            httpCall.sendRequest(request);
+            httpCall.sendRequest(request, new Callback() {
 
-            // MOVE ALL THE CODE BELOW IN A CALLBACK
-            // Status retrieval!!
-
-            // Get the server address
-            response.getServerInfo().setAddress(httpCall.getServerAddress());
-            response.getServerInfo().setPort(httpCall.getServerPort());
-
-            // Read the response headers
-            readResponseHeaders(httpCall, response);
-
-            // Set the entity
-            response.setEntity(httpCall.getResponseEntity(response));
-            // Release the representation's content for some obvious cases
-            if (response.getEntity() != null) {
-                if (response.getEntity().getSize() == 0) {
-                    response.getEntity().release();
-                } else if (response.getRequest().getMethod()
-                        .equals(Method.HEAD)) {
-                    response.getEntity().release();
-                } else if (response.getStatus().equals(
-                        Status.SUCCESS_NO_CONTENT)) {
-                    response.getEntity().release();
-                } else if (response.getStatus().equals(
-                        Status.SUCCESS_RESET_CONTENT)) {
-                    response.getEntity().release();
-                    response.setEntity(null);
-                } else if (response.getStatus().equals(
-                        Status.SUCCESS_PARTIAL_CONTENT)) {
-                    response.getEntity().release();
-                    response.setEntity(null);
-                } else if (response.getStatus().equals(
-                        Status.REDIRECTION_NOT_MODIFIED)) {
-                    response.getEntity().release();
-                } else if (response.getStatus().isInformational()) {
-                    response.getEntity().release();
-                    response.setEntity(null);
+                @Override
+                public void onEvent(Request request, Response response) {
+                    updateResponse(response, httpCall);
+                    callback.onEvent(request, response);
                 }
+
+            });
+        }
+    }
+
+    /**
+     * Updates the response with information from the lower-level HTTP client
+     * call.
+     * 
+     * @param response
+     *            The response to update.
+     * @param httpCall
+     *            The source HTTP client call.
+     */
+    public void updateResponse(Response response, HttpClientCall httpCall) {
+        // Get the server address
+        response.getServerInfo().setAddress(httpCall.getServerAddress());
+        response.getServerInfo().setPort(httpCall.getServerPort());
+
+        // Read the response headers
+        readResponseHeaders(httpCall, response);
+
+        // Set the entity
+        response.setEntity(httpCall.getResponseEntity(response));
+        // Release the representation's content for some obvious cases
+        if (response.getEntity() != null) {
+            if (response.getEntity().getSize() == 0) {
+                response.getEntity().release();
+            } else if (response.getRequest().getMethod().equals(Method.HEAD)) {
+                response.getEntity().release();
+            } else if (response.getStatus().equals(Status.SUCCESS_NO_CONTENT)) {
+                response.getEntity().release();
+            } else if (response.getStatus()
+                    .equals(Status.SUCCESS_RESET_CONTENT)) {
+                response.getEntity().release();
+                response.setEntity(null);
+            } else if (response.getStatus().equals(
+                    Status.SUCCESS_PARTIAL_CONTENT)) {
+                response.getEntity().release();
+                response.setEntity(null);
+            } else if (response.getStatus().equals(
+                    Status.REDIRECTION_NOT_MODIFIED)) {
+                response.getEntity().release();
+            } else if (response.getStatus().isInformational()) {
+                response.getEntity().release();
+                response.setEntity(null);
             }
         }
     }
