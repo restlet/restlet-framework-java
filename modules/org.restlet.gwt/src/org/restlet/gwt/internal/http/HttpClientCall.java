@@ -18,8 +18,6 @@
 
 package org.restlet.gwt.internal.http;
 
-import java.util.logging.Logger;
-
 import org.restlet.gwt.Callback;
 import org.restlet.gwt.data.CharacterSet;
 import org.restlet.gwt.data.Encoding;
