@@ -41,7 +41,7 @@ import com.noelios.restlet.StatusFilter;
  */
 public class ComponentHelper extends ChainHelper<Component> {
     /** The internal client router. */
-    private volatile ClientRouter clientRouter;
+    private final ClientRouter clientRouter;
 
     /** The internal server router. */
     private volatile ServerRouter serverRouter;
