@@ -137,8 +137,12 @@ public class GwtHttpClientCall extends HttpClientCall {
         final Series<Parameter> result = super.getResponseHeaders();
 
         if (!this.responseHeadersAdded && (getResponse() != null)) {
-            for (final Header header : getResponse().getHeaders()) {
-                result.add(header.getName(), header.getValue());
+            Header[] headers = getResponse().getHeaders();
+
+            for (int i = 0; i < headers.length; i++) {
+                if (headers[i] != null) {
+                    result.add(headers[i].getName(), headers[i].getValue());
+                }
             }
 
             this.responseHeadersAdded = true;
