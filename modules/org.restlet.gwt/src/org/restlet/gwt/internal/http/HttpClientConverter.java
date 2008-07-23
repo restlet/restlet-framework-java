@@ -382,6 +382,10 @@ public class HttpClientConverter extends HttpConverter {
      *            The source HTTP client call.
      */
     public void updateResponse(Response response, HttpClientCall httpCall) {
+        // Now we can access the status code
+        response.setStatus(new Status(httpCall.getStatusCode(), null, httpCall
+                .getReasonPhrase(), null));
+
         // Get the server address
         response.getServerInfo().setAddress(httpCall.getServerAddress());
         response.getServerInfo().setPort(httpCall.getServerPort());

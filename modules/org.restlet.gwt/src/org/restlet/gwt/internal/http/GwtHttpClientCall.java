@@ -35,8 +35,7 @@ import com.google.gwt.http.client.Response;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class GwtHttpClientCall extends HttpClientCall implements
-        RequestCallback {
+public class GwtHttpClientCall extends HttpClientCall {
 
     /** The wrapped HTTP request builder. */
     private final RequestBuilder requestBuilder;
@@ -46,6 +45,12 @@ public class GwtHttpClientCall extends HttpClientCall implements
 
     /** Indicates if the response headers were added. */
     private volatile boolean responseHeadersAdded;
+
+    /**
+     * Special status code set when an error occurs and we don't have a Response
+     * object.
+     */
+    private int errorStatusCode;
 
     /**
      * Constructor.
@@ -92,7 +97,7 @@ public class GwtHttpClientCall extends HttpClientCall implements
      */
     @Override
     public String getReasonPhrase() {
-        return getResponse().getStatusText();
+        return (getResponse() == null) ? null : getResponse().getStatusText();
     }
 
     /**
@@ -120,7 +125,7 @@ public class GwtHttpClientCall extends HttpClientCall implements
 
     @Override
     public String getResponseEntityString(long size) {
-        return getResponse().getText();
+        return (getResponse() == null) ? null : getResponse().getText();
     }
 
     /**
@@ -132,7 +137,7 @@ public class GwtHttpClientCall extends HttpClientCall implements
     public Series<Parameter> getResponseHeaders() {
         final Series<Parameter> result = super.getResponseHeaders();
 
-        if (!this.responseHeadersAdded) {
+        if (!this.responseHeadersAdded && (getResponse() != null)) {
             for (final Header header : getResponse().getHeaders()) {
                 result.add(header.getName(), header.getValue());
             }
@@ -150,22 +155,8 @@ public class GwtHttpClientCall extends HttpClientCall implements
 
     @Override
     public int getStatusCode() {
-        return getResponse().getStatusCode();
-    }
-
-    public void onError(com.google.gwt.http.client.Request request,
-            Throwable exception) {
-
-    }
-
-    public void onResponseReceived(com.google.gwt.http.client.Request request,
-            Response response) {
-        // Update the response property
-        setResponse(response);
-
-        // Now we can access the status code
-        // Status result = new Status(getStatusCode(), null, getReasonPhrase(),
-        // null);
+        return (getResponse() == null) ? this.errorStatusCode : getResponse()
+                .getStatusCode();
     }
 
     @Override
@@ -184,7 +175,20 @@ public class GwtHttpClientCall extends HttpClientCall implements
         }
 
         // Set the current call as the callback handler
-        getRequestBuilder().setCallback(this);
+        getRequestBuilder().setCallback(new RequestCallback() {
+
+            public void onError(com.google.gwt.http.client.Request request,
+                    Throwable exception) {
+
+            }
+
+            public void onResponseReceived(
+                    com.google.gwt.http.client.Request request,
+                    Response response) {
+                setResponse(response);
+            }
+
+        });
 
         // Send the request
         getRequestBuilder().send();
