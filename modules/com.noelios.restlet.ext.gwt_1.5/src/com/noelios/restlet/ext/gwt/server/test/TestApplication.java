@@ -20,11 +20,25 @@ package com.noelios.restlet.ext.gwt.server.test;
 
 import org.restlet.Application;
 import org.restlet.Context;
+import org.restlet.Restlet;
+import org.restlet.data.MediaType;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 
 public class TestApplication extends Application {
 
     public TestApplication(Context context) {
         super(context);
+    }
+    
+    public Restlet createRoot() {
+        return new Restlet() {
+            @Override
+            public void handle(Request request, Response response) {
+                response.setEntity("The Restlet server side is alive.", MediaType.TEXT_PLAIN);
+            }
+        };
+
     }
 
 }
