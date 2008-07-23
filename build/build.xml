@@ -655,6 +655,7 @@
 				<fileset dir="${classes}/${mod-@{name}-id}" />
 				<fileset dir="${mod}/${mod-@{name}-id}/src" includes="META-INF/**" />
 				<fileset dir="${mod}/${mod-@{name}-id}/src" includes="**/*.properties" />
+				<fileset dir="${mod}/${mod-@{name}-id}/src" includes="**/*.xml" />
 				<fileset dir="${temp}/jar/" />
 			</jar>
 
