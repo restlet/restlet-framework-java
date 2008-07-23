@@ -21,7 +21,6 @@ package org.restlet.gwt.internal.http;
 import org.restlet.gwt.Callback;
 import org.restlet.gwt.data.Parameter;
 import org.restlet.gwt.data.Reference;
-import org.restlet.gwt.data.Request;
 import org.restlet.gwt.resource.Representation;
 import org.restlet.gwt.util.Series;
 
@@ -160,8 +159,9 @@ public class GwtHttpClientCall extends HttpClientCall {
     }
 
     @Override
-    public void sendRequest(Request request, Callback callback)
-            throws Exception {
+    public void sendRequest(final org.restlet.gwt.data.Request request,
+            final org.restlet.gwt.data.Response response,
+            final Callback callback) throws Exception {
         final Representation entity = request.isEntityAvailable() ? request
                 .getEntity() : null;
         if (entity != null) {
@@ -177,15 +177,16 @@ public class GwtHttpClientCall extends HttpClientCall {
         // Set the current call as the callback handler
         getRequestBuilder().setCallback(new RequestCallback() {
 
-            public void onError(com.google.gwt.http.client.Request request,
+            public void onError(com.google.gwt.http.client.Request gwtRequest,
                     Throwable exception) {
-
+                callback.onEvent(request, response);
             }
 
             public void onResponseReceived(
-                    com.google.gwt.http.client.Request request,
-                    Response response) {
-                setResponse(response);
+                    com.google.gwt.http.client.Request gwtRequest,
+                    Response gwtResponse) {
+                setResponse(gwtResponse);
+                callback.onEvent(request, response);
             }
 
         });

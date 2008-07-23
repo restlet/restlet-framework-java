@@ -360,7 +360,7 @@ public class HttpClientConverter extends HttpConverter {
             Response response, final Callback callback) throws Exception {
         if (httpCall != null) {
             // Send the request to the client
-            httpCall.sendRequest(request, new Callback() {
+            httpCall.sendRequest(request, response, new Callback() {
 
                 @Override
                 public void onEvent(Request request, Response response) {

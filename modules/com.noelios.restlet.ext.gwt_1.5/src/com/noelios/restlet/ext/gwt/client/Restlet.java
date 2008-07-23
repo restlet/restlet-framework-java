@@ -45,8 +45,8 @@ public class Restlet implements EntryPoint {
 
         button.addClickListener(new ClickListener() {
             public void onClick(Widget sender) {
-                new Client(Protocol.HTTP).get("/demo/hello.txt",
-                        new Callback() {
+                new Client(Protocol.HTTP).get(
+                        "http://localhost:8888/demo/hello.txt", new Callback() {
                             @Override
                             public void onEvent(Request request,
                                     Response response) {

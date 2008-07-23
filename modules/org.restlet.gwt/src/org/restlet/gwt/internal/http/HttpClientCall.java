@@ -291,11 +291,13 @@ public abstract class HttpClientCall extends HttpCall {
      * 
      * @param request
      *            The high-level request.
+     * @param response
+     *            The high-level response.
      * @param callback
      *            The callback invoked upon request completion.
      */
-    public abstract void sendRequest(Request request, Callback callback)
-            throws Exception;
+    public abstract void sendRequest(Request request, Response response,
+            Callback callback) throws Exception;
 
     /**
      * Indicates if the request entity should be chunked.
