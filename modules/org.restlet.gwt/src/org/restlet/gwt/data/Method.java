@@ -280,7 +280,7 @@ public final class Method extends Metadata {
      * 
      * @param name
      *            The technical name of the method.
-     * @see org.restlet.data.Method#valueOf(String)
+     * @see #valueOf(String)
      */
     public Method(final String name) {
         this(name, null, null);
@@ -293,7 +293,7 @@ public final class Method extends Metadata {
      *            The technical name of the method.
      * @param description
      *            The description.
-     * @see org.restlet.data.Method#valueOf(String)
+     * @see #valueOf(String)
      */
     public Method(final String name, final String description) {
         this(name, description, null);
@@ -308,7 +308,7 @@ public final class Method extends Metadata {
      *            The description.
      * @param uri
      *            The URI of the specification describing the method.
-     * @see org.restlet.data.Method#valueOf(String)
+     * @see #valueOf(String)
      */
     public Method(final String name, final String description, final String uri) {
         super(name, description);

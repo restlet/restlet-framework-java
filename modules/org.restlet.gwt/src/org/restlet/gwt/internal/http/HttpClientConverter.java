@@ -19,7 +19,6 @@
 package org.restlet.gwt.internal.http;
 
 import java.util.Set;
-import java.util.logging.Logger;
 
 import org.restlet.gwt.Callback;
 import org.restlet.gwt.Context;
@@ -50,9 +49,7 @@ public class HttpClientConverter extends HttpConverter {
      *            The headers to copy.
      * @param response
      *            The response to update.
-     * @param logger
-     *            The logger to use.
-     * @see Engine#copyResponseHeaders(Iterable, Response, Logger)
+     * @see Engine#copyResponseHeaders(Iterable, Response)
      * @see HttpClientCall#copyResponseEntityHeaders(Iterable,
      *      org.restlet.resource.Representation)
      */

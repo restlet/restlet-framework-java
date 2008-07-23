@@ -37,7 +37,7 @@ import org.restlet.gwt.data.Parameter;
  * @author Jerome Louvel (contact@noelios.com)
  * @param <E>
  *            The contained type
- * @see org.restlet.data.Parameter
+ * @see Parameter
  * @see java.util.Collections
  * @see java.util.List
  */

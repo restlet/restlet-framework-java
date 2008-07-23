@@ -250,8 +250,8 @@ public class JaxRsRestlet extends Restlet {
      * has a role, the request is returned with HTTP status 500 (Internal Server
      * Error), see {@link SecurityContext#isUserInRole(String)}. You may set a
      * {@link RoleChecker} by using the constructor
-     * {@link JaxRsRestlet#JaxRsRouter(Context, RoleChecker, MetadataService)}
-     * or method {@link #setRoleChecker(RoleChecker)}.
+     * {@link #JaxRsRestlet(Context, RoleChecker, MetadataService)} or method
+     * {@link #setRoleChecker(RoleChecker)}.
      * 
      * @param context
      *            the context from the parent, see

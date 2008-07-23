@@ -77,13 +77,8 @@ public class Restlet extends Uniform {
     }
 
     /**
-     * Handles a call. The default behavior is to call the (now deprecated)
-     * {@link #init(Request, Response)} method. In next version,
-     * {@link #init(Request, Response)} will be removed and its logic directly
-     * added to this method instead.
-     * <p>
-     * Subclasses overriding this method should make sure that they call
-     * super.handle(request, response) before adding their own logic.
+     * Handles a call. Subclasses overriding this method should make sure that
+     * they call super.handle(request, response) before adding their own logic.
      * 
      * @param request
      *            The request to handle.

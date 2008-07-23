@@ -299,11 +299,6 @@ public class Request extends Message {
      * note that beside the update of its base property, the resource reference
      * can be modified during the request processing.
      * 
-     * For example, the {@link TunnelService} associated to an application can
-     * extract some special extensions or query parameters and replace them by
-     * semantically equivalent properties on the request object. Therefore, the
-     * resource reference can become different from the original reference.
-     * 
      * Finally, when sending out requests via a dispatcher such as
      * {@link Context#getClientDispatcher()} or
      * {@link Context#getServerDispatcher()}, if the reference contains URI
