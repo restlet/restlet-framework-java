@@ -755,7 +755,11 @@ public class WadlRepresentation extends SaxRepresentation {
     }
 
     /**
-     * Returns an HTML representation.
+     * Returns an HTML representation. Note that the internal XSLT stylesheet
+     * used comes from <a href="http://www.mnot.net/webdesc/">Mark
+     * Nottingham</a>. This stylesheet requires advanced XSLT features,
+     * including EXSLT extensions. Usage of a recent version of Xalan-J is
+     * suggested. It has been tested successfully with Xalan-J 2.7.1.
      * 
      * @return An HTML representation.
      */

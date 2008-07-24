@@ -18,6 +18,7 @@
 
 package org.restlet.ext.wadl;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -35,12 +36,13 @@ import org.restlet.Route;
 import org.restlet.Router;
 import org.restlet.Server;
 import org.restlet.VirtualHost;
+import org.restlet.data.Language;
+import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
 import org.restlet.resource.Variant;
@@ -304,7 +306,7 @@ public class WadlApplication extends Application {
         final ApplicationInfo applicationInfo = new ApplicationInfo();
         applicationInfo.getResources().setBaseRef(getBaseRef());
         applicationInfo.getResources().setResources(
-                getResourceInfos(getFirstRouter(getRoot()), ""));
+                getResourceInfos(getFirstRouter(getRoot())));
         return applicationInfo;
     }
 
@@ -433,7 +435,8 @@ public class WadlApplication extends Application {
             result = getResourceInfo((Finder) restlet, path);
         } else if (restlet instanceof Router) {
             result = new ResourceInfo();
-            result.setChildResources(getResourceInfos((Router) restlet, path));
+            result.setPath(path);
+            result.setChildResources(getResourceInfos((Router) restlet));
         } else if (restlet instanceof Filter) {
             result = getResourceInfo((Filter) restlet, path);
         }
@@ -462,11 +465,11 @@ public class WadlApplication extends Application {
      *            The router to document.
      * @return The list of ResourceInfo instances to complete.
      */
-    private List<ResourceInfo> getResourceInfos(Router router, String path) {
+    private List<ResourceInfo> getResourceInfos(Router router) {
         List<ResourceInfo> result = new ArrayList<ResourceInfo>();
 
         for (final Route route : router.getRoutes()) {
-            result.add(getResourceInfo(route, path));
+            result.add(getResourceInfo(route, ""));
         }
 
         return result;
@@ -528,8 +531,7 @@ public class WadlApplication extends Application {
         if (isAutoDescribed() && Method.OPTIONS.equals(request.getMethod())
                 && request.getResourceRef().getIdentifier().endsWith("*")) {
             // Returns a WADL representation of the application.
-            response.setEntity(new WadlRepresentation(getApplicationInfo()));
-            response.setStatus(Status.SUCCESS_OK);
+            response.setEntity(wadlRepresent(request));
         } else {
             super.handle(request, response);
         }
@@ -566,6 +568,78 @@ public class WadlApplication extends Application {
      */
     public void setBaseRef(Reference baseRef) {
         this.baseRef = baseRef;
+    }
+
+    /**
+     * Represents the resource as a WADL description.
+     * 
+     * @return The WADL description.
+     */
+    protected Representation wadlRepresent(Request request) {
+        return wadlRepresent(getPreferredWadlVariant(request));
+    }
+
+    /**
+     * Returns the available WADL variants.
+     * 
+     * @return The available WADL variants.
+     */
+    protected List<Variant> getWadlVariants() {
+        final List<Variant> result = new ArrayList<Variant>();
+        result.add(new Variant(MediaType.APPLICATION_WADL_XML));
+        result.add(new Variant(MediaType.TEXT_HTML));
+        return result;
+    }
+
+    /**
+     * Returns the preferred WADL variant according to the client preferences
+     * specified in the request.
+     * 
+     * @return The preferred WADL variant.
+     */
+    protected Variant getPreferredWadlVariant(Request request) {
+        Variant result = null;
+
+        // Compute the preferred variant. Get the default language
+        // preference from the Application (if any).
+        final Application app = Application.getCurrent();
+        Language language = null;
+
+        if (app != null) {
+            language = app.getMetadataService().getDefaultLanguage();
+        }
+
+        result = request.getClientInfo().getPreferredVariant(getWadlVariants(),
+                language);
+
+        return result;
+    }
+
+    /**
+     * Represents the resource as a WADL description for the given variant.
+     * 
+     * @param variant
+     *            The WADL variant.
+     * @return The WADL description.
+     */
+    public Representation wadlRepresent(Variant variant) {
+        Representation result = null;
+
+        if (MediaType.APPLICATION_WADL_XML.equals(variant.getMediaType())) {
+            result = new WadlRepresentation(getApplicationInfo());
+        } else if (MediaType.TEXT_HTML.equals(variant.getMediaType())) {
+            result = new WadlRepresentation(getApplicationInfo())
+                    .getHtmlRepresentation();
+        }
+
+        try {
+            result.write(System.out);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        return result;
     }
 
 }

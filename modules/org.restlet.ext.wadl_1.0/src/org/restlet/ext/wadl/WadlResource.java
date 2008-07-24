@@ -179,6 +179,13 @@ public class WadlResource extends Resource {
         return result;
     }
 
+    /**
+     * Returns a WADL description for a given variant.
+     * 
+     * @param variant
+     *            The variant to describe.
+     * @return The variant description.
+     */
     protected RepresentationInfo getRepresentationInfo(Variant variant) {
         final RepresentationInfo result = new RepresentationInfo();
         result.setMediaType(variant.getMediaType());
@@ -368,8 +375,7 @@ public class WadlResource extends Resource {
 
         if (MediaType.APPLICATION_WADL_XML.equals(variant.getMediaType())) {
             result = new WadlRepresentation(getResourceInfo());
-        } else if (MediaType.APPLICATION_WADL_XML
-                .equals(variant.getMediaType())) {
+        } else if (MediaType.TEXT_HTML.equals(variant.getMediaType())) {
             result = new WadlRepresentation(getResourceInfo())
                     .getHtmlRepresentation();
         }
