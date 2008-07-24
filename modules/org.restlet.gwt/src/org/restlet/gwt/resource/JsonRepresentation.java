@@ -28,7 +28,7 @@ import com.google.gwt.json.client.JSONValue;
  * JSON representation based on an JSON value. JSON (JavaScript Object Notation)
  * is a common serialization format similar to XML but lighter.
  * 
- * @see <a href="http://www.json.org">JSON< /a>
+ * @see <a href="http://www.json.org">JSON<a/>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class JsonRepresentation extends Representation {
