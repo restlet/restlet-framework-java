@@ -21,8 +21,10 @@ package org.restlet.gwt.data;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.restlet.gwt.resource.JsonRepresentation;
 import org.restlet.gwt.resource.Representation;
 import org.restlet.gwt.resource.StringRepresentation;
+import org.restlet.gwt.resource.XmlRepresentation;
 
 /**
  * Generic message exchanged between client and server connectors.
@@ -38,6 +40,12 @@ public abstract class Message {
 
     /** The optional cached Form. */
     private volatile Form form;
+
+    /** The optional cached JSON representation. */
+    private volatile JsonRepresentation jsonRepresentation;
+
+    /** The optional cached XML representation. */
+    private volatile XmlRepresentation xmlRepresentation;
 
     /**
      * Constructor.
@@ -129,6 +137,40 @@ public abstract class Message {
         }
 
         return this.form;
+    }
+
+    /**
+     * Returns the entity as a JSON representation.<br>
+     * This method can be called several times and will always return the same
+     * representation instance. Note that if the entity is large this method can
+     * result in important memory consumption.
+     * 
+     * @return The entity as a JSON representation.
+     */
+    public JsonRepresentation getEntityAsJson() {
+        if (this.jsonRepresentation == null) {
+            this.jsonRepresentation = (getEntity() == null) ? null
+                    : new JsonRepresentation(getEntity());
+        }
+
+        return this.jsonRepresentation;
+    }
+
+    /**
+     * Returns the entity as a XML DOM representation.<br>
+     * This method can be called several times and will always return the same
+     * representation instance. Note that if the entity is large this method can
+     * result in important memory consumption.
+     * 
+     * @return The entity as a XML DOM representation.
+     */
+    public XmlRepresentation getEntityAsXml() {
+        if (this.xmlRepresentation == null) {
+            this.xmlRepresentation = (getEntity() == null) ? null
+                    : new XmlRepresentation(getEntity());
+        }
+
+        return this.xmlRepresentation;
     }
 
     /**

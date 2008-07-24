@@ -21,6 +21,7 @@ package org.restlet.gwt.internal.http;
 import org.restlet.gwt.Callback;
 import org.restlet.gwt.data.Parameter;
 import org.restlet.gwt.data.Reference;
+import org.restlet.gwt.data.Status;
 import org.restlet.gwt.resource.Representation;
 import org.restlet.gwt.util.Series;
 
@@ -36,6 +37,17 @@ import com.google.gwt.http.client.Response;
  */
 public class GwtHttpClientCall extends HttpClientCall {
 
+    /**
+     * Special reason phrase in case of error.
+     */
+    private String errorReasonPhrase;
+
+    /**
+     * Special status code set when an error occurs and we don't have a Response
+     * object.
+     */
+    private int errorStatusCode;
+
     /** The wrapped HTTP request builder. */
     private final RequestBuilder requestBuilder;
 
@@ -44,12 +56,6 @@ public class GwtHttpClientCall extends HttpClientCall {
 
     /** Indicates if the response headers were added. */
     private volatile boolean responseHeadersAdded;
-
-    /**
-     * Special status code set when an error occurs and we don't have a Response
-     * object.
-     */
-    private int errorStatusCode;
 
     /**
      * Constructor.
@@ -80,6 +86,25 @@ public class GwtHttpClientCall extends HttpClientCall {
     }
 
     /**
+     * Returns a special reason phrase in case of error.
+     * 
+     * @return A special reason phrase in case of error.
+     */
+    private String getErrorReasonPhrase() {
+        return errorReasonPhrase;
+    }
+
+    /**
+     * Returns a special status code set when an error occurs and we don't have
+     * a Response object.
+     * 
+     * @return A special error status code.
+     */
+    private int getErrorStatusCode() {
+        return this.errorStatusCode;
+    }
+
+    /**
      * Returns the HTTP client helper.
      * 
      * @return The HTTP client helper.
@@ -96,7 +121,8 @@ public class GwtHttpClientCall extends HttpClientCall {
      */
     @Override
     public String getReasonPhrase() {
-        return (getResponse() == null) ? null : getResponse().getStatusText();
+        return (getResponse() == null) ? getErrorReasonPhrase() : getResponse()
+                .getStatusText();
     }
 
     /**
@@ -158,7 +184,7 @@ public class GwtHttpClientCall extends HttpClientCall {
 
     @Override
     public int getStatusCode() {
-        return (getResponse() == null) ? this.errorStatusCode : getResponse()
+        return (getResponse() == null) ? getErrorStatusCode() : getResponse()
                 .getStatusCode();
     }
 
@@ -183,6 +209,9 @@ public class GwtHttpClientCall extends HttpClientCall {
 
             public void onError(com.google.gwt.http.client.Request gwtRequest,
                     Throwable exception) {
+                setErrorStatusCode(Status.CONNECTOR_ERROR_INTERNAL.getCode());
+                setErrorReasonPhrase(exception == null ? "Unknown GWT HTTP communication error."
+                        : exception.getMessage());
                 callback.onEvent(request, response);
             }
 
@@ -197,6 +226,27 @@ public class GwtHttpClientCall extends HttpClientCall {
 
         // Send the request
         getRequestBuilder().send();
+    }
+
+    /**
+     * Sets a special reason phrase in case of error.
+     * 
+     * @param errorReasonPhrase
+     *            Special reason phrase in case of error.
+     */
+    private void setErrorReasonPhrase(String errorReasonPhrase) {
+        this.errorReasonPhrase = errorReasonPhrase;
+    }
+
+    /**
+     * Sets a special status code set when an error occurs and we don't have a
+     * Response object.
+     * 
+     * @param errorStatusCode
+     *            Special error status code.
+     */
+    private void setErrorStatusCode(int errorStatusCode) {
+        this.errorStatusCode = errorStatusCode;
     }
 
     /**
