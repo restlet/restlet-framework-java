@@ -33,10 +33,10 @@
 	<property name="vendor" value="Noelios Consulting" />
 	<property name="excludes" value="**/.emptyDir **/package.html **/overview.html" />
 	<property name="restlet-api" value="Restlet API" />
-	<property name="restlet-ext-api" value="Restlet API Extensions" />
-	<property name="restlet-ext-nre" value="Engine Extensions" />
-	<property name="restlet-nre" value="Noelios Restlet Engine" />
-	<property name="restlet-gwt" value="Restlet-GWT Library" />
+	<property name="restlet-ext-api" value="Restlet API extensions" />
+	<property name="restlet-ext-nre" value="Restlet Engine extensions" />
+	<property name="restlet-nre" value="Restlet Engine" />
+	<property name="restlet-gwt" value="Restlet-GWT" />
 
 	<!-- Location properties -->
 	<property name="dist-base" value="dist" />
@@ -1190,7 +1190,7 @@
 			<link href="http://www.simpleframework.org/javadoc/" />
 		</javadoc>
 
-		<javadoc packagenames="org.restlet.gwt.*" excludepackagenames="${exclude-packages}" destdir="${docs-gwt}" classpathref="path-all" author="true" version="true" use="true" windowtitle="Restlet-GWT Library ${version-full}" doctitle="Restlet-GWT Library ${version-full}" overview="${temp}/javadocs/overview-gwt.html" stylesheetfile="${tmpl}/javadocs/stylesheet.css" verbose="${verbose}">
+		<javadoc packagenames="org.restlet.gwt.*" excludepackagenames="${exclude-packages}" destdir="${docs-gwt}" classpathref="path-all" author="true" version="true" use="true" windowtitle="Restlet-GWT library ${version-full}" doctitle="Restlet-GWT library ${version-full}" overview="${temp}/javadocs/overview-gwt.html" stylesheetfile="${tmpl}/javadocs/stylesheet.css" verbose="${verbose}">
 			<sourcepath>
 				<pathelement path="${mod}/${mod-gwt-api-id}/src/" />
 			</sourcepath>
