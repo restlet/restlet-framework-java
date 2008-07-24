@@ -118,6 +118,7 @@ public class ResourceInfo {
         if (m == null) {
             synchronized (this) {
                 m = this.methods;
+                
                 if (m == null) {
                     this.methods = m = new ArrayList<MethodInfo>();
                 }

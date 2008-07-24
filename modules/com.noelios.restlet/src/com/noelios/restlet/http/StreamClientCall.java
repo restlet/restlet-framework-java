@@ -270,8 +270,12 @@ public class StreamClientCall extends HttpClientCall {
             final String hostDomain = request.getResourceRef().getHostDomain();
             int hostPort = request.getResourceRef().getHostPort();
             if (hostPort == -1) {
-                hostPort = request.getResourceRef().getSchemeProtocol()
-                        .getDefaultPort();
+                if (request.getResourceRef().getSchemeProtocol() != null) {
+                    hostPort = request.getResourceRef().getSchemeProtocol()
+                            .getDefaultPort();
+                } else {
+                    hostPort = getProtocol().getDefaultPort();
+                }
             }
 
             // Create the client socket

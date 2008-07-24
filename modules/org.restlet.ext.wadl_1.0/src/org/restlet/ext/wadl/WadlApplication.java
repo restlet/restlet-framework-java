@@ -76,6 +76,12 @@ import org.restlet.resource.Variant;
  */
 public class WadlApplication extends Application {
 
+    /**
+     * Indicates if the application should be automatically described via WADL
+     * when an OPTIONS request handles a "*" target URI.
+     */
+    private volatile boolean autoDescribed;
+
     /** The WADL base reference. */
     private volatile Reference baseRef;
 
@@ -83,8 +89,24 @@ public class WadlApplication extends Application {
     private volatile Router router;
 
     /**
+     * Creates an application that can automatically introspect and expose
+     * itself as with a WADL description upon reception of an OPTIONS request on
+     * the "*" target URI.
+     * 
+     * @param parentContext
+     *            The parent component context.
+     */
+    public WadlApplication(Context parentContext) {
+        super(parentContext);
+        this.autoDescribed = true;
+    }
+
+    /**
      * Creates an application described using a WADL document. Creates a router
      * where Resource classes are attached and set it as the root Restlet.
+     * 
+     * By default the application is not automatically described. If you want
+     * to, you can call {@link #setAutoDescribed(boolean)}.
      * 
      * @param parentContext
      *            The parent component context.
@@ -93,6 +115,7 @@ public class WadlApplication extends Application {
      */
     public WadlApplication(Context parentContext, Representation wadl) {
         super(parentContext);
+        this.autoDescribed = false;
 
         try {
             // Instantiates a WadlRepresentation of the WADL document
@@ -256,7 +279,6 @@ public class WadlApplication extends Application {
      */
     public void attachToHost(VirtualHost host) {
         if (getBaseRef() != null) {
-            // TODO Added test on the path that may be null.
             final String path = getBaseRef().getPath();
             if (path == null) {
                 host.attach("", this);
@@ -281,9 +303,8 @@ public class WadlApplication extends Application {
     protected ApplicationInfo getApplicationInfo() {
         final ApplicationInfo applicationInfo = new ApplicationInfo();
         applicationInfo.getResources().setBaseRef(getBaseRef());
-        getResourceInfos(getRouter(), applicationInfo.getResources()
-                .getResources());
-
+        applicationInfo.getResources().setResources(
+                getResourceInfos(getFirstRouter(getRoot()), ""));
         return applicationInfo;
     }
 
@@ -297,6 +318,27 @@ public class WadlApplication extends Application {
     }
 
     /**
+     * Returns the first router available.
+     * 
+     * @param current
+     *            The current Restlet to inspect.
+     * @return The first router available.
+     */
+    private Router getFirstRouter(Restlet current) {
+        Router result = getRouter();
+
+        if (result == null) {
+            if (current instanceof Router) {
+                result = (Router) current;
+            } else if (current instanceof Filter) {
+                result = getFirstRouter(((Filter) current).getNext());
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * Completes the data available about a given Filter instance.
      * 
      * @param resourceInfo
@@ -305,8 +347,8 @@ public class WadlApplication extends Application {
      *            The Filter instance to document.
      */
 
-    private void getResourceInfo(ResourceInfo resourceInfo, Filter filter) {
-        getResourceInfo(resourceInfo, filter.getNext());
+    private ResourceInfo getResourceInfo(Filter filter, String path) {
+        return getResourceInfo(filter.getNext(), path);
     }
 
     /**
@@ -317,54 +359,63 @@ public class WadlApplication extends Application {
      * @param finder
      *            The Finder instance to document.
      */
-    private void getResourceInfo(ResourceInfo resourceInfo, Finder finder) {
+    private ResourceInfo getResourceInfo(Finder finder, String path) {
+        ResourceInfo result = null;
+
         // The handler instance targeted by this finder.
         final Handler handler = finder.createTarget(finder.getTargetClass(),
                 null, null);
 
-        // The set of allowed methods
-        final List<Method> methods = new ArrayList<Method>();
-        methods.addAll(handler.getAllowedMethods());
-
-        Collections.sort(methods, new Comparator<Method>() {
-            public int compare(Method m1, Method m2) {
-                return m1.getName().compareTo(m2.getName());
-            }
-        });
-
         if (handler instanceof WadlResource) {
             // This kind of resource gives more information
             final WadlResource resource = (WadlResource) handler;
-            for (final Method method : methods) {
-                resourceInfo.getMethods().add(resource.getMethodInfo(method));
-            }
-        } else if (handler instanceof Resource) {
-            final Resource resource = (Resource) handler;
-            for (final Method method : methods) {
-                final MethodInfo methodInfo = new MethodInfo();
-                methodInfo.setName(method);
-                // Can document the list of supported variants.
-                if (Method.GET.equals(method)) {
-                    final ResponseInfo responseInfo = new ResponseInfo();
-                    for (final Variant variant : resource.getVariants()) {
-                        final RepresentationInfo representationInfo = new RepresentationInfo();
-                        representationInfo.setMediaType(variant.getMediaType());
-                        responseInfo.getRepresentations().add(
-                                representationInfo);
-                    }
-                    methodInfo.setResponse(responseInfo);
-                }
-
-                resourceInfo.getMethods().add(methodInfo);
-            }
+            result = resource.getResourceInfo(path);
         } else {
-            // Can only give information about the list of allowed methods.
-            for (final Method method : methods) {
-                final MethodInfo methodInfo = new MethodInfo();
-                methodInfo.setName(method);
-                resourceInfo.getMethods().add(methodInfo);
+            result = new ResourceInfo();
+            result.setPath(path);
+
+            // The set of allowed methods
+            final List<Method> methods = new ArrayList<Method>();
+            methods.addAll(handler.getAllowedMethods());
+
+            Collections.sort(methods, new Comparator<Method>() {
+                public int compare(Method m1, Method m2) {
+                    return m1.getName().compareTo(m2.getName());
+                }
+            });
+
+            if (handler instanceof Resource) {
+                final Resource resource = (Resource) handler;
+
+                for (final Method method : methods) {
+                    final MethodInfo methodInfo = new MethodInfo();
+                    methodInfo.setName(method);
+                    // Can document the list of supported variants.
+                    if (Method.GET.equals(method)) {
+                        final ResponseInfo responseInfo = new ResponseInfo();
+                        for (final Variant variant : resource.getVariants()) {
+                            final RepresentationInfo representationInfo = new RepresentationInfo();
+                            representationInfo.setMediaType(variant
+                                    .getMediaType());
+                            responseInfo.getRepresentations().add(
+                                    representationInfo);
+                        }
+                        methodInfo.setResponse(responseInfo);
+                    }
+
+                    result.getMethods().add(methodInfo);
+                }
+            } else {
+                // Can only give information about the list of allowed methods.
+                for (final Method method : methods) {
+                    final MethodInfo methodInfo = new MethodInfo();
+                    methodInfo.setName(method);
+                    result.getMethods().add(methodInfo);
+                }
             }
         }
+
+        return result;
     }
 
     /**
@@ -375,14 +426,19 @@ public class WadlApplication extends Application {
      * @param restlet
      *            The Restlet instance to document.
      */
-    private void getResourceInfo(ResourceInfo resourceInfo, Restlet restlet) {
+    private ResourceInfo getResourceInfo(Restlet restlet, String path) {
+        ResourceInfo result = null;
+
         if (restlet instanceof Finder) {
-            getResourceInfo(resourceInfo, (Finder) restlet);
+            result = getResourceInfo((Finder) restlet, path);
         } else if (restlet instanceof Router) {
-            getResourceInfos((Router) restlet, resourceInfo.getChildResources());
+            result = new ResourceInfo();
+            result.setChildResources(getResourceInfos((Router) restlet, path));
         } else if (restlet instanceof Filter) {
-            getResourceInfo(resourceInfo, (Filter) restlet);
+            result = getResourceInfo((Filter) restlet, path);
         }
+
+        return result;
     }
 
     /**
@@ -392,10 +448,9 @@ public class WadlApplication extends Application {
      *            The Route instance to document.
      * @return The WADL data about the given Route instance.
      */
-    private ResourceInfo getResourceInfo(Route route) {
-        final ResourceInfo result = new ResourceInfo();
-        result.setPath(route.getTemplate().getPattern());
-        getResourceInfo(result, route.getNext());
+    private ResourceInfo getResourceInfo(Route route, String path) {
+        final ResourceInfo result = getResourceInfo(route.getNext(), path
+                + route.getTemplate().getPattern());
         return result;
     }
 
@@ -405,13 +460,16 @@ public class WadlApplication extends Application {
      * 
      * @param router
      *            The router to document.
-     * @param list
-     *            The list of ResourceInfo instances to complete.
+     * @return The list of ResourceInfo instances to complete.
      */
-    private void getResourceInfos(Router router, List<ResourceInfo> list) {
-        for (final Route route : getRouter().getRoutes()) {
-            list.add(getResourceInfo(route));
+    private List<ResourceInfo> getResourceInfos(Router router, String path) {
+        List<ResourceInfo> result = new ArrayList<ResourceInfo>();
+
+        for (final Route route : router.getRoutes()) {
+            result.add(getResourceInfo(route, path));
         }
+
+        return result;
     }
 
     /**
@@ -459,9 +517,15 @@ public class WadlApplication extends Application {
         return host;
     }
 
+    /**
+     * Handles the requests normally, exception for the OPTIONS methods with "*"
+     * as the target resource reference value. In this case, the application is
+     * automatically introspected and described as a WADL representation based
+     * on the result of the {@link #getApplicationInfo()} method.
+     */
     @Override
     public void handle(Request request, Response response) {
-        if (Method.OPTIONS.equals(request.getMethod())
+        if (isAutoDescribed() && Method.OPTIONS.equals(request.getMethod())
                 && request.getResourceRef().getIdentifier().endsWith("*")) {
             // Returns a WADL representation of the application.
             response.setEntity(new WadlRepresentation(getApplicationInfo()));
@@ -469,6 +533,29 @@ public class WadlApplication extends Application {
         } else {
             super.handle(request, response);
         }
+    }
+
+    /**
+     * Indicates if the application should be automatically described via WADL
+     * when an OPTIONS request handles a "*" target URI.
+     * 
+     * @return True if the application should be automatically described via
+     *         WADL.
+     */
+    public boolean isAutoDescribed() {
+        return autoDescribed;
+    }
+
+    /**
+     * Indicates if the application should be automatically described via WADL
+     * when an OPTIONS request handles a "*" target URI.
+     * 
+     * @param autoDescribed
+     *            True if the application should be automatically described via
+     *            WADL.
+     */
+    public void setAutoDescribed(boolean autoDescribed) {
+        this.autoDescribed = autoDescribed;
     }
 
     /**

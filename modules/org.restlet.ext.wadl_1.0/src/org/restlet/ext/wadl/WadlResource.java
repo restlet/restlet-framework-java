@@ -51,10 +51,16 @@ import org.restlet.resource.Variant;
 public class WadlResource extends Resource {
 
     /**
+     * Indicates if the resource should be automatically described via WADL when
+     * an OPTIONS request is handled.
+     */
+    private volatile boolean autoDescribed;
+
+    /**
      * Constructor.
      */
     public WadlResource() {
-        super();
+        this.autoDescribed = true;
     }
 
     /**
@@ -69,6 +75,7 @@ public class WadlResource extends Resource {
      */
     public WadlResource(Context context, Request request, Response response) {
         super(context, request, response);
+        this.autoDescribed = true;
     }
 
     /**
@@ -91,11 +98,9 @@ public class WadlResource extends Resource {
      */
     protected MethodInfo getMethodInfo(Method method) {
         final MethodInfo methodInfo = new MethodInfo();
-        if (isDescribable(method)) {
-            methodInfo.setName(method);
-            methodInfo.setRequest(getRequestInfo(method));
-            methodInfo.setResponse(getResponseInfo(method));
-        }
+        methodInfo.setName(method);
+        methodInfo.setRequest(getRequestInfo(method));
+        methodInfo.setResponse(getResponseInfo(method));
         return methodInfo;
     }
 
@@ -194,28 +199,42 @@ public class WadlResource extends Resource {
     }
 
     /**
+     * Returns a WADL description of the current resource, leveraging the
+     * {@link #getResourcePath()} method.
+     * 
+     * @return A WADL description of the current resource.
+     */
+    private ResourceInfo getResourceInfo() {
+        return getResourceInfo(getResourcePath());
+    }
+
+    /**
      * Returns a WADL description of the current resource.
      * 
      * @return A WADL description of the current resource.
      */
-    public ResourceInfo getResourceInfo() {
+    public ResourceInfo getResourceInfo(String path) {
         final ResourceInfo result = new ResourceInfo();
-        result.setPath(getResourcePath());
+        result.setPath(path);
 
         // Introspect the current resource to detect the allowed methods
-        final List<MethodInfo> methods = result.getMethods();
-        // The set of allowed methods
         final List<Method> methodsList = new ArrayList<Method>();
         methodsList.addAll(getAllowedMethods());
 
+        // Sort the allowed methods alphabetically
         Collections.sort(methodsList, new Comparator<Method>() {
             public int compare(Method m1, Method m2) {
                 return m1.getName().compareTo(m2.getName());
             }
         });
 
-        for (final Method name : methodsList) {
-            methods.add(getMethodInfo(name));
+        // Update the resource info with the description
+        // of the allowed methods
+        final List<MethodInfo> methods = result.getMethods();
+        for (final Method method : methodsList) {
+            if (isDescribable(method)) {
+                methods.add(getMethodInfo(method));
+            }
         }
 
         result.setParameters(getParametersInfo());
@@ -288,12 +307,25 @@ public class WadlResource extends Resource {
 
     @Override
     public void handleOptions() {
-        getResponse().setEntity(wadlRepresent());
+        if (isAutoDescribed()) {
+            getResponse().setEntity(wadlRepresent());
+        }
+    }
+
+    /**
+     * Indicates if the resource should be automatically described via WADL when
+     * an OPTIONS request is handled.
+     * 
+     * @return True if the resource should be automatically described via WADL.
+     */
+    public boolean isAutoDescribed() {
+        return this.autoDescribed;
     }
 
     /**
      * Indicates if the given method exposes its WADL description. By default,
-     * HEAD and OPTIONS are not exposed.
+     * HEAD and OPTIONS are not exposed. This method is called by
+     * {@link #getMethodInfo(Method)}.
      * 
      * @param method
      *            The method
@@ -301,6 +333,18 @@ public class WadlResource extends Resource {
      */
     public boolean isDescribable(Method method) {
         return !(Method.HEAD.equals(method) || Method.OPTIONS.equals(method));
+    }
+
+    /**
+     * Indicates if the resource should be automatically described via WADL when
+     * an OPTIONS request is handled.
+     * 
+     * @param autoDescribed
+     *            True if the resource should be automatically described via
+     *            WADL.
+     */
+    public void setAutoDescribed(boolean autoDescribed) {
+        this.autoDescribed = autoDescribed;
     }
 
     /**
