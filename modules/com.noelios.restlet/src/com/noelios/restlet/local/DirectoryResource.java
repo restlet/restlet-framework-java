@@ -47,9 +47,9 @@ import org.restlet.resource.Variant;
  * to Apache HTTP server) is available. It is based on path extensions to detect
  * variants (languages, media types or character sets).
  * 
- * @see <a *
+ * @see <a
  *      href="http://httpd.apache.org/docs/2.0/content-negotiation.html">Apache
- *      * mod_negotiation module< /a>
+ *      mod_negotiation module< /a>
  * @author Jerome Louvel
  * @author Thierry Boileau
  */

@@ -353,7 +353,8 @@ public abstract class HttpCall {
      * @return True if the given exception is caused by a broken connection.
      */
     public boolean isConnectionBroken(Exception exception) {
-        return exception.getMessage().indexOf("Broken pipe") != -1;
+        return (exception.getMessage() == null) ? false : exception
+                .getMessage().indexOf("Broken pipe") != -1;
     }
 
     /**
