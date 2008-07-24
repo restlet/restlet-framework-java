@@ -640,6 +640,7 @@
 	<!-- Package a module -->
 	<macrodef name="stageModule">
 		<attribute name="name" />
+		<attribute name="includeSource" default="false" />
 		<sequential>
 			<!-- Create the Manifest by merging the Eclipse plugin Manifest and the default JAR's one -->
 			<mkdir dir="${temp}/jar/META-INF" />
@@ -655,13 +656,29 @@
 
 			<!-- Create plugin jar -->
 			<mkdir dir="${dist-classic}/lib" />
-			<jar destfile="${dist-classic}/lib/${mod-@{name}-id}.jar" filesetmanifest="merge">
-				<fileset dir="${classes}/${mod-@{name}-id}" />
-				<fileset dir="${mod}/${mod-@{name}-id}/src" includes="META-INF/**" />
-				<fileset dir="${mod}/${mod-@{name}-id}/src" includes="**/*.properties" />
-				<fileset dir="${mod}/${mod-@{name}-id}/src" includes="**/*.xml" />
-				<fileset dir="${temp}/jar/" />
-			</jar>
+			
+			<if>
+				<equals arg1="@{includeSource}" arg2="true" />
+				<then>
+					<jar destfile="${dist-classic}/lib/${mod-@{name}-id}.jar" filesetmanifest="merge">
+						<fileset dir="${classes}/${mod-@{name}-id}" />
+						<fileset dir="${mod}/${mod-@{name}-id}/src" includes="META-INF/**" />
+						<fileset dir="${mod}/${mod-@{name}-id}/src" includes="**/*.java" />
+						<fileset dir="${mod}/${mod-@{name}-id}/src" includes="**/*.properties" />
+						<fileset dir="${mod}/${mod-@{name}-id}/src" includes="**/*.xml" />
+						<fileset dir="${temp}/jar/" />
+					</jar>
+				</then>
+				<else>
+					<jar destfile="${dist-classic}/lib/${mod-@{name}-id}.jar" filesetmanifest="merge">
+						<fileset dir="${classes}/${mod-@{name}-id}" />
+						<fileset dir="${mod}/${mod-@{name}-id}/src" includes="META-INF/**" />
+						<fileset dir="${mod}/${mod-@{name}-id}/src" includes="**/*.properties" />
+						<fileset dir="${mod}/${mod-@{name}-id}/src" includes="**/*.xml" />
+						<fileset dir="${temp}/jar/" />
+					</jar>
+				</else>
+			</if>
 
 			<!-- Create extension source jar file -->
 			<mkdir dir="${dist-classic}/src" />
@@ -1413,7 +1430,7 @@
 		<stageModule name="fileupload" />
 		<stageModule name="freemarker" />
 		<stageModule name="grizzly" />
-		<stageModule name="gwt-api" />
+		<stageModule name="gwt-api" includeSource="true" />
 		<stageModule name="gwt-ri" />
 		<stageModule name="httpclient" />
 		<stageModule name="javamail" />
