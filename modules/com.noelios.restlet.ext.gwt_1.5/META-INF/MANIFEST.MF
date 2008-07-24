@@ -5,28 +5,7 @@ Bundle-SymbolicName: com.noelios.restlet.ext.gwt
 Bundle-Version: 1.1
 Bundle-Vendor: Noelios Consulting
 Export-Package: com.noelios.restlet.ext.gwt;uses:="javax.servlet.http,com.noelios.restlet.ext.servlet"
-Import-Package: com.google.gwt.core.client,
- com.google.gwt.http.client,
- com.google.gwt.user.client,
- com.google.gwt.user.client.ui,
- com.google.gwt.xml.client,
- com.noelios.restlet,
- com.noelios.restlet.application,
- com.noelios.restlet.authentication,
- com.noelios.restlet.component,
- com.noelios.restlet.ext.servlet,
- com.noelios.restlet.http,
- com.noelios.restlet.local,
- com.noelios.restlet.util,
+Import-Package: com.noelios.restlet.ext.servlet,
  javax.servlet,
- javax.servlet.http,
- org.restlet,
- org.restlet.data,
- org.restlet.gwt,
- org.restlet.gwt.data,
- org.restlet.gwt.resource,
- org.restlet.gwt.util,
- org.restlet.resource,
- org.restlet.service,
- org.restlet.util
+ javax.servlet.http
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
