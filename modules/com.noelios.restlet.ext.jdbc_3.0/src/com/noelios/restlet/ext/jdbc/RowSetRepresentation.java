@@ -37,9 +37,9 @@ import com.sun.rowset.WebRowSetImpl;
  * Give access to the JdbcResult instance and to the WebRowSet for retrieval of
  * the connected ResultSet in the same JVM (for advanced use cases).
  * 
- * @see <a * href=
+ * @see <a href=
  *      "http://java.sun.com/j2se/1.5.0/docs/api/javax/sql/rowset/WebRowSet.html"
- *      >WebRowSet * Interface< /a>
+ *      >WebRowSet Interface< /a>
  * @author Thierry Boileau
  * @author Jerome Louvel (contact@noelios.com)
  */

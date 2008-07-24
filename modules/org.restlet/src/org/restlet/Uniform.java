@@ -37,9 +37,9 @@ import org.restlet.resource.Representation;
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
  * 
- * @see <a *
+ * @see <a
  *      href="http://roy.gbiv.com/pubs/dissertation/rest_arch_style.htm#sec_5_1_5"
- *      >Source * dissertation< /a>
+ *      >Source dissertation< /a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public abstract class Uniform {

@@ -29,12 +29,11 @@ import java.util.logging.Logger;
  * entities are equivalent and could be substituted for each other with no
  * significant change in semantics."
  * 
- * @see <a *
- *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11"
- *      >HTTP * Entity Tags< /a>
- * @see <a *
+ * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11"
+ *      >HTTP Entity Tags< /a>
+ * @see <a
  *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html#sec13.3.2"
- *      >HTTP * Entity Tag Cache Validators< /a>
+ *      >HTTP Entity Tag Cache Validators< /a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public final class Tag extends Metadata {

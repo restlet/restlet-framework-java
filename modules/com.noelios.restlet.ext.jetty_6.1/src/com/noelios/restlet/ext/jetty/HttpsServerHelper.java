@@ -120,8 +120,8 @@ import com.noelios.restlet.util.SslContextFactory;
  * </tr>
  * </table>
  * 
- * @see <a *
- *      href="http://docs.codehaus.org/display/JETTY/How+to+configure+SSL">How *
+ * @see <a
+ *      href="http://docs.codehaus.org/display/JETTY/How+to+configure+SSL">How
  *      to configure SSL for Jetty< /a>
  * @author Jerome Louvel (contact@noelios.com)
  */

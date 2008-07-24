@@ -89,9 +89,9 @@ import com.noelios.restlet.http.HttpClientCall;
  * the {@link #getHostnameVerifier()} method for details.
  * 
  * @see Client#getConnectTimeout()
- * @see <a *
+ * @see <a
  *      href="http://java.sun.com/j2se/1.5.0/docs/guide/net/index.html">Networking
- *      * Features< /a>
+ *      Features< /a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper {

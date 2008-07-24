@@ -38,7 +38,6 @@ import org.w3c.dom.NodeList;
  * <td>message</td>
  * </tr>
  * </table>
- * 
  */
 public class MailResolver extends Resolver<String> {
     /** Mail identifier. */

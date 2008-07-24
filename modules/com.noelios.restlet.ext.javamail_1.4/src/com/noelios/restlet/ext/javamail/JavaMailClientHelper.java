@@ -135,7 +135,6 @@ import com.sun.mail.pop3.POP3Folder;
  * </tr>
  * </table>
  * 
- * 
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class JavaMailClientHelper extends ClientHelper {

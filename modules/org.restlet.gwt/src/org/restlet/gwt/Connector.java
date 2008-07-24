@@ -36,12 +36,12 @@ import org.restlet.gwt.data.Protocol;
  * concerns and hiding the underlying implementation of resources and
  * communication mechanisms" Roy T. Fielding
  * 
- * @see <a *
+ * @see <a
  *      href="http://roy.gbiv.com/pubs/dissertation/software_arch.htm#sec_1_2_2"
- *      >Source * dissertation< /a>
- * @see <a *
+ *      >Source dissertation< /a>
+ * @see <a
  *      href="http://roy.gbiv.com/pubs/dissertation/rest_arch_style.htm#sec_5_2_2"
- *      >Source * dissertation< /a>
+ *      >Source dissertation< /a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public abstract class Connector extends Restlet {
