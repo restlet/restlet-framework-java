@@ -1,7 +1,8 @@
 <module>
 
-	<!-- Inherit the core Web Toolkit stuff.                  -->
 	<inherits name='com.google.gwt.user.User'/>
+
+	<!-- Inherit the Restlet-GWT API.                         -->
 	<inherits name='org.restlet.GWT'/>
 
 	<!-- Specify the app entry point class.                   -->
