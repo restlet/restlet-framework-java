@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Google Web Toolkit
 Bundle-SymbolicName: com.google.gwt
 Bundle-Version: 1.5.0
-Bundle-ClassPath: gwt-servlet.jar
+Bundle-ClassPath: gwt-user.jar
 Bundle-Vendor: Google Inc.
 Export-Package: com.google.gwt.animation.client;uses:="com.google.gwt.user.client",
  com.google.gwt.benchmarks;
@@ -17,6 +17,7 @@ Export-Package: com.google.gwt.animation.client;uses:="com.google.gwt.user.clien
  com.google.gwt.http.client;uses:="com.google.gwt.user.client,com.google.gwt.core.client,new com.google.gwt.http.client",
  com.google.gwt.i18n.client;uses:="com.google.gwt.user.client,com.google.gwt.i18n.client.constants",
  com.google.gwt.i18n.client.constants;uses:="com.google.gwt.i18n.client",
+ com.google.gwt.json.client,
  com.google.gwt.junit.client,
  com.google.gwt.user.client;uses:="com.google.gwt.core.client,com.google.gwt.dom.client",
  com.google.gwt.user.client.rpc,

@@ -208,6 +208,10 @@
 		<pathelement path="${classes}/${mod-atom-id}" />
 		<pathelement path="${mod}/${mod-atom-id}/src" />
 
+		<path refid="mod-gwt-api-path" />
+		<pathelement path="${classes}/${mod-gwt-api-id}" />
+		<pathelement path="${mod}/${mod-gwt-api-id}/src" />
+
 		<path refid="mod-net-path" />
 		<pathelement path="${classes}/${mod-net-id}" />
 		<pathelement path="${mod}/${mod-net-id}/src" />

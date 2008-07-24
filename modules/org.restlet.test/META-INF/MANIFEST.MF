@@ -4,9 +4,7 @@ Bundle-Name: Restlet API - Tests
 Bundle-SymbolicName: org.restlet.test
 Bundle-Version: 1.1
 Bundle-Vendor: Noelios Consulting
-Import-Package: com.google.gwt.core,
- com.google.gwt.core.client,
- com.google.gwt.user,
+Import-Package: com.google.gwt.core.client,
  com.google.gwt.user.client,
  com.google.gwt.user.client.ui,
  com.noelios.restlet,
@@ -72,4 +70,5 @@ Import-Package: com.google.gwt.core,
  org.springframework.beans.factory.xml,
  org.springframework.core,
  org.springframework.core.io
+onEnvironment: J2SE-1.5
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
