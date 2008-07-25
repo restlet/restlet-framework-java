@@ -18,7 +18,6 @@
 
 package org.restlet.ext.wadl;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -630,13 +629,6 @@ public class WadlApplication extends Application {
         } else if (MediaType.TEXT_HTML.equals(variant.getMediaType())) {
             result = new WadlRepresentation(getApplicationInfo())
                     .getHtmlRepresentation();
-        }
-
-        try {
-            result.write(System.out);
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         }
 
         return result;

@@ -156,11 +156,15 @@ public class SaxRepresentation extends XmlRepresentation {
 
     /**
      * Returns the SAX source that can be parsed by the
-     * {@link #parse(ContentHandler)} method.
+     * {@link #parse(ContentHandler)} method or used for an XSLT transformation.
      */
     @Override
     public SAXSource getSaxSource() throws IOException {
-        return this.source;
+        if (this.source == null) {
+            return new SAXSource(new InputSource(getStream()));
+        } else {
+            return this.source;
+        }
     }
 
     /**
