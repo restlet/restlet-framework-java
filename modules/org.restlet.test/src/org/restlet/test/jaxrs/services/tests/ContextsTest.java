@@ -44,7 +44,7 @@ public class ContextsTest extends JaxRsTestCase {
         final Response response = get("lastPathSegm;a=b;c=d;c=e");
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        final String entity = response.getEntity().getText();
+        // final String entity = response.getEntity().getText();
         // LATER assertEquals("a : [b]\nc : [d, e]\n", entity);
     }
 

@@ -1211,7 +1211,7 @@
 			<link href="http://www.simpleframework.org/javadoc/" />
 		</javadoc>
 
-		<javadoc packagenames="org.restlet.gwt.*" excludepackagenames="${exclude-packages}" destdir="${docs-gwt}" classpathref="path-all" author="true" version="true" use="true" windowtitle="Restlet-GWT library ${version-full}" doctitle="Restlet-GWT library ${version-full}" overview="${temp}/javadocs/overview-gwt.html" stylesheetfile="${tmpl}/javadocs/stylesheet.css" verbose="${verbose}">
+		<javadoc packagenames="org.restlet.gwt.*" excludepackagenames="${exclude-packages}" destdir="${docs-gwt}" classpathref="path-all" author="true" version="true" use="true" windowtitle="Restlet-GWT module ${version-full}" doctitle="Restlet-GWT module ${version-full}" overview="${temp}/javadocs/overview-gwt.html" stylesheetfile="${tmpl}/javadocs/stylesheet.css" verbose="${verbose}">
 			<sourcepath>
 				<pathelement path="${mod}/${mod-gwt-api-id}/src/" />
 			</sourcepath>
