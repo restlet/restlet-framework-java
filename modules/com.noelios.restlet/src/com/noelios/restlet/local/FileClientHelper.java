@@ -229,42 +229,42 @@ public class FileClientHelper extends LocalClientHelper {
                 response.setStatus(Status.SUCCESS_OK);
             }
         } else if (request.getMethod().equals(Method.PUT)) {
-            // Several checks : first the consistency of the metadata and the
-            // filename
-            if (!checkMetadataConsistency(file.getName(), metadataService,
-                    request.getEntity())) {
-                // ask the client to reiterate properly its request
-                response.setStatus(new Status(Status.REDIRECTION_SEE_OTHER,
-                        "The metadata are not consistent with the URI"));
+            // Deals with directory
+            boolean isDirectory = false;
+            if (file.exists()) {
+                if (file.isDirectory()) {
+                    isDirectory = true;
+                    response.setStatus(new Status(
+                            Status.CLIENT_ERROR_FORBIDDEN,
+                            "Can't put a new representation of a directory"));
+                }
             } else {
-                // Deals with directory
-                boolean isDirectory = false;
-                if (file.exists()) {
-                    if (file.isDirectory()) {
-                        isDirectory = true;
-                        response
-                                .setStatus(new Status(
-                                        Status.CLIENT_ERROR_FORBIDDEN,
-                                        "Can't put a new representation of a directory"));
-                    }
-                } else {
-                    // No existing file or directory found
-                    if (path.endsWith("/")) {
-                        isDirectory = true;
-                        // Create a new directory and its necessary parents
-                        if (file.mkdirs()) {
-                            response.setStatus(Status.SUCCESS_NO_CONTENT);
-                        } else {
-                            getLogger().log(Level.WARNING,
-                                    "Unable to create the new directory");
-                            response.setStatus(new Status(
-                                    Status.SERVER_ERROR_INTERNAL,
-                                    "Unable to create the new directory"));
-                        }
+                // No existing file or directory found
+                if (path.endsWith("/")) {
+                    isDirectory = true;
+                    // Create a new directory and its necessary parents
+                    if (file.mkdirs()) {
+                        response.setStatus(Status.SUCCESS_NO_CONTENT);
+                    } else {
+                        getLogger().log(Level.WARNING,
+                                "Unable to create the new directory");
+                        response.setStatus(new Status(
+                                Status.SERVER_ERROR_INTERNAL,
+                                "Unable to create the new directory"));
                     }
                 }
+            }
 
-                if (!isDirectory) {
+            if (!isDirectory) {
+                // Several checks : first the consistency of the metadata and
+                // the
+                // filename
+                if (!checkMetadataConsistency(file.getName(), metadataService,
+                        request.getEntity())) {
+                    // ask the client to reiterate properly its request
+                    response.setStatus(new Status(Status.REDIRECTION_SEE_OTHER,
+                            "The metadata are not consistent with the URI"));
+                } else {
                     // We look for the possible variants
                     // 1- set up base name as the longest part of the name
                     // without known extensions (beginning from the left)
