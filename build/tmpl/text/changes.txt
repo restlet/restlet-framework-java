@@ -11,6 +11,8 @@ Changes log
    starts with the same name. Reported by Rémi Dewitte.
  - Fixed bug with the support of media-type parameters when writing the response. 
    Reported by Zsolt Czinkos.
+ - Fixed bug regarding the creation of directories (with no index name) via the 
+   Directory Restlet. Reported by Marc-Elian Bégin.
 [Enhancements]
  - Updated Jetty to version 6.1.11
  
