@@ -59,6 +59,16 @@ public class DirectoryTestCase extends TestCase {
 
     String percentEncodedFileUrlBis = webSiteURL.concat("a+new%20file.txt");
 
+    /** Tests the creation of directory with unknown parent directories. */
+    String testCreationDirectory = webSiteURL.concat("/dir/does/not/exist");
+
+    /** Tests the creation of file with unknown parent directories. */
+    String testCreationFile = webSiteURL.concat("/file/does/not/exist");
+
+    /** Tests the creation of text file with unknown parent directories. */
+    String testCreationTextFile = webSiteURL
+            .concat("/text/file/does/not/exist.txt");
+
     File testDir;
 
     public void testDirectory() throws IOException {
@@ -83,8 +93,12 @@ public class DirectoryTestCase extends TestCase {
             clientComponent.start();
 
             // Test the directory Restlet with an index name
+            deleteDir(testDir);
+            testDir.mkdir();
             testDirectory(application, application.getDirectory(), "index");
             // Test the directory Restlet with no index name
+            deleteDir(testDir);
+            testDir.mkdir();
             testDirectory(application, application.getDirectory(), "");
 
             // Now, let's stop the component!
@@ -330,9 +344,44 @@ public class DirectoryTestCase extends TestCase {
             System.out.println("");
         }
         // Test 9d : Try to delete the file
-        response = handle(application, webSiteURL, percentEncodedFileUrl, Method.DELETE,
-                null, "9d");
+        response = handle(application, webSiteURL, percentEncodedFileUrl,
+                Method.DELETE, null, "9d");
         assertTrue(response.getStatus().equals(Status.SUCCESS_NO_CONTENT));
+
+        // Test 10a : Try to create a directory with an unkown hierarchy of
+        // parent directories.
+        response = handle(application, webSiteURL, testCreationDirectory,
+                Method.PUT, new StringRepresentation("useless entity"), "10a");
+        assertTrue(response.getStatus().equals(Status.REDIRECTION_SEE_OTHER));
+
+        // Test 10b : Try to create a directory (with the trailing "/") with an
+        // unkown hierarchy of parent directories.
+        response = handle(application, webSiteURL, testCreationDirectory + "/",
+                Method.PUT, new StringRepresentation("useless entity"), "10b");
+        if ("".equals(indexName)) {
+            assertTrue(response.getStatus().equals(Status.SUCCESS_NO_CONTENT));
+        } else {
+            // In this case, the PUT request is made on the index name. The PUT
+            // request fails unless the index contains the extensions that
+            // corresponds to the default metadata as expressed in the
+            // MetadataService.
+            assertTrue(response.getStatus()
+                    .equals(Status.REDIRECTION_SEE_OTHER));
+        }
+
+        // Test 10c : Try to create a file with an unkown hierarchy of
+        // parent directories. The name and the metadata of the provided entity
+        // don't match
+        response = handle(application, webSiteURL, testCreationFile,
+                Method.PUT, new StringRepresentation("file entity"), "10c");
+        assertTrue(response.getStatus().equals(Status.REDIRECTION_SEE_OTHER));
+
+        // Test 10d : Try to create a file with an unkown hierarchy of
+        // parent directories. The name and the metadata of the provided entity
+        // match
+        response = handle(application, webSiteURL, testCreationTextFile,
+                Method.PUT, new StringRepresentation("file entity"), "10d");
+        assertTrue(response.getStatus().equals(Status.SUCCESS_CREATED));
 
         testDirectory.delete();
         System.out.println("End of tests*********************");
@@ -403,7 +452,7 @@ public class DirectoryTestCase extends TestCase {
          * Constructor.
          * 
          * @param context
-         *                The parent context.
+         *            The parent context.
          */
         public MyApplication(Context context, File testDirectory)
                 throws IOException {
@@ -433,7 +482,7 @@ public class DirectoryTestCase extends TestCase {
      * Recursively delete a directory.
      * 
      * @param dir
-     *                The directory to delete.
+     *            The directory to delete.
      */
     private void deleteDir(File dir) {
         if (dir.exists()) {
