@@ -419,15 +419,13 @@ public class FileClientHelper extends LocalClientHelper {
 
             if (!isDirectory) {
                 // Several checks : first the consistency of the metadata and
-                // the
-                // filename
+                // the filename
                 if (!checkMetadataConsistency(file.getName(), metadataService,
                         request.getEntity())) {
                     // ask the client to reiterate properly its request
                     response.setStatus(new Status(Status.REDIRECTION_SEE_OTHER,
                             "The metadata are not consistent with the URI"));
                 } else {
-
                     // We look for the possible variants
                     // 1- set up base name as the longest part of the name
                     // without known extensions (beginning from the left)
