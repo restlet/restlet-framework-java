@@ -257,8 +257,7 @@ public class FileClientHelper extends LocalClientHelper {
 
             if (!isDirectory) {
                 // Several checks : first the consistency of the metadata and
-                // the
-                // filename
+                // the filename
                 if (!checkMetadataConsistency(file.getName(), metadataService,
                         request.getEntity())) {
                     // ask the client to reiterate properly its request
