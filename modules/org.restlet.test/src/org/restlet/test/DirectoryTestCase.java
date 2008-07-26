@@ -118,6 +118,16 @@ public class DirectoryTestCase extends TestCase {
     String percentEncodedFileUrlBis = this.webSiteURL
             .concat("a+new%20file.txt");
 
+    /** Tests the creation of directory with unknown parent directories. */
+    String testCreationDirectory = webSiteURL.concat("dir/does/not/exist");
+
+    /** Tests the creation of file with unknown parent directories. */
+    String testCreationFile = webSiteURL.concat("file/does/not/exist");
+
+    /** Tests the creation of text file with unknown parent directories. */
+    String testCreationTextFile = webSiteURL
+            .concat("text/file/does/not/exist.txt");
+
     File testDir;
 
     /**
@@ -175,8 +185,6 @@ public class DirectoryTestCase extends TestCase {
             // Create a temporary directory for the tests
             this.testDir = new File(System.getProperty("java.io.tmpdir"),
                     "DirectoryTestCase");
-            deleteDir(this.testDir);
-            this.testDir.mkdir();
 
             // Create a new Restlet component
             final Component clientComponent = new Component();
@@ -193,15 +201,23 @@ public class DirectoryTestCase extends TestCase {
 
             // Allow extensions tunneling
             application.getTunnelService().setExtensionsTunnel(true);
+            deleteDir(this.testDir);
+            this.testDir.mkdir();
             // Test the directory Restlet with an index name
             testDirectory(application, application.getDirectory(), "index");
+            deleteDir(this.testDir);
+            this.testDir.mkdir();
             // Test the directory Restlet with no index name
             testDirectory(application, application.getDirectory(), "");
 
             // Avoid extensions tunneling
             application.getTunnelService().setExtensionsTunnel(false);
+            deleteDir(this.testDir);
+            this.testDir.mkdir();
             // Test the directory Restlet with an index name
             testDirectory(application, application.getDirectory(), "index");
+            deleteDir(this.testDir);
+            this.testDir.mkdir();
             // Test the directory Restlet with no index name
             testDirectory(application, application.getDirectory(), "");
 
@@ -464,6 +480,41 @@ public class DirectoryTestCase extends TestCase {
         response = handle(application, this.webSiteURL,
                 this.percentEncodedFileUrl, Method.DELETE, null, "9d");
         assertEquals(Status.SUCCESS_NO_CONTENT, response.getStatus());
+
+        // Test 10a : Try to create a directory with an unkown hierarchy of
+        // parent directories.
+        response = handle(application, webSiteURL, testCreationDirectory,
+                Method.PUT, new StringRepresentation("useless entity"), "10a");
+        assertTrue(response.getStatus().equals(Status.REDIRECTION_SEE_OTHER));
+
+        // Test 10b : Try to create a directory (with the trailing "/") with an
+        // unkown hierarchy of parent directories.
+        response = handle(application, webSiteURL, testCreationDirectory + "/",
+                Method.PUT, new StringRepresentation("useless entity"), "10b");
+        if ("".equals(indexName)) {
+            assertTrue(response.getStatus().equals(Status.SUCCESS_NO_CONTENT));
+        } else {
+            // In this case, the PUT request is made on the index name. The PUT
+            // request fails unless the index contains the extensions that
+            // corresponds to the default metadata as expressed in the
+            // MetadataService.
+            assertTrue(response.getStatus()
+                    .equals(Status.REDIRECTION_SEE_OTHER));
+        }
+
+        // Test 10c : Try to create a file with an unkown hierarchy of
+        // parent directories. The name and the metadata of the provided entity
+        // don't match
+        response = handle(application, webSiteURL, testCreationFile,
+                Method.PUT, new StringRepresentation("file entity"), "10c");
+        assertTrue(response.getStatus().equals(Status.REDIRECTION_SEE_OTHER));
+
+        // Test 10d : Try to create a file with an unkown hierarchy of
+        // parent directories. The name and the metadata of the provided entity
+        // match
+        response = handle(application, webSiteURL, testCreationTextFile,
+                Method.PUT, new StringRepresentation("file entity"), "10d");
+        assertTrue(response.getStatus().equals(Status.SUCCESS_CREATED));
 
         testDirectory.delete();
         System.out.println("End of tests*********************");
