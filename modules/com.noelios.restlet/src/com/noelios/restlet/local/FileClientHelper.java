@@ -111,7 +111,7 @@ public class FileClientHelper extends LocalClientHelper {
         if (representation != null) {
             final Variant var = new Variant();
             updateMetadata(metadataService, fileName, var);
-            // "rep" contains the theorical correct metadata
+            // "var" contains the theorical correct metadata
             if (!representation.getLanguages().isEmpty()
                     && !var.getLanguages().containsAll(
                             representation.getLanguages())) {

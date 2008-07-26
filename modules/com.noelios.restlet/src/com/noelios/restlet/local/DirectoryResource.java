@@ -236,9 +236,10 @@ public class DirectoryResource extends Resource {
                     this.directoryUri = this.targetUri;
                     this.baseName = getDirectory().getIndexName();
                     this.targetUri = this.directoryUri + this.baseName;
+                    this.directoryTarget = true;
+
                     contextResponse = getClientDispatcher().get(this.targetUri);
                     if (contextResponse.getEntity() != null) {
-                        this.directoryTarget = true;
                         this.directoryContent = new ReferenceList();
                         this.directoryContent
                                 .add(new Reference(this.targetUri));
