@@ -19,7 +19,6 @@
 package org.restlet.ext.wadl;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -794,15 +793,15 @@ public class WadlRepresentation extends SaxRepresentation {
     }
 
     @Override
-    public void write(OutputStream outputStream) throws IOException {
-        // Convert the attached ApplicationInfo instance into an equivalent WADL
-        // XML document.
-        final XmlWriter writer = new XmlWriter(outputStream, "UTF-8");
+    public void write(XmlWriter writer) throws IOException {
         try {
             writer.forceNSDecl(APP_NAMESPACE, "");
             writer.setDataFormat(true);
             writer.setIndentStep(3);
-            writer.startDocument();
+            writer.processingInstruction("xml",
+                    "version=\"1.0\" standalone=\"yes\"");
+            writer.processingInstruction("xml-stylesheet",
+                    "type=\"text/xsl\" href=\"wadl_documentation.xsl\"");
             this.application.writeElement(writer);
             writer.endDocument();
         } catch (final SAXException e) {

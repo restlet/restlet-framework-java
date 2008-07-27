@@ -299,11 +299,14 @@ public class WadlApplication extends Application {
      * method discovers all the resources attached to this application. It can
      * be overriden to add documentation, list of representations, etc.
      * 
+     * @param request
+     *            The current request.
      * @return An application description.
      */
-    protected ApplicationInfo getApplicationInfo() {
+    protected ApplicationInfo getApplicationInfo(Request request) {
         final ApplicationInfo applicationInfo = new ApplicationInfo();
-        applicationInfo.getResources().setBaseRef(getBaseRef());
+        applicationInfo.getResources().setBaseRef(
+                request.getResourceRef().getBaseRef());
         applicationInfo.getResources().setResources(
                 getResourceInfos(getFirstRouter(getRoot())));
         return applicationInfo;
@@ -448,11 +451,19 @@ public class WadlApplication extends Application {
      * 
      * @param route
      *            The Route instance to document.
+     * @param basePath
+     *            The base path.
      * @return The WADL data about the given Route instance.
      */
-    private ResourceInfo getResourceInfo(Route route, String path) {
-        final ResourceInfo result = getResourceInfo(route.getNext(), path
-                + route.getTemplate().getPattern());
+    private ResourceInfo getResourceInfo(Route route, String basePath) {
+        String path = route.getTemplate().getPattern();
+
+        // WADL requires resource paths to be relative to parent path
+        if (path.startsWith("/") && basePath.endsWith("/")) {
+            path = path.substring(1);
+        }
+
+        final ResourceInfo result = getResourceInfo(route.getNext(), path);
         return result;
     }
 
@@ -468,7 +479,7 @@ public class WadlApplication extends Application {
         List<ResourceInfo> result = new ArrayList<ResourceInfo>();
 
         for (final Route route : router.getRoutes()) {
-            result.add(getResourceInfo(route, ""));
+            result.add(getResourceInfo(route, "/"));
         }
 
         return result;
@@ -527,8 +538,15 @@ public class WadlApplication extends Application {
      */
     @Override
     public void handle(Request request, Response response) {
+        Reference rr = request.getResourceRef();
+        String rp = rr.getRemainingPart();
+
         if (isAutoDescribed() && Method.OPTIONS.equals(request.getMethod())
-                && request.getResourceRef().getIdentifier().endsWith("*")) {
+                && (rp.equals("/*") || rp.equals("*"))) {
+            if (!rr.getBaseRef().getIdentifier().endsWith("/")) {
+                rr.setBaseRef(rr.getBaseRef() + "/");
+            }
+
             // Returns a WADL representation of the application.
             response.setEntity(wadlRepresent(request));
         } else {
@@ -572,10 +590,12 @@ public class WadlApplication extends Application {
     /**
      * Represents the resource as a WADL description.
      * 
+     * @param request
+     *            The current request.
      * @return The WADL description.
      */
     protected Representation wadlRepresent(Request request) {
-        return wadlRepresent(getPreferredWadlVariant(request));
+        return wadlRepresent(getPreferredWadlVariant(request), request);
     }
 
     /**
@@ -619,15 +639,17 @@ public class WadlApplication extends Application {
      * 
      * @param variant
      *            The WADL variant.
+     * @param request
+     *            The current request.
      * @return The WADL description.
      */
-    public Representation wadlRepresent(Variant variant) {
+    public Representation wadlRepresent(Variant variant, Request request) {
         Representation result = null;
 
         if (MediaType.APPLICATION_WADL_XML.equals(variant.getMediaType())) {
-            result = new WadlRepresentation(getApplicationInfo());
+            result = new WadlRepresentation(getApplicationInfo(request));
         } else if (MediaType.TEXT_HTML.equals(variant.getMediaType())) {
-            result = new WadlRepresentation(getApplicationInfo())
+            result = new WadlRepresentation(getApplicationInfo(request))
                     .getHtmlRepresentation();
         }
 
