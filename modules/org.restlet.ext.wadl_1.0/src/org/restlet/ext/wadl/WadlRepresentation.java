@@ -773,6 +773,7 @@ public class WadlRepresentation extends SaxRepresentation {
                         wadlHtmlXsltUrl.openStream(),
                         MediaType.APPLICATION_W3C_XSLT);
                 representation = new TransformRepresentation(this, xslRep);
+                representation.setMediaType(MediaType.TEXT_HTML);
             } catch (final IOException e) {
                 Context.getCurrent().getLogger().log(Level.WARNING,
                         "Unable to generate the WADL HTML representation", e);
