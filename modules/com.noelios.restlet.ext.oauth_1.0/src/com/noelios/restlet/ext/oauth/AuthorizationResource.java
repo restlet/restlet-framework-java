@@ -23,6 +23,7 @@ import net.oauth.OAuthMessage;
 
 import org.restlet.Context;
 import org.restlet.data.ChallengeRequest;
+import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -46,8 +47,11 @@ public abstract class AuthorizationResource extends Resource {
      * Constructor.
      * 
      * @param context
+     *            The parent context.
      * @param request
+     *            The current request.
      * @param response
+     *            The current response.
      */
     public AuthorizationResource(Context context, Request request,
             Response response) {
@@ -69,7 +73,7 @@ public abstract class AuthorizationResource extends Resource {
 
         if (accessor == null) {
             final ChallengeRequest challengeRequest = new ChallengeRequest(
-                    OAuthGuard.SCHEME, this.realm);
+                    ChallengeScheme.HTTP_OAUTH, this.realm);
             getResponse().setChallengeRequest(challengeRequest);
             // TODO: Use OAuthServlet mapping from problem to status.
             getResponse().setStatus(Status.CLIENT_ERROR_UNAUTHORIZED,

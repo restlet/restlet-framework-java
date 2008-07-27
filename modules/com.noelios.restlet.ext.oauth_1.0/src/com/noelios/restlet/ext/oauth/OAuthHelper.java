@@ -29,6 +29,7 @@ import net.oauth.OAuthMessage;
 
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
+import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -108,7 +109,7 @@ public class OAuthHelper extends AuthenticationHelper {
      * Constructor.
      */
     public OAuthHelper() {
-        super(OAuthGuard.SCHEME, false, true);
+        super(ChallengeScheme.HTTP_OAUTH, false, true);
     }
 
     @Override

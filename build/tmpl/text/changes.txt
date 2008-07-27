@@ -58,6 +58,7 @@ Changes log
        	  methods. Updated Javadocs of Context related to concurrent
        	  access and modifications of those collections. Suggested by
        	  Tim Peierls.
+       	- Added HTTP OAuth authentication scheme constant.
     - NRE and Extension Enhancements
         - Added a static HttpServletRequest getRequest(Request) method
           to the Servlet extension.
@@ -83,7 +84,8 @@ Changes log
           jSSLutils library 0.3. Contributed by Bruno Harbulot.
         - Added a port of Restlet to GWT. This is a subset of the Restlet
           API and Engine, mostly the client side working on top of 
-          GWT 1.5 RC1. 
+          GWT 1.5 RC1.
+        - Slightly refactored and documented OAuth extension. 
     - Misc
         - Refactored WAR client to remove remaining class in NRE core.
 

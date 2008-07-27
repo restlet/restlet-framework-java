@@ -28,12 +28,14 @@ import net.oauth.OAuthProblemException;
 
 import org.restlet.Context;
 import org.restlet.data.ChallengeRequest;
+import org.restlet.data.ChallengeScheme;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
+import org.restlet.resource.ResourceException;
 import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
 
@@ -52,8 +54,11 @@ public class RequestTokenResource extends Resource {
      * Constructor.
      * 
      * @param context
+     *            The parent context.
      * @param request
+     *            The current request.
      * @param response
+     *            The current response.
      */
     public RequestTokenResource(Context context, Request request,
             Response response) {
@@ -67,7 +72,8 @@ public class RequestTokenResource extends Resource {
     }
 
     @Override
-    public void acceptRepresentation(Representation entity) {
+    public void acceptRepresentation(Representation entity)
+            throws ResourceException {
         handle();
     }
 
@@ -76,7 +82,12 @@ public class RequestTokenResource extends Resource {
         return true;
     }
 
-    private void handle() {
+    /**
+     * Handles both GET and POST requests.
+     * 
+     * @throws ResourceException
+     */
+    private void handle() throws ResourceException {
         /*
          * This is stolen and modified from RequestTokenServlet in the OAuth
          * Java source.
@@ -86,7 +97,7 @@ public class RequestTokenResource extends Resource {
         final OAuthConsumer consumer = this.provider
                 .getConsumer(requestMessage);
         final ChallengeRequest challengeRequest = new ChallengeRequest(
-                OAuthGuard.SCHEME, this.realm);
+                ChallengeScheme.HTTP_OAUTH, this.realm);
 
         if (consumer == null) {
             getResponse().setChallengeRequest(challengeRequest);
@@ -123,13 +134,12 @@ public class RequestTokenResource extends Resource {
                             "oauth_token", accessor.requestToken,
                             "oauth_token_secret", accessor.tokenSecret))));
         } catch (final IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new ResourceException(e);
         }
     }
 
     @Override
-    public Representation represent(Variant variant) {
+    public Representation represent(Variant variant) throws ResourceException {
         handle();
         return getResponse().getEntity();
     }

@@ -37,11 +37,6 @@ import org.restlet.data.Request;
  * @author Adam Rosien
  */
 public class OAuthGuard extends Guard {
-    /**
-     * ChallengeScheme for OAuth.
-     */
-    public static final ChallengeScheme SCHEME = new ChallengeScheme(
-            "HTTP_OAuth", "OAuth");
 
     private volatile OAuthProvider provider;
 
@@ -49,11 +44,16 @@ public class OAuthGuard extends Guard {
      * Constructor.
      * 
      * @param context
+     *            The context.
      * @param realm
+     *            The authentication realm.
      * @param provider
+     *            The OAuth provider.
+     * @throws IllegalArgumentException
+     *             if the scheme is null
      */
     public OAuthGuard(Context context, String realm, OAuthProvider provider) {
-        super(context, SCHEME, realm);
+        super(context, ChallengeScheme.HTTP_OAUTH, realm);
         this.provider = provider;
     }
 

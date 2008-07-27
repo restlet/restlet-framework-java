@@ -27,7 +27,7 @@ import net.oauth.OAuthMessage;
  * 
  * @author Adam Rosien
  */
-public interface OAuthProvider {
+public abstract class OAuthProvider {
 
     /**
      * Add a consumer.
@@ -35,21 +35,21 @@ public interface OAuthProvider {
      * @param key
      * @param consumer
      */
-    void addConsumer(String key, OAuthConsumer consumer);
+    abstract void addConsumer(String key, OAuthConsumer consumer);
 
     /**
      * Generate an access token.
      * 
      * @param accessor
      */
-    void generateAccessToken(OAuthAccessor accessor);
+    abstract void generateAccessToken(OAuthAccessor accessor);
 
     /**
      * Generate a request token.
      * 
      * @param accessor
      */
-    void generateRequestToken(OAuthAccessor accessor);
+    abstract void generateRequestToken(OAuthAccessor accessor);
 
     /**
      * Get the accessor from a request.
@@ -57,7 +57,7 @@ public interface OAuthProvider {
      * @param requestMessage
      * @return Accessor, null if none found.
      */
-    OAuthAccessor getAccessor(OAuthMessage requestMessage);
+    abstract OAuthAccessor getAccessor(OAuthMessage requestMessage);
 
     /**
      * Get the consumer from a request.
@@ -65,7 +65,7 @@ public interface OAuthProvider {
      * @param requestMessage
      * @return Consumer, null if none found.
      */
-    OAuthConsumer getConsumer(OAuthMessage requestMessage);
+    abstract OAuthConsumer getConsumer(OAuthMessage requestMessage);
 
     /**
      * Authorize a request token for a user.
@@ -73,6 +73,6 @@ public interface OAuthProvider {
      * @param accessor
      * @param userId
      */
-    void markAsAuthorized(OAuthAccessor accessor, String userId);
+    abstract void markAsAuthorized(OAuthAccessor accessor, String userId);
 
 }

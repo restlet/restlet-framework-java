@@ -36,25 +36,34 @@ import org.apache.commons.codec.digest.DigestUtils;
  * 
  * @author Adam Rosien
  */
-public class MemoryOAuthProvider implements OAuthProvider {
+public class MemoryOAuthProvider extends OAuthProvider {
 
     // TODO: Mutexes.
     // TODO: LRU collections.
     private final Map<String, OAuthConsumer> consumers = new HashMap<String, OAuthConsumer>();
 
+    /** The current logger. */
     private final Logger logger;
 
     private final Set<OAuthAccessor> tokens = new HashSet<OAuthAccessor>();
 
+    /**
+     * Constructor.
+     * 
+     * @param logger
+     *            The current logger.
+     */
     public MemoryOAuthProvider(Logger logger) {
         this.logger = logger;
     }
 
+    @Override
     public void addConsumer(String key, OAuthConsumer consumer) {
         this.logger.fine("Adding consumer " + consumer);
         this.consumers.put(key, consumer);
     }
 
+    @Override
     public void generateAccessToken(OAuthAccessor accessor) {
         // generate oauth_token and oauth_secret
         final String consumer_key = (String) accessor.consumer
@@ -77,6 +86,7 @@ public class MemoryOAuthProvider implements OAuthProvider {
         this.tokens.add(accessor);
     }
 
+    @Override
     public void generateRequestToken(OAuthAccessor accessor) {
         // generate oauth_token and oauth_secret
         final String consumer_key = (String) accessor.consumer
@@ -100,6 +110,7 @@ public class MemoryOAuthProvider implements OAuthProvider {
         this.tokens.add(accessor);
     }
 
+    @Override
     public OAuthAccessor getAccessor(OAuthMessage requestMessage) {
         String consumer_token = null;
         try {
@@ -132,6 +143,7 @@ public class MemoryOAuthProvider implements OAuthProvider {
         return accessor;
     }
 
+    @Override
     public OAuthConsumer getConsumer(OAuthMessage requestMessage) {
         try {
             final String consumer_key = requestMessage.getConsumerKey();
@@ -141,6 +153,7 @@ public class MemoryOAuthProvider implements OAuthProvider {
         }
     }
 
+    @Override
     public void markAsAuthorized(OAuthAccessor accessor, String userId) {
         // first remove the accessor from cache
         this.tokens.remove(accessor);
