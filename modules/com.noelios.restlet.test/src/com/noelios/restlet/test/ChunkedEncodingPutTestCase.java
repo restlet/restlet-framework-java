@@ -42,6 +42,8 @@ import org.restlet.resource.Variant;
  */
 public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
 
+    private static int LOOP_NUMBER = 50;
+    
     /**
      * Test resource that answers to PUT requests by sending back the received
      * entity.
@@ -79,13 +81,13 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
 
     @Override
     protected void call(String uri) throws Exception {
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < LOOP_NUMBER; i++) {
             sendPut(uri, 10);
         }
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < LOOP_NUMBER; i++) {
             sendPut(uri, 1024);
         }
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < LOOP_NUMBER; i++) {
             sendPut(uri, 10240);
         }
     }
@@ -124,57 +126,57 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
 
     @Override
     public void testGrizzlyAndApache() throws Exception {
-        // super.testGrizzlyAndApache();
+        super.testGrizzlyAndApache();
     }
 
     @Override
     public void testGrizzlyAndInternal() throws Exception {
-        // super.testGrizzlyAndInternal();
+        super.testGrizzlyAndInternal();
     }
 
     @Override
     public void testGrizzlyAndJdkNet() throws Exception {
-        // super.testGrizzlyAndJdkNet();
+        super.testGrizzlyAndJdkNet();
     }
 
     @Override
     public void testInternalAndApache() throws Exception {
-        // super.testInternalAndApache();
+        super.testInternalAndApache();
     }
 
     @Override
     public void testInternalAndInternal() throws Exception {
-        // super.testInternalAndInternal();
+        super.testInternalAndInternal();
     }
 
     @Override
     public void testInternalAndJdkNet() throws Exception {
-        // super.testInternalAndJdkNet();
+        super.testInternalAndJdkNet();
     }
 
     @Override
     public void testJettyAndApache() throws Exception {
-        // super.testJettyAndApache();
+        super.testJettyAndApache();
     }
 
     @Override
     public void testJettyAndInternal() throws Exception {
-        // super.testJettyAndInternal();
+        super.testJettyAndInternal();
     }
 
     @Override
     public void testJettyAndJdkNet() throws Exception {
-        // super.testJettyAndJdkNet();
+        super.testJettyAndJdkNet();
     }
 
     @Override
     public void testSimpleAndApache() throws Exception {
-        // super.testSimpleAndApache();
+        super.testSimpleAndApache();
     }
 
     @Override
     public void testSimpleAndInternal() throws Exception {
-        // super.testSimpleAndInternal();
+        super.testSimpleAndInternal();
     }
 
     @Override

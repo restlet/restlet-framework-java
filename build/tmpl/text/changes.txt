@@ -21,6 +21,9 @@ Changes log
           Reported by Bruno Harbulot.
         - Fix potential NPE in Template class. Reported by Ralf
           Bommersbach
+        - Fixed bug in HTTP client connectors causing a null response
+          entity to be returned when no entity headers were found but
+          when chunked encoding was detected.
     - API Enhancements
         - Added a "Request.originalRef" property containing the URI 
           reference originally requested by the client. Clarified the

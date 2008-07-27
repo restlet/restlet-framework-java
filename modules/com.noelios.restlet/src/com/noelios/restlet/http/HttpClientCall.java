@@ -70,7 +70,7 @@ public abstract class HttpClientCall extends HttpCall {
     public static Representation copyResponseEntityHeaders(
             Iterable<Parameter> responseHeaders, Representation representation)
             throws NumberFormatException {
-        final Representation result = (representation == null) ? Representation
+        Representation result = (representation == null) ? Representation
                 .createEmpty() : representation;
         boolean entityHeaderFound = false;
 
@@ -133,8 +133,10 @@ public abstract class HttpClientCall extends HttpCall {
             }
         }
 
-        if (!entityHeaderFound) {
-            return null;
+        // If no representation was initially expected and no entity header 
+        // is found, then do not return any representation
+        if ((representation == null) && !entityHeaderFound) {
+            result = null;
         }
 
         return result;
@@ -311,6 +313,7 @@ public abstract class HttpClientCall extends HttpCall {
         result = copyResponseEntityHeaders(responseHeaders, result);
         if (result != null) {
             result.setSize(size);
+
             // Informs that the size has not been specified in the header.
             if (size == Representation.UNKNOWN_SIZE) {
                 getLogger()

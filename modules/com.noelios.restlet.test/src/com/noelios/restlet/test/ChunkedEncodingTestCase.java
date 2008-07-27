@@ -57,6 +57,8 @@ import com.noelios.restlet.http.HttpConstants;
  */
 public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
 
+    private static int LOOP_NUMBER = 50;
+
     public static class PutTestResource extends Resource {
 
         public PutTestResource(Context ctx, Request request, Response response) {
@@ -150,7 +152,7 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
 
     @Override
     protected void call(String uri) throws Exception {
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < LOOP_NUMBER; i++) {
             sendPut(uri);
             sendGet(uri);
         }
