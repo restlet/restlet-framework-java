@@ -21,6 +21,7 @@ package org.restlet.ext.wadl;
 import static org.restlet.ext.wadl.WadlRepresentation.APP_NAMESPACE;
 
 import java.util.Iterator;
+import java.util.List;
 
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
@@ -34,6 +35,22 @@ import org.xml.sax.helpers.AttributesImpl;
  * @author Jerome Louvel
  */
 public class FaultInfo extends RepresentationInfo {
+
+	public FaultInfo() {
+		super();
+	}
+
+	public FaultInfo(DocumentationInfo documentation) {
+		super(documentation);
+	}
+
+	public FaultInfo(List<DocumentationInfo> documentations) {
+		super(documentations);
+	}
+
+	public FaultInfo(String documentation) {
+		super(documentation);
+	}
 
 	/**
 	 * Writes the current object as an XML element using the given SAX writer.

@@ -49,6 +49,7 @@ public class RepresentationInfo extends DocumentedInfo {
 
 	/** List of locations of one or more meta data profiles. */
 	private List<Reference> profiles;
+
 	/**
 	 * List of statuses associated with this response representation.
 	 */
@@ -56,6 +57,21 @@ public class RepresentationInfo extends DocumentedInfo {
 
 	/** Qualified name of the root element for this XML-based representation. */
 	private String xmlElement;
+
+	public RepresentationInfo() {
+		super();
+	}
+
+	public RepresentationInfo(DocumentationInfo documentation) {
+		super(documentation);
+	}
+	public RepresentationInfo(List<DocumentationInfo> documentations) {
+		super(documentations);
+	}
+
+	public RepresentationInfo(String documentation) {
+		super(documentation);
+	}
 
 	/**
 	 * Returns the identifier for that element.

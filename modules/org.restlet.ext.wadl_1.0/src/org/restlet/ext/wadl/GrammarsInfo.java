@@ -38,6 +38,22 @@ public class GrammarsInfo extends DocumentedInfo {
 	/** Definitions of data format descriptions to be included by reference. */
 	private List<IncludeInfo> includes;
 
+	public GrammarsInfo() {
+		super();
+	}
+
+	public GrammarsInfo(DocumentationInfo documentation) {
+		super(documentation);
+	}
+
+	public GrammarsInfo(List<DocumentationInfo> documentations) {
+		super(documentations);
+	}
+
+	public GrammarsInfo(String documentation) {
+		super(documentation);
+	}
+
 	/**
 	 * Returns the list of include elements.
 	 * 

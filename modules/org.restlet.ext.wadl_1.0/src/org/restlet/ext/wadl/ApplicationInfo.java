@@ -54,6 +54,22 @@ public class ApplicationInfo extends DocumentedInfo {
 	 */
 	private List<ResourceTypeInfo> resourceTypes;
 
+	public ApplicationInfo() {
+		super();
+	}
+
+	public ApplicationInfo(DocumentationInfo documentation) {
+		super(documentation);
+	}
+
+	public ApplicationInfo(List<DocumentationInfo> documentations) {
+		super(documentations);
+	}
+
+	public ApplicationInfo(String documentation) {
+		super(documentation);
+	}
+
 	/**
 	 * Returns the list of fault elements.
 	 * 
