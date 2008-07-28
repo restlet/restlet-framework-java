@@ -37,14 +37,14 @@ import org.restlet.resource.Variant;
 
 /**
  * Resource that is able to automatically describe itself with WADL. This
- * description can be customized by overriding the {@link #getResourceInfo()}
- * and {@link #getMethodInfo(Method)} methods.
+ * description can be customized by overriding the {@link #describe()} and
+ * {@link #describeMethod(Method)} methods.
  * 
  * When used to describe a class of resources in the context of a parent
  * application, a special instance will be created using the default constructor
  * (with no request, response associated). In this case, the resource should do
  * its best to return the generic information when the WADL description methods
- * are invoked, like {@link #getResourceInfo()} and delegate methods.
+ * are invoked, like {@link #describe()} and delegate methods.
  * 
  * @author Jerome Louvel
  */
@@ -90,18 +90,142 @@ public class WadlResource extends Resource {
     }
 
     /**
+     * Describes the resource as a WADL document.
+     * 
+     * @return The WADL description.
+     */
+    protected Representation describe() {
+        return describe(getPreferredWadlVariant());
+    }
+
+    /**
+     * Returns a WADL description of the current resource, leveraging the
+     * {@link #getResourcePath()} method.
+     * 
+     * @param resourceInfo
+     *            WADL description of the current resource to update.
+     */
+    private void describe(ResourceInfo resourceInfo) {
+        describe(getResourcePath(), resourceInfo);
+    }
+
+    /**
+     * Returns a WADL description of the current resource.
+     * 
+     * @param path
+     *            Path of the current resource.
+     * @param resourceInfo
+     *            WADL description of the current resource to update.
+     */
+    public void describe(String path, ResourceInfo resourceInfo) {
+        resourceInfo.setPath(path);
+
+        // Introspect the current resource to detect the allowed methods
+        final List<Method> methodsList = new ArrayList<Method>();
+        methodsList.addAll(getAllowedMethods());
+
+        // Sort the allowed methods alphabetically
+        Collections.sort(methodsList, new Comparator<Method>() {
+            public int compare(Method m1, Method m2) {
+                return m1.getName().compareTo(m2.getName());
+            }
+        });
+
+        // Update the resource info with the description
+        // of the allowed methods
+        final List<MethodInfo> methods = resourceInfo.getMethods();
+        MethodInfo methodInfo;
+        for (final Method method : methodsList) {
+            if (isDescribable(method)) {
+                methodInfo = new MethodInfo();
+                describeMethod(method, methodInfo);
+                methods.add(methodInfo);
+            }
+        }
+
+        resourceInfo.setParameters(getParametersInfo());
+    }
+
+    /**
+     * Describes the resource as a WADL document for the given variant.
+     * 
+     * @param variant
+     *            The WADL variant.
+     * @return The WADL description.
+     */
+    protected Representation describe(Variant variant) {
+        Representation result = null;
+        ResourceInfo resourceInfo = new ResourceInfo();
+        describe(resourceInfo);
+
+        if (MediaType.APPLICATION_WADL_XML.equals(variant.getMediaType())) {
+            result = new WadlRepresentation(resourceInfo);
+        } else if (MediaType.TEXT_HTML.equals(variant.getMediaType())) {
+            result = new WadlRepresentation(resourceInfo)
+                    .getHtmlRepresentation();
+        }
+
+        return result;
+    }
+
+    /**
+     * Describes the DELETE method.
+     * 
+     * @param methodInfo
+     *            The method description to update.
+     */
+    protected void describeDelete(MethodInfo methodInfo) {
+    }
+
+    /**
+     * Describes the GET method.
+     * 
+     * @param methodInfo
+     *            The method description to update.
+     */
+    protected void describeGet(MethodInfo methodInfo) {
+    }
+
+    /**
      * Returns a WADL description of the given method.
      * 
      * @param method
      *            The method to describe.
-     * @return A method description.
+     * @param methodInfo
+     *            The method description to update.
      */
-    protected MethodInfo getMethodInfo(Method method) {
-        final MethodInfo methodInfo = new MethodInfo();
+    protected void describeMethod(Method method, MethodInfo methodInfo) {
         methodInfo.setName(method);
         methodInfo.setRequest(getRequestInfo(method));
         methodInfo.setResponse(getResponseInfo(method));
-        return methodInfo;
+
+        if (Method.GET.equals(method)) {
+            describeGet(methodInfo);
+        } else if (Method.POST.equals(method)) {
+            describePost(methodInfo);
+        } else if (Method.PUT.equals(method)) {
+            describePut(methodInfo);
+        } else if (Method.DELETE.equals(method)) {
+            describeDelete(methodInfo);
+        }
+    }
+
+    /**
+     * Describes the POST method.
+     * 
+     * @param methodInfo
+     *            The method description to update.
+     */
+    protected void describePost(MethodInfo methodInfo) {
+    }
+
+    /**
+     * Describes the PUT method.
+     * 
+     * @param methodInfo
+     *            The method description to update.
+     */
+    protected void describePut(MethodInfo methodInfo) {
     }
 
     /**
@@ -206,49 +330,6 @@ public class WadlResource extends Resource {
     }
 
     /**
-     * Returns a WADL description of the current resource, leveraging the
-     * {@link #getResourcePath()} method.
-     * 
-     * @return A WADL description of the current resource.
-     */
-    private ResourceInfo getResourceInfo() {
-        return getResourceInfo(getResourcePath());
-    }
-
-    /**
-     * Returns a WADL description of the current resource.
-     * 
-     * @return A WADL description of the current resource.
-     */
-    public ResourceInfo getResourceInfo(String path) {
-        final ResourceInfo result = new ResourceInfo();
-        result.setPath(path);
-
-        // Introspect the current resource to detect the allowed methods
-        final List<Method> methodsList = new ArrayList<Method>();
-        methodsList.addAll(getAllowedMethods());
-
-        // Sort the allowed methods alphabetically
-        Collections.sort(methodsList, new Comparator<Method>() {
-            public int compare(Method m1, Method m2) {
-                return m1.getName().compareTo(m2.getName());
-            }
-        });
-
-        // Update the resource info with the description
-        // of the allowed methods
-        final List<MethodInfo> methods = result.getMethods();
-        for (final Method method : methodsList) {
-            if (isDescribable(method)) {
-                methods.add(getMethodInfo(method));
-            }
-        }
-
-        result.setParameters(getParametersInfo());
-        return result;
-    }
-
-    /**
      * Returns the resource's relative path.
      * 
      * @return The resource's relative path.
@@ -315,7 +396,7 @@ public class WadlResource extends Resource {
     @Override
     public void handleOptions() {
         if (isAutoDescribed()) {
-            getResponse().setEntity(wadlRepresent());
+            getResponse().setEntity(describe());
         }
     }
 
@@ -332,7 +413,7 @@ public class WadlResource extends Resource {
     /**
      * Indicates if the given method exposes its WADL description. By default,
      * HEAD and OPTIONS are not exposed. This method is called by
-     * {@link #getMethodInfo(Method)}.
+     * {@link #describeMethod(Method)}.
      * 
      * @param method
      *            The method
@@ -352,35 +433,6 @@ public class WadlResource extends Resource {
      */
     public void setAutoDescribed(boolean autoDescribed) {
         this.autoDescribed = autoDescribed;
-    }
-
-    /**
-     * Represents the resource as a WADL description.
-     * 
-     * @return The WADL description.
-     */
-    protected Representation wadlRepresent() {
-        return wadlRepresent(getPreferredWadlVariant());
-    }
-
-    /**
-     * Represents the resource as a WADL description for the given variant.
-     * 
-     * @param variant
-     *            The WADL variant.
-     * @return The WADL description.
-     */
-    protected Representation wadlRepresent(Variant variant) {
-        Representation result = null;
-
-        if (MediaType.APPLICATION_WADL_XML.equals(variant.getMediaType())) {
-            result = new WadlRepresentation(getResourceInfo());
-        } else if (MediaType.TEXT_HTML.equals(variant.getMediaType())) {
-            result = new WadlRepresentation(getResourceInfo())
-                    .getHtmlRepresentation();
-        }
-
-        return result;
     }
 
 }
