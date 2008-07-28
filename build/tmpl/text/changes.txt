@@ -24,6 +24,9 @@ Changes log
         - Fixed bug in HTTP client connectors causing a null response
           entity to be returned when no entity headers were found but
           when chunked encoding was detected.
+        - Each connector now has its own instance of Context to allow
+          setting of different parameter values on different 
+          connectors.
     - API Enhancements
         - Added a "Request.originalRef" property containing the URI 
           reference originally requested by the client. Clarified the
@@ -72,9 +75,9 @@ Changes log
         - The Apache HTTP Client extension can now have a retry handler
           parameter set. Suggested by Sanjay Acharya.
         - Added a "sslContextFactory" parameter to HTTPS connector to 
-          improve the flexibility of SSL configuration. If this parameter
-          isn't set, the previous parameters are used instead. 
-          Contributed by Bruno Harbulot.
+          improve the flexibility of SSL configuration. If this 
+          parameter isn't set, the previous parameters are used 
+          instead. Contributed by Bruno Harbulot.
         - Exceptions occuring while writing the response entities are 
           now reported as severe errors instead of just info messages.
           Broken connections are still reported as info messages to 
@@ -82,9 +85,9 @@ Changes log
         - Made the com.noelios.ext.ssl extension public to provide more 
           flexibility in configuring SSL certificates. Depends on 
           jSSLutils library 0.3. Contributed by Bruno Harbulot.
-        - Added a port of Restlet to GWT. This is a subset of the Restlet
-          API and Engine, mostly the client side working on top of 
-          GWT 1.5 RC1.
+        - Added a port of Restlet to GWT. This is a subset of the 
+          Restlet API and Engine, mostly the client side working on top
+          of GWT 1.5 RC1.
         - Slightly refactored and documented OAuth extension. 
     - Misc
         - Refactored WAR client to remove remaining class in NRE core.
@@ -175,10 +178,10 @@ Changes log
           MessageRepresentation, MessagesRepresentation and 
           RepresentationMessage. Suggested by Matthieu Hug.
         - Added an ObjectFactory to the JAX-RS extension for customized
-          root resource class and provider instantiation. Contributed by
-          Bruno Dumon.
-        - The local connectors (FILE and CLAP connectors for now) have a
-          new "defaultLanguage" parameter that is uses when no parent
+          root resource class and provider instantiation. Contributed
+          by Bruno Dumon.
+        - The local connectors (FILE and CLAP connectors for now) have 
+          a new "defaultLanguage" parameter that is uses when no parent
           application is available (no MetadataService accessible).
           Limitation reported by Jules Milner-Brage.
         - Added SslContextFactory and DefaultSslContextFactory to the

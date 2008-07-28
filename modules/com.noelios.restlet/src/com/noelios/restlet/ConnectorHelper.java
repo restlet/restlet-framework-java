@@ -20,6 +20,7 @@ package com.noelios.restlet;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.logging.Logger;
 
 import org.restlet.Connector;
 import org.restlet.Context;
@@ -45,7 +46,7 @@ public abstract class ConnectorHelper<T extends Connector> extends Helper<T> {
 
     @Override
     public Context createContext(String loggerName) {
-        return null;
+        return new Context(Logger.getLogger(loggerName));
     }
 
     /**
