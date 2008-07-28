@@ -20,9 +20,6 @@ package org.restlet.ext.wadl;
 
 import static org.restlet.ext.wadl.WadlRepresentation.APP_NAMESPACE;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.restlet.util.XmlWriter;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
@@ -32,51 +29,10 @@ import org.xml.sax.helpers.AttributesImpl;
  * 
  * @author Jerome Louvel
  */
-public class OptionInfo {
-
-    /** Doc elements used to document that element. */
-    private List<DocumentationInfo> documentations;
+public class OptionInfo extends DocumentedInfo {
 
     /** Value of this option element. */
     private String value;
-
-    /**
-     * Constructor.
-     * 
-     */
-    public OptionInfo() {
-        super();
-    }
-
-    /**
-     * Constructor with a single documentation element.
-     * 
-     * @param documentation
-     *            A single documentation element.
-     */
-    public OptionInfo(DocumentationInfo documentation) {
-        super();
-        getDocumentations().add(documentation);
-    }
-
-    /**
-     * Returns the list of documentation elements.
-     * 
-     * @return The list of documentation elements.
-     */
-    public List<DocumentationInfo> getDocumentations() {
-        // Lazy initialization with double-check.
-        List<DocumentationInfo> d = this.documentations;
-        if (d == null) {
-            synchronized (this) {
-                d = this.documentations;
-                if (d == null) {
-                    this.documentations = d = new ArrayList<DocumentationInfo>();
-                }
-            }
-        }
-        return d;
-    }
 
     /**
      * Returns the value of this option element.
@@ -85,27 +41,6 @@ public class OptionInfo {
      */
     public String getValue() {
         return this.value;
-    }
-
-    /**
-     * Set the list of documentation elements with a single element.
-     * 
-     * @param documentation
-     *            A single documentation element.
-     */
-    public void setDocumentationInfo(DocumentationInfo documentation) {
-        getDocumentations().clear();
-        getDocumentations().add(documentation);
-    }
-
-    /**
-     * Sets the list of documentation elements.
-     * 
-     * @param doc
-     *            The list of documentation elements.
-     */
-    public void setDocumentations(List<DocumentationInfo> doc) {
-        this.documentations = doc;
     }
 
     /**

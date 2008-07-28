@@ -31,293 +31,231 @@ import org.xml.sax.SAXException;
  * 
  * @author Jerome Louvel
  */
-public class ApplicationInfo {
+public class ApplicationInfo extends DocumentedInfo {
 
-    /** Doc elements used to document that element. */
-    private List<DocumentationInfo> documentations;
+	/** List of faults (representations that denote an error condition). */
+	private List<FaultInfo> faults;
 
-    /** List of faults (representations that denote an error condition). */
-    private List<FaultInfo> faults;
+	/** Container for definitions of the format of data exchanged. */
+	private GrammarsInfo grammars;
 
-    /** Container for definitions of the format of data exchanged. */
-    private GrammarsInfo grammars;
+	/** List of methods. */
+	private List<MethodInfo> methods;
 
-    /** List of methods. */
-    private List<MethodInfo> methods;
+	/** List of representations. */
+	private List<RepresentationInfo> representations;
 
-    /** List of representations. */
-    private List<RepresentationInfo> representations;
+	/** Resources provided by the application. */
+	private ResourcesInfo resources;
 
-    /** Resources provided by the application. */
-    private ResourcesInfo resources;
+	/**
+	 * Describes a set of methods that define the behavior of a type of
+	 * resource.
+	 */
+	private List<ResourceTypeInfo> resourceTypes;
 
-    /**
-     * Describes a set of methods that define the behavior of a type of
-     * resource.
-     */
-    private List<ResourceTypeInfo> resourceTypes;
+	/**
+	 * Returns the list of fault elements.
+	 * 
+	 * @return The list of fault elements.
+	 */
+	public List<FaultInfo> getFaults() {
+		// Lazy initialization with double-check.
+		List<FaultInfo> f = this.faults;
+		if (f == null) {
+			synchronized (this) {
+				f = this.faults;
+				if (f == null) {
+					this.faults = f = new ArrayList<FaultInfo>();
+				}
+			}
+		}
+		return f;
+	}
 
-    /**
-     * Constructor.
-     * 
-     */
-    public ApplicationInfo() {
-        super();
-    }
+	/**
+	 * Returns the grammar elements.
+	 * 
+	 * @return The grammar elements.
+	 */
+	public GrammarsInfo getGrammars() {
+		return this.grammars;
+	}
 
-    /**
-     * Constructor with a single documentation element.
-     * 
-     * @param documentation
-     *            A single documentation element.
-     */
-    public ApplicationInfo(DocumentationInfo documentation) {
-        super();
-        getDocumentations().add(documentation);
-    }
+	/**
+	 * Returns the list of method elements.
+	 * 
+	 * @return The list of method elements.
+	 */
+	public List<MethodInfo> getMethods() {
+		// Lazy initialization with double-check.
+		List<MethodInfo> m = this.methods;
+		if (m == null) {
+			synchronized (this) {
+				m = this.methods;
+				if (m == null) {
+					this.methods = m = new ArrayList<MethodInfo>();
+				}
+			}
+		}
+		return m;
+	}
 
-    /**
-     * Returns the list of documentation elements.
-     * 
-     * @return The list of documentation elements.
-     */
-    public List<DocumentationInfo> getDocumentations() {
-        // Lazy initialization with double-check.
-        List<DocumentationInfo> d = this.documentations;
-        if (d == null) {
-            synchronized (this) {
-                d = this.documentations;
-                if (d == null) {
-                    this.documentations = d = new ArrayList<DocumentationInfo>();
-                }
-            }
-        }
-        return d;
-    }
+	/**
+	 * Returns the list of representation elements.
+	 * 
+	 * @return The list of representation elements.
+	 */
+	public List<RepresentationInfo> getRepresentations() {
+		// Lazy initialization with double-check.
+		List<RepresentationInfo> r = this.representations;
+		if (r == null) {
+			synchronized (this) {
+				r = this.representations;
+				if (r == null) {
+					this.representations = r = new ArrayList<RepresentationInfo>();
+				}
+			}
+		}
+		return r;
+	}
 
-    /**
-     * Returns the list of fault elements.
-     * 
-     * @return The list of fault elements.
-     */
-    public List<FaultInfo> getFaults() {
-        // Lazy initialization with double-check.
-        List<FaultInfo> f = this.faults;
-        if (f == null) {
-            synchronized (this) {
-                f = this.faults;
-                if (f == null) {
-                    this.faults = f = new ArrayList<FaultInfo>();
-                }
-            }
-        }
-        return f;
-    }
+	/**
+	 * Returns the resources root element.
+	 * 
+	 * @return The resources root element.
+	 */
+	public ResourcesInfo getResources() {
+		// Lazy initialization with double-check.
+		ResourcesInfo r = this.resources;
+		if (r == null) {
+			synchronized (this) {
+				r = this.resources;
+				if (r == null) {
+					this.resources = r = new ResourcesInfo();
+				}
+			}
+		}
+		return r;
+	}
 
-    /**
-     * Returns the grammar elements.
-     * 
-     * @return The grammar elements.
-     */
-    public GrammarsInfo getGrammars() {
-        return this.grammars;
-    }
+	/**
+	 * Returns the list of resource type elements.
+	 * 
+	 * @return The list of resource type elements.
+	 */
+	public List<ResourceTypeInfo> getResourceTypes() {
+		// Lazy initialization with double-check.
+		List<ResourceTypeInfo> rt = this.resourceTypes;
+		if (rt == null) {
+			synchronized (this) {
+				rt = this.resourceTypes;
+				if (rt == null) {
+					this.resourceTypes = rt = new ArrayList<ResourceTypeInfo>();
+				}
+			}
+		}
+		return rt;
+	}
 
-    /**
-     * Returns the list of method elements.
-     * 
-     * @return The list of method elements.
-     */
-    public List<MethodInfo> getMethods() {
-        // Lazy initialization with double-check.
-        List<MethodInfo> m = this.methods;
-        if (m == null) {
-            synchronized (this) {
-                m = this.methods;
-                if (m == null) {
-                    this.methods = m = new ArrayList<MethodInfo>();
-                }
-            }
-        }
-        return m;
-    }
+	/**
+	 * Sets the list of fault elements.
+	 * 
+	 * @param faults
+	 *            The list of documentation elements.
+	 */
+	public void setFaults(List<FaultInfo> faults) {
+		this.faults = faults;
+	}
 
-    /**
-     * Returns the list of representation elements.
-     * 
-     * @return The list of representation elements.
-     */
-    public List<RepresentationInfo> getRepresentations() {
-        // Lazy initialization with double-check.
-        List<RepresentationInfo> r = this.representations;
-        if (r == null) {
-            synchronized (this) {
-                r = this.representations;
-                if (r == null) {
-                    this.representations = r = new ArrayList<RepresentationInfo>();
-                }
-            }
-        }
-        return r;
-    }
+	/**
+	 * Sets the grammars element.
+	 * 
+	 * @param grammars
+	 *            The grammars element.
+	 */
+	public void setGrammars(GrammarsInfo grammars) {
+		this.grammars = grammars;
+	}
 
-    /**
-     * Returns the resources root element.
-     * 
-     * @return The resources root element.
-     */
-    public ResourcesInfo getResources() {
-        // Lazy initialization with double-check.
-        ResourcesInfo r = this.resources;
-        if (r == null) {
-            synchronized (this) {
-                r = this.resources;
-                if (r == null) {
-                    this.resources = r = new ResourcesInfo();
-                }
-            }
-        }
-        return r;
-    }
+	/**
+	 * Sets the list of documentation elements.
+	 * 
+	 * @param methods
+	 *            The list of method elements.
+	 */
+	public void setMethods(List<MethodInfo> methods) {
+		this.methods = methods;
+	}
 
-    /**
-     * Returns the list of resource type elements.
-     * 
-     * @return The list of resource type elements.
-     */
-    public List<ResourceTypeInfo> getResourceTypes() {
-        // Lazy initialization with double-check.
-        List<ResourceTypeInfo> rt = this.resourceTypes;
-        if (rt == null) {
-            synchronized (this) {
-                rt = this.resourceTypes;
-                if (rt == null) {
-                    this.resourceTypes = rt = new ArrayList<ResourceTypeInfo>();
-                }
-            }
-        }
-        return rt;
-    }
+	/**
+	 * sets the list of representation elements.
+	 * 
+	 * @param representations
+	 *            The list of representation elements.
+	 */
+	public void setRepresentations(List<RepresentationInfo> representations) {
+		this.representations = representations;
+	}
 
-    /**
-     * Set the list of documentation elements with a single element.
-     * 
-     * @param documentation
-     *            A single documentation element.
-     */
-    public void setDocumentationInfo(DocumentationInfo documentation) {
-        getDocumentations().clear();
-        getDocumentations().add(documentation);
-    }
+	/**
+	 * Sets the list of resource elements.
+	 * 
+	 * @param resources
+	 *            The list of resource elements.
+	 */
+	public void setResources(ResourcesInfo resources) {
+		this.resources = resources;
+	}
 
-    /**
-     * Sets the list of documentation elements.
-     * 
-     * @param doc
-     *            The list of documentation elements.
-     */
-    public void setDocumentations(List<DocumentationInfo> doc) {
-        this.documentations = doc;
-    }
+	/**
+	 * sets the list of resource type elements.
+	 * 
+	 * @param resourceTypes
+	 *            The list of resource type elements.
+	 */
+	public void setResourceTypes(List<ResourceTypeInfo> resourceTypes) {
+		this.resourceTypes = resourceTypes;
+	}
 
-    /**
-     * Sets the list of fault elements.
-     * 
-     * @param faults
-     *            The list of documentation elements.
-     */
-    public void setFaults(List<FaultInfo> faults) {
-        this.faults = faults;
-    }
+	/**
+	 * Writes the current object as an XML element using the given SAX writer.
+	 * 
+	 * @param writer
+	 *            The SAX writer.
+	 * @throws SAXException
+	 */
+	public void writeElement(XmlWriter writer) throws SAXException {
+		writer.startElement(APP_NAMESPACE, "application");
 
-    /**
-     * Sets the grammars element.
-     * 
-     * @param grammars
-     *            The grammars element.
-     */
-    public void setGrammars(GrammarsInfo grammars) {
-        this.grammars = grammars;
-    }
+		for (final DocumentationInfo documentationInfo : getDocumentations()) {
+			documentationInfo.writeElement(writer);
+		}
 
-    /**
-     * Sets the list of documentation elements.
-     * 
-     * @param methods
-     *            The list of method elements.
-     */
-    public void setMethods(List<MethodInfo> methods) {
-        this.methods = methods;
-    }
+		if (getGrammars() != null) {
+			getGrammars().writeElement(writer);
+		}
 
-    /**
-     * sets the list of representation elements.
-     * 
-     * @param representations
-     *            The list of representation elements.
-     */
-    public void setRepresentations(List<RepresentationInfo> representations) {
-        this.representations = representations;
-    }
+		for (final MethodInfo methodInfo : getMethods()) {
+			methodInfo.writeElement(writer);
+		}
 
-    /**
-     * Sets the list of resource elements.
-     * 
-     * @param resources
-     *            The list of resource elements.
-     */
-    public void setResources(ResourcesInfo resources) {
-        this.resources = resources;
-    }
+		for (final RepresentationInfo representationInfo : getRepresentations()) {
+			representationInfo.writeElement(writer);
+		}
 
-    /**
-     * sets the list of resource type elements.
-     * 
-     * @param resourceTypes
-     *            The list of resource type elements.
-     */
-    public void setResourceTypes(List<ResourceTypeInfo> resourceTypes) {
-        this.resourceTypes = resourceTypes;
-    }
+		if (getResources() != null) {
+			getResources().writeElement(writer);
+		}
 
-    /**
-     * Writes the current object as an XML element using the given SAX writer.
-     * 
-     * @param writer
-     *            The SAX writer.
-     * @throws SAXException
-     */
-    public void writeElement(XmlWriter writer) throws SAXException {
-        writer.startElement(APP_NAMESPACE, "application");
+		for (final ResourceTypeInfo resourceTypeInfo : getResourceTypes()) {
+			resourceTypeInfo.writeElement(writer);
+		}
 
-        for (final DocumentationInfo documentationInfo : getDocumentations()) {
-            documentationInfo.writeElement(writer);
-        }
+		for (final FaultInfo faultInfo : getFaults()) {
+			faultInfo.writeElement(writer);
+		}
 
-        if (getGrammars() != null) {
-            getGrammars().writeElement(writer);
-        }
-
-        for (final MethodInfo methodInfo : getMethods()) {
-            methodInfo.writeElement(writer);
-        }
-
-        for (final RepresentationInfo representationInfo : getRepresentations()) {
-            representationInfo.writeElement(writer);
-        }
-
-        if (getResources() != null) {
-            getResources().writeElement(writer);
-        }
-
-        for (final ResourceTypeInfo resourceTypeInfo : getResourceTypes()) {
-            resourceTypeInfo.writeElement(writer);
-        }
-
-        for (final FaultInfo faultInfo : getFaults()) {
-            faultInfo.writeElement(writer);
-        }
-
-        writer.endElement(APP_NAMESPACE, "application");
-    }
+		writer.endElement(APP_NAMESPACE, "application");
+	}
 }

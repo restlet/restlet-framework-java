@@ -20,7 +20,6 @@ package org.restlet.ext.wadl;
 
 import static org.restlet.ext.wadl.WadlRepresentation.APP_NAMESPACE;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.data.Reference;
@@ -33,114 +32,68 @@ import org.xml.sax.helpers.AttributesImpl;
  * 
  * @author Jerome Louvel
  */
-public class IncludeInfo {
+public class IncludeInfo extends DocumentedInfo {
 
-    /** Doc elements used to document that element. */
-    private List<DocumentationInfo> documentations;
+	/** URI for the referenced definitions. */
+	private Reference targetRef;
 
-    /** URI for the referenced definitions. */
-    private Reference targetRef;
+	public IncludeInfo() {
+		super();
+	}
 
-    /**
-     * Constructor.
-     * 
-     */
-    public IncludeInfo() {
-        super();
-    }
+	public IncludeInfo(DocumentationInfo documentation) {
+		super(documentation);
+	}
 
-    /**
-     * Constructor with a single documentation element.
-     * 
-     * @param documentation
-     *            A single documentation element.
-     */
-    public IncludeInfo(DocumentationInfo documentation) {
-        super();
-        getDocumentations().add(documentation);
-    }
+	public IncludeInfo(List<DocumentationInfo> documentations) {
+		super(documentations);
+	}
 
-    /**
-     * Returns the list of documentation elements.
-     * 
-     * @return The list of documentation elements.
-     */
-    public List<DocumentationInfo> getDocumentations() {
-        // Lazy initialization with double-check.
-        List<DocumentationInfo> d = this.documentations;
-        if (d == null) {
-            synchronized (this) {
-                d = this.documentations;
-                if (d == null) {
-                    this.documentations = d = new ArrayList<DocumentationInfo>();
-                }
-            }
-        }
-        return d;
-    }
+	public IncludeInfo(String documentation) {
+		super(documentation);
+	}
 
-    /**
-     * Returns the URI of the referenced definition.
-     * 
-     * @return The URI of the referenced definition.
-     */
-    public Reference getTargetRef() {
-        return this.targetRef;
-    }
+	/**
+	 * Returns the URI of the referenced definition.
+	 * 
+	 * @return The URI of the referenced definition.
+	 */
+	public Reference getTargetRef() {
+		return this.targetRef;
+	}
 
-    /**
-     * Set the list of documentation elements with a single element.
-     * 
-     * @param documentation
-     *            A single documentation element.
-     */
-    public void setDocumentationInfo(DocumentationInfo documentation) {
-        getDocumentations().clear();
-        getDocumentations().add(documentation);
-    }
+	/**
+	 * Sets the URI of the referenced definition.
+	 * 
+	 * @param href
+	 *            The URI of the referenced definition.
+	 */
+	public void setTargetRef(Reference href) {
+		this.targetRef = href;
+	}
 
-    /**
-     * Sets the list of documentation elements.
-     * 
-     * @param doc
-     *            The list of documentation elements.
-     */
-    public void setDocumentations(List<DocumentationInfo> doc) {
-        this.documentations = doc;
-    }
+	/**
+	 * Writes the current object as an XML element using the given SAX writer.
+	 * 
+	 * @param writer
+	 *            The SAX writer.
+	 * @throws SAXException
+	 */
+	public void writeElement(XmlWriter writer) throws SAXException {
+		final AttributesImpl attributes = new AttributesImpl();
+		if ((getTargetRef() != null) && (getTargetRef().toString() != null)) {
+			attributes.addAttribute("", "href", null, "xs:anyURI",
+					getTargetRef().toString());
+		}
 
-    /**
-     * Sets the URI of the referenced definition.
-     * 
-     * @param href
-     *            The URI of the referenced definition.
-     */
-    public void setTargetRef(Reference href) {
-        this.targetRef = href;
-    }
-
-    /**
-     * Writes the current object as an XML element using the given SAX writer.
-     * 
-     * @param writer
-     *            The SAX writer.
-     * @throws SAXException
-     */
-    public void writeElement(XmlWriter writer) throws SAXException {
-        final AttributesImpl attributes = new AttributesImpl();
-        if ((getTargetRef() != null) && (getTargetRef().toString() != null)) {
-            attributes.addAttribute("", "href", null, "xs:anyURI",
-                    getTargetRef().toString());
-        }
-
-        if (getDocumentations().isEmpty()) {
-            writer.emptyElement(APP_NAMESPACE, "include", null, attributes);
-        } else {
-            writer.startElement(APP_NAMESPACE, "include", null, attributes);
-            for (final DocumentationInfo documentationInfo : getDocumentations()) {
-                documentationInfo.writeElement(writer);
-            }
-            writer.endElement(APP_NAMESPACE, "include");
-        }
-    }
+		if (getDocumentations().isEmpty()) {
+			writer.emptyElement(APP_NAMESPACE, "include", null, attributes);
+		} else {
+			writer.startElement(APP_NAMESPACE, "include", null, attributes);
+			for (final DocumentationInfo documentationInfo : getDocumentations()) {
+				documentationInfo.writeElement(writer);
+			}
+			writer.endElement(APP_NAMESPACE, "include");
+		}
+	}
 }

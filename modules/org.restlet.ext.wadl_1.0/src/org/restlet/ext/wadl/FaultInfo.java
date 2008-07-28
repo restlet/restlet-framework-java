@@ -35,98 +35,68 @@ import org.xml.sax.helpers.AttributesImpl;
  */
 public class FaultInfo extends RepresentationInfo {
 
-    /**
-     * Constructor.
-     * 
-     */
-    public FaultInfo() {
-        super();
-    }
+	/**
+	 * Writes the current object as an XML element using the given SAX writer.
+	 * 
+	 * @param writer
+	 *            The SAX writer.
+	 * @throws SAXException
+	 */
+	@Override
+	public void writeElement(XmlWriter writer) throws SAXException {
+		final AttributesImpl attributes = new AttributesImpl();
+		if ((getIdentifier() != null) && !getIdentifier().equals("")) {
+			attributes.addAttribute("", "id", null, "xs:ID", getIdentifier());
+		}
+		if (getMediaType() != null) {
+			attributes.addAttribute("", "mediaType", null, "xs:string",
+					getMediaType().toString());
+		}
+		if ((getProfiles() != null) && !getProfiles().isEmpty()) {
+			final StringBuilder builder = new StringBuilder();
+			for (final Iterator<Reference> iterator = getProfiles().iterator(); iterator
+					.hasNext();) {
+				final Reference reference = iterator.next();
+				builder.append(reference.toString());
+				if (iterator.hasNext()) {
+					builder.append(" ");
+				}
+			}
+			attributes.addAttribute("", "profile", null, "xs:string", builder
+					.toString());
+		}
+		if ((getStatuses() != null) && !getStatuses().isEmpty()) {
+			final StringBuilder builder = new StringBuilder();
+			for (final Iterator<Status> iterator = getStatuses().iterator(); iterator
+					.hasNext();) {
+				final Status status = iterator.next();
+				builder.append(status.getCode());
+				if (iterator.hasNext()) {
+					builder.append(" ");
+				}
+			}
+			attributes.addAttribute("", "status", null, "xs:string", builder
+					.toString());
+		}
+		if ((getXmlElement() != null) && !getXmlElement().equals("")) {
+			attributes.addAttribute("", "element", null, "xs:QName",
+					getXmlElement());
+		}
 
-    /**
-     * Constructor with a single documentation element.
-     * 
-     * @param documentation
-     *            A single documentation element.
-     */
-    public FaultInfo(DocumentationInfo documentation) {
-        super();
-        getDocumentations().add(documentation);
-    }
+		if (getDocumentations().isEmpty() && getParameters().isEmpty()) {
+			writer.emptyElement(APP_NAMESPACE, "fault", null, attributes);
+		} else {
+			writer.startElement(APP_NAMESPACE, "fault", null, attributes);
 
-    /**
-     * Set the list of documentation elements with a single element.
-     * 
-     * @param documentation
-     *            A single documentation element.
-     */
-    public void setDocumentationInfo(DocumentationInfo documentation) {
-        getDocumentations().clear();
-        getDocumentations().add(documentation);
-    }
+			for (final DocumentationInfo documentationInfo : getDocumentations()) {
+				documentationInfo.writeElement(writer);
+			}
+			for (final ParameterInfo parameterInfo : getParameters()) {
+				parameterInfo.writeElement(writer);
+			}
 
-    /**
-     * Writes the current object as an XML element using the given SAX writer.
-     * 
-     * @param writer
-     *            The SAX writer.
-     * @throws SAXException
-     */
-    @Override
-    public void writeElement(XmlWriter writer) throws SAXException {
-        final AttributesImpl attributes = new AttributesImpl();
-        if ((getIdentifier() != null) && !getIdentifier().equals("")) {
-            attributes.addAttribute("", "id", null, "xs:ID", getIdentifier());
-        }
-        if (getMediaType() != null) {
-            attributes.addAttribute("", "mediaType", null, "xs:string",
-                    getMediaType().toString());
-        }
-        if ((getProfiles() != null) && !getProfiles().isEmpty()) {
-            final StringBuilder builder = new StringBuilder();
-            for (final Iterator<Reference> iterator = getProfiles().iterator(); iterator
-                    .hasNext();) {
-                final Reference reference = iterator.next();
-                builder.append(reference.toString());
-                if (iterator.hasNext()) {
-                    builder.append(" ");
-                }
-            }
-            attributes.addAttribute("", "profile", null, "xs:string", builder
-                    .toString());
-        }
-        if ((getStatuses() != null) && !getStatuses().isEmpty()) {
-            final StringBuilder builder = new StringBuilder();
-            for (final Iterator<Status> iterator = getStatuses().iterator(); iterator
-                    .hasNext();) {
-                final Status status = iterator.next();
-                builder.append(status.getCode());
-                if (iterator.hasNext()) {
-                    builder.append(" ");
-                }
-            }
-            attributes.addAttribute("", "status", null, "xs:string", builder
-                    .toString());
-        }
-        if ((getXmlElement() != null) && !getXmlElement().equals("")) {
-            attributes.addAttribute("", "element", null, "xs:QName",
-                    getXmlElement());
-        }
-
-        if (getDocumentations().isEmpty() && getParameters().isEmpty()) {
-            writer.emptyElement(APP_NAMESPACE, "fault", null, attributes);
-        } else {
-            writer.startElement(APP_NAMESPACE, "fault", null, attributes);
-
-            for (final DocumentationInfo documentationInfo : getDocumentations()) {
-                documentationInfo.writeElement(writer);
-            }
-            for (final ParameterInfo parameterInfo : getParameters()) {
-                parameterInfo.writeElement(writer);
-            }
-
-            writer.endElement(APP_NAMESPACE, "fault");
-        }
-    }
+			writer.endElement(APP_NAMESPACE, "fault");
+		}
+	}
 
 }

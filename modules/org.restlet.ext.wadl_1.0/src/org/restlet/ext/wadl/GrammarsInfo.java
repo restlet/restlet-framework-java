@@ -33,125 +33,63 @@ import org.xml.sax.SAXException;
  * 
  * @author Jerome Louvel
  */
-public class GrammarsInfo {
+public class GrammarsInfo extends DocumentedInfo {
 
-    /** Doc elements used to document that element. */
-    private List<DocumentationInfo> documentations;
+	/** Definitions of data format descriptions to be included by reference. */
+	private List<IncludeInfo> includes;
 
-    /** Definitions of data format descriptions to be included by reference. */
-    private List<IncludeInfo> includes;
+	/**
+	 * Returns the list of include elements.
+	 * 
+	 * @return The list of include elements.
+	 */
+	public List<IncludeInfo> getIncludes() {
+		// Lazy initialization with double-check.
+		List<IncludeInfo> i = this.includes;
+		if (i == null) {
+			synchronized (this) {
+				i = this.includes;
+				if (i == null) {
+					this.includes = i = new ArrayList<IncludeInfo>();
+				}
+			}
+		}
+		return i;
+	}
 
-    /**
-     * Constructor.
-     * 
-     */
-    public GrammarsInfo() {
-        super();
-    }
+	/**
+	 * Sets the list of include elements.
+	 * 
+	 * @param includes
+	 *            The list of include elements.
+	 */
+	public void setIncludes(List<IncludeInfo> includes) {
+		this.includes = includes;
+	}
 
-    /**
-     * Constructor with a single documentation element.
-     * 
-     * @param documentation
-     *            A single documentation element.
-     */
-    public GrammarsInfo(DocumentationInfo documentation) {
-        super();
-        getDocumentations().add(documentation);
-    }
+	/**
+	 * Writes the current object as an XML element using the given SAX writer.
+	 * 
+	 * @param writer
+	 *            The SAX writer.
+	 * @throws SAXException
+	 */
+	public void writeElement(XmlWriter writer) throws SAXException {
 
-    /**
-     * Returns the list of documentation elements.
-     * 
-     * @return The list of documentation elements.
-     */
-    public List<DocumentationInfo> getDocumentations() {
-        // Lazy initialization with double-check.
-        List<DocumentationInfo> d = this.documentations;
-        if (d == null) {
-            synchronized (this) {
-                d = this.documentations;
-                if (d == null) {
-                    this.documentations = d = new ArrayList<DocumentationInfo>();
-                }
-            }
-        }
-        return d;
-    }
+		if (getDocumentations().isEmpty() && getIncludes().isEmpty()) {
+			writer.emptyElement(APP_NAMESPACE, "grammars");
+		} else {
+			writer.startElement(APP_NAMESPACE, "grammars");
 
-    /**
-     * Returns the list of include elements.
-     * 
-     * @return The list of include elements.
-     */
-    public List<IncludeInfo> getIncludes() {
-        // Lazy initialization with double-check.
-        List<IncludeInfo> i = this.includes;
-        if (i == null) {
-            synchronized (this) {
-                i = this.includes;
-                if (i == null) {
-                    this.includes = i = new ArrayList<IncludeInfo>();
-                }
-            }
-        }
-        return i;
-    }
+			for (final DocumentationInfo documentationInfo : getDocumentations()) {
+				documentationInfo.writeElement(writer);
+			}
 
-    /**
-     * Set the list of documentation elements with a single element.
-     * 
-     * @param documentation
-     *            A single documentation element.
-     */
-    public void setDocumentationInfo(DocumentationInfo documentation) {
-        getDocumentations().clear();
-        getDocumentations().add(documentation);
-    }
+			for (final IncludeInfo includeInfo : getIncludes()) {
+				includeInfo.writeElement(writer);
+			}
 
-    /**
-     * Sets the list of documentation elements.
-     * 
-     * @param doc
-     *            The list of documentation elements.
-     */
-    public void setDocumentations(List<DocumentationInfo> doc) {
-        this.documentations = doc;
-    }
-
-    /**
-     * Sets the list of include elements.
-     * 
-     * @param includes
-     *            The list of include elements.
-     */
-    public void setIncludes(List<IncludeInfo> includes) {
-        this.includes = includes;
-    }
-
-    /**
-     * Writes the current object as an XML element using the given SAX writer.
-     * 
-     * @param writer
-     *            The SAX writer.
-     * @throws SAXException
-     */
-    public void writeElement(XmlWriter writer) throws SAXException {
-
-        if (getDocumentations().isEmpty() && getIncludes().isEmpty()) {
-            writer.emptyElement(APP_NAMESPACE, "grammars");
-        } else {
-            writer.startElement(APP_NAMESPACE, "grammars");
-
-            for (final DocumentationInfo documentationInfo : getDocumentations()) {
-                documentationInfo.writeElement(writer);
-            }
-
-            for (final IncludeInfo includeInfo : getIncludes()) {
-                includeInfo.writeElement(writer);
-            }
-
-            writer.endElement(APP_NAMESPACE, "grammars");
-        }
-    }
+			writer.endElement(APP_NAMESPACE, "grammars");
+		}
+	}
 }

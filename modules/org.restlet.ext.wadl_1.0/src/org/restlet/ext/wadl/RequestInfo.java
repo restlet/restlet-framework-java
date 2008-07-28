@@ -31,162 +31,100 @@ import org.xml.sax.SAXException;
  * 
  * @author Jerome Louvel
  */
-public class RequestInfo {
+public class RequestInfo extends DocumentedInfo {
 
-    /** Doc elements used to document that element. */
-    private List<DocumentationInfo> documentations;
+	/** List of parameters. */
+	private List<ParameterInfo> parameters;
 
-    /** List of parameters. */
-    private List<ParameterInfo> parameters;
+	/** List of supported input representations. */
+	private List<RepresentationInfo> representations;
 
-    /** List of supported input representations. */
-    private List<RepresentationInfo> representations;
+	/**
+	 * Returns the list of parameters.
+	 * 
+	 * @return The list of parameters.
+	 */
+	public List<ParameterInfo> getParameters() {
+		// Lazy initialization with double-check.
+		List<ParameterInfo> p = this.parameters;
+		if (p == null) {
+			synchronized (this) {
+				p = this.parameters;
+				if (p == null) {
+					this.parameters = p = new ArrayList<ParameterInfo>();
+				}
+			}
+		}
+		return p;
+	}
 
-    /**
-     * Constructor.
-     * 
-     */
-    public RequestInfo() {
-        super();
-    }
+	/**
+	 * Returns the list of supported input representations.
+	 * 
+	 * @return The list of supported input representations.
+	 */
+	public List<RepresentationInfo> getRepresentations() {
+		// Lazy initialization with double-check.
+		List<RepresentationInfo> r = this.representations;
+		if (r == null) {
+			synchronized (this) {
+				r = this.representations;
+				if (r == null) {
+					this.representations = r = new ArrayList<RepresentationInfo>();
+				}
+			}
+		}
+		return r;
+	}
 
-    /**
-     * Constructor with a single documentation element.
-     * 
-     * @param documentation
-     *            A single documentation element.
-     */
-    public RequestInfo(DocumentationInfo documentation) {
-        super();
-        getDocumentations().add(documentation);
-    }
+	/**
+	 * Sets the list of parameters.
+	 * 
+	 * @param parameters
+	 *            The list of parameters.
+	 */
+	public void setParameters(List<ParameterInfo> parameters) {
+		this.parameters = parameters;
+	}
 
-    /**
-     * Returns the list of documentation elements.
-     * 
-     * @return The list of documentation elements.
-     */
-    public List<DocumentationInfo> getDocumentations() {
-        // Lazy initialization with double-check.
-        List<DocumentationInfo> d = this.documentations;
-        if (d == null) {
-            synchronized (this) {
-                d = this.documentations;
-                if (d == null) {
-                    this.documentations = d = new ArrayList<DocumentationInfo>();
-                }
-            }
-        }
-        return d;
-    }
+	/**
+	 * Sets the list of supported input representations.
+	 * 
+	 * @param representations
+	 *            The list of supported input representations.
+	 */
+	public void setRepresentations(List<RepresentationInfo> representations) {
+		this.representations = representations;
+	}
 
-    /**
-     * Returns the list of parameters.
-     * 
-     * @return The list of parameters.
-     */
-    public List<ParameterInfo> getParameters() {
-        // Lazy initialization with double-check.
-        List<ParameterInfo> p = this.parameters;
-        if (p == null) {
-            synchronized (this) {
-                p = this.parameters;
-                if (p == null) {
-                    this.parameters = p = new ArrayList<ParameterInfo>();
-                }
-            }
-        }
-        return p;
-    }
+	/**
+	 * Writes the current object as an XML element using the given SAX writer.
+	 * 
+	 * @param writer
+	 *            The SAX writer.
+	 * @throws SAXException
+	 */
+	public void writeElement(XmlWriter writer) throws SAXException {
+		if (getDocumentations().isEmpty() && getParameters().isEmpty()
+				&& getRepresentations().isEmpty()) {
+			writer.emptyElement(APP_NAMESPACE, "request");
+		} else {
+			writer.startElement(APP_NAMESPACE, "request");
 
-    /**
-     * Returns the list of supported input representations.
-     * 
-     * @return The list of supported input representations.
-     */
-    public List<RepresentationInfo> getRepresentations() {
-        // Lazy initialization with double-check.
-        List<RepresentationInfo> r = this.representations;
-        if (r == null) {
-            synchronized (this) {
-                r = this.representations;
-                if (r == null) {
-                    this.representations = r = new ArrayList<RepresentationInfo>();
-                }
-            }
-        }
-        return r;
-    }
+			for (final DocumentationInfo documentationInfo : getDocumentations()) {
+				documentationInfo.writeElement(writer);
+			}
 
-    /**
-     * Set the list of documentation elements with a single element.
-     * 
-     * @param documentation
-     *            A single documentation element.
-     */
-    public void setDocumentationInfo(DocumentationInfo documentation) {
-        getDocumentations().clear();
-        getDocumentations().add(documentation);
-    }
+			for (final ParameterInfo parameterInfo : getParameters()) {
+				parameterInfo.writeElement(writer);
+			}
 
-    /**
-     * Sets the list of documentation elements.
-     * 
-     * @param doc
-     *            The list of documentation elements.
-     */
-    public void setDocumentations(List<DocumentationInfo> doc) {
-        this.documentations = doc;
-    }
+			for (final RepresentationInfo representationInfo : getRepresentations()) {
+				representationInfo.writeElement(writer);
+			}
 
-    /**
-     * Sets the list of parameters.
-     * 
-     * @param parameters
-     *            The list of parameters.
-     */
-    public void setParameters(List<ParameterInfo> parameters) {
-        this.parameters = parameters;
-    }
-
-    /**
-     * Sets the list of supported input representations.
-     * 
-     * @param representations
-     *            The list of supported input representations.
-     */
-    public void setRepresentations(List<RepresentationInfo> representations) {
-        this.representations = representations;
-    }
-
-    /**
-     * Writes the current object as an XML element using the given SAX writer.
-     * 
-     * @param writer
-     *            The SAX writer.
-     * @throws SAXException
-     */
-    public void writeElement(XmlWriter writer) throws SAXException {
-        if (getDocumentations().isEmpty() && getParameters().isEmpty()
-                && getRepresentations().isEmpty()) {
-            writer.emptyElement(APP_NAMESPACE, "request");
-        } else {
-            writer.startElement(APP_NAMESPACE, "request");
-
-            for (final DocumentationInfo documentationInfo : getDocumentations()) {
-                documentationInfo.writeElement(writer);
-            }
-
-            for (final ParameterInfo parameterInfo : getParameters()) {
-                parameterInfo.writeElement(writer);
-            }
-
-            for (final RepresentationInfo representationInfo : getRepresentations()) {
-                representationInfo.writeElement(writer);
-            }
-
-            writer.endElement(APP_NAMESPACE, "request");
-        }
-    }
+			writer.endElement(APP_NAMESPACE, "request");
+		}
+	}
 
 }

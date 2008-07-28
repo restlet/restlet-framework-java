@@ -20,9 +20,6 @@ package org.restlet.ext.wadl;
 
 import static org.restlet.ext.wadl.WadlRepresentation.APP_NAMESPACE;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.restlet.data.Reference;
 import org.restlet.util.XmlWriter;
 import org.xml.sax.SAXException;
@@ -33,179 +30,117 @@ import org.xml.sax.helpers.AttributesImpl;
  * 
  * @author Jerome Louvel
  */
-public class LinkInfo {
+public class LinkInfo extends DocumentedInfo {
+	/**
+	 * Identifies the relationship of the resource identified by the link to the
+	 * resource whose representation the link is embedded in.
+	 */
+	private String relationship;
 
-    /** Doc elements used to document that element. */
-    private List<DocumentationInfo> documentations;
-    /**
-     * Identifies the relationship of the resource identified by the link to the
-     * resource whose representation the link is embedded in.
-     */
-    private String relationship;
+	/**
+	 * Defines the capabilities of the resource that the link identifies.
+	 */
+	private Reference resourceType;
 
-    /**
-     * Defines the capabilities of the resource that the link identifies.
-     */
-    private Reference resourceType;
+	/**
+	 * Identifies the relationship of the resource whose representation the link
+	 * is embedded in to the resource identified by the link.
+	 */
+	private String reverseRelationship;
 
-    /**
-     * Identifies the relationship of the resource whose representation the link
-     * is embedded in to the resource identified by the link.
-     */
-    private String reverseRelationship;
+	/**
+	 * Returns the relationship attribute value.
+	 * 
+	 * @return The relationship attribute value.
+	 */
+	public String getRelationship() {
+		return this.relationship;
+	}
 
-    /**
-     * Constructor.
-     * 
-     */
-    public LinkInfo() {
-        super();
-    }
+	/**
+	 * Returns the reference to the resource type of the linked resource.
+	 * 
+	 * @return The reference to the resource type of the linked resource.
+	 */
+	public Reference getResourceType() {
+		return this.resourceType;
+	}
 
-    /**
-     * Constructor with a single documentation element.
-     * 
-     * @param documentation
-     *            A single documentation element.
-     */
-    public LinkInfo(DocumentationInfo documentation) {
-        super();
-        getDocumentations().add(documentation);
-    }
+	/**
+	 * Returns the reverse relationship attribute value.
+	 * 
+	 * @return The reverse relationship attribute value.
+	 */
+	public String getReverseRelationship() {
+		return this.reverseRelationship;
+	}
 
-    /**
-     * Returns the list of documentation elements.
-     * 
-     * @return The list of documentation elements.
-     */
-    public List<DocumentationInfo> getDocumentations() {
-        // Lazy initialization with double-check.
-        List<DocumentationInfo> d = this.documentations;
-        if (d == null) {
-            synchronized (this) {
-                d = this.documentations;
-                if (d == null) {
-                    this.documentations = d = new ArrayList<DocumentationInfo>();
-                }
-            }
-        }
-        return d;
-    }
+	/**
+	 * Sets the relationship attribute value.
+	 * 
+	 * @param relationship
+	 *            The relationship attribute value.
+	 */
+	public void setRelationship(String relationship) {
+		this.relationship = relationship;
+	}
 
-    /**
-     * Returns the relationship attribute value.
-     * 
-     * @return The relationship attribute value.
-     */
-    public String getRelationship() {
-        return this.relationship;
-    }
+	/**
+	 * The reference to the resource type of the linked resource.
+	 * 
+	 * @param resourceType
+	 *            The reference to the resource type of the linked resource.
+	 */
+	public void setResourceType(Reference resourceType) {
+		this.resourceType = resourceType;
+	}
 
-    /**
-     * Returns the reference to the resource type of the linked resource.
-     * 
-     * @return The reference to the resource type of the linked resource.
-     */
-    public Reference getResourceType() {
-        return this.resourceType;
-    }
+	/**
+	 * Sets the reverse relationship attribute value.
+	 * 
+	 * @param reverseRelationship
+	 *            The reverse relationship attribute value.
+	 */
+	public void setReverseRelationship(String reverseRelationship) {
+		this.reverseRelationship = reverseRelationship;
+	}
 
-    /**
-     * Returns the reverse relationship attribute value.
-     * 
-     * @return The reverse relationship attribute value.
-     */
-    public String getReverseRelationship() {
-        return this.reverseRelationship;
-    }
+	/**
+	 * Writes the current object as an XML element using the given SAX writer.
+	 * 
+	 * @param writer
+	 *            The SAX writer.
+	 * @throws SAXException
+	 */
+	public void writeElement(XmlWriter writer) throws SAXException {
+		final AttributesImpl attributes = new AttributesImpl();
+		if ((getRelationship() != null) && !getRelationship().equals("")) {
+			attributes.addAttribute("", "rel", null, "xs:token",
+					getRelationship());
+		}
+		if ((getReverseRelationship() != null)
+				&& !getReverseRelationship().equals("")) {
+			attributes.addAttribute("", "rev", null, "xs:token",
+					getReverseRelationship());
+		}
 
-    /**
-     * Set the list of documentation elements with a single element.
-     * 
-     * @param documentation
-     *            A single documentation element.
-     */
-    public void setDocumentationInfo(DocumentationInfo documentation) {
-        getDocumentations().clear();
-        getDocumentations().add(documentation);
-    }
+		if ((getResourceType() != null)
+				&& (getResourceType().toString() != null)) {
+			attributes.addAttribute("", "resource_type", null, "xs:anyURI",
+					getResourceType().toString());
+		}
 
-    /**
-     * Sets the list of documentation elements.
-     * 
-     * @param doc
-     *            The list of documentation elements.
-     */
-    public void setDocumentations(List<DocumentationInfo> doc) {
-        this.documentations = doc;
-    }
+		if (getDocumentations().isEmpty()) {
+			writer.emptyElement(APP_NAMESPACE, "link", null, attributes);
+		} else {
+			writer.startElement(APP_NAMESPACE, "link", null, attributes);
 
-    /**
-     * Sets the relationship attribute value.
-     * 
-     * @param relationship
-     *            The relationship attribute value.
-     */
-    public void setRelationship(String relationship) {
-        this.relationship = relationship;
-    }
+			for (final DocumentationInfo documentationInfo : getDocumentations()) {
+				documentationInfo.writeElement(writer);
+			}
 
-    /**
-     * The reference to the resource type of the linked resource.
-     * 
-     * @param resourceType
-     *            The reference to the resource type of the linked resource.
-     */
-    public void setResourceType(Reference resourceType) {
-        this.resourceType = resourceType;
-    }
-
-    /**
-     * Sets the reverse relationship attribute value.
-     * 
-     * @param reverseRelationship
-     *            The reverse relationship attribute value.
-     */
-    public void setReverseRelationship(String reverseRelationship) {
-        this.reverseRelationship = reverseRelationship;
-    }
-
-    /**
-     * Writes the current object as an XML element using the given SAX writer.
-     * 
-     * @param writer
-     *            The SAX writer.
-     * @throws SAXException
-     */
-    public void writeElement(XmlWriter writer) throws SAXException {
-        final AttributesImpl attributes = new AttributesImpl();
-        if ((getRelationship() != null) && !getRelationship().equals("")) {
-            attributes.addAttribute("", "rel", null, "xs:token",
-                    getRelationship());
-        }
-        if ((getReverseRelationship() != null)
-                && !getReverseRelationship().equals("")) {
-            attributes.addAttribute("", "rev", null, "xs:token",
-                    getReverseRelationship());
-        }
-
-        if ((getResourceType() != null)
-                && (getResourceType().toString() != null)) {
-            attributes.addAttribute("", "resource_type", null, "xs:anyURI",
-                    getResourceType().toString());
-        }
-
-        if (getDocumentations().isEmpty()) {
-            writer.emptyElement(APP_NAMESPACE, "link", null, attributes);
-        } else {
-            writer.startElement(APP_NAMESPACE, "link", null, attributes);
-
-            for (final DocumentationInfo documentationInfo : getDocumentations()) {
-                documentationInfo.writeElement(writer);
-            }
-
-            writer.endElement(APP_NAMESPACE, "link");
-        }
-    }
+			writer.endElement(APP_NAMESPACE, "link");
+		}
+	}
 
 }

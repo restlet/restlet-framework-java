@@ -31,200 +31,139 @@ import org.xml.sax.SAXException;
  * 
  * @author Jerome Louvel
  */
-public class ResponseInfo {
+public class ResponseInfo extends DocumentedInfo {
 
-    /** Doc elements used to document that element. */
-    private List<DocumentationInfo> documentations;
+	/** List of faults (representations that denote an error condition). */
+	private List<FaultInfo> faults;
 
-    /** List of faults (representations that denote an error condition). */
-    private List<FaultInfo> faults;
+	/** List of parameters. */
+	private List<ParameterInfo> parameters;
 
-    /** List of parameters. */
-    private List<ParameterInfo> parameters;
+	/** List of representations. */
+	private List<RepresentationInfo> representations;
 
-    /** List of representations. */
-    private List<RepresentationInfo> representations;
-    /**
-     * Constructor.
-     * 
-     */
-    public ResponseInfo() {
-        super();
-    }
+	/**
+	 * Returns the list of faults (representations that denote an error
+	 * condition).
+	 * 
+	 * @return The list of faults (representations that denote an error
+	 *         condition).
+	 */
+	public List<FaultInfo> getFaults() {
+		// Lazy initialization with double-check.
+		List<FaultInfo> f = this.faults;
+		if (f == null) {
+			synchronized (this) {
+				f = this.faults;
+				if (f == null) {
+					this.faults = f = new ArrayList<FaultInfo>();
+				}
+			}
+		}
+		return f;
+	}
 
-    /**
-     * Constructor with a single documentation element.
-     * 
-     * @param documentation
-     *            A single documentation element.
-     */
-    public ResponseInfo(DocumentationInfo documentation) {
-        super();
-        getDocumentations().add(documentation);
-    }
+	/**
+	 * Returns the list of parameters.
+	 * 
+	 * @return The list of parameters.
+	 */
+	public List<ParameterInfo> getParameters() {
+		// Lazy initialization with double-check.
+		List<ParameterInfo> p = this.parameters;
+		if (p == null) {
+			synchronized (this) {
+				p = this.parameters;
+				if (p == null) {
+					this.parameters = p = new ArrayList<ParameterInfo>();
+				}
+			}
+		}
+		return p;
+	}
 
-    /**
-     * Returns the list of documentation elements.
-     * 
-     * @return The list of documentation elements.
-     */
-    public List<DocumentationInfo> getDocumentations() {
-        // Lazy initialization with double-check.
-        List<DocumentationInfo> d = this.documentations;
-        if (d == null) {
-            synchronized (this) {
-                d = this.documentations;
-                if (d == null) {
-                    this.documentations = d = new ArrayList<DocumentationInfo>();
-                }
-            }
-        }
-        return d;
-    }
+	/**
+	 * Returns the list of representations
+	 * 
+	 * @return The list of representations
+	 */
+	public List<RepresentationInfo> getRepresentations() {
+		// Lazy initialization with double-check.
+		List<RepresentationInfo> r = this.representations;
+		if (r == null) {
+			synchronized (this) {
+				r = this.representations;
+				if (r == null) {
+					this.representations = r = new ArrayList<RepresentationInfo>();
+				}
+			}
+		}
+		return r;
+	}
 
-    /**
-     * Returns the list of faults (representations that denote an error
-     * condition).
-     * 
-     * @return The list of faults (representations that denote an error
-     *         condition).
-     */
-    public List<FaultInfo> getFaults() {
-        // Lazy initialization with double-check.
-        List<FaultInfo> f = this.faults;
-        if (f == null) {
-            synchronized (this) {
-                f = this.faults;
-                if (f == null) {
-                    this.faults = f = new ArrayList<FaultInfo>();
-                }
-            }
-        }
-        return f;
-    }
+	/**
+	 * Sets the list of faults (representations that denote an error condition).
+	 * 
+	 * @param faults
+	 *            The list of faults (representations that denote an error
+	 *            condition).
+	 */
+	public void setFaults(List<FaultInfo> faults) {
+		this.faults = faults;
+	}
 
-    /**
-     * Returns the list of parameters.
-     * 
-     * @return The list of parameters.
-     */
-    public List<ParameterInfo> getParameters() {
-        // Lazy initialization with double-check.
-        List<ParameterInfo> p = this.parameters;
-        if (p == null) {
-            synchronized (this) {
-                p = this.parameters;
-                if (p == null) {
-                    this.parameters = p = new ArrayList<ParameterInfo>();
-                }
-            }
-        }
-        return p;
-    }
+	/**
+	 * Sets the list of parameters.
+	 * 
+	 * @param parameters
+	 *            The list of parameters.
+	 */
+	public void setParameters(List<ParameterInfo> parameters) {
+		this.parameters = parameters;
+	}
 
-    /**
-     * Returns the list of representations
-     * 
-     * @return The list of representations
-     */
-    public List<RepresentationInfo> getRepresentations() {
-        // Lazy initialization with double-check.
-        List<RepresentationInfo> r = this.representations;
-        if (r == null) {
-            synchronized (this) {
-                r = this.representations;
-                if (r == null) {
-                    this.representations = r = new ArrayList<RepresentationInfo>();
-                }
-            }
-        }
-        return r;
-    }
+	/**
+	 * Sets the list of representations
+	 * 
+	 * @param representations
+	 *            The list of representations
+	 */
+	public void setRepresentations(List<RepresentationInfo> representations) {
+		this.representations = representations;
+	}
 
-    /**
-     * Set the list of documentation elements with a single element.
-     * 
-     * @param documentation
-     *            A single documentation element.
-     */
-    public void setDocumentationInfo(DocumentationInfo documentation) {
-        getDocumentations().clear();
-        getDocumentations().add(documentation);
-    }
+	/**
+	 * Writes the current object as an XML element using the given SAX writer.
+	 * 
+	 * @param writer
+	 *            The SAX writer.
+	 * @throws SAXException
+	 */
+	public void writeElement(XmlWriter writer) throws SAXException {
 
-    /**
-     * Sets the list of documentation elements.
-     * 
-     * @param doc
-     *            The list of documentation elements.
-     */
-    public void setDocumentations(List<DocumentationInfo> doc) {
-        this.documentations = doc;
-    }
+		if (getDocumentations().isEmpty() && getFaults().isEmpty()
+				&& getParameters().isEmpty() && getRepresentations().isEmpty()) {
+			writer.emptyElement(APP_NAMESPACE, "response");
+		} else {
+			writer.startElement(APP_NAMESPACE, "response");
 
-    /**
-     * Sets the list of faults (representations that denote an error condition).
-     * 
-     * @param faults
-     *            The list of faults (representations that denote an error
-     *            condition).
-     */
-    public void setFaults(List<FaultInfo> faults) {
-        this.faults = faults;
-    }
+			for (final DocumentationInfo documentationInfo : getDocumentations()) {
+				documentationInfo.writeElement(writer);
+			}
 
-    /**
-     * Sets the list of parameters.
-     * 
-     * @param parameters
-     *            The list of parameters.
-     */
-    public void setParameters(List<ParameterInfo> parameters) {
-        this.parameters = parameters;
-    }
+			for (final ParameterInfo parameterInfo : getParameters()) {
+				parameterInfo.writeElement(writer);
+			}
 
-    /**
-     * Sets the list of representations
-     * 
-     * @param representations
-     *            The list of representations
-     */
-    public void setRepresentations(List<RepresentationInfo> representations) {
-        this.representations = representations;
-    }
+			for (final RepresentationInfo representationInfo : getRepresentations()) {
+				representationInfo.writeElement(writer);
+			}
 
-    /**
-     * Writes the current object as an XML element using the given SAX writer.
-     * 
-     * @param writer
-     *            The SAX writer.
-     * @throws SAXException
-     */
-    public void writeElement(XmlWriter writer) throws SAXException {
+			for (final FaultInfo faultInfo : getFaults()) {
+				faultInfo.writeElement(writer);
+			}
 
-        if (getDocumentations().isEmpty() && getFaults().isEmpty()
-                && getParameters().isEmpty() && getRepresentations().isEmpty()) {
-            writer.emptyElement(APP_NAMESPACE, "response");
-        } else {
-            writer.startElement(APP_NAMESPACE, "response");
-
-            for (final DocumentationInfo documentationInfo : getDocumentations()) {
-                documentationInfo.writeElement(writer);
-            }
-
-            for (final ParameterInfo parameterInfo : getParameters()) {
-                parameterInfo.writeElement(writer);
-            }
-
-            for (final RepresentationInfo representationInfo : getRepresentations()) {
-                representationInfo.writeElement(writer);
-            }
-
-            for (final FaultInfo faultInfo : getFaults()) {
-                faultInfo.writeElement(writer);
-            }
-
-            writer.endElement(APP_NAMESPACE, "response");
-        }
-    }
+			writer.endElement(APP_NAMESPACE, "response");
+		}
+	}
 }

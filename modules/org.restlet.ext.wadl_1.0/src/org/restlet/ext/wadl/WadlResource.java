@@ -196,8 +196,6 @@ public class WadlResource extends Resource {
      */
     protected void describeMethod(Method method, MethodInfo methodInfo) {
         methodInfo.setName(method);
-        methodInfo.setRequest(getRequestInfo(method));
-        methodInfo.setResponse(getResponseInfo(method));
 
         if (Method.GET.equals(method)) {
             describeGet(methodInfo);
