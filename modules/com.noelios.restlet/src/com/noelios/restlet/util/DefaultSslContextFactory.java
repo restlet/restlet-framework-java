@@ -56,7 +56,7 @@ public class DefaultSslContextFactory implements SslContextFactory {
      * Name of the KeyManager algorithm.
      */
     private String keyManagerAlgorithm = System.getProperty(
-            "ssl.KeyManagerFactory.algorithm", "SunX509");
+            "ssl.KeyManagerFactory.algorithm", KeyManagerFactory.getDefaultAlgorithm());
 
     /**
      * Password for the key in the keystore (as a String).
@@ -91,7 +91,7 @@ public class DefaultSslContextFactory implements SslContextFactory {
      * KeyStore type of the keystore.
      */
     private String keyStoreType = System.getProperty(
-            "javax.net.ssl.keyStoreType", "JKS");
+            "javax.net.ssl.keyStoreType", KeyStore.getDefaultType());
 
     /**
      * Name of the SecureRandom algorithm.
@@ -107,7 +107,7 @@ public class DefaultSslContextFactory implements SslContextFactory {
      * Name of the TrustManager algorithm.
      */
     private String trustManagerAlgorithm = System.getProperty(
-            "ssl.TrustManagerFactory.algorithm", "PKIX");
+            "ssl.TrustManagerFactory.algorithm", TrustManagerFactory.getDefaultAlgorithm());
 
     /**
      * Password for the trust store keystore.
@@ -133,7 +133,7 @@ public class DefaultSslContextFactory implements SslContextFactory {
      * KeyStore type of the trust store.
      */
     private String trustStoreType = System.getProperty(
-            "javax.net.ssl.trustStoreType", "JKS");
+            "javax.net.ssl.trustStoreType", KeyStore.getDefaultType());
 
     /**
      * This class is likely to contain sensitive information; cloning is
