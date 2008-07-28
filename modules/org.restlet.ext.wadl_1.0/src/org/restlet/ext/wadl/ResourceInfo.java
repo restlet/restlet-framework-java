@@ -57,6 +57,22 @@ public class ResourceInfo extends DocumentedInfo {
 	/** List of references to resource type elements. */
 	private List<Reference> type;
 
+	public ResourceInfo() {
+		super();
+	}
+
+	public ResourceInfo(DocumentationInfo documentation) {
+		super(documentation);
+	}
+
+	public ResourceInfo(List<DocumentationInfo> documentations) {
+		super(documentations);
+	}
+
+	public ResourceInfo(String documentation) {
+		super(documentation);
+	}
+
 	/**
 	 * Returns the list of child resources.
 	 * 

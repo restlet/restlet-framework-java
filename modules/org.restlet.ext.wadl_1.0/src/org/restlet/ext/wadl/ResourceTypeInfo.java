@@ -43,6 +43,22 @@ public class ResourceTypeInfo extends DocumentedInfo {
 	/** List of parameters. */
 	private List<ParameterInfo> parameters;
 
+	public ResourceTypeInfo() {
+		super();
+	}
+
+	public ResourceTypeInfo(DocumentationInfo documentation) {
+		super(documentation);
+	}
+
+	public ResourceTypeInfo(List<DocumentationInfo> documentations) {
+		super(documentations);
+	}
+
+	public ResourceTypeInfo(String documentation) {
+		super(documentation);
+	}
+
 	/**
 	 * Returns the identifier for that element.
 	 * 

@@ -39,6 +39,22 @@ public class RequestInfo extends DocumentedInfo {
 	/** List of supported input representations. */
 	private List<RepresentationInfo> representations;
 
+	public RequestInfo() {
+		super();
+	}
+
+	public RequestInfo(DocumentationInfo documentation) {
+		super(documentation);
+	}
+
+	public RequestInfo(List<DocumentationInfo> documentations) {
+		super(documentations);
+	}
+
+	public RequestInfo(String documentation) {
+		super(documentation);
+	}
+
 	/**
 	 * Returns the list of parameters.
 	 * 

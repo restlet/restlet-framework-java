@@ -95,6 +95,10 @@ public class ParameterInfo extends DocumentedInfo {
 		getDocumentations().add(documentation);
 	}
 
+	public ParameterInfo(List<DocumentationInfo> documentations) {
+		super(documentations);
+	}
+
 	/**
 	 * Constructor with a single documentation element.
 	 * 

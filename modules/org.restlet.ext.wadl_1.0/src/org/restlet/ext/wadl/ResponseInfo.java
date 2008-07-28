@@ -42,6 +42,22 @@ public class ResponseInfo extends DocumentedInfo {
 	/** List of representations. */
 	private List<RepresentationInfo> representations;
 
+	public ResponseInfo() {
+		super();
+	}
+
+	public ResponseInfo(DocumentationInfo documentation) {
+		super(documentation);
+	}
+
+	public ResponseInfo(List<DocumentationInfo> documentations) {
+		super(documentations);
+	}
+
+	public ResponseInfo(String documentation) {
+		super(documentation);
+	}
+
 	/**
 	 * Returns the list of faults (representations that denote an error
 	 * condition).

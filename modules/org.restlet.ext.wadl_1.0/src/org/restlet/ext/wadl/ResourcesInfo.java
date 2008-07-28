@@ -41,6 +41,22 @@ public class ResourcesInfo extends DocumentedInfo
 	/** List of child resources. */
 	private List<ResourceInfo> resources;
 
+	public ResourcesInfo() {
+		super();
+	}
+
+	public ResourcesInfo(DocumentationInfo documentation) {
+		super(documentation);
+	}
+
+	public ResourcesInfo(List<DocumentationInfo> documentations) {
+		super(documentations);
+	}
+
+	public ResourcesInfo(String documentation) {
+		super(documentation);
+	}
+
 	/**
 	 * Returns the base URI for each child resource identifier.
 	 * 

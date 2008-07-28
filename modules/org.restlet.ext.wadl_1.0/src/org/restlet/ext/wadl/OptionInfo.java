@@ -20,6 +20,8 @@ package org.restlet.ext.wadl;
 
 import static org.restlet.ext.wadl.WadlRepresentation.APP_NAMESPACE;
 
+import java.util.List;
+
 import org.restlet.util.XmlWriter;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
@@ -33,6 +35,22 @@ public class OptionInfo extends DocumentedInfo {
 
     /** Value of this option element. */
     private String value;
+
+	public OptionInfo() {
+		super();
+	}
+
+	public OptionInfo(DocumentationInfo documentation) {
+		super(documentation);
+	}
+
+	public OptionInfo(List<DocumentationInfo> documentations) {
+		super(documentations);
+	}
+
+	public OptionInfo(String documentation) {
+		super(documentation);
+	}
 
     /**
      * Returns the value of this option element.

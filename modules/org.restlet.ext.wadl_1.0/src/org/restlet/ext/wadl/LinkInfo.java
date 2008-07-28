@@ -20,6 +20,8 @@ package org.restlet.ext.wadl;
 
 import static org.restlet.ext.wadl.WadlRepresentation.APP_NAMESPACE;
 
+import java.util.List;
+
 import org.restlet.data.Reference;
 import org.restlet.util.XmlWriter;
 import org.xml.sax.SAXException;
@@ -47,6 +49,22 @@ public class LinkInfo extends DocumentedInfo {
 	 * is embedded in to the resource identified by the link.
 	 */
 	private String reverseRelationship;
+
+	public LinkInfo() {
+		super();
+	}
+
+	public LinkInfo(DocumentationInfo documentation) {
+		super(documentation);
+	}
+
+	public LinkInfo(List<DocumentationInfo> documentations) {
+		super(documentations);
+	}
+
+	public LinkInfo(String documentation) {
+		super(documentation);
+	}
 
 	/**
 	 * Returns the relationship attribute value.

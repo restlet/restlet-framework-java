@@ -20,6 +20,8 @@ package org.restlet.ext.wadl;
 
 import static org.restlet.ext.wadl.WadlRepresentation.APP_NAMESPACE;
 
+import java.util.List;
+
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.util.XmlWriter;
@@ -47,6 +49,22 @@ public class MethodInfo extends DocumentedInfo {
 
 	/** Reference to a method definition element. */
 	private Reference targetRef;
+
+	public MethodInfo() {
+		super();
+	}
+
+	public MethodInfo(DocumentationInfo documentation) {
+		super(documentation);
+	}
+
+	public MethodInfo(List<DocumentationInfo> documentations) {
+		super(documentations);
+	}
+
+	public MethodInfo(String documentation) {
+		super(documentation);
+	}
 
 	/**
 	 * Returns the identifier for the method.
