@@ -59,6 +59,24 @@ public class ResourceInfo {
 
     /** List of references to resource type elements. */
     private List<Reference> type;
+    /**
+     * Constructor.
+     * 
+     */
+    public ResourceInfo() {
+        super();
+    }
+
+    /**
+     * Constructor with a single documentation element.
+     * 
+     * @param documentation
+     *            A single documentation element.
+     */
+    public ResourceInfo(DocumentationInfo documentation) {
+        super();
+        getDocumentations().add(documentation);
+    }
 
     /**
      * Returns the list of child resources.
@@ -191,6 +209,17 @@ public class ResourceInfo {
      */
     public void setChildResources(List<ResourceInfo> resources) {
         this.childResources = resources;
+    }
+
+    /**
+     * Set the list of documentation elements with a single element.
+     * 
+     * @param documentation
+     *            A single documentation element.
+     */
+    public void setDocumentationInfo(DocumentationInfo documentation) {
+        getDocumentations().clear();
+        getDocumentations().add(documentation);
     }
 
     /**

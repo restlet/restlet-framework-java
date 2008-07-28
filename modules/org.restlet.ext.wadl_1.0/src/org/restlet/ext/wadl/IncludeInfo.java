@@ -42,6 +42,25 @@ public class IncludeInfo {
     private Reference targetRef;
 
     /**
+     * Constructor.
+     * 
+     */
+    public IncludeInfo() {
+        super();
+    }
+
+    /**
+     * Constructor with a single documentation element.
+     * 
+     * @param documentation
+     *            A single documentation element.
+     */
+    public IncludeInfo(DocumentationInfo documentation) {
+        super();
+        getDocumentations().add(documentation);
+    }
+
+    /**
      * Returns the list of documentation elements.
      * 
      * @return The list of documentation elements.
@@ -67,6 +86,17 @@ public class IncludeInfo {
      */
     public Reference getTargetRef() {
         return this.targetRef;
+    }
+
+    /**
+     * Set the list of documentation elements with a single element.
+     * 
+     * @param documentation
+     *            A single documentation element.
+     */
+    public void setDocumentationInfo(DocumentationInfo documentation) {
+        getDocumentations().clear();
+        getDocumentations().add(documentation);
     }
 
     /**

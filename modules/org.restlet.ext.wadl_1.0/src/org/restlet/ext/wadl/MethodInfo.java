@@ -53,6 +53,24 @@ public class MethodInfo {
 
     /** Reference to a method definition element. */
     private Reference targetRef;
+    /**
+     * Constructor.
+     * 
+     */
+    public MethodInfo() {
+        super();
+    }
+
+    /**
+     * Constructor with a single documentation element.
+     * 
+     * @param documentation
+     *            A single documentation element.
+     */
+    public MethodInfo(DocumentationInfo documentation) {
+        super();
+        getDocumentations().add(documentation);
+    }
 
     /**
      * Return the list of documentation elements.
@@ -117,6 +135,17 @@ public class MethodInfo {
      */
     public Reference getTargetRef() {
         return this.targetRef;
+    }
+
+    /**
+     * Set the list of documentation elements with a single element.
+     * 
+     * @param documentation
+     *            A single documentation element.
+     */
+    public void setDocumentationInfo(DocumentationInfo documentation) {
+        getDocumentations().clear();
+        getDocumentations().add(documentation);
     }
 
     /**

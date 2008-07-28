@@ -52,7 +52,6 @@ public class RepresentationInfo {
 
     /** List of locations of one or more meta data profiles. */
     private List<Reference> profiles;
-
     /**
      * List of statuses associated with this response representation.
      */
@@ -60,6 +59,25 @@ public class RepresentationInfo {
 
     /** Qualified name of the root element for this XML-based representation. */
     private String xmlElement;
+
+    /**
+     * Constructor.
+     * 
+     */
+    public RepresentationInfo() {
+        super();
+    }
+
+    /**
+     * Constructor with a single documentation element.
+     * 
+     * @param documentation
+     *            A single documentation element.
+     */
+    public RepresentationInfo(DocumentationInfo documentation) {
+        super();
+        getDocumentations().add(documentation);
+    }
 
     /**
      * Returns the list of documentation elements.
@@ -166,6 +184,17 @@ public class RepresentationInfo {
      */
     public String getXmlElement() {
         return this.xmlElement;
+    }
+
+    /**
+     * Set the list of documentation elements with a single element.
+     * 
+     * @param documentation
+     *            A single documentation element.
+     */
+    public void setDocumentationInfo(DocumentationInfo documentation) {
+        getDocumentations().clear();
+        getDocumentations().add(documentation);
     }
 
     /**

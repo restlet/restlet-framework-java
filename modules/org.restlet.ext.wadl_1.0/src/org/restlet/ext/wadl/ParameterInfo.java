@@ -79,6 +79,25 @@ public class ParameterInfo {
     private String type;
 
     /**
+     * Constructor.
+     * 
+     */
+    public ParameterInfo() {
+        super();
+    }
+
+    /**
+     * Constructor with a single documentation element.
+     * 
+     * @param documentation
+     *            A single documentation element.
+     */
+    public ParameterInfo(DocumentationInfo documentation) {
+        super();
+        getDocumentations().add(documentation);
+    }
+
+    /**
      * Returns the default value of this parameter.
      * 
      * @return The default value of this parameter.
@@ -225,6 +244,17 @@ public class ParameterInfo {
      */
     public void setDefaultValue(String defaultValue) {
         this.defaultValue = defaultValue;
+    }
+
+    /**
+     * Set the list of documentation elements with a single element.
+     * 
+     * @param documentation
+     *            A single documentation element.
+     */
+    public void setDocumentationInfo(DocumentationInfo documentation) {
+        getDocumentations().clear();
+        getDocumentations().add(documentation);
     }
 
     /**

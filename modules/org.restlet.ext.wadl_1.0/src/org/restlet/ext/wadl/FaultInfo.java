@@ -36,6 +36,36 @@ import org.xml.sax.helpers.AttributesImpl;
 public class FaultInfo extends RepresentationInfo {
 
     /**
+     * Constructor.
+     * 
+     */
+    public FaultInfo() {
+        super();
+    }
+
+    /**
+     * Constructor with a single documentation element.
+     * 
+     * @param documentation
+     *            A single documentation element.
+     */
+    public FaultInfo(DocumentationInfo documentation) {
+        super();
+        getDocumentations().add(documentation);
+    }
+
+    /**
+     * Set the list of documentation elements with a single element.
+     * 
+     * @param documentation
+     *            A single documentation element.
+     */
+    public void setDocumentationInfo(DocumentationInfo documentation) {
+        getDocumentations().clear();
+        getDocumentations().add(documentation);
+    }
+
+    /**
      * Writes the current object as an XML element using the given SAX writer.
      * 
      * @param writer

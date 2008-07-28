@@ -37,7 +37,6 @@ public class LinkInfo {
 
     /** Doc elements used to document that element. */
     private List<DocumentationInfo> documentations;
-
     /**
      * Identifies the relationship of the resource identified by the link to the
      * resource whose representation the link is embedded in.
@@ -54,6 +53,25 @@ public class LinkInfo {
      * is embedded in to the resource identified by the link.
      */
     private String reverseRelationship;
+
+    /**
+     * Constructor.
+     * 
+     */
+    public LinkInfo() {
+        super();
+    }
+
+    /**
+     * Constructor with a single documentation element.
+     * 
+     * @param documentation
+     *            A single documentation element.
+     */
+    public LinkInfo(DocumentationInfo documentation) {
+        super();
+        getDocumentations().add(documentation);
+    }
 
     /**
      * Returns the list of documentation elements.
@@ -99,6 +117,17 @@ public class LinkInfo {
      */
     public String getReverseRelationship() {
         return this.reverseRelationship;
+    }
+
+    /**
+     * Set the list of documentation elements with a single element.
+     * 
+     * @param documentation
+     *            A single documentation element.
+     */
+    public void setDocumentationInfo(DocumentationInfo documentation) {
+        getDocumentations().clear();
+        getDocumentations().add(documentation);
     }
 
     /**

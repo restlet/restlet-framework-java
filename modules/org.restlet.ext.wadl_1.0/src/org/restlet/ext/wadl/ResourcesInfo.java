@@ -44,6 +44,24 @@ public class ResourcesInfo {
     private List<ResourceInfo> resources;
 
     /**
+     * Constructor.
+     * 
+     */
+    public ResourcesInfo() {
+        super();
+    }
+    /**
+     * Constructor with a single documentation element.
+     * 
+     * @param documentation
+     *            A single documentation element.
+     */
+    public ResourcesInfo(DocumentationInfo documentation) {
+        super();
+        getDocumentations().add(documentation);
+    }
+
+    /**
      * Returns the base URI for each child resource identifier.
      * 
      * @return The base URI for each child resource identifier.
@@ -98,6 +116,17 @@ public class ResourcesInfo {
      */
     public void setBaseRef(Reference baseRef) {
         this.baseRef = baseRef;
+    }
+
+    /**
+     * Set the list of documentation elements with a single element.
+     * 
+     * @param documentation
+     *            A single documentation element.
+     */
+    public void setDocumentationInfo(DocumentationInfo documentation) {
+        getDocumentations().clear();
+        getDocumentations().add(documentation);
     }
 
     /**
