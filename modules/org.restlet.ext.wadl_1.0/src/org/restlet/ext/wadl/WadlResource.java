@@ -316,18 +316,6 @@ public class WadlResource extends Resource {
     }
 
     /**
-     * Returns a WADL description of the request to the given method. Returns
-     * null by default.
-     * 
-     * @param method
-     *            The method to describe.
-     * @return A request description.
-     */
-    protected RequestInfo getRequestInfo(Method method) {
-        return null;
-    }
-
-    /**
      * Returns the resource's relative path.
      * 
      * @return The resource's relative path.
