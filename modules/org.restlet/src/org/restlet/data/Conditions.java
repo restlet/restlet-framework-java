@@ -30,18 +30,10 @@ import org.restlet.util.DateUtils;
  * Set of conditions applying to a request. This is equivalent to the HTTP
  * conditional headers.
  * 
- * @see <a
- *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.24"
- *      >If-Match< /a>
- * @see <a
- *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.25"
- *      >If-Modified-Since< /a>
- * @see <a
- *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.26"
- *      >If-None-Match< /a>
- * @see <a
- *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.28"
- *      >If-Unmodified-Since< /a>
+ * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.24">If-Match</a>
+ * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.25">If-Modified-Since</a>
+ * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.26">If-None-Match</a>
+ * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.28">If-Unmodified-Since</a>
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */

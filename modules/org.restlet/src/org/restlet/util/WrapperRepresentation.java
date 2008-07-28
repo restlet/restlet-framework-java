@@ -40,8 +40,7 @@ import org.restlet.resource.Representation;
  * Representation wrapper. Useful for application developer who need to enrich
  * the representation with application related properties and behavior.
  * 
- * @see <a href="http://c2.com/cgi/wiki?DecoratorPattern">The decorator (aka *
- *      wrapper) pattern< /a>
+ * @see <a href="http://c2.com/cgi/wiki?DecoratorPattern">The decorator (aka wrapper) pattern</a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class WrapperRepresentation extends Representation {

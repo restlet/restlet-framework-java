@@ -46,8 +46,7 @@ import org.restlet.data.Response;
  * {@link #parse(String, Request)}.
  * 
  * @see Resolver
- * @see <a href="http://bitworking.org/projects/URI-Templates/">URI Template *
- *      specification< /a>
+ * @see <a href="http://bitworking.org/projects/URI-Templates/">URI Template specification</a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Template {

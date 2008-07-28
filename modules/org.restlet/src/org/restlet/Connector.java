@@ -40,12 +40,8 @@ import org.restlet.data.Protocol;
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
  * 
- * @see <a
- *      href="http://roy.gbiv.com/pubs/dissertation/software_arch.htm#sec_1_2_2"
- *      >Source dissertation< /a>
- * @see <a
- *      href="http://roy.gbiv.com/pubs/dissertation/rest_arch_style.htm#sec_5_2_2"
- *      >Source dissertation< /a>
+ * @see <a href="http://roy.gbiv.com/pubs/dissertation/software_arch.htm#sec_1_2_2">Source dissertation</a>
+ * @see <a href="http://roy.gbiv.com/pubs/dissertation/rest_arch_style.htm#sec_5_2_2">Source dissertation</a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public abstract class Connector extends Restlet {

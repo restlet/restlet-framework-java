@@ -93,9 +93,7 @@ import org.w3c.dom.NodeList;
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
  * 
- * @see <a
- *      href="http://roy.gbiv.com/pubs/dissertation/software_arch.htm#sec_1_2_1"
- *      >Source dissertation< /a>
+ * @see <a href="http://roy.gbiv.com/pubs/dissertation/software_arch.htm#sec_1_2_1">Source dissertation</a>
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */

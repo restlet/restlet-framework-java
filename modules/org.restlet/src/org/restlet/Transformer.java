@@ -39,8 +39,7 @@ import org.restlet.resource.TransformRepresentation;
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
  * 
- * @author Jerome Louvel (contact@noelios.com) <a
- *         href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel (contact@noelios.com)
  */
 public class Transformer extends Filter {
     /**

@@ -28,9 +28,7 @@ package org.restlet.data;
  * metadata: information about the resource that is not specific to the supplied
  * representation." Roy T. Fielding
  * 
- * @see <a href=
- *      "http://roy.gbiv.com/pubs/dissertation/rest_arch_style.htm#sec_5_2_1_2"
- *      >Source dissertation< /a>
+ * @see <a href="http://roy.gbiv.com/pubs/dissertation/rest_arch_style.htm#sec_5_2_1_2">Source dissertation</a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Metadata {

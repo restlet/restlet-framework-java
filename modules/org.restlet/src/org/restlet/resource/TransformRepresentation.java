@@ -37,8 +37,7 @@ import org.xml.sax.XMLFilter;
  * Therefore, it isn't intended to be reused on different sources. For this use
  * case, you should instead use the {@link org.restlet.Transformer} filter.
  * 
- * @author Jerome Louvel (contact@noelios.com) <a
- *         href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel
  */
 public class TransformRepresentation extends OutputRepresentation {
     /**
