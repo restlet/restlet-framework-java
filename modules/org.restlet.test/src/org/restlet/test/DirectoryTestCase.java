@@ -358,16 +358,7 @@ public class DirectoryTestCase extends TestCase {
         // unkown hierarchy of parent directories.
         response = handle(application, webSiteURL, testCreationDirectory + "/",
                 Method.PUT, new StringRepresentation("useless entity"), "10b");
-        if ("".equals(indexName)) {
-            assertTrue(response.getStatus().equals(Status.SUCCESS_NO_CONTENT));
-        } else {
-            // In this case, the PUT request is made on the index name. The PUT
-            // request fails unless the index contains the extensions that
-            // corresponds to the default metadata as expressed in the
-            // MetadataService.
-            assertTrue(response.getStatus()
-                    .equals(Status.REDIRECTION_SEE_OTHER));
-        }
+        assertTrue(response.getStatus().equals(Status.SUCCESS_NO_CONTENT));
 
         // Test 10c : Try to create a file with an unkown hierarchy of
         // parent directories. The name and the metadata of the provided entity
