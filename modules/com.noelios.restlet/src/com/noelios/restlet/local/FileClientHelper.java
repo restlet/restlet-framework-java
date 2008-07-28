@@ -626,18 +626,21 @@ public class FileClientHelper extends LocalClientHelper {
         if (representation != null) {
             Variant var = new Variant();
             updateMetadata(metadataService, fileName, var);
-            // "rep" contains the theorical correct metadata
-            if (!representation.getLanguages().isEmpty()
+            // "var" contains the theorical correct metadata
+            if (!var.getLanguages().isEmpty()
+                    && !representation.getLanguages().isEmpty()
                     && !var.getLanguages().containsAll(
                             representation.getLanguages())) {
                 result = false;
             }
-            if (representation.getMediaType() != null
+            if (var.getMediaType() != null
+                    && representation.getMediaType() != null
                     && !(var.getMediaType() != null && var.getMediaType()
                             .includes(representation.getMediaType()))) {
                 result = false;
             }
-            if (!representation.getEncodings().isEmpty()
+            if (!var.getEncodings().isEmpty()
+                    && !representation.getEncodings().isEmpty()
                     && !var.getEncodings().containsAll(
                             representation.getEncodings())) {
                 result = false;
