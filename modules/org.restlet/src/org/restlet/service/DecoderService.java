@@ -23,9 +23,14 @@ package org.restlet.service;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class DecoderService {
-    /** Indicates if the service has been enabled. */
-    private volatile boolean enabled;
+public class DecoderService extends Service {
+
+    /**
+     * Constructor.
+     */
+    public DecoderService() {
+        super();
+    }
 
     /**
      * Constructor.
@@ -34,26 +39,7 @@ public class DecoderService {
      *            True if the service has been enabled.
      */
     public DecoderService(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    /**
-     * Indicates if the service should be enabled.
-     * 
-     * @return True if the service should be enabled.
-     */
-    public boolean isEnabled() {
-        return this.enabled;
-    }
-
-    /**
-     * Indicates if the service should be enabled.
-     * 
-     * @param enabled
-     *            True if the service should be enabled.
-     */
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
+        super(enabled);
     }
 
 }

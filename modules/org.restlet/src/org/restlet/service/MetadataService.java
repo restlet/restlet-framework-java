@@ -33,7 +33,7 @@ import org.restlet.data.Metadata;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class MetadataService {
+public class MetadataService extends Service {
     /**
      * Associates an extension name and a metadata.
      * 

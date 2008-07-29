@@ -18,20 +18,14 @@
 
 package org.restlet;
 
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
-import org.restlet.data.Response;
 import org.restlet.util.Series;
 
 /**
@@ -84,9 +78,6 @@ public class Context {
     /** The modifiable attributes map. */
     private final ConcurrentMap<String, Object> attributes;
 
-    /** The executor service. */
-    private final ExecutorService executorService = createExecutorService();
-
     /** The logger instance to use. */
     private volatile Logger logger;
 
@@ -132,15 +123,6 @@ public class Context {
      */
     public Context createChildContext() {
         return new Context();
-    }
-
-    /**
-     * Creates a new executor service.
-     * 
-     * @return A new executor service.
-     */
-    private ExecutorService createExecutorService() {
-        return wrapExecutorService(Executors.newCachedThreadPool());
     }
 
     /**
@@ -200,28 +182,6 @@ public class Context {
     @Deprecated
     public Uniform getDispatcher() {
         return getClientDispatcher();
-    }
-
-    /**
-     * Returns an executor service to run concurrent tasks. The service instance
-     * returned will not invoke the runnable task in the current thread.
-     * 
-     * In addition to allowing pooling, this method will ensure that the threads
-     * executing the tasks will have the thread local variables copied from the
-     * calling thread. This will ensure that call to static methods like
-     * {@link Application#getCurrent()} still work.
-     * 
-     * Also, note that this executor service will be shared among all Restlets
-     * and Resources that are part of your context. In general this context
-     * corresponds to a parent Application's context. If you want to have your
-     * own service instance, you can use the
-     * {@link #wrapExecutorService(ExecutorService)} method to ensure that
-     * thread local variables are correctly set.
-     * 
-     * @return An executor service.
-     */
-    public ExecutorService getExecutorService() {
-        return this.executorService;
     }
 
     /**
@@ -292,73 +252,6 @@ public class Context {
     public synchronized void setParameters(Series<Parameter> parameters) {
         this.parameters.clear();
         this.parameters.addAll(parameters);
-    }
-
-    /**
-     * Wraps an executor service to ensure that the threads executing the tasks
-     * will have the thread local variables copied from the calling thread. This
-     * will ensure that call to static methods like
-     * {@link Application#getCurrent()} still work.
-     * 
-     * @param executorService
-     *            The service to wrap.
-     * @return The wrapper service to use.
-     */
-    public ExecutorService wrapExecutorService(
-            final ExecutorService executorService) {
-        return new AbstractExecutorService() {
-                        
-
-            public boolean awaitTermination(long timeout, TimeUnit unit)
-                    throws InterruptedException {
-                return executorService.awaitTermination(timeout, unit);
-            }
-
-            public void execute(final Runnable runnable) {
-                // Save the thread local variables
-                final Application currentApplication = Application.getCurrent();
-                final Context currentContext = Context.getCurrent();
-                final Integer currentVirtualHost = VirtualHost.getCurrent();
-                final Response currentResponse = Response.getCurrent();
-
-                executorService.execute(new Runnable() {
-                    public void run() {
-                        // Copy the thread local variables
-                        Response.setCurrent(currentResponse);
-                        Context.setCurrent(currentContext);
-                        VirtualHost.setCurrent(currentVirtualHost);
-                        Application.setCurrent(currentApplication);
-
-                        try {
-                            // Run the user task
-                            runnable.run();
-                        } finally {
-                            // Reset the thread local variables
-                            Response.setCurrent(null);
-                            Context.setCurrent(null);
-                            VirtualHost.setCurrent(-1);
-                            Application.setCurrent(null);
-                        }
-                    }
-                });
-            }
-
-            public boolean isShutdown() {
-                return executorService.isShutdown();
-            }
-
-            public boolean isTerminated() {
-                return executorService.isTerminated();
-            }
-
-            public void shutdown() {
-                executorService.shutdown();
-            }
-
-            public List<Runnable> shutdownNow() {
-                return executorService.shutdownNow();
-            }
-        };
     }
 
 }

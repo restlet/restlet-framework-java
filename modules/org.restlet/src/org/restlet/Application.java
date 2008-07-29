@@ -22,6 +22,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.service.ConnectorService;
 import org.restlet.service.DecoderService;
+import org.restlet.service.ExecutorService;
 import org.restlet.service.MetadataService;
 import org.restlet.service.StatusService;
 import org.restlet.service.TunnelService;
@@ -103,6 +104,9 @@ public class Application extends Restlet {
     /** The description. */
     private volatile String description;
 
+    /** The executor service. */
+    private volatile ExecutorService executorService;
+
     /** The helper provided by the implementation. */
     private volatile Helper<Application> helper;
 
@@ -159,10 +163,11 @@ public class Application extends Restlet {
         this.root = null;
         this.connectorService = new ConnectorService();
         this.converterService = new org.restlet.service.ConverterService();
-        this.decoderService = new DecoderService(true);
+        this.decoderService = new DecoderService();
+        this.executorService = new ExecutorService();
         this.metadataService = new MetadataService();
-        this.statusService = new StatusService(true);
-        this.tunnelService = new TunnelService(true, true, true);
+        this.statusService = new StatusService();
+        this.tunnelService = new TunnelService(true, true);
     }
 
     /**
@@ -187,8 +192,7 @@ public class Application extends Restlet {
     }
 
     /**
-     * Returns the connector service. Creates a new instance if no one has been
-     * set.
+     * Returns the connector service. The service is enabled by default.
      * 
      * @return The connector service.
      */
@@ -197,8 +201,7 @@ public class Application extends Restlet {
     }
 
     /**
-     * Returns the converter service. Creates a new instance if no one has been
-     * set.
+     * Returns the converter service. The service is enabled by default.
      * 
      * @return The converter service.
      * @deprecated Since 1.1 with no replacement as it doesn't fit well with
@@ -211,8 +214,7 @@ public class Application extends Restlet {
     }
 
     /**
-     * Returns the decoder service, enabled by default. Creates a new instance
-     * if no one has been set.
+     * Returns the decoder service. The service is enabled by default.
      * 
      * @return The decoderservice.
      */
@@ -230,6 +232,16 @@ public class Application extends Restlet {
     }
 
     /**
+     * Returns an executor service to run concurrent tasks. The service is
+     * enabled by default.
+     * 
+     * @return An executor service.
+     */
+    public ExecutorService getExecutorService() {
+        return this.executorService;
+    }
+
+    /**
      * Returns the helper provided by the implementation.
      * 
      * @return The helper provided by the implementation.
@@ -239,8 +251,7 @@ public class Application extends Restlet {
     }
 
     /**
-     * Returns the metadata service. Creates a new instance if no one has been
-     * set.
+     * Returns the metadata service. The service is enabled by default.
      * 
      * @return The metadata service.
      */
@@ -281,8 +292,7 @@ public class Application extends Restlet {
     }
 
     /**
-     * Returns the status service, enabled by default. Creates a new instance if
-     * no one has been set.
+     * Returns the status service. The service is enabled by default.
      * 
      * @return The status service.
      */
@@ -291,8 +301,7 @@ public class Application extends Restlet {
     }
 
     /**
-     * Returns the tunnel service, enabled by default. Creates a new instance if
-     * no one has been set.
+     * Returns the tunnel service. The service is enabled by default.
      * 
      * @return The tunnel service.
      */
@@ -371,6 +380,16 @@ public class Application extends Restlet {
     }
 
     /**
+     * Sets the executor service.
+     * 
+     * @param executorService
+     *            The executor service.
+     */
+    public void setExecutorService(ExecutorService executorService) {
+        this.executorService = executorService;
+    }
+
+    /**
      * Sets the metadata service.
      * 
      * @param metadataService
@@ -430,22 +449,86 @@ public class Application extends Restlet {
         this.tunnelService = tunnelService;
     }
 
+    /**
+     * Starts the application then all the enabled associated services.
+     */
     @Override
     public synchronized void start() throws Exception {
         if (isStopped()) {
             super.start();
+
             if (getHelper() != null) {
                 getHelper().start();
+            }
+
+            if (getConnectorService() != null) {
+                getConnectorService().start();
+            }
+
+            if (getConverterService() != null) {
+                getConverterService().start();
+            }
+
+            if (getDecoderService() != null) {
+                getDecoderService().start();
+            }
+
+            if (getExecutorService() != null) {
+                getExecutorService().start();
+            }
+
+            if (getMetadataService() != null) {
+                getMetadataService().start();
+            }
+
+            if (getStatusService() != null) {
+                getStatusService().start();
+            }
+
+            if (getTunnelService() != null) {
+                getTunnelService().start();
             }
         }
     }
 
+    /**
+     * Stops all the enabled associated services the the application itself.
+     */
     @Override
     public synchronized void stop() throws Exception {
         if (isStarted()) {
+            if (getConnectorService() != null) {
+                getConnectorService().stop();
+            }
+
+            if (getConverterService() != null) {
+                getConverterService().stop();
+            }
+
+            if (getDecoderService() != null) {
+                getDecoderService().stop();
+            }
+
+            if (getExecutorService() != null) {
+                getExecutorService().stop();
+            }
+
+            if (getMetadataService() != null) {
+                getMetadataService().stop();
+            }
+
+            if (getStatusService() != null) {
+                getStatusService().stop();
+            }
+
+            if (getTunnelService() != null) {
+                getTunnelService().stop();
+            }
+
             if (getHelper() != null) {
                 getHelper().stop();
             }
+
             super.stop();
         }
     }

@@ -57,10 +57,7 @@ package org.restlet.service;
  * @see <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/logging/package-summary.html">java.util.logging</a>
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class LogService {
-    /** Indicates if the service has been enabled. */
-    private volatile boolean enabled;
-
+public class LogService extends Service {
     /** The access logger name. */
     private volatile String loggerName;
 
@@ -77,8 +74,8 @@ public class LogService {
      *            True if the service has been enabled.
      */
     public LogService(boolean enabled) {
+        super(enabled);
         this.loggerName = null;
-        this.enabled = enabled;
         this.logFormat = null;
         this.identityCheck = false;
     }
@@ -103,15 +100,6 @@ public class LogService {
     }
 
     /**
-     * Indicates if the service should be enabled.
-     * 
-     * @return True if the service should be enabled.
-     */
-    public boolean isEnabled() {
-        return this.enabled;
-    }
-
-    /**
      * Indicates if the identity check (as specified by RFC1413) is enabled.
      * Default value is false.
      * 
@@ -119,16 +107,6 @@ public class LogService {
      */
     public boolean isIdentityCheck() {
         return this.identityCheck;
-    }
-
-    /**
-     * Indicates if the service should be enabled.
-     * 
-     * @param enabled
-     *            True if the service should be enabled.
-     */
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
     }
 
     /**

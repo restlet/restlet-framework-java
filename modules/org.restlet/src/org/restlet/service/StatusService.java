@@ -47,10 +47,7 @@ import org.restlet.resource.Representation;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class StatusService {
-    /** Indicates if the service has been enabled. */
-    private volatile boolean enabled;
-
+public class StatusService extends Service {
     /** The email address to contact in case of error. */
     private volatile String contactEmail;
 
@@ -62,12 +59,19 @@ public class StatusService {
 
     /**
      * Constructor.
+     */
+    public StatusService() {
+        this(true);
+    }
+
+    /**
+     * Constructor.
      * 
      * @param enabled
      *            True if the service has been enabled.
      */
     public StatusService(boolean enabled) {
-        this.enabled = enabled;
+        super(enabled);
         this.contactEmail = null;
         this.homeRef = null;
         this.overwrite = false;
@@ -129,15 +133,6 @@ public class StatusService {
     }
 
     /**
-     * Indicates if the service should be enabled.
-     * 
-     * @return True if the service should be enabled.
-     */
-    public boolean isEnabled() {
-        return this.enabled;
-    }
-
-    /**
      * Indicates if an existing entity should be overwritten. False by default.
      * 
      * @return True if an existing entity should be overwritten.
@@ -155,16 +150,6 @@ public class StatusService {
      */
     public void setContactEmail(String contactEmail) {
         this.contactEmail = contactEmail;
-    }
-
-    /**
-     * Indicates if the service should be enabled.
-     * 
-     * @param enabled
-     *            True if the service should be enabled.
-     */
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
     }
 
     /**

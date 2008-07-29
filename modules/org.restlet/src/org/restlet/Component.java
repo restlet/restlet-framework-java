@@ -93,7 +93,9 @@ import org.w3c.dom.NodeList;
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
  * 
- * @see <a href="http://roy.gbiv.com/pubs/dissertation/software_arch.htm#sec_1_2_1">Source dissertation</a>
+ * @see <a
+ *      href="http://roy.gbiv.com/pubs/dissertation/software_arch.htm#sec_1_2_1"
+ *      >Source dissertation< /a>
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
@@ -1123,6 +1125,7 @@ public class Component extends Restlet {
             startClients();
             startServers();
             startHelper();
+            startServices();
             super.start();
         }
     }
@@ -1165,6 +1168,21 @@ public class Component extends Restlet {
     }
 
     /**
+     * Starts the associated services.
+     * 
+     * @throws Exception
+     */
+    protected synchronized void startServices() throws Exception {
+        if (getLogService() != null) {
+            getLogService().start();
+        }
+
+        if (getStatusService() != null) {
+            getStatusService().start();
+        }
+    }
+
+    /**
      * Stops the component. First it stops the component's internal helper and
      * then stops all the connectors (servers then clients). Finally it calls
      * the stop method of the super class.
@@ -1178,6 +1196,7 @@ public class Component extends Restlet {
         stopHelper();
         stopServers();
         stopClients();
+        stopServices();
         super.stop();
     }
 
@@ -1215,6 +1234,21 @@ public class Component extends Restlet {
             for (final Server server : this.servers) {
                 server.stop();
             }
+        }
+    }
+
+    /**
+     * Stops the associated services.
+     * 
+     * @throws Exception
+     */
+    protected synchronized void stopServices() throws Exception {
+        if (getLogService() != null) {
+            getLogService().stop();
+        }
+
+        if (getStatusService() != null) {
+            getStatusService().stop();
         }
     }
 

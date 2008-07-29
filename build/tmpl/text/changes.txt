@@ -71,6 +71,12 @@ Changes log
        	  access and modifications of those collections. Suggested by
        	  Tim Peierls.
        	- Added HTTP OAuth authentication scheme constant.
+       	- Completed the Component's XML config with the support of 
+       	  parameters under the component, client and server elements. 
+       	  Reported by Bruno Harbulot.
+       	- Added a org.restlet.service.Service class, super class of all
+       	  existing service classes. Also added an ExecutorService class
+       	  implementing java.util.concurrent.ExecutorService interface.
     - NRE and Extension Enhancements
         - Added a static HttpServletRequest getRequest(Request) method
           to the Servlet extension.

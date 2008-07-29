@@ -44,7 +44,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.Context;
+import org.restlet.Application;
 import org.restlet.data.CharacterSet;
 import org.restlet.resource.Representation;
 import org.restlet.resource.WriterRepresentation;
@@ -528,11 +528,11 @@ public final class ByteUtils {
     public static ReadableByteChannel getChannel(
             final Representation representation) throws IOException {
         final Pipe pipe = Pipe.open();
-        final Context context = Context.getCurrent();
+        final Application application = Application.getCurrent();
 
         // Get a thread that will handle the task of continuously
         // writing the representation into the input side of the pipe
-        context.getExecutorService().execute(new Runnable() {
+        application.getExecutorService().execute(new Runnable() {
             public void run() {
                 try {
                     final WritableByteChannel wbc = pipe.sink();
@@ -581,11 +581,11 @@ public final class ByteUtils {
             throws IOException {
         final PipedWriter pipedWriter = new PipedWriter();
         final PipedReader pipedReader = new PipedReader(pipedWriter);
-        final Context context = Context.getCurrent();
+        final Application application = Application.getCurrent();
 
         // Gets a thread that will handle the task of continuously
         // writing the representation into the input side of the pipe
-        context.getExecutorService().execute(new Runnable() {
+        application.getExecutorService().execute(new Runnable() {
             public void run() {
                 try {
                     representation.write(pipedWriter);
@@ -645,11 +645,11 @@ public final class ByteUtils {
         }
 
         final PipeStream pipe = new PipeStream();
-        final Context context = Context.getCurrent();
+        final Application application = Application.getCurrent();
 
         // Creates a thread that will handle the task of continuously
         // writing the representation into the input side of the pipe
-        context.getExecutorService().execute(new Runnable() {
+        application.getExecutorService().execute(new Runnable() {
             public void run() {
                 try {
                     final OutputStream os = pipe.getOutputStream();

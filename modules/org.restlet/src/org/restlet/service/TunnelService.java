@@ -95,13 +95,10 @@ import org.restlet.data.Request;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class TunnelService {
+public class TunnelService extends Service {
 
     /** The name of the parameter containing the accepted character set. */
     private volatile String characterSetParameter;
-
-    /** Indicates if the service has been enabled. */
-    private volatile boolean enabled;
 
     /** The name of the parameter containing the accepted encoding. */
     private volatile String encodingParameter;
@@ -138,6 +135,20 @@ public class TunnelService {
      * string.
      */
     private volatile boolean userAgentTunnel;
+
+    /**
+     * Constructor that enables the query tunnel and disables the extensions and
+     * user agent tunnels.
+     * 
+     * @param methodTunnel
+     *            Indicates if the method name can be tunnelled.
+     * @param preferencesTunnel
+     *            Indicates if the client preferences can be tunnelled by query
+     *            parameters or file-like extensions or user agent string.
+     */
+    public TunnelService(boolean methodTunnel, boolean preferencesTunnel) {
+        this(true, methodTunnel, preferencesTunnel);
+    }
 
     /**
      * Constructor that enables the query tunnel and disables the extensions and
@@ -200,7 +211,7 @@ public class TunnelService {
     public TunnelService(boolean enabled, boolean methodTunnel,
             boolean preferencesTunnel, boolean queryTunnel,
             boolean extensionsTunnel, boolean userAgentTunnel) {
-        this.enabled = enabled;
+        super(enabled);
 
         this.extensionsTunnel = extensionsTunnel;
         this.methodTunnel = methodTunnel;
@@ -318,15 +329,6 @@ public class TunnelService {
     }
 
     /**
-     * Indicates if the service should be enabled.
-     * 
-     * @return True if the service should be enabled.
-     */
-    public boolean isEnabled() {
-        return this.enabled;
-    }
-
-    /**
      * Indicates if the client preferences can be tunnelled via the extensions.
      * 
      * @return True if the client preferences can be tunnelled via the
@@ -397,16 +399,6 @@ public class TunnelService {
      */
     public void setCharacterSetParameter(String parameterName) {
         this.characterSetParameter = parameterName;
-    }
-
-    /**
-     * Indicates if the service should be enabled.
-     * 
-     * @param enabled
-     *            True if the service should be enabled.
-     */
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
     }
 
     /**

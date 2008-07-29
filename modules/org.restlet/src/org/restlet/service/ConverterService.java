@@ -38,7 +38,7 @@ import org.restlet.resource.Representation;
  *             Resource subclasses.
  */
 @Deprecated
-public class ConverterService {
+public class ConverterService extends Service {
     /**
      * Converts a representation into a higher-level object. Returns null by
      * default.

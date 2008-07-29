@@ -33,7 +33,7 @@ import org.restlet.resource.Representation;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class ConnectorService {
+public class ConnectorService extends Service {
     /** The list of required client protocols. */
     private volatile List<Protocol> clientProtocols;
 
