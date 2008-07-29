@@ -121,7 +121,6 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
      * @return
      * @see #isWriteable(MessageBodyWriter, Class, Type, Annotation[])
      */
-    @SuppressWarnings("unchecked")
     private static boolean isReadable(MessageBodyReader mbr,
             Class<?> paramType, Type genericType, Annotation[] annotations) {
         try {
@@ -156,7 +155,6 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
      * @throws IllegalArgumentException
      * @see #isReadable(MessageBodyReader, Class, Type, Annotation[])
      */
-    @SuppressWarnings("unchecked")
     private static boolean isWriteable(MessageBodyWriter mbw,
             Class<?> entityClass, Type genericType, Annotation[] annotations)
             throws NullPointerException, IllegalArgumentException {
@@ -319,7 +317,6 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
      * @see MessageBodyReaderSet#getBestReader(Class, Type, Annotation[],
      *      MediaType)
      */
-    @SuppressWarnings("unchecked")
     public MessageBodyReader getBestReader(Class<?> paramType,
             Type genericType, Annotation[] annotations, MediaType mediaType) {
         // NICE optimization: may be cached for speed.
@@ -476,7 +473,6 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
      * @see javax.ws.rs.ext.MessageBodyWriter#isWriteable(Class, Type,
      *      Annotation[])
      */
-    @SuppressWarnings("unchecked")
     public MessageBodyWriterSubSet writerSubSet(Class<?> entityClass,
             Type genericType, Annotation[] annotations) {
         // NICE optimization: may be cached for speed.

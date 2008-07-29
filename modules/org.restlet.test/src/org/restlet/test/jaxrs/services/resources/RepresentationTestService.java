@@ -80,7 +80,7 @@ public class RepresentationTestService {
     @POST
     @Path("jaxb")
     @Consumes({MediaType.APPLICATION_XML, MediaType.TEXT_XML})
-    public String postJaxb(JaxbRepresentation<Person> personRepr) throws IOException {
+    public String postJaxb(JaxbRepresentation<Person> personRepr) {
         if (personRepr == null) {
             return "null";
         }

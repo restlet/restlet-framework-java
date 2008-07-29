@@ -24,7 +24,6 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
-import org.restlet.test.jaxrs.services.others.Person;
 import org.restlet.test.jaxrs.services.resources.RepresentationTestService;
 
 /**

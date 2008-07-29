@@ -262,7 +262,6 @@ public class ContextInjector {
      * @throws ImplementationException
      *             the declaringClass must not be {@link UriInfo}
      */
-    @SuppressWarnings("unused") // LODO remove genericType, if not needed
     static Object getInjectObject(Class<?> declaringClass, Type genericType,
             ThreadLocalizedContext tlContext, Providers providers,
             ExtensionBackwardMapping extensionBackwardMapping)
@@ -373,11 +372,6 @@ public class ContextInjector {
      *            {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
      * @param allProviders
      *            all entity providers.
-<<<<<<< .mine
-=======
-     * @param allResolvers
-     *            all available {@link ContextResolver}s.
->>>>>>> .r3440
      * @param extensionBackwardMapping
      *            the extension backward mapping
      * 

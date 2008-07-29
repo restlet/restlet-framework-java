@@ -74,7 +74,6 @@ public class EntityGetter implements ParamGetter {
      * @throws NoMessageBodyReaderException
      * @see IntoRrcInjector.AbstractInjectObjectGetter#getValue()
      */
-    @SuppressWarnings("unchecked")
     public Object getValue() throws ConvertRepresentationException {
         final Request request = this.tlContext.get().getRequest();
         final Representation entity = request.getEntity();
