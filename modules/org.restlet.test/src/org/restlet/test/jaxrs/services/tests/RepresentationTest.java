@@ -24,6 +24,7 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
+import org.restlet.test.jaxrs.services.others.Person;
 import org.restlet.test.jaxrs.services.resources.RepresentationTestService;
 
 /**
@@ -37,7 +38,9 @@ public class RepresentationTest extends JaxRsTestCase {
         return RepresentationTestService.class;
     }
 
-    public void testDecodePost() throws Exception {
+    /** @throws IOException 
+     *  @see RepresentationTestService#post(Representation) */
+    public void testDecodePost() throws IOException {
         final Representation repr = new StringRepresentation("abcde");
         final Response response = post("reprDecode", repr);
         sysOutEntityIfError(response);
@@ -45,35 +48,39 @@ public class RepresentationTest extends JaxRsTestCase {
         assertEquals("abcde", response.getEntity().getText());
     }
 
-    /** @see RepresentationTestService#postJaxb(org.restlet.ext.jaxb.JaxbRepresentation) */
+    /** @throws IOException 
+     *  @see RepresentationTestService#postJaxb(org.restlet.ext.jaxb.JaxbRepresentation) */
     public void testJaxbPost() throws IOException {
-        if(true) // TODO RepresentationTest.testJaxbPost()
-            return;
         final Response response = post("jaxb", (Representation) null);
         sysOutEntityIfError(response);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEquals("null", response.getEntity().getText());
+        assertEquals(Status.SUCCESS_NO_CONTENT, response.getStatus());
+        assertEquals(null, response.getEntity().getText());
     }
 
+    /** @see RepresentationTestService#get() */
     public void testReprGet() {
         final Response response = get("repr");
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
     }
 
-    /** @see RepresentationTestService#postJaxb(org.restlet.ext.jaxb.JaxbRepresentation) */
+    /** @throws IOException 
+     *  @see RepresentationTestService#postJaxb(org.restlet.ext.jaxb.JaxbRepresentation) */
     public void testReprPost() throws IOException {
         Response response = post("jaxb", new StringRepresentation("abcdef"));
-        assertEquals(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE, response.getStatus());
+        assertEquals(Status.CLIENT_ERROR_UNSUPPORTED_MEDIA_TYPE, response
+                .getStatus());
 
-        if(true) // TODO RepresentationTest.testReprPost()
-            return;
-        response = post("jaxb", new StringRepresentation("<person firstname=\"Angela\" lastname=\"Merkel\"/>", MediaType.APPLICATION_XML));
+        response = post("jaxb", new StringRepresentation(
+                "<person firstname=\"Angela\" lastname=\"Merkel\"/>",
+                MediaType.APPLICATION_XML));
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEquals("abcde", response.getEntity().getText());
+        String packageName = Person.class.getPackage().getName();
+        assertEquals(packageName, response.getEntity().getText());
     }
 
+    /** @see RepresentationTestService#getString() */
     public void testStringGet() {
         final Response response = get("reprString");
         sysOutEntityIfError(response);

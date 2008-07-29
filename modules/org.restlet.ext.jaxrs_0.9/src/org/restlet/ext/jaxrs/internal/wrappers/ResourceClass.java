@@ -110,8 +110,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      */
     ResourceClass(Class<?> jaxRsClass, ThreadLocalizedContext tlContext,
             JaxRsProviders jaxRsProviders,
-            ExtensionBackwardMapping extensionBackwardMapping,
-            Logger logger)
+            ExtensionBackwardMapping extensionBackwardMapping, Logger logger)
             throws IllegalArgumentException, MissingAnnotationException {
         super();
         this.leaveEncoded = jaxRsClass.isAnnotationPresent(Encoded.class);
@@ -143,8 +142,9 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      */
     protected ResourceClass(Class<?> jaxRsClass,
             ThreadLocalizedContext tlContext, JaxRsProviders jaxRsProviders,
-            ExtensionBackwardMapping extensionBackwardMapping,
-            Logger logger, Logger sameLogger) throws IllegalArgumentException,
+            ExtensionBackwardMapping extensionBackwardMapping, Logger logger,
+            @SuppressWarnings("unused")
+            Logger sameLogger) throws IllegalArgumentException,
             IllegalPathOnClassException, MissingAnnotationException {
         super(PathRegExp.createForClass(jaxRsClass));
         this.leaveEncoded = jaxRsClass.isAnnotationPresent(Encoded.class);
@@ -357,8 +357,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
 
     private void initResourceMethodsAndLocators(
             ThreadLocalizedContext tlContext, JaxRsProviders jaxRsProviders,
-            ExtensionBackwardMapping extensionBackwardMapping,
-            Logger logger)
+            ExtensionBackwardMapping extensionBackwardMapping, Logger logger)
             throws IllegalArgumentException, MissingAnnotationException {
         for (final Method execMethod : jaxRsClass.getMethods()) {
             final Method annotatedMethod = getAnnotatedJavaMethod(execMethod);

@@ -17,7 +17,6 @@
  */
 package org.restlet.ext.jaxrs;
 
-
 /**
  * <p>
  * Implement this interface to instantiate JAX-RS root resource classes and
@@ -49,9 +48,6 @@ public interface ObjectFactory {
      * @throws InstantiateException
      */
     public <T> T getInstance(Class<T> jaxRsClass) throws InstantiateException;
-    // TODO move InstantiateException from package internal to another package
-    // if more exceptions should be used public, perhaps own package for Except.
-
     // LATER if a resource class is a singelton, it must be ensured, that it
     // has no @*Param on fields and perhaps bean setters.
 }

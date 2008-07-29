@@ -46,6 +46,7 @@ import com.noelios.restlet.application.DecodeRepresentation;
 @Path("representationTest")
 public class RepresentationTestService {
 
+    /**@return*/
     @GET
     @Path("repr")
     @Produces("text/plain")
@@ -53,6 +54,7 @@ public class RepresentationTestService {
         return getString();
     }
 
+    /**@return*/
     @GET
     @Path("reprString")
     @Produces("text/plain")
@@ -60,6 +62,9 @@ public class RepresentationTestService {
         return new StringRepresentation("jgkghkg");
     }
 
+    /**@return
+     * @param representation
+     * @throws IOException */
     @POST
     @Path("repr")
     public Response post(Representation representation) throws IOException {
@@ -68,6 +73,9 @@ public class RepresentationTestService {
         return Response.ok(entity).type(type).build();
     }
 
+    /**@return
+     * @param representation
+     * @throws IOException */
     @POST
     @Path("reprDecode")
     public Response postDecode(DecodeRepresentation representation)
@@ -77,13 +85,18 @@ public class RepresentationTestService {
         return Response.ok(entity).type(type).build();
     }
 
+    /**@return
+     * @param personRepr
+     * @throws IOException */
     @POST
     @Path("jaxb")
     @Consumes({MediaType.APPLICATION_XML, MediaType.TEXT_XML})
-    public String postJaxb(JaxbRepresentation<Person> personRepr) {
+    public String postJaxb(JaxbRepresentation<Person> personRepr)
+            throws IOException {
         if (personRepr == null) {
-            return "null";
+            return null;
         }
+        personRepr.getObject();
         return personRepr.getContextPath();
     }
 }

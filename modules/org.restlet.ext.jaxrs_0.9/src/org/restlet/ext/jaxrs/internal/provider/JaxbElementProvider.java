@@ -96,11 +96,10 @@ public class JaxbElementProvider extends AbstractJaxbProvider<JAXBElement<?>> {
             throw new ImplementationException(
                     "The JaxbElement provider has gotten a type it could not unmarshal. Perhaps is the JaxbElementProvider not consistent to itself.");
         }
-        final QName qName = new QName("testQName"); // TODO QName for
-                                                    // JAXBElement?
-        final Class<?> declaredType = clazz;
+        final QName qName = new QName("testQName"); 
+        // REQUESTED QName for JAXBElement?
         final Object value = unmarshal(clazz, entityStream);
-        return new JAXBElement(qName, declaredType, value);
+        return new JAXBElement(qName, clazz, value);
     }
 
     /**

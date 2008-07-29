@@ -60,7 +60,7 @@ public class ContextsTestService {
     public String fieldsAvailable() {
         final StringBuilder stb = new StringBuilder();
         if (this.messageBodyWorkers != null) {
-            stb.append("messageBodyWorkers\n");
+            stb.append("providers\n");
         }
         if (this.contextResolver != null) {
             stb.append("contextResolver\n");
@@ -91,7 +91,7 @@ public class ContextsTestService {
             @Context Providers providers) {
         final StringBuilder stb = new StringBuilder();
         if (providers != null) {
-            stb.append("messageBodyWorkers\n");
+            stb.append("providers\n");
         }
         if (contextResolver != null) {
             stb.append("contextResolver\n");

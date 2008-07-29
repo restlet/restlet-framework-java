@@ -81,7 +81,8 @@ public class ListParamTest extends JaxRsTestCase {
         }
     }
 
-    /** @see ListParamService#getMatrix(String, java.util.Collection) */
+    /** @see ListParamService#getMatrix(String, java.util.Collection) 
+     * @throws IOException */
     public void testMatrixParams() throws IOException {
         final Response response = get("matrix;m=m1;m=m2;mm=mm1;mm=mm2");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
@@ -89,7 +90,7 @@ public class ListParamTest extends JaxRsTestCase {
         final String m = entity[0];
         final String mm = entity[1];
         try {
-            // TODO test: get in given direction -> Resources.Parameters
+            // LATER test: get in given direction -> Resources.Parameters
             assertEquals("m=m1", m);
         } catch (final AssertionFailedError afe) {
             assertEquals("m=m2", m);

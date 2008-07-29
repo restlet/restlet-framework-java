@@ -114,7 +114,7 @@ public class PathRegExp {
      */
     private static String getPathPattern(Path path)
             throws IllegalArgumentException, IllegalPathException {
-        // TODO the @Path could include reg exps
+        // LATER the @Path could include reg exps
         if (path == null) {
             throw new IllegalArgumentException("The path must not be null");
         }

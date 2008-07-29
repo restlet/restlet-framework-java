@@ -25,27 +25,27 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.test.jaxrs.services.providers.CrazyTypeProvider;
-import org.restlet.test.jaxrs.services.providers.MessageBodyWorkersTestProvider;
-import org.restlet.test.jaxrs.services.resources.MessageBodyWorkersTestResource;
+import org.restlet.test.jaxrs.services.providers.ProidersTestProvider;
+import org.restlet.test.jaxrs.services.resources.MessageBodyWriterTestResource;
 import org.restlet.test.jaxrs.util.TestUtils;
 
 /**
  * @author Stephan Koops
- * @see MessageBodyWorkersTestProvider
- * @see MessageBodyWorkersTestResource
+ * @see ProidersTestProvider
+ * @see MessageBodyWriterTestResource
  */
 @SuppressWarnings("all")
-public class MessageBodyWorkersTest extends JaxRsTestCase {
+public class MessageBodyWritersTest extends JaxRsTestCase {
 
     @Override
     protected Set<Class<?>> getProvClasses() {
-        return (Set) TestUtils.createSet(MessageBodyWorkersTestProvider.class,
+        return (Set) TestUtils.createSet(ProidersTestProvider.class,
                 CrazyTypeProvider.class);
     }
 
     @Override
     protected Class<?> getRootResourceClass() {
-        return MessageBodyWorkersTestResource.class;
+        return MessageBodyWriterTestResource.class;
     }
 
     public void test1() throws IOException {

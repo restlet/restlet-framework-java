@@ -190,8 +190,8 @@ public class ParameterList {
          * @return
          * @throws ConvertParameterException
          * @throws WebApplicationException
-         *             if the conversion method throws an
-         *             WebApplicationException.
+         *                 if the conversion method throws an
+         *                 WebApplicationException.
          */
         private Object convertParamValueInner(String paramValue,
                 DefaultValue defaultValue) throws ConvertParameterException,
@@ -644,7 +644,11 @@ public class ParameterList {
             final String queryString = resourceRef.getQuery();
             final Form form = Converter.toFormEncoded(queryString, localLogger);
             final String paramName = this.queryParam.value();
-            return super.getParamValue(form, paramName);
+            try {
+                return super.getParamValue(form, paramName);
+            } catch (final ConvertParameterException e) {
+                throw new ConvertQueryParamException(e);
+            }
         }
     }
 
@@ -663,21 +667,17 @@ public class ParameterList {
          * @throws ConvertQueryParamException
          */
         Object getParamValue(final Form form, final String paramName)
-                throws ConvertQueryParamException {
+                throws ConvertParameterException {
             final List<Parameter> parameters = form.subList(paramName);
-            try {
-                if (this.collType == null) { // no collection parameter
-                    final Parameter firstFormParam = form.getFirst(paramName);
-                    final String queryParamValue = WrapperUtil
-                            .getValue(firstFormParam);
-                    return convertParamValue(queryParamValue);
-                }
-                ParamValueIter queryParamValueIter;
-                queryParamValueIter = new ParamValueIter(parameters);
-                return convertParamValues(queryParamValueIter);
-            } catch (final ConvertParameterException e) {
-                throw new ConvertQueryParamException(e);
+            if (this.collType == null) { // no collection parameter
+                final Parameter firstFormParam = form.getFirst(paramName);
+                final String queryParamValue = WrapperUtil
+                        .getValue(firstFormParam);
+                return convertParamValue(queryParamValue);
             }
+            ParamValueIter queryParamValueIter;
+            queryParamValueIter = new ParamValueIter(parameters);
+            return convertParamValues(queryParamValueIter);
         }
     }
 
@@ -697,7 +697,11 @@ public class ParameterList {
             final Form form = this.tlContext.get().getRequest()
                     .getEntityAsForm();
             final String paramName = this.formParam.value();
-            return super.getParamValue(form, paramName);
+            try {
+                return super.getParamValue(form, paramName);
+            } catch (final ConvertParameterException e) {
+                throw new ConvertQueryParamException(e);
+            }
         }
     }
 
@@ -816,7 +820,7 @@ public class ParameterList {
      * used. A value less than zero means, that no special handling is needed.
      */
     private final int entityPosition;
-    
+
     /**
      * @param parameterTypes
      * @param genParamTypes
@@ -862,9 +866,8 @@ public class ParameterList {
                             allMustBeAvailable);
                 } else {
                     this.parameters[i] = new ContextHolder(ContextInjector
-                            .getInjectObject(parameterType, genParamType,
-                                    tlContext, jaxRsProviders,
-                                    extensionBackwardMapping));
+                            .getInjectObject(parameterType, tlContext,
+                                    jaxRsProviders, extensionBackwardMapping));
                 }
                 continue;
             }

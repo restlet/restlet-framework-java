@@ -39,11 +39,11 @@ import org.restlet.test.jaxrs.services.others.Person;
  * @author Stephan Koops
  */
 @Produces("text/crazy-person")
-public class MessageBodyWorkersTestProvider implements
+public class ProidersTestProvider implements
         MessageBodyWriter<Person> {
 
     @Context
-    Providers messageBodyWorkers;
+    Providers providers;
 
     /**
      * @see javax.ws.rs.ext.MessageBodyWriter#getSize(java.lang.Object)
@@ -69,13 +69,13 @@ public class MessageBodyWorkersTestProvider implements
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
         MessageBodyWriter<Person> mbw;
-        mbw = this.messageBodyWorkers.getMessageBodyWriter(Person.class,
+        mbw = this.providers.getMessageBodyWriter(Person.class,
                 Person.class, annotations, MediaType.APPLICATION_XML_TYPE);
         mbw.writeTo(t, Person.class, Person.class, annotations,
                 MediaType.APPLICATION_XML_TYPE, httpHeaders, entityStream);
 
         final MediaType mediaType2 = new MediaType("application", "crazyType");
-        mbw = this.messageBodyWorkers.getMessageBodyWriter(Person.class,
+        mbw = this.providers.getMessageBodyWriter(Person.class,
                 Person.class, annotations, mediaType2);
         mbw.writeTo(t, Person.class, Person.class, annotations, mediaType2,
                 httpHeaders, entityStream);

@@ -23,7 +23,6 @@ import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -248,23 +247,20 @@ public class ContextInjector {
 
     /**
      * @param declaringClass
-     *            the class / interface to injecto into; must not be
-     *            {@link UriInfo}
-     * @param genericType
+     *                the class / interface to injecto into; must not be
+     *                {@link UriInfo}
      * @param tlContext
      * @param providers
      * @param extensionBackwardMapping
      * @param aim
      * @return
      * @throws IllegalTypeException
-     *             if the given class is not valid to be annotated with &#64;
-     *             {@link Context}.
+     *                 if the given class is not valid to be annotated with
+     *                 &#64; {@link Context}.
      * @throws ImplementationException
-     *             the declaringClass must not be {@link UriInfo}
-     * 
-     *             TODO remove genericType, if not needed
+     *                 the declaringClass must not be {@link UriInfo}
      */
-    static Object getInjectObject(Class<?> declaringClass, Type genericType,
+    static Object getInjectObject(Class<?> declaringClass,
             ThreadLocalizedContext tlContext, Providers providers,
             ExtensionBackwardMapping extensionBackwardMapping)
             throws IllegalTypeException, ImplementationException {
@@ -302,27 +298,24 @@ public class ContextInjector {
     /**
      * 
      * @param declaringClass
-     * @param genericType
      * @param aim
      * @param tlContext
      * @param allProviders
      * @param extensionBackwardMapping
      * @return
      * @throws IllegalTypeException
-     *             if the given class is not valid to be annotated with &#64;
-     *             {@link Context}.
+     *                 if the given class is not valid to be annotated with
+     *                 &#64; {@link Context}.
      */
-    static Injector getInjector(Class<?> declaringClass, Type genericType,
-            InjectionAim aim, ThreadLocalizedContext tlContext,
-            Providers allProviders,
+    static Injector getInjector(Class<?> declaringClass, InjectionAim aim,
+            ThreadLocalizedContext tlContext, Providers allProviders,
             ExtensionBackwardMapping extensionBackwardMapping)
             throws IllegalTypeException {
         if (declaringClass.equals(UriInfo.class)) {
             return new UriInfoInjector(aim, tlContext);
         } else {
             return new EverSameInjector(aim, getInjectObject(declaringClass,
-                    genericType, tlContext, allProviders,
-                    extensionBackwardMapping));
+                    tlContext, allProviders, extensionBackwardMapping));
         }
     }
 
@@ -338,26 +331,24 @@ public class ContextInjector {
     /**
      * @param jaxRsClass
      * @param tlContext
-     * @param mbWorkers
-     *            all entity providers. <<<<<<< .mine =======
-     * @param allResolvers
-     *            all available {@link ContextResolver}s. >>>>>>> .r3440
+     * @param providers
+     *                all entity providers.
      * @param extensionBackwardMapping
-     *            the extension backward mapping
+     *                the extension backward mapping
      * @throws IllegalBeanSetterTypeException
-     *             if one of the bean setters annotated with &#64;
-     *             {@link Context} has a type that must not be annotated with
-     *             &#64;{@link Context}.
+     *                 if one of the bean setters annotated with &#64;
+     *                 {@link Context} has a type that must not be annotated
+     *                 with &#64;{@link Context}.
      * @throws IllegalFieldTypeException
-     *             if one of the fields annotated with &#64;{@link Context} has
-     *             a type that must not be annotated with &#64;{@link Context}.
+     *                 if one of the fields annotated with &#64;{@link Context}
+     *                 has a type that must not be annotated with &#64;{@link Context}.
      * @throws ImplementationException
      */
     public ContextInjector(Class<?> jaxRsClass,
-            ThreadLocalizedContext tlContext, Providers mbWorkers,
+            ThreadLocalizedContext tlContext, Providers providers,
             ExtensionBackwardMapping extensionBackwardMapping)
             throws IllegalFieldTypeException, IllegalBeanSetterTypeException {
-        this.init(jaxRsClass, tlContext, mbWorkers, extensionBackwardMapping);
+        this.init(jaxRsClass, tlContext, providers, extensionBackwardMapping);
     }
 
     protected void add(AccessibleObject fieldOrBeanSetter,
@@ -370,20 +361,20 @@ public class ContextInjector {
      * initiates the fields to cache the fields that needs injection.
      * 
      * @param tlContext
-     *            the {@link ThreadLocalizedContext} of the
-     *            {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
+     *                the {@link ThreadLocalizedContext} of the
+     *                {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
      * @param allProviders
-     *            all entity providers.
+     *                all entity providers.
      * @param extensionBackwardMapping
-     *            the extension backward mapping
+     *                the extension backward mapping
      * 
      * @throws IllegalFieldTypeException
-     *             if one of the fields annotated with &#64;{@link Context} has
-     *             a type that must not be annotated with &#64;{@link Context}.
+     *                 if one of the fields annotated with &#64;{@link Context}
+     *                 has a type that must not be annotated with &#64;{@link Context}.
      * @throws IllegalBeanSetterTypeException
-     *             if one of the bean setters annotated with &#64;
-     *             {@link Context} has a type that must not be annotated with
-     *             &#64;{@link Context}.
+     *                 if one of the bean setters annotated with &#64;
+     *                 {@link Context} has a type that must not be annotated
+     *                 with &#64;{@link Context}.
      */
     private void init(Class<?> jaxRsClass, ThreadLocalizedContext tlContext,
             Providers allProviders,
@@ -395,9 +386,8 @@ public class ContextInjector {
                     if (field.isAnnotationPresent(Context.class)) {
                         final InjectionAim aim = new FieldWrapper(field);
                         final Class<?> declaringClass = field.getType();
-                        final Type genericType = field.getGenericType();
                         final Injector injector = getInjector(declaringClass,
-                                genericType, aim, tlContext, allProviders,
+                                aim, tlContext, allProviders,
                                 extensionBackwardMapping);
                         this.injEverSameAims.add(injector);
                     }
@@ -413,10 +403,8 @@ public class ContextInjector {
                     if (isBeanSetter(method, Context.class)) {
                         final BeanSetter aim = new BeanSetter(method);
                         final Class<?> paramClass = method.getParameterTypes()[0];
-                        final Type genericType = method
-                                .getGenericParameterTypes()[0];
-                        final Injector injector = getInjector(paramClass,
-                                genericType, aim, tlContext, allProviders,
+                        final Injector injector = getInjector(paramClass, aim,
+                                tlContext, allProviders,
                                 extensionBackwardMapping);
                         this.injEverSameAims.add(injector);
                     }
@@ -437,14 +425,14 @@ public class ContextInjector {
      * 
      * @param jaxRsResObj
      * @param allMustBeAvailable
-     *            if true, all information in &#64;{@link Context} annotated
-     *            objects must be available, especially the ancestor resource
-     *            info (false for singelton lifecycle)
+     *                if true, all information in &#64;{@link Context}
+     *                annotated objects must be available, especially the
+     *                ancestor resource info (false for singelton lifecycle)
      * @throws InjectException
-     *             if the injection was not possible. See
-     *             {@link InjectException#getCause()} for the reason.
+     *                 if the injection was not possible. See
+     *                 {@link InjectException#getCause()} for the reason.
      * @throws InvocationTargetException
-     *             if a setter throws an exception
+     *                 if a setter throws an exception
      */
     public void injectInto(Object jaxRsResObj, boolean allMustBeAvailable)
             throws InjectException, InvocationTargetException {

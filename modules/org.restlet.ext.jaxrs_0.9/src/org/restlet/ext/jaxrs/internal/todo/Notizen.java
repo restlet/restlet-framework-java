@@ -27,10 +27,10 @@ public class Notizen {
     // REQUEST javadoc of attribute setters of CacheControl does not ease it to
     // use the class
 
-    // REQUEST (check before) what to do, if an ExceptionMapper throws an
+    // REQUESTED what to do, if an ExceptionMapper throws an
     // Exception. I think rethrow (easy to implement the wished rethrow)
 
-    // REQUEST darf ein ExceptionMapper null zurückgeben? Könnte man als
+    // REQUESTED darf ein ExceptionMapper null zurueckgeben? Könnte man als
     // Indikator verwenden, die Exception weiterzugeben
 
     // REQUEST could the implementation see, what is required to add

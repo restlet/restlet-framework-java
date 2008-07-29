@@ -37,7 +37,7 @@ public class ContextsTest extends JaxRsTestCase {
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         final String entity = response.getEntity().getText();
-        assertEquals("messageBodyWorkers\nuriInfo\n", entity);
+        assertEquals("providers\nuriInfo\n", entity);
     }
 
     public void testLastPathSegm() throws Exception {
@@ -53,6 +53,6 @@ public class ContextsTest extends JaxRsTestCase {
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         final String entity = response.getEntity().getText();
-        assertEquals("messageBodyWorkers\nuriInfo\n", entity);
+        assertEquals("providers\nuriInfo\n", entity);
     }
 }

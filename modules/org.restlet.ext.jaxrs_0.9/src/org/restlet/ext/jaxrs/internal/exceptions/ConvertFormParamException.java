@@ -15,21 +15,28 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
+package org.restlet.ext.jaxrs.internal.exceptions;
+
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response.Status;
 
 /**
- * <p>
- * This package contains the default providers for this JAX-RS runtime
- * environment.
- * </p>
- * <p>
- * The JAX-RS extension as well as the JAX-RS specification are currently under
- * development. You should only use this extension for experimental purpose.
- * </p>
+ * This kind of exception is thrown, if a query parameter could not be
+ * converted.
  * 
- * @see MessageBodyWriter
- * @see MessageBodyReader
  * @author Stephan Koops
+ * @see QueryParam
  */
-package org.restlet.ext.jaxrs.internal.provider;
+public class ConvertFormParamException extends WebApplicationException {
 
-// NICE JSON Provider for JAXB and all providers supporting XML.
+    private static final long serialVersionUID = 131640120766355816L;
+
+    /**
+     * @param cpe
+     */
+    public ConvertFormParamException(ConvertParameterException cpe) {
+        super(cpe.getCause(), Status.BAD_REQUEST);
+        setStackTrace(cpe.getStackTrace());
+    }
+}

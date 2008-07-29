@@ -23,18 +23,16 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 import org.restlet.test.jaxrs.services.others.Person;
-import org.restlet.test.jaxrs.services.providers.MessageBodyWorkersTestProvider;
-import org.restlet.test.jaxrs.services.tests.MessageBodyWorkersTest;
+import org.restlet.test.jaxrs.services.providers.ProidersTestProvider;
+import org.restlet.test.jaxrs.services.tests.MessageBodyWritersTest;
 
 /**
  * @author Stephan Koops
- * @see MessageBodyWorkersTest
- * @see MessageBodyWorkersTestProvider
+ * @see MessageBodyWritersTest
+ * @see ProidersTestProvider
  */
 @Path("mbw")
-public class MessageBodyWorkersTestResource {
-
-    // TODO rename to ProvidersTestResource or somethig like this
+public class MessageBodyWriterTestResource {
 
     @GET
     @Produces("text/crazy-person")
