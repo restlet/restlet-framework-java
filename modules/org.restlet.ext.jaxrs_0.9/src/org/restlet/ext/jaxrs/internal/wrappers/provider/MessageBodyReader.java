@@ -17,19 +17,55 @@
  */
 package org.restlet.ext.jaxrs.internal.wrappers.provider;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.List;
 
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MultivaluedMap;
+
+import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 
 /**
  * Class to wrap a {@link javax.ws.rs.ext.MessageBodyWriter}
  * 
  * @author Stephan Koops
- * @param <T>
- *            the java type to convert to.
  */
-public interface MessageBodyReader<T> extends
-        javax.ws.rs.ext.MessageBodyReader<T> {
+public interface MessageBodyReader {
+
+    /**
+     * 
+     * @param type
+     * @param genericType
+     * @param annotations
+     * @return
+     * @see {@link javax.ws.rs.ext.MessageBodyReader#isReadable(Class, Type, Annotation[])}
+     */
+    public boolean isReadable(Class<?> type, Type genericType,
+            Annotation annotations[]);
+
+    /**
+     * 
+     * @param type
+     * @param genericType
+     * @param annotations
+     * @param mediaType
+     * @param characterSet
+     * @param httpHeaders
+     * @param entityStream
+     * @return
+     * @throws IOException
+     * @throws WebApplicationException
+     * @see {@link javax.ws.rs.ext.MessageBodyReader#readFrom(Class, Type, Annotation[], javax.ws.rs.core.MediaType, MultivaluedMap, InputStream)}
+     */
+    public Object readFrom(Class<?> type, Type genericType,
+            Annotation annotations[], MediaType mediaType,
+            CharacterSet characterSet,
+            MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
+            throws IOException, WebApplicationException;
 
     /**
      * Returns the list of produced {@link MediaType}s of the wrapped
@@ -44,7 +80,7 @@ public interface MessageBodyReader<T> extends
      * 
      * @return the JAX-RS MessageBodyReader
      */
-    public javax.ws.rs.ext.MessageBodyReader<T> getJaxRsReader();
+    public javax.ws.rs.ext.MessageBodyReader<?> getJaxRsReader();
 
     /**
      * Checks, if this MessageBodyReader supports the given MediaType.

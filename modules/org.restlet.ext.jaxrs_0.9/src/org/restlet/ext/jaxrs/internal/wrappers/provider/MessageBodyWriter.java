@@ -17,7 +17,14 @@
  */
 package org.restlet.ext.jaxrs.internal.wrappers.provider;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.List;
+
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MultivaluedMap;
 
 import org.restlet.data.MediaType;
 
@@ -25,28 +32,20 @@ import org.restlet.data.MediaType;
  * Interface to access a wrapped a {@link javax.ws.rs.ext.MessageBodyWriter}
  * 
  * @author Stephan Koops
- * @param <T>
- *            the java type to convert.
  */
-public interface MessageBodyWriter<T> extends
-        javax.ws.rs.ext.MessageBodyWriter<T> {
-
+public interface MessageBodyWriter {
+    
     /**
-     * Returns the JAX-RS {@link javax.ws.rs.ext.MessageBodyWriter}.
      * 
-     * @return the JAX-RS MessageBodyWriter
+     * @param type
+     * @param genericType
+     * @param annotations
+     * @return
+     * @see javax.ws.rs.ext.MessageBodyWriter#isWriteable(Class, Type,
+     *      Annotation[])
      */
-    public javax.ws.rs.ext.MessageBodyWriter<T> getJaxRsWriter();
-
-    /**
-     * Returns the list of produced {@link MediaType}s of the wrapped
-     * {@link javax.ws.rs.ext.MessageBodyWriter}.
-     * 
-     * @return List of produced {@link MediaType}s. If the entity provider is
-     *         not annotated with &#64; {@link javax.ws.rs.Produces},
-     *         '*<!---->/*' is returned.
-     */
-    public List<MediaType> getProducedMimes();
+    public boolean isWriteable(Class<?> type, Type genericType,
+            Annotation annotations[]);
 
     /**
      * Called before <code>writeTo</code> to ascertain the length in bytes of
@@ -54,18 +53,55 @@ public interface MessageBodyWriter<T> extends
      * used in a HTTP <code>Content-Length</code> header.
      * 
      * @param t
-     *            the type
+     *                the instance to write
      * @return length in bytes or -1 if the length cannot be determined in
      *         advance
      */
-    public long getSize(T t);
+    public long getSize(Object t);
+
+    /**
+     * @param object
+     * @param type
+     * @param genericType
+     * @param annotations
+     * @param mediaType
+     * @param httpHeaders
+     * @param entityStream
+     * @throws IOException
+     * @throws WebApplicationException
+     * @see javax.ws.rs.ext.MessageBodyWriter#writeTo(Object, Class, Type,
+     *      Annotation[], javax.ws.rs.core.MediaType, MultivaluedMap,
+     *      OutputStream)
+     */
+    public void writeTo(Object object, Class<?> type, Type genericType,
+            Annotation annotations[], MediaType mediaType,
+            MultivaluedMap<String, Object> httpHeaders,
+            OutputStream entityStream) throws IOException,
+            WebApplicationException;
+
+    /**
+     * Returns the JAX-RS {@link javax.ws.rs.ext.MessageBodyWriter}.
+     * 
+     * @return the JAX-RS MessageBodyWriter
+     */
+    public javax.ws.rs.ext.MessageBodyWriter<?> getJaxRsWriter();
+
+    /**
+     * Returns the list of produced {@link MediaType}s of the wrapped
+     * {@link javax.ws.rs.ext.MessageBodyWriter}.
+     * 
+     * @return List of produced {@link MediaType}s. If the entity provider is
+     *         not annotated with &#64; {@link javax.ws.rs.Produces}, '*<!---->/*'
+     *         is returned.
+     */
+    public List<MediaType> getProducedMimes();
 
     /**
      * Checks, if the wrapped MessageBodyWriter supports at least one of the
      * given {@link MediaType}s.
      * 
      * @param mediaTypes
-     *            the {@link MediaType}s
+     *                the {@link MediaType}s
      * @return true, if at least one of the requested {@link MediaType}s is
      *         supported, otherwise false.
      */
@@ -76,7 +112,7 @@ public interface MessageBodyWriter<T> extends
      * {@link MediaType}.
      * 
      * @param mediaType
-     *            the {@link MediaType}
+     *                the {@link MediaType}
      * @return true, if the requested {@link MediaType} is supported, otherwise
      *         false.
      */

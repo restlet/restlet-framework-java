@@ -44,7 +44,7 @@ public class JaxRsOutputRepresentation<T> extends OutputRepresentation {
     private static final Logger LOGGER = Logger
             .getLogger("JaxRsOutputRepresentation");
 
-    private final MessageBodyWriter<T> mbw;
+    private final MessageBodyWriter mbw;
 
     private final T object;
 
@@ -74,7 +74,7 @@ public class JaxRsOutputRepresentation<T> extends OutputRepresentation {
      */
     public JaxRsOutputRepresentation(T object, Type genericType,
             MediaType mediaType, Annotation[] annotations,
-            MessageBodyWriter<T> mbw, MultivaluedMap<String, Object> httpHeaders) {
+            MessageBodyWriter mbw, MultivaluedMap<String, Object> httpHeaders) {
         super(mediaType, mbw.getSize(object));
         if (!mediaType.isConcrete()) {
             throw new IllegalArgumentException(mediaType + " is not concrete");
@@ -92,10 +92,8 @@ public class JaxRsOutputRepresentation<T> extends OutputRepresentation {
     @Override
     public void write(OutputStream outputStream) throws IOException {
         try {
-            javax.ws.rs.core.MediaType jaxRsMediaType;
-            jaxRsMediaType = Converter.toJaxRsMediaType(getMediaType(), null);
             this.mbw.writeTo(this.object, this.object.getClass(),
-                    this.genericType, this.annotations, jaxRsMediaType,
+                    this.genericType, this.annotations, getMediaType(),
                     this.httpHeaders, outputStream);
         } catch (final WebApplicationException e) {
             final String msg = "The Restlet extension for JAX-RS do not support the throwing of WebApplicationException in a MessageBodyWriter.";

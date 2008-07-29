@@ -29,7 +29,6 @@ import org.restlet.data.Request;
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
 import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
-import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.ext.jaxrs.internal.wrappers.params.ParameterList.ParamGetter;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyReader;
@@ -83,7 +82,7 @@ public class EntityGetter implements ParamGetter {
             return null;
         }
         final MediaType mediaType = entity.getMediaType();
-        final MessageBodyReader<?> mbr = this.mbrs.getBestReader(this.convToCl,
+        final MessageBodyReader mbr = this.mbrs.getBestReader(this.convToCl,
                 this.convToGen, this.annotations, mediaType);
         if (mbr == null) {
             throw new NoMessageBodyReaderException(mediaType, this.convToCl);
@@ -91,10 +90,8 @@ public class EntityGetter implements ParamGetter {
         final MultivaluedMap<String, String> httpHeaders = Util
                 .getJaxRsHttpHeaders(request);
         try {
-            final javax.ws.rs.core.MediaType jaxRsMediaType = Converter
-                    .toJaxRsMediaType(mediaType, entity.getCharacterSet());
-            return mbr.readFrom((Class) this.convToCl, this.convToGen,
-                    this.annotations, jaxRsMediaType, httpHeaders, entity
+            return mbr.readFrom(this.convToCl, this.convToGen,
+                    this.annotations, mediaType, entity.getCharacterSet(), httpHeaders, entity
                             .getStream());
         } catch (final WebApplicationException wae) {
             throw wae;

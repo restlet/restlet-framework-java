@@ -462,7 +462,7 @@ public class JaxRsUriBuilder extends UriBuilder {
      *             disabled and the name or any stringified value contains
      *             illegal characters
      * @see <a href="http://www.w3.org/DesignIssues/MatrixURIs.html">Matrix
-     *      URIs< /a>
+     *      URIs</a>
      * @see javax.ws.rs.core.UriBuilder#matrixParam(String, Object...)
      */
     @Override

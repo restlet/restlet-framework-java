@@ -101,8 +101,8 @@ public class EncodeOrCheck {
     /**
      * Checks, if the string contains characters that are reserved in URIs.
      * 
-     * @see <a href="http://tools.ietf.org/html/rfc3986#section-2.2">RFC 3986, *
-     *      Section 2.2< /a>
+     * @see <a href="http://tools.ietf.org/html/rfc3986#section-2.2">RFC 3986,
+     *      Section 2.2</a>
      * @param uriPart
      * @param indexForErrMessage
      * @param errMessName
@@ -165,7 +165,7 @@ public class EncodeOrCheck {
      * @param stb
      *            the {@link StringBuilder} to append.
      * @see <a href="http://tools.ietf.org/html/rfc3986#section-2.2"> RFC 3986,
-     *      * section 2.2< /a>
+     *      section 2.2</a>
      */
     private static void encode(char toEncode, StringBuilder stb) {
         // this are all unreserved characters, see RFC 3986 (section 2.2)

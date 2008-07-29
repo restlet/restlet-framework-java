@@ -29,8 +29,8 @@ import javax.ws.rs.core.Response.Status;
  * requested method.
  * 
  * @author Stephan Koops
- * @see <a href="http://tools.ietf.org/html/rfc2616#sec10.4.16">RFC 2616, *
- *      Section 10.4.16, "415 Unsupported Media Type"< /a>
+ * @see <a href="http://tools.ietf.org/html/rfc2616#sec10.4.16">RFC 2616,
+ *      Section 10.4.16, "415 Unsupported Media Type"</a>
  */
 public class UnsupportedMediaTypeWebAppException extends
         WebApplicationException {

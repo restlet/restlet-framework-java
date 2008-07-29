@@ -34,10 +34,9 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Providers;
 
+import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.ext.jaxrs.ObjectFactory;
 import org.restlet.ext.jaxrs.internal.core.CallContext;
@@ -55,6 +54,7 @@ import org.restlet.ext.jaxrs.internal.exceptions.InstantiateException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingConstructorException;
 import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
+import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.ext.jaxrs.internal.wrappers.WrapperUtil;
 import org.restlet.ext.jaxrs.internal.wrappers.params.ContextInjector;
@@ -64,14 +64,9 @@ import org.restlet.ext.jaxrs.internal.wrappers.params.ParameterList;
  * Wraps a JAX-RS provider, see chapter 4 of JAX-RS specification.
  * 
  * @author Stephan Koops
- * @param <T>
- *            the java type to convert.
  * @see javax.ws.rs.ext.Provider
  */
-public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
-        ExceptionMapper<T> {
-    // TODO perhaps Provider does not implement MessageBodyReader etc. 
-
+public class Provider implements MessageBodyReader, MessageBodyWriter {
     /**
      * the mimes this MessageBodyReader consumes.
      */
@@ -81,9 +76,9 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * the {@link ContextResolver}, if this providers is a
      * {@link ContextResolver}
      */
-    private final javax.ws.rs.ext.ContextResolver<T> contextResolver;
+    private final javax.ws.rs.ext.ContextResolver<?> contextResolver;
 
-    private final javax.ws.rs.ext.ExceptionMapper<T> excMapper;
+    private final javax.ws.rs.ext.ExceptionMapper<Object> excMapper;
 
     private final Object jaxRsProvider;
 
@@ -93,11 +88,11 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * The JAX-RS {@link javax.ws.rs.ext.MessageBodyReader} this wrapper
      * represent.
      */
-    private final javax.ws.rs.ext.MessageBodyReader<T> reader;
+    private final javax.ws.rs.ext.MessageBodyReader<Object> reader;
 
     private final boolean singelton = true;
 
-    private final javax.ws.rs.ext.MessageBodyWriter<T> writer;
+    private final javax.ws.rs.ext.MessageBodyWriter<Object> writer;
 
     /**
      * Creates a new wrapper for a Provider and initializes the provider. If the
@@ -105,30 +100,27 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * thrown.
      * 
      * @param jaxRsProviderClass
-     *            the JAX-RS provider class.
+     *                the JAX-RS provider class.
      * @param objectFactory
-     *            The object factory is responsible for the provider
-     *            instantiation, if given.
+     *                The object factory is responsible for the provider
+     *                instantiation, if given.
      * @param tlContext
-     *            The tread local wrapped call context
+     *                The tread local wrapped call context
      * @param allProviders
-     *            all entity providers.
-<<<<<<< .mine
-=======
+     *                all entity providers. <<<<<<< .mine =======
      * @param allResolvers
-     *            all available {@link ContextResolver}s.
->>>>>>> .r3440
+     *                all available {@link ContextResolver}s. >>>>>>> .r3440
      * @param extensionBackwardMapping
-     *            the extension backward mapping
+     *                the extension backward mapping
      * @param logger
-     *            the logger to use.
+     *                the logger to use.
      * @throws IllegalArgumentException
-     *             if the class is not a valid provider, may not be instantiated
-     *             or what ever.
+     *                 if the class is not a valid provider, may not be
+     *                 instantiated or what ever.
      * @throws InvocationTargetException
-     *             if the constructor throws an Throwable
+     *                 if the constructor throws an Throwable
      * @throws MissingConstructorException
-     *             if no valid constructor could be found
+     *                 if no valid constructor could be found
      * @throws InstantiateException
      * @throws WebApplicationException
      * @throws MissingAnnotationException
@@ -164,25 +156,25 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
         this.jaxRsProvider = jaxRsProvider;
         boolean isProvider = false;
         if (jaxRsProvider instanceof javax.ws.rs.ext.MessageBodyWriter) {
-            this.writer = (javax.ws.rs.ext.MessageBodyWriter<T>) jaxRsProvider;
+            this.writer = (javax.ws.rs.ext.MessageBodyWriter) jaxRsProvider;
             isProvider = true;
         } else {
             this.writer = null;
         }
         if (jaxRsProvider instanceof javax.ws.rs.ext.MessageBodyReader) {
-            this.reader = (javax.ws.rs.ext.MessageBodyReader<T>) jaxRsProvider;
+            this.reader = (javax.ws.rs.ext.MessageBodyReader) jaxRsProvider;
             isProvider = true;
         } else {
             this.reader = null;
         }
         if (jaxRsProvider instanceof javax.ws.rs.ext.ExceptionMapper) {
-            this.excMapper = (javax.ws.rs.ext.ExceptionMapper<T>) jaxRsProvider;
+            this.excMapper = (javax.ws.rs.ext.ExceptionMapper) jaxRsProvider;
             isProvider = true;
         } else {
             this.excMapper = null;
         }
         if (jaxRsProvider instanceof javax.ws.rs.ext.ContextResolver) {
-            this.contextResolver = (javax.ws.rs.ext.ContextResolver<T>) jaxRsProvider;
+            this.contextResolver = (javax.ws.rs.ext.ContextResolver) jaxRsProvider;
             isProvider = true;
         } else {
             this.contextResolver = null;
@@ -212,32 +204,29 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
 
     /**
      * @param providerConstructor
-     *            the constructor to use.
+     *                the constructor to use.
      * @param jaxRsProviderClass
-     *            class for exception message.
+     *                class for exception message.
      * @param tlContext
-     *            The tread local wrapped call context
+     *                The tread local wrapped call context
      * @param allProviders
-     *            all entity providers.
-<<<<<<< .mine
-=======
+     *                all entity providers. <<<<<<< .mine =======
      * @param allResolvers
-     *            all available {@link ContextResolver}s.
->>>>>>> .r3440
+     *                all available {@link ContextResolver}s. >>>>>>> .r3440
      * @param extensionBackwardMapping
-     *            the extension backward mapping
+     *                the extension backward mapping
      * @param logger
-     *            the logger to use
+     *                the logger to use
      * @throws IllegalArgumentException
      * @throws InvocationTargetException
-     *             if the constructor throws an Throwable
+     *                 if the constructor throws an Throwable
      * @throws InstantiateException
      * @throws MissingAnnotationException
      * @throws WebApplicationException
      * @throws IllegalConstrParamTypeException
-     *             if one of the fields or bean setters annotated with &#64;
-     *             {@link Context} has a type that must not be annotated with
-     *             &#64;{@link Context}.
+     *                 if one of the fields or bean setters annotated with &#64;
+     *                 {@link Context} has a type that must not be annotated
+     *                 with &#64;{@link Context}.
      */
     private Object createInstance(Constructor<?> providerConstructor,
             Class<?> jaxRsProviderClass, ThreadLocalizedContext tlContext,
@@ -304,7 +293,7 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
             return false;
         }
         return this.jaxRsProvider.getClass().equals(
-                ((Provider<?>) otherProvider).jaxRsProvider.getClass());
+                ((Provider) otherProvider).jaxRsProvider.getClass());
     }
 
     /**
@@ -320,7 +309,7 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
     /**
      * @return the contextResolver
      */
-    public javax.ws.rs.ext.ContextResolver<T> getContextResolver() {
+    public javax.ws.rs.ext.ContextResolver<?> getContextResolver() {
         return this.contextResolver;
     }
 
@@ -332,21 +321,21 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      *         {@link ExceptionMapper}.
      */
     @SuppressWarnings("unchecked")
-    public ExceptionMapper<? extends Throwable> getExcMapper() {
-        return (ExceptionMapper) this.excMapper;
+    public javax.ws.rs.ext.ExceptionMapper<? extends Throwable> getExcMapper() {
+        return (javax.ws.rs.ext.ExceptionMapper) this.excMapper;
     }
 
     /**
      * @see org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyReader#getJaxRsReader()
      */
-    public javax.ws.rs.ext.MessageBodyReader<T> getJaxRsReader() {
+    public javax.ws.rs.ext.MessageBodyReader<?> getJaxRsReader() {
         return this.reader;
     }
 
     /**
      * @see org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyWriter#getJaxRsWriter()
      */
-    public javax.ws.rs.ext.MessageBodyWriter<T> getJaxRsWriter() {
+    public javax.ws.rs.ext.MessageBodyWriter<?> getJaxRsWriter() {
         return this.writer;
     }
 
@@ -368,12 +357,12 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * used in a HTTP <code>Content-Length</code> header.
      * 
      * @param t
-     *            the type
+     *                the type
      * @return length in bytes or -1 if the length cannot be determined in
      *         advance
      */
-    public long getSize(T t) {
-        return this.writer.getSize(t);
+    public long getSize(Object o) {
+        return this.writer.getSize(o);
     }
 
     @Override
@@ -386,22 +375,19 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * method annotated with &#64;{@link PostConstruct}.
      * 
      * @param tlContext
-     *            The thread local wrapped {@link CallContext}
+     *                The thread local wrapped {@link CallContext}
      * @param allProviders
-     *            all entity providers.
-<<<<<<< .mine
-=======
+     *                all entity providers. <<<<<<< .mine =======
      * @param allResolvers
-     *            all available {@link ContextResolver}s.
->>>>>>> .r3440
+     *                all available {@link ContextResolver}s. >>>>>>> .r3440
      * @param extensionBackwardMapping
-     *            the extension backward mapping
+     *                the extension backward mapping
      * @throws InjectException
      * @throws InvocationTargetException
-     *             if a bean setter throws an exception
+     *                 if a bean setter throws an exception
      * @throws IllegalTypeException
-     *             if the given class is not valid to be annotated with &#64;
-     *             {@link Context}.
+     *                 if the given class is not valid to be annotated with
+     *                 &#64; {@link Context}.
      */
     public void init(ThreadLocalizedContext tlContext, Providers allProviders,
             ExtensionBackwardMapping extensionBackwardMapping)
@@ -414,23 +400,20 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * Inject the values fields for &#64;{@link Context}.
      * 
      * @param tlContext
-     *            The thread local wrapped {@link CallContext}
+     *                The thread local wrapped {@link CallContext}
      * @param allProviders
-     *            all entity providers.
-<<<<<<< .mine
-=======
+     *                all entity providers. <<<<<<< .mine =======
      * @param allResolvers
-     *            all available {@link ContextResolver}s.
->>>>>>> .r3440
+     *                all available {@link ContextResolver}s. >>>>>>> .r3440
      * @param extensionBackwardMapping
-     *            the extension backward mapping
+     *                the extension backward mapping
      * @throws InjectException
      * @throws InvocationTargetException
-     *             if a bean setter throws an exception
+     *                 if a bean setter throws an exception
      * @throws IllegalTypeException
      * @throws IllegalTypeException
-     *             if the given class is not valid to be annotated with &#64;
-     *             {@link Context}.
+     *                 if the given class is not valid to be annotated with
+     *                 &#64; {@link Context}.
      */
     private void injectContexts(ThreadLocalizedContext tlContext,
             Providers allProviders,
@@ -461,8 +444,8 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
     /**
      * Checks, if this provider represents an {@link ExceptionMapper}.
      * 
-     * @return true, if this provider is an {@link ExceptionMapper}, or false if
-     *         not.
+     * @return true, if this provider is an {@link ExceptionMapper}, or false
+     *         if not.
      */
     public boolean isExceptionMapper() {
         return this.excMapper != null;
@@ -523,9 +506,9 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * 
      * @param type
      * @param genericType
-     *            The generic {@link Type} to convert to.
+     *                The generic {@link Type} to convert to.
      * @param annotations
-     *            the annotations of the artefact to convert to
+     *                the annotations of the artefact to convert to
      * @param mediaType
      * @param httpHeaders
      * @param entityStream
@@ -535,12 +518,13 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      *      javax.ws.rs.core.MediaType, Annotation[], MultivaluedMap,
      *      InputStream)
      */
-    public T readFrom(Class<T> type, Type genericType,
-            Annotation[] annotations, javax.ws.rs.core.MediaType mediaType,
-            MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
+    @SuppressWarnings("unchecked")
+    public Object readFrom(Class<?> type, Type genericType,
+            Annotation[] annotations, MediaType mediaType,
+            CharacterSet characterSet, MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
-        return this.reader.readFrom(type, genericType, annotations, mediaType,
-                httpHeaders, entityStream);
+        return this.reader.readFrom((Class)type, genericType, annotations, Converter
+                .toJaxRsMediaType(mediaType), httpHeaders, entityStream);
     }
 
     /**
@@ -563,7 +547,7 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * requested {@link MediaType}s.
      * 
      * @param mediaTypes
-     *            the {@link MediaType}s
+     *                the {@link MediaType}s
      * @return true, if at least one of the requested {@link MediaType}s is
      *         supported, otherwise false.
      */
@@ -583,7 +567,7 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * requested {@link MediaType}s.
      * 
      * @param mediaTypes
-     *            the {@link MediaType}s
+     *                the {@link MediaType}s
      * @return true, if at least one of the requested {@link MediaType}s is
      *         supported, otherwise false.
      */
@@ -597,9 +581,11 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
     }
 
     /**
+     * @param exception 
+     * @return 
      * @see javax.ws.rs.ext.ExceptionMapper#toResponse(java.lang.Object)
      */
-    public Response toResponse(T exception) {
+    public Response toResponse(Throwable exception) {
         return this.excMapper.toResponse(exception);
     }
 
@@ -614,29 +600,36 @@ public class Provider<T> implements MessageBodyReader<T>, MessageBodyWriter<T>,
      * headers will be flushed prior to writing the response body.
      * 
      * @param genericType
-     *            The generic {@link Type} to convert to.
+     *                The generic {@link Type} to convert to.
      * @param annotations
-     *            the annotations of the artefact to convert to
+     *                the annotations of the artefact to convert to
      * @param mediaType
-     *            the media type of the HTTP entity.
+     *                the media type of the HTTP entity.
      * @param httpHeaders
-     *            a mutable map of the HTTP response headers.
+     *                a mutable map of the HTTP response headers.
      * @param entityStream
-     *            the {@link OutputStream} for the HTTP entity.
+     *                the {@link OutputStream} for the HTTP entity.
      * @param object
-     *            the object to write.
+     *                the object to write.
      * 
      * @throws java.io.IOException
-     *             if an IO error arises
+     *                 if an IO error arises
      * @see javax.ws.rs.ext.MessageBodyWriter#writeTo(Object, Type,
      *      Annotation[], javax.ws.rs.core.MediaType, MultivaluedMap,
      *      OutputStream)
      */
-    public void writeTo(T object, Class<?> type, Type genericType,
-            Annotation[] annotations, javax.ws.rs.core.MediaType mediaType,
+    public void writeTo(Object object, Class<?> type, Type genericType,
+            Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
-        this.writer.writeTo(object, type, genericType, annotations, mediaType,
-                httpHeaders, entityStream);
+        this.writer.writeTo(object, type, genericType, annotations, Converter
+                .toJaxRsMediaType(mediaType), httpHeaders, entityStream);
+    }
+
+    /**
+     * @return the JAX-RS provider class name
+     */
+    public String getClassName() {
+        return jaxRsProvider.getClass().getName();
     }
 }

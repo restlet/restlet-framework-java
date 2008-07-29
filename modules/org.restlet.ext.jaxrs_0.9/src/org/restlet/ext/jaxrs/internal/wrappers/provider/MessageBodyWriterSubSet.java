@@ -32,7 +32,7 @@ import org.restlet.ext.jaxrs.internal.util.SortedMetadata;
 public class MessageBodyWriterSubSet {
 
     private static final MessageBodyWriterSubSet EMPTY = new MessageBodyWriterSubSet(
-            new ArrayList<MessageBodyWriter<?>>());
+            new ArrayList<MessageBodyWriter>());
 
     /**
      * @return
@@ -41,9 +41,9 @@ public class MessageBodyWriterSubSet {
         return EMPTY;
     }
 
-    private final List<MessageBodyWriter<?>> mbws;
+    private final List<MessageBodyWriter> mbws;
 
-    MessageBodyWriterSubSet(List<MessageBodyWriter<?>> mbws) {
+    MessageBodyWriterSubSet(List<MessageBodyWriter> mbws) {
         this.mbws = mbws;
     }
 
@@ -56,7 +56,7 @@ public class MessageBodyWriterSubSet {
      */
     public Collection<MediaType> getAllProducibleMediaTypes() {
         final List<MediaType> p = new ArrayList<MediaType>();
-        for (final MessageBodyWriter<?> messageBodyWriter : this.mbws) {
+        for (final MessageBodyWriter messageBodyWriter : this.mbws) {
             p.addAll(messageBodyWriter.getProducedMimes());
         }
         return p;
@@ -76,17 +76,17 @@ public class MessageBodyWriterSubSet {
      *         Returns null, if no adequate {@link MessageBodyWriter} could be
      *         found in this set.
      */
-    public MessageBodyWriter<?> getBestWriter(
+    public MessageBodyWriter getBestWriter(
             MediaType determinedResponseMediaType,
             SortedMetadata<MediaType> accMediaTypes) {
-        final List<MessageBodyWriter<?>> mbws = new ArrayList<MessageBodyWriter<?>>();
-        for (final MessageBodyWriter<?> mbw : this.mbws) {
+        final List<MessageBodyWriter> mbws = new ArrayList<MessageBodyWriter>();
+        for (final MessageBodyWriter mbw : this.mbws) {
             if (mbw.supportsWrite(determinedResponseMediaType)) {
                 mbws.add(mbw);
             }
         }
         for (final Iterable<MediaType> amts : accMediaTypes.listOfColls()) {
-            for (final MessageBodyWriter<?> mbw : mbws) {
+            for (final MessageBodyWriter mbw : mbws) {
                 if (mbw.supportsWrite(amts)) {
                     return mbw;
                 }

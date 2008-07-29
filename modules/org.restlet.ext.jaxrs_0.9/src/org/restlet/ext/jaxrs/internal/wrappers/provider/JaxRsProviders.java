@@ -177,7 +177,7 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
         }
     }
 
-    private final Set<Provider<?>> all;
+    private final Set<Provider> all;
 
     /**
      * This {@link Set} contains all available
@@ -188,17 +188,17 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
 
     private final Map<Class<? extends Throwable>, ExceptionMapper<? extends Throwable>> excMappers;
 
-    private final List<MessageBodyReader<?>> messageBodyReaders;
+    private final List<MessageBodyReader> messageBodyReaders;
 
-    private final List<MessageBodyWriter<?>> messageBodyWriters;
+    private final List<MessageBodyWriter> messageBodyWriters;
 
     /**
      * Creates a new JaxRsProviders.
      */
     public JaxRsProviders() {
-        this.all = new CopyOnWriteArraySet<Provider<?>>();
-        this.messageBodyReaders = new CopyOnWriteArrayList<MessageBodyReader<?>>();
-        this.messageBodyWriters = new CopyOnWriteArrayList<MessageBodyWriter<?>>();
+        this.all = new CopyOnWriteArraySet<Provider>();
+        this.messageBodyReaders = new CopyOnWriteArrayList<MessageBodyReader>();
+        this.messageBodyWriters = new CopyOnWriteArrayList<MessageBodyWriter>();
         this.contextResolvers = new CopyOnWriteArraySet<ContextResolver<?>>();
         this.excMappers = new ConcurrentHashMap<Class<? extends Throwable>, ExceptionMapper<? extends Throwable>>();
         this.add(new ThrowableMapper());
@@ -242,7 +242,7 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
      * @throws NullPointerException
      *                 if <code>null</code> is given
      */
-    public boolean add(Provider<?> exceptionMapper) {
+    public boolean add(Provider exceptionMapper) {
         if (!exceptionMapper.isExceptionMapper())
             return false;
         return add(exceptionMapper.getExcMapper());
@@ -255,7 +255,7 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
      * @param provider
      * @param defaultProvider
      */
-    public void add(Provider<?> provider, boolean defaultProvider) {
+    public void add(Provider provider, boolean defaultProvider) {
         if (provider.isWriter()) {
             if (defaultProvider)
                 this.messageBodyWriters.add(provider);
@@ -320,7 +320,7 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
      *      MediaType)
      */
     @SuppressWarnings("unchecked")
-    public MessageBodyReader<?> getBestReader(Class<?> paramType,
+    public MessageBodyReader getBestReader(Class<?> paramType,
             Type genericType, Annotation[] annotations, MediaType mediaType) {
         // NICE optimization: may be cached for speed.
         for (MessageBodyReader mbr : this.messageBodyReaders) {
@@ -400,7 +400,7 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
             Class<T> type, Type genericType, Annotation[] annotations,
             javax.ws.rs.core.MediaType mediaType) {
         MediaType restletMediaType = Converter.toRestletMediaType(mediaType);
-        MessageBodyReader<?> mbr;
+        final MessageBodyReader mbr;
         mbr = getBestReader(type, genericType, annotations, restletMediaType);
         return (javax.ws.rs.ext.MessageBodyReader) mbr.getJaxRsReader();
     }
@@ -414,11 +414,12 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
             Class<T> type, Type genericType, Annotation[] annotations,
             javax.ws.rs.core.MediaType mediaType) {
         MediaType restletMediaType = Converter.toRestletMediaType(mediaType);
-        List<MessageBodyWriter> mbws = (List) this.messageBodyWriters;
-        for (MessageBodyWriter<T> mbw : mbws) {
+        List<MessageBodyWriter> mbws = this.messageBodyWriters;
+        for (MessageBodyWriter mbw : mbws) {
             if (mbw.supportsWrite(restletMediaType))
                 if (isWriteable(mbw, type, genericType, annotations))
-                    return mbw.getJaxRsWriter();
+                    return (javax.ws.rs.ext.MessageBodyWriter<T>) mbw
+                            .getJaxRsWriter();
         }
         return null;
     }
@@ -432,21 +433,21 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
      */
     public void initAll(ThreadLocalizedContext tlContext,
             ExtensionBackwardMapping extensionBackwardMapping) {
-        for (Provider<?> provider : new ArrayList<Provider<?>>(this.all)) {
+        for (final Provider provider : new ArrayList<Provider>(this.all)) {
             try {
                 provider.init(tlContext, this, extensionBackwardMapping);
             } catch (InjectException e) {
+                localLogger.log(Level.WARNING, "The provider "
+                        + provider.getClassName() + " could not be used", e);
                 this.remove(provider);
-                // TODO Auto-generated catch block
-                e.printStackTrace();
             } catch (IllegalTypeException e) {
+                localLogger.log(Level.WARNING, "The provider "
+                        + provider.getClassName() + " could not be used", e);
                 this.remove(provider);
-                // TODO Auto-generated catch block
-                e.printStackTrace();
             } catch (InvocationTargetException e) {
+                localLogger.log(Level.WARNING, "The provider "
+                        + provider.getClassName() + " could not be used", e);
                 this.remove(provider);
-                // TODO Auto-generated catch block
-                e.printStackTrace();
             }
         }
     }
@@ -454,11 +455,12 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
     /**
      * @param provider
      */
-    private void remove(Provider<?> provider) {
+    private void remove(Provider provider) {
         this.all.remove(provider);
-        this.contextResolvers.remove(provider);
-        // TODO Auto-generated method stub
-
+        this.contextResolvers.remove(provider.getContextResolver());
+        this.excMappers.remove(provider.getExcMapper());
+        this.messageBodyReaders.remove(provider.getJaxRsReader());
+        this.messageBodyWriters.remove(provider.getJaxRsWriter());
     }
 
     /**
@@ -478,7 +480,7 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
     public MessageBodyWriterSubSet writerSubSet(Class<?> entityClass,
             Type genericType, Annotation[] annotations) {
         // NICE optimization: may be cached for speed.
-        List<MessageBodyWriter<?>> mbws = new ArrayList<MessageBodyWriter<?>>();
+        final List<MessageBodyWriter> mbws = new ArrayList<MessageBodyWriter>();
         for (MessageBodyWriter mbw : this.messageBodyWriters) {
             if (isWriteable(mbw, entityClass, genericType, annotations))
                 mbws.add(mbw);

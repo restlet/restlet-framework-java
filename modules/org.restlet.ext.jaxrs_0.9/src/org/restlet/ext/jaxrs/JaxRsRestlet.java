@@ -204,9 +204,8 @@ public class JaxRsRestlet extends Restlet {
         this.extensionBackwardMapping = new ExtensionBackwardMapping(
                 metadataService);
         this.excHandler = new ExceptionHandler(getLogger());
-        this.wrapperFactory = new WrapperFactory(tlContext,
-                this.providers, extensionBackwardMapping,
-                getLogger());
+        this.wrapperFactory = new WrapperFactory(tlContext, this.providers,
+                extensionBackwardMapping, getLogger());
         this.loadDefaultProviders();
         if (roleChecker != null)
             this.setRoleChecker(roleChecker);
@@ -231,7 +230,7 @@ public class JaxRsRestlet extends Restlet {
         this.addProvider(WwwFormFormProvider.class, true);
         this.addProvider(WwwFormMmapProvider.class, true);
         this.addProvider(SourceProvider.class, true);
-        
+
         this.addProvider(WebAppExcMapper.class, true);
     }
 
@@ -286,19 +285,19 @@ public class JaxRsRestlet extends Restlet {
         } catch (IllegalConstrParamTypeException e) {
             getLogger().warning(
                     "The root resource class " + rootResourceClass.getName()
-                            + " has no valid constructor: "+e.getMessage());
+                            + " has no valid constructor: " + e.getMessage());
             // LATER better warning
             return false;
         } catch (IllegalBeanSetterTypeException e) {
             getLogger().warning(
                     "The root resource class " + rootResourceClass.getName()
-                            + " has no valid constructor: "+e.getMessage());
+                            + " has no valid constructor: " + e.getMessage());
             // LATER better warning
             return false;
         } catch (IllegalFieldTypeException e) {
             getLogger().warning(
                     "The root resource class " + rootResourceClass.getName()
-                            + " has no valid constructor: "+e.getMessage());
+                            + " has no valid constructor: " + e.getMessage());
             // LATER better warning
             return false;
         }
@@ -353,11 +352,11 @@ public class JaxRsRestlet extends Restlet {
             String message = "Officially a JAX-RS provider class must be annotated with @javax.ws.rs.ext.Provider";
             getLogger().config(message);
         }
-        Provider<?> provider;
+        Provider provider;
         try {
-            provider = new Provider<Object>(jaxRsProviderClass, objectFactory,
-                    tlContext, this.providers, extensionBackwardMapping,
-                    getLogger());
+            provider = new Provider(jaxRsProviderClass, this.objectFactory,
+                    this.tlContext, this.providers,
+                    this.extensionBackwardMapping, this.getLogger());
         } catch (InstantiateException e) {
             String msg = "Ignore provider " + jaxRsProviderClass.getName()
                     + "Could not instantiate the Provider, class "
@@ -383,12 +382,14 @@ public class JaxRsRestlet extends Restlet {
             return false;
         } catch (MissingConstructorException mce) {
             String msg = "Ignore provider " + jaxRsProviderClass.getName()
-                    + ", because no valid constructor was found: "+mce.getMessage();
+                    + ", because no valid constructor was found: "
+                    + mce.getMessage();
             getLogger().warning(msg);
             return false;
         } catch (IllegalConstrParamTypeException e) {
             String msg = "Ignore provider " + jaxRsProviderClass.getName()
-                    + ", because no valid constructor was found: "+e.getMessage();
+                    + ", because no valid constructor was found: "
+                    + e.getMessage();
             getLogger().warning(msg);
             return false;
         }
@@ -843,22 +844,22 @@ public class JaxRsRestlet extends Restlet {
         } else {
             mbws = MessageBodyWriterSubSet.empty();
         }
-        MediaType respMediaType;
+        final MediaType respMediaType;
         if (jaxRsResponseMediaType != null)
             respMediaType = jaxRsResponseMediaType;
         else if (resourceMethod != null)
             respMediaType = determineMediaType(resourceMethod, mbws);
         else
             respMediaType = MediaType.TEXT_PLAIN;
-        Response response = tlContext.get().getResponse();
+        final Response response = tlContext.get().getResponse();
         MultivaluedMap<String, Object> httpResponseHeaders = new WrappedRequestForHttpHeaders(
                 response, jaxRsRespHeaders, getLogger());
-        Representation repr;
+        final Representation repr;
         if (entity == null) {
             repr = Representation.createEmpty();
             repr.setMediaType(respMediaType);
         } else {
-            MessageBodyWriter<?> mbw;
+            final MessageBodyWriter mbw;
             mbw = mbws.getBestWriter(respMediaType, accMediaTypes);
             if (mbw == null)
                 throw excHandler.noMessageBodyWriter(entityClass,

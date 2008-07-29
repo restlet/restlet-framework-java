@@ -29,8 +29,8 @@ import javax.ws.rs.core.Response.Status;
  * accept headers sent in the request.
  * 
  * @author Stephan Koops
- * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.4.7">RFC 2616, *
- *      Section 10.4.7, "406 Not Acceptable"< /a>
+ * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.4.7">RFC 2616,
+ *      Section 10.4.7, "406 Not Acceptable"</a>
  */
 public class NotAcceptableWebAppException extends WebApplicationException {
 

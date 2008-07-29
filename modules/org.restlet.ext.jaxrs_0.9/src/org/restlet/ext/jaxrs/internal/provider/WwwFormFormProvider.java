@@ -105,7 +105,7 @@ public class WwwFormFormProvider extends AbstractProvider<Form> {
     static Form getForm(MediaType mediaType, InputStream entityStream) {
         org.restlet.data.MediaType restletMediaType = Converter
                 .toRestletMediaType(mediaType);
-        Form form;
+        final Form form;
         form = new Form(new InputRepresentation(entityStream, restletMediaType));
         saveToThreadsRequest(form);
         return form;
@@ -115,8 +115,9 @@ public class WwwFormFormProvider extends AbstractProvider<Form> {
      * @param form
      */
     private static void saveToThreadsRequest(Form form) {
+        // TODO implement @FormParam and the EntityGetter for it
         try {
-            Field field = Message.class.getField("form");
+            Field field = Message.class.getDeclaredField("form");
             field.setAccessible(true);
             field.set(Request.getCurrent(), form);
         } catch (SecurityException e) {

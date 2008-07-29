@@ -252,7 +252,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
             throw new IllegalArgumentException(
                     "The Restlet Response must not be null");
         }
-        if (roleChecker == null) { // FIXME is this needed?
+        if (roleChecker == null) {
             throw new IllegalArgumentException(
                     "The RoleChecker must not be null.");
         }
@@ -745,15 +745,8 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * @see javax.ws.rs.core.Request#getFormParameters()
      */
     public MultivaluedMap<String, String> getFormParameters() {
-        // TODO CallContext.getFormParameters()
-        if (true)
-            throw new NotYetImplementedException();
-        if (!request.getEntity().getMediaType().equals(
-                org.restlet.data.MediaType.APPLICATION_WWW_FORM))
-            throw new IllegalStateException(
-                    "The form parameters are only available, if you used the media type \"application/x-www-form-urlencoded\"");
-        Form form = request.getEntityAsForm();
-        return UnmodifiableMultivaluedMap.getFromForm(form, false);
+        // LATER method removed in JAX-RS 0.10
+        throw new NotYetImplementedException("this meod is removed in JAX-RS 0.10");
     }
 
     /**

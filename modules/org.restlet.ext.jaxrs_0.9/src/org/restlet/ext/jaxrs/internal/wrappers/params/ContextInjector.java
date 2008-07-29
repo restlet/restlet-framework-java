@@ -271,7 +271,7 @@ public class ContextInjector {
             return providers;
         }
         if (declaringClass.equals(ContextResolver.class)) {
-            // FIXME mit ausgeben, wo der Fehler aufgetreten ist. 
+            // NICE mit ausgeben, wo der Fehler aufgetreten ist. 
             throw new IllegalTypeException("The ContextResolver is not allowed for @Context annotated fields yet. Use javax.ws.rs.ext.Providers#getContextResolver(...)");
         }
         if (declaringClass.equals(ExtensionBackwardMapping.class)) {
