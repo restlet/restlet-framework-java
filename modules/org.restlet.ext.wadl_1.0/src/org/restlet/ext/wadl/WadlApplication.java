@@ -95,12 +95,24 @@ public class WadlApplication extends Application {
      * Creates an application that can automatically introspect and expose
      * itself as with a WADL description upon reception of an OPTIONS request on
      * the "*" target URI.
-     * 
-     * @param parentContext
-     *            The parent component context.
      */
-    public WadlApplication(Context parentContext) {
-        super(parentContext);
+    public WadlApplication() {
+        this((Context) null);
+    }
+
+    /**
+     * Creates an application that can automatically introspect and expose
+     * itself as with a WADL description upon reception of an OPTIONS request on
+     * the "*" target URI.
+     * 
+     * @param context
+     *            The context to use based on parent component context. This
+     *            context should be created using the
+     *            {@link Context#createChildContext()} method to ensure a proper
+     *            isolation with the other applications.
+     */
+    public WadlApplication(Context context) {
+        super(context);
         this.autoDescribed = true;
     }
 
@@ -111,13 +123,16 @@ public class WadlApplication extends Application {
      * By default the application is not automatically described. If you want
      * to, you can call {@link #setAutoDescribed(boolean)}.
      * 
-     * @param parentContext
-     *            The parent component context.
+     * @param context
+     *            The context to use based on parent component context. This
+     *            context should be created using the
+     *            {@link Context#createChildContext()} method to ensure a proper
+     *            isolation with the other applications.
      * @param wadl
      *            The WADL description document.
      */
-    public WadlApplication(Context parentContext, Representation wadl) {
-        super(parentContext);
+    public WadlApplication(Context context, Representation wadl) {
+        super(context);
         this.autoDescribed = false;
 
         try {
@@ -147,6 +162,20 @@ public class WadlApplication extends Application {
             getLogger().log(Level.WARNING,
                     "Error during the attachment of the WADL application", e);
         }
+    }
+
+    /**
+     * Creates an application described using a WADL document. Creates a router
+     * where Resource classes are attached and set it as the root Restlet.
+     * 
+     * By default the application is not automatically described. If you want
+     * to, you can call {@link #setAutoDescribed(boolean)}.
+     * 
+     * @param wadl
+     *            The WADL description document.
+     */
+    public WadlApplication(Representation wadl) {
+        this(null, wadl);
     }
 
     /**
