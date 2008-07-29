@@ -26,7 +26,6 @@ import junit.framework.TestCase;
 import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
-import org.restlet.Context;
 import org.restlet.Directory;
 import org.restlet.Restlet;
 import org.restlet.data.LocalReference;
@@ -99,14 +98,8 @@ public class TemplateFilterTestCase extends TestCase {
 
         /**
          * Constructor.
-         * 
-         * @param context
-         *            The application's dedicated context based on the protected
-         *            parent component's context.
          */
-        public MyVelocityApplication(Context context, File testDirectory) {
-            super(context);
-
+        public MyVelocityApplication(File testDirectory) {
             setTestDirectory(testDirectory);
             // Create a Directory that manages a local directory
             this.directory = new Directory(getContext(), LocalReference
@@ -204,7 +197,7 @@ public class TemplateFilterTestCase extends TestCase {
                     this.testDir);
             // Create an application filtered with Velocity
             final MyVelocityApplication velocityApplication = new MyVelocityApplication(
-                    component.getContext(), this.testDir);
+                    this.testDir);
 
             // Attach the applications to the component and start it
             component.getDefaultHost().attach("/freemarker",

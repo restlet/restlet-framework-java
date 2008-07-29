@@ -43,7 +43,7 @@ import org.restlet.resource.Variant;
 public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
 
     private static int LOOP_NUMBER = 50;
-    
+
     /**
      * Test resource that answers to PUT requests by sending back the received
      * entity.
@@ -94,7 +94,7 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
 
     @Override
     protected Application createApplication(Component component) {
-        final Application application = new Application(component.getContext()) {
+        final Application application = new Application() {
             @Override
             public Restlet createRoot() {
                 final Router router = new Router(getContext());
@@ -102,6 +102,7 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
                 return router;
             }
         };
+
         return application;
     }
 
