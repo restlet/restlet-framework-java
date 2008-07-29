@@ -43,7 +43,7 @@ public class StreamClientHelper extends HttpClientHelper {
 
     @Override
     public HttpClientCall create(Request request) {
-        //request.getClientInfo().setAgent(Engine.VERSION_HEADER);
+        request.getClientInfo().setAgent(Engine.VERSION_HEADER);
         return new StreamClientCall(this, request);
     }
 

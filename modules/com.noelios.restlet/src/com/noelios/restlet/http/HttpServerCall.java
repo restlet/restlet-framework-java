@@ -590,8 +590,8 @@ public abstract class HttpServerCall extends HttpCall {
         headStream.write(10); // LF
 
         // We don't support persistent connections yet
-//        getResponseHeaders().set(HttpConstants.HEADER_CONNECTION, "close",
-//                isServerKeepAlive());
+        getResponseHeaders().set(HttpConstants.HEADER_CONNECTION, "close",
+                isServerKeepAlive());
 
         // Check if 'Transfer-Encoding' header should be set
         if (shouldResponseBeChunked(response)) {
