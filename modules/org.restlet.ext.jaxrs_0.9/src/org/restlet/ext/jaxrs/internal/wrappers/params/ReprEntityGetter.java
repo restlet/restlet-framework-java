@@ -202,7 +202,7 @@ public abstract class ReprEntityGetter implements ParamGetter {
                 return null;
             }
             final Representation entity = request.getEntity();
-            if (entity == null) {
+            if((entity == null)/* || (entity is not empty)*/) {
                 return null;
             }
             return createInstance(entity);

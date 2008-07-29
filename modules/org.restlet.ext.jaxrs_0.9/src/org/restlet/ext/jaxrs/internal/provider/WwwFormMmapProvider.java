@@ -35,7 +35,6 @@ import org.restlet.data.Form;
 import org.restlet.ext.jaxrs.internal.core.UnmodifiableMultivaluedMap;
 import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.ext.jaxrs.internal.util.Util;
-import org.restlet.resource.InputRepresentation;
 import org.restlet.resource.Representation;
 
 /**
@@ -60,23 +59,6 @@ public class WwwFormMmapProvider extends
     }
 
     /**
-     * @see MessageBodyReader#readFrom(Class, Type, MediaType, Annotation[],
-     *      MultivaluedMap, InputStream)
-     */
-    @Override
-    public MultivaluedMap<String, String> readFrom(
-            Class<MultivaluedMap<String, String>> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, String> httpResponseHeaders,
-            InputStream entityStream) throws IOException {
-        final org.restlet.data.MediaType restletMediaType = Converter
-                .toRestletMediaType(mediaType);
-        final Form form = new Form(new InputRepresentation(entityStream,
-                restletMediaType));
-        return UnmodifiableMultivaluedMap.getFromForm(form, false);
-    }
-
-    /**
      * @see org.restlet.ext.jaxrs.internal.provider.AbstractProvider#supportedClass()
      */
     @Override
@@ -93,8 +75,22 @@ public class WwwFormMmapProvider extends
             Type genericType, Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
-        final Form form = Converter.toForm(mmap);
-        final Representation formRepr = form.getWebRepresentation();
+        Form form = Converter.toForm(mmap);
+        Representation formRepr = form.getWebRepresentation();
         Util.copyStream(formRepr.getStream(), entityStream);
+    }
+
+    /**
+     * @see MessageBodyReader#readFrom(Class, Type, MediaType, Annotation[],
+     *      MultivaluedMap, InputStream)
+     */
+    @Override
+    public MultivaluedMap<String, String> readFrom(
+            Class<MultivaluedMap<String, String>> type, Type genericType,
+            Annotation[] annotations, MediaType mediaType,
+            MultivaluedMap<String, String> httpResponseHeaders,
+            InputStream entityStream) throws IOException {
+        Form form = WwwFormFormProvider.getForm(mediaType, entityStream);
+        return UnmodifiableMultivaluedMap.getFromForm(form, false);
     }
 }

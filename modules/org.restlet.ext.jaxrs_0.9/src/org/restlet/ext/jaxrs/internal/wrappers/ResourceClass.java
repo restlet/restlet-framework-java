@@ -35,7 +35,6 @@ import java.util.logging.Logger;
 
 import javax.ws.rs.Encoded;
 import javax.ws.rs.Path;
-import javax.ws.rs.ext.ContextResolver;
 
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalMethodParamTypeException;
@@ -44,7 +43,7 @@ import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnMethodException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.util.PathRegExp;
 import org.restlet.ext.jaxrs.internal.util.RemainingPath;
-import org.restlet.ext.jaxrs.internal.wrappers.provider.EntityProviders;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.JaxRsProviders;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.ExtensionBackwardMapping;
 
 /**
@@ -73,21 +72,21 @@ public class ResourceClass extends AbstractJaxRsWrapper {
     /**
      * The resource methods of this resource class. (It is initialized in
      * method.)
-     * {@link #initResourceMethodsAndLocators(ThreadLocalizedContext, EntityProviders, Collection, ExtensionBackwardMapping, Logger)}
+     * {@link #initResourceMethodsAndLocators(ThreadLocalizedContext, JaxRsProviders, ExtensionBackwardMapping, Logger)}
      */
     private final Collection<ResourceMethod> resourceMethods = new ArrayList<ResourceMethod>();
 
     /**
      * The resource methods and sub resource locators of this resource class.
      * (It is initialized in method.)
-     * {@link #initResourceMethodsAndLocators(ThreadLocalizedContext, EntityProviders, Collection, ExtensionBackwardMapping, Logger)}
+     * {@link #initResourceMethodsAndLocators(ThreadLocalizedContext, JaxRsProviders, ExtensionBackwardMapping, Logger)}
      */
     private final Collection<ResourceMethodOrLocator> resourceMethodsAndLocators = new ArrayList<ResourceMethodOrLocator>();
 
     /**
      * The sub resource locators of this resource class. (It is initialized in
      * method.)
-     * {@link #initResourceMethodsAndLocators(ThreadLocalizedContext, EntityProviders, Collection, ExtensionBackwardMapping, Logger)}
+     * {@link #initResourceMethodsAndLocators(ThreadLocalizedContext, JaxRsProviders, ExtensionBackwardMapping, Logger)}
      */
     private final Collection<SubResourceLocator> subResourceLocators = new ArrayList<SubResourceLocator>();
 
@@ -97,30 +96,28 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * 
      * @param jaxRsClass
      * @param tlContext
-     *            the {@link ThreadLocalizedContext} of the
-     *            {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
-     * @param entityProviders
-     *            all entity providers
-     * @param allCtxResolvers
-     *            all ContextResolvers
+     *                the {@link ThreadLocalizedContext} of the
+     *                {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
+     * @param jaxRsProviders
+     *                all entity providers
      * @param extensionBackwardMapping
-     *            the extension backward mapping
+     *                the extension backward mapping
      * @param logger
-     *            The logger to log warnings, if the class is not valid.
+     *                The logger to log warnings, if the class is not valid.
      * @throws MissingAnnotationException
      * @throws IllegalArgumentException
      * @see WrapperFactory#getResourceClass(Class)
      */
     ResourceClass(Class<?> jaxRsClass, ThreadLocalizedContext tlContext,
-            EntityProviders entityProviders,
-            Collection<ContextResolver<?>> allCtxResolvers,
-            ExtensionBackwardMapping extensionBackwardMapping, Logger logger)
+            JaxRsProviders jaxRsProviders,
+            ExtensionBackwardMapping extensionBackwardMapping,
+            Logger logger)
             throws IllegalArgumentException, MissingAnnotationException {
         super();
         this.leaveEncoded = jaxRsClass.isAnnotationPresent(Encoded.class);
         this.jaxRsClass = jaxRsClass;
-        initResourceMethodsAndLocators(tlContext, entityProviders,
-                allCtxResolvers, extensionBackwardMapping, logger);
+        initResourceMethodsAndLocators(tlContext, jaxRsProviders,
+                extensionBackwardMapping, logger);
     }
 
     /**
@@ -128,35 +125,32 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * 
      * @param jaxRsClass
      * @param tlContext
-     *            the {@link ThreadLocalizedContext} of the
-     *            {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
-     * @param entityProviders
-     *            all entity providers
-     * @param allCtxResolvers
-     *            all ContextResolvers
+     *                the {@link ThreadLocalizedContext} of the
+     *                {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
+     * @param jaxRsProviders
+     *                all entity providers
      * @param extensionBackwardMapping
-     *            the extension backward mapping
+     *                the extension backward mapping
      * @param logger
      * @param sameLogger
-     *            the subclass RootResourceClass must call this constructor.
-     *            This Object is ignored.
+     *                the subclass RootResourceClass must call this constructor.
+     *                This Object is ignored.
      * @throws IllegalArgumentException
      * @throws IllegalPathOnClassException
      * @throws MissingAnnotationException
-     *             if &#64;{@link Path} is missing on the jaxRsClass
+     *                 if &#64;{@link Path} is missing on the jaxRsClass
      * @see WrapperFactory#getResourceClass(Class)
      */
     protected ResourceClass(Class<?> jaxRsClass,
-            ThreadLocalizedContext tlContext, EntityProviders entityProviders,
-            Collection<ContextResolver<?>> allCtxResolvers,
-            ExtensionBackwardMapping extensionBackwardMapping, Logger logger,
-            Logger sameLogger) throws IllegalArgumentException,
+            ThreadLocalizedContext tlContext, JaxRsProviders jaxRsProviders,
+            ExtensionBackwardMapping extensionBackwardMapping,
+            Logger logger, @SuppressWarnings("unused") Logger sameLogger) throws IllegalArgumentException,
             IllegalPathOnClassException, MissingAnnotationException {
         super(PathRegExp.createForClass(jaxRsClass));
         this.leaveEncoded = jaxRsClass.isAnnotationPresent(Encoded.class);
         this.jaxRsClass = jaxRsClass;
-        initResourceMethodsAndLocators(tlContext, entityProviders,
-                allCtxResolvers, extensionBackwardMapping, logger);
+        this.initResourceMethodsAndLocators(tlContext, jaxRsProviders,
+                extensionBackwardMapping, logger);
     }
 
     /**
@@ -228,7 +222,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * found one. This would be returned.
      * 
      * @param javaMethod
-     *            The java method to look for annotations
+     *                The java method to look for annotations
      * @return the founded method, or null, if no method with annotations was
      *         found. Returns also null, if null was given.
      */
@@ -270,9 +264,9 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * given class.
      * 
      * @param clazz
-     *            The Class to look for the method.
+     *                The Class to look for the method.
      * @param subClassMethod
-     *            the Method to look for it's signature in the given class.
+     *                the Method to look for it's signature in the given class.
      * @return the method in the given class, with the same signature as given
      *         method, or null if such method is not available. Returns also
      *         null, if the given class is null.
@@ -295,9 +289,9 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * consumed or produced mimes and so on.
      * 
      * @param resourceObject
-     *            The resource object
+     *                The resource object
      * @param remainingPath
-     *            the path
+     *                the path
      * @return The ist of ResourceMethods
      */
     public Collection<ResourceMethod> getMethodsForPath(
@@ -362,11 +356,11 @@ public class ResourceClass extends AbstractJaxRsWrapper {
     }
 
     private void initResourceMethodsAndLocators(
-            ThreadLocalizedContext tlContext, EntityProviders entityProviders,
-            Collection<ContextResolver<?>> allCtxResolvers,
-            ExtensionBackwardMapping extensionBackwardMapping, Logger logger)
+            ThreadLocalizedContext tlContext, JaxRsProviders jaxRsProviders,
+            ExtensionBackwardMapping extensionBackwardMapping,
+            Logger logger)
             throws IllegalArgumentException, MissingAnnotationException {
-        for (final Method execMethod : this.jaxRsClass.getMethods()) {
+        for (final Method execMethod : jaxRsClass.getMethods()) {
             final Method annotatedMethod = getAnnotatedJavaMethod(execMethod);
             if (annotatedMethod == null) {
                 continue;
@@ -383,8 +377,8 @@ public class ResourceClass extends AbstractJaxRsWrapper {
                     try {
                         subResMeth = new ResourceMethod(execMethod,
                                 annotatedMethod, this, httpMethod, tlContext,
-                                entityProviders, allCtxResolvers,
-                                extensionBackwardMapping, logger);
+                                jaxRsProviders, extensionBackwardMapping,
+                                logger);
                     } catch (final IllegalMethodParamTypeException e) {
                         Logger.getAnonymousLogger().log(
                                 Level.WARNING,
@@ -405,8 +399,8 @@ public class ResourceClass extends AbstractJaxRsWrapper {
                         try {
                             subResLoc = new SubResourceLocator(execMethod,
                                     annotatedMethod, this, tlContext,
-                                    entityProviders, allCtxResolvers,
-                                    extensionBackwardMapping, logger);
+                                    jaxRsProviders, extensionBackwardMapping,
+                                    logger);
                         } catch (final IllegalMethodParamTypeException e) {
                             Logger.getAnonymousLogger().log(
                                     Level.WARNING,

@@ -35,6 +35,25 @@ import org.restlet.data.Response;
  */
 public class RestletServerWrapper implements ServerWrapper {
 
+    /**
+     * @author Stephan
+     *
+     */
+    private final class ClientConnector extends Client {
+        /**
+         * @param protocol
+         */
+        private ClientConnector(Protocol protocol) {
+            super(protocol);
+        }
+
+        @Override
+        public void handle(Request request, Response response) {
+            request.setOriginalRef(request.getResourceRef());
+            super.handle(request, response);
+        }
+    }
+
     private Component component;
 
     public RestletServerWrapper() {
@@ -44,13 +63,7 @@ public class RestletServerWrapper implements ServerWrapper {
      * @see org.restlet.test.jaxrs.server.ServerWrapper#getClientConnector()
      */
     public Restlet getClientConnector() {
-        return new Client(Protocol.HTTP) {
-            @Override
-            public void handle(Request request, Response response) {
-                request.setOriginalRef(request.getResourceRef());
-                super.handle(request, response);
-            }
-        };
+        return new ClientConnector(Protocol.HTTP);
     }
 
     public int getServerPort() {

@@ -81,7 +81,7 @@ public class WrapperClassesTests extends TestCase {
     }
 
     private static final WrapperFactory wrapperFactory = new WrapperFactory(
-            new ThreadLocalizedContext(), null, null, null, Logger
+            new ThreadLocalizedContext(), null, null, Logger
                     .getAnonymousLogger());
 
     public void testIllegalMethodPath() throws Exception {

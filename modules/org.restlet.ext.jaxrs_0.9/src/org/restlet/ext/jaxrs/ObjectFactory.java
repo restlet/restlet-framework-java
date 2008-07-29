@@ -45,7 +45,7 @@ public interface ObjectFactory {
      * 
      * @param <T>
      * @param jaxRsClass
-     *            the root resource class or provider class.
+     *                the root resource class or provider class.
      * @return The created instance.
      * @throws InstantiateException
      */
@@ -53,6 +53,6 @@ public interface ObjectFactory {
     // TODO move InstantiateException from package internal to another package
     // if more exceptions should be used public, perhaps own package for Except.
 
-    // TODO if a resource class is a singelton, it must be ensured, that it
+    // LATER if a resource class is a singelton, it must be ensured, that it
     // has no @*Param on fields and perhaps bean setters.
 }

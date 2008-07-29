@@ -24,9 +24,11 @@ import java.util.logging.Logger;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.Providers;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -37,13 +39,12 @@ import javax.xml.bind.Unmarshaller;
  */
 abstract class AbstractJaxbProvider<T> extends AbstractProvider<T> {
 
-    @Context
     ContextResolver<JAXBContext> contextResolver;
 
     private JAXBContext getJaxbContext(Class<?> type) throws JAXBException {
         // NICE perhaps caching the JAXBContext
         final JAXBContext jaxbContext = this.contextResolver.getContext(type);
-        if (jaxbContext != null) {
+        if(jaxbContext != null) {
             return jaxbContext;
         }
         try {
@@ -53,9 +54,9 @@ abstract class AbstractJaxbProvider<T> extends AbstractProvider<T> {
                     e.getMessage()).build());
         }
     }
-
+    
     abstract Logger getLogger();
-
+    
     /**
      * @see MessageBodyWriter#getSize(Object)
      */
@@ -86,5 +87,11 @@ abstract class AbstractJaxbProvider<T> extends AbstractProvider<T> {
             final String message = "Could not unmarshal to " + type.getName();
             throw logAndIOExc(getLogger(), message, e);
         }
+    }
+
+    @Context
+    void setContextResolver(Providers providers) {
+        // REQUEST Benutzung ist mir noch nicht ganz klar.
+        this.contextResolver = providers.getContextResolver(JAXBContext.class, Object.class, MediaType.APPLICATION_XML_TYPE);
     }
 }

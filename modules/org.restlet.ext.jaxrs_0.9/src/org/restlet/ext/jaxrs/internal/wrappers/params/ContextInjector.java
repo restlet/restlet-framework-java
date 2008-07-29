@@ -17,7 +17,6 @@
  */
 package org.restlet.ext.jaxrs.internal.wrappers.params;
 
-import static org.restlet.ext.jaxrs.internal.wrappers.WrapperUtil.getContextResolver;
 import static org.restlet.ext.jaxrs.internal.wrappers.WrapperUtil.isBeanSetter;
 
 import java.lang.reflect.AccessibleObject;
@@ -26,7 +25,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -254,8 +252,7 @@ public class ContextInjector {
      *            {@link UriInfo}
      * @param genericType
      * @param tlContext
-     * @param mbWorkers
-     * @param allCtxResolvers
+     * @param providers
      * @param extensionBackwardMapping
      * @param aim
      * @return
@@ -265,16 +262,17 @@ public class ContextInjector {
      * @throws ImplementationException
      *             the declaringClass must not be {@link UriInfo}
      */
+    @SuppressWarnings("unused") // LODO remove genericType, if not needed
     static Object getInjectObject(Class<?> declaringClass, Type genericType,
-            ThreadLocalizedContext tlContext, Providers mbWorkers,
-            Collection<ContextResolver<?>> allCtxResolvers,
+            ThreadLocalizedContext tlContext, Providers providers,
             ExtensionBackwardMapping extensionBackwardMapping)
             throws IllegalTypeException, ImplementationException {
         if (declaringClass.equals(Providers.class)) {
-            return mbWorkers;
+            return providers;
         }
         if (declaringClass.equals(ContextResolver.class)) {
-            return getContextResolver(genericType, allCtxResolvers);
+            // FIXME mit ausgeben, wo der Fehler aufgetreten ist. 
+            throw new IllegalTypeException("The ContextResolver is not allowed for @Context annotated fields yet. Use javax.ws.rs.ext.Providers#getContextResolver(...)");
         }
         if (declaringClass.equals(ExtensionBackwardMapping.class)) {
             return extensionBackwardMapping;
@@ -305,8 +303,7 @@ public class ContextInjector {
      * @param genericType
      * @param aim
      * @param tlContext
-     * @param mbWorkers
-     * @param allResolvers
+     * @param allProviders
      * @param extensionBackwardMapping
      * @return
      * @throws IllegalTypeException
@@ -315,15 +312,14 @@ public class ContextInjector {
      */
     static Injector getInjector(Class<?> declaringClass, Type genericType,
             InjectionAim aim, ThreadLocalizedContext tlContext,
-            Providers mbWorkers, Collection<ContextResolver<?>> allResolvers,
+            Providers allProviders,
             ExtensionBackwardMapping extensionBackwardMapping)
             throws IllegalTypeException {
         if (declaringClass.equals(UriInfo.class)) {
             return new UriInfoInjector(aim, tlContext);
         } else {
             return new EverSameInjector(aim, getInjectObject(declaringClass,
-                    genericType, tlContext, mbWorkers, allResolvers,
-                    extensionBackwardMapping));
+                    genericType, tlContext, allProviders, extensionBackwardMapping));
         }
     }
 
@@ -341,8 +337,11 @@ public class ContextInjector {
      * @param tlContext
      * @param mbWorkers
      *            all entity providers.
+<<<<<<< .mine
+=======
      * @param allResolvers
      *            all available {@link ContextResolver}s.
+>>>>>>> .r3440
      * @param extensionBackwardMapping
      *            the extension backward mapping
      * @throws IllegalBeanSetterTypeException
@@ -356,11 +355,9 @@ public class ContextInjector {
      */
     public ContextInjector(Class<?> jaxRsClass,
             ThreadLocalizedContext tlContext, Providers mbWorkers,
-            Collection<ContextResolver<?>> allResolvers,
             ExtensionBackwardMapping extensionBackwardMapping)
             throws IllegalFieldTypeException, IllegalBeanSetterTypeException {
-        init(jaxRsClass, tlContext, mbWorkers, allResolvers,
-                extensionBackwardMapping);
+        this.init(jaxRsClass, tlContext, mbWorkers, extensionBackwardMapping);
     }
 
     protected void add(AccessibleObject fieldOrBeanSetter,
@@ -371,16 +368,19 @@ public class ContextInjector {
 
     /**
      * initiates the fields to cache the fields that needs injection.
-     * 
      * @param tlContext
      *            the {@link ThreadLocalizedContext} of the
      *            {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
-     * @param mbWorkers
+     * @param allProviders
      *            all entity providers.
+<<<<<<< .mine
+=======
      * @param allResolvers
      *            all available {@link ContextResolver}s.
+>>>>>>> .r3440
      * @param extensionBackwardMapping
      *            the extension backward mapping
+     * 
      * @throws IllegalFieldTypeException
      *             if one of the fields annotated with &#64;{@link Context} has
      *             a type that must not be annotated with &#64;{@link Context}.
@@ -390,7 +390,7 @@ public class ContextInjector {
      *             &#64;{@link Context}.
      */
     private void init(Class<?> jaxRsClass, ThreadLocalizedContext tlContext,
-            Providers mbWorkers, Collection<ContextResolver<?>> allResolvers,
+            Providers allProviders,
             ExtensionBackwardMapping extensionBackwardMapping)
             throws IllegalFieldTypeException, IllegalBeanSetterTypeException {
         do {
@@ -401,8 +401,8 @@ public class ContextInjector {
                         final Class<?> declaringClass = field.getType();
                         final Type genericType = field.getGenericType();
                         final Injector injector = getInjector(declaringClass,
-                                genericType, aim, tlContext, mbWorkers,
-                                allResolvers, extensionBackwardMapping);
+                                genericType, aim, tlContext, allProviders,
+                                extensionBackwardMapping);
                         this.injEverSameAims.add(injector);
                     }
                 }
@@ -420,8 +420,8 @@ public class ContextInjector {
                         final Type genericType = method
                                 .getGenericParameterTypes()[0];
                         final Injector injector = getInjector(paramClass,
-                                genericType, aim, tlContext, mbWorkers,
-                                allResolvers, extensionBackwardMapping);
+                                genericType, aim, tlContext, allProviders,
+                                extensionBackwardMapping);
                         this.injEverSameAims.add(injector);
                     }
                 }

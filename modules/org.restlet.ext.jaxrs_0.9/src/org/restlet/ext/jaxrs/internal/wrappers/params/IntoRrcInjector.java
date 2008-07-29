@@ -23,7 +23,6 @@ import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.Collection;
 
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.DefaultValue;
@@ -32,7 +31,6 @@ import javax.ws.rs.HeaderParam;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Providers;
 
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
@@ -59,19 +57,21 @@ public class IntoRrcInjector extends ContextInjector {
      * @param leaveClassEncoded
      * @param mbWorkers
      *            all entity providers.
+<<<<<<< .mine
+=======
      * @param allResolvers
      *            all available {@link ContextResolver}s.
+>>>>>>> .r3440
      * @param extensionBackwardMapping
      * @throws IllegalBeanSetterTypeException
      * @throws IllegalFieldTypeException
      */
     public IntoRrcInjector(Class<?> jaxRsClass,
             ThreadLocalizedContext tlContext, boolean leaveClassEncoded,
-            Providers mbWorkers, Collection<ContextResolver<?>> allResolvers,
+            Providers mbWorkers,
             ExtensionBackwardMapping extensionBackwardMapping)
             throws IllegalFieldTypeException, IllegalBeanSetterTypeException {
-        super(jaxRsClass, tlContext, mbWorkers, allResolvers,
-                extensionBackwardMapping);
+        super(jaxRsClass, tlContext, mbWorkers, extensionBackwardMapping);
         init(jaxRsClass, tlContext, leaveClassEncoded);
     }
 

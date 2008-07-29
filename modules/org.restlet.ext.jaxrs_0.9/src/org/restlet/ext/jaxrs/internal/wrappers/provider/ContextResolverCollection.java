@@ -25,24 +25,25 @@ import javax.ws.rs.ext.ContextResolver;
  * Collection, if multiple context resolvers are possible for injection.
  * 
  * @author Stephan Koops
+ * @param <T> 
  */
-public class ContextResolverCollection implements ContextResolver<Object> {
+public class ContextResolverCollection<T> implements ContextResolver<T> {
 
-    private final Collection<ContextResolver<?>> resolvers;
+    private final Collection<ContextResolver<T>> resolvers;
 
     /**
      * @param resolvers
      */
-    public ContextResolverCollection(Collection<ContextResolver<?>> resolvers) {
+    public ContextResolverCollection(Collection<ContextResolver<T>> resolvers) {
         this.resolvers = resolvers;
     }
 
     /**
      * @see javax.ws.rs.ext.ContextResolver#getContext(java.lang.Class)
      */
-    public Object getContext(Class<?> type) {
-        for (final ContextResolver<?> cr : this.resolvers) {
-            final Object context = cr.getContext(type);
+    public T getContext(Class<?> type) {
+        for (final ContextResolver<T> cr : this.resolvers) {
+            final T context = cr.getContext(type);
             if (context != null) {
                 return context;
             }

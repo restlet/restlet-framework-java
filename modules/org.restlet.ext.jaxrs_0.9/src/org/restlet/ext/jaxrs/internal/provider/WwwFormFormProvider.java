@@ -21,7 +21,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Type;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
@@ -30,6 +33,8 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
 
 import org.restlet.data.Form;
+import org.restlet.data.Message;
+import org.restlet.data.Request;
 import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.resource.InputRepresentation;
@@ -49,26 +54,14 @@ import org.restlet.resource.Representation;
 @Produces(MediaType.APPLICATION_FORM_URLENCODED)
 public class WwwFormFormProvider extends AbstractProvider<Form> {
 
+    private static Logger logger = Logger.getLogger("WwwFormFormProvider");
+
     /**
      * @see AbstractProvider#getSize(java.lang.Object)
      */
     @Override
     public long getSize(Form form) {
         return -1;
-    }
-
-    /**
-     * @see AbstractProvider#readFrom(Class, Type, Annotation[], MediaType,
-     *      MultivaluedMap, InputStream)
-     */
-    @Override
-    public Form readFrom(Class<Form> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, String> httpResponseHeaders,
-            InputStream entityStream) throws IOException {
-        final org.restlet.data.MediaType restletMediaType = Converter
-                .toRestletMediaType(mediaType);
-        return new Form(new InputRepresentation(entityStream, restletMediaType));
     }
 
     /**
@@ -88,7 +81,56 @@ public class WwwFormFormProvider extends AbstractProvider<Form> {
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
-        final Representation formRepr = form.getWebRepresentation();
+        Representation formRepr = form.getWebRepresentation();
         Util.copyStream(formRepr.getStream(), entityStream);
+    }
+
+    /**
+     * @see AbstractProvider#readFrom(Class, Type, Annotation[], MediaType,
+     *      MultivaluedMap, InputStream)
+     */
+    @Override
+    public Form readFrom(Class<Form> type, Type genericType,
+            Annotation[] annotations, MediaType mediaType,
+            MultivaluedMap<String, String> httpResponseHeaders,
+            InputStream entityStream) throws IOException {
+        return getForm(mediaType, entityStream);
+    }
+
+    /**
+     * @param mediaType
+     * @param entityStream
+     * @return
+     */
+    static Form getForm(MediaType mediaType, InputStream entityStream) {
+        org.restlet.data.MediaType restletMediaType = Converter
+                .toRestletMediaType(mediaType);
+        Form form;
+        form = new Form(new InputRepresentation(entityStream, restletMediaType));
+        saveToThreadsRequest(form);
+        return form;
+    }
+
+    /**
+     * @param form
+     */
+    private static void saveToThreadsRequest(Form form) {
+        try {
+            Field field = Message.class.getField("form");
+            field.setAccessible(true);
+            field.set(Request.getCurrent(), form);
+        } catch (SecurityException e) {
+            logger.log(Level.WARNING,
+                    "Could not put the Form into the Restlet request", e);
+        } catch (IllegalArgumentException e) {
+            logger.log(Level.WARNING,
+                    "Could not put the Form into the Restlet request", e);
+        } catch (NoSuchFieldException e) {
+            logger.log(Level.WARNING,
+                    "Could not put the Form into the Restlet request", e);
+        } catch (IllegalAccessException e) {
+            logger.log(Level.WARNING,
+                    "Could not put the Form into the Restlet request", e);
+        }
     }
 }

@@ -57,14 +57,14 @@ public class PathRegExp {
      * Creates a {@link PathRegExp} for a root resource class.
      * 
      * @param rrc
-     *            the JAX-RS root resource class
+     *                the JAX-RS root resource class
      * @return the PathRegExp from the given root resource class
      * @throws MissingAnnotationException
-     *             if the {@link Path} annotation is missing.
+     *                 if the {@link Path} annotation is missing.
      * @throws IllegalPathOnClassException
-     *             if the {@link Path} annotation is not valid.
+     *                 if the {@link Path} annotation is not valid.
      * @throws IllegalArgumentException
-     *             if the rrc is null.
+     *                 if the rrc is null.
      * @see {@link #EMPTY}
      */
     public static PathRegExp createForClass(Class<?> rrc)
@@ -85,19 +85,18 @@ public class PathRegExp {
      * @param annotatedMethod
      * @return the {@link PathRegExp}. Never returns null.
      * @throws IllegalPathOnMethodException
-     *             tif the annotation on the method is invalid.
+     *                 tif the annotation on the method is invalid.
      * @throws IllegalArgumentException
-     *             if the method is null.
+     *                 if the method is null.
      */
     public static PathRegExp createForMethod(Method annotatedMethod)
             throws IllegalPathOnMethodException, IllegalArgumentException {
-        final Path pathAnnotation = Util
-                .getPathAnnotationOrNull(annotatedMethod);
-        if (pathAnnotation == null) {
+        final Path pathAnno = Util.getPathAnnotationOrNull(annotatedMethod);
+        if (pathAnno == null) {
             return EMPTY;
         }
         try {
-            return new PathRegExp(pathAnnotation);
+            return new PathRegExp(pathAnno);
         } catch (final IllegalPathException e) {
             throw new IllegalPathOnMethodException(e);
         }
@@ -109,12 +108,13 @@ public class PathRegExp {
      * @param path
      * @return
      * @throws IllegalPathException
-     *             if the found {@link Path} is invalid.
+     *                 if the found {@link Path} is invalid.
      * @throws IllegalArgumentException
-     *             if the path is null.
+     *                 if the path is null.
      */
     private static String getPathPattern(Path path)
             throws IllegalArgumentException, IllegalPathException {
+        // TODO the @Path could include reg exps
         if (path == null) {
             throw new IllegalArgumentException("The path must not be null");
         }
@@ -259,8 +259,7 @@ public class PathRegExp {
         if (pathSuppl) {
             givenPath += '/';
         }
-        final boolean matches = this.template.parse(givenPath,
-                (Map) templateVars) >= 0;
+        boolean matches = template.parse(givenPath, (Map) templateVars) >= 0;
         if (!matches) {
             return null;
         }

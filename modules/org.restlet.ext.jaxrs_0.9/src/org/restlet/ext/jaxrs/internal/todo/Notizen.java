@@ -27,8 +27,14 @@ public class Notizen {
     // REQUEST javadoc of attribute setters of CacheControl does not ease it to
     // use the class
 
-    // REQUEST perhaps document in UriInfo.getPathSegments(), that ever all
-    // path segments are returned.
+    // REQUEST (check before) what to do, if an ExceptionMapper throws an
+    // Exception. I think rethrow (easy to implement the wished rethrow)
+
+    // REQUEST darf ein ExceptionMapper null zurückgeben? Könnte man als
+    // Indikator verwenden, die Exception weiterzugeben
+
+    // REQUEST could the implementation see, what is required to add
+    // after precondition evaluating into the ResponseBuilder
 
     // LATER @Path(limited=false) effects only trailing values; implement when
     // @Path template matching is ready

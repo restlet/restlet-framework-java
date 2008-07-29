@@ -20,6 +20,10 @@ package org.restlet.test.jaxrs.server;
 import org.restlet.Application;
 import org.restlet.Restlet;
 import org.restlet.data.Protocol;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
+import org.restlet.data.Status;
+import org.restlet.ext.jaxrs.internal.exceptions.JaxRsRuntimeException;
 
 /**
  * This class allows easy testing of JAX-RS implementations by starting a server
@@ -48,9 +52,20 @@ public class DirectServerWrapper implements ServerWrapper {
                 "Uses direct access, so you can access the port");
     }
 
-    public void startServer(Application application, Protocol protocol)
+    public void startServer(final Application application, Protocol protocol)
             throws Exception {
-        this.connector = application;
+        this.connector = new Restlet()
+        {
+            @Override
+            public void handle(Request request, Response response)
+            {
+                try {
+                    application.handle(request, response);
+                } catch (JaxRsRuntimeException e) {
+                    response.setStatus(Status.SERVER_ERROR_INTERNAL);
+                }
+            }
+        };
     }
 
     public void stopServer() throws Exception {

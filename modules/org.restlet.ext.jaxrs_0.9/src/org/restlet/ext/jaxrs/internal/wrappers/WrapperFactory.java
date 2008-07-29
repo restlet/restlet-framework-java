@@ -17,12 +17,9 @@
  */
 package org.restlet.ext.jaxrs.internal.wrappers;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
-
-import javax.ws.rs.ext.ContextResolver;
 
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalBeanSetterTypeException;
@@ -31,8 +28,8 @@ import org.restlet.ext.jaxrs.internal.exceptions.IllegalFieldTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingConstructorException;
-import org.restlet.ext.jaxrs.internal.wrappers.provider.EntityProviders;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.ExtensionBackwardMapping;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.JaxRsProviders;
 
 /**
  * A WrapperFactory creates and caches some of the wrapper objects.
@@ -41,9 +38,7 @@ import org.restlet.ext.jaxrs.internal.wrappers.provider.ExtensionBackwardMapping
  */
 public class WrapperFactory {
 
-    private final Collection<ContextResolver<?>> allCtxResolvers;
-
-    private final EntityProviders entityProviders;
+    private final JaxRsProviders jaxRsProviders;
 
     private final ExtensionBackwardMapping extensionBackwardMapping;
 
@@ -57,20 +52,18 @@ public class WrapperFactory {
      * @param tlContext
      *            the {@link ThreadLocalizedContext} of the
      *            {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
-     * @param entityProviders
-     * @param allCtxResolvers
+     * @param jaxRsProviders
      * @param extensionBackwardMapping
      *            the extension backward mapping
      * @param logger
      *            the to log warnings and so on
      */
     public WrapperFactory(ThreadLocalizedContext tlContext,
-            EntityProviders entityProviders,
-            Collection<ContextResolver<?>> allCtxResolvers,
-            ExtensionBackwardMapping extensionBackwardMapping, Logger logger) {
+            JaxRsProviders jaxRsProviders,
+            ExtensionBackwardMapping extensionBackwardMapping,
+            Logger logger) {
         this.tlContext = tlContext;
-        this.entityProviders = entityProviders;
-        this.allCtxResolvers = allCtxResolvers;
+        this.jaxRsProviders = jaxRsProviders;
         this.extensionBackwardMapping = extensionBackwardMapping;
         this.logger = logger;
     }
@@ -92,7 +85,7 @@ public class WrapperFactory {
         }
         if (rc == null) {
             rc = new ResourceClass(jaxRsResourceClass, this.tlContext,
-                    this.entityProviders, this.allCtxResolvers,
+                    this.jaxRsProviders,
                     this.extensionBackwardMapping, this.logger);
             synchronized (this.resourceClasses) {
                 this.resourceClasses.put(jaxRsResourceClass, rc);
@@ -113,17 +106,15 @@ public class WrapperFactory {
      * @throws IllegalPathOnClassException
      * @throws MissingConstructorException
      *             if no valid constructor could be found.
-     * @throws IllegalBeanSetterTypeException
-     * @throws IllegalFieldTypeException
-     * @throws IllegalConstrParamTypeException
+     * @throws IllegalBeanSetterTypeException 
+     * @throws IllegalFieldTypeException 
+     * @throws IllegalConstrParamTypeException 
      */
     public RootResourceClass getRootResourceClass(
             Class<?> jaxRsRootResourceClass) throws IllegalArgumentException,
             MissingAnnotationException, IllegalPathOnClassException,
-            MissingConstructorException, IllegalConstrParamTypeException,
-            IllegalFieldTypeException, IllegalBeanSetterTypeException {
+            MissingConstructorException, IllegalConstrParamTypeException, IllegalFieldTypeException, IllegalBeanSetterTypeException {
         return new RootResourceClass(jaxRsRootResourceClass, this.tlContext,
-                this.entityProviders, this.allCtxResolvers,
-                this.extensionBackwardMapping, this.logger);
+                this.jaxRsProviders, this.extensionBackwardMapping, this.logger);
     }
 }

@@ -100,7 +100,7 @@ public abstract class RestletServerTestCase extends TestCase {
      * 
      * @see #setServerWrapperFactory(ServerWrapperFactory)
      */
-    private static boolean useTcp = false;
+    private static boolean useTcp = true;
 
     /**
      * Adds the given media types to the accepted media types.

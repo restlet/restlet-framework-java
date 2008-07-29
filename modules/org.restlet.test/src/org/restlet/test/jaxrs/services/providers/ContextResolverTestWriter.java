@@ -30,6 +30,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
+import javax.ws.rs.ext.Providers;
 
 import org.restlet.test.jaxrs.services.others.Person;
 
@@ -41,6 +42,11 @@ import org.restlet.test.jaxrs.services.others.Person;
 public class ContextResolverTestWriter implements MessageBodyWriter<Person> {
 
     @Context
+    void setProviders(Providers providers) {
+        this.contextResolver = providers.getContextResolver(
+                BaseUriContext.class, Object.class, MediaType.TEXT_HTML_TYPE);
+    }
+
     private ContextResolver<BaseUriContext> contextResolver;
 
     /**

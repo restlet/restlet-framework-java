@@ -184,6 +184,7 @@ public class JaxRsUriBuilder extends UriBuilder {
      */
     @Override
     public URI build() throws UriBuilderException {
+        // TODO Methode kann raus
         final Template template = new Template(toStringWithCheck(false));
         return buildUri(template.format(NO_VAR_RESOLVER));
     }
@@ -343,7 +344,7 @@ public class JaxRsUriBuilder extends UriBuilder {
      * @see UriInfo#getConnegExtension()
      * @see javax.ws.rs.core.UriBuilder#extension(java.lang.String)
      */
-    @Override
+    @Override // TODO Methode gelöscht aus API
     public UriBuilder extension(String extension) {
         final StringBuilder path = getPath();
         final int lastPathSt = path.lastIndexOf("/");

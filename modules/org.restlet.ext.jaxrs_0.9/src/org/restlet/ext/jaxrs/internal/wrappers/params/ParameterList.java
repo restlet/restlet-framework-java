@@ -48,7 +48,6 @@ import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Response.ResponseBuilder;
-import javax.ws.rs.ext.ContextResolver;
 
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
@@ -69,7 +68,7 @@ import org.restlet.ext.jaxrs.internal.todo.NotYetImplementedException;
 import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.ext.jaxrs.internal.wrappers.WrapperUtil;
-import org.restlet.ext.jaxrs.internal.wrappers.provider.EntityProviders;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.JaxRsProviders;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.ExtensionBackwardMapping;
 import org.restlet.resource.Representation;
 import org.restlet.util.Series;
@@ -538,6 +537,7 @@ public class ParameterList {
      * &#64;{@link QueryParam}).
      */
     abstract static class NoEncParamGetter extends AbstractParamGetter {
+        // TODO support @FormParam
 
         /**
          * @param annoSaysLeaveEncoded
@@ -779,8 +779,7 @@ public class ParameterList {
      * @param paramAnnoss
      * @param tlContext
      * @param leaveAllEncoded
-     * @param entityProviders
-     * @param allCtxResolvers
+     * @param jaxRsProviders
      * @param extensionBackwardMapping
      * @param paramsAllowed
      *            true, if &#64;*Params are allowed as parameter, otherwise
@@ -798,11 +797,10 @@ public class ParameterList {
      */
     private ParameterList(Class<?>[] parameterTypes, Type[] genParamTypes,
             Annotation[][] paramAnnoss, ThreadLocalizedContext tlContext,
-            boolean leaveAllEncoded, EntityProviders entityProviders,
-            Collection<ContextResolver<?>> allCtxResolvers,
+            boolean leaveAllEncoded, JaxRsProviders jaxRsProviders,
             ExtensionBackwardMapping extensionBackwardMapping,
-            boolean paramsAllowed, boolean entityAllowed, Logger logger,
-            boolean allMustBeAvailable) throws MissingAnnotationException,
+            boolean paramsAllowed,
+            boolean entityAllowed, Logger logger, boolean allMustBeAvailable) throws MissingAnnotationException,
             IllegalTypeException {
         this.paramCount = parameterTypes.length;
         this.parameters = new ParamGetter[this.paramCount];
@@ -819,8 +817,8 @@ public class ParameterList {
                 } else {
                     this.parameters[i] = new ContextHolder(ContextInjector
                             .getInjectObject(parameterType, genParamType,
-                                    tlContext, entityProviders,
-                                    allCtxResolvers, extensionBackwardMapping));
+                                    tlContext, jaxRsProviders,
+                                    extensionBackwardMapping));
                 }
                 continue;
             }
@@ -882,8 +880,8 @@ public class ParameterList {
                         genParamType, logger);
             }
             if (this.parameters[i] == null) {
-                this.parameters[i] = new EntityGetter(parameterType,
-                        genParamType, tlContext, entityProviders, paramAnnos);
+                this.parameters[i] = new EntityGetter(parameterType, genParamType,
+                        tlContext, jaxRsProviders, paramAnnos);
             }
             entityAlreadyRead = true;
         }
@@ -893,8 +891,7 @@ public class ParameterList {
      * @param constr
      * @param tlContext
      * @param leaveEncoded
-     * @param entityProviders
-     * @param allCtxResolvers
+     * @param jaxRsProviders
      * @param extensionBackwardMapping
      * @param paramsAllowed
      * @param logger
@@ -906,15 +903,15 @@ public class ParameterList {
      */
     public ParameterList(Constructor<?> constr,
             ThreadLocalizedContext tlContext, boolean leaveEncoded,
-            EntityProviders entityProviders,
-            Collection<ContextResolver<?>> allCtxResolvers,
+            JaxRsProviders jaxRsProviders,
             ExtensionBackwardMapping extensionBackwardMapping,
-            boolean paramsAllowed, Logger logger, boolean allMustBeAvailable)
+            boolean paramsAllowed,
+            Logger logger, boolean allMustBeAvailable)
             throws MissingAnnotationException, IllegalTypeException {
         this(constr.getParameterTypes(), constr.getGenericParameterTypes(),
                 constr.getParameterAnnotations(), tlContext, leaveEncoded,
-                entityProviders, allCtxResolvers, extensionBackwardMapping,
-                paramsAllowed, false, logger, allMustBeAvailable);
+                jaxRsProviders, extensionBackwardMapping, paramsAllowed,
+                false, logger, allMustBeAvailable);
     }
 
     /**
@@ -922,8 +919,7 @@ public class ParameterList {
      * @param annotatedMethod
      * @param tlContext
      * @param leaveEncoded
-     * @param entityProviders
-     * @param allCtxResolvers
+     * @param jaxRsProviders
      * @param extensionBackwardMapping
      * @param entityAllowed
      * @param logger
@@ -934,16 +930,16 @@ public class ParameterList {
      */
     public ParameterList(Method executeMethod, Method annotatedMethod,
             ThreadLocalizedContext tlContext, boolean leaveEncoded,
-            EntityProviders entityProviders,
-            Collection<ContextResolver<?>> allCtxResolvers,
+            JaxRsProviders jaxRsProviders,
             ExtensionBackwardMapping extensionBackwardMapping,
-            boolean entityAllowed, Logger logger)
+            boolean entityAllowed,
+            Logger logger)
             throws MissingAnnotationException, IllegalTypeException {
         this(executeMethod.getParameterTypes(), executeMethod
                 .getGenericParameterTypes(), annotatedMethod
                 .getParameterAnnotations(), tlContext, leaveEncoded,
-                entityProviders, allCtxResolvers, extensionBackwardMapping,
-                true, entityAllowed, logger, true);
+                jaxRsProviders, extensionBackwardMapping, true,
+                entityAllowed, logger, true);
     }
 
     /**

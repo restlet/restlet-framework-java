@@ -26,6 +26,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ContextResolver;
@@ -43,7 +44,11 @@ public class ContextsTestService {
     @Context
     Providers messageBodyWorkers;
 
-    @Context
+    void setProviders(Providers providers) {
+        this.contextResolver = providers.getContextResolver(Integer.class,
+                Object.class, MediaType.WILDCARD_TYPE);
+    }
+
     ContextResolver<Integer> contextResolver;
 
     @Context
@@ -83,10 +88,9 @@ public class ContextsTestService {
     @Produces("text/plain")
     @Path("params")
     public String getResources(@Context UriInfo uriInfo,
-            @Context Providers messageBodyWorkers,
-            @Context ContextResolver<Integer> contextResolver) {
+            @Context Providers providers) {
         final StringBuilder stb = new StringBuilder();
-        if (messageBodyWorkers != null) {
+        if (providers != null) {
             stb.append("messageBodyWorkers\n");
         }
         if (contextResolver != null) {

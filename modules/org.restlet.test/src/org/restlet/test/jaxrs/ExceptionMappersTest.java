@@ -34,7 +34,8 @@ import javax.ws.rs.core.Response.Status;
 import junit.framework.TestCase;
 
 import org.restlet.ext.jaxrs.internal.core.MultivaluedMapImpl;
-import org.restlet.ext.jaxrs.internal.wrappers.provider.ExceptionMappers;
+import org.restlet.ext.jaxrs.internal.exceptions.JaxRsRuntimeException;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.JaxRsProviders;
 import org.restlet.test.jaxrs.services.providers.IllegalArgExcMapper;
 
 /**
@@ -84,7 +85,7 @@ public class ExceptionMappersTest extends TestCase {
     private static final int INTERNAL_SERVER_ERROR = Status.INTERNAL_SERVER_ERROR
             .getStatusCode();
 
-    private ExceptionMappers exceptionMappers;
+    private JaxRsProviders exceptionMappers;
 
     /**
      * @param exc
@@ -102,7 +103,7 @@ public class ExceptionMappersTest extends TestCase {
         super.setUp();
         final IllegalArgExcMapper illegalArgExcMapper = new IllegalArgExcMapper();
         illegalArgExcMapper.httpHeaders = new TestHttpHeaders();
-        this.exceptionMappers = new ExceptionMappers();
+        this.exceptionMappers = new JaxRsProviders();
         this.exceptionMappers.add(illegalArgExcMapper);
     }
 
@@ -113,10 +114,14 @@ public class ExceptionMappersTest extends TestCase {
     }
 
     public void testIoe() throws Exception {
-        final Response r = convert(new IOException(
-                "This exception is planned for testing !"));
-        assertNotNull(r);
-        assertEquals(INTERNAL_SERVER_ERROR, r.getStatus());
+        IOException ioException = new IOException(
+                "This exception is planned for testing !");
+        try {
+            convert(ioException);
+            fail("must throw an wrapper exception");
+        } catch (JaxRsRuntimeException e) {
+            assertEquals(ioException, e.getCause());
+        }
     }
 
     public void testNfe() throws Exception {
