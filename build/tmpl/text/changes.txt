@@ -89,9 +89,9 @@ Changes log
           Sponsored by NetDev Ltd (http://www.netdev.co.uk).
         - The Apache HTTP Client extension can now have a retry handler
           parameter set. Suggested by Sanjay Acharya.
-        - Added a "sslContextFactory" parameter to HTTPS connector to 
-          improve the flexibility of SSL configuration. If this 
-          parameter isn't set, the previous parameters are used 
+        - Added a "sslContextFactory" parameter and attribute to HTTPS 
+          connectors to improve the flexibility of SSL configuration. If
+          this parameter isn't set, the previous parameters are used 
           instead. Contributed by Bruno Harbulot.
         - Exceptions occuring while writing the response entities are 
           now reported as severe errors instead of just info messages.
@@ -103,7 +103,9 @@ Changes log
         - Added a port of Restlet to GWT. This is a subset of the 
           Restlet API and Engine, mostly the client side working on top
           of GWT 1.5 RC1.
-        - Slightly refactored and documented OAuth extension. 
+        - Slightly refactored and documented OAuth extension.
+        - Renamed the "org.restlet.ssl.hostnameVerifier" attribute into
+          just "hostnameVerifier" for consistency with existing naming. 
     - Misc
         - Refactored WAR client to remove remaining class in NRE core.
 

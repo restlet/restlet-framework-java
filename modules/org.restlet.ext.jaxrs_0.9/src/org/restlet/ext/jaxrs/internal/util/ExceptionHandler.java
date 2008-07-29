@@ -211,7 +211,7 @@ public class ExceptionHandler {
      * @return staticly to throw, if needed by compiler.
      */
     public WebApplicationException noMessageBodyWriter(Class<?> entityClass,
-            Type genericType, @SuppressWarnings("unused") Annotation[] annotations) {
+            Type genericType, Annotation[] annotations) {
         this.logger.warning("No message body writer found for class "
                 + entityClass + ", genericType " + genericType);
         // LATER log also annotations
