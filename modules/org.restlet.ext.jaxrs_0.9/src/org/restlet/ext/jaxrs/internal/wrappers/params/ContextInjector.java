@@ -261,8 +261,9 @@ public class ContextInjector {
      *             {@link Context}.
      * @throws ImplementationException
      *             the declaringClass must not be {@link UriInfo}
+     * 
+     *             TODO remove genericType, if not needed
      */
-    @SuppressWarnings("unused") // TODO remove genericType, if not needed
     static Object getInjectObject(Class<?> declaringClass, Type genericType,
             ThreadLocalizedContext tlContext, Providers providers,
             ExtensionBackwardMapping extensionBackwardMapping)
@@ -271,8 +272,9 @@ public class ContextInjector {
             return providers;
         }
         if (declaringClass.equals(ContextResolver.class)) {
-            // NICE mit ausgeben, wo der Fehler aufgetreten ist. 
-            throw new IllegalTypeException("The ContextResolver is not allowed for @Context annotated fields yet. Use javax.ws.rs.ext.Providers#getContextResolver(...)");
+            // NICE mit ausgeben, wo der Fehler aufgetreten ist.
+            throw new IllegalTypeException(
+                    "The ContextResolver is not allowed for @Context annotated fields yet. Use javax.ws.rs.ext.Providers#getContextResolver(...)");
         }
         if (declaringClass.equals(ExtensionBackwardMapping.class)) {
             return extensionBackwardMapping;
@@ -319,7 +321,8 @@ public class ContextInjector {
             return new UriInfoInjector(aim, tlContext);
         } else {
             return new EverSameInjector(aim, getInjectObject(declaringClass,
-                    genericType, tlContext, allProviders, extensionBackwardMapping));
+                    genericType, tlContext, allProviders,
+                    extensionBackwardMapping));
         }
     }
 
@@ -336,12 +339,9 @@ public class ContextInjector {
      * @param jaxRsClass
      * @param tlContext
      * @param mbWorkers
-     *            all entity providers.
-<<<<<<< .mine
-=======
+     *            all entity providers. <<<<<<< .mine =======
      * @param allResolvers
-     *            all available {@link ContextResolver}s.
->>>>>>> .r3440
+     *            all available {@link ContextResolver}s. >>>>>>> .r3440
      * @param extensionBackwardMapping
      *            the extension backward mapping
      * @throws IllegalBeanSetterTypeException
@@ -368,6 +368,7 @@ public class ContextInjector {
 
     /**
      * initiates the fields to cache the fields that needs injection.
+     * 
      * @param tlContext
      *            the {@link ThreadLocalizedContext} of the
      *            {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
