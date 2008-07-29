@@ -31,8 +31,11 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
+import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
-import javax.xml.namespace.QName;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.stream.StreamSource;
 
 import org.restlet.ext.jaxrs.internal.exceptions.ImplementationException;
 import org.restlet.ext.jaxrs.internal.util.Util;
@@ -96,10 +99,15 @@ public class JaxbElementProvider extends AbstractJaxbProvider<JAXBElement<?>> {
             throw new ImplementationException(
                     "The JaxbElement provider has gotten a type it could not unmarshal. Perhaps is the JaxbElementProvider not consistent to itself.");
         }
-        final QName qName = new QName("testQName"); 
-        // REQUESTED QName for JAXBElement?
-        final Object value = unmarshal(clazz, entityStream);
-        return new JAXBElement(qName, clazz, value);
+        try {
+            final JAXBContext jaxbContext = getJaxbContext(clazz);
+            final Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+            JAXBElement<?> je = unmarshaller.unmarshal(new StreamSource(entityStream), type);
+            return je;
+        } catch (final JAXBException e) {
+            final String message = "Could not unmarshal to " + type.getName();
+            throw logAndIOExc(getLogger(), message, e);
+        }
     }
 
     /**

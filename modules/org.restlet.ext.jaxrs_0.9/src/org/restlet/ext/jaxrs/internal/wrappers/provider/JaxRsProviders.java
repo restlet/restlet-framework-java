@@ -335,16 +335,17 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
     @SuppressWarnings("unchecked")
     public <T> ContextResolver<T> getContextResolver(Class<T> contextType,
             Class<?> objectType, javax.ws.rs.core.MediaType mediaType) {
-        List<ContextResolver<T>> returnResolvers = new ArrayList<ContextResolver<T>>();
         for (ContextResolver<?> cr : this.contextResolvers) {
             Class<?> crClaz = cr.getClass();
             Class<?> genClass = getCtxResGenClass(crClaz);
             if (genClass == null || !genClass.equals(contextType))
                 continue;
+            // TODO check media type; but which?
             try {
                 Method getContext = crClaz.getMethod("getContext", Class.class);
-                if (getContext.getReturnType().equals(contextType))
-                    returnResolvers.add((ContextResolver) cr);
+                if (getContext.getReturnType().equals(contextType)) {
+                    return (ContextResolver) cr;
+                }
             } catch (SecurityException e) {
                 throw new RuntimeException(
                         "sorry, the method getContext(Class) of ContextResolver "
@@ -356,11 +357,7 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
                                 + " is not valid, because it has no method getContext(Class)");
             }
         }
-        if (returnResolvers.isEmpty())
-            return ReturnNullContextResolver.get();
-        if (returnResolvers.size() == 1)
-            return returnResolvers.get(0);
-        return new ContextResolverCollection<T>(returnResolvers);
+        return ReturnNullContextResolver.get();
     }
 
     /**

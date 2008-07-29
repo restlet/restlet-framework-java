@@ -18,7 +18,6 @@
 package org.restlet.ext.jaxrs.internal.provider;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.logging.Logger;
 
@@ -32,16 +31,15 @@ import javax.ws.rs.ext.Providers;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 
 /**
  * @author Stephan Koops
  */
 abstract class AbstractJaxbProvider<T> extends AbstractProvider<T> {
 
-    ContextResolver<JAXBContext> contextResolver;
+    public ContextResolver<JAXBContext> contextResolver;
 
-    private JAXBContext getJaxbContext(Class<?> type) throws JAXBException {
+    protected JAXBContext getJaxbContext(Class<?> type) throws JAXBException {
         // NICE perhaps caching the JAXBContext
         final JAXBContext jaxbContext = this.contextResolver.getContext(type);
         if(jaxbContext != null) {
@@ -77,21 +75,8 @@ abstract class AbstractJaxbProvider<T> extends AbstractProvider<T> {
         }
     }
 
-    Object unmarshal(Class<?> type, InputStream entityStream)
-            throws IOException {
-        try {
-            final JAXBContext jaxbContext = getJaxbContext(type);
-            final Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
-            return unmarshaller.unmarshal(entityStream);
-        } catch (final JAXBException e) {
-            final String message = "Could not unmarshal to " + type.getName();
-            throw logAndIOExc(getLogger(), message, e);
-        }
-    }
-
     @Context
     void setContextResolver(Providers providers) {
-        // REQUEST Benutzung ist mir noch nicht ganz klar.
         this.contextResolver = providers.getContextResolver(JAXBContext.class, Object.class, MediaType.APPLICATION_XML_TYPE);
     }
 }

@@ -214,7 +214,7 @@ public class ExceptionHandler {
             Type genericType, Annotation[] annotations) {
         this.logger.warning("No message body writer found for class "
                 + entityClass + ", genericType " + genericType);
-        // LATER log also annotations
+        annotations.toString(); // LATER log also annotations
         // NICE get as parameters the accMediaTypes and the entityClass.
         // and return supported MediaTypes as entity
         throw new WebApplicationException(Status.NOT_ACCEPTABLE);

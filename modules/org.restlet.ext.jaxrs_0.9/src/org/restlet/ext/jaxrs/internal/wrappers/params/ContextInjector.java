@@ -436,8 +436,8 @@ public class ContextInjector {
      */
     public void injectInto(Object jaxRsResObj, boolean allMustBeAvailable)
             throws InjectException, InvocationTargetException {
-        for (final Injector contextResolverAim : this.injEverSameAims) {
-            contextResolverAim.injectInto(jaxRsResObj, allMustBeAvailable);
+        for (final Injector injectAim : this.injEverSameAims) {
+            injectAim.injectInto(jaxRsResObj, allMustBeAvailable);
         }
     }
 }

@@ -31,6 +31,9 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -72,7 +75,14 @@ public class JaxbProvider extends AbstractJaxbProvider<Object> {
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
-        return unmarshal(type, entityStream);
+        try {
+            final JAXBContext jaxbContext = getJaxbContext(type);
+            final Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+            return unmarshaller.unmarshal(entityStream);
+        } catch (final JAXBException e) {
+            final String message = "Could not unmarshal to " + type.getName();
+            throw logAndIOExc(getLogger(), message, e);
+        }
     }
 
     /**

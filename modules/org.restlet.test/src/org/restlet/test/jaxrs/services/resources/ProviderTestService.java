@@ -36,7 +36,9 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import javax.xml.transform.Source;
@@ -220,7 +222,29 @@ public class ProviderTestService {
     @Consumes( { "text/xml", "application/xml" })
     @Produces("text/plain")
     public String jaxbPost(JAXBElement<Person> person) {
+        if (person == null) {
+            throw new WebApplicationException(Response.serverError().entity(
+                    "the JAXBElement is null").build());
+        }
+        if (person.getValue() == null) {
+            return null;
+        }
         return person.getValue().toString();
+    }
+
+    @POST
+    @Path("jaxbElement/rootElement")
+    @Consumes( { "text/xml", "application/xml" })
+    @Produces("text/plain")
+    public String jaxbPostRootElement(JAXBElement<Person> person) {
+        if (person == null) {
+            throw new WebApplicationException(Response.serverError().entity(
+                    "the JAXBElement is null").build());
+        }
+        if (person.getValue() == null) {
+            return null;
+        }
+        return person.getName().toString();
     }
 
     @POST
