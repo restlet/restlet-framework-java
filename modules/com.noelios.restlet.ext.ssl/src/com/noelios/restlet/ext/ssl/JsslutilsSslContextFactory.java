@@ -21,6 +21,9 @@ import javax.net.ssl.SSLContext;
 
 import jsslutils.sslcontext.SSLContextFactory;
 
+import org.restlet.data.Parameter;
+import org.restlet.util.Series;
+
 import com.noelios.restlet.util.SslContextFactory;
 
 /**
@@ -29,7 +32,7 @@ import com.noelios.restlet.util.SslContextFactory;
  * 
  * @author Bruno Harbulot (Bruno.Harbulot@manchester.ac.uk)
  */
-public class JsslutilsSslContextFactory implements SslContextFactory {
+public class JsslutilsSslContextFactory extends SslContextFactory {
     /**
      * The wrapped SSLContextFactory.
      */
@@ -54,6 +57,7 @@ public class JsslutilsSslContextFactory implements SslContextFactory {
      * 
      * @see SSLContextFactory#buildSSLContext()
      */
+    @Override
     public SSLContext createSslContext() throws Exception {
         return this.sslContextFactory.buildSSLContext();
     }
@@ -65,5 +69,9 @@ public class JsslutilsSslContextFactory implements SslContextFactory {
      */
     public SSLContextFactory getSslContextFactory() {
         return this.sslContextFactory;
+    }
+
+    @Override
+    public void init(Series<Parameter> parameters) {
     }
 }

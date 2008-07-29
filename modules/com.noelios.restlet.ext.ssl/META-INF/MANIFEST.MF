@@ -10,5 +10,10 @@ Export-Package: com.noelios.restlet.ext.ssl;
    jsslutils.sslcontext.trustmanagers"
 Import-Package: com.noelios.restlet.util,
  jsslutils.sslcontext,
- jsslutils.sslcontext.trustmanagers
+ jsslutils.sslcontext.trustmanagers,
+ org.restlet,
+ org.restlet.data,
+ org.restlet.resource,
+ org.restlet.service,
+ org.restlet.util
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
