@@ -38,6 +38,7 @@ import java.util.logging.Logger;
 import javax.ws.rs.CookieParam;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.Encoded;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.PathParam;
@@ -387,8 +388,8 @@ public class ParameterList {
 
         /**
          * @param annoSaysLeaveClassEncoded
-         *            to check if the annotation is available, but should not
-         *            be.
+         *                to check if the annotation is available, but should
+         *                not be.
          */
         CookieParamGetter(CookieParam cookieParam, DefaultValue defaultValue,
                 Class<?> convToCl, Type convToGen,
@@ -445,8 +446,8 @@ public class ParameterList {
 
     /**
      * Abstract super class for access to the entity or to &#64;*Param where
-     * encoded is allowed (&#64;{@link PathParam}, &#64;{@link MatrixParam} and
-     * &#64;{@link QueryParam}).
+     * encoded is allowed (&#64;{@link PathParam}, &#64;{@link MatrixParam}
+     * and &#64;{@link QueryParam}).
      */
     abstract static class EncParamGetter extends AbstractParamGetter {
 
@@ -471,7 +472,7 @@ public class ParameterList {
 
         /**
          * @param annoSaysLeaveClassEncoded
-         *            to check if the annotation is available.
+         *                to check if the annotation is available.
          */
         HeaderParamGetter(HeaderParam headerParam, DefaultValue defaultValue,
                 Class<?> convToCl, Type paramGenericType,
@@ -533,15 +534,14 @@ public class ParameterList {
 
     /**
      * Abstract super class for access to the entity or to &#64;*Param where
-     * encoded is allowed (&#64;{@link PathParam}, &#64;{@link MatrixParam} and
-     * &#64;{@link QueryParam}).
+     * encoded is allowed (&#64;{@link PathParam}, &#64;{@link MatrixParam}
+     * and &#64;{@link QueryParam}).
      */
     abstract static class NoEncParamGetter extends AbstractParamGetter {
-        // TODO support @FormParam
 
         /**
          * @param annoSaysLeaveEncoded
-         *            to check if the annotation is available.
+         *                to check if the annotation is available.
          */
         NoEncParamGetter(DefaultValue defaultValue, Class<?> convToCl,
                 Type convToGen, ThreadLocalizedContext tlContext,
@@ -626,7 +626,7 @@ public class ParameterList {
         }
     }
 
-    static class QueryParamGetter extends EncParamGetter {
+    static class QueryParamGetter extends FormOrQueryParamGetter {
 
         private final QueryParam queryParam;
 
@@ -643,14 +643,33 @@ public class ParameterList {
                     .getResourceRef();
             final String queryString = resourceRef.getQuery();
             final Form form = Converter.toFormEncoded(queryString, localLogger);
-            // NICE cache Form
             final String paramName = this.queryParam.value();
+            return super.getParamValue(form, paramName);
+        }
+    }
+
+    static abstract class FormOrQueryParamGetter extends EncParamGetter {
+
+        FormOrQueryParamGetter(DefaultValue defaultValue, Class<?> convToCl,
+                Type convToGen, ThreadLocalizedContext tlContext,
+                boolean leaveEncoded) {
+            super(defaultValue, convToCl, convToGen, tlContext, leaveEncoded);
+        }
+
+        /**
+         * @param form
+         * @param paramName
+         * @return
+         * @throws ConvertQueryParamException
+         */
+        Object getParamValue(final Form form, final String paramName)
+                throws ConvertQueryParamException {
             final List<Parameter> parameters = form.subList(paramName);
             try {
                 if (this.collType == null) { // no collection parameter
-                    final Parameter firstQueryParam = form.getFirst(paramName);
+                    final Parameter firstFormParam = form.getFirst(paramName);
                     final String queryParamValue = WrapperUtil
-                            .getValue(firstQueryParam);
+                            .getValue(firstFormParam);
                     return convertParamValue(queryParamValue);
                 }
                 ParamValueIter queryParamValueIter;
@@ -662,9 +681,28 @@ public class ParameterList {
         }
     }
 
+    static class FormParamGetter extends FormOrQueryParamGetter {
+
+        private final FormParam formParam;
+
+        FormParamGetter(FormParam formParam, DefaultValue defaultValue,
+                Class<?> convToCl, Type convToGen,
+                ThreadLocalizedContext tlContext, boolean leaveEncoded) {
+            super(defaultValue, convToCl, convToGen, tlContext, leaveEncoded);
+            this.formParam = formParam;
+        }
+
+        @Override
+        public Object getParamValue() {
+            final Form form = this.tlContext.get().getRequest()
+                    .getEntityAsForm();
+            final String paramName = this.formParam.value();
+            return super.getParamValue(form, paramName);
+        }
+    }
+
     /**
-     * @author Stephan
-     * 
+     * @author Stephan Koops
      */
     private static class UriInfoGetter implements ParamGetter {
 
@@ -774,6 +812,12 @@ public class ParameterList {
     private final ParamGetter[] parameters;
 
     /**
+     * must call the {@link EntityGetter} first, if &#64;{@link FormParam} is
+     * used. A value less than zero means, that no special handling is needed.
+     */
+    private final int entityPosition;
+
+    /**
      * @param parameterTypes
      * @param genParamTypes
      * @param paramAnnoss
@@ -782,29 +826,31 @@ public class ParameterList {
      * @param jaxRsProviders
      * @param extensionBackwardMapping
      * @param paramsAllowed
-     *            true, if &#64;*Params are allowed as parameter, otherwise
-     *            false.
+     *                true, if &#64;*Params are allowed as parameter, otherwise
+     *                false.
      * @param entityAllowed
-     *            true, if the entity is allowed as parameter, otherwise false.
+     *                true, if the entity is allowed as parameter, otherwise
+     *                false.
      * @param logger
      * @param allMustBeAvailable
-     *            if true, all values must be available (for singeltons creation
-     *            it must be false)
+     *                if true, all values must be available (for singeltons
+     *                creation it must be false)
      * @throws MissingAnnotationException
      * @throws IllegalTypeException
-     *             if the given class is not valid to be annotated with &#64;
-     *             {@link Context}.
+     *                 if the given class is not valid to be annotated with
+     *                 &#64; {@link Context}.
      */
     private ParameterList(Class<?>[] parameterTypes, Type[] genParamTypes,
             Annotation[][] paramAnnoss, ThreadLocalizedContext tlContext,
             boolean leaveAllEncoded, JaxRsProviders jaxRsProviders,
             ExtensionBackwardMapping extensionBackwardMapping,
-            boolean paramsAllowed,
-            boolean entityAllowed, Logger logger, boolean allMustBeAvailable) throws MissingAnnotationException,
+            boolean paramsAllowed, boolean entityAllowed, Logger logger,
+            boolean allMustBeAvailable) throws MissingAnnotationException,
             IllegalTypeException {
         this.paramCount = parameterTypes.length;
         this.parameters = new ParamGetter[this.paramCount];
         boolean entityAlreadyRead = false;
+        int entityPosition = -1;
         for (int i = 0; i < this.paramCount; i++) {
             final Class<?> parameterType = parameterTypes[i];
             final Type genParamType = genParamTypes[i];
@@ -835,6 +881,7 @@ public class ParameterList {
                 final PathParam pathParam = getAnno(paramAnnos, PathParam.class);
                 final QueryParam queryParam = getAnno(paramAnnos,
                         QueryParam.class);
+                final FormParam formParam = getAnno(paramAnnos, FormParam.class);
                 if (pathParam != null) {
                     this.parameters[i] = new PathParamGetter(pathParam,
                             defValue, parameterType, genParamType, tlContext,
@@ -860,6 +907,11 @@ public class ParameterList {
                             defValue, parameterType, genParamType, tlContext,
                             leaveAllEncoded || leaveThisEncoded);
                     continue;
+                } else if (formParam != null) {
+                    this.parameters[i] = new FormParamGetter(formParam,
+                            defValue, parameterType, genParamType, tlContext,
+                            leaveAllEncoded || leaveThisEncoded);
+                    continue;
                 }
             }
             // could only be the entity here
@@ -880,11 +932,13 @@ public class ParameterList {
                         genParamType, logger);
             }
             if (this.parameters[i] == null) {
-                this.parameters[i] = new EntityGetter(parameterType, genParamType,
-                        tlContext, jaxRsProviders, paramAnnos);
+                this.parameters[i] = new EntityGetter(parameterType,
+                        genParamType, tlContext, jaxRsProviders, paramAnnos);
             }
+            entityPosition = i;
             entityAlreadyRead = true;
         }
+        this.entityPosition = entityPosition;
     }
 
     /**
@@ -898,20 +952,19 @@ public class ParameterList {
      * @param allMustBeAvailable
      * @throws MissingAnnotationException
      * @throws IllegalTypeException
-     *             if one of the parameters contains a &#64;{@link Context} on
-     *             an type that must not be annotated with &#64;{@link Context}.
+     *                 if one of the parameters contains a &#64;{@link Context}
+     *                 on an type that must not be annotated with &#64;{@link Context}.
      */
     public ParameterList(Constructor<?> constr,
             ThreadLocalizedContext tlContext, boolean leaveEncoded,
             JaxRsProviders jaxRsProviders,
             ExtensionBackwardMapping extensionBackwardMapping,
-            boolean paramsAllowed,
-            Logger logger, boolean allMustBeAvailable)
+            boolean paramsAllowed, Logger logger, boolean allMustBeAvailable)
             throws MissingAnnotationException, IllegalTypeException {
         this(constr.getParameterTypes(), constr.getGenericParameterTypes(),
                 constr.getParameterAnnotations(), tlContext, leaveEncoded,
-                jaxRsProviders, extensionBackwardMapping, paramsAllowed,
-                false, logger, allMustBeAvailable);
+                jaxRsProviders, extensionBackwardMapping, paramsAllowed, false,
+                logger, allMustBeAvailable);
     }
 
     /**
@@ -925,21 +978,20 @@ public class ParameterList {
      * @param logger
      * @throws MissingAnnotationException
      * @throws IllegalTypeException
-     *             if one of the parameters contains a &#64;{@link Context} on
-     *             an type that must not be annotated with &#64;{@link Context}.
+     *                 if one of the parameters contains a &#64;{@link Context}
+     *                 on an type that must not be annotated with &#64;{@link Context}.
      */
     public ParameterList(Method executeMethod, Method annotatedMethod,
             ThreadLocalizedContext tlContext, boolean leaveEncoded,
             JaxRsProviders jaxRsProviders,
             ExtensionBackwardMapping extensionBackwardMapping,
-            boolean entityAllowed,
-            Logger logger)
+            boolean entityAllowed, Logger logger)
             throws MissingAnnotationException, IllegalTypeException {
         this(executeMethod.getParameterTypes(), executeMethod
                 .getGenericParameterTypes(), annotatedMethod
                 .getParameterAnnotations(), tlContext, leaveEncoded,
-                jaxRsProviders, extensionBackwardMapping, true,
-                entityAllowed, logger, true);
+                jaxRsProviders, extensionBackwardMapping, true, entityAllowed,
+                logger, true);
     }
 
     /**
@@ -953,8 +1005,13 @@ public class ParameterList {
     public Object[] get() throws ConvertRepresentationException,
             InvocationTargetException, WebApplicationException {
         final Object[] args = new Object[this.parameters.length];
+        if (this.entityPosition >= 0) {
+            args[entityPosition] = this.parameters[entityPosition].getValue();
+        }
         for (int i = 0; i < this.paramCount; i++) {
-            args[i] = this.parameters[i].getValue();
+            if (i != this.entityPosition) {
+                args[i] = this.parameters[i].getValue();
+            }
         }
         return args;
     }

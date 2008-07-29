@@ -38,6 +38,7 @@ public class AllServiceTests extends TestCase {
         mySuite.addTestSuite(CookieParamTest.class);
         mySuite.addTestSuite(DeterminingMediaTypeTest.class);
         mySuite.addTestSuite(ExcMapperTest.class);
+        mySuite.addTestSuite(FormTest.class);
         mySuite.addTestSuite(GenericTypeTestCase.class);
         mySuite.addTestSuite(HeadOptionsTest.class);
         mySuite.addTestSuite(HttpHeaderTest.class);

@@ -262,6 +262,7 @@ public class ContextInjector {
      * @throws ImplementationException
      *             the declaringClass must not be {@link UriInfo}
      */
+    @SuppressWarnings("unused") // TODO remove genericType, if not needed
     static Object getInjectObject(Class<?> declaringClass, Type genericType,
             ThreadLocalizedContext tlContext, Providers providers,
             ExtensionBackwardMapping extensionBackwardMapping)

@@ -17,14 +17,16 @@
  */
 package org.restlet.test.jaxrs.services.tests;
 
+import java.io.IOException;
+
+import org.restlet.data.Form;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.test.jaxrs.services.resources.AncestorTestService;
 import org.restlet.test.jaxrs.services.resources.FormTestResource;
 
 /**
  * @author Stephan Koops
- * @see AncestorTestService
+ * @see FormTestResource
  */
 public class FormTest extends JaxRsTestCase {
 
@@ -33,90 +35,45 @@ public class FormTest extends JaxRsTestCase {
         return FormTestResource.class;
     }
 
-    public void testGet() throws Exception {
-        Response response = get();
-        sysOutEntityIfError(response);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEquals("0\n0", response.getEntity().getText());
+    public void testFormOnly() throws IOException {
+        check("formOnly");
     }
 
-    public void testUri() throws Exception {
-        Response response = get("uris");
-        sysOutEntityIfError(response);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEquals("1\n/ancestorTest", response.getEntity().getText());
+    public void testFormAndParam() throws IOException {
+        check("formAndParam");
     }
 
-    public void testResourceClassNames() throws Exception {
-        Response response = get("resourceClassNames");
-        sysOutEntityIfError(response);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEquals(
-                "1\norg.restlet.test.jaxrs.services.resources.AncestorTestService",
-                response.getEntity().getText());
+    /** @see FormTestResource#paramOnly(String, String) */
+    public void testParamOnly() throws IOException {
+        check("paramOnly");
+    }
+
+    public void testParamAndForm() throws IOException {
+        check("paramAndForm");
     }
 
     /**
-     * @see AncestorTestService#getUriInfoAttribute(javax.ws.rs.core.UriInfo,
-     *      String)
+     * @param subPath
+     * @throws IOException
      */
-    public void testUriInfos() throws Exception {
-        Response response404 = get("uriInfo/abc");
-        assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response404.getStatus());
-
-        Response response = get("uriInfo/ancestorResourceURIs");
+    private void check(String subPath) throws IOException {
+        Form form = new Form();
+        form.add("a", "b");
+        Response response = post(subPath, form.getWebRepresentation());
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        String entity = response.getEntity().getText();
-        String expected = "[]\n[/ancestorTest]";
-        System.out.println("expected:\n"+expected+"\ngot:\n"+entity);
-        assertEquals(expected, entity);
-    }
+        assertEquals("a -> b\n", response.getEntity().getText());
 
-    /**
-     * @see AncestorTestService#getUriInfoAttribute(javax.ws.rs.core.UriInfo,
-     *      String)
-     */
-    public void testUriInfosSub() throws Exception {
-        Response response404 = get("sub/uriInfo/abc");
-        assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response404.getStatus());
-
-        Response response = get("sub/uriInfo/ancestorResourceURIs");
+        form.add("c", "d");
+        response = post(subPath, form.getWebRepresentation());
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        String entity = response.getEntity().getText();
-        String expected = "[]\n[/ancestorTest/sub, /ancestorTest]";
-        System.out.println("expected:\n"+expected+"\ngot:\n"+entity);
-        assertEquals(expected, entity);
-    }
+        assertEquals("a -> b\nc -> d\n", response.getEntity().getText());
 
-    public void testGetSub() throws Exception {
-        Response response = get("sub");
+        form.add("c", "d");
+        response = post(subPath, form.getWebRepresentation());
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEquals("1\n1", response.getEntity().getText());
-    }
-
-    public void testGetSubSub() throws Exception {
-        Response response = get("sub/sub");
-        sysOutEntityIfError(response);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEquals("2\n2", response.getEntity().getText());
-    }
-
-    public void testGetSubSameSub() throws Exception {
-        Response response = get("sub/sameSub");
-        sysOutEntityIfError(response);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEquals("2\n2", response.getEntity().getText());
-    }
-
-    public void testSameSubSubUri() throws Exception {
-        Response response = get("sameSub/sub/uris");
-        sysOutEntityIfError(response);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEquals(
-                "3\n/ancestorTest/sameSub/sub\n/ancestorTest/sameSub\n/ancestorTest",
-                response.getEntity().getText());
+        assertEquals("a -> b\nc -> d\nc -> d\n", response.getEntity().getText());
     }
 }

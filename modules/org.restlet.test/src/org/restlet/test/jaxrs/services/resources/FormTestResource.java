@@ -17,9 +17,18 @@
  */
 package org.restlet.test.jaxrs.services.resources;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.TreeSet;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Request;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriInfo;
 
 /**
@@ -28,11 +37,86 @@ import javax.ws.rs.core.UriInfo;
  * @see UriInfo#getAncestorResources()
  * @see UriInfo#getAncestorResourceURIs()
  */
-@Path("ancestorTest")
+@Path("formTest")
 public class FormTestResource {
 
-    public Object getByRequest(@Context Request request) {
-        return "";
-        // TODO FormTestResource
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.TEXT_PLAIN)
+    @Path("formOnly")
+    @POST
+    public Object formOnly(final MultivaluedMap<String, String> form) {
+        return new StreamingOutput() {
+            public void write(OutputStream out) throws IOException {
+                for (final String key : new TreeSet<String>(form.keySet())) {
+                    for (final String value : form.get(key)) {
+                        out.write(key.getBytes());
+                        out.write(" -> ".getBytes());
+                        out.write(value.getBytes());
+                        out.write('\n');
+                    }
+                }
+            }
+        };
+    }
+
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.TEXT_PLAIN)
+    @Path("paramOnly")
+    @POST
+    public Object paramOnly(@FormParam("a")
+    String a, @FormParam("b")
+    String b) {
+        return "a -> " + a + "\nb -> " + b + "\n";
+    }
+
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.TEXT_PLAIN)
+    @Path("formAndParam")
+    @POST
+    public Object formAndParam(final MultivaluedMap<String, String> form,
+            @FormParam("a")
+            final String a) {
+        return new StreamingOutput() {
+            public void write(OutputStream out) throws IOException {
+                out.write("a -> ".getBytes());
+                out.write(a.getBytes());
+                out.write('\n');
+                for (final String key : new TreeSet<String>(form.keySet())) {
+                    if (!key.equals("a")) {
+                        for (final String value : form.get(key)) {
+                            out.write(key.getBytes());
+                            out.write(" -> ".getBytes());
+                            out.write(value.getBytes());
+                            out.write('\n');
+                        }
+                    }
+                }
+            }
+        };
+    }
+
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.TEXT_PLAIN)
+    @Path("paramAndForm")
+    @POST
+    public Object paramAndForm(@FormParam("a")
+    final String a, final MultivaluedMap<String, String> form) {
+        return new StreamingOutput() {
+            public void write(OutputStream out) throws IOException {
+                out.write("a -> ".getBytes());
+                out.write(a.getBytes());
+                out.write('\n');
+                for (final String key : new TreeSet<String>(form.keySet())) {
+                    if (!key.equals("a")) {
+                        for (final String value : form.get(key)) {
+                            out.write(key.getBytes());
+                            out.write(" -> ".getBytes());
+                            out.write(value.getBytes());
+                            out.write('\n');
+                        }
+                    }
+                }
+            }
+        };
     }
 }
