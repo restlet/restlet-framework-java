@@ -210,12 +210,16 @@ public class TunnelFilter extends Filter {
 
             // Tunnel the request method
             final Method method = request.getMethod();
-            if (tunnelService.isMethodTunnel() && method.equals(Method.POST)) {
+            if (tunnelService.isMethodTunnel()) {
                 final String methodName = query.getFirstValue(tunnelService
                         .getMethodParameter());
 
-                if (methodName != null) {
-                    request.setMethod(Method.valueOf(methodName));
+                Method tunnelledMethod = Method.valueOf(methodName);
+                // The OPTIONS method can be tunnelled via GET requests.
+                if (tunnelledMethod != null
+                        && (Method.POST.equals(method) || Method.OPTIONS
+                                .equals(tunnelledMethod))) {
+                    request.setMethod(tunnelledMethod);
                     query.removeFirst(tunnelService.getMethodParameter());
                     queryModified = true;
                 }
