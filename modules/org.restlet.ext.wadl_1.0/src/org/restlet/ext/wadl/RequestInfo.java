@@ -33,114 +33,114 @@ import org.xml.sax.SAXException;
  */
 public class RequestInfo extends DocumentedInfo {
 
-	/** List of parameters. */
-	private List<ParameterInfo> parameters;
+    /** List of parameters. */
+    private List<ParameterInfo> parameters;
 
-	/** List of supported input representations. */
-	private List<RepresentationInfo> representations;
+    /** List of supported input representations. */
+    private List<RepresentationInfo> representations;
 
-	public RequestInfo() {
-		super();
-	}
+    public RequestInfo() {
+        super();
+    }
 
-	public RequestInfo(DocumentationInfo documentation) {
-		super(documentation);
-	}
+    public RequestInfo(DocumentationInfo documentation) {
+        super(documentation);
+    }
 
-	public RequestInfo(List<DocumentationInfo> documentations) {
-		super(documentations);
-	}
+    public RequestInfo(List<DocumentationInfo> documentations) {
+        super(documentations);
+    }
 
-	public RequestInfo(String documentation) {
-		super(documentation);
-	}
+    public RequestInfo(String documentation) {
+        super(documentation);
+    }
 
-	/**
-	 * Returns the list of parameters.
-	 * 
-	 * @return The list of parameters.
-	 */
-	public List<ParameterInfo> getParameters() {
-		// Lazy initialization with double-check.
-		List<ParameterInfo> p = this.parameters;
-		if (p == null) {
-			synchronized (this) {
-				p = this.parameters;
-				if (p == null) {
-					this.parameters = p = new ArrayList<ParameterInfo>();
-				}
-			}
-		}
-		return p;
-	}
+    /**
+     * Returns the list of parameters.
+     * 
+     * @return The list of parameters.
+     */
+    public List<ParameterInfo> getParameters() {
+        // Lazy initialization with double-check.
+        List<ParameterInfo> p = this.parameters;
+        if (p == null) {
+            synchronized (this) {
+                p = this.parameters;
+                if (p == null) {
+                    this.parameters = p = new ArrayList<ParameterInfo>();
+                }
+            }
+        }
+        return p;
+    }
 
-	/**
-	 * Returns the list of supported input representations.
-	 * 
-	 * @return The list of supported input representations.
-	 */
-	public List<RepresentationInfo> getRepresentations() {
-		// Lazy initialization with double-check.
-		List<RepresentationInfo> r = this.representations;
-		if (r == null) {
-			synchronized (this) {
-				r = this.representations;
-				if (r == null) {
-					this.representations = r = new ArrayList<RepresentationInfo>();
-				}
-			}
-		}
-		return r;
-	}
+    /**
+     * Returns the list of supported input representations.
+     * 
+     * @return The list of supported input representations.
+     */
+    public List<RepresentationInfo> getRepresentations() {
+        // Lazy initialization with double-check.
+        List<RepresentationInfo> r = this.representations;
+        if (r == null) {
+            synchronized (this) {
+                r = this.representations;
+                if (r == null) {
+                    this.representations = r = new ArrayList<RepresentationInfo>();
+                }
+            }
+        }
+        return r;
+    }
 
-	/**
-	 * Sets the list of parameters.
-	 * 
-	 * @param parameters
-	 *            The list of parameters.
-	 */
-	public void setParameters(List<ParameterInfo> parameters) {
-		this.parameters = parameters;
-	}
+    /**
+     * Sets the list of parameters.
+     * 
+     * @param parameters
+     *            The list of parameters.
+     */
+    public void setParameters(List<ParameterInfo> parameters) {
+        this.parameters = parameters;
+    }
 
-	/**
-	 * Sets the list of supported input representations.
-	 * 
-	 * @param representations
-	 *            The list of supported input representations.
-	 */
-	public void setRepresentations(List<RepresentationInfo> representations) {
-		this.representations = representations;
-	}
+    /**
+     * Sets the list of supported input representations.
+     * 
+     * @param representations
+     *            The list of supported input representations.
+     */
+    public void setRepresentations(List<RepresentationInfo> representations) {
+        this.representations = representations;
+    }
 
-	/**
-	 * Writes the current object as an XML element using the given SAX writer.
-	 * 
-	 * @param writer
-	 *            The SAX writer.
-	 * @throws SAXException
-	 */
-	public void writeElement(XmlWriter writer) throws SAXException {
-		if (getDocumentations().isEmpty() && getParameters().isEmpty()
-				&& getRepresentations().isEmpty()) {
-			writer.emptyElement(APP_NAMESPACE, "request");
-		} else {
-			writer.startElement(APP_NAMESPACE, "request");
+    /**
+     * Writes the current object as an XML element using the given SAX writer.
+     * 
+     * @param writer
+     *            The SAX writer.
+     * @throws SAXException
+     */
+    public void writeElement(XmlWriter writer) throws SAXException {
+        if (getDocumentations().isEmpty() && getParameters().isEmpty()
+                && getRepresentations().isEmpty()) {
+            writer.emptyElement(APP_NAMESPACE, "request");
+        } else {
+            writer.startElement(APP_NAMESPACE, "request");
 
-			for (final DocumentationInfo documentationInfo : getDocumentations()) {
-				documentationInfo.writeElement(writer);
-			}
+            for (final DocumentationInfo documentationInfo : getDocumentations()) {
+                documentationInfo.writeElement(writer);
+            }
 
-			for (final ParameterInfo parameterInfo : getParameters()) {
-				parameterInfo.writeElement(writer);
-			}
+            for (final ParameterInfo parameterInfo : getParameters()) {
+                parameterInfo.writeElement(writer);
+            }
 
-			for (final RepresentationInfo representationInfo : getRepresentations()) {
-				representationInfo.writeElement(writer);
-			}
+            for (final RepresentationInfo representationInfo : getRepresentations()) {
+                representationInfo.writeElement(writer);
+            }
 
-			writer.endElement(APP_NAMESPACE, "request");
-		}
-	}
+            writer.endElement(APP_NAMESPACE, "request");
+        }
+    }
 
 }

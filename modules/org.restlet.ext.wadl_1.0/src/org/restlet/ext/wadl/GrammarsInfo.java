@@ -35,77 +35,77 @@ import org.xml.sax.SAXException;
  */
 public class GrammarsInfo extends DocumentedInfo {
 
-	/** Definitions of data format descriptions to be included by reference. */
-	private List<IncludeInfo> includes;
+    /** Definitions of data format descriptions to be included by reference. */
+    private List<IncludeInfo> includes;
 
-	public GrammarsInfo() {
-		super();
-	}
+    public GrammarsInfo() {
+        super();
+    }
 
-	public GrammarsInfo(DocumentationInfo documentation) {
-		super(documentation);
-	}
+    public GrammarsInfo(DocumentationInfo documentation) {
+        super(documentation);
+    }
 
-	public GrammarsInfo(List<DocumentationInfo> documentations) {
-		super(documentations);
-	}
+    public GrammarsInfo(List<DocumentationInfo> documentations) {
+        super(documentations);
+    }
 
-	public GrammarsInfo(String documentation) {
-		super(documentation);
-	}
+    public GrammarsInfo(String documentation) {
+        super(documentation);
+    }
 
-	/**
-	 * Returns the list of include elements.
-	 * 
-	 * @return The list of include elements.
-	 */
-	public List<IncludeInfo> getIncludes() {
-		// Lazy initialization with double-check.
-		List<IncludeInfo> i = this.includes;
-		if (i == null) {
-			synchronized (this) {
-				i = this.includes;
-				if (i == null) {
-					this.includes = i = new ArrayList<IncludeInfo>();
-				}
-			}
-		}
-		return i;
-	}
+    /**
+     * Returns the list of include elements.
+     * 
+     * @return The list of include elements.
+     */
+    public List<IncludeInfo> getIncludes() {
+        // Lazy initialization with double-check.
+        List<IncludeInfo> i = this.includes;
+        if (i == null) {
+            synchronized (this) {
+                i = this.includes;
+                if (i == null) {
+                    this.includes = i = new ArrayList<IncludeInfo>();
+                }
+            }
+        }
+        return i;
+    }
 
-	/**
-	 * Sets the list of include elements.
-	 * 
-	 * @param includes
-	 *            The list of include elements.
-	 */
-	public void setIncludes(List<IncludeInfo> includes) {
-		this.includes = includes;
-	}
+    /**
+     * Sets the list of include elements.
+     * 
+     * @param includes
+     *            The list of include elements.
+     */
+    public void setIncludes(List<IncludeInfo> includes) {
+        this.includes = includes;
+    }
 
-	/**
-	 * Writes the current object as an XML element using the given SAX writer.
-	 * 
-	 * @param writer
-	 *            The SAX writer.
-	 * @throws SAXException
-	 */
-	public void writeElement(XmlWriter writer) throws SAXException {
+    /**
+     * Writes the current object as an XML element using the given SAX writer.
+     * 
+     * @param writer
+     *            The SAX writer.
+     * @throws SAXException
+     */
+    public void writeElement(XmlWriter writer) throws SAXException {
 
-		if (getDocumentations().isEmpty() && getIncludes().isEmpty()) {
-			writer.emptyElement(APP_NAMESPACE, "grammars");
-		} else {
-			writer.startElement(APP_NAMESPACE, "grammars");
+        if (getDocumentations().isEmpty() && getIncludes().isEmpty()) {
+            writer.emptyElement(APP_NAMESPACE, "grammars");
+        } else {
+            writer.startElement(APP_NAMESPACE, "grammars");
 
-			for (final DocumentationInfo documentationInfo : getDocumentations()) {
-				documentationInfo.writeElement(writer);
-			}
+            for (final DocumentationInfo documentationInfo : getDocumentations()) {
+                documentationInfo.writeElement(writer);
+            }
 
-			for (final IncludeInfo includeInfo : getIncludes()) {
-				includeInfo.writeElement(writer);
-			}
+            for (final IncludeInfo includeInfo : getIncludes()) {
+                includeInfo.writeElement(writer);
+            }
 
-			writer.endElement(APP_NAMESPACE, "grammars");
-		}
-	}
+            writer.endElement(APP_NAMESPACE, "grammars");
+        }
+    }
 }

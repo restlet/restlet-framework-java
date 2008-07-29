@@ -33,132 +33,132 @@ import org.xml.sax.helpers.AttributesImpl;
  * @author Jerome Louvel
  */
 public class LinkInfo extends DocumentedInfo {
-	/**
-	 * Identifies the relationship of the resource identified by the link to the
-	 * resource whose representation the link is embedded in.
-	 */
-	private String relationship;
+    /**
+     * Identifies the relationship of the resource identified by the link to the
+     * resource whose representation the link is embedded in.
+     */
+    private String relationship;
 
-	/**
-	 * Defines the capabilities of the resource that the link identifies.
-	 */
-	private Reference resourceType;
+    /**
+     * Defines the capabilities of the resource that the link identifies.
+     */
+    private Reference resourceType;
 
-	/**
-	 * Identifies the relationship of the resource whose representation the link
-	 * is embedded in to the resource identified by the link.
-	 */
-	private String reverseRelationship;
+    /**
+     * Identifies the relationship of the resource whose representation the link
+     * is embedded in to the resource identified by the link.
+     */
+    private String reverseRelationship;
 
-	public LinkInfo() {
-		super();
-	}
+    public LinkInfo() {
+        super();
+    }
 
-	public LinkInfo(DocumentationInfo documentation) {
-		super(documentation);
-	}
+    public LinkInfo(DocumentationInfo documentation) {
+        super(documentation);
+    }
 
-	public LinkInfo(List<DocumentationInfo> documentations) {
-		super(documentations);
-	}
+    public LinkInfo(List<DocumentationInfo> documentations) {
+        super(documentations);
+    }
 
-	public LinkInfo(String documentation) {
-		super(documentation);
-	}
+    public LinkInfo(String documentation) {
+        super(documentation);
+    }
 
-	/**
-	 * Returns the relationship attribute value.
-	 * 
-	 * @return The relationship attribute value.
-	 */
-	public String getRelationship() {
-		return this.relationship;
-	}
+    /**
+     * Returns the relationship attribute value.
+     * 
+     * @return The relationship attribute value.
+     */
+    public String getRelationship() {
+        return this.relationship;
+    }
 
-	/**
-	 * Returns the reference to the resource type of the linked resource.
-	 * 
-	 * @return The reference to the resource type of the linked resource.
-	 */
-	public Reference getResourceType() {
-		return this.resourceType;
-	}
+    /**
+     * Returns the reference to the resource type of the linked resource.
+     * 
+     * @return The reference to the resource type of the linked resource.
+     */
+    public Reference getResourceType() {
+        return this.resourceType;
+    }
 
-	/**
-	 * Returns the reverse relationship attribute value.
-	 * 
-	 * @return The reverse relationship attribute value.
-	 */
-	public String getReverseRelationship() {
-		return this.reverseRelationship;
-	}
+    /**
+     * Returns the reverse relationship attribute value.
+     * 
+     * @return The reverse relationship attribute value.
+     */
+    public String getReverseRelationship() {
+        return this.reverseRelationship;
+    }
 
-	/**
-	 * Sets the relationship attribute value.
-	 * 
-	 * @param relationship
-	 *            The relationship attribute value.
-	 */
-	public void setRelationship(String relationship) {
-		this.relationship = relationship;
-	}
+    /**
+     * Sets the relationship attribute value.
+     * 
+     * @param relationship
+     *            The relationship attribute value.
+     */
+    public void setRelationship(String relationship) {
+        this.relationship = relationship;
+    }
 
-	/**
-	 * The reference to the resource type of the linked resource.
-	 * 
-	 * @param resourceType
-	 *            The reference to the resource type of the linked resource.
-	 */
-	public void setResourceType(Reference resourceType) {
-		this.resourceType = resourceType;
-	}
+    /**
+     * The reference to the resource type of the linked resource.
+     * 
+     * @param resourceType
+     *            The reference to the resource type of the linked resource.
+     */
+    public void setResourceType(Reference resourceType) {
+        this.resourceType = resourceType;
+    }
 
-	/**
-	 * Sets the reverse relationship attribute value.
-	 * 
-	 * @param reverseRelationship
-	 *            The reverse relationship attribute value.
-	 */
-	public void setReverseRelationship(String reverseRelationship) {
-		this.reverseRelationship = reverseRelationship;
-	}
+    /**
+     * Sets the reverse relationship attribute value.
+     * 
+     * @param reverseRelationship
+     *            The reverse relationship attribute value.
+     */
+    public void setReverseRelationship(String reverseRelationship) {
+        this.reverseRelationship = reverseRelationship;
+    }
 
-	/**
-	 * Writes the current object as an XML element using the given SAX writer.
-	 * 
-	 * @param writer
-	 *            The SAX writer.
-	 * @throws SAXException
-	 */
-	public void writeElement(XmlWriter writer) throws SAXException {
-		final AttributesImpl attributes = new AttributesImpl();
-		if ((getRelationship() != null) && !getRelationship().equals("")) {
-			attributes.addAttribute("", "rel", null, "xs:token",
-					getRelationship());
-		}
-		if ((getReverseRelationship() != null)
-				&& !getReverseRelationship().equals("")) {
-			attributes.addAttribute("", "rev", null, "xs:token",
-					getReverseRelationship());
-		}
+    /**
+     * Writes the current object as an XML element using the given SAX writer.
+     * 
+     * @param writer
+     *            The SAX writer.
+     * @throws SAXException
+     */
+    public void writeElement(XmlWriter writer) throws SAXException {
+        final AttributesImpl attributes = new AttributesImpl();
+        if ((getRelationship() != null) && !getRelationship().equals("")) {
+            attributes.addAttribute("", "rel", null, "xs:token",
+                    getRelationship());
+        }
+        if ((getReverseRelationship() != null)
+                && !getReverseRelationship().equals("")) {
+            attributes.addAttribute("", "rev", null, "xs:token",
+                    getReverseRelationship());
+        }
 
-		if ((getResourceType() != null)
-				&& (getResourceType().toString() != null)) {
-			attributes.addAttribute("", "resource_type", null, "xs:anyURI",
-					getResourceType().toString());
-		}
+        if ((getResourceType() != null)
+                && (getResourceType().toString() != null)) {
+            attributes.addAttribute("", "resource_type", null, "xs:anyURI",
+                    getResourceType().toString());
+        }
 
-		if (getDocumentations().isEmpty()) {
-			writer.emptyElement(APP_NAMESPACE, "link", null, attributes);
-		} else {
-			writer.startElement(APP_NAMESPACE, "link", null, attributes);
+        if (getDocumentations().isEmpty()) {
+            writer.emptyElement(APP_NAMESPACE, "link", null, attributes);
+        } else {
+            writer.startElement(APP_NAMESPACE, "link", null, attributes);
 
-			for (final DocumentationInfo documentationInfo : getDocumentations()) {
-				documentationInfo.writeElement(writer);
-			}
+            for (final DocumentationInfo documentationInfo : getDocumentations()) {
+                documentationInfo.writeElement(writer);
+            }
 
-			writer.endElement(APP_NAMESPACE, "link");
-		}
-	}
+            writer.endElement(APP_NAMESPACE, "link");
+        }
+    }
 
 }

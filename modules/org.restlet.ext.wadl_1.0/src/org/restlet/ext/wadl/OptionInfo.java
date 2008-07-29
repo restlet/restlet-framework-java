@@ -36,21 +36,21 @@ public class OptionInfo extends DocumentedInfo {
     /** Value of this option element. */
     private String value;
 
-	public OptionInfo() {
-		super();
-	}
+    public OptionInfo() {
+        super();
+    }
 
-	public OptionInfo(DocumentationInfo documentation) {
-		super(documentation);
-	}
+    public OptionInfo(DocumentationInfo documentation) {
+        super(documentation);
+    }
 
-	public OptionInfo(List<DocumentationInfo> documentations) {
-		super(documentations);
-	}
+    public OptionInfo(List<DocumentationInfo> documentations) {
+        super(documentations);
+    }
 
-	public OptionInfo(String documentation) {
-		super(documentation);
-	}
+    public OptionInfo(String documentation) {
+        super(documentation);
+    }
 
     /**
      * Returns the value of this option element.

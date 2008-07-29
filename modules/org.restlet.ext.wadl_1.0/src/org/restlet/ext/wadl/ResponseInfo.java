@@ -33,153 +33,153 @@ import org.xml.sax.SAXException;
  */
 public class ResponseInfo extends DocumentedInfo {
 
-	/** List of faults (representations that denote an error condition). */
-	private List<FaultInfo> faults;
+    /** List of faults (representations that denote an error condition). */
+    private List<FaultInfo> faults;
 
-	/** List of parameters. */
-	private List<ParameterInfo> parameters;
+    /** List of parameters. */
+    private List<ParameterInfo> parameters;
 
-	/** List of representations. */
-	private List<RepresentationInfo> representations;
+    /** List of representations. */
+    private List<RepresentationInfo> representations;
 
-	public ResponseInfo() {
-		super();
-	}
+    public ResponseInfo() {
+        super();
+    }
 
-	public ResponseInfo(DocumentationInfo documentation) {
-		super(documentation);
-	}
+    public ResponseInfo(DocumentationInfo documentation) {
+        super(documentation);
+    }
 
-	public ResponseInfo(List<DocumentationInfo> documentations) {
-		super(documentations);
-	}
+    public ResponseInfo(List<DocumentationInfo> documentations) {
+        super(documentations);
+    }
 
-	public ResponseInfo(String documentation) {
-		super(documentation);
-	}
+    public ResponseInfo(String documentation) {
+        super(documentation);
+    }
 
-	/**
-	 * Returns the list of faults (representations that denote an error
-	 * condition).
-	 * 
-	 * @return The list of faults (representations that denote an error
-	 *         condition).
-	 */
-	public List<FaultInfo> getFaults() {
-		// Lazy initialization with double-check.
-		List<FaultInfo> f = this.faults;
-		if (f == null) {
-			synchronized (this) {
-				f = this.faults;
-				if (f == null) {
-					this.faults = f = new ArrayList<FaultInfo>();
-				}
-			}
-		}
-		return f;
-	}
+    /**
+     * Returns the list of faults (representations that denote an error
+     * condition).
+     * 
+     * @return The list of faults (representations that denote an error
+     *         condition).
+     */
+    public List<FaultInfo> getFaults() {
+        // Lazy initialization with double-check.
+        List<FaultInfo> f = this.faults;
+        if (f == null) {
+            synchronized (this) {
+                f = this.faults;
+                if (f == null) {
+                    this.faults = f = new ArrayList<FaultInfo>();
+                }
+            }
+        }
+        return f;
+    }
 
-	/**
-	 * Returns the list of parameters.
-	 * 
-	 * @return The list of parameters.
-	 */
-	public List<ParameterInfo> getParameters() {
-		// Lazy initialization with double-check.
-		List<ParameterInfo> p = this.parameters;
-		if (p == null) {
-			synchronized (this) {
-				p = this.parameters;
-				if (p == null) {
-					this.parameters = p = new ArrayList<ParameterInfo>();
-				}
-			}
-		}
-		return p;
-	}
+    /**
+     * Returns the list of parameters.
+     * 
+     * @return The list of parameters.
+     */
+    public List<ParameterInfo> getParameters() {
+        // Lazy initialization with double-check.
+        List<ParameterInfo> p = this.parameters;
+        if (p == null) {
+            synchronized (this) {
+                p = this.parameters;
+                if (p == null) {
+                    this.parameters = p = new ArrayList<ParameterInfo>();
+                }
+            }
+        }
+        return p;
+    }
 
-	/**
-	 * Returns the list of representations
-	 * 
-	 * @return The list of representations
-	 */
-	public List<RepresentationInfo> getRepresentations() {
-		// Lazy initialization with double-check.
-		List<RepresentationInfo> r = this.representations;
-		if (r == null) {
-			synchronized (this) {
-				r = this.representations;
-				if (r == null) {
-					this.representations = r = new ArrayList<RepresentationInfo>();
-				}
-			}
-		}
-		return r;
-	}
+    /**
+     * Returns the list of representations
+     * 
+     * @return The list of representations
+     */
+    public List<RepresentationInfo> getRepresentations() {
+        // Lazy initialization with double-check.
+        List<RepresentationInfo> r = this.representations;
+        if (r == null) {
+            synchronized (this) {
+                r = this.representations;
+                if (r == null) {
+                    this.representations = r = new ArrayList<RepresentationInfo>();
+                }
+            }
+        }
+        return r;
+    }
 
-	/**
-	 * Sets the list of faults (representations that denote an error condition).
-	 * 
-	 * @param faults
-	 *            The list of faults (representations that denote an error
-	 *            condition).
-	 */
-	public void setFaults(List<FaultInfo> faults) {
-		this.faults = faults;
-	}
+    /**
+     * Sets the list of faults (representations that denote an error condition).
+     * 
+     * @param faults
+     *            The list of faults (representations that denote an error
+     *            condition).
+     */
+    public void setFaults(List<FaultInfo> faults) {
+        this.faults = faults;
+    }
 
-	/**
-	 * Sets the list of parameters.
-	 * 
-	 * @param parameters
-	 *            The list of parameters.
-	 */
-	public void setParameters(List<ParameterInfo> parameters) {
-		this.parameters = parameters;
-	}
+    /**
+     * Sets the list of parameters.
+     * 
+     * @param parameters
+     *            The list of parameters.
+     */
+    public void setParameters(List<ParameterInfo> parameters) {
+        this.parameters = parameters;
+    }
 
-	/**
-	 * Sets the list of representations
-	 * 
-	 * @param representations
-	 *            The list of representations
-	 */
-	public void setRepresentations(List<RepresentationInfo> representations) {
-		this.representations = representations;
-	}
+    /**
+     * Sets the list of representations
+     * 
+     * @param representations
+     *            The list of representations
+     */
+    public void setRepresentations(List<RepresentationInfo> representations) {
+        this.representations = representations;
+    }
 
-	/**
-	 * Writes the current object as an XML element using the given SAX writer.
-	 * 
-	 * @param writer
-	 *            The SAX writer.
-	 * @throws SAXException
-	 */
-	public void writeElement(XmlWriter writer) throws SAXException {
+    /**
+     * Writes the current object as an XML element using the given SAX writer.
+     * 
+     * @param writer
+     *            The SAX writer.
+     * @throws SAXException
+     */
+    public void writeElement(XmlWriter writer) throws SAXException {
 
-		if (getDocumentations().isEmpty() && getFaults().isEmpty()
-				&& getParameters().isEmpty() && getRepresentations().isEmpty()) {
-			writer.emptyElement(APP_NAMESPACE, "response");
-		} else {
-			writer.startElement(APP_NAMESPACE, "response");
+        if (getDocumentations().isEmpty() && getFaults().isEmpty()
+                && getParameters().isEmpty() && getRepresentations().isEmpty()) {
+            writer.emptyElement(APP_NAMESPACE, "response");
+        } else {
+            writer.startElement(APP_NAMESPACE, "response");
 
-			for (final DocumentationInfo documentationInfo : getDocumentations()) {
-				documentationInfo.writeElement(writer);
-			}
+            for (final DocumentationInfo documentationInfo : getDocumentations()) {
+                documentationInfo.writeElement(writer);
+            }
 
-			for (final ParameterInfo parameterInfo : getParameters()) {
-				parameterInfo.writeElement(writer);
-			}
+            for (final ParameterInfo parameterInfo : getParameters()) {
+                parameterInfo.writeElement(writer);
+            }
 
-			for (final RepresentationInfo representationInfo : getRepresentations()) {
-				representationInfo.writeElement(writer);
-			}
+            for (final RepresentationInfo representationInfo : getRepresentations()) {
+                representationInfo.writeElement(writer);
+            }
 
-			for (final FaultInfo faultInfo : getFaults()) {
-				faultInfo.writeElement(writer);
-			}
+            for (final FaultInfo faultInfo : getFaults()) {
+                faultInfo.writeElement(writer);
+            }
 
-			writer.endElement(APP_NAMESPACE, "response");
-		}
-	}
+            writer.endElement(APP_NAMESPACE, "response");
+        }
+    }
 }
