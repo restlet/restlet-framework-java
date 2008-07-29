@@ -29,7 +29,7 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 
 /**
- * HTTP-style header manipulation utilities.
+ * Various HTTP utilities.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */

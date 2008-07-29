@@ -19,6 +19,9 @@ package com.noelios.restlet.util;
 
 import javax.net.ssl.SSLContext;
 
+import org.restlet.data.Parameter;
+import org.restlet.util.Series;
+
 /**
  * This is an abstract factory that produces configured and initialised
  * instances of SSLContext. Concrete implementations of SslContextFactory must
@@ -34,7 +37,7 @@ import javax.net.ssl.SSLContext;
  * @author Bruno Harbulot (Bruno.Harbulot@manchester.ac.uk)
  * @see SSLContext
  */
-public interface SslContextFactory {
+public abstract class SslContextFactory {
 
     /**
      * Creates a configured and initialised SSLContext.
@@ -42,6 +45,14 @@ public interface SslContextFactory {
      * @return A configured and initialised SSLContext.
      * @throws Exception
      */
-    public SSLContext createSslContext() throws Exception;
+    public abstract SSLContext createSslContext() throws Exception;
+
+    /**
+     * Initialize the factory with the given connector parameters.
+     * 
+     * @param parameters
+     *            The connector parameters.
+     */
+    public abstract void init(Series<Parameter> parameters);
 
 }

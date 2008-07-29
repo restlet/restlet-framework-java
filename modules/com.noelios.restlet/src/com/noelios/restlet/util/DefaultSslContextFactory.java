@@ -51,12 +51,13 @@ import org.restlet.util.Series;
  * @see SSLContext
  * @see KeyStore
  */
-public class DefaultSslContextFactory implements SslContextFactory {
+public class DefaultSslContextFactory extends SslContextFactory {
     /**
      * Name of the KeyManager algorithm.
      */
     private String keyManagerAlgorithm = System.getProperty(
-            "ssl.KeyManagerFactory.algorithm", KeyManagerFactory.getDefaultAlgorithm());
+            "ssl.KeyManagerFactory.algorithm", KeyManagerFactory
+                    .getDefaultAlgorithm());
 
     /**
      * Password for the key in the keystore (as a String).
@@ -107,7 +108,8 @@ public class DefaultSslContextFactory implements SslContextFactory {
      * Name of the TrustManager algorithm.
      */
     private String trustManagerAlgorithm = System.getProperty(
-            "ssl.TrustManagerFactory.algorithm", TrustManagerFactory.getDefaultAlgorithm());
+            "ssl.TrustManagerFactory.algorithm", TrustManagerFactory
+                    .getDefaultAlgorithm());
 
     /**
      * Password for the trust store keystore.
@@ -158,6 +160,7 @@ public class DefaultSslContextFactory implements SslContextFactory {
      * @see SSLContext#init(javax.net.ssl.KeyManager[],
      *      javax.net.ssl.TrustManager[], SecureRandom)
      */
+    @Override
     public SSLContext createSslContext() throws Exception {
 
         KeyManagerFactory kmf = null;
@@ -301,6 +304,7 @@ public class DefaultSslContextFactory implements SslContextFactory {
      *            HttpsServerHelper.getParameters()
      * 
      */
+    @Override
     public void init(Series<Parameter> helperParameters) {
         setKeyStorePath(helperParameters.getFirstValue("keystorePath", System
                 .getProperty("user.home")

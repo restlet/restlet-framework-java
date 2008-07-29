@@ -29,6 +29,7 @@ import javax.net.ssl.SSLContext;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 
+import com.noelios.restlet.http.HttpsUtils;
 import com.noelios.restlet.util.SslContextFactory;
 import com.sun.grizzly.Controller;
 import com.sun.grizzly.DefaultProtocolChain;
@@ -51,9 +52,9 @@ import com.sun.grizzly.filter.SSLReadFilter;
  * <td>sslContextFactory</td>
  * <td>String</td>
  * <td>null</td>
- * <td>Let you specify a {@link SslContextFactory} instance for a more complete
- * and flexible SSL context setting. If this parameter is set, it takes
- * precedance over the other SSL parameters below.</td>
+ * <td>Let you specify a {@link SslContextFactory} class name as a parameter, or
+ * an instance as an attribute for a more complete and flexible SSL context
+ * setting. If set, it takes precedance over the other SSL parameters below.</td>
  * </tr>
  * <tr>
  * <td>keystorePath</td>
@@ -124,8 +125,10 @@ public class HttpsServerHelper extends GrizzlyServerHelper {
     @Override
     protected void configure(Controller controller) throws Exception {
         // Initialize the SSL context
-        final SslContextFactory sslContextFactory = getSslContextFactory();
+        final SslContextFactory sslContextFactory = HttpsUtils
+                .getSslContextFactory(this);
         SSLContext sslContext;
+
         /*
          * If an SslContextFactory has been set up, its settings take priority
          * over the other parameters (which are otherwise used to build and
@@ -226,16 +229,6 @@ public class HttpsServerHelper extends GrizzlyServerHelper {
      */
     public String getKeystoreType() {
         return getParameters().getFirstValue("keystoreType", "JKS");
-    }
-
-    /**
-     * Returns the SSL context factory.
-     * 
-     * @return The SSL context factory.
-     */
-    public SslContextFactory getSslContextFactory() {
-        return (SslContextFactory) getContext().getAttributes().get(
-                "sslContextFactory");
     }
 
     /**

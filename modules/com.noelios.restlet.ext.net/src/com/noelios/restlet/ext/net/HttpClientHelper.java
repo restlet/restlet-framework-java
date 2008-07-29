@@ -166,7 +166,7 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
      * @return The hostname verifier or null.
      */
     public HostnameVerifier getHostnameVerifier() {
-        return (HostnameVerifier) getContext().getAttributes().get(
+        return (HostnameVerifier) getAttributes().get(
                 "org.restlet.ssl.hostnameVerifier");
     }
 

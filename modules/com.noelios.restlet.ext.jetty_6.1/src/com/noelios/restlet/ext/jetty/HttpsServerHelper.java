@@ -29,6 +29,7 @@ import org.mortbay.jetty.security.SslSocketConnector;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 
+import com.noelios.restlet.http.HttpsUtils;
 import com.noelios.restlet.util.SslContextFactory;
 
 /**
@@ -45,9 +46,9 @@ import com.noelios.restlet.util.SslContextFactory;
  * <td>sslContextFactory</td>
  * <td>String</td>
  * <td>null</td>
- * <td>Let you specify a {@link SslContextFactory} instance for a more complete
- * and flexible SSL context setting. If this parameter is set, it takes
- * precedance over the other SSL parameters below.</td>
+ * <td>Let you specify a {@link SslContextFactory} class name as a parameter, or
+ * an instance as an attribute for a more complete and flexible SSL context
+ * setting. If set, it takes precedance over the other SSL parameters below.</td>
  * </tr>
  * <tr>
  * <td>keystorePath</td>
@@ -145,7 +146,8 @@ public class HttpsServerHelper extends JettyServerHelper {
     @Override
     protected AbstractConnector createConnector() {
         AbstractConnector result = null;
-        final SslContextFactory sslContextFactory = getSslContextFactory();
+        final SslContextFactory sslContextFactory = HttpsUtils
+                .getSslContextFactory(this);
 
         // Create and configure the Jetty HTTP connector
         switch (getType()) {
@@ -301,16 +303,6 @@ public class HttpsServerHelper extends JettyServerHelper {
      */
     public String getSecurityProvider() {
         return getParameters().getFirstValue("securityProvider", null);
-    }
-
-    /**
-     * Returns the SSL context factory.
-     * 
-     * @return The SSL context factory.
-     */
-    public SslContextFactory getSslContextFactory() {
-        return (SslContextFactory) getContext().getAttributes().get(
-                "sslContextFactory");
     }
 
     /**
