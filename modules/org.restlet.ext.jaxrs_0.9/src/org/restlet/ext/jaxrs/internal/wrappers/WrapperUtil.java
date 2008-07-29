@@ -22,10 +22,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -38,16 +35,13 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
-import javax.ws.rs.ext.ContextResolver;
 
 import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
 import org.restlet.data.Request;
+import org.restlet.ext.jaxrs.InstantiateException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalTypeException;
-import org.restlet.ext.jaxrs.internal.exceptions.InstantiateException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingConstructorException;
-import org.restlet.ext.jaxrs.internal.wrappers.provider.ContextResolverCollection;
-import org.restlet.ext.jaxrs.internal.wrappers.provider.ReturnNullContextResolver;
 
 /**
  * Utility methods for the wrappers.
@@ -160,9 +154,9 @@ public class WrapperUtil {
      * @return Returns an unmodifiable List of MediaTypes
      */
     public static List<MediaType> convertToMediaTypes(String[] mimes) {
-        final List<MediaType> mediaTypes = new ArrayList<MediaType>(
-                mimes.length);
-        for (final String mime : mimes) {
+        final List<MediaType> mediaTypes;
+        mediaTypes = new ArrayList<MediaType>(mimes.length);
+        for (String mime : mimes) {
             if (mime == null) {
                 mediaTypes.add(MediaType.ALL);
             } else {
@@ -233,80 +227,6 @@ public class WrapperUtil {
             return constructor;
         }
         throw new MissingConstructorException(jaxRsClass, rrcOrProvider);
-    }
-
-    /**
-     * Creates the {@link ContextResolver} to inject in the given field.
-     * 
-     * @param genType
-     *            generic type of field {@link ContextResolver}.
-     * @param allCtxResolvers
-     * @return
-     * @throws RuntimeException
-     */
-    @SuppressWarnings("unchecked")
-    public static ContextResolver<?> getContextResolver(Type genType,
-            Collection<ContextResolver<?>> allCtxResolvers) {
-        if (!(genType instanceof ParameterizedType)) {
-            return ReturnNullContextResolver.get();
-        }
-        final Type t = ((ParameterizedType) genType).getActualTypeArguments()[0];
-        if (!(t instanceof Class)) {
-            return ReturnNullContextResolver.get();
-        }
-        final Class crType = (Class) t;
-        final List<ContextResolver<?>> returnResolvers = new ArrayList<javax.ws.rs.ext.ContextResolver<?>>();
-        for (final ContextResolver<?> cr : allCtxResolvers) {
-            final Class<?> crClaz = cr.getClass();
-            final Class<?> genClass = getCtxResGenClass(crClaz);
-            if ((genClass == null) || !genClass.equals(crType)) {
-                continue;
-            }
-            try {
-                final Method getContext = crClaz.getMethod("getContext",
-                        Class.class);
-                if (getContext.getReturnType().equals(crType)) {
-                    returnResolvers.add(cr);
-                }
-            } catch (final SecurityException e) {
-                throw new RuntimeException(
-                        "sorry, the method getContext(Class) of ContextResolver "
-                                + crClaz + " is not accessible");
-            } catch (final NoSuchMethodException e) {
-                throw new RuntimeException(
-                        "The ContextResolver "
-                                + crClaz
-                                + " is not valid, because it has no method getContext(Class)");
-            }
-        }
-        if (returnResolvers.isEmpty()) {
-            return ReturnNullContextResolver.get();
-        }
-        if (returnResolvers.size() == 1) {
-            return returnResolvers.get(0);
-        }
-        return new ContextResolverCollection(returnResolvers);
-    }
-
-    /**
-     * Returns the generic class of the given {@link ContextResolver} class.
-     * 
-     * @param crClaz
-     */
-    private static Class<?> getCtxResGenClass(Class<?> crClaz) {
-        final Type[] crIfTypes = crClaz.getGenericInterfaces();
-        for (final Type crIfType : crIfTypes) {
-            if (!(crIfType instanceof ParameterizedType)) {
-                continue;
-            }
-            final Type t = ((ParameterizedType) crIfType)
-                    .getActualTypeArguments()[0];
-            if (!(t instanceof Class)) {
-                continue;
-            }
-            return (Class<?>) t;
-        }
-        return null;
     }
 
     /**

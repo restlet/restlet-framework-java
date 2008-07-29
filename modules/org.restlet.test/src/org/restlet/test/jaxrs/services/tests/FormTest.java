@@ -22,6 +22,7 @@ import java.io.IOException;
 import org.restlet.data.Form;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.resource.Representation;
 import org.restlet.test.jaxrs.services.resources.FormTestResource;
 
 /**
@@ -30,50 +31,89 @@ import org.restlet.test.jaxrs.services.resources.FormTestResource;
  */
 public class FormTest extends JaxRsTestCase {
 
-    @Override
-    protected Class<?> getRootResourceClass() {
-        return FormTestResource.class;
+    /**
+     * @param subPath
+     * @throws IOException
+     */
+    private void check(String subPath, boolean cPerhapsDouble) throws IOException {
+        check1(subPath);
+        check2(subPath);
+        check3(subPath, cPerhapsDouble);
     }
 
-    public void testFormOnly() throws IOException {
-        check("formOnly");
-    }
-
-    public void testFormAndParam() throws IOException {
-        check("formAndParam");
-    }
-
-    /** @see FormTestResource#paramOnly(String, String) */
-    public void testParamOnly() throws IOException {
-        check("paramOnly");
-    }
-
-    public void testParamAndForm() throws IOException {
-        check("paramAndForm");
+    /**
+     * @param subPath
+     * @return
+     * @throws IOException
+     */
+    private Representation check1(String subPath) throws IOException {
+        Form form = new Form();
+        form.add("a", "b");
+        Representation webRepresentation = form.getWebRepresentation();
+        Response response = post(subPath, webRepresentation);
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("a -> b\n", response.getEntity().getText());
+        return webRepresentation;
     }
 
     /**
      * @param subPath
      * @throws IOException
      */
-    private void check(String subPath) throws IOException {
+    private void check2(String subPath) throws IOException {
+        Response response;
         Form form = new Form();
         form.add("a", "b");
-        Response response = post(subPath, form.getWebRepresentation());
-        sysOutEntityIfError(response);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEquals("a -> b\n", response.getEntity().getText());
-
         form.add("c", "d");
         response = post(subPath, form.getWebRepresentation());
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("a -> b\nc -> d\n", response.getEntity().getText());
+    }
 
+    /**
+     * @param subPath
+     * @param cDouble
+     *                the variable c is given double in the entity. If this
+     *                parameter is true, c must be returned double, if false,
+     *                then only once.
+     * @throws IOException
+     */
+    private void check3(String subPath, boolean cDouble) throws IOException {
+        Response response;
+        Form form = new Form();
+        form.add("a", "b");
         form.add("c", "d");
+        form.add("c", "d2");
         response = post(subPath, form.getWebRepresentation());
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEquals("a -> b\nc -> d\nc -> d\n", response.getEntity().getText());
+        String expectedEntity = "a -> b\nc -> d\n";
+        if (cDouble)
+            expectedEntity += "c -> d2\n";
+        assertEquals(expectedEntity, response.getEntity().getText());
+    }
+
+    @Override
+    protected Class<?> getRootResourceClass() {
+        return FormTestResource.class;
+    }
+
+    public void testFormAndParam() throws IOException {
+        check("formAndParam", true);
+    }
+
+    public void testFormOnly() throws IOException {
+        check("formOnly", true);
+    }
+
+    public void testParamAndForm() throws IOException {
+        check("paramAndForm", true);
+    }
+
+    /** @see FormTestResource#paramOnly(String, String) */
+    public void testParamOnly() throws IOException {
+        check("paramOnly", false);
     }
 }

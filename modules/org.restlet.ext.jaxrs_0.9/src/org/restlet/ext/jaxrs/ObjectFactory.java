@@ -17,7 +17,6 @@
  */
 package org.restlet.ext.jaxrs;
 
-import org.restlet.ext.jaxrs.internal.exceptions.InstantiateException;
 
 /**
  * <p>

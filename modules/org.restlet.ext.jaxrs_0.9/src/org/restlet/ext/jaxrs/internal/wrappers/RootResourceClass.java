@@ -19,14 +19,13 @@ package org.restlet.ext.jaxrs.internal.wrappers;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Collection;
 import java.util.logging.Logger;
 
 import javax.ws.rs.Encoded;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.ext.ContextResolver;
 
+import org.restlet.ext.jaxrs.InstantiateException;
 import org.restlet.ext.jaxrs.ObjectFactory;
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
@@ -37,14 +36,13 @@ import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.ImplementationException;
 import org.restlet.ext.jaxrs.internal.exceptions.InjectException;
-import org.restlet.ext.jaxrs.internal.exceptions.InstantiateException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingConstructorException;
 import org.restlet.ext.jaxrs.internal.util.PathRegExp;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.ext.jaxrs.internal.wrappers.params.IntoRrcInjector;
 import org.restlet.ext.jaxrs.internal.wrappers.params.ParameterList;
-import org.restlet.ext.jaxrs.internal.wrappers.provider.EntityProviders;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.JaxRsProviders;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.ExtensionBackwardMapping;
 
 /**
@@ -96,10 +94,8 @@ public class RootResourceClass extends ResourceClass {
      * @param tlContext
      *            the {@link ThreadLocalizedContext} of the
      *            {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
-     * @param entityProviders
+     * @param jaxRsProviders
      *            all entity providers.
-     * @param allCtxResolvers
-     *            all available {@link ContextResolver}s.
      * @param extensionBackwardMapping
      *            the extension backward mapping
      * @param logger
@@ -117,29 +113,26 @@ public class RootResourceClass extends ResourceClass {
      * @throws IllegalFieldTypeException
      */
     RootResourceClass(Class<?> jaxRsClass, ThreadLocalizedContext tlContext,
-            EntityProviders entityProviders,
-            Collection<ContextResolver<?>> allCtxResolvers,
+            JaxRsProviders jaxRsProviders,
             ExtensionBackwardMapping extensionBackwardMapping, Logger logger)
             throws IllegalArgumentException, MissingAnnotationException,
             IllegalPathOnClassException, MissingConstructorException,
             IllegalConstrParamTypeException, IllegalFieldTypeException,
             IllegalBeanSetterTypeException {
-        super(jaxRsClass, tlContext, entityProviders, allCtxResolvers,
-                extensionBackwardMapping, logger, logger);
+        super(jaxRsClass, tlContext, jaxRsProviders, extensionBackwardMapping,
+                logger, logger);
         Util.checkClassConcrete(getJaxRsClass(), "root resource class");
         checkClassForPathAnnot(jaxRsClass, "root resource class");
         this.injectHelper = new IntoRrcInjector(jaxRsClass, tlContext,
-                isLeaveEncoded(), entityProviders, allCtxResolvers,
-                extensionBackwardMapping);
+                isLeaveEncoded(), jaxRsProviders, extensionBackwardMapping);
         this.constructor = WrapperUtil.findJaxRsConstructor(getJaxRsClass(),
                 "root resource class");
         final boolean constructorLeaveEncoded = isLeaveEncoded()
-                || this.constructor.isAnnotationPresent(Encoded.class);
+                || constructor.isAnnotationPresent(Encoded.class);
         try {
             this.constructorParameters = new ParameterList(this.constructor,
-                    tlContext, constructorLeaveEncoded, entityProviders,
-                    allCtxResolvers, extensionBackwardMapping, true, logger,
-                    !this.singelton);
+                    tlContext, constructorLeaveEncoded, jaxRsProviders,
+                    extensionBackwardMapping, true, logger, !this.singelton);
         } catch (final IllegalTypeException e) {
             throw new IllegalConstrParamTypeException(e);
         }
@@ -172,8 +165,8 @@ public class RootResourceClass extends ResourceClass {
                 throw new ImplementationException("Must not be possible", e);
             }
         }
-        final ResourceObject rootResourceObject = new ResourceObject(instance,
-                this);
+        final ResourceObject rootResourceObject;
+        rootResourceObject = new ResourceObject(instance, this);
         try {
             this.injectHelper.injectInto(instance, true);
         } catch (final InjectException e) {

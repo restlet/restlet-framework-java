@@ -15,7 +15,7 @@
  * enclosed by brackets "[]" replaced with your own identifying information:
  * Portions Copyright [yyyy] [name of copyright owner]
  */
-package org.restlet.ext.jaxrs.internal.exceptions;
+package org.restlet.ext.jaxrs;
 
 import java.lang.reflect.Method;
 
@@ -25,7 +25,7 @@ import java.lang.reflect.Method;
  * 
  * @author Stephan Koops
  */
-public class InstantiateException extends JaxRsException {
+public class InstantiateException extends Exception {
     private static final long serialVersionUID = 951579935427584482L;
 
     /**

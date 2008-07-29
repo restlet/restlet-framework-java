@@ -63,10 +63,13 @@ public class FormTestResource {
     @Produces(MediaType.TEXT_PLAIN)
     @Path("paramOnly")
     @POST
-    public Object paramOnly(@FormParam("a")
-    String a, @FormParam("b")
-    String b) {
-        return "a -> " + a + "\nb -> " + b + "\n";
+    public Object paramOnly(@FormParam("a") String a,
+            @FormParam("c") String c) {
+        String result = "a -> " + a + "\n";
+        if(c != null) {
+            result += "c -> " + c + "\n";
+        }
+        return result;
     }
 
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -74,8 +77,7 @@ public class FormTestResource {
     @Path("formAndParam")
     @POST
     public Object formAndParam(final MultivaluedMap<String, String> form,
-            @FormParam("a")
-            final String a) {
+            @FormParam("a") final String a) {
         return new StreamingOutput() {
             public void write(OutputStream out) throws IOException {
                 out.write("a -> ".getBytes());

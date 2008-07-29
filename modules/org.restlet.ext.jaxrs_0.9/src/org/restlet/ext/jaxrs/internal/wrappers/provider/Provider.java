@@ -38,6 +38,7 @@ import javax.ws.rs.ext.Providers;
 
 import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
+import org.restlet.ext.jaxrs.InstantiateException;
 import org.restlet.ext.jaxrs.ObjectFactory;
 import org.restlet.ext.jaxrs.internal.core.CallContext;
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
@@ -50,7 +51,6 @@ import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalConstrParamTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.InjectException;
-import org.restlet.ext.jaxrs.internal.exceptions.InstantiateException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingConstructorException;
 import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;

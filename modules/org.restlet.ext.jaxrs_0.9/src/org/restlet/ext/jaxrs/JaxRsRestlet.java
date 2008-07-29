@@ -60,7 +60,6 @@ import org.restlet.ext.jaxrs.internal.exceptions.IllegalConstrParamTypeException
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalFieldTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
 import org.restlet.ext.jaxrs.internal.exceptions.ImplementationException;
-import org.restlet.ext.jaxrs.internal.exceptions.InstantiateException;
 import org.restlet.ext.jaxrs.internal.exceptions.MethodInvokeException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingConstructorException;

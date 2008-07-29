@@ -100,7 +100,7 @@ public abstract class RestletServerTestCase extends TestCase {
      * 
      * @see #setServerWrapperFactory(ServerWrapperFactory)
      */
-    private static boolean useTcp = true;
+    private static boolean useTcp = false;
 
     /**
      * Adds the given media types to the accepted media types.
@@ -215,7 +215,7 @@ public abstract class RestletServerTestCase extends TestCase {
     /**
      * @param response
      */
-    private static void sysOutEntity(Response response) {
+    public static void sysOutEntity(Response response) {
         final Representation entity = response.getEntity();
         try {
             if (entity != null) {

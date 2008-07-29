@@ -19,14 +19,13 @@ package org.restlet.ext.jaxrs.internal.wrappers;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Collection;
 import java.util.logging.Logger;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response.ResponseBuilder;
-import javax.ws.rs.ext.ContextResolver;
 
+import org.restlet.ext.jaxrs.InstantiateException;
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertCookieParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertHeaderParamException;
@@ -37,10 +36,9 @@ import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalMethodParamTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnMethodException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalTypeException;
-import org.restlet.ext.jaxrs.internal.exceptions.InstantiateException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
-import org.restlet.ext.jaxrs.internal.wrappers.provider.EntityProviders;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.JaxRsProviders;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.ExtensionBackwardMapping;
 
 /**
@@ -55,7 +53,7 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
      * Creates a new wrapper for the given sub resource locator.
      * 
      * @param javaMethod
-     *            The Java method wich creats the sub resource
+     *            The Java method which creats the sub resource
      * @param annotatedMethod
      *            the message containing the annotations for this sub resource
      *            locator.
@@ -64,32 +62,28 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
      * @param tlContext
      *            the {@link ThreadLocalizedContext} of the
      *            {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
-     * @param entityProviders
-     *            all entity providers
-     * @param allCtxResolvers
-     *            all ContextResolvers
+     * @param jaxRsProviders
+     *            all providers
      * @param extensionBackwardMapping
      *            the extension backward mapping
      * @param logger
      * @throws IllegalPathOnMethodException
      * @throws MissingAnnotationException
-     * @throws IllegalArgumentException
-     *             if the annotated method is null
+     * @throws IllegalArgumentException if the annotated method is null
      * @throws IllegalTypeException
      *             if one of the parameters annotated with &#64;{@link Context}
-     *             has a type that must not be annotated with &#64;
-     *             {@link Context}.
+     *             has a type that must not be annotated with &#64;{@link Context}.
      */
     SubResourceLocator(Method javaMethod, Method annotatedMethod,
             ResourceClass resourceClass, ThreadLocalizedContext tlContext,
-            EntityProviders entityProviders,
-            Collection<ContextResolver<?>> allCtxResolvers,
-            ExtensionBackwardMapping extensionBackwardMapping, Logger logger)
+            JaxRsProviders jaxRsProviders,
+            ExtensionBackwardMapping extensionBackwardMapping,
+            Logger logger)
             throws IllegalPathOnMethodException, IllegalArgumentException,
             MissingAnnotationException, IllegalMethodParamTypeException {
         super(javaMethod, annotatedMethod, resourceClass, tlContext,
-                entityProviders, allCtxResolvers, extensionBackwardMapping,
-                false, logger);
+                jaxRsProviders, extensionBackwardMapping, false,
+                logger);
     }
 
     /**

@@ -115,11 +115,10 @@ public class WwwFormFormProvider extends AbstractProvider<Form> {
      * @param form
      */
     private static void saveToThreadsRequest(Form form) {
-        // TODO implement @FormParam and the EntityGetter for it
         try {
-            Field field = Message.class.getDeclaredField("form");
-            field.setAccessible(true);
-            field.set(Request.getCurrent(), form);
+            Field formField = Message.class.getDeclaredField("form");
+            formField.setAccessible(true);
+            formField.set(Request.getCurrent(), form);
         } catch (SecurityException e) {
             logger.log(Level.WARNING,
                     "Could not put the Form into the Restlet request", e);

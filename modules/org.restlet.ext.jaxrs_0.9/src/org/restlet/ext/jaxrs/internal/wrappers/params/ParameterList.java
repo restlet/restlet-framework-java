@@ -816,7 +816,7 @@ public class ParameterList {
      * used. A value less than zero means, that no special handling is needed.
      */
     private final int entityPosition;
-
+    
     /**
      * @param parameterTypes
      * @param genParamTypes

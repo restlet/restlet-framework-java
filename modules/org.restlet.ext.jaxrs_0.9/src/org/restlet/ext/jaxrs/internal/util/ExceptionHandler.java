@@ -34,9 +34,9 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
 import org.restlet.data.Method;
+import org.restlet.ext.jaxrs.InstantiateException;
 import org.restlet.ext.jaxrs.internal.core.CallContext;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
-import org.restlet.ext.jaxrs.internal.exceptions.InstantiateException;
 import org.restlet.ext.jaxrs.internal.exceptions.MethodInvokeException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.NotAcceptableWebAppException;
@@ -82,7 +82,7 @@ public class ExceptionHandler {
      * Creates a new ExceptionHandler.
      * 
      * @param logger
-     *            the logger to use
+     *                the logger to use
      */
     public ExceptionHandler(Logger logger) {
         this.logger = logger;
@@ -205,11 +205,13 @@ public class ExceptionHandler {
      * 
      * @param accMediaTypes
      * @param entityClass
+     * @param genericType 
+     * @param annotations 
      * 
      * @return staticly to throw, if needed by compiler.
      */
     public WebApplicationException noMessageBodyWriter(Class<?> entityClass,
-            Type genericType, Annotation[] annotations) {
+            Type genericType, @SuppressWarnings("unused") Annotation[] annotations) {
         this.logger.warning("No message body writer found for class "
                 + entityClass + ", genericType " + genericType);
         // LATER log also annotations
@@ -275,9 +277,9 @@ public class ExceptionHandler {
      * a creation if a sub resource object.
      * 
      * @param exception
-     *            the exception to log
+     *                the exception to log
      * @param jaxRsMethod
-     *            the called method when the exception occurs. May be null.
+     *                the called method when the exception occurs. May be null.
      * @param callContext
      *            Contains the encoded template Parameters, that are read from
      *            the called URI, the Restlet {@link org.restlet.data.Request}
