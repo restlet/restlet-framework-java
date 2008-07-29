@@ -60,13 +60,13 @@ public abstract class Helper<T extends Restlet> {
     }
 
     /**
-     * Creates a new context.
+     * Indicates that the helped Restlet's context has changed.
      * 
-     * @param loggerName
-     *            The JDK's logger name to use for contextual logging.
-     * @return The new context.
+     * @param context
+     *            The new context.
      */
-    public abstract Context createContext(String loggerName);
+    public void fireContextChanged(Context context) {
+    }
 
     /**
      * Returns the map of attributes exchanged between the API and the Engine
@@ -111,8 +111,15 @@ public abstract class Helper<T extends Restlet> {
      * @return The helped Restlet parameters.
      */
     public Series<Parameter> getParameters() {
-        return (getHelped() != null) ? getHelped().getContext().getParameters()
-                : new Form();
+        Series<Parameter> result = null;
+
+        if ((getHelped() != null) && (getHelped().getContext() != null)) {
+            result = getHelped().getContext().getParameters();
+        } else {
+            result = new Form();
+        }
+
+        return result;
     }
 
     /**

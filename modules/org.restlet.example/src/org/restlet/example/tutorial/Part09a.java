@@ -22,7 +22,6 @@ import static org.restlet.example.tutorial.Constants.ROOT_URI;
 
 import org.restlet.Application;
 import org.restlet.Component;
-import org.restlet.Context;
 import org.restlet.Directory;
 import org.restlet.Guard;
 import org.restlet.Restlet;
@@ -50,21 +49,11 @@ public class Part09a extends Application {
         component.getClients().add(Protocol.FILE);
 
         // Create an application
-        final Application application = new Part09a(component.getContext());
+        final Application application = new Part09a();
 
         // Attach the application to the component and start it
         component.getDefaultHost().attachDefault(application);
         component.start();
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param parentContext
-     *            The component's context.
-     */
-    public Part09a(Context parentContext) {
-        super(parentContext);
     }
 
     @Override

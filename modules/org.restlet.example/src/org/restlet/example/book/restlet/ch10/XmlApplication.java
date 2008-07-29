@@ -1,17 +1,12 @@
 package org.restlet.example.book.restlet.ch10;
 
 import org.restlet.Application;
-import org.restlet.Context;
 import org.restlet.Directory;
 import org.restlet.Restlet;
 import org.restlet.Router;
 import org.restlet.data.LocalReference;
 
 public class XmlApplication extends Application {
-
-    public XmlApplication(Context parentContext) {
-        super(parentContext);
-    }
 
     @Override
     public Restlet createRoot() {

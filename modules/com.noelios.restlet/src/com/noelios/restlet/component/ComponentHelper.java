@@ -19,12 +19,10 @@
 package com.noelios.restlet.component;
 
 import java.util.Iterator;
-import java.util.logging.Logger;
 
 import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
-import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.Route;
 import org.restlet.Server;
@@ -54,6 +52,7 @@ public class ComponentHelper extends ChainHelper<Component> {
      */
     public ComponentHelper(Component component) {
         super(component);
+        component.setContext(new ComponentContext(this));
         this.clientRouter = new ClientRouter(getHelped());
         this.serverRouter = new ServerRouter(getHelped());
     }
@@ -140,11 +139,6 @@ public class ComponentHelper extends ChainHelper<Component> {
         }
 
         return result;
-    }
-
-    @Override
-    public Context createContext(String loggerName) {
-        return new ComponentContext(this, Logger.getLogger(loggerName));
     }
 
     /**

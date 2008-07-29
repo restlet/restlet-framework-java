@@ -21,6 +21,7 @@ package org.restlet.ext.spring;
 import java.util.Enumeration;
 import java.util.Properties;
 
+import org.restlet.Context;
 import org.restlet.data.Protocol;
 
 /**
@@ -49,7 +50,7 @@ public class SpringServer extends org.restlet.Server {
      *            The server's protocol such as "HTTP" or "HTTPS".
      */
     public SpringServer(String protocol) {
-        super(Protocol.valueOf(protocol), null);
+        super(new Context(), Protocol.valueOf(protocol), null);
     }
 
     /**
@@ -61,7 +62,7 @@ public class SpringServer extends org.restlet.Server {
      *            The port number.
      */
     public SpringServer(String protocol, int port) {
-        super(Protocol.valueOf(protocol), port, null);
+        super(new Context(), Protocol.valueOf(protocol), port, null);
     }
 
     /**
@@ -75,7 +76,7 @@ public class SpringServer extends org.restlet.Server {
      *            The port number.
      */
     public SpringServer(String protocol, String address, int port) {
-        super(Protocol.valueOf(protocol), address, port, null);
+        super(new Context(), Protocol.valueOf(protocol), address, port, null);
     }
 
     /**

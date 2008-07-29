@@ -37,7 +37,7 @@ public class ClapTest {
         component.getServers().add(Protocol.HTTP, 8182);
         component.getClients().add(Protocol.CLAP);
 
-        final Application application = new Application(component.getContext()) {
+        final Application application = new Application() {
 
             @Override
             public Restlet createRoot() {

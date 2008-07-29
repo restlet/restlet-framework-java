@@ -21,7 +21,6 @@ package org.restlet.example.book.restlet.ch8;
 import java.io.File;
 
 import org.restlet.Component;
-import org.restlet.Context;
 import org.restlet.Directory;
 import org.restlet.Restlet;
 import org.restlet.Router;
@@ -55,8 +54,7 @@ public class Application extends org.restlet.Application {
         component.getClients().add(Protocol.FILE);
         component.getClients().add(Protocol.HTTP);
         // Attach the application to the default host and start it
-        component.getDefaultHost().attach("/rmep",
-                new Application(component.getContext()));
+        component.getDefaultHost().attach("/rmep", new Application());
         component.start();
     }
 
@@ -66,8 +64,10 @@ public class Application extends org.restlet.Application {
     /** Freemarker configuration object. */
     private freemarker.template.Configuration fmc;
 
-    public Application(Context context) {
-        super(context);
+    /**
+     * Constructor.
+     */
+    public Application() {
         // List of protocols required by the application.
         getConnectorService().getClientProtocols().add(Protocol.FILE);
         getConnectorService().getClientProtocols().add(Protocol.HTTP);

@@ -4,6 +4,15 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - Security warning
+        - The handling of Context has been significantly refactored in 
+          this release. A new Context#createChildContext() method has
+          been added to create a new isolated child context from a 
+          parent component's context. Application(Context) constructor
+          doesn't wrap the given context anymore. Attach methods on
+          virtual hosts and internal component router now automatically
+          set the child context on the target application is a null 
+          context is detected.
     - Bugs fixed
         - Allowed subclasses of StatusService to get the throwable 
           that generate the error in getRepresentation() method. 

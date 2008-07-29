@@ -3,7 +3,6 @@ package org.restlet.example.book.restlet.ch10;
 import java.io.File;
 
 import org.restlet.Application;
-import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.Router;
 
@@ -14,8 +13,10 @@ public class DynamicApplication extends Application {
     /** Freemarker configuration object. */
     private Configuration fmc;
 
-    public DynamicApplication(Context parentContext) {
-        super(parentContext);
+    /**
+     * Constructor.
+     */
+    public DynamicApplication() {
         try {
             // Instantiate the shared configuration manager for Freemarker.
             final File templateDir = new File(

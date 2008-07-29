@@ -125,37 +125,31 @@ public class Application extends Restlet {
     private volatile TunnelService tunnelService;
 
     /**
-     * Constructor. Note that usage of this constructor is not recommended as
-     * your application won't have access to the parent component context. For
-     * example, no dispatching will be possible as it requires access to the
-     * component's client connectors.
+     * Constructor. Note this constructor is convenient because you don't have
+     * to provide a context like for {@link #Application(Context)}. Therefore
+     * the context will initially be null. It's only when you attach the
+     * application to a virtual host via one of its attach*() methods that a
+     * proper context will be set.
      */
     public Application() {
-        this((Context) null);
+        this(null);
     }
 
     /**
      * Constructor.
      * 
-     * @param parentContext
-     *            The parent context. Typically the component's context.
+     * @param context
+     *            The context to use based on parent component context. This
+     *            context should be created using the
+     *            {@link Context#createChildContext()} method to ensure a proper
+     *            isolation with the other applications.
      */
     @SuppressWarnings("deprecation")
-    public Application(Context parentContext) {
-        super(null);
+    public Application(Context context) {
+        super(context);
 
         if (Engine.getInstance() != null) {
-            this.helper = Engine.getInstance()
-                    .createHelper(this, parentContext);
-
-            // Compose the logger name
-            final String applicationName = (getName() == null) ? Integer
-                    .toString(hashCode()) : getName();
-            final String loggerName = Application.class.getCanonicalName()
-                    + "." + applicationName;
-
-            // Create the application context
-            setContext(this.helper.createContext(loggerName));
+            this.helper = Engine.getInstance().createHelper(this);
         }
 
         this.name = null;
@@ -333,6 +327,12 @@ public class Application extends Restlet {
      */
     public void setConnectorService(ConnectorService connectorService) {
         this.connectorService = connectorService;
+    }
+
+    @Override
+    public void setContext(Context context) {
+        super.setContext(context);
+        getHelper().fireContextChanged(context);
     }
 
     /**

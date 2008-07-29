@@ -27,6 +27,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 
 import com.noelios.restlet.ChainHelper;
+import com.noelios.restlet.component.ComponentContext;
 
 /**
  * Application implementation.
@@ -39,17 +40,14 @@ public class ApplicationHelper extends ChainHelper<Application> {
      * 
      * @param application
      *            The application to help.
-     * @param parentContext
-     *            The parent context, typically the component's context.
      */
-    public ApplicationHelper(Application application, Context parentContext) {
-        super(application, parentContext);
-    }
+    public ApplicationHelper(Application application) {
+        super(application);
+        Context context = application.getContext();
 
-    @Override
-    public Context createContext(String loggerName) {
-        return new ApplicationContext(getHelped(), getParentContext(), Logger
-                .getLogger(loggerName));
+        if (context != null) {
+            fireContextChanged(context);
+        }
     }
 
     /**
@@ -83,6 +81,19 @@ public class ApplicationHelper extends ChainHelper<Application> {
      */
     protected Filter createTunnelFilter(Context context) {
         return new TunnelFilter(context);
+    }
+
+    @Override
+    public void fireContextChanged(Context context) {
+        if (context instanceof ApplicationContext) {
+            ((ApplicationContext) context).setApplication(getHelped());
+            String loggerName = ApplicationContext.getLoggerName(getHelped());
+            context.setLogger(Logger.getLogger(loggerName));
+        } else if (context instanceof ComponentContext) {
+            getLogger()
+                    .severe(
+                            "For security reasons, don't pass the component context to your application anymore. Use the Context#createChildContext() method instead.");
+        }
     }
 
     /**

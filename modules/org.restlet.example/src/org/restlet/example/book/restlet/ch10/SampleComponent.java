@@ -33,17 +33,17 @@ public class SampleComponent {
 
         // Attach the application to the component and start it
         component.getDefaultHost().attach("/directoryApplication",
-                new DirectoryApplication(component.getContext()));
+                new DirectoryApplication());
         component.getDefaultHost().attach("/dynamicApplication",
-                new DynamicApplication(component.getContext()));
+                new DynamicApplication());
         component.getDefaultHost().attach("/xmlApplication",
-                new XmlApplication(component.getContext()));
+                new XmlApplication());
         component.getDefaultHost().attach("/cookiesRestlet",
                 new CookiesRestlet());
         component.getDefaultHost().attach("/tunnelApplication",
-                new TunnelApplication(component.getContext()));
+                new TunnelApplication());
         component.getDefaultHost().attach("/nonStandardMethodsApplication",
-                new NonStandardMethodsApplication(component.getContext()));
+                new NonStandardMethodsApplication());
 
         component.start();
 

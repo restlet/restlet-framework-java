@@ -41,9 +41,6 @@ public abstract class ChainHelper<T extends Restlet> extends Helper<T> {
     /** The last Filter. */
     private volatile Filter last;
 
-    /** The parent context, typically the component's context. */
-    private volatile Context parentContext;
-
     /**
      * Constructor.
      * 
@@ -51,20 +48,7 @@ public abstract class ChainHelper<T extends Restlet> extends Helper<T> {
      *            The helped Restlet.
      */
     public ChainHelper(T helped) {
-        this(helped, null);
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param helpedRestlet
-     *            The helped Restlet.
-     * @param parentContext
-     *            The parent context, typically the component's context.
-     */
-    public ChainHelper(T helpedRestlet, Context parentContext) {
-        super(helpedRestlet);
-        this.parentContext = parentContext;
+        super(helped);
         this.first = null;
     }
 
@@ -121,15 +105,6 @@ public abstract class ChainHelper<T extends Restlet> extends Helper<T> {
      */
     protected Filter getLast() {
         return this.last;
-    }
-
-    /**
-     * Returns the parent context, typically the component's context.
-     * 
-     * @return The parent context.
-     */
-    public Context getParentContext() {
-        return this.parentContext;
     }
 
     @Override

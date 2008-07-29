@@ -25,7 +25,6 @@ import junit.framework.TestCase;
 
 import org.restlet.Application;
 import org.restlet.Component;
-import org.restlet.Context;
 import org.restlet.Directory;
 import org.restlet.Restlet;
 import org.restlet.data.LocalReference;
@@ -56,28 +55,20 @@ public class DirectoryTestCase extends TestCase {
 
         /**
          * Constructor.
-         */
-        public MyApplication() {
-            super();
-        }
-
-        /**
-         * Constructor.
          * 
-         * @param context
-         *            The parent context.
+         * @param testDirectory
+         *            The test directory.
          */
-        public MyApplication(Context context, File testDirectory) {
-            super(context);
+        public MyApplication(File testDirectory) {
             setTestDirectory(testDirectory);
-            // Create a DirectoryHandler that manages a local Directory
-            this.directory = new Directory(getContext(), LocalReference
-                    .createFileReference(getTestDirectory()));
-            this.directory.setNegotiateContent(true);
         }
 
         @Override
         public Restlet createRoot() {
+            // Create a DirectoryHandler that manages a local Directory
+            this.directory = new Directory(getContext(), LocalReference
+                    .createFileReference(getTestDirectory()));
+            this.directory.setNegotiateContent(true);
             return this.directory;
         }
 
@@ -191,8 +182,7 @@ public class DirectoryTestCase extends TestCase {
             clientComponent.getClients().add(Protocol.FILE);
 
             // Create an application
-            final MyApplication application = new MyApplication(clientComponent
-                    .getContext(), this.testDir);
+            final MyApplication application = new MyApplication(this.testDir);
             // Attach the application to the component and start it
             clientComponent.getDefaultHost().attach("", application);
 
@@ -203,10 +193,12 @@ public class DirectoryTestCase extends TestCase {
             application.getTunnelService().setExtensionsTunnel(true);
             deleteDir(this.testDir);
             this.testDir.mkdir();
+
             // Test the directory Restlet with an index name
             testDirectory(application, application.getDirectory(), "index");
             deleteDir(this.testDir);
             this.testDir.mkdir();
+
             // Test the directory Restlet with no index name
             testDirectory(application, application.getDirectory(), "");
 
@@ -214,10 +206,12 @@ public class DirectoryTestCase extends TestCase {
             application.getTunnelService().setExtensionsTunnel(false);
             deleteDir(this.testDir);
             this.testDir.mkdir();
+
             // Test the directory Restlet with an index name
             testDirectory(application, application.getDirectory(), "index");
             deleteDir(this.testDir);
             this.testDir.mkdir();
+
             // Test the directory Restlet with no index name
             testDirectory(application, application.getDirectory(), "");
 

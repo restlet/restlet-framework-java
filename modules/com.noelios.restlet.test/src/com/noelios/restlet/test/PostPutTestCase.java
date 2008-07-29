@@ -43,10 +43,10 @@ public class PostPutTestCase extends BaseConnectorsTestCase {
 
     @Override
     protected Application createApplication(final Component component) {
-        final Application application = new Application(component.getContext()) {
+        final Application application = new Application() {
             @Override
             public Restlet createRoot() {
-                final Restlet trace = new Restlet(component.getContext()) {
+                final Restlet trace = new Restlet(getContext()) {
                     @Override
                     public void handle(Request request, Response response) {
                         final Form inputForm = request.getEntityAsForm();

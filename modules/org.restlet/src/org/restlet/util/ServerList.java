@@ -60,8 +60,8 @@ public final class ServerList extends WrapperList<Server> {
      * @return The added server.
      */
     public Server add(Protocol protocol) {
-        final Server result = new Server(getContext(), protocol, null, protocol
-                .getDefaultPort(), getTarget());
+        final Server result = new Server(getContext().createChildContext(),
+                protocol, null, protocol.getDefaultPort(), getTarget());
         add(result);
         return result;
     }
@@ -77,8 +77,8 @@ public final class ServerList extends WrapperList<Server> {
      * @return The added server.
      */
     public Server add(Protocol protocol, int port) {
-        final Server result = new Server(getContext(), protocol, null, port,
-                getTarget());
+        final Server result = new Server(getContext().createChildContext(),
+                protocol, null, port, getTarget());
         add(result);
         return result;
     }
@@ -97,8 +97,8 @@ public final class ServerList extends WrapperList<Server> {
      * @return The added server.
      */
     public Server add(Protocol protocol, String address, int port) {
-        final Server result = new Server(getContext(), protocol, address, port,
-                getTarget());
+        final Server result = new Server(getContext().createChildContext(),
+                protocol, address, port, getTarget());
         add(result);
         return result;
     }

@@ -1,7 +1,6 @@
 package org.restlet.example.book.restlet.ch10;
 
 import org.restlet.Application;
-import org.restlet.Context;
 import org.restlet.Directory;
 import org.restlet.Restlet;
 import org.restlet.data.LocalReference;
@@ -9,8 +8,10 @@ import org.restlet.data.Protocol;
 
 public class DirectoryApplication extends Application {
 
-    public DirectoryApplication(Context parentContext) {
-        super(parentContext);
+    /**
+     * Constructor.
+     */
+    public DirectoryApplication() {
         // Sets the facultative name of the application.
         setName("directoryApplication");
         // the application requires the following client connector.

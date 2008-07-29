@@ -155,7 +155,6 @@ public class Component extends Restlet {
      * Constructor.
      */
     public Component() {
-        super(null);
         this.hosts = new CopyOnWriteArrayList<VirtualHost>();
         this.clients = new ClientList(null);
         this.servers = new ServerList(null, this);
@@ -164,10 +163,50 @@ public class Component extends Restlet {
             this.helper = Engine.getInstance().createHelper(this);
 
             if (this.helper != null) {
-                setContext(this.helper.createContext(getClass()
-                        .getCanonicalName()));
                 this.defaultHost = new VirtualHost(getContext());
-                this.internalRouter = new Router(getContext());
+                this.internalRouter = new Router(getContext()) {
+
+                    @Override
+                    public Route attach(Restlet target) {
+                        if (target.getContext() == null) {
+                            target
+                                    .setContext(getContext()
+                                            .createChildContext());
+                        }
+
+                        return super.attach(target);
+                    }
+
+                    @Override
+                    public Route attach(String uriPattern, Restlet target) {
+                        if (target.getContext() == null) {
+                            target
+                                    .setContext(getContext()
+                                            .createChildContext());
+                        }
+
+                        return super.attach(uriPattern, target);
+                    }
+
+                    @Override
+                    public Route attachDefault(Restlet defaultTarget) {
+                        if (defaultTarget.getContext() == null) {
+                            defaultTarget.setContext(getContext()
+                                    .createChildContext());
+                        }
+
+                        return super.attachDefault(defaultTarget);
+                    }
+
+                    @Override
+                    protected Finder createFinder(
+                            Class<? extends Resource> targetClass) {
+                        Finder result = super.createFinder(targetClass);
+                        result.setContext(getContext().createChildContext());
+                        return result;
+                    }
+
+                };
                 this.logService = new LogService(true);
                 this.logService.setLoggerName(getClass().getCanonicalName()
                         + " (" + hashCode() + ")");
@@ -195,182 +234,244 @@ public class Component extends Restlet {
             final Document document = db.parse(new FileInputStream(
                     new LocalReference(xmlConfigReference).getFile()));
 
-            // Look for clients
-            final NodeList clientNodes = document
-                    .getElementsByTagName("client");
+            // Check root node
+            if ("component".equals(document.getFirstChild().getNodeName())) {
+                // Look for clients
+                final NodeList childNodes = document.getFirstChild()
+                        .getChildNodes();
+                Node childNode;
 
-            for (int i = 0; i < clientNodes.getLength(); i++) {
-                final Node clientNode = clientNodes.item(i);
-                Node item = clientNode.getAttributes().getNamedItem("protocol");
-                Client client = null;
+                for (int i = 0; i < childNodes.getLength(); i++) {
+                    childNode = childNodes.item(i);
 
-                if (item == null) {
-                    item = clientNode.getAttributes().getNamedItem("protocols");
+                    if ("client".equals(childNode.getNodeName())) {
+                        Node item = childNode.getAttributes().getNamedItem(
+                                "protocol");
+                        Client client = null;
 
-                    if (item != null) {
-                        final String[] protocols = item.getNodeValue().split(
-                                " ");
-                        final List<Protocol> protocolsList = new ArrayList<Protocol>();
+                        if (item == null) {
+                            item = childNode.getAttributes().getNamedItem(
+                                    "protocols");
 
-                        for (final String protocol : protocols) {
-                            protocolsList.add(getProtocol(protocol));
-                        }
+                            if (item != null) {
+                                final String[] protocols = item.getNodeValue()
+                                        .split(" ");
+                                final List<Protocol> protocolsList = new ArrayList<Protocol>();
 
-                        client = new Client(getContext(), protocolsList);
-                    }
-                } else {
-                    client = new Client(getContext(), getProtocol(item
-                            .getNodeValue()));
-                }
+                                for (final String protocol : protocols) {
+                                    protocolsList.add(getProtocol(protocol));
+                                }
 
-                if (client != null) {
-                    getClients().add(client);
-                }
-            }
-
-            // Look for servers
-            final NodeList serverNodes = document
-                    .getElementsByTagName("server");
-
-            for (int i = 0; i < serverNodes.getLength(); i++) {
-                final Node serverNode = serverNodes.item(i);
-                Node item = serverNode.getAttributes().getNamedItem("protocol");
-                final Node portNode = serverNode.getAttributes().getNamedItem(
-                        "port");
-                final Node addressNode = serverNode.getAttributes()
-                        .getNamedItem("address");
-                Server server = null;
-
-                if (item == null) {
-                    item = serverNode.getAttributes().getNamedItem("protocols");
-
-                    if (item != null) {
-                        final String[] protocols = item.getNodeValue().split(
-                                " ");
-                        final List<Protocol> protocolsList = new ArrayList<Protocol>();
-
-                        for (final String protocol : protocols) {
-                            protocolsList.add(getProtocol(protocol));
-                        }
-
-                        final int port = getInt(portNode, Protocol.UNKNOWN_PORT);
-
-                        if (port == Protocol.UNKNOWN_PORT) {
-                            getLogger()
-                                    .warning(
-                                            "Please specify a port when defining a list of protocols.");
+                                client = new Client(new Context(),
+                                        protocolsList);
+                            }
                         } else {
-                            server = new Server(getContext(), protocolsList,
-                                    getInt(portNode, Protocol.UNKNOWN_PORT),
+                            client = new Client(new Context(), getProtocol(item
+                                    .getNodeValue()));
+                        }
+
+                        if (client != null) {
+                            getClients().add(client);
+
+                            // Look for parameters
+                            for (int j = 0; j < childNode.getChildNodes()
+                                    .getLength(); j++) {
+                                final Node childNode2 = childNode
+                                        .getChildNodes().item(j);
+
+                                if ("parameter"
+                                        .equals(childNode2.getNodeName())) {
+                                    final Node nameNode = childNode2
+                                            .getAttributes().getNamedItem(
+                                                    "name");
+                                    final Node valueNode = childNode2
+                                            .getAttributes().getNamedItem(
+                                                    "value");
+
+                                    if ((nameNode != null)
+                                            && (valueNode != null)) {
+                                        client
+                                                .getContext()
+                                                .getParameters()
+                                                .add(
+                                                        nameNode.getNodeValue(),
+                                                        valueNode
+                                                                .getNodeValue());
+                                    }
+                                }
+                            }
+                        }
+                    } else if ("server".equals(childNode.getNodeName())) {
+                        Node item = childNode.getAttributes().getNamedItem(
+                                "protocol");
+                        final Node portNode = childNode.getAttributes()
+                                .getNamedItem("port");
+                        final Node addressNode = childNode.getAttributes()
+                                .getNamedItem("address");
+                        Server server = null;
+
+                        if (item == null) {
+                            item = childNode.getAttributes().getNamedItem(
+                                    "protocols");
+
+                            if (item != null) {
+                                final String[] protocols = item.getNodeValue()
+                                        .split(" ");
+                                final List<Protocol> protocolsList = new ArrayList<Protocol>();
+
+                                for (final String protocol : protocols) {
+                                    protocolsList.add(getProtocol(protocol));
+                                }
+
+                                final int port = getInt(portNode,
+                                        Protocol.UNKNOWN_PORT);
+
+                                if (port == Protocol.UNKNOWN_PORT) {
+                                    getLogger()
+                                            .warning(
+                                                    "Please specify a port when defining a list of protocols.");
+                                } else {
+                                    server = new Server(new Context(),
+                                            protocolsList, getInt(portNode,
+                                                    Protocol.UNKNOWN_PORT),
+                                            getServers().getTarget());
+                                }
+                            }
+                        } else {
+                            final Protocol protocol = getProtocol(item
+                                    .getNodeValue());
+                            server = new Server(
+                                    new Context(),
+                                    protocol,
+                                    getInt(portNode, protocol.getDefaultPort()),
                                     getServers().getTarget());
                         }
-                    }
-                } else {
-                    final Protocol protocol = getProtocol(item.getNodeValue());
-                    server = new Server(getContext(), protocol, getInt(
-                            portNode, protocol.getDefaultPort()), getServers()
-                            .getTarget());
-                }
 
-                if (server != null) {
-                    if (addressNode != null) {
-                        final String address = addressNode.getNodeValue();
-                        if (address != null) {
-                            server.setAddress(address);
+                        if (server != null) {
+                            if (addressNode != null) {
+                                final String address = addressNode
+                                        .getNodeValue();
+                                if (address != null) {
+                                    server.setAddress(address);
+                                }
+                            }
+
+                            // Look for parameters
+                            for (int j = 0; j < childNode.getChildNodes()
+                                    .getLength(); j++) {
+                                final Node childNode2 = childNode
+                                        .getChildNodes().item(j);
+
+                                if ("parameter"
+                                        .equals(childNode2.getNodeName())) {
+                                    final Node nameNode = childNode2
+                                            .getAttributes().getNamedItem(
+                                                    "name");
+                                    final Node valueNode = childNode2
+                                            .getAttributes().getNamedItem(
+                                                    "value");
+
+                                    if ((nameNode != null)
+                                            && (valueNode != null)) {
+                                        server
+                                                .getContext()
+                                                .getParameters()
+                                                .add(
+                                                        nameNode.getNodeValue(),
+                                                        valueNode
+                                                                .getNodeValue());
+                                    }
+                                }
+                            }
+
+                            getServers().add(server);
+                        }
+                    } else if ("defaultHost".equals(childNode.getNodeName())) {
+                        parseHost(getDefaultHost(), childNode);
+                    } else if ("host".equals(childNode.getNodeName())) {
+                        final VirtualHost host = new VirtualHost(getContext());
+                        parseHost(host, childNode);
+                        getHosts().add(host);
+                    } else if ("parameter".equals(childNode.getNodeName())) {
+                        final Node nameNode = childNode.getAttributes()
+                                .getNamedItem("name");
+                        final Node valueNode = childNode.getAttributes()
+                                .getNamedItem("value");
+
+                        if ((nameNode != null) && (valueNode != null)) {
+                            getContext().getParameters().add(
+                                    nameNode.getNodeValue(),
+                                    valueNode.getNodeValue());
+                        }
+                    } else if ("internalRouter".equals(childNode.getNodeName())) {
+                        parseRouter(getInternalRouter(), childNode);
+                    } else if ("logService".equals(childNode.getNodeName())) {
+                        Node item = childNode.getAttributes().getNamedItem(
+                                "logFormat");
+
+                        if (item != null) {
+                            getLogService().setLogFormat(item.getNodeValue());
+                        }
+
+                        item = childNode.getAttributes().getNamedItem(
+                                "loggerName");
+
+                        if (item != null) {
+                            getLogService().setLoggerName(item.getNodeValue());
+                        }
+
+                        item = childNode.getAttributes()
+                                .getNamedItem("enabled");
+
+                        if (item != null) {
+                            getLogService().setEnabled(getBoolean(item, true));
+                        }
+
+                        item = childNode.getAttributes().getNamedItem(
+                                "identityCheck");
+
+                        if (item != null) {
+                            getLogService().setIdentityCheck(
+                                    getBoolean(item, true));
+                        }
+                    } else if ("statusService".equals(childNode.getNodeName())) {
+                        Node item = childNode.getAttributes().getNamedItem(
+                                "contactEmail");
+
+                        if (item != null) {
+                            getStatusService().setContactEmail(
+                                    item.getNodeValue());
+                        }
+
+                        item = childNode.getAttributes()
+                                .getNamedItem("enabled");
+
+                        if (item != null) {
+                            getStatusService().setEnabled(
+                                    getBoolean(item, true));
+                        }
+
+                        item = childNode.getAttributes()
+                                .getNamedItem("homeRef");
+
+                        if (item != null) {
+                            getStatusService().setHomeRef(
+                                    new Reference(item.getNodeValue()));
+                        }
+
+                        item = childNode.getAttributes().getNamedItem(
+                                "overwrite");
+
+                        if (item != null) {
+                            getStatusService().setOverwrite(
+                                    getBoolean(item, true));
                         }
                     }
-
-                    getServers().add(server);
                 }
-
-                // Look for default host
-                final NodeList defaultHostNodes = document
-                        .getElementsByTagName("defaultHost");
-
-                if (defaultHostNodes.getLength() > 0) {
-                    parseHost(getDefaultHost(), defaultHostNodes.item(0));
-                }
-
-                // Look for other virtual hosts
-                final NodeList hostNodes = document
-                        .getElementsByTagName("host");
-
-                for (int j = 0; j < hostNodes.getLength(); j++) {
-                    final VirtualHost host = new VirtualHost();
-                    parseHost(host, hostNodes.item(j));
-                    getHosts().add(host);
-                }
-            }
-
-            // Look for internal router
-            final NodeList internalRouterNodes = document
-                    .getElementsByTagName("internalRouter");
-
-            if (internalRouterNodes.getLength() > 0) {
-                parseRouter(getInternalRouter(), internalRouterNodes.item(0));
-            }
-
-            // Look for logService
-            final NodeList logServiceNodes = document
-                    .getElementsByTagName("logService");
-
-            if (logServiceNodes.getLength() > 0) {
-                final Node node = logServiceNodes.item(0);
-                Node item = node.getAttributes().getNamedItem("logFormat");
-
-                if (item != null) {
-                    getLogService().setLogFormat(item.getNodeValue());
-                }
-
-                item = node.getAttributes().getNamedItem("loggerName");
-
-                if (item != null) {
-                    getLogService().setLoggerName(item.getNodeValue());
-                }
-
-                item = node.getAttributes().getNamedItem("enabled");
-
-                if (item != null) {
-                    getLogService().setEnabled(getBoolean(item, true));
-                }
-
-                item = node.getAttributes().getNamedItem("identityCheck");
-
-                if (item != null) {
-                    getLogService().setIdentityCheck(getBoolean(item, true));
-                }
-            }
-
-            // Look for statusService
-            final NodeList statusServiceNodes = document
-                    .getElementsByTagName("statusService");
-
-            if (statusServiceNodes.getLength() > 0) {
-                final Node node = statusServiceNodes.item(0);
-                Node item = node.getAttributes().getNamedItem("contactEmail");
-
-                if (item != null) {
-                    getStatusService().setContactEmail(item.getNodeValue());
-                }
-
-                item = node.getAttributes().getNamedItem("enabled");
-
-                if (item != null) {
-                    getStatusService().setEnabled(getBoolean(item, true));
-                }
-
-                item = node.getAttributes().getNamedItem("homeRef");
-
-                if (item != null) {
-                    getStatusService().setHomeRef(
-                            new Reference(item.getNodeValue()));
-                }
-
-                item = node.getAttributes().getNamedItem("overwrite");
-
-                if (item != null) {
-                    getStatusService().setOverwrite(getBoolean(item, true));
-                }
+            } else {
+                getLogger()
+                        .log(Level.WARNING,
+                                "Unable to find the root \"component\" node in the XML configuration.");
             }
         } catch (final Exception e) {
             getLogger().log(Level.WARNING,
@@ -423,7 +524,7 @@ public class Component extends Restlet {
                     } catch (final NoSuchMethodException e) {
                         getLogger()
                                 .log(
-                                        Level.WARNING,
+                                        Level.FINE,
                                         "Couldn't invoke the constructor of the target class. Please check this class has a constructor with a single parameter of type Context. The empty constructor and the context setter will be used instead.",
                                         e);
 
@@ -432,9 +533,6 @@ public class Component extends Restlet {
                         // constructor then invoke the setContext method.
                         target = (Restlet) targetClass.getConstructor()
                                 .newInstance();
-
-                        // Set the context based on the component's context
-                        target.setContext(getContext());
                     }
 
                     if (target != null) {

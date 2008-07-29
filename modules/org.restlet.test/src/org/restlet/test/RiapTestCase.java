@@ -58,7 +58,7 @@ public class RiapTestCase extends TestCase {
     @SuppressWarnings("unchecked")
     public void testRiap() throws Exception {
         final Component comp = new Component();
-        final Application localOnly = new Application(comp.getContext()) {
+        final Application localOnly = new Application() {
             @Override
             public Restlet createRoot() {
                 return new Restlet(getContext()) {

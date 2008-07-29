@@ -49,6 +49,10 @@
       <sequence>
          <element name="client" type="tns:ClientType" minOccurs="0"
             maxOccurs="unbounded" />
+         <element name="server" type="tns:ServerType" minOccurs="0"
+            maxOccurs="unbounded" />
+         <element name="parameter" type="tns:ParameterType" 
+            minOccurs="0" maxOccurs="unbounded" />
          <element name="defaultHost" type="tns:VirtualHostType"
             minOccurs="0" maxOccurs="1" />
          <element name="host" type="tns:VirtualHostType" minOccurs="0"
@@ -57,14 +61,16 @@
             minOccurs="0" maxOccurs="1" />
          <element name="logService" type="tns:LogServiceType"
             minOccurs="0" maxOccurs="1" />
-         <element name="server" type="tns:ServerType" minOccurs="0"
-            maxOccurs="unbounded" />
          <element name="statusService" type="tns:StatusServiceType"
             minOccurs="0" maxOccurs="1" />
       </sequence>
    </complexType>
 
    <complexType name="ConnectorType" abstract="true">
+      <sequence>
+         <element name="parameter" type="tns:ParameterType" 
+            minOccurs="0" maxOccurs="unbounded" />
+      </sequence>
       <attribute name="protocol" type="string" use="optional" />
       <attribute name="protocols" type="tns:ProtocolListType"
          use="optional">
@@ -76,6 +82,11 @@
       <attribute name="identityCheck" type="boolean" use="optional" />
       <attribute name="logFormat" type="string" use="optional" />
       <attribute name="loggerName" type="string" use="optional" />
+   </complexType>
+
+   <complexType name="ParameterType">
+      <attribute name="name" type="string" />
+      <attribute name="value" type="string" />
    </complexType>
 
    <complexType name="RouterType">

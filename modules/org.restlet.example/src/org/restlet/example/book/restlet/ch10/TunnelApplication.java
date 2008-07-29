@@ -1,7 +1,6 @@
 package org.restlet.example.book.restlet.ch10;
 
 import org.restlet.Application;
-import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -13,8 +12,10 @@ import org.restlet.resource.StringRepresentation;
 
 public class TunnelApplication extends Application {
 
-    public TunnelApplication(Context parentContext) {
-        super(parentContext);
+    /**
+     * Constructor.
+     */
+    public TunnelApplication() {
         // Update the default value of the method parameter
         getTunnelService().setMethodParameter("_method");
     }

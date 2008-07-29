@@ -30,7 +30,6 @@ import java.util.logging.Logger;
 import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
-import org.restlet.Context;
 import org.restlet.Directory;
 import org.restlet.Guard;
 import org.restlet.Server;
@@ -323,12 +322,9 @@ public abstract class Engine {
      * 
      * @param application
      *            The application to help.
-     * @param parentContext
-     *            The parent context, typically the component's context.
      * @return The new helper.
      */
-    public abstract Helper<Application> createHelper(Application application,
-            Context parentContext);
+    public abstract Helper<Application> createHelper(Application application);
 
     /**
      * Creates a new helper for a given client connector.

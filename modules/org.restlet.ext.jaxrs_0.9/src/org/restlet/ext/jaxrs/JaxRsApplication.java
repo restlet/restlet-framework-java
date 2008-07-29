@@ -84,8 +84,7 @@ public class JaxRsApplication extends Application {
     private volatile JaxRsRestlet jaxRsRestlet;
 
     /**
-     * Creates an new JaxRsApplication. You should typically use one of the
-     * other constructors, see {@link Restlet#Restlet()}.
+     * Creates an new JaxRsApplication.
      * 
      * @see #JaxRsApplication(Context)
      */
@@ -101,13 +100,14 @@ public class JaxRsApplication extends Application {
      * Use {@link #setGuard(Guard)} and {@link #setRoleChecker(RoleChecker)} or
      * {@link #setAuthentication(Guard, RoleChecker)}, to set access control.<br>
      * 
-     * @param parentContext
-     *            The parent component context.
+     * @param context
+     *            The application's dedicated context based on the protected
+     *            parent component's context.
      */
-    public JaxRsApplication(Context parentContext) {
-        super(parentContext);
+    public JaxRsApplication(Context context) {
+        super(context);
         getTunnelService().setExtensionsTunnel(false);
-        this.jaxRsRestlet = new JaxRsRestlet(getContext(), getMetadataService());
+        this.jaxRsRestlet = new JaxRsRestlet(context, getMetadataService());
     }
 
     /**
@@ -368,6 +368,12 @@ public class JaxRsApplication extends Application {
     public void setAuthentication(Guard guard, RoleChecker roleChecker) {
         setGuard(guard);
         setRoleChecker(roleChecker);
+    }
+
+    @Override
+    public void setContext(Context context) {
+        super.setContext(context);
+        this.jaxRsRestlet.setContext(context);
     }
 
     /**

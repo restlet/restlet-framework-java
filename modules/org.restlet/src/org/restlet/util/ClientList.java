@@ -53,7 +53,8 @@ public final class ClientList extends WrapperList<Client> {
      * @return The added client.
      */
     public Client add(Protocol protocol) {
-        final Client result = new Client(getContext(), protocol);
+        final Client result = new Client(getContext().createChildContext(),
+                protocol);
         add(result);
         return result;
     }

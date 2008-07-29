@@ -245,7 +245,7 @@ public class Router extends Restlet {
      *            The target Resource class to attach.
      * @return The new finder instance.
      */
-    private Finder createFinder(Class<? extends Resource> targetClass) {
+    protected Finder createFinder(Class<? extends Resource> targetClass) {
         Finder result = null;
 
         if (getFinderClass() != null) {

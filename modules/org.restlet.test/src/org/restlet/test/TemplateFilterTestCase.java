@@ -53,12 +53,10 @@ public class TemplateFilterTestCase extends TestCase {
         /**
          * Constructor.
          * 
-         * @param context
-         *            The parent context.
+         * @param testDirectory
+         *            The test directory.
          */
-        public MyFreemakerApplication(Context context, File testDirectory) {
-            super(context);
-
+        public MyFreemakerApplication(File testDirectory) {
             setTestDirectory(testDirectory);
             // Create a Directory that manages a local directory
             this.directory = new Directory(getContext(), LocalReference
@@ -103,7 +101,8 @@ public class TemplateFilterTestCase extends TestCase {
          * Constructor.
          * 
          * @param context
-         *            The parent context.
+         *            The application's dedicated context based on the protected
+         *            parent component's context.
          */
         public MyVelocityApplication(Context context, File testDirectory) {
             super(context);
@@ -202,7 +201,7 @@ public class TemplateFilterTestCase extends TestCase {
 
             // Create an application filtered with Freemarker
             final MyFreemakerApplication freemarkerApplication = new MyFreemakerApplication(
-                    component.getContext(), this.testDir);
+                    this.testDir);
             // Create an application filtered with Velocity
             final MyVelocityApplication velocityApplication = new MyVelocityApplication(
                     component.getContext(), this.testDir);

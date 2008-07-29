@@ -76,10 +76,6 @@ public class Client extends Connector {
             if (Engine.getInstance() != null) {
                 this.helper = Engine.getInstance().createHelper(this,
                         helperClass);
-
-                // Create the client context
-                setContext(this.helper.createContext(getClass()
-                        .getCanonicalName()));
             }
         }
     }

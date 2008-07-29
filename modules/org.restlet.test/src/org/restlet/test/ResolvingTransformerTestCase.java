@@ -36,7 +36,6 @@ import junit.framework.TestCase;
 
 import org.restlet.Application;
 import org.restlet.Component;
-import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.data.LocalReference;
 import org.restlet.data.MediaType;
@@ -108,13 +107,6 @@ public class ResolvingTransformerTestCase extends TestCase {
         private final Map<String, Representation> uriMap = new HashMap<String, Representation>();
 
         public SimpleUriMapApplication() {
-            super();
-            // Turn off the useless extension tunnel.
-            getTunnelService().setExtensionsTunnel(false);
-        }
-
-        public SimpleUriMapApplication(Context parentContext) {
-            super(parentContext);
             // Turn off the useless extension tunnel.
             getTunnelService().setExtensionsTunnel(false);
         }

@@ -19,7 +19,6 @@
 package org.restlet.test.gwt.server;
 
 import org.restlet.Application;
-import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -31,10 +30,6 @@ import org.restlet.data.Response;
  * @author Rob Heittman
  */
 public class TestApplication extends Application {
-
-    public TestApplication(Context context) {
-        super(context);
-    }
 
     @Override
     public Restlet createRoot() {

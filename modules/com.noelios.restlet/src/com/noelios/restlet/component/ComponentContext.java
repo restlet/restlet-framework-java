@@ -18,9 +18,10 @@
 
 package com.noelios.restlet.component;
 
-import java.util.logging.Logger;
-
+import org.restlet.Component;
 import org.restlet.Context;
+
+import com.noelios.restlet.application.ApplicationContext;
 
 /**
  * Context allowing access to the component's connectors.
@@ -28,6 +29,24 @@ import org.restlet.Context;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class ComponentContext extends Context {
+    /**
+     * Returns a non-null logger name.
+     * 
+     * @param component
+     *            The component.
+     * @return The logger name.
+     */
+    private static String getLoggerName(Component component) {
+        String result = component.getClass().getCanonicalName();
+        if (result == null) {
+            result = "org.restlet.component";
+        }
+
+        result += "#" + component.hashCode();
+
+        return result;
+    }
+
     /** The client dispatcher. */
     private volatile ComponentClientDispatcher clientDispatcher;
 
@@ -45,11 +64,17 @@ public class ComponentContext extends Context {
      * @param logger
      *            The logger instance of use.
      */
-    public ComponentContext(ComponentHelper componentHelper, Logger logger) {
-        super(logger);
+    public ComponentContext(ComponentHelper componentHelper) {
+        super(getLoggerName(componentHelper.getHelped()));
         this.componentHelper = componentHelper;
         this.clientDispatcher = new ComponentClientDispatcher(this);
         this.serverDispatcher = new ComponentServerDispatcher(this);
+    }
+
+    @Override
+    public Context createChildContext() {
+        return new ApplicationContext(getComponentHelper().getHelped()
+                .getContext());
     }
 
     @Override

@@ -287,15 +287,14 @@ public class Engine extends org.restlet.util.Engine {
     }
 
     @Override
-    public Resource createDirectoryResource(Directory handler, Request request,
-            Response response) throws IOException {
-        return new DirectoryResource(handler, request, response);
+    public Resource createDirectoryResource(Directory directory,
+            Request request, Response response) throws IOException {
+        return new DirectoryResource(directory, request, response);
     }
 
     @Override
-    public ApplicationHelper createHelper(Application application,
-            Context parentContext) {
-        return new ApplicationHelper(application, parentContext);
+    public ApplicationHelper createHelper(Application application) {
+        return new ApplicationHelper(application);
     }
 
     @Override

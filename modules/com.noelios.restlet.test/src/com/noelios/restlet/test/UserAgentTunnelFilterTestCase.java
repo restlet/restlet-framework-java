@@ -21,7 +21,6 @@ package com.noelios.restlet.test;
 import junit.framework.TestCase;
 
 import org.restlet.Application;
-import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.Router;
 import org.restlet.data.MediaType;
@@ -61,7 +60,7 @@ public class UserAgentTunnelFilterTestCase extends TestCase {
 
     @Override
     public void setUp() {
-        this.application = new Application(new Context()) {
+        this.application = new Application() {
             @Override
             public Restlet createRoot() {
                 final Router router = new Router(getContext());

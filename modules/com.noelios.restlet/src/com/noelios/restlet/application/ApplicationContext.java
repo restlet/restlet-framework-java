@@ -32,18 +32,28 @@ import org.restlet.Uniform;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class ApplicationContext extends Context {
+
     /**
-     * Returns a non-null logger name.
+     * Returns the standard logger name for the given application.
      * 
      * @param application
-     *            The application.
-     * @return The logger name.
+     *            The application to log about.
+     * @return The standard logger name.
      */
-    private static String getLoggerName(Application application) {
-        String result = application.getClass().getCanonicalName();
-        if (result == null) {
-            result = "org.restlet.application";
+    public static String getLoggerName(Application application) {
+        String result = null;
+        Context context = application.getContext();
+
+        if (context != null) {
+            result = application.getClass().getCanonicalName();
+
+            if (result == null) {
+                result = "org.restlet.application";
+            }
+
+            result += "#" + application.hashCode();
         }
+
         return result;
     }
 
@@ -81,6 +91,21 @@ public class ApplicationContext extends Context {
     }
 
     /**
+     * Constructor.
+     * 
+     * @param parentContext
+     *            The parent context.
+     */
+    public ApplicationContext(Context parentContext) {
+        super("org.restlet.application");
+        this.parentContext = parentContext;
+        this.clientDispatcher = new ApplicationClientDispatcher(this);
+        this.serverDispatcher = (getParentContext() != null) ? getParentContext()
+                .getServerDispatcher()
+                : null;
+    }
+
+    /**
      * Returns the application.
      * 
      * @return the application.
@@ -106,6 +131,16 @@ public class ApplicationContext extends Context {
     @Override
     public Uniform getServerDispatcher() {
         return this.serverDispatcher;
+    }
+
+    /**
+     * Sets the application.
+     * 
+     * @param application
+     *            The application.
+     */
+    public void setApplication(Application application) {
+        this.application = application;
     }
 
 }

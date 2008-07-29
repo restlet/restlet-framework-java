@@ -50,6 +50,9 @@ public class Application extends org.restlet.Application {
 
     private final ObjectContainer container;
 
+    /**
+     * Constructor.
+     */
     public Application() {
         /** Open and keep the db4o object container. */
         final Configuration config = Db4o.newConfiguration();

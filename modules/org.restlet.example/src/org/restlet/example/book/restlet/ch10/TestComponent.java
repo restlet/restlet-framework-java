@@ -24,7 +24,7 @@ public class TestComponent {
 
         // Attach the application to the component and start it
         component.getDefaultHost().attach("/dynamicApplication",
-                new DynamicApplication(component.getContext()));
+                new DynamicApplication());
 
         component.start();
 

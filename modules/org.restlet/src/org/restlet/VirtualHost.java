@@ -23,6 +23,7 @@ import java.net.UnknownHostException;
 
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.resource.Resource;
 
 /**
  * Router of calls from Server connectors to Restlets. The attached Restlets are
@@ -213,6 +214,92 @@ public class VirtualHost extends Router {
 
         this.serverAddress = serverAddress;
         this.serverPort = serverPort;
+    }
+
+    /**
+     * Attaches a target Restlet to this router with an empty URI pattern. A new
+     * route will be added routing to the target when any call is received.
+     * 
+     * In addition to super class behavior, this method will set the context of
+     * the target if it is empty by creating a protected context via the
+     * {@link Context#createChildContext()} method.
+     * 
+     * @param target
+     *            The target Restlet to attach.
+     * @return The created route.
+     */
+    @Override
+    public Route attach(Restlet target) {
+        if (target.getContext() == null) {
+            target.setContext(getContext().createChildContext());
+        }
+
+        return super.attach(target);
+    }
+
+    /**
+     * Attaches a target Restlet to this router based on a given URI pattern. A
+     * new route will be added routing to the target when calls with a URI
+     * matching the pattern will be received.
+     * 
+     * In addition to super class behavior, this method will set the context of
+     * the target if it is empty by creating a protected context via the
+     * {@link Context#createChildContext()} method.
+     * 
+     * @param uriPattern
+     *            The URI pattern that must match the relative part of the
+     *            resource URI.
+     * @param target
+     *            The target Restlet to attach.
+     * @return The created route.
+     */
+    @Override
+    public Route attach(String uriPattern, Restlet target) {
+        if (target.getContext() == null) {
+            target.setContext(getContext().createChildContext());
+        }
+
+        return super.attach(uriPattern, target);
+    }
+
+    /**
+     * Attaches a Restlet to this router as the default target to invoke when no
+     * route matches. It actually sets a default route that scores all calls to
+     * 1.0.
+     * 
+     * In addition to super class behavior, this method will set the context of
+     * the target if it is empty by creating a protected context via the
+     * {@link Context#createChildContext()} method.
+     * 
+     * @param defaultTarget
+     *            The Restlet to use as the default target.
+     * @return The created route.
+     */
+    @Override
+    public Route attachDefault(Restlet defaultTarget) {
+        if (defaultTarget.getContext() == null) {
+            defaultTarget.setContext(getContext().createChildContext());
+        }
+
+        return super.attachDefault(defaultTarget);
+    }
+
+    /**
+     * Creates a new finder instance based on the "targetClass" property.
+     * 
+     * In addition to super class behavior, this method will set the context of
+     * the finder by creating a protected context via the
+     * {@link Context#createChildContext()} method.
+     * 
+     * @param targetClass
+     *            The target Resource class to attach.
+     * @return The new finder instance.
+     */
+    @Override
+    protected Finder createFinder(Class<? extends Resource> targetClass) {
+        Finder result = super.createFinder(targetClass);
+        result.setContext(getContext().createChildContext());
+        return result;
     }
 
     @Override

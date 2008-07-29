@@ -20,7 +20,6 @@ package org.restlet.example.tutorial;
 
 import org.restlet.Application;
 import org.restlet.Component;
-import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.Router;
 import org.restlet.data.Protocol;
@@ -45,21 +44,11 @@ public class Part12 extends Application {
         component.getServers().add(Protocol.HTTP, 8182);
 
         // Create an application
-        final Application application = new Part12(component.getContext());
+        final Application application = new Part12();
 
         // Attach the application to the component and start it
         component.getDefaultHost().attachDefault(application);
         component.start();
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param parentContext
-     *            The component's context.
-     */
-    public Part12(Context parentContext) {
-        super(parentContext);
     }
 
     @Override

@@ -37,8 +37,8 @@ import org.restlet.util.Series;
 /**
  * Contextual data and services provided to a Restlet. The context is the means
  * by which a Restlet may access the software environment within the framework.
- * It is typically provided by the immediate parent Restlet (Component and
- * Application are the most common cases).<br>
+ * It is typically provided by the immediate parent Restlet (Application is the
+ * most common case).<br>
  * <br>
  * Note that attributes and parameters of a context are stored in concurrent
  * collections that guarantee thread safe access and modification. If several
@@ -123,24 +123,24 @@ public class Context {
     }
 
     /**
+     * Creates a protected child context. This is especially useful for new
+     * application attached to their parent component, to ensure their isolation
+     * from the other applications. By default it just creates a new context
+     * instance.
+     * 
+     * @return The child context.
+     */
+    public Context createChildContext() {
+        return new Context();
+    }
+
+    /**
      * Creates a new executor service.
      * 
      * @return A new executor service.
      */
     private ExecutorService createExecutorService() {
         return wrapExecutorService(Executors.newCachedThreadPool());
-    }
-
-    /**
-     * Returns the parent application if it exists, or null.
-     * 
-     * @return The parent application if it exists, or null.
-     * @deprecated Use the {@link Application#getCurrent()} static method
-     *             instead.
-     */
-    @Deprecated
-    public Application getApplication() {
-        return Application.getCurrent();
     }
 
     /**
@@ -278,9 +278,7 @@ public class Context {
      * 
      * @param logger
      *            The logger.
-     * @deprecated No compelling need for this.
      */
-    @Deprecated
     public void setLogger(Logger logger) {
         this.logger = logger;
     }
@@ -309,6 +307,7 @@ public class Context {
     public ExecutorService wrapExecutorService(
             final ExecutorService executorService) {
         return new AbstractExecutorService() {
+                        
 
             public boolean awaitTermination(long timeout, TimeUnit unit)
                     throws InterruptedException {

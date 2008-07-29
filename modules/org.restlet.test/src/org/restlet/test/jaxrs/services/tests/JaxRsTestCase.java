@@ -31,6 +31,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.core.ApplicationConfig;
 
 import org.restlet.Application;
+import org.restlet.Context;
 import org.restlet.Guard;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
@@ -272,7 +273,7 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
      */
     public JaxRsApplication createApplication(ApplicationConfig appConfig,
             ChallengeScheme challengeScheme, RoleChecker roleChecker) {
-        final JaxRsApplication application = new JaxRsApplication();
+        final JaxRsApplication application = new JaxRsApplication(new Context());
         if (roleChecker != null) {
             application.setRoleChecker(roleChecker);
             final Guard guard = createGuard(application.getContext(),

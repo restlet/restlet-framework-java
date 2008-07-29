@@ -231,8 +231,7 @@ public class HttpBasicTestCase extends TestCase {
         this.component.getServers().add(Protocol.HTTP, port);
         this.uri = "http://localhost:" + port + "/";
 
-        final Application application = new Application(this.component
-                .getContext()) {
+        final Application application = new Application() {
             @Override
             public Restlet createRoot() {
                 HttpBasicTestCase.this.guard = new TestGuard(getContext());
