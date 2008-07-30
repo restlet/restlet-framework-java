@@ -182,145 +182,161 @@ public class DirectoryResource extends Resource {
             this.targetUri = directory.getRootRef().toString();
         }
 
-        // Try to detect the presence of a directory
-        Response contextResponse = getClientDispatcher().get(this.targetUri);
-        if (contextResponse.getEntity() != null) {
-            // As a convention, underlying client connectors return the
-            // directory listing with the media-type "MediaType.TEXT_URI_LIST"
-            // when handling directories
-            if (MediaType.TEXT_URI_LIST.equals(contextResponse.getEntity()
-                    .getMediaType())) {
-                this.directoryTarget = true;
-                this.fileTarget = false;
-                this.directoryContent = new ReferenceList(contextResponse
-                        .getEntity());
-                if (!request.getResourceRef().getIdentifier().endsWith("/")) {
-                    // All requests will be automatically redirected
-                    this.directoryRedirection = true;
-                }
-
-                if (!this.targetUri.endsWith("/")) {
-                    this.targetUri += "/";
-                    this.relativePart += "/";
-                }
-
-                // Append the index name
-                if ((getDirectory().getIndexName() != null)
-                        && (getDirectory().getIndexName().length() > 0)) {
-                    this.directoryUri = this.targetUri;
-                    this.baseName = getDirectory().getIndexName();
-                    this.targetUri = this.directoryUri + this.baseName;
-                    this.indexTarget = true;
-                } else {
-                    this.directoryUri = this.targetUri;
-                    this.baseName = null;
-                }
-            } else {
-                // Allows underlying helpers that do not support "content
-                // negotiation" to return the targetted file.
-                this.directoryTarget = false;
-                this.fileTarget = true;
-                this.fileContent = contextResponse.getEntity();
-            }
+        if (getClientDispatcher() == null) {
+            getLogger().warning(
+                    "No client dispatcher is available on the context. Can't get the target URI: "
+                            + this.targetUri);
         } else {
-            this.directoryTarget = false;
-            this.fileTarget = false;
-
-            // Let's try with the facultative index, in case the underlying
-            // client connector does not handle directory listing.
-            if (this.targetUri.endsWith("/")) {
-                // In this case, the trailing "/" shows that the URIs must
-                // point to a directory
-                if ((getDirectory().getIndexName() != null)
-                        && (getDirectory().getIndexName().length() > 0)) {
-                    this.directoryUri = this.targetUri;
+            // Try to detect the presence of a directory
+            Response contextResponse = getClientDispatcher()
+                    .get(this.targetUri);
+            if (contextResponse.getEntity() != null) {
+                // As a convention, underlying client connectors return the
+                // directory listing with the media-type
+                // "MediaType.TEXT_URI_LIST"
+                // when handling directories
+                if (MediaType.TEXT_URI_LIST.equals(contextResponse.getEntity()
+                        .getMediaType())) {
                     this.directoryTarget = true;
-
-                    contextResponse = getClientDispatcher().get(
-                            this.directoryUri + getDirectory().getIndexName());
-                    if (contextResponse.getEntity() != null) {
-                        this.baseName = getDirectory().getIndexName();
-                        this.targetUri = this.directoryUri + this.baseName;
-                        this.directoryContent = new ReferenceList();
-                        this.directoryContent
-                                .add(new Reference(this.targetUri));
-                        this.indexTarget = true;
-                    }
-                }
-            } else {
-                // Try to determine if this target URI with no trailing "/" is a
-                // directory, in order to force the redirection.
-                if ((getDirectory().getIndexName() != null)
-                        && (getDirectory().getIndexName().length() > 0)) {
-                    // Append the index name
-                    contextResponse = getClientDispatcher().get(
-                            this.targetUri + "/"
-                                    + getDirectory().getIndexName());
-                    if (contextResponse.getEntity() != null) {
-                        this.directoryUri = this.targetUri + "/";
-                        this.baseName = getDirectory().getIndexName();
-                        this.targetUri = this.directoryUri + this.baseName;
-                        this.directoryTarget = true;
+                    this.fileTarget = false;
+                    this.directoryContent = new ReferenceList(contextResponse
+                            .getEntity());
+                    if (!request.getResourceRef().getIdentifier().endsWith("/")) {
+                        // All requests will be automatically redirected
                         this.directoryRedirection = true;
-                        this.directoryContent = new ReferenceList();
-                        this.directoryContent
-                                .add(new Reference(this.targetUri));
+                    }
+
+                    if (!this.targetUri.endsWith("/")) {
+                        this.targetUri += "/";
+                        this.relativePart += "/";
+                    }
+
+                    // Append the index name
+                    if ((getDirectory().getIndexName() != null)
+                            && (getDirectory().getIndexName().length() > 0)) {
+                        this.directoryUri = this.targetUri;
+                        this.baseName = getDirectory().getIndexName();
+                        this.targetUri = this.directoryUri + this.baseName;
                         this.indexTarget = true;
+                    } else {
+                        this.directoryUri = this.targetUri;
+                        this.baseName = null;
+                    }
+                } else {
+                    // Allows underlying helpers that do not support "content
+                    // negotiation" to return the targetted file.
+                    this.directoryTarget = false;
+                    this.fileTarget = true;
+                    this.fileContent = contextResponse.getEntity();
+                }
+            } else {
+                this.directoryTarget = false;
+                this.fileTarget = false;
+
+                // Let's try with the facultative index, in case the underlying
+                // client connector does not handle directory listing.
+                if (this.targetUri.endsWith("/")) {
+                    // In this case, the trailing "/" shows that the URIs must
+                    // point to a directory
+                    if ((getDirectory().getIndexName() != null)
+                            && (getDirectory().getIndexName().length() > 0)) {
+                        this.directoryUri = this.targetUri;
+                        this.directoryTarget = true;
+
+                        contextResponse = getClientDispatcher().get(
+                                this.directoryUri
+                                        + getDirectory().getIndexName());
+                        if (contextResponse.getEntity() != null) {
+                            this.baseName = getDirectory().getIndexName();
+                            this.targetUri = this.directoryUri + this.baseName;
+                            this.directoryContent = new ReferenceList();
+                            this.directoryContent.add(new Reference(
+                                    this.targetUri));
+                            this.indexTarget = true;
+                        }
+                    }
+                } else {
+                    // Try to determine if this target URI with no trailing "/"
+                    // is a
+                    // directory, in order to force the redirection.
+                    if ((getDirectory().getIndexName() != null)
+                            && (getDirectory().getIndexName().length() > 0)) {
+                        // Append the index name
+                        contextResponse = getClientDispatcher().get(
+                                this.targetUri + "/"
+                                        + getDirectory().getIndexName());
+                        if (contextResponse.getEntity() != null) {
+                            this.directoryUri = this.targetUri + "/";
+                            this.baseName = getDirectory().getIndexName();
+                            this.targetUri = this.directoryUri + this.baseName;
+                            this.directoryTarget = true;
+                            this.directoryRedirection = true;
+                            this.directoryContent = new ReferenceList();
+                            this.directoryContent.add(new Reference(
+                                    this.targetUri));
+                            this.indexTarget = true;
+                        }
                     }
                 }
             }
-        }
 
-        // In case the request does not target a directory and the file has not
-        // been found, try with the tunnelled URI
-        if (isNegotiateContent() && !this.directoryTarget && !this.fileTarget
-                && (this.originalRef != null)) {
-            this.relativePart = request.getResourceRef().getRemainingPart();
+            // In case the request does not target a directory and the file has
+            // not
+            // been found, try with the tunnelled URI
+            if (isNegotiateContent() && !this.directoryTarget
+                    && !this.fileTarget && (this.originalRef != null)) {
+                this.relativePart = request.getResourceRef().getRemainingPart();
 
-            // The target uri does not take into account the query and fragment
-            // parts of the resource.
-            this.targetUri = new Reference(directory.getRootRef().toString()
-                    + this.relativePart).normalize().toString(false, false);
-            if (!this.targetUri.startsWith(directory.getRootRef().toString())) {
-                // Prevent the client from accessing resources in upper
-                // directories
-                this.targetUri = directory.getRootRef().toString();
-            }
-        }
-
-        // Try to get the directory content, in case the request does not target
-        // a directory
-        if (!this.directoryTarget) {
-            final int lastSlashIndex = this.targetUri.lastIndexOf('/');
-            if (lastSlashIndex == -1) {
-                this.directoryUri = "";
-                this.baseName = this.targetUri;
-            } else {
-                this.directoryUri = this.targetUri.substring(0,
-                        lastSlashIndex + 1);
-                this.baseName = this.targetUri.substring(lastSlashIndex + 1);
+                // The target uri does not take into account the query and
+                // fragment
+                // parts of the resource.
+                this.targetUri = new Reference(directory.getRootRef()
+                        .toString()
+                        + this.relativePart).normalize().toString(false, false);
+                if (!this.targetUri.startsWith(directory.getRootRef()
+                        .toString())) {
+                    // Prevent the client from accessing resources in upper
+                    // directories
+                    this.targetUri = directory.getRootRef().toString();
+                }
             }
 
-            contextResponse = getClientDispatcher().get(this.directoryUri);
-            if ((contextResponse.getEntity() != null)
-                    && MediaType.TEXT_URI_LIST.equals(contextResponse
-                            .getEntity().getMediaType())) {
-                this.directoryContent = new ReferenceList(contextResponse
-                        .getEntity());
+            // Try to get the directory content, in case the request does not
+            // target
+            // a directory
+            if (!this.directoryTarget) {
+                final int lastSlashIndex = this.targetUri.lastIndexOf('/');
+                if (lastSlashIndex == -1) {
+                    this.directoryUri = "";
+                    this.baseName = this.targetUri;
+                } else {
+                    this.directoryUri = this.targetUri.substring(0,
+                            lastSlashIndex + 1);
+                    this.baseName = this.targetUri
+                            .substring(lastSlashIndex + 1);
+                }
+
+                contextResponse = getClientDispatcher().get(this.directoryUri);
+                if ((contextResponse.getEntity() != null)
+                        && MediaType.TEXT_URI_LIST.equals(contextResponse
+                                .getEntity().getMediaType())) {
+                    this.directoryContent = new ReferenceList(contextResponse
+                            .getEntity());
+                }
             }
-        }
 
-        if (this.baseName != null) {
-            // Remove the extensions from the base name
-            final int firstDotIndex = this.baseName.indexOf('.');
-            if (firstDotIndex != -1) {
-                // Store the set of extensions
-                this.baseExtensions = getExtensions(this.baseName);
+            if (this.baseName != null) {
+                // Remove the extensions from the base name
+                final int firstDotIndex = this.baseName.indexOf('.');
+                if (firstDotIndex != -1) {
+                    // Store the set of extensions
+                    this.baseExtensions = getExtensions(this.baseName);
 
-                // Remove stored extensions from the base name
-                this.baseName = this.baseName.substring(0, firstDotIndex);
+                    // Remove stored extensions from the base name
+                    this.baseName = this.baseName.substring(0, firstDotIndex);
+                }
+
             }
-
         }
 
         // Check if the resource exists or not.
