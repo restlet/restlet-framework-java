@@ -9,7 +9,9 @@ Export-Package: com.noelios.restlet.ext.ssl;
    jsslutils.sslcontext,
    jsslutils.sslcontext.trustmanagers"
 Import-Package: com.noelios.restlet.util,
+ jsslutils.keystores,
  jsslutils.sslcontext,
+ jsslutils.sslcontext.keymanagers,
  jsslutils.sslcontext.trustmanagers,
  org.restlet,
  org.restlet.data,
