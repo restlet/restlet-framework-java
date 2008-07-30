@@ -23,7 +23,6 @@ import java.util.List;
 
 /**
  * Root object that manages a set of mailboxes and users.
- * 
  */
 public class MailRoot extends BaseObject {
 

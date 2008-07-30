@@ -24,7 +24,6 @@ import java.util.List;
 
 /**
  * Mail exchanged between a sender and receivers.
- * 
  */
 public class Mail extends BaseObject {
 

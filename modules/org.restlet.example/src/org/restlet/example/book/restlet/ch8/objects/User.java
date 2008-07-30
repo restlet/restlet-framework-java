@@ -20,7 +20,6 @@ package org.restlet.example.book.restlet.ch8.objects;
 
 /**
  * User account.
- * 
  */
 public class User extends BaseObject {
 

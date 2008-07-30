@@ -39,7 +39,6 @@ import org.restlet.util.Series;
 
 /**
  * Resource for a mailbox.
- * 
  */
 public class MailboxResource extends BaseResource {
 

@@ -23,7 +23,6 @@ import java.util.List;
 
 /**
  * Feed seen as a list of mails having their tags in a defined set.
- * 
  */
 public class Feed extends BaseObject {
 

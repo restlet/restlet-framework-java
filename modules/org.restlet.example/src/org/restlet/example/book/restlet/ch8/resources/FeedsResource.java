@@ -37,7 +37,6 @@ import org.restlet.resource.Variant;
 
 /**
  * Resource for a list of feeds.
- * 
  */
 public class FeedsResource extends BaseResource {
 

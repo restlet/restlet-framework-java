@@ -20,7 +20,6 @@ package org.restlet.example.book.restlet.ch8.objects;
 
 /**
  * Contact of a mail box owner.
- * 
  */
 public class Contact extends BaseObject {
     /** Mail address of the contact. */

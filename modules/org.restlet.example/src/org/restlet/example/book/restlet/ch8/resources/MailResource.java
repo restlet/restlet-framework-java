@@ -44,7 +44,6 @@ import org.restlet.resource.Variant;
 
 /**
  * Resource for a mail.
- * 
  */
 public class MailResource extends BaseResource {
 

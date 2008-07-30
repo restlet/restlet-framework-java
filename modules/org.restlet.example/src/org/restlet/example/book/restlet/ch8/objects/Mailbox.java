@@ -23,7 +23,6 @@ import java.util.List;
 
 /**
  * Mailbox seen as a list of mails, contacts and feeds.
- * 
  */
 public class Mailbox extends BaseObject {
 

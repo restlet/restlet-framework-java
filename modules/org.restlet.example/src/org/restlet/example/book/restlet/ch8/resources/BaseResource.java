@@ -38,7 +38,6 @@ import freemarker.template.Configuration;
 /**
  * Base resource class that supports common behaviours or attributes shared by
  * all resources.
- * 
  */
 public class BaseResource extends Resource {
 

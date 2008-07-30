@@ -30,6 +30,9 @@ import org.restlet.example.book.restlet.ch8.objects.MailRoot;
 import org.restlet.example.book.restlet.ch8.objects.Mailbox;
 import org.restlet.example.book.restlet.ch8.objects.User;
 
+/**
+ *
+ */
 public class DomainObjects {
 
     /** Root object at the top of the hierarchy. */

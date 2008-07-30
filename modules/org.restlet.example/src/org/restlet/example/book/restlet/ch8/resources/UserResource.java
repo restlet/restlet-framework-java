@@ -36,7 +36,6 @@ import org.restlet.resource.Variant;
 
 /**
  * Resource for a user.
- * 
  */
 public class UserResource extends BaseResource {
 

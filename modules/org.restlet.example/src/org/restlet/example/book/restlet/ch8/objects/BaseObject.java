@@ -21,7 +21,6 @@ package org.restlet.example.book.restlet.ch8.objects;
 /**
  * Base class that supports common behaviours or attributes shared by domain
  * objects.
- * 
  */
 public class BaseObject {
 

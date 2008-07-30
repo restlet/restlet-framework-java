@@ -36,7 +36,6 @@ import org.restlet.resource.Variant;
 
 /**
  * Resource for a user's contact.
- * 
  */
 public class ContactResource extends BaseResource {
 

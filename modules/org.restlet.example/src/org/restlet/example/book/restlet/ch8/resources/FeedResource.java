@@ -53,7 +53,6 @@ import com.noelios.restlet.Engine;
 
 /**
  * Resource for a user's feed.
- * 
  */
 public class FeedResource extends BaseResource {
 
