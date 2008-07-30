@@ -150,15 +150,18 @@ public class AuthenticationUtils {
      */
     public static String format(ChallengeRequest request) {
         String result = null;
-        final AuthenticationHelper helper = Engine.getInstance().findHelper(
-                request.getScheme(), false, true);
 
-        if (helper != null) {
-            result = helper.format(request);
-        } else {
-            throw new IllegalArgumentException("Challenge scheme "
-                    + request.getScheme()
-                    + " not supported by the Restlet engine.");
+        if (request != null) {
+            final AuthenticationHelper helper = Engine.getInstance()
+                    .findHelper(request.getScheme(), false, true);
+
+            if (helper != null) {
+                result = helper.format(request);
+            } else {
+                throw new IllegalArgumentException("Challenge scheme "
+                        + request.getScheme()
+                        + " not supported by the Restlet engine.");
+            }
         }
 
         return result;
