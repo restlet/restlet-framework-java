@@ -38,13 +38,14 @@ import javax.ws.rs.Path;
 
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalMethodParamTypeException;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalParamTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnMethodException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.util.PathRegExp;
 import org.restlet.ext.jaxrs.internal.util.RemainingPath;
-import org.restlet.ext.jaxrs.internal.wrappers.provider.JaxRsProviders;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.ExtensionBackwardMapping;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.JaxRsProviders;
 
 /**
  * Instances represents a root resource class.
@@ -379,11 +380,16 @@ public class ResourceClass extends AbstractJaxRsWrapper {
                                 jaxRsProviders, extensionBackwardMapping,
                                 logger);
                     } catch (final IllegalMethodParamTypeException e) {
-                        Logger.getAnonymousLogger().log(
-                                Level.WARNING,
-                                "An annotated parameter of the resource method "
-                                        + annotatedMethod
-                                        + " is has an illegal type", e);
+                        String message = "Ignore method "
+                                + execMethod
+                                + ": An annotated parameter of the resource method "
+                                + annotatedMethod + " is has an illegal type";
+                        logger.log(Level.WARNING, message, e);
+                        continue;
+                    } catch (final IllegalParamTypeException e) {
+                        String message = "Ignore method " + execMethod + ": "
+                                + e.getMessage();
+                        logger.log(Level.WARNING, message, e);
                         continue;
                     }
                     this.resourceMethods.add(subResMeth);
@@ -401,11 +407,17 @@ public class ResourceClass extends AbstractJaxRsWrapper {
                                     jaxRsProviders, extensionBackwardMapping,
                                     logger);
                         } catch (final IllegalMethodParamTypeException e) {
-                            Logger.getAnonymousLogger().log(
-                                    Level.WARNING,
-                                    "An annotated parameter of the resource method "
-                                            + annotatedMethod
-                                            + " is has an illegal type", e);
+                            String message = "Ignore method "
+                                    + execMethod
+                                    + ": An annotated parameter of the resource method "
+                                    + annotatedMethod
+                                    + " is has an illegal type";
+                            logger.log(Level.WARNING, message, e);
+                            continue;
+                        } catch (final IllegalParamTypeException e) {
+                            String message = "Ignore method " + execMethod + ": "
+                                    + e.getMessage();
+                            logger.log(Level.WARNING, message, e);
                             continue;
                         }
                         this.subResourceLocators.add(subResLoc);

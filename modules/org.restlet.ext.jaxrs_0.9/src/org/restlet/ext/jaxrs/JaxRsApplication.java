@@ -101,8 +101,8 @@ public class JaxRsApplication extends Application {
      * {@link #setAuthentication(Guard, RoleChecker)}, to set access control.<br>
      * 
      * @param context
-     *            The application's dedicated context based on the protected
-     *            parent component's context.
+     *                The application's dedicated context based on the protected
+     *                parent component's context.
      */
     public JaxRsApplication(Context context) {
         super(context);
@@ -124,13 +124,16 @@ public class JaxRsApplication extends Application {
      * </p>
      * 
      * @param appConfig
-     *            Contains the classes to load as root resource classes and as
-     *            providers. Invalid root resource classes and provider classes
-     *            are ignored, according to JAX-RS specification.
+     *                Contains the classes to load as root resource classes and
+     *                as providers. Invalid root resource classes and provider
+     *                classes are ignored, according to JAX-RS specification.<br>
+     *                The JAX-RS class {@link javax.ws.rs.ApplicationConfig}
+     *                will be renamed to {@link javax.ws.rs.Application} in the
+     *                next JAX-RS release.
      * @return true, if all resource classes and providers could be added, or
      *         false if not.
      * @throws IllegalArgumentException
-     *             if the appConfig is null.
+     *                 if the appConfig is null.
      * @see #add(ApplicationConfig, boolean)
      */
     public boolean add(ApplicationConfig appConfig)
@@ -145,18 +148,21 @@ public class JaxRsApplication extends Application {
      * JaxRsApplication.
      * 
      * @param appConfig
-     *            Contains the classes to load as root resource classes and as
-     *            providers. Invalid root resource classes and provider classes
-     *            are ignored, according to JAX-RS specification.
+     *                Contains the classes to load as root resource classes and
+     *                as providers. Invalid root resource classes and provider
+     *                classes are ignored, according to JAX-RS specification.<br>
+     *                The JAX-RS class {@link javax.ws.rs.ApplicationConfig}
+     *                will be renamed to {@link javax.ws.rs.Application} in the
+     *                next JAX-RS release.
      * @param clearMetadataIfFirst
-     *            If this flag is true and the given ApplicationConfig is the
-     *            first attached ApplicationConfig, the default extension
-     *            mappings are remove an replaced by the given, see
-     *            {@link TunnelService}
+     *                If this flag is true and the given ApplicationConfig is
+     *                the first attached ApplicationConfig, the default
+     *                extension mappings are remove an replaced by the given,
+     *                see {@link TunnelService}
      * @return true, if all resource classes and providers could be added, or
      *         false if not.
      * @throws IllegalArgumentException
-     *             if the appConfig is null.
+     *                 if the appConfig is null.
      * @see #add(ApplicationConfig)
      */
     public boolean add(ApplicationConfig appConfig, boolean clearMetadataIfFirst)
@@ -199,7 +205,7 @@ public class JaxRsApplication extends Application {
      * {@link Application}.
      * 
      * @param appConfig
-     *            the ApplicationConfig to read the mappings from.
+     *                the ApplicationConfig to read the mappings from.
      */
     private void addExtensionMappings(ApplicationConfig appConfig) {
         final MetadataService metadataService = getMetadataService();
@@ -228,18 +234,19 @@ public class JaxRsApplication extends Application {
      * method {@link #add(ApplicationConfig)}.
      * 
      * @param appConfig
-     *            Contains the classes to load as root resource classes and as
-     *            providers.
+     *                Contains the classes to load as root resource classes and
+     *                as providers.
      * @return true, if all resource classes and providers could be added, or
      *         false if not.
      * @throws IllegalArgumentException
-     *             if the appConfig is null.
+     *                 if the appConfig is null.
      * @see #add(ApplicationConfig, boolean)
      * @deprecated Use {@link #add(ApplicationConfig)} instead
      */
     @Deprecated
     public boolean attach(ApplicationConfig appConfig)
             throws IllegalArgumentException {
+        // remove this method when ApplicationConfig is renamed to Application 
         return add(appConfig);
     }
 
@@ -248,23 +255,24 @@ public class JaxRsApplication extends Application {
      * method {@link #add(ApplicationConfig, boolean)}.
      * 
      * @param appConfig
-     *            Contains the classes to load as root resource classes and as
-     *            providers.
+     *                Contains the classes to load as root resource classes and
+     *                as providers.
      * @param clearMetadataIfFirst
-     *            If this flag is true and the given ApplicationConfig is the
-     *            first attached ApplicationConfig, the default extension
-     *            mappings are remove an replaced by the given, see
-     *            {@link TunnelService}
+     *                If this flag is true and the given ApplicationConfig is
+     *                the first attached ApplicationConfig, the default
+     *                extension mappings are remove an replaced by the given,
+     *                see {@link TunnelService}
      * @return true, if all resource classes and providers could be added, or
      *         false if not.
      * @throws IllegalArgumentException
-     *             if the appConfig is null.
+     *                 if the appConfig is null.
      * @see #add(ApplicationConfig)
      * @deprecated Use {@link #add(ApplicationConfig,boolean)} instead
      */
     @Deprecated
     public boolean attach(ApplicationConfig appConfig,
             boolean clearMetadataIfFirst) throws IllegalArgumentException {
+        // remove this method when ApplicationConfig is renamed to Application 
         return add(appConfig, clearMetadataIfFirst);
     }
 
@@ -359,9 +367,9 @@ public class JaxRsApplication extends Application {
      * role management for the JAX-RS extension.
      * 
      * @param guard
-     *            the Guard to use.
+     *                the Guard to use.
      * @param roleChecker
-     *            the RoleChecker to use
+     *                the RoleChecker to use
      * @see #setGuard(Guard)
      * @see #setRoleChecker(RoleChecker)
      */
@@ -383,7 +391,7 @@ public class JaxRsApplication extends Application {
      * {@link #createRoot()}.
      * 
      * @param guard
-     *            the Guard to use.
+     *                the Guard to use.
      * @see #setAuthentication(Guard, RoleChecker)
      */
     public void setGuard(Guard guard) {
@@ -395,8 +403,8 @@ public class JaxRsApplication extends Application {
      * instantiation.
      * 
      * @param objectFactory
-     *            the ObjectFactory for root resource class and provider
-     *            instantiation.
+     *                the ObjectFactory for root resource class and provider
+     *                instantiation.
      */
     public void setObjectFactory(ObjectFactory objectFactory) {
         this.jaxRsRestlet.setObjectFactory(objectFactory);

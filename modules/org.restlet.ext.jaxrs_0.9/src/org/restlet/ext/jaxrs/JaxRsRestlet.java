@@ -58,6 +58,7 @@ import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalBeanSetterTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalConstrParamTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalFieldTypeException;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalParamTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
 import org.restlet.ext.jaxrs.internal.exceptions.ImplementationException;
 import org.restlet.ext.jaxrs.internal.exceptions.MethodInvokeException;
@@ -256,6 +257,12 @@ public class JaxRsRestlet extends Restlet {
         RootResourceClass newRrc;
         try {
             newRrc = wrapperFactory.getRootResourceClass(rootResourceClass);
+        } catch (IllegalParamTypeException e) {
+            String msg = "Ignore provider " + rootResourceClass.getName()
+                    + ": Could not instantiate class "
+                    + rootResourceClass.getName();
+            getLogger().log(Level.WARNING, msg, e);
+            return false;
         } catch (IllegalPathOnClassException e) {
             getLogger().warning(
                     "The root resource class " + rootResourceClass.getName()
@@ -356,15 +363,21 @@ public class JaxRsRestlet extends Restlet {
             provider = new Provider(jaxRsProviderClass, this.objectFactory,
                     this.tlContext, this.providers,
                     this.extensionBackwardMapping, this.getLogger());
+        } catch (IllegalParamTypeException e) {
+            String msg = "Ignore provider " + jaxRsProviderClass.getName()
+                    + ": Could not instantiate class "
+                    + jaxRsProviderClass.getName();
+            getLogger().log(Level.WARNING, msg, e);
+            return false;
         } catch (InstantiateException e) {
             String msg = "Ignore provider " + jaxRsProviderClass.getName()
-                    + "Could not instantiate the Provider, class "
+                    + ": Could not instantiate class "
                     + jaxRsProviderClass.getName();
             getLogger().log(Level.WARNING, msg, e);
             return false;
         } catch (MissingAnnotationException e) {
             String msg = "Ignore provider " + jaxRsProviderClass.getName()
-                    + "Could not instantiate the Provider, class "
+                    + ": Could not instantiate class "
                     + jaxRsProviderClass.getName() + ", because "
                     + e.getMessage();
             getLogger().log(Level.WARNING, msg);

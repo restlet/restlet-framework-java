@@ -33,6 +33,7 @@ import org.restlet.ext.jaxrs.internal.exceptions.IllegalBeanSetterTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalConstrParamTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalFieldTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathParamTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.ImplementationException;
 import org.restlet.ext.jaxrs.internal.exceptions.InjectException;
@@ -57,11 +58,11 @@ public class RootResourceClass extends ResourceClass {
      * Checks, if the class is public and so on.
      * 
      * @param jaxRsClass
-     *            JAX-RS root resource class or JAX-RS provider.
+     *                JAX-RS root resource class or JAX-RS provider.
      * @param typeName
-     *            "root resource class" or "provider"
+     *                "root resource class" or "provider"
      * @throws MissingAnnotationException
-     *             if the class is not annotated with &#64;Path.
+     *                 if the class is not annotated with &#64;Path.
      */
     private static void checkClassForPathAnnot(Class<?> jaxRsClass,
             String typeName) throws MissingAnnotationException {
@@ -90,27 +91,28 @@ public class RootResourceClass extends ResourceClass {
      * Creates a wrapper for the given JAX-RS root resource class.
      * 
      * @param jaxRsClass
-     *            the root resource class to wrap
+     *                the root resource class to wrap
      * @param tlContext
-     *            the {@link ThreadLocalizedContext} of the
-     *            {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
+     *                the {@link ThreadLocalizedContext} of the
+     *                {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
      * @param jaxRsProviders
-     *            all entity providers.
+     *                all entity providers.
      * @param extensionBackwardMapping
-     *            the extension backward mapping
+     *                the extension backward mapping
      * @param logger
-     *            the logger to use.
+     *                the logger to use.
      * @see WrapperFactory#getRootResourceClass(Class)
      * @throws IllegalArgumentException
-     *             if the class is not a valid root resource class.
+     *                 if the class is not a valid root resource class.
      * @throws MissingAnnotationException
-     *             if the class is not annotated with &#64;Path.
+     *                 if the class is not annotated with &#64;Path.
      * @throws IllegalPathOnClassException
      * @throws MissingConstructorException
-     *             if no valid constructor could be found
+     *                 if no valid constructor could be found
      * @throws IllegalConstrParamTypeException
      * @throws IllegalBeanSetterTypeException
      * @throws IllegalFieldTypeException
+     * @throws IllegalPathParamTypeException
      */
     RootResourceClass(Class<?> jaxRsClass, ThreadLocalizedContext tlContext,
             JaxRsProviders jaxRsProviders,
@@ -118,7 +120,7 @@ public class RootResourceClass extends ResourceClass {
             throws IllegalArgumentException, MissingAnnotationException,
             IllegalPathOnClassException, MissingConstructorException,
             IllegalConstrParamTypeException, IllegalFieldTypeException,
-            IllegalBeanSetterTypeException {
+            IllegalBeanSetterTypeException, IllegalPathParamTypeException {
         super(jaxRsClass, tlContext, jaxRsProviders, extensionBackwardMapping,
                 logger, logger);
         Util.checkClassConcrete(getJaxRsClass(), "root resource class");
@@ -142,8 +144,8 @@ public class RootResourceClass extends ResourceClass {
      * Creates an instance of the root resource class.
      * 
      * @param objectFactory
-     *            object responsible for instantiating the root resource class.
-     *            Optional, thus can be null.
+     *                object responsible for instantiating the root resource
+     *                class. Optional, thus can be null.
      * @return
      * @throws InvocationTargetException
      * @throws InstantiateException

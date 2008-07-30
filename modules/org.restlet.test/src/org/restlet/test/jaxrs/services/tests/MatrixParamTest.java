@@ -68,6 +68,13 @@ public class MatrixParamTest extends JaxRsTestCase {
         checkOneGiven("b");
     }
 
+    public void testCheckUnmodifiable() {
+        Response response = get("checkUnmodifiable");
+        assertTrue(
+                "The List annotated with @MatrixParam seems to be modifiable",
+                response.getStatus().isSuccess());
+    }
+
     public void testDecoded() throws IOException {
         final Response response = get("b;firstname=George%20U.;lastname=Bush");
         assertEquals(Status.SUCCESS_OK, response.getStatus());

@@ -19,6 +19,7 @@ package org.restlet.test.jaxrs.services.resources;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
 import java.util.TreeSet;
 
 import javax.ws.rs.Consumes;
@@ -26,8 +27,10 @@ import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriInfo;
 
@@ -40,10 +43,10 @@ import javax.ws.rs.core.UriInfo;
 @Path("formTest")
 public class FormTestResource {
 
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Produces(MediaType.TEXT_PLAIN)
     @Path("formOnly")
     @POST
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.TEXT_PLAIN)
     public Object formOnly(final MultivaluedMap<String, String> form) {
         return new StreamingOutput() {
             public void write(OutputStream out) throws IOException {
@@ -59,23 +62,23 @@ public class FormTestResource {
         };
     }
 
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Produces(MediaType.TEXT_PLAIN)
     @Path("paramOnly")
     @POST
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.TEXT_PLAIN)
     public Object paramOnly(@FormParam("a") String a,
             @FormParam("c") String c) {
         String result = "a -> " + a + "\n";
-        if(c != null) {
+        if (c != null) {
             result += "c -> " + c + "\n";
         }
         return result;
     }
 
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Produces(MediaType.TEXT_PLAIN)
     @Path("formAndParam")
     @POST
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.TEXT_PLAIN)
     public Object formAndParam(final MultivaluedMap<String, String> form,
             @FormParam("a") final String a) {
         return new StreamingOutput() {
@@ -97,12 +100,12 @@ public class FormTestResource {
         };
     }
 
-    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    @Produces(MediaType.TEXT_PLAIN)
     @Path("paramAndForm")
     @POST
-    public Object paramAndForm(@FormParam("a")
-    final String a, final MultivaluedMap<String, String> form) {
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.TEXT_PLAIN)
+    public Object paramAndForm(@FormParam("a") final String a,
+            final MultivaluedMap<String, String> form) {
         return new StreamingOutput() {
             public void write(OutputStream out) throws IOException {
                 out.write("a -> ".getBytes());
@@ -120,5 +123,18 @@ public class FormTestResource {
                 }
             }
         };
+    }
+    
+    @Path("checkUnmodifiable")
+    @POST
+    @Produces("text/plain")
+    public Object checkUnmodifiable(@FormParam("a") List<String> as) {
+        try {
+            as.clear();
+            throw new WebApplicationException(Response.serverError().entity(
+                    "the List must be unmodifiable").build());
+        } catch (UnsupportedOperationException uoe) {
+            return null;
+        }
     }
 }

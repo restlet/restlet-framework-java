@@ -22,7 +22,6 @@ import java.lang.reflect.Method;
 import java.util.logging.Logger;
 
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.restlet.ext.jaxrs.InstantiateException;
@@ -35,11 +34,11 @@ import org.restlet.ext.jaxrs.internal.exceptions.ConvertQueryParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalMethodParamTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnMethodException;
-import org.restlet.ext.jaxrs.internal.exceptions.IllegalTypeException;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathParamTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
-import org.restlet.ext.jaxrs.internal.wrappers.provider.JaxRsProviders;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.ExtensionBackwardMapping;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.JaxRsProviders;
 
 /**
  * A method of a resource class that is used to locate sub-resources of the
@@ -53,48 +52,46 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
      * Creates a new wrapper for the given sub resource locator.
      * 
      * @param javaMethod
-     *            The Java method which creats the sub resource
+     *                The Java method which creats the sub resource
      * @param annotatedMethod
-     *            the message containing the annotations for this sub resource
-     *            locator.
+     *                the message containing the annotations for this sub
+     *                resource locator.
      * @param resourceClass
-     *            the wrapped resource class.
+     *                the wrapped resource class.
      * @param tlContext
-     *            the {@link ThreadLocalizedContext} of the
-     *            {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
+     *                the {@link ThreadLocalizedContext} of the
+     *                {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
      * @param jaxRsProviders
-     *            all providers
+     *                all providers
      * @param extensionBackwardMapping
-     *            the extension backward mapping
+     *                the extension backward mapping
      * @param logger
      * @throws IllegalPathOnMethodException
      * @throws MissingAnnotationException
-     * @throws IllegalArgumentException if the annotated method is null
-     * @throws IllegalTypeException
-     *             if one of the parameters annotated with &#64;{@link Context}
-     *             has a type that must not be annotated with &#64;{@link Context}.
+     * @throws IllegalArgumentException
+     *                 if the annotated method is null
+     * @throws IllegalPathParamTypeException
      */
     SubResourceLocator(Method javaMethod, Method annotatedMethod,
             ResourceClass resourceClass, ThreadLocalizedContext tlContext,
             JaxRsProviders jaxRsProviders,
-            ExtensionBackwardMapping extensionBackwardMapping,
-            Logger logger)
+            ExtensionBackwardMapping extensionBackwardMapping, Logger logger)
             throws IllegalPathOnMethodException, IllegalArgumentException,
-            MissingAnnotationException, IllegalMethodParamTypeException {
+            MissingAnnotationException, IllegalMethodParamTypeException,
+            IllegalPathParamTypeException {
         super(javaMethod, annotatedMethod, resourceClass, tlContext,
-                jaxRsProviders, extensionBackwardMapping, false,
-                logger);
+                jaxRsProviders, extensionBackwardMapping, false, logger);
     }
 
     /**
      * Creates a sub resource
      * 
      * @param resourceObject
-     *            the wrapped resource object.
+     *                the wrapped resource object.
      * @param wrapperFactory
-     *            factory to create wrappers.
+     *                factory to create wrappers.
      * @param logger
-     *            The logger to use
+     *                The logger to use
      * @return Returns the wrapped sub resource object.
      * @throws InvocationTargetException
      * @throws NoMessageBodyReaderException

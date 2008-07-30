@@ -29,6 +29,7 @@ import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalMethodParamTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnMethodException;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathParamTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.util.PathRegExp;
@@ -70,12 +71,13 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
      * @param logger
      * @throws IllegalPathOnMethodException
      * @throws IllegalArgumentException
-     *             if the annotated method is null
+     *                 if the annotated method is null
      * @throws MissingAnnotationException
      * @throws IllegalMethodParamTypeException
      *                 if one of the parameters annotated with &#64;{@link Context}
-     *             has a type that must not be annotated with &#64;
-     *             {@link Context}.
+     *                 has a type that must not be annotated with &#64;
+     *                 {@link Context}.
+     * @throws IllegalPathParamTypeException
      */
     AbstractMethodWrapper(Method executeMethod, Method annotatedMethod,
             ResourceClass resourceClass, ThreadLocalizedContext tlContext,
@@ -83,7 +85,8 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
             ExtensionBackwardMapping extensionBackwardMapping,
             boolean entityAllowed, Logger logger)
             throws IllegalPathOnMethodException, IllegalArgumentException,
-            MissingAnnotationException, IllegalMethodParamTypeException {
+            MissingAnnotationException, IllegalMethodParamTypeException,
+            IllegalPathParamTypeException {
         super(PathRegExp.createForMethod(annotatedMethod));
         this.executeMethod = executeMethod;
         this.executeMethod.setAccessible(true);

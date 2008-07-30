@@ -42,9 +42,11 @@ abstract class AbstractJaxbProvider<T> extends AbstractProvider<T> {
 
     protected JAXBContext getJaxbContext(Class<?> type) throws JAXBException {
         // NICE perhaps caching the JAXBContext
-        final JAXBContext jaxbContext = this.contextResolver.getContext(type);
-        if(jaxbContext != null) {
-            return jaxbContext;
+        if (this.contextResolver != null) {
+            JAXBContext jaxbContext = this.contextResolver.getContext(type);
+            if (jaxbContext != null) {
+                return jaxbContext;
+            }
         }
         try {
             return JAXBContext.newInstance(type);
@@ -53,9 +55,9 @@ abstract class AbstractJaxbProvider<T> extends AbstractProvider<T> {
                     e.getMessage()).build());
         }
     }
-    
+
     abstract Logger getLogger();
-    
+
     /**
      * @see MessageBodyWriter#getSize(Object)
      */
@@ -78,6 +80,7 @@ abstract class AbstractJaxbProvider<T> extends AbstractProvider<T> {
 
     @Context
     void setContextResolver(Providers providers) {
-        this.contextResolver = providers.getContextResolver(JAXBContext.class, Object.class, MediaType.APPLICATION_XML_TYPE);
+        this.contextResolver = providers.getContextResolver(JAXBContext.class,
+                Object.class, MediaType.APPLICATION_XML_TYPE);
     }
 }

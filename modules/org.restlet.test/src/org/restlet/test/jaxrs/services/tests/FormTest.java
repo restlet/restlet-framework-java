@@ -35,7 +35,8 @@ public class FormTest extends JaxRsTestCase {
      * @param subPath
      * @throws IOException
      */
-    private void check(String subPath, boolean cPerhapsDouble) throws IOException {
+    private void check(String subPath, boolean cPerhapsDouble)
+            throws IOException {
         check1(subPath);
         check2(subPath);
         check3(subPath, cPerhapsDouble);
@@ -98,6 +99,20 @@ public class FormTest extends JaxRsTestCase {
     @Override
     protected Class<?> getRootResourceClass() {
         return FormTestResource.class;
+    }
+
+    /** @see FormTestResource#checkUnmodifiable(java.util.List) */
+    public void testCheckUnmodifiable() {
+        Form form = new Form();
+        form.add("a", "b");
+        form.add("a", "c");
+        Response response = post("checkUnmodifiable", form
+                .getWebRepresentation());
+        sysOutEntityIfError(response);
+        assertTrue(
+                "The List annotated with @FormParam must not be modifiable. Status is "
+                        + response.getStatus(), response.getStatus()
+                        .isSuccess());
     }
 
     public void testFormAndParam() throws IOException {

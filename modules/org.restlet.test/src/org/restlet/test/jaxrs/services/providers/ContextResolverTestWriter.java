@@ -45,6 +45,8 @@ public class ContextResolverTestWriter implements MessageBodyWriter<Person> {
     void setProviders(Providers providers) {
         this.contextResolver = providers.getContextResolver(
                 BaseUriContext.class, Object.class, MediaType.TEXT_HTML_TYPE);
+        if(this.contextResolver == null)
+            throw new RuntimeException("No Context Resolver found");
     }
 
     private ContextResolver<BaseUriContext> contextResolver;

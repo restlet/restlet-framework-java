@@ -30,6 +30,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.PathSegment;
 
 import org.restlet.test.jaxrs.services.tests.ListParamTest;
 
@@ -72,8 +73,8 @@ public class ListParamService {
     @GET
     @Path("path/{p}/{p}/{pp}/{pp}")
     @Produces("text/plain")
-    public String getPath(@PathParam("p") String p,
-            @PathParam("pp") SortedSet<String> pp) {
+    public String getPath(@PathParam("p") PathSegment p,
+            @PathParam("pp") SortedSet<PathSegment> pp) {
         return "p=" + p + "\npp=" + pp;
     }
 
@@ -83,12 +84,5 @@ public class ListParamService {
     public String getQuery(@QueryParam("q") String q,
             @QueryParam("qq") List<String> qq) {
         return "q=" + q + "\nqq=" + qq;
-    }
-
-    @GET
-    @Produces("text/plain")
-    public String getZ(@PathParam("other") String other,
-            @PathParam("other") List<String> others) {
-        return "other=" + other + "\nothers=" + others;
     }
 }

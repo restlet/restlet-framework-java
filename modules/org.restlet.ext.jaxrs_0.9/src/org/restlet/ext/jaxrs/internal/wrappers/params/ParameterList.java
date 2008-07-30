@@ -27,6 +27,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -54,6 +55,7 @@ import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.ext.jaxrs.internal.core.CallContext;
+import org.restlet.ext.jaxrs.internal.core.JaxRsPathSegment;
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedUriInfo;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertCookieParamException;
@@ -63,6 +65,7 @@ import org.restlet.ext.jaxrs.internal.exceptions.ConvertParameterException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertPathParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertQueryParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathParamTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.todo.NotYetImplementedException;
@@ -86,7 +89,7 @@ public class ParameterList {
      * Abstract super class for access to &#64;*Param.
      */
     abstract static class AbstractParamGetter implements ParamGetter {
-
+        
         /**
          * The type of the collection. null, if this parameter do not represent
          * a collection.
@@ -268,8 +271,9 @@ public class ParameterList {
             }
             if (this.isArray) {
                 return Util.toArray(coll, this.convertTo);
+            } else {
+                return unmodifiable(coll);
             }
-            return coll;
         }
 
         /**
@@ -288,6 +292,16 @@ public class ParameterList {
                         "Could not instantiate the collection type "
                                 + this.collType, e);
             }
+        }
+
+        protected <A> Collection<A> unmodifiable(Collection<A> coll) {
+            if (coll instanceof List)
+                return Collections.unmodifiableList((List<A>) coll);
+            if (coll instanceof SortedSet)
+                return Collections.unmodifiableSortedSet((SortedSet<A>) coll);
+            if (coll instanceof Set)
+                return Collections.unmodifiableSet((Set<A>) coll);
+            return Collections.unmodifiableCollection(coll);
         }
 
         protected abstract boolean decode();
@@ -466,6 +480,59 @@ public class ParameterList {
         }
     }
 
+    static abstract class FormOrQueryParamGetter extends EncParamGetter {
+
+        FormOrQueryParamGetter(DefaultValue defaultValue, Class<?> convToCl,
+                Type convToGen, ThreadLocalizedContext tlContext,
+                boolean leaveEncoded) {
+            super(defaultValue, convToCl, convToGen, tlContext, leaveEncoded);
+        }
+
+        /**
+         * @param form
+         * @param paramName
+         * @return
+         * @throws ConvertQueryParamException
+         */
+        Object getParamValue(final Form form, final String paramName)
+                throws ConvertParameterException {
+            final List<Parameter> parameters = form.subList(paramName);
+            if (this.collType == null) { // no collection parameter
+                final Parameter firstFormParam = form.getFirst(paramName);
+                final String queryParamValue = WrapperUtil
+                        .getValue(firstFormParam);
+                return convertParamValue(queryParamValue);
+            }
+            ParamValueIter queryParamValueIter;
+            queryParamValueIter = new ParamValueIter(parameters);
+            return convertParamValues(queryParamValueIter);
+        }
+    }
+
+    static class FormParamGetter extends FormOrQueryParamGetter {
+
+        private final FormParam formParam;
+
+        FormParamGetter(FormParam formParam, DefaultValue defaultValue,
+                Class<?> convToCl, Type convToGen,
+                ThreadLocalizedContext tlContext, boolean leaveEncoded) {
+            super(defaultValue, convToCl, convToGen, tlContext, leaveEncoded);
+            this.formParam = formParam;
+        }
+
+        @Override
+        public Object getParamValue() {
+            final Form form;
+            form = this.tlContext.get().getRequest().getEntityAsForm();
+            final String paramName = this.formParam.value();
+            try {
+                return super.getParamValue(form, paramName);
+            } catch (final ConvertParameterException e) {
+                throw new ConvertQueryParamException(e);
+            }
+        }
+    }
+
     static class HeaderParamGetter extends NoEncParamGetter {
 
         private final HeaderParam headerParam;
@@ -596,9 +663,27 @@ public class ParameterList {
 
         PathParamGetter(PathParam pathParam, DefaultValue defaultValue,
                 Class<?> convToCl, Type convToGen,
-                ThreadLocalizedContext tlContext, boolean leaveEncoded) {
+                ThreadLocalizedContext tlContext, boolean leaveEncoded)
+                throws IllegalPathParamTypeException {
             super(defaultValue, convToCl, convToGen, tlContext, leaveEncoded);
+            if ((this.collType != null)
+                    && (!this.convertTo.equals(PathSegment.class))) {
+                throw new IllegalPathParamTypeException(
+                        "The type of a @PathParam annotated parameter etc. must not be a collection type or array, if the type parameter is not PathSegment");
+            }
             this.pathParam = pathParam;
+        }
+
+        /**
+         * Creates a {@link PathSegment}.
+         * 
+         * @param pathSegmentEnc
+         * @return
+         * @throws IllegalArgumentException
+         */
+        private PathSegment createPathSegment(final String pathSegmentEnc)
+                throws IllegalArgumentException {
+            return new JaxRsPathSegment(pathSegmentEnc, this.decode(), -1);
         }
 
         @Override
@@ -606,20 +691,29 @@ public class ParameterList {
             final CallContext callContext = this.tlContext.get();
             // LATER @PathParam(...) List<String> (see PathParamTest.testGet3())
             if (this.convertTo.equals(PathSegment.class)) {
-                throw new NotYetImplementedException(
-                        "Sorry, @PathParam(..) PathSegment is not yet supported. You may use the non default @Context PathSegment to return the last of the available path segments (decoded), or UriInfo.getPathSegments(boolean)");
-                // LATER @PathParam("x") PathSegment allowed.
+                if (this.collType == null) { // no collection parameter
+                    final String pathSegmentEnc = callContext
+                            .getLastPathSegmentEnc(this.pathParam);
+                    return createPathSegment(pathSegmentEnc);
+                }
+                final Iterator<String> pathSegmentEncIter;
+                pathSegmentEncIter = callContext
+                        .pathSegementEncIter(this.pathParam);
+                final Collection<Object> coll = createColl();
+                while (pathSegmentEncIter.hasNext()) {
+                    final String pathSegmentEnc = pathSegmentEncIter.next();
+                    coll.add(createPathSegment(pathSegmentEnc));
+                }
+                if (this.isArray) {
+                    return Util.toArray(coll, this.convertTo);
+                } else {
+                    return unmodifiable(coll);
+                }
             }
             try {
-                if (this.collType == null) { // no collection parameter
-                    String pathParamValue;
-                    pathParamValue = callContext
-                            .getLastPathParamEnc(this.pathParam);
-                    return convertParamValue(pathParamValue);
-                }
-                Iterator<String> ppvIter;
-                ppvIter = callContext.pathParamEncIter(this.pathParam);
-                return convertParamValues(ppvIter);
+                final String pathParamValue;
+                pathParamValue = callContext.getLastPathParamEnc(pathParam);
+                return convertParamValue(pathParamValue);
             } catch (final ConvertParameterException e) {
                 throw new ConvertPathParamException(e);
             }
@@ -644,59 +738,6 @@ public class ParameterList {
             final String queryString = resourceRef.getQuery();
             final Form form = Converter.toFormEncoded(queryString, localLogger);
             final String paramName = this.queryParam.value();
-            try {
-                return super.getParamValue(form, paramName);
-            } catch (final ConvertParameterException e) {
-                throw new ConvertQueryParamException(e);
-            }
-        }
-    }
-
-    static abstract class FormOrQueryParamGetter extends EncParamGetter {
-
-        FormOrQueryParamGetter(DefaultValue defaultValue, Class<?> convToCl,
-                Type convToGen, ThreadLocalizedContext tlContext,
-                boolean leaveEncoded) {
-            super(defaultValue, convToCl, convToGen, tlContext, leaveEncoded);
-        }
-
-        /**
-         * @param form
-         * @param paramName
-         * @return
-         * @throws ConvertQueryParamException
-         */
-        Object getParamValue(final Form form, final String paramName)
-                throws ConvertParameterException {
-            final List<Parameter> parameters = form.subList(paramName);
-            if (this.collType == null) { // no collection parameter
-                final Parameter firstFormParam = form.getFirst(paramName);
-                final String queryParamValue = WrapperUtil
-                        .getValue(firstFormParam);
-                return convertParamValue(queryParamValue);
-            }
-            ParamValueIter queryParamValueIter;
-            queryParamValueIter = new ParamValueIter(parameters);
-            return convertParamValues(queryParamValueIter);
-        }
-    }
-
-    static class FormParamGetter extends FormOrQueryParamGetter {
-
-        private final FormParam formParam;
-
-        FormParamGetter(FormParam formParam, DefaultValue defaultValue,
-                Class<?> convToCl, Type convToGen,
-                ThreadLocalizedContext tlContext, boolean leaveEncoded) {
-            super(defaultValue, convToCl, convToGen, tlContext, leaveEncoded);
-            this.formParam = formParam;
-        }
-
-        @Override
-        public Object getParamValue() {
-            final Form form = this.tlContext.get().getRequest()
-                    .getEntityAsForm();
-            final String paramName = this.formParam.value();
             try {
                 return super.getParamValue(form, paramName);
             } catch (final ConvertParameterException e) {
@@ -809,17 +850,17 @@ public class ParameterList {
         return false;
     }
 
-    /** shortcut for {@link #parameters}.length */
-    private final int paramCount;
-
-    /** @see #paramCount */
-    private final ParamGetter[] parameters;
-
     /**
      * must call the {@link EntityGetter} first, if &#64;{@link FormParam} is
      * used. A value less than zero means, that no special handling is needed.
      */
     private final int entityPosition;
+
+    /** shortcut for {@link #parameters}.length */
+    private final int paramCount;
+
+    /** @see #paramCount */
+    private final ParamGetter[] parameters;
 
     /**
      * @param parameterTypes
@@ -843,6 +884,7 @@ public class ParameterList {
      * @throws IllegalTypeException
      *                 if the given class is not valid to be annotated with
      *                 &#64; {@link Context}.
+     * @throws IllegalPathParamTypeException
      */
     private ParameterList(Class<?>[] parameterTypes, Type[] genParamTypes,
             Annotation[][] paramAnnoss, ThreadLocalizedContext tlContext,
@@ -850,7 +892,7 @@ public class ParameterList {
             ExtensionBackwardMapping extensionBackwardMapping,
             boolean paramsAllowed, boolean entityAllowed, Logger logger,
             boolean allMustBeAvailable) throws MissingAnnotationException,
-            IllegalTypeException {
+            IllegalTypeException, IllegalPathParamTypeException {
         this.paramCount = parameterTypes.length;
         this.parameters = new ParamGetter[this.paramCount];
         boolean entityAlreadyRead = false;
@@ -957,13 +999,15 @@ public class ParameterList {
      * @throws IllegalTypeException
      *                 if one of the parameters contains a &#64;{@link Context}
      *                 on an type that must not be annotated with &#64;{@link Context}.
+     * @throws IllegalPathParamTypeException
      */
     public ParameterList(Constructor<?> constr,
             ThreadLocalizedContext tlContext, boolean leaveEncoded,
             JaxRsProviders jaxRsProviders,
             ExtensionBackwardMapping extensionBackwardMapping,
             boolean paramsAllowed, Logger logger, boolean allMustBeAvailable)
-            throws MissingAnnotationException, IllegalTypeException {
+            throws MissingAnnotationException, IllegalTypeException,
+            IllegalPathParamTypeException {
         this(constr.getParameterTypes(), constr.getGenericParameterTypes(),
                 constr.getParameterAnnotations(), tlContext, leaveEncoded,
                 jaxRsProviders, extensionBackwardMapping, paramsAllowed, false,
@@ -983,13 +1027,15 @@ public class ParameterList {
      * @throws IllegalTypeException
      *                 if one of the parameters contains a &#64;{@link Context}
      *                 on an type that must not be annotated with &#64;{@link Context}.
+     * @throws IllegalPathParamTypeException
      */
     public ParameterList(Method executeMethod, Method annotatedMethod,
             ThreadLocalizedContext tlContext, boolean leaveEncoded,
             JaxRsProviders jaxRsProviders,
             ExtensionBackwardMapping extensionBackwardMapping,
             boolean entityAllowed, Logger logger)
-            throws MissingAnnotationException, IllegalTypeException {
+            throws MissingAnnotationException, IllegalTypeException,
+            IllegalPathParamTypeException {
         this(executeMethod.getParameterTypes(), executeMethod
                 .getGenericParameterTypes(), annotatedMethod
                 .getParameterAnnotations(), tlContext, leaveEncoded,

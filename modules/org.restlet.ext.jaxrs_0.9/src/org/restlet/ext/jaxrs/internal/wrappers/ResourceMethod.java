@@ -43,6 +43,7 @@ import org.restlet.ext.jaxrs.internal.exceptions.ConvertQueryParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalMethodParamTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnMethodException;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathParamTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.MethodInvokeException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
@@ -93,13 +94,15 @@ public class ResourceMethod extends AbstractMethodWrapper implements
      * @param executeMethod
      *                the Java method to wrap.
      * @param annotatedMethod
-     *            the java method that contains the annotations for this method.
+     *                the java method that contains the annotations for this
+     *                method.
      * @param resourceClass
      *                the wrapped class of the method.
      * @param httpMethod
-     *            the HTTP method of the Java method. It will be checked be the
-     *            {@link org.restlet.ext.jaxrs.JaxRsRestlet}, so avoiding double
-     *            work. It will be requested from the javaMethod.
+     *                the HTTP method of the Java method. It will be checked be
+     *                the {@link org.restlet.ext.jaxrs.JaxRsRestlet}, so
+     *                avoiding double work. It will be requested from the
+     *                javaMethod.
      * @param tlContext
      *                the {@link ThreadLocalizedContext} of the
      *                {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
@@ -113,20 +116,20 @@ public class ResourceMethod extends AbstractMethodWrapper implements
      * @throws IllegalArgumentException
      *                 if the annotated method is null
      * @throws IllegalMethodParamTypeException
-     *             if one of the method parameters annotated with &#64;
-     *             {@link Context} has a type that must not be annotated with
-     *             &#64;{@link Context}.
+     *                 if one of the method parameters annotated with &#64;
+     *                 {@link Context} has a type that must not be annotated
+     *                 with &#64;{@link Context}.
+     * @throws IllegalPathParamTypeException
      */
     ResourceMethod(Method executeMethod, Method annotatedMethod,
             ResourceClass resourceClass, org.restlet.data.Method httpMethod,
             ThreadLocalizedContext tlContext, JaxRsProviders jaxRsProviders,
-            ExtensionBackwardMapping extensionBackwardMapping,
-            Logger logger)
+            ExtensionBackwardMapping extensionBackwardMapping, Logger logger)
             throws IllegalPathOnMethodException, IllegalArgumentException,
-            MissingAnnotationException, IllegalMethodParamTypeException {
+            MissingAnnotationException, IllegalMethodParamTypeException,
+            IllegalPathParamTypeException {
         super(executeMethod, annotatedMethod, resourceClass, tlContext,
-                jaxRsProviders, extensionBackwardMapping, true,
-                logger);
+                jaxRsProviders, extensionBackwardMapping, true, logger);
         this.annotatedMethod = annotatedMethod;
         if (httpMethod != null) {
             this.httpMethod = httpMethod;
@@ -155,7 +158,7 @@ public class ResourceMethod extends AbstractMethodWrapper implements
             return WrapperUtil.convertToMediaTypes(consumes.value());
         } else {
             return Collections.singletonList(MediaType.ALL);
-    }
+        }
     }
 
     /**
@@ -286,8 +289,8 @@ public class ResourceMethod extends AbstractMethodWrapper implements
      * Check if this method supports the media type to produce for a request.
      * 
      * @param accMediaTypess
-     *            The Media Types the client would accept, ordered by quality.
-     *            See {@link SortedMetadata}
+     *                The Media Types the client would accept, ordered by
+     *                quality. See {@link SortedMetadata}
      * @return Returns true, if the give MediaType is supported by the method,
      *         or no MediaType is given for the method, otherweise false.
      */
@@ -350,8 +353,8 @@ public class ResourceMethod extends AbstractMethodWrapper implements
      * @param requestedMethod
      *                the requested Method
      * @param alsoGet
-     *            if true, than this method returns also true, if this method is
-     *            GET. This functionality is needed for HEAD.
+     *                if true, than this method returns also true, if this
+     *                method is GET. This functionality is needed for HEAD.
      * @return true, if this method supports the given HTTP method. Returns also
      *         true, if alsoGet is true and this method is true.
      * @throws IllegalArgumentException

@@ -106,74 +106,6 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
         return null;
     }
 
-    /**
-     * Checks, if the given {@link javax.ws.rs.ext.MessageBodyReader} is
-     * writeable for the given class, genericType and annotations. If one of the
-     * arguments is null, and the MessageBodyWriter throws a
-     * {@link NullPointerException} or an {@link IllegalArgumentException}, it
-     * is interpreted as false.
-     * 
-     * @param mbr
-     * @param paramType
-     * @param genericType
-     * @param annotations
-     * @return
-     * @see #isWriteable(MessageBodyWriter, Class, Type, Annotation[])
-     */
-    private static boolean isReadable(MessageBodyReader mbr,
-            Class<?> paramType, Type genericType, Annotation[] annotations) {
-        try {
-            return mbr.isReadable(paramType, genericType, annotations);
-        } catch (NullPointerException e) {
-            if (genericType == null || annotations == null) {
-                // interpreted as not readable for the given combination
-                return false;
-            }
-            throw e;
-        } catch (IllegalArgumentException e) {
-            if (genericType == null || annotations == null) {
-                // interpreted as not readable for the given combination
-                return false;
-            }
-            throw e;
-        }
-    }
-
-    /**
-     * Checks, if the given {@link javax.ws.rs.ext.MessageBodyWriter} is
-     * writeable for the given class, genericType and annotations. If one of the
-     * arguments is null, and the MessageBodyWriter throws a
-     * {@link NullPointerException} or an {@link IllegalArgumentException}, it
-     * is interpreted as false.
-     * 
-     * @param mbw
-     * @param entityClass
-     * @param genericType
-     * @param annotations
-     * @throws NullPointerException
-     * @throws IllegalArgumentException
-     * @see #isReadable(MessageBodyReader, Class, Type, Annotation[])
-     */
-    private static boolean isWriteable(MessageBodyWriter mbw,
-            Class<?> entityClass, Type genericType, Annotation[] annotations)
-            throws NullPointerException, IllegalArgumentException {
-        try {
-            return mbw.isWriteable(entityClass, genericType, annotations);
-        } catch (NullPointerException e) {
-            if (genericType == null || annotations == null) {
-                // interpreted as not writable for the given combination
-                return false;
-            }
-            throw e;
-        } catch (IllegalArgumentException e) {
-            if (genericType == null || annotations == null) {
-                // interpreted as not writable for the given combination
-                return false;
-            }
-            throw e;
-        }
-    }
-
     private final Set<Provider> all;
 
     /**
@@ -321,7 +253,7 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
         // NICE optimization: may be cached for speed.
         for (MessageBodyReader mbr : this.messageBodyReaders) {
             if (mbr.supportsRead(mediaType))
-                if (isReadable(mbr, paramType, genericType, annotations))
+                if (mbr.isReadable(paramType, genericType, annotations))
                     return mbr;
         }
         return null;
@@ -332,22 +264,25 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
      *      javax.ws.rs.core.MediaType)
      */
     @SuppressWarnings("unchecked")
-    public <T> javax.ws.rs.ext.ContextResolver<T> getContextResolver(Class<T> contextType,
-            Class<?> objectType, javax.ws.rs.core.MediaType mediaType) {
+    public <T> javax.ws.rs.ext.ContextResolver<T> getContextResolver(
+            Class<T> contextType, Class<?> objectType,
+            javax.ws.rs.core.MediaType mediaType) {
         // LATER test JaxRsProviders.getContextResolver
-        for (ContextResolver cr : this.contextResolvers) {
-            Class<?> crClaz = cr.getClass();
-            Class<?> genClass = getCtxResGenClass(crClaz);
+        for (ContextResolver crWrapper : this.contextResolvers) {
+            final javax.ws.rs.ext.ContextResolver<?> cr;
+            cr = crWrapper.getContextResolver();
+            final Class<?> crClaz = cr.getClass();
+            final Class<?> genClass = getCtxResGenClass(crClaz);
             if (genClass == null || !genClass.equals(contextType)) {
                 continue;
             }
-            if(!cr.supportsWrite(mediaType)) {
+            if (!crWrapper.supportsWrite(mediaType)) {
                 continue;
             }
             try {
                 Method getContext = crClaz.getMethod("getContext", Class.class);
                 if (getContext.getReturnType().equals(contextType)) {
-                    return (javax.ws.rs.ext.ContextResolver<T>)cr.getContextResolver();
+                    return (javax.ws.rs.ext.ContextResolver<T>) cr;
                 }
             } catch (SecurityException e) {
                 throw new RuntimeException(
@@ -414,7 +349,7 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
         List<MessageBodyWriter> mbws = this.messageBodyWriters;
         for (MessageBodyWriter mbw : mbws) {
             if (mbw.supportsWrite(restletMediaType))
-                if (isWriteable(mbw, type, genericType, annotations))
+                if (mbw.isWriteable(type, genericType, annotations))
                     return (javax.ws.rs.ext.MessageBodyWriter<T>) mbw
                             .getJaxRsWriter();
         }
@@ -443,7 +378,8 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
                 this.remove(provider);
             } catch (InvocationTargetException e) {
                 localLogger.log(Level.WARNING, "The provider "
-                        + provider.getClassName() + " could not be used", e);
+                        + provider.getClassName() + " could not be used", e
+                        .getCause());
                 this.remove(provider);
             }
         }
@@ -454,10 +390,11 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
      */
     private void remove(Provider provider) {
         this.all.remove(provider);
-        this.contextResolvers.remove(provider.getContextResolver());
-        this.excMappers.remove(provider.getExcMapper());
-        this.messageBodyReaders.remove(provider.getJaxRsReader());
-        this.messageBodyWriters.remove(provider.getJaxRsWriter());
+        this.contextResolvers.remove(provider);
+        this.messageBodyReaders.remove(provider);
+        this.messageBodyWriters.remove(provider);
+        if (provider.getExcMapper() != null)
+            this.excMappers.remove(provider.getExcMapper());
     }
 
     /**
@@ -478,7 +415,7 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
         // NICE optimization: may be cached for speed.
         final List<MessageBodyWriter> mbws = new ArrayList<MessageBodyWriter>();
         for (MessageBodyWriter mbw : this.messageBodyWriters) {
-            if (isWriteable(mbw, entityClass, genericType, annotations))
+            if (mbw.isWriteable(entityClass, genericType, annotations))
                 mbws.add(mbw);
         }
         return new MessageBodyWriterSubSet(mbws);

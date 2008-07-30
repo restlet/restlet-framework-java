@@ -21,8 +21,6 @@ import java.io.IOException;
 
 import javax.ws.rs.PathParam;
 
-import junit.framework.AssertionFailedError;
-
 import org.restlet.data.Reference;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -37,7 +35,7 @@ public class PathParamTest extends JaxRsTestCase {
 
     /**
      * @param subPath
-     *            without beginning '/'
+     *                without beginning '/'
      * @return
      */
     private Reference createReference(String subPath) {
@@ -50,6 +48,16 @@ public class PathParamTest extends JaxRsTestCase {
         return PathParamTestService.class;
     }
 
+    /** @see PathParamTestService#checkUnmodifiable(java.util.List) */
+    public void htestCheckUnmodifiable() {
+        // LATER @PathParam(..) PathSegment testen
+        final Response response = get(createReference("4711/checkUnmodifiable/1667"));
+        assertTrue(
+                "The List annotated with @PathParam must not be modifiable. Status is "
+                        + response.getStatus(), response.getStatus()
+                        .isSuccess());
+    }
+
     public void testGet1() throws IOException {
         final Response response = get(createReference("4711"));
         assertEquals(Status.SUCCESS_OK, response.getStatus());
@@ -60,19 +68,6 @@ public class PathParamTest extends JaxRsTestCase {
         final Response response = get(createReference("4711/abc/677/def"));
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("4711\n677", response.getEntity().getText());
-    }
-
-    public void testGet3() throws IOException {
-        final Response response = get(createReference("abc/array/def"));
-        sysOutEntityIfError(response);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
-        final String entity = response.getEntity().getText();
-        try {
-            assertEquals("var1=\nabc\ndef", entity);
-        } catch (final AssertionFailedError afe) {
-            // LATER test: @PathParam bug for colls; not yet for PathSegment
-            assertEquals("var1=\nabc\ndef\ndef", entity);
-        }
     }
 
     public void testGet4() throws IOException {

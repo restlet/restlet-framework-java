@@ -49,6 +49,7 @@ import org.restlet.ext.jaxrs.internal.exceptions.ConvertPathParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertQueryParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalConstrParamTypeException;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathParamTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.InjectException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
@@ -66,7 +67,8 @@ import org.restlet.ext.jaxrs.internal.wrappers.params.ParameterList;
  * @author Stephan Koops
  * @see javax.ws.rs.ext.Provider
  */
-public class Provider implements MessageBodyReader, MessageBodyWriter, ContextResolver {
+public class Provider implements MessageBodyReader, MessageBodyWriter,
+        ContextResolver {
     /**
      * the mimes this MessageBodyReader consumes.
      */
@@ -125,6 +127,7 @@ public class Provider implements MessageBodyReader, MessageBodyWriter, ContextRe
      * @throws WebApplicationException
      * @throws MissingAnnotationException
      * @throws IllegalConstrParamTypeException
+     * @throws IllegalPathParamTypeException
      * @see javax.ws.rs.ext.MessageBodyReader
      * @see javax.ws.rs.ext.MessageBodyWriter
      * @see javax.ws.rs.ext.ContextResolver
@@ -136,7 +139,7 @@ public class Provider implements MessageBodyReader, MessageBodyWriter, ContextRe
             throws IllegalArgumentException, InvocationTargetException,
             MissingConstructorException, InstantiateException,
             MissingAnnotationException, WebApplicationException,
-            IllegalConstrParamTypeException {
+            IllegalConstrParamTypeException, IllegalPathParamTypeException {
         if (jaxRsProviderClass == null) {
             throw new IllegalArgumentException(
                     "The JAX-RS provider class must not be null");
@@ -227,6 +230,7 @@ public class Provider implements MessageBodyReader, MessageBodyWriter, ContextRe
      *                 if one of the fields or bean setters annotated with &#64;
      *                 {@link Context} has a type that must not be annotated
      *                 with &#64;{@link Context}.
+     * @throws IllegalPathParamTypeException
      */
     private Object createInstance(Constructor<?> providerConstructor,
             Class<?> jaxRsProviderClass, ThreadLocalizedContext tlContext,
@@ -234,7 +238,8 @@ public class Provider implements MessageBodyReader, MessageBodyWriter, ContextRe
             ExtensionBackwardMapping extensionBackwardMapping, Logger logger)
             throws IllegalArgumentException, InvocationTargetException,
             InstantiateException, MissingAnnotationException,
-            WebApplicationException, IllegalConstrParamTypeException {
+            WebApplicationException, IllegalConstrParamTypeException,
+            IllegalPathParamTypeException {
         ParameterList parameters;
         try {
             parameters = new ParameterList(providerConstructor, tlContext,
@@ -463,7 +468,21 @@ public class Provider implements MessageBodyReader, MessageBodyWriter, ContextRe
      */
     public boolean isReadable(Class<?> type, Type genericType,
             Annotation[] annotations) {
-        return this.reader.isReadable(type, genericType, annotations);
+        try {
+            return this.reader.isReadable(type, genericType, annotations);
+        } catch (NullPointerException e) {
+            if (genericType == null || annotations == null) {
+                // interpreted as not readable for the given combination
+                return false;
+            }
+            throw e;
+        } catch (IllegalArgumentException e) {
+            if (genericType == null || annotations == null) {
+                // interpreted as not readable for the given combination
+                return false;
+            }
+            throw e;
+        }
     }
 
     /**
@@ -488,7 +507,21 @@ public class Provider implements MessageBodyReader, MessageBodyWriter, ContextRe
      */
     public boolean isWriteable(Class<?> type, Type genericType,
             Annotation[] annotations) {
-        return this.writer.isWriteable(type, genericType, annotations);
+        try {
+            return this.writer.isWriteable(type, genericType, annotations);
+        } catch (NullPointerException e) {
+            if (genericType == null || annotations == null) {
+                // interpreted as not writable for the given combination
+                return false;
+            }
+            throw e;
+        } catch (IllegalArgumentException e) {
+            if (genericType == null || annotations == null) {
+                // interpreted as not writable for the given combination
+                return false;
+            }
+            throw e;
+        }
     }
 
     /**
@@ -521,10 +554,12 @@ public class Provider implements MessageBodyReader, MessageBodyWriter, ContextRe
     @SuppressWarnings("unchecked")
     public Object readFrom(Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType,
-            CharacterSet characterSet, MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
+            CharacterSet characterSet,
+            MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
             throws IOException {
-        return this.reader.readFrom((Class)type, genericType, annotations, Converter
-                .toJaxRsMediaType(mediaType), httpHeaders, entityStream);
+        return this.reader.readFrom((Class) type, genericType, annotations,
+                Converter.toJaxRsMediaType(mediaType), httpHeaders,
+                entityStream);
     }
 
     /**
@@ -565,7 +600,7 @@ public class Provider implements MessageBodyReader, MessageBodyWriter, ContextRe
     public boolean supportsWrite(javax.ws.rs.core.MediaType requested) {
         return this.supportsWrite(Converter.toRestletMediaType(requested));
     }
-    
+
     /**
      * Checks, if the wrapped MessageBodyWriter supports at least one of the
      * requested {@link MediaType}s.
@@ -585,8 +620,8 @@ public class Provider implements MessageBodyReader, MessageBodyWriter, ContextRe
     }
 
     /**
-     * @param exception 
-     * @return 
+     * @param exception
+     * @return
      * @see javax.ws.rs.ext.ExceptionMapper#toResponse(java.lang.Object)
      */
     public Response toResponse(Throwable exception) {

@@ -72,7 +72,7 @@ public class EntityGetter implements ParamGetter {
      * @throws ConvertRepresentationException
      * @throws WebApplicationException
      * @throws NoMessageBodyReaderException
-     * @see IntoRrcInjector.AbstractInjectObjectGetter#getValue()
+     * @see IntoRrcInjector.AbstractInjectObjectGetter#getValue(String)
      */
     public Object getValue() throws ConvertRepresentationException {
         final Request request = this.tlContext.get().getRequest();

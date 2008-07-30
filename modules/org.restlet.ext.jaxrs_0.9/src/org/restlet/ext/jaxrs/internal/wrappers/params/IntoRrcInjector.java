@@ -36,6 +36,7 @@ import javax.ws.rs.ext.Providers;
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalBeanSetterTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalFieldTypeException;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathParamTypeException;
 import org.restlet.ext.jaxrs.internal.wrappers.params.ParameterList.CookieParamGetter;
 import org.restlet.ext.jaxrs.internal.wrappers.params.ParameterList.HeaderParamGetter;
 import org.restlet.ext.jaxrs.internal.wrappers.params.ParameterList.MatrixParamGetter;
@@ -55,23 +56,20 @@ public class IntoRrcInjector extends ContextInjector {
      * @param jaxRsClass
      * @param tlContext
      * @param leaveClassEncoded
-     * @param mbWorkers
-     *            all entity providers.
-<<<<<<< .mine
-=======
-     * @param allResolvers
-     *            all available {@link ContextResolver}s.
->>>>>>> .r3440
+     * @param allProviders
+     *                all entity providers.
      * @param extensionBackwardMapping
      * @throws IllegalBeanSetterTypeException
      * @throws IllegalFieldTypeException
+     * @throws IllegalPathParamTypeException
      */
     public IntoRrcInjector(Class<?> jaxRsClass,
             ThreadLocalizedContext tlContext, boolean leaveClassEncoded,
-            Providers mbWorkers,
+            Providers allProviders,
             ExtensionBackwardMapping extensionBackwardMapping)
-            throws IllegalFieldTypeException, IllegalBeanSetterTypeException {
-        super(jaxRsClass, tlContext, mbWorkers, extensionBackwardMapping);
+            throws IllegalFieldTypeException, IllegalBeanSetterTypeException,
+            IllegalPathParamTypeException {
+        super(jaxRsClass, tlContext, allProviders, extensionBackwardMapping);
         init(jaxRsClass, tlContext, leaveClassEncoded);
     }
 
@@ -105,10 +103,11 @@ public class IntoRrcInjector extends ContextInjector {
      * initiates the fields to cache the fields that needs injection.
      * 
      * @param lcEnc
-     *            leave class encoded
+     *                leave class encoded
+     * @throws IllegalPathParamTypeException
      */
     private void init(Class<?> jaxRsClass, ThreadLocalizedContext tlContext,
-            boolean lcEnc) {
+            boolean lcEnc) throws IllegalPathParamTypeException {
         do {
             for (final Field field : jaxRsClass.getDeclaredFields()) {
                 if (field.isAnnotationPresent(PathParam.class)) {
@@ -173,7 +172,8 @@ public class IntoRrcInjector extends ContextInjector {
 
     private PathParamGetter newPathParamGetter(
             AccessibleObject fieldOrBeanSetter,
-            ThreadLocalizedContext tlContext, boolean leaveClassEncoded) {
+            ThreadLocalizedContext tlContext, boolean leaveClassEncoded)
+            throws IllegalPathParamTypeException {
         return new PathParamGetter(fieldOrBeanSetter
                 .getAnnotation(PathParam.class), fieldOrBeanSetter
                 .getAnnotation(DefaultValue.class),

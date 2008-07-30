@@ -88,6 +88,13 @@ public class QueryParamTest extends JaxRsTestCase {
         checkOneGiven("a");
     }
 
+    public void testCheckUnmodifiable() {
+        final Response response = get("checkUnmodifiable");
+        assertTrue(
+                "The List annotated with @QueryParam must not be modifiable",
+                response.getStatus().isSuccess());
+    }
+
     public void testDecoded() throws IOException {
         final Response response = get("qpDecoded?firstname=George%20U.&lastname=Bush");
         sysOutEntityIfError(response);

@@ -279,12 +279,12 @@ public class PathRegExp {
             matchedChars--;
         }
         matched = givenPath.substring(0, matchedChars); // ignore '/' at end
-        return new MatchingResult(matched, templateVars, finalCapturingGroup,
-                templateVars.size());
+        return new MatchingResult(matched, templateVars, finalCapturingGroup);
     }
 
     /**
-     * See JSR-311-Spec, Section 2.6, Algorithm, part 3a, point 1.
+     * Checks, if this regular expression matches the given path with no final
+     * matching group.
      * 
      * @param remainingPath
      * @return

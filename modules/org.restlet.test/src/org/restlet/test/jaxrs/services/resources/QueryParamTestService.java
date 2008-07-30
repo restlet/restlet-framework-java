@@ -26,8 +26,10 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.restlet.test.jaxrs.services.tests.QueryParamTest;
@@ -47,6 +49,19 @@ public class QueryParamTestService {
     @QueryParam("encoded")
     private String encoded;
 
+    @GET
+    @Produces("text/plain")
+    @Path("checkUnmodifiable")
+    public Object checkUnmodifiable(@QueryParam("a") List<String> as) {
+        try {
+            as.clear();
+            throw new WebApplicationException(Response.serverError().entity(
+                    "the List must be unmodifiable").build());
+        } catch (UnsupportedOperationException uoe) {
+            return null;
+        }
+    }
+    
     @GET
     @Produces("text/plain")
     @Path("encodedA")

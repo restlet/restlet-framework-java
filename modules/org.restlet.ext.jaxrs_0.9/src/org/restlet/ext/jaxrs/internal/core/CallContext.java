@@ -67,6 +67,7 @@ import org.restlet.data.Status;
 import org.restlet.data.Tag;
 import org.restlet.ext.jaxrs.RoleChecker;
 import org.restlet.ext.jaxrs.internal.todo.NotYetImplementedException;
+import org.restlet.ext.jaxrs.internal.todo.WillNotBeImplementedException;
 import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.ext.jaxrs.internal.util.EmptyIterator;
 import org.restlet.ext.jaxrs.internal.util.SecurityUtil;
@@ -724,6 +725,26 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
     }
 
     /**
+     * Get the request URI extension. The returned string includes any
+     * extensions remove during request pre-processing for the purposes of
+     * URI-based content negotiation. E.g. if the request URI was:
+     * 
+     * <pre>
+     * http://example.com/resource.xml.en
+     * </pre>
+     * 
+     * this method would return "xml.en" even if an applications implementation
+     * of {@link ApplicationConfig#getMediaTypeMappings()} returned a map that
+     * included "xml" as a key
+     * 
+     * @return the request URI extension
+     * @see javax.ws.rs.core.UriInfo#getConnegExtension()
+     */
+    public String getConnegExtension() {
+        return referenceOriginal.getExtensions();
+    }
+
+    /**
      * Get any cookies that accompanied the request.
      * 
      * @return a map of cookie name (String) to Cookie.
@@ -746,7 +767,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      */
     public MultivaluedMap<String, String> getFormParameters() {
         // LATER method removed in JAX-RS 0.10
-        throw new NotYetImplementedException("this meod is removed in JAX-RS 0.10");
+        throw new WillNotBeImplementedException("this method is removed in JAX-RS 0.10");
     }
 
     /**
@@ -807,6 +828,16 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
     }
 
     /**
+     * @param pathParam
+     * @return
+     */
+    public String getLastPathSegmentEnc(PathParam pathParam) {
+        pathParam.annotationType();
+        // TODO CallContext.getLastPathSegmentEnc(PathParam)
+        throw new NotYetImplementedException();
+    }
+
+    /**
      * Get the media type of the request entity
      * 
      * @return the media type or null if there is no request entity.
@@ -858,26 +889,6 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
             return path;
         }
         return Reference.decode(path);
-    }
-
-    /**
-     * Get the request URI extension. The returned string includes any
-     * extensions remove during request pre-processing for the purposes of
-     * URI-based content negotiation. E.g. if the request URI was:
-     * 
-     * <pre>
-     * http://example.com/resource.xml.en
-     * </pre>
-     * 
-     * this method would return "xml.en" even if an applications implementation
-     * of {@link ApplicationConfig#getMediaTypeMappings()} returned a map that
-     * included "xml" as a key
-     * 
-     * @return the request URI extension
-     * @see javax.ws.rs.core.UriInfo#getConnegExtension()
-     */
-    public String getConnegExtension() {
-        return referenceOriginal.getExtensions();
     }
 
     /**
@@ -1169,6 +1180,8 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * @see #getLastPathParamEnc(PathParam)
      */
     public Iterator<String> pathParamEncIter(PathParam pathParamAnnot) {
+        // LATER perhaps this method could be removed, if it is not needed for
+        // @PathParam(..) PathSegment
         final String ppName = pathParamAnnot.value();
         List<String> pathParamValues;
         pathParamValues = interalGetPathParamsEncoded().get(ppName);
@@ -1176,6 +1189,16 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
             return EmptyIterator.get();
         }
         return pathParamValues.iterator();
+    }
+
+    /**
+     * @param pathParam
+     * @return
+     */
+    public Iterator<String> pathSegementEncIter(PathParam pathParam) {
+        pathParam.annotationType();
+        // TODO CallContext.pathSegementEncIter(PathParam)
+        throw new NotYetImplementedException();
     }
 
     /**

@@ -34,23 +34,19 @@ public class MatchingResult {
 
     private final RemainingPath finalCapturingGroup;
 
-    private final int numberOfCapturingGroups;
-
     /**
      * Creates a new MatchingResult
      * 
      * @param matched
-     *            The matched uri part
+     *                The matched uri part
      * @param variables
      * @param finalCapturingGroup
-     * @param numberOfCapturingGroups
      */
     public MatchingResult(String matched, Map<String, String> variables,
-            String finalCapturingGroup, int numberOfCapturingGroups) {
+            String finalCapturingGroup) {
         this.matched = matched;
         this.variables = variables;
         this.finalCapturingGroup = new RemainingPath(finalCapturingGroup);
-        this.numberOfCapturingGroups = numberOfCapturingGroups;
     }
 
     /**
@@ -69,15 +65,6 @@ public class MatchingResult {
      */
     public String getMatched() {
         return this.matched;
-    }
-
-    /**
-     * Returns the number of capturing groups.
-     * 
-     * @return Returns the number of capturing groups.
-     */
-    public int getNumberOfCapturingGroups() {
-        return this.numberOfCapturingGroups;
     }
 
     /**

@@ -25,6 +25,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.MatrixParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.Response;
@@ -44,6 +45,19 @@ public class MatrixParamTestService {
     private String encoded;
 
     private String decoded;
+    
+    @GET
+    @Produces("text/plain")
+    @Path("checkUnmodifiable")
+    public Object checkUnmodifiable(@MatrixParam("mp") List<String> mps) {
+        try {
+            mps.clear();
+            throw new WebApplicationException(Response.serverError().entity(
+                    "the List must be unmodifiable").build());
+        } catch (UnsupportedOperationException use) {
+            return null;
+        }
+    }
 
     @GET
     @Produces("text/plain")
