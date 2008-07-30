@@ -23,10 +23,13 @@ import java.util.List;
 import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.restlet.Application;
 import org.restlet.Context;
@@ -45,23 +48,130 @@ import org.restlet.data.Response;
  * Also, note that this executor service will be shared among all Restlets and
  * Resources that are part of your context. In general this context corresponds
  * to a parent Application's context. If you want to have your own service
- * instance, you can use the {@link #wrap(java.util.concurrent.ExecutorService)}
- * method to ensure that thread local variables are correctly set.
+ * instance, you can use the {@link #wrap(ExecutorService)} method to ensure
+ * that thread local variables are correctly set.
  * 
  * @author Jerome Louvel
- * @author Doug Lea (documentation of ExecutorService interface)
+ * @author Doug Lea (docs of ExecutorService in public domain)
  */
-public class TaskService extends Service implements
-        java.util.concurrent.ExecutorService {
+public class TaskService extends Service implements ExecutorService {
+
+    /**
+     * The default thread factory
+     * 
+     * @author Jerome Louvel
+     * @author Doug Lea (initial code in public domain)
+     */
+    private static class RestletThreadFactory implements ThreadFactory {
+        static final AtomicInteger restletPoolNumber = new AtomicInteger(1);
+
+        final ThreadGroup group;
+
+        final String namePrefix;
+
+        final AtomicInteger threadNumber = new AtomicInteger(1);
+
+        /**
+         * Constructor.
+         */
+        public RestletThreadFactory() {
+            SecurityManager s = System.getSecurityManager();
+            group = (s != null) ? s.getThreadGroup() : Thread.currentThread()
+                    .getThreadGroup();
+            namePrefix = "restlet-" + restletPoolNumber.getAndIncrement()
+                    + "-thread-";
+        }
+
+        /**
+         * Creates and name a new thread.
+         * 
+         * @param runnable
+         *            The runnable task.
+         */
+        public Thread newThread(Runnable runnable) {
+            Thread t = new Thread(group, runnable, namePrefix
+                    + threadNumber.getAndIncrement(), 0);
+            if (t.isDaemon())
+                t.setDaemon(false);
+            if (t.getPriority() != Thread.NORM_PRIORITY)
+                t.setPriority(Thread.NORM_PRIORITY);
+            return t;
+        }
+    }
+
+    /**
+     * Wraps a JDK's executor service to ensure that the threads executing the
+     * tasks will have the thread local variables copied from the calling
+     * thread. This will ensure that call to static methods like
+     * {@link Application#getCurrent()} still work.
+     * 
+     * @param jdkExecutorService
+     *            The JDK service to wrap.
+     * @return The wrapper service to use.
+     */
+    public static ExecutorService wrap(final ExecutorService jdkExecutorService) {
+        return new AbstractExecutorService() {
+
+            public boolean awaitTermination(long timeout, TimeUnit unit)
+                    throws InterruptedException {
+                return jdkExecutorService.awaitTermination(timeout, unit);
+            }
+
+            public void execute(final Runnable runnable) {
+                // Save the thread local variables
+                final Application currentApplication = Application.getCurrent();
+                final Context currentContext = Context.getCurrent();
+                final Integer currentVirtualHost = VirtualHost.getCurrent();
+                final Response currentResponse = Response.getCurrent();
+
+                jdkExecutorService.execute(new Runnable() {
+                    public void run() {
+                        // Copy the thread local variables
+                        Response.setCurrent(currentResponse);
+                        Context.setCurrent(currentContext);
+                        VirtualHost.setCurrent(currentVirtualHost);
+                        Application.setCurrent(currentApplication);
+
+                        try {
+                            // Run the user task
+                            runnable.run();
+                        } finally {
+                            // Reset the thread local variables
+                            Response.setCurrent(null);
+                            Context.setCurrent(null);
+                            VirtualHost.setCurrent(-1);
+                            Application.setCurrent(null);
+                        }
+                    }
+                });
+            }
+
+            public boolean isShutdown() {
+                return jdkExecutorService.isShutdown();
+            }
+
+            public boolean isTerminated() {
+                return jdkExecutorService.isTerminated();
+            }
+
+            public void shutdown() {
+                jdkExecutorService.shutdown();
+            }
+
+            public List<Runnable> shutdownNow() {
+                return jdkExecutorService.shutdownNow();
+            }
+        };
+    }
 
     /** The wrapped JDK executor service. */
-    private volatile java.util.concurrent.ExecutorService wrapped;
+    private volatile ExecutorService wrapped;
 
     /**
      * Constructor.
      */
     public TaskService() {
-        setWrapped(create());
+        setWrapped(wrap(createExecutorService()));
     }
 
     /**
@@ -83,13 +193,23 @@ public class TaskService extends Service implements
 
     /**
      * Creates a new JDK executor service that will be wrapped. By default it
-     * calls the {@link #wrap(java.util.concurrent.ExecutorService)} method on
-     * an instance of {@link Executors#newCachedThreadPool()}.
+     * calls {@link Executors#newCachedThreadPool(ThreadFactory))}, passing the
+     * result of {@link #createThreadFactory()} as a parameter.
      * 
      * @return A new JDK executor service.
      */
-    protected java.util.concurrent.ExecutorService create() {
-        return wrap(Executors.newCachedThreadPool());
+    protected ExecutorService createExecutorService() {
+        return Executors.newCachedThreadPool(createThreadFactory());
+    }
+
+    /**
+     * Creates a new thread factory that will properly name the Restlet created
+     * threads with a "restlet-" prefix.
+     * 
+     * @return A new thread factory.
+     */
+    protected ThreadFactory createThreadFactory() {
+        return new RestletThreadFactory();
     }
 
     /**
@@ -107,7 +227,7 @@ public class TaskService extends Service implements
      * 
      * @return The wrapped JDK executor service.
      */
-    private java.util.concurrent.ExecutorService getWrapped() {
+    private ExecutorService getWrapped() {
         return wrapped;
     }
 
@@ -206,12 +326,11 @@ public class TaskService extends Service implements
     /**
      * Sets the wrapped JDK executor service.
      * 
-     * @param wrappedExecutorService
+     * @param wrapped
      *            The wrapped JDK executor service.
      */
-    private void setWrapped(
-            java.util.concurrent.ExecutorService wrappedExecutorService) {
-        this.wrapped = wrappedExecutorService;
+    private void setWrapped(ExecutorService wrapped) {
+        this.wrapped = wrapped;
     }
 
     /**
@@ -236,7 +355,7 @@ public class TaskService extends Service implements
     @Override
     public synchronized void start() throws Exception {
         if (getWrapped().isShutdown()) {
-            setWrapped(create());
+            setWrapped(wrap(createExecutorService()));
         }
 
         super.start();
@@ -286,72 +405,6 @@ public class TaskService extends Service implements
      */
     public <T> Future<T> submit(Runnable task, T result) {
         return getWrapped().submit(task, result);
-    }
-
-    /**
-     * Wraps a JDK's executor service to ensure that the threads executing the
-     * tasks will have the thread local variables copied from the calling
-     * thread. This will ensure that call to static methods like
-     * {@link Application#getCurrent()} still work.
-     * 
-     * @param jdkExecutorService
-     *            The JDK service to wrap.
-     * @return The wrapper service to use.
-     */
-    public static java.util.concurrent.ExecutorService wrap(
-            final java.util.concurrent.ExecutorService jdkExecutorService) {
-        return new AbstractExecutorService() {
-
-            public boolean awaitTermination(long timeout, TimeUnit unit)
-                    throws InterruptedException {
-                return jdkExecutorService.awaitTermination(timeout, unit);
-            }
-
-            public void execute(final Runnable runnable) {
-                // Save the thread local variables
-                final Application currentApplication = Application.getCurrent();
-                final Context currentContext = Context.getCurrent();
-                final Integer currentVirtualHost = VirtualHost.getCurrent();
-                final Response currentResponse = Response.getCurrent();
-
-                jdkExecutorService.execute(new Runnable() {
-                    public void run() {
-                        // Copy the thread local variables
-                        Response.setCurrent(currentResponse);
-                        Context.setCurrent(currentContext);
-                        VirtualHost.setCurrent(currentVirtualHost);
-                        Application.setCurrent(currentApplication);
-
-                        try {
-                            // Run the user task
-                            runnable.run();
-                        } finally {
-                            // Reset the thread local variables
-                            Response.setCurrent(null);
-                            Context.setCurrent(null);
-                            VirtualHost.setCurrent(-1);
-                            Application.setCurrent(null);
-                        }
-                    }
-                });
-            }
-
-            public boolean isShutdown() {
-                return jdkExecutorService.isShutdown();
-            }
-
-            public boolean isTerminated() {
-                return jdkExecutorService.isTerminated();
-            }
-
-            public void shutdown() {
-                jdkExecutorService.shutdown();
-            }
-
-            public List<Runnable> shutdownNow() {
-                return jdkExecutorService.shutdownNow();
-            }
-        };
     }
 
 }

@@ -58,7 +58,7 @@ Changes log
        	- Replaced the Context#getThread(Runnable) method with a more
        	  flexible org.restlet.service.TaskService class and a new
        	  "taskService" property on Application. Many design 
-       	  contributions from Tim Peierls.
+       	  contributions from Tim Peierls. Suggestions by Kevin Conaway.
        	- Clarified Javadocs for static getCurrent() methods. Suggested
        	  by Patrick Logan.
        	- Replaced Map<String, Object> parameters by Map<String, ?>
