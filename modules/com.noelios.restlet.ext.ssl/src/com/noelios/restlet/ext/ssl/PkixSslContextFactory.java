@@ -29,6 +29,8 @@ import javax.net.ssl.SSLContext;
 import jsslutils.keystores.KeyStoreLoader;
 import jsslutils.sslcontext.PKIXSSLContextFactory;
 import jsslutils.sslcontext.SSLContextFactory.SSLContextFactoryException;
+import jsslutils.sslcontext.X509SSLContextFactory.LockedSettingsException;
+import jsslutils.sslcontext.keymanagers.FixedServerAliasKeyManager;
 
 import org.restlet.data.Parameter;
 import org.restlet.util.Series;
@@ -127,6 +129,12 @@ public class PkixSslContextFactory extends SslContextFactory {
      * <td>SSL truststore provider</td>
      * </tr>
      * <tr>
+     * <td>sslServerAlias</td>
+     * <td>String</td>
+     * <td></td>
+     * <td>alias to use on the server side</td>
+     * </tr>
+     * <tr>
      * <td>sslProtocol</td>
      * <td>String: TLS/SSLv3</td>
      * <td>TLS</td>
@@ -198,6 +206,8 @@ public class PkixSslContextFactory extends SslContextFactory {
 
         String sslProtocol = parameters.getFirstValue("sslProtocol");
 
+        String serverAlias = parameters.getFirstValue("sslServerAlias");
+
         boolean disableRevocation = Boolean.parseBoolean(parameters
                 .getFirstValue("disableCrl"));
 
@@ -207,6 +217,12 @@ public class PkixSslContextFactory extends SslContextFactory {
 
             PKIXSSLContextFactory sslContextFactory = new PKIXSSLContextFactory(
                     keyStore, keyPassword, trustStore, !disableRevocation);
+
+            if (serverAlias != null) {
+                sslContextFactory
+                        .setKeyManagerWrapper(new FixedServerAliasKeyManager.Wrapper(
+                                serverAlias));
+            }
 
             String[] crlArray = parameters.getValuesArray("crlUrl");
             if (crlArray != null) {
@@ -232,6 +248,8 @@ public class PkixSslContextFactory extends SslContextFactory {
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (SSLContextFactoryException e) {
+            throw new RuntimeException(e);
+        } catch (LockedSettingsException e) {
             throw new RuntimeException(e);
         }
     }
