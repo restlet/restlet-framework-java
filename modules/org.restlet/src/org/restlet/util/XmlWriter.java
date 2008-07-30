@@ -724,7 +724,7 @@ public final class XmlWriter extends XMLFilterImpl {
      */
     private String doPrefix(String uri, String qName, boolean isElement) {
         final String defaultNS = this.nsSupport.getURI("");
-        if ("".equals(uri)) {
+        if ("".equals(uri) || uri == null) {
             if (isElement && (defaultNS != null)) {
                 this.nsSupport.declarePrefix("", "");
             }
