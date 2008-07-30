@@ -55,9 +55,10 @@ Changes log
        	  contributed by Bruno Dumon.
        	- Completed the Component's XML config with the default query 
        	  match setting defined on routers. Suggested by Bruno Dumon.
-       	- Replaced the Context#getThread(Runnable) method with more
-       	  flexible getExecutorService() and wrapExecutorService() 
-       	  methods. Suggested by Tim Peierls.
+       	- Replaced the Context#getThread(Runnable) method with a more
+       	  flexible org.restlet.service.TaskService class and a new
+       	  "taskService" property on Application. Many design 
+       	  contributions from Tim Peierls.
        	- Clarified Javadocs for static getCurrent() methods. Suggested
        	  by Patrick Logan.
        	- Replaced Map<String, Object> parameters by Map<String, ?>
@@ -75,8 +76,9 @@ Changes log
        	  parameters under the component, client and server elements. 
        	  Reported by Bruno Harbulot.
        	- Added a org.restlet.service.Service class, super class of all
-       	  existing service classes. Also added an ExecutorService class
-       	  implementing java.util.concurrent.ExecutorService interface.
+       	  existing service classes, with "enabled" and "started" 
+       	  properties. Enabled services are automatically started by
+       	  their parent application or component. 
     - NRE and Extension Enhancements
         - Added a static HttpServletRequest getRequest(Request) method
           to the Servlet extension.

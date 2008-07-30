@@ -22,7 +22,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.service.ConnectorService;
 import org.restlet.service.DecoderService;
-import org.restlet.service.ExecutorService;
+import org.restlet.service.TaskService;
 import org.restlet.service.MetadataService;
 import org.restlet.service.StatusService;
 import org.restlet.service.TunnelService;
@@ -104,9 +104,6 @@ public class Application extends Restlet {
     /** The description. */
     private volatile String description;
 
-    /** The executor service. */
-    private volatile ExecutorService executorService;
-
     /** The helper provided by the implementation. */
     private volatile Helper<Application> helper;
 
@@ -124,6 +121,9 @@ public class Application extends Restlet {
 
     /** The status service. */
     private volatile StatusService statusService;
+
+    /** The task service. */
+    private volatile TaskService taskService;
 
     /** The tunnel service. */
     private volatile TunnelService tunnelService;
@@ -164,7 +164,7 @@ public class Application extends Restlet {
         this.connectorService = new ConnectorService();
         this.converterService = new org.restlet.service.ConverterService();
         this.decoderService = new DecoderService();
-        this.executorService = new ExecutorService();
+        this.taskService = new TaskService();
         this.metadataService = new MetadataService();
         this.statusService = new StatusService();
         this.tunnelService = new TunnelService(true, true);
@@ -232,16 +232,6 @@ public class Application extends Restlet {
     }
 
     /**
-     * Returns an executor service to run concurrent tasks. The service is
-     * enabled by default.
-     * 
-     * @return An executor service.
-     */
-    public ExecutorService getExecutorService() {
-        return this.executorService;
-    }
-
-    /**
      * Returns the helper provided by the implementation.
      * 
      * @return The helper provided by the implementation.
@@ -298,6 +288,16 @@ public class Application extends Restlet {
      */
     public StatusService getStatusService() {
         return this.statusService;
+    }
+
+    /**
+     * Returns a task service to run concurrent tasks. The service is enabled by
+     * default.
+     * 
+     * @return A task service.
+     */
+    public TaskService getTaskService() {
+        return this.taskService;
     }
 
     /**
@@ -380,16 +380,6 @@ public class Application extends Restlet {
     }
 
     /**
-     * Sets the executor service.
-     * 
-     * @param executorService
-     *            The executor service.
-     */
-    public void setExecutorService(ExecutorService executorService) {
-        this.executorService = executorService;
-    }
-
-    /**
      * Sets the metadata service.
      * 
      * @param metadataService
@@ -440,6 +430,16 @@ public class Application extends Restlet {
     }
 
     /**
+     * Sets the task service.
+     * 
+     * @param taskService
+     *            The task service.
+     */
+    public void setTaskService(TaskService taskService) {
+        this.taskService = taskService;
+    }
+
+    /**
      * Sets the tunnel service.
      * 
      * @param tunnelService
@@ -473,8 +473,8 @@ public class Application extends Restlet {
                 getDecoderService().start();
             }
 
-            if (getExecutorService() != null) {
-                getExecutorService().start();
+            if (getTaskService() != null) {
+                getTaskService().start();
             }
 
             if (getMetadataService() != null) {
@@ -509,8 +509,8 @@ public class Application extends Restlet {
                 getDecoderService().stop();
             }
 
-            if (getExecutorService() != null) {
-                getExecutorService().stop();
+            if (getTaskService() != null) {
+                getTaskService().stop();
             }
 
             if (getMetadataService() != null) {

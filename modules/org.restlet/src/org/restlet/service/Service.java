@@ -28,7 +28,7 @@ package org.restlet.service;
  * 
  * @author Jerome Louvel
  */
-public class Service {
+public abstract class Service {
     /** Indicates if the service has been enabled. */
     private volatile boolean enabled;
 

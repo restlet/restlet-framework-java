@@ -532,7 +532,7 @@ public final class ByteUtils {
 
         // Get a thread that will handle the task of continuously
         // writing the representation into the input side of the pipe
-        application.getExecutorService().execute(new Runnable() {
+        application.getTaskService().execute(new Runnable() {
             public void run() {
                 try {
                     final WritableByteChannel wbc = pipe.sink();
@@ -585,7 +585,7 @@ public final class ByteUtils {
 
         // Gets a thread that will handle the task of continuously
         // writing the representation into the input side of the pipe
-        application.getExecutorService().execute(new Runnable() {
+        application.getTaskService().execute(new Runnable() {
             public void run() {
                 try {
                     representation.write(pipedWriter);
@@ -649,7 +649,7 @@ public final class ByteUtils {
 
         // Creates a thread that will handle the task of continuously
         // writing the representation into the input side of the pipe
-        application.getExecutorService().execute(new Runnable() {
+        application.getTaskService().execute(new Runnable() {
             public void run() {
                 try {
                     final OutputStream os = pipe.getOutputStream();

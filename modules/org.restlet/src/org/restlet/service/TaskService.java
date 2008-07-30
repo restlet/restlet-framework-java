@@ -45,13 +45,13 @@ import org.restlet.data.Response;
  * Also, note that this executor service will be shared among all Restlets and
  * Resources that are part of your context. In general this context corresponds
  * to a parent Application's context. If you want to have your own service
- * instance, you can use the {@link #wrap(ExecutorService)} method to ensure
- * that thread local variables are correctly set.
+ * instance, you can use the {@link #wrap(java.util.concurrent.ExecutorService)}
+ * method to ensure that thread local variables are correctly set.
  * 
  * @author Jerome Louvel
- * @author Doug Lea
+ * @author Doug Lea (documentation of ExecutorService interface)
  */
-public class ExecutorService extends Service implements
+public class TaskService extends Service implements
         java.util.concurrent.ExecutorService {
 
     /** The wrapped JDK executor service. */
@@ -60,7 +60,7 @@ public class ExecutorService extends Service implements
     /**
      * Constructor.
      */
-    public ExecutorService() {
+    public TaskService() {
         setWrapped(create());
     }
 
@@ -298,7 +298,7 @@ public class ExecutorService extends Service implements
      *            The JDK service to wrap.
      * @return The wrapper service to use.
      */
-    public java.util.concurrent.ExecutorService wrap(
+    public static java.util.concurrent.ExecutorService wrap(
             final java.util.concurrent.ExecutorService jdkExecutorService) {
         return new AbstractExecutorService() {
 
