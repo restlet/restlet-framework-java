@@ -41,7 +41,7 @@ import org.restlet.data.LocalReference;
 import org.restlet.data.Protocol;
 import org.restlet.util.Engine;
 
-import com.noelios.restlet.application.ApplicationContext;
+import com.noelios.restlet.component.ChildContext;
 import com.noelios.restlet.component.ComponentContext;
 import com.noelios.restlet.http.HttpServerCall;
 import com.noelios.restlet.http.HttpServerHelper;
@@ -278,9 +278,9 @@ public class ServerServlet extends HttpServlet {
                             .newInstance();
 
                     // Set the context based on the Servlet's context
-                    final ApplicationContext applicationContext = (ApplicationContext) application
+                    final ChildContext applicationContext = (ChildContext) application
                             .getContext();
-                    application.setContext(new ApplicationContext(application,
+                    application.setContext(new ChildContext(application,
                             new ServletContextAdapter(this, context),
                             applicationContext.getLogger()));
                 }
@@ -309,7 +309,7 @@ public class ServerServlet extends HttpServlet {
         }
 
         if (application != null) {
-            final ApplicationContext applicationContext = (ApplicationContext) application
+            final ChildContext applicationContext = (ChildContext) application
                     .getContext();
 
             // Copy all the servlet parameters into the context

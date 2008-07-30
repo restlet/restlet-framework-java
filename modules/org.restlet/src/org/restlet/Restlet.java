@@ -24,6 +24,7 @@ import java.util.logging.Logger;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.util.Engine;
 
 /**
  * Uniform class that provides a context and life cycle support. It has many
@@ -67,6 +68,7 @@ public class Restlet extends Uniform {
     public Restlet(Context context) {
         this.context = context;
         this.started = false;
+        Engine.getInstance().fireContextChanged(this, context);
     }
 
     /**
@@ -184,6 +186,7 @@ public class Restlet extends Uniform {
      */
     public void setContext(Context context) {
         this.context = context;
+        Engine.getInstance().fireContextChanged(this, context);
     }
 
     /** Starts the Restlet. */

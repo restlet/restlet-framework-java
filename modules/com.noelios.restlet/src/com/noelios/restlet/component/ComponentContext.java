@@ -21,8 +21,6 @@ package com.noelios.restlet.component;
 import org.restlet.Component;
 import org.restlet.Context;
 
-import com.noelios.restlet.application.ApplicationContext;
-
 /**
  * Context allowing access to the component's connectors.
  * 
@@ -73,7 +71,7 @@ public class ComponentContext extends Context {
 
     @Override
     public Context createChildContext() {
-        return new ApplicationContext(getComponentHelper().getHelped()
+        return new ChildContext(null, getComponentHelper().getHelped()
                 .getContext());
     }
 

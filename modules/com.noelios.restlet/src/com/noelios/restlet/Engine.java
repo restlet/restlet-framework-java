@@ -41,6 +41,7 @@ import org.restlet.Component;
 import org.restlet.Context;
 import org.restlet.Directory;
 import org.restlet.Guard;
+import org.restlet.Restlet;
 import org.restlet.Server;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.CharacterSet;
@@ -69,6 +70,8 @@ import com.noelios.restlet.authentication.HttpAmazonS3Helper;
 import com.noelios.restlet.authentication.HttpBasicHelper;
 import com.noelios.restlet.authentication.HttpDigestHelper;
 import com.noelios.restlet.authentication.SmtpPlainHelper;
+import com.noelios.restlet.component.ChildContext;
+import com.noelios.restlet.component.ComponentContext;
 import com.noelios.restlet.component.ComponentHelper;
 import com.noelios.restlet.http.ContentType;
 import com.noelios.restlet.http.CookieReader;
@@ -556,6 +559,35 @@ public class Engine extends org.restlet.util.Engine {
         }
 
         return result;
+    }
+
+    /**
+     * Indicates that a Restlet's context has changed.
+     * 
+     * @param restlet
+     *            The Restlet with a changed context.
+     * @param context
+     *            The new context.
+     */
+    @Override
+    public void fireContextChanged(Restlet restlet, Context context) {
+        if (context != null) {
+            if (context instanceof ChildContext) {
+                ChildContext childContext = (ChildContext) context;
+
+                if (childContext.getChild() == null) {
+                    childContext.setChild(restlet);
+                    String loggerName = ChildContext.getLoggerName(restlet);
+                    context.setLogger(Logger.getLogger(loggerName));
+                }
+            } else if (!(restlet instanceof Component)
+                    && (context instanceof ComponentContext)) {
+                context
+                        .getLogger()
+                        .severe(
+                                "For security reasons, don't pass the component context to child Restlets anymore. Use the Context#createChildContext() method instead.");
+            }
+        }
     }
 
     @Override

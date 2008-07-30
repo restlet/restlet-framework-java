@@ -16,8 +16,9 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.application;
+package com.noelios.restlet.component;
 
+import org.restlet.Application;
 import org.restlet.data.LocalReference;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
@@ -26,7 +27,7 @@ import org.restlet.data.Response;
 import com.noelios.restlet.TemplateDispatcher;
 
 /**
- * Application client dispatcher.
+ * Client dispatcher for a component child.
  * 
  * Concurrency note: instances of this class or its subclasses can be invoked by
  * several threads at the same time and therefore must be thread-safe. You
@@ -34,15 +35,15 @@ import com.noelios.restlet.TemplateDispatcher;
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class ApplicationClientDispatcher extends TemplateDispatcher {
+public class ChildClientDispatcher extends TemplateDispatcher {
     /**
      * Constructor.
      * 
-     * @param applicationContext
-     *            The application context.
+     * @param childContext
+     *            The child context.
      */
-    public ApplicationClientDispatcher(ApplicationContext applicationContext) {
-        super(applicationContext);
+    public ChildClientDispatcher(ChildContext childContext) {
+        super(childContext);
     }
 
     @Override
@@ -59,12 +60,13 @@ public class ApplicationClientDispatcher extends TemplateDispatcher {
                     .getResourceRef());
 
             if (cr.getRiapAuthorityType() == LocalReference.RIAP_APPLICATION) {
-                request.getResourceRef().setBaseRef(
-                        request.getResourceRef().getHostIdentifier());
-
-                if (getApplicationContext() != null) {
-                    getApplicationContext().getApplication().getRoot().handle(
-                            request, response);
+                if ((getChildContext() != null)
+                        && (getChildContext().getChild() instanceof Application)) {
+                    Application application = (Application) getChildContext()
+                            .getChild();
+                    request.getResourceRef().setBaseRef(
+                            request.getResourceRef().getHostIdentifier());
+                    application.getRoot().handle(request, response);
                 }
             } else if (cr.getRiapAuthorityType() == LocalReference.RIAP_COMPONENT) {
                 parentHandle(request, response);
@@ -76,12 +78,18 @@ public class ApplicationClientDispatcher extends TemplateDispatcher {
                                 "Unknown RIAP authority. Only \"component\", \"host\" and \"application\" are supported.");
             }
         } else {
-            if (!getApplicationContext().getApplication().getConnectorService()
-                    .getClientProtocols().contains(protocol)) {
-                getLogger()
-                        .fine(
-                                "The protocol used by this request is not declared in the application's connector service. "
-                                        + "Please update the list of client connectors used by your application and restart it.");
+            if ((getChildContext() != null)
+                    && (getChildContext().getChild() instanceof Application)) {
+                Application application = (Application) getChildContext()
+                        .getChild();
+
+                if (!application.getConnectorService().getClientProtocols()
+                        .contains(protocol)) {
+                    getLogger()
+                            .fine(
+                                    "The protocol used by this request is not declared in the application's connector service. "
+                                            + "Please update the list of client connectors used by your application and restart it.");
+                }
             }
 
             parentHandle(request, response);
@@ -89,12 +97,12 @@ public class ApplicationClientDispatcher extends TemplateDispatcher {
     }
 
     /**
-     * Returns the application context.
+     * Returns the child context.
      * 
-     * @return The application context.
+     * @return The child context.
      */
-    private ApplicationContext getApplicationContext() {
-        return (ApplicationContext) getContext();
+    private ChildContext getChildContext() {
+        return (ChildContext) getContext();
     }
 
     /**
@@ -106,12 +114,11 @@ public class ApplicationClientDispatcher extends TemplateDispatcher {
      *            The response to update.
      */
     private void parentHandle(Request request, Response response) {
-        if (getApplicationContext() != null) {
-            if (getApplicationContext().getParentContext() != null) {
-                if (getApplicationContext().getParentContext()
-                        .getClientDispatcher() != null) {
-                    getApplicationContext().getParentContext()
-                            .getClientDispatcher().handle(request, response);
+        if (getChildContext() != null) {
+            if (getChildContext().getParentContext() != null) {
+                if (getChildContext().getParentContext().getClientDispatcher() != null) {
+                    getChildContext().getParentContext().getClientDispatcher()
+                            .handle(request, response);
                 } else {
                     getLogger()
                             .warning(
@@ -120,12 +127,11 @@ public class ApplicationClientDispatcher extends TemplateDispatcher {
             } else {
                 getLogger()
                         .warning(
-                                "Your Application doesn't have a parent context available. Ensure that your parent Component has a context available.");
+                                "Your Restlet doesn't have a parent context available.");
             }
         } else {
-            getLogger()
-                    .warning(
-                            "Your Application doesn't have a context set. Ensure that you pass the parent Component's context to your Application constructor.");
+            getLogger().warning(
+                    "Your Restlet doesn't have a context available.");
         }
     }
 

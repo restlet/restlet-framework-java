@@ -30,8 +30,10 @@ import java.util.logging.Logger;
 import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
+import org.restlet.Context;
 import org.restlet.Directory;
 import org.restlet.Guard;
+import org.restlet.Restlet;
 import org.restlet.Server;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.ClientInfo;
@@ -358,6 +360,16 @@ public abstract class Engine {
      */
     public abstract Helper<Server> createHelper(Server server,
             String helperClass);
+
+    /**
+     * Indicates that a Restlet's context has changed.
+     * 
+     * @param restlet
+     *            The Restlet with a changed context.
+     * @param context
+     *            The new context.
+     */
+    public abstract void fireContextChanged(Restlet restlet, Context context);
 
     /**
      * Formats the given Cookie to a String

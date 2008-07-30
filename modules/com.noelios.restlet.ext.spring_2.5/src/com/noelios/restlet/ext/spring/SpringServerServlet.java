@@ -26,7 +26,7 @@ import org.restlet.Context;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import com.noelios.restlet.application.ApplicationContext;
+import com.noelios.restlet.component.ChildContext;
 import com.noelios.restlet.ext.servlet.ServerServlet;
 import com.noelios.restlet.ext.servlet.ServletContextAdapter;
 
@@ -78,9 +78,9 @@ public class SpringServerServlet extends ServerServlet {
 
         if (application != null) {
             // Set the context based on the Servlet's context
-            final ApplicationContext applicationContext = (ApplicationContext) application
+            final ChildContext applicationContext = (ChildContext) application
                     .getContext();
-            application.setContext(new ApplicationContext(application,
+            application.setContext(new ChildContext(application,
                     new ServletContextAdapter(this, context),
                     applicationContext.getLogger()));
 

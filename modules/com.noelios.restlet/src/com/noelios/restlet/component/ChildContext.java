@@ -16,52 +16,56 @@
  * Portions Copyright [yyyy] [name of copyright owner]
  */
 
-package com.noelios.restlet.application;
+package com.noelios.restlet.component;
 
 import java.util.logging.Logger;
 
-import org.restlet.Application;
 import org.restlet.Context;
+import org.restlet.Restlet;
 import org.restlet.Uniform;
 
 /**
- * Context based on a parent component's context but dedicated to an
- * application. This is important to allow contextual access to application's
- * resources.
+ * Context based on a parent component's context but dedicated to a child
+ * Restlet, typically to an application.
  * 
  * @author Jerome Louvel (contact@noelios.com)
  */
-public class ApplicationContext extends Context {
+public class ChildContext extends Context {
 
     /**
-     * Returns the standard logger name for the given application.
+     * Returns the standard logger name for the given child Restlet.
      * 
-     * @param application
-     *            The application to log about.
+     * @param child
+     *            The child to log about.
      * @return The standard logger name.
      */
-    public static String getLoggerName(Application application) {
+    public static String getLoggerName(Restlet child) {
         String result = null;
-        Context context = application.getContext();
 
-        if (context != null) {
-            result = application.getClass().getCanonicalName();
+        if (child != null) {
+            Context context = child.getContext();
 
-            if (result == null) {
-                result = "org.restlet.application";
+            if (context != null) {
+                result = child.getClass().getCanonicalName();
+
+                if (result == null) {
+                    result = "org.restlet.restlet (";
+                }
+
+                result = result + child.hashCode() + ")";
             }
-
-            result += "#" + application.hashCode();
+        } else {
+            result = "org.restlet.restlet";
         }
 
         return result;
     }
 
-    /** The application delegate. */
-    private volatile Application application;
+    /** The child delegate, typically an application. */
+    private volatile Restlet child;
 
     /** The client dispatcher. */
-    private volatile ApplicationClientDispatcher clientDispatcher;
+    private volatile ChildClientDispatcher clientDispatcher;
 
     /** The parent context. */
     private volatile Context parentContext;
@@ -72,50 +76,46 @@ public class ApplicationContext extends Context {
     /**
      * Constructor.
      * 
-     * @param application
-     *            The application.
+     * @param child
+     *            The child.
      * @param parentContext
      *            The parent context.
-     * @param logger
-     *            The logger instance of use.
      */
-    public ApplicationContext(Application application, Context parentContext,
-            Logger logger) {
-        super(getLoggerName(application));
-        this.application = application;
-        this.parentContext = parentContext;
-        this.clientDispatcher = new ApplicationClientDispatcher(this);
-        this.serverDispatcher = (getParentContext() != null) ? getParentContext()
-                .getServerDispatcher()
-                : null;
+    public ChildContext(Restlet child, Context parentContext) {
+        this(child, parentContext, Logger.getLogger(getLoggerName(child)));
     }
 
     /**
      * Constructor.
      * 
+     * @param child
+     *            The child.
      * @param parentContext
      *            The parent context.
+     * @param logger
+     *            The logger instance of use.
      */
-    public ApplicationContext(Context parentContext) {
-        super("org.restlet.application");
+    public ChildContext(Restlet child, Context parentContext, Logger logger) {
+        super(logger);
+        this.child = child;
         this.parentContext = parentContext;
-        this.clientDispatcher = new ApplicationClientDispatcher(this);
+        this.clientDispatcher = new ChildClientDispatcher(this);
         this.serverDispatcher = (getParentContext() != null) ? getParentContext()
                 .getServerDispatcher()
                 : null;
     }
 
     /**
-     * Returns the application.
+     * Returns the child.
      * 
-     * @return the application.
+     * @return the child.
      */
-    public Application getApplication() {
-        return this.application;
+    public Restlet getChild() {
+        return this.child;
     }
 
     @Override
-    public ApplicationClientDispatcher getClientDispatcher() {
+    public ChildClientDispatcher getClientDispatcher() {
         return this.clientDispatcher;
     }
 
@@ -134,13 +134,14 @@ public class ApplicationContext extends Context {
     }
 
     /**
-     * Sets the application.
+     * Sets the child.
      * 
-     * @param application
-     *            The application.
+     * @param child
+     *            The child.
      */
-    public void setApplication(Application application) {
-        this.application = application;
+    public void setChild(Restlet child) {
+        this.child = child;
+        setLogger(Logger.getLogger(getLoggerName(child)));
     }
 
 }

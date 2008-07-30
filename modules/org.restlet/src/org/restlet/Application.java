@@ -338,12 +338,6 @@ public class Application extends Restlet {
         this.connectorService = connectorService;
     }
 
-    @Override
-    public void setContext(Context context) {
-        super.setContext(context);
-        getHelper().fireContextChanged(context);
-    }
-
     /**
      * Sets the converter service.
      * 

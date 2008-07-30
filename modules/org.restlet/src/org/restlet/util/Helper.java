@@ -60,15 +60,6 @@ public abstract class Helper<T extends Restlet> {
     }
 
     /**
-     * Indicates that the helped Restlet's context has changed.
-     * 
-     * @param context
-     *            The new context.
-     */
-    public void fireContextChanged(Context context) {
-    }
-
-    /**
      * Returns the map of attributes exchanged between the API and the Engine
      * via this helper.
      * 
