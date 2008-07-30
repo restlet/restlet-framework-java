@@ -23,6 +23,7 @@ import org.restlet.Router;
 import org.restlet.resource.Resource;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
@@ -59,9 +60,13 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
  * should be especially careful when storing state in member variables.
  * 
  * @author Rhett Sutphin
+ * @author James Maki
  */
 public class SpringBeanRouter extends Router implements
         BeanFactoryPostProcessor {
+
+    /** If beans should be searched for higher up in the BeanFactory hierarchy */
+    private volatile boolean findInAncestors = true;
 
     /**
      * Creates an instance of {@link SpringBeanFinder}. This can be overriden if
@@ -77,6 +82,19 @@ public class SpringBeanRouter extends Router implements
     }
 
     /**
+     * Returns true if bean names will be searched for higher up in the
+     * BeanFactory hierarchy.
+     * <p>
+     * Default is true.
+     * 
+     * @return true if bean names will be searched for higher up in the
+     *         BeanFactory hierarchy
+     */
+    public boolean isFindInAncestors() {
+        return findInAncestors;
+    }
+
+    /**
      * Modify the application context by looking up the name of all beans of
      * type Resource, calling the
      * {@link #resolveUri(String, ConfigurableListableBeanFactory)} method for
@@ -85,8 +103,10 @@ public class SpringBeanRouter extends Router implements
      */
     public void postProcessBeanFactory(ConfigurableListableBeanFactory factory)
             throws BeansException {
-        final String[] names = factory.getBeanNamesForType(Resource.class,
-                true, true);
+        String[] names = isFindInAncestors() ? BeanFactoryUtils
+                .beanNamesForTypeIncludingAncestors(factory, Resource.class,
+                        true, true) : factory.getBeanNamesForType(
+                Resource.class, true, true);
 
         for (final String name : names) {
             final String uri = resolveUri(name, factory);
@@ -111,5 +131,16 @@ public class SpringBeanRouter extends Router implements
         }
 
         return null;
+    }
+
+    /**
+     * Sets if bean names will be searched for higher up in the BeanFactory
+     * hierarchy.
+     * 
+     * @param findInAncestors
+     *            search for beans higher up in the BeanFactory hierarchy.
+     */
+    public void setFindInAncestors(boolean findInAncestors) {
+        this.findInAncestors = findInAncestors;
     }
 }

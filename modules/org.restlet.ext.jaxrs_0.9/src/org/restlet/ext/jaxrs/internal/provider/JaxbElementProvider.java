@@ -89,7 +89,6 @@ public class JaxbElementProvider extends AbstractJaxbProvider<JAXBElement<?>> {
      *      MultivaluedMap, InputStream)
      */
     @Override
-    @SuppressWarnings("unchecked")
     public JAXBElement<?> readFrom(Class<JAXBElement<?>> type,
             Type genericType, Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, String> httpResponseHeaders,

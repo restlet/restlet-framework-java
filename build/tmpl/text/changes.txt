@@ -107,7 +107,9 @@ Changes log
           of GWT 1.5 RC1.
         - Slightly refactored and documented OAuth extension.
         - Renamed the "org.restlet.ssl.hostnameVerifier" attribute into
-          just "hostnameVerifier" for consistency with existing naming. 
+          just "hostnameVerifier" for consistency with existing naming.
+        - SpringBeanRouter can now search beans in ancestors. 
+          Contribution from James Maki. 
     - Misc
         - Refactored WAR client to remove remaining class in NRE core.
 
