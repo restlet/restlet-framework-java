@@ -66,7 +66,7 @@ import org.restlet.ext.jaxrs.internal.wrappers.params.ParameterList;
  * @author Stephan Koops
  * @see javax.ws.rs.ext.Provider
  */
-public class Provider implements MessageBodyReader, MessageBodyWriter {
+public class Provider implements MessageBodyReader, MessageBodyWriter, ContextResolver {
     /**
      * the mimes this MessageBodyReader consumes.
      */
@@ -427,7 +427,7 @@ public class Provider implements MessageBodyReader, MessageBodyWriter {
         iph.injectInto(this.jaxRsProvider, !this.singelton);
     }
 
-    // TODO before a call of a message body reader or writer the current state
+    // LATER before a call of a message body reader or writer the current state
     // of the matched resources and URIs must be stored fpr the current thread.
 
     /**
@@ -562,6 +562,10 @@ public class Provider implements MessageBodyReader, MessageBodyWriter {
         return false;
     }
 
+    public boolean supportsWrite(javax.ws.rs.core.MediaType requested) {
+        return this.supportsWrite(Converter.toRestletMediaType(requested));
+    }
+    
     /**
      * Checks, if the wrapped MessageBodyWriter supports at least one of the
      * requested {@link MediaType}s.

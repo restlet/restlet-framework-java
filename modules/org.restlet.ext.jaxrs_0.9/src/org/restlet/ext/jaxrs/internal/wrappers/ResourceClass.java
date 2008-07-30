@@ -120,7 +120,8 @@ public class ResourceClass extends AbstractJaxRsWrapper {
     }
 
     /**
-     * Creates a new root resource class wrapper.
+     * Creates a new root resource class wrapper. To be used by subclass
+     * {@link RootResourceClass}.
      * 
      * @param jaxRsClass
      * @param tlContext
@@ -143,6 +144,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
     protected ResourceClass(Class<?> jaxRsClass,
             ThreadLocalizedContext tlContext, JaxRsProviders jaxRsProviders,
             ExtensionBackwardMapping extensionBackwardMapping, Logger logger,
+            @SuppressWarnings("unused")
             Logger sameLogger) throws IllegalArgumentException,
             IllegalPathOnClassException, MissingAnnotationException {
         super(PathRegExp.createForClass(jaxRsClass));

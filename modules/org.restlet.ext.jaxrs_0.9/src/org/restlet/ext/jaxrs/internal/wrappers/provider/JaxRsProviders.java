@@ -34,7 +34,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Providers;
 
@@ -182,7 +181,7 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
      * {@link javax.ws.rs.ext.ContextResolver}s.<br>
      * This field is final, because it is shared with other objects.
      */
-    private final Collection<ContextResolver<?>> contextResolvers;
+    private final Collection<ContextResolver> contextResolvers;
 
     private final Map<Class<? extends Throwable>, ExceptionMapper<? extends Throwable>> excMappers;
 
@@ -197,7 +196,7 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
         this.all = new CopyOnWriteArraySet<Provider>();
         this.messageBodyReaders = new CopyOnWriteArrayList<MessageBodyReader>();
         this.messageBodyWriters = new CopyOnWriteArrayList<MessageBodyWriter>();
-        this.contextResolvers = new CopyOnWriteArraySet<ContextResolver<?>>();
+        this.contextResolvers = new CopyOnWriteArraySet<ContextResolver>();
         this.excMappers = new ConcurrentHashMap<Class<? extends Throwable>, ExceptionMapper<? extends Throwable>>();
         this.add(new ThrowableMapper());
         this.add(new ErrorMapper());
@@ -267,7 +266,7 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
                 this.messageBodyReaders.add(0, provider);
         }
         if (provider.isContextResolver())
-            this.contextResolvers.add(provider.getContextResolver());
+            this.contextResolvers.add(provider);
         if (provider.isExceptionMapper())
             this.add(provider.getExcMapper());
         this.all.add(provider);
@@ -333,18 +332,22 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
      *      javax.ws.rs.core.MediaType)
      */
     @SuppressWarnings("unchecked")
-    public <T> ContextResolver<T> getContextResolver(Class<T> contextType,
+    public <T> javax.ws.rs.ext.ContextResolver<T> getContextResolver(Class<T> contextType,
             Class<?> objectType, javax.ws.rs.core.MediaType mediaType) {
-        for (ContextResolver<?> cr : this.contextResolvers) {
+        // LATER test JaxRsProviders.getContextResolver
+        for (ContextResolver cr : this.contextResolvers) {
             Class<?> crClaz = cr.getClass();
             Class<?> genClass = getCtxResGenClass(crClaz);
-            if (genClass == null || !genClass.equals(contextType))
+            if (genClass == null || !genClass.equals(contextType)) {
                 continue;
-            // TODO check media type; but which?
+            }
+            if(!cr.supportsWrite(mediaType)) {
+                continue;
+            }
             try {
                 Method getContext = crClaz.getMethod("getContext", Class.class);
                 if (getContext.getReturnType().equals(contextType)) {
-                    return (ContextResolver) cr;
+                    return (javax.ws.rs.ext.ContextResolver<T>)cr.getContextResolver();
                 }
             } catch (SecurityException e) {
                 throw new RuntimeException(
@@ -357,7 +360,7 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
                                 + " is not valid, because it has no method getContext(Class)");
             }
         }
-        return ReturnNullContextResolver.get();
+        return null;
     }
 
     /**

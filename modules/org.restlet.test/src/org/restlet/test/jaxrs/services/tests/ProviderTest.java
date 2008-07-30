@@ -221,7 +221,7 @@ public class ProviderTest extends JaxRsTestCase {
 
     /** @see ProviderTestService#jaxbPost(javax.xml.bind.JAXBElement) */
     public void testJaxbElementPost() throws Exception {
-        if(true) // TODO conversion to JAXBElement doesn't work
+        if(true) // LATER conversion to JAXBElement doesn't work
             return;
         postAndCheckXml("jaxbElement");
     }
@@ -232,7 +232,7 @@ public class ProviderTest extends JaxRsTestCase {
      * @see ProviderTestService#jaxbPostNamespace(javax.xml.bind.JAXBElement)
      */
     public void testJaxbElementPostRootElement() throws Exception {
-        if(true) // TODO conversion to JAXBElement doesn't work
+        if(true) // LATER conversion to JAXBElement doesn't work
             return;
         final Representation send = new DomRepresentation(
                 new StringRepresentation(
@@ -244,6 +244,7 @@ public class ProviderTest extends JaxRsTestCase {
         assertEquals("person", respEntity.getText());
     }
 
+    @SuppressWarnings("all")
     public static void main(String[] args) throws Exception {
         Person person = new Person("vn", "nn");
         JaxbElementProvider jaxbElementProvider = new JaxbElementProvider();

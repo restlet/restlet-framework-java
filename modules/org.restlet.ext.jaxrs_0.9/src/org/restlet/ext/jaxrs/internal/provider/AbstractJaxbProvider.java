@@ -37,6 +37,7 @@ import javax.xml.bind.Marshaller;
  */
 abstract class AbstractJaxbProvider<T> extends AbstractProvider<T> {
 
+    /** public for testing */
     public ContextResolver<JAXBContext> contextResolver;
 
     protected JAXBContext getJaxbContext(Class<?> type) throws JAXBException {

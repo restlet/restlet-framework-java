@@ -54,6 +54,9 @@ public class PersonsResource {
      * @return
      */
     private int createPerson(Person person) {
+        // create person in database 
+        person.toString();
+        
         return 5;
     }
 

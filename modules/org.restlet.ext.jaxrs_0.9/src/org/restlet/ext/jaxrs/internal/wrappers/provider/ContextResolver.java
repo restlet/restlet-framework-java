@@ -17,43 +17,29 @@
  */
 package org.restlet.ext.jaxrs.internal.wrappers.provider;
 
-import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.core.MediaType;
 
 /**
- * This {@link ContextResolver} returns ever null. Is is used as default, if no
- * one was found.
+ * Wrapper vor a JAX-RS {@link javax.ws.rs.ext.ContextResolver}.
  * 
  * @author Stephan Koops
- * @param <T>
- * @see ContextResolver
  */
-public class ReturnNullContextResolver<T> implements ContextResolver<T> {
-
+public interface ContextResolver {
     /**
-     * The instance.
+     * Returns the wrapped ContextResolver
      * 
-     * @see #get()
+     * @return the wrapped ContextResolver
      */
-    public static final ReturnNullContextResolver<Object> INSTANCE = new ReturnNullContextResolver<Object>();
+    public javax.ws.rs.ext.ContextResolver<?> getContextResolver();
 
     /**
-     * Returns the singelton instance.
+     * Checks, if the wrapped ContextResolver supports the given
+     * {@link MediaType}.
      * 
-     * @param <A>
-     * @return
+     * @param mediaType
+     *                the {@link MediaType} to check for support.
+     * @return true, if the requested {@link MediaType} is supported, otherwise
+     *         false.
      */
-    @SuppressWarnings("unchecked")
-    public static <A> ReturnNullContextResolver<A> get() {
-        return (ReturnNullContextResolver) INSTANCE;
-    }
-
-    private ReturnNullContextResolver() {
-    }
-
-    /**
-     * @see javax.ws.rs.ext.ContextResolver#getContext(java.lang.Class)
-     */
-    public T getContext(Class<?> type) {
-        return null;
-    }
+    public boolean supportsWrite(MediaType mediaType);
 }

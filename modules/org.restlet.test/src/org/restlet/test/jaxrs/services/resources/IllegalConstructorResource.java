@@ -30,6 +30,7 @@ import org.restlet.test.jaxrs.services.tests.IllegalConstructorTest;
  * @see IllegalConstructorTest
  */
 @Path("IllegalConstructorResource")
+@SuppressWarnings("all")
 public class IllegalConstructorResource {
 
     /**
