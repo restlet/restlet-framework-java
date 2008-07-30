@@ -58,7 +58,7 @@ public abstract class JxtaServerHelper extends StreamServerHelper {
      * @return The JXTA connection name.
      */
     public String getConnectionName() {
-        return getParameters().getFirstValue("connectionName", "restlet");
+        return getHelpedParameters().getFirstValue("connectionName", "restlet");
     }
 
     /**

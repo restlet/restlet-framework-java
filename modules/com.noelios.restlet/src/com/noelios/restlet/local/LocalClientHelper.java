@@ -81,7 +81,7 @@ public class LocalClientHelper extends ClientHelper {
      * @return The default language.
      */
     public String getDefaultLanguage() {
-        return getParameters().getFirstValue("defaultLanguage", "");
+        return getHelpedParameters().getFirstValue("defaultLanguage", "");
     }
 
     /**
@@ -113,7 +113,7 @@ public class LocalClientHelper extends ClientHelper {
      *         seconds).
      */
     public int getTimeToLive() {
-        return Integer.parseInt(getParameters().getFirstValue("timeToLive",
+        return Integer.parseInt(getHelpedParameters().getFirstValue("timeToLive",
                 "600"));
     }
 

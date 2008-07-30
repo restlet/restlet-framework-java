@@ -95,7 +95,7 @@ public class HttpServerHelper extends JettyServerHelper {
      * @return The type of Jetty connector to use.
      */
     public int getType() {
-        return Integer.parseInt(getParameters().getFirstValue("type", "1"));
+        return Integer.parseInt(getHelpedParameters().getFirstValue("type", "1"));
     }
 
 }

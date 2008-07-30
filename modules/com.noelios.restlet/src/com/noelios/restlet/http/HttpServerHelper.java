@@ -89,7 +89,7 @@ public class HttpServerHelper extends ServerHelper {
     public HttpServerConverter getConverter() {
         if (this.converter == null) {
             try {
-                final String converterClass = getParameters().getFirstValue(
+                final String converterClass = getHelpedParameters().getFirstValue(
                         "converter",
                         "com.noelios.restlet.http.HttpServerConverter");
                 this.converter = (HttpServerConverter) Class.forName(

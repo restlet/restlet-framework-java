@@ -316,7 +316,7 @@ public class JavaMailClientHelper extends ClientHelper {
      *         instances from an XML representation and a JavaMail Session.
      */
     public String getRepresentationMessageClass() {
-        return getParameters().getFirstValue("representationMessageClass");
+        return getHelpedParameters().getFirstValue("representationMessageClass");
     }
 
     @Override
@@ -546,7 +546,7 @@ public class JavaMailClientHelper extends ClientHelper {
      * @return True the connector should generate JavaMail debug messages.
      */
     public boolean isDebug() {
-        return Boolean.parseBoolean(getParameters().getFirstValue("debug",
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue("debug",
                 "false"));
     }
 
@@ -556,7 +556,7 @@ public class JavaMailClientHelper extends ClientHelper {
      * @return True if the SMTP protocol should attempt to start a TLS tunnel.
      */
     public boolean isStartTls() {
-        return Boolean.parseBoolean(getParameters().getFirstValue("startTls",
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue("startTls",
                 "false"));
     }
 

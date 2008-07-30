@@ -151,7 +151,7 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
      *         connection from the HTTP connection manager.
      */
     public int getConnectionManagerTimeout() {
-        return Integer.parseInt(getParameters().getFirstValue(
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
                 "connectionManagerTimeout", "0"));
     }
 
@@ -167,7 +167,7 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
      *         particular host.
      */
     public int getMaxConnectionsPerHost() {
-        return Integer.parseInt(getParameters().getFirstValue(
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
                 "maxConnectionsPerHost", "2"));
     }
 
@@ -177,7 +177,7 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
      * @return The maximum number of active connections.
      */
     public int getMaxTotalConnections() {
-        return Integer.parseInt(getParameters().getFirstValue(
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
                 "maxTotalConnections", "20"));
     }
 
@@ -188,7 +188,7 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
      * @return The read timeout value.
      */
     public int getReadTimeout() {
-        return Integer.parseInt(getParameters().getFirstValue("readTimeout",
+        return Integer.parseInt(getHelpedParameters().getFirstValue("readTimeout",
                 "0"));
     }
 
@@ -201,7 +201,7 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
      * @return The class name of the retry handler.
      */
     public String getRetryHandler() {
-        return getParameters().getFirstValue("retryHandler", null);
+        return getHelpedParameters().getFirstValue("retryHandler", null);
     }
 
     /**
@@ -212,7 +212,7 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
      *         closed when stopping the connector.
      */
     public int getStopIdleTimeout() {
-        return Integer.parseInt(getParameters().getFirstValue(
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
                 "stopIdleTimeout", "1000"));
     }
 
@@ -222,7 +222,7 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
      * @return True if the protocol will automatically follow redirects.
      */
     public boolean isFollowRedirects() {
-        return Boolean.parseBoolean(getParameters().getFirstValue(
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
                 "followRedirects", "false"));
     }
 

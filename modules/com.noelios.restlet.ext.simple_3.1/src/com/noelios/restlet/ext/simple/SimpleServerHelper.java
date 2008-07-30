@@ -119,7 +119,7 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
      * @return The default number of polling threads for a handler object.
      */
     public int getDefaultThreads() {
-        return Integer.parseInt(getParameters().getFirstValue("defaultThreads",
+        return Integer.parseInt(getHelpedParameters().getFirstValue("defaultThreads",
                 "20"));
     }
 
@@ -138,7 +138,7 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
      * @return The maximum waiting time between polls of the input.
      */
     public int getMaxWaitTimeMs() {
-        return Integer.parseInt(getParameters().getFirstValue("maxWaitTimeMs",
+        return Integer.parseInt(getHelpedParameters().getFirstValue("maxWaitTimeMs",
                 "200"));
     }
 

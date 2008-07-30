@@ -80,7 +80,7 @@ public abstract class HttpClientHelper extends ClientHelper {
      */
     public HttpClientConverter getConverter() throws Exception {
         if (this.converter == null) {
-            final String converterClass = getParameters()
+            final String converterClass = getHelpedParameters()
                     .getFirstValue("converter",
                             "com.noelios.restlet.http.HttpClientConverter");
             this.converter = (HttpClientConverter) Class

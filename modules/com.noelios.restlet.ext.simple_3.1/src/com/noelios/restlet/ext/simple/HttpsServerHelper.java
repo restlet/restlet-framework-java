@@ -136,7 +136,7 @@ public class HttpsServerHelper extends SimpleServerHelper {
      * @return The SSL certificate algorithm.
      */
     public String getCertAlgorithm() {
-        return getParameters().getFirstValue("certAlgorithm", "SunX509");
+        return getHelpedParameters().getFirstValue("certAlgorithm", "SunX509");
     }
 
     /**
@@ -145,7 +145,7 @@ public class HttpsServerHelper extends SimpleServerHelper {
      * @return The SSL key password.
      */
     public String getKeyPassword() {
-        return getParameters().getFirstValue("keyPassword", "");
+        return getHelpedParameters().getFirstValue("keyPassword", "");
     }
 
     /**
@@ -154,7 +154,7 @@ public class HttpsServerHelper extends SimpleServerHelper {
      * @return The SSL keystore password.
      */
     public String getKeystorePassword() {
-        return getParameters().getFirstValue("keystorePassword", "");
+        return getHelpedParameters().getFirstValue("keystorePassword", "");
     }
 
     /**
@@ -163,7 +163,7 @@ public class HttpsServerHelper extends SimpleServerHelper {
      * @return The SSL keystore path.
      */
     public String getKeystorePath() {
-        return getParameters().getFirstValue("keystorePath",
+        return getHelpedParameters().getFirstValue("keystorePath",
                 System.getProperty("user.home") + File.separator + ".keystore");
     }
 
@@ -173,7 +173,7 @@ public class HttpsServerHelper extends SimpleServerHelper {
      * @return The SSL keystore type.
      */
     public String getKeystoreType() {
-        return getParameters().getFirstValue("keystoreType", "JKS");
+        return getHelpedParameters().getFirstValue("keystoreType", "JKS");
     }
 
     /**
@@ -182,7 +182,7 @@ public class HttpsServerHelper extends SimpleServerHelper {
      * @return The SSL keystore type.
      */
     public String getSslProtocol() {
-        return getParameters().getFirstValue("sslProtocol", "TLS");
+        return getHelpedParameters().getFirstValue("sslProtocol", "TLS");
     }
 
     /**
@@ -191,7 +191,7 @@ public class HttpsServerHelper extends SimpleServerHelper {
      * @return True if we require client certificate authentication.
      */
     public boolean isNeedClientAuthentication() {
-        return Boolean.parseBoolean(getParameters().getFirstValue(
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
                 "needClientAuthentication", "false"));
     }
 
@@ -201,7 +201,7 @@ public class HttpsServerHelper extends SimpleServerHelper {
      * @return True if we would like client certificate authentication.
      */
     public boolean isWantClientAuthentication() {
-        return Boolean.parseBoolean(getParameters().getFirstValue(
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
                 "wantClientAuthentication", "false"));
     }
 

@@ -139,7 +139,7 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
      *         response entities.
      */
     public int getChunkLength() {
-        return Integer.parseInt(getParameters().getFirstValue("chunkLength",
+        return Integer.parseInt(getHelpedParameters().getFirstValue("chunkLength",
                 "0"));
     }
 
@@ -154,19 +154,19 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
         if (super.getConnectTimeout() > 0) {
             return super.getConnectTimeout();
         } else {
-            return Integer.parseInt(getParameters().getFirstValue(
+            return Integer.parseInt(getHelpedParameters().getFirstValue(
                     "connectTimeout", "0"));
         }
     }
 
     /**
-     * Returns the hostname verifier by looking up the
-     * "hostnameVerifier" attribute of the client's context.
+     * Returns the hostname verifier by looking up the "hostnameVerifier"
+     * attribute of the client's context.
      * 
      * @return The hostname verifier or null.
      */
     public HostnameVerifier getHostnameVerifier() {
-        return (HostnameVerifier) getAttributes().get(
+        return (HostnameVerifier) getContext().getAttributes().get(
                 "hostnameVerifier");
     }
 
@@ -177,7 +177,7 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
      * @return The read timeout value.
      */
     public int getReadTimeout() {
-        return Integer.parseInt(getParameters().getFirstValue("readTimeout",
+        return Integer.parseInt(getHelpedParameters().getFirstValue("readTimeout",
                 "0"));
     }
 
@@ -189,7 +189,7 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
      * @return True if it makes sense to allow user interactions.
      */
     public boolean isAllowUserInteraction() {
-        return Boolean.parseBoolean(getParameters().getFirstValue(
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
                 "allowUserInteraction", "false"));
     }
 
@@ -199,7 +199,7 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
      * @return True if the protocol will automatically follow redirects.
      */
     public boolean isFollowRedirects() {
-        return Boolean.parseBoolean(getParameters().getFirstValue(
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
                 "followRedirects", "false"));
     }
 
@@ -209,7 +209,7 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
      * @return True if the protocol is allowed to use caching whenever it can.
      */
     public boolean isUseCaches() {
-        return Boolean.parseBoolean(getParameters().getFirstValue("useCaches",
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue("useCaches",
                 "false"));
     }
 

@@ -110,7 +110,7 @@ public abstract class Helper<T extends Restlet> {
      * 
      * @return The helped Restlet parameters.
      */
-    public Series<Parameter> getParameters() {
+    public Series<Parameter> getHelpedParameters() {
         Series<Parameter> result = null;
 
         if ((getHelped() != null) && (getHelped().getContext() != null)) {

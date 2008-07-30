@@ -227,7 +227,7 @@ public abstract class JettyServerHelper extends
      * @return The number of acceptor threads to set.
      */
     public int getAcceptorThreads() {
-        return Integer.parseInt(getParameters().getFirstValue(
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
                 "acceptorThreads", "1"));
     }
 
@@ -237,7 +237,7 @@ public abstract class JettyServerHelper extends
      * @return The size of the accept queue.
      */
     public int getAcceptQueueSize() {
-        return Integer.parseInt(getParameters().getFirstValue(
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
                 "acceptQueueSize", "0"));
     }
 
@@ -249,7 +249,7 @@ public abstract class JettyServerHelper extends
      *         headers.
      */
     public int getHeaderBufferSize() {
-        return Integer.parseInt(getParameters().getFirstValue(
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
                 "headerBufferSize", Integer.toString(4 * 1024)));
     }
 
@@ -259,7 +259,7 @@ public abstract class JettyServerHelper extends
      * @return The maximum time to wait on an idle IO operation.
      */
     public int getIoMaxIdleTimeMs() {
-        return Integer.parseInt(getParameters().getFirstValue(
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
                 "ioMaxIdleTimeMs", "30000"));
     }
 
@@ -271,7 +271,7 @@ public abstract class JettyServerHelper extends
      *         on resources.
      */
     public int getLowResourceMaxIdleTimeMs() {
-        return Integer.parseInt(getParameters().getFirstValue(
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
                 "lowResourceMaxIdleTimeMs", "2500"));
     }
 
@@ -283,7 +283,7 @@ public abstract class JettyServerHelper extends
      *         considered as running low on resources.
      */
     public int getLowThreads() {
-        return Integer.parseInt(getParameters().getFirstValue("lowThreads",
+        return Integer.parseInt(getHelpedParameters().getFirstValue("lowThreads",
                 "25"));
     }
 
@@ -293,7 +293,7 @@ public abstract class JettyServerHelper extends
      * @return The maximum threads that will service requests.
      */
     public int getMaxThreads() {
-        return Integer.parseInt(getParameters().getFirstValue("maxThreads",
+        return Integer.parseInt(getHelpedParameters().getFirstValue("maxThreads",
                 "255"));
     }
 
@@ -303,7 +303,7 @@ public abstract class JettyServerHelper extends
      * @return The minimum threads waiting to service requests.
      */
     public int getMinThreads() {
-        return Integer.parseInt(getParameters()
+        return Integer.parseInt(getHelpedParameters()
                 .getFirstValue("minThreads", "1"));
     }
 
@@ -313,7 +313,7 @@ public abstract class JettyServerHelper extends
      * @return The size of the content buffer for receiving requests.
      */
     public int getRequestBufferSize() {
-        return Integer.parseInt(getParameters().getFirstValue(
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
                 "requestBufferSize", Integer.toString(8 * 1024)));
     }
 
@@ -323,7 +323,7 @@ public abstract class JettyServerHelper extends
      * @return The size of the content buffer for sending responses.
      */
     public int getResponseBufferSize() {
-        return Integer.parseInt(getParameters().getFirstValue(
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
                 "responseBufferSize", Integer.toString(32 * 1024)));
     }
 
@@ -333,7 +333,7 @@ public abstract class JettyServerHelper extends
      * @return The SO linger time (see Jetty 6 documentation).
      */
     public int getSoLingerTime() {
-        return Integer.parseInt(getParameters().getFirstValue("soLingerTime",
+        return Integer.parseInt(getHelpedParameters().getFirstValue("soLingerTime",
                 "1000"));
     }
 
@@ -343,7 +343,7 @@ public abstract class JettyServerHelper extends
      * @return The time for an idle thread to wait for a request or read.
      */
     public int getThreadMaxIdleTimeMs() {
-        return Integer.parseInt(getParameters().getFirstValue(
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
                 "threadMaxIdleTimeMs", "60000"));
     }
 

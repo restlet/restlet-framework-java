@@ -116,11 +116,11 @@ public class HttpsUtils extends HttpUtils {
      * @return The SSL context factory.
      */
     public static SslContextFactory getSslContextFactory(Helper<?> helper) {
-        SslContextFactory result = (SslContextFactory) helper.getAttributes()
-                .get("sslContextFactory");
+        SslContextFactory result = (SslContextFactory) helper.getContext()
+                .getAttributes().get("sslContextFactory");
 
         if (result == null) {
-            String[] sslContextFactoryNames = helper.getParameters()
+            String[] sslContextFactoryNames = helper.getHelpedParameters()
                     .getValuesArray("sslContextFactory");
             if (sslContextFactoryNames != null) {
                 for (String sslContextFactoryName : sslContextFactoryNames) {
@@ -129,7 +129,7 @@ public class HttpsUtils extends HttpUtils {
                                 .forName(sslContextFactoryName).asSubclass(
                                         SslContextFactory.class);
                         result = sslContextFactoryClass.newInstance();
-                        result.init(helper.getParameters());
+                        result.init(helper.getHelpedParameters());
                     } catch (ClassNotFoundException e) {
                         helper.getLogger().log(
                                 Level.WARNING,
