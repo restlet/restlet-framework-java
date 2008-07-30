@@ -870,7 +870,7 @@
 			</condition>
 			<property name="lib-pom-@{name}-artifactId" value="${lib-@{name}-package}" />
 
-			<propertyregex property="lib-dir-@{name}-maven-groupId" input="${lib-@{name}-maven-groupId}" regexp="\." replace="/" global="true" casesensitive="false" />
+			<propertyregex property="lib-dir-@{name}-maven-groupId" input="${lib-@{name}-maven-groupId}" regexp="\." replace="/" global="true" casesensitive="false" defaultvalue="${lib-@{name}-maven-groupId}" />
 			<property name="lib-dir-@{name}-maven2" value="${dist-maven2}/${lib-dir-@{name}-maven-groupId}/${lib-pom-@{name}-artifactId}/${lib-pom-@{name}-version}" />
 			<mkdir dir="${lib-dir-@{name}-maven2}" />
 
@@ -886,7 +886,7 @@
 	<macrodef name="maven2Module">
 		<attribute name="name" />
 		<sequential>
-			<propertyregex property="mod-dir-@{name}-maven-groupId" input="${mod-@{name}-maven-groupId}" regexp="\." replace="/" global="true" casesensitive="false" />
+			<propertyregex property="mod-dir-@{name}-maven-groupId" input="${mod-@{name}-maven-groupId}" regexp="\." replace="/" global="true" casesensitive="false" defaultvalue="${mod-@{name}-maven-groupId}"/>
 			<condition property="mod-pom-@{name}-artifactId" value="${mod-@{name}-maven-artifactId}">
 				<isset property="mod-@{name}-maven-artifactId" />
 			</condition>
