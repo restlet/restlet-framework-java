@@ -25,8 +25,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.data.Language;
+import org.restlet.data.MediaType;
+import org.restlet.resource.DomRepresentation;
 import org.restlet.util.XmlWriter;
-import org.w3c.dom.Element;
+import org.w3c.dom.CDATASection;
+import org.w3c.dom.Comment;
+import org.w3c.dom.Document;
+import org.w3c.dom.EntityReference;
+import org.w3c.dom.Node;
+import org.w3c.dom.Text;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
 
@@ -43,31 +50,17 @@ public class DocumentationInfo {
     /** The language of that documentation element. */
     private Language language;
 
-    /** The content of that element as text. */
-    private String textContent;
+    /** The mixed content of that element. */
+    private Node mixedContent;
 
     /** The title of that documentation element. */
     private String title;
-
-    /** The content of that element as XML element. */
-    private Element xmlContent;
 
     /**
      * Constructor.
      */
     public DocumentationInfo() {
         super();
-    }
-
-    /**
-     * Constructor with XML content.
-     * 
-     * @param xmlContent
-     *            The XML content.
-     */
-    public DocumentationInfo(Element xmlContent) {
-        super();
-        this.xmlContent = xmlContent;
     }
 
     /**
@@ -78,7 +71,18 @@ public class DocumentationInfo {
      */
     public DocumentationInfo(String textContent) {
         super();
-        this.textContent = textContent;
+        setTextContent(textContent);
+    }
+
+    /**
+     * Constructor with mixed content.
+     * 
+     * @param mixedContent
+     *            The mixed content.
+     */
+    public DocumentationInfo(Text mixedContent) {
+        super();
+        this.mixedContent = mixedContent;
     }
 
     /**
@@ -91,12 +95,21 @@ public class DocumentationInfo {
     }
 
     /**
+     * Returns the mixed content of that element.
+     * 
+     * @return The mixed content of that element.
+     */
+    public Node getMixedContent() {
+        return this.mixedContent;
+    }
+
+    /**
      * Returns the language of that documentation element.
      * 
      * @return The content of that element as text.
      */
     public String getTextContent() {
-        return this.textContent;
+        return this.mixedContent.getTextContent();
     }
 
     /**
@@ -106,15 +119,6 @@ public class DocumentationInfo {
      */
     public String getTitle() {
         return this.title;
-    }
-
-    /**
-     * Returns the content of that element as XML element.
-     * 
-     * @return The content of that element as XML element.
-     */
-    public Element getXmlContent() {
-        return this.xmlContent;
     }
 
     /**
@@ -128,13 +132,28 @@ public class DocumentationInfo {
     }
 
     /**
+     * Sets the mixed content of that element.
+     * 
+     * @param mixedContent
+     *            The mixed content of that element.
+     */
+    public void setMixedContent(Node mixedContent) {
+        this.mixedContent = mixedContent;
+    }
+
+    /**
      * Sets the content of that element as text.
      * 
      * @param textContent
      *            The content of that element as text.
      */
     public void setTextContent(String textContent) {
-        this.textContent = textContent;
+        try {
+            Document doc = new DomRepresentation(MediaType.TEXT_XML)
+                    .getDocument();
+            this.mixedContent = doc.createTextNode(textContent);
+        } catch (IOException e) {
+        }
     }
 
     /**
@@ -145,16 +164,6 @@ public class DocumentationInfo {
      */
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    /**
-     * Sets the content of that element as XML element.
-     * 
-     * @param xmlContent
-     *            The content of that element as XML element.
-     */
-    public void setXmlContent(Element xmlContent) {
-        this.xmlContent = xmlContent;
     }
 
     /**
@@ -174,27 +183,104 @@ public class DocumentationInfo {
                     getLanguage().toString());
         }
 
-        if (((getTextContent() == null) || getTextContent().equals(""))
-                && (getXmlContent() == null)) {
+        if (getMixedContent() == null) {
             writer.emptyElement(APP_NAMESPACE, "doc", null, attributes);
         } else {
-
-            if (getXmlContent() != null) {
-                // TODO what do we do?
-            } else {
-                writer.startElement(APP_NAMESPACE, "doc", null, attributes);
-                try {
-                    writer.getWriter().write(getTextContent());
-                } catch (final IOException e) {
-                    logger
-                            .log(
-                                    Level.SEVERE,
-                                    "Error when writing the text content of the current \"doc\" tag.",
-                                    e);
+            writer.startElement(APP_NAMESPACE, "doc", null, attributes);
+            try {
+                // Used to restore the SAX writer's dataFormat
+                boolean isDataFormat = writer.isDataFormat();
+                writer.setDataFormat(false);
+                // Walk along the tree of nodes.
+                for (int i = 0; i < getMixedContent().getChildNodes()
+                        .getLength(); i++) {
+                    writeElement(writer, getMixedContent().getChildNodes()
+                            .item(i));
                 }
-                writer.endElement(APP_NAMESPACE, "doc");
+                // Restore the SAX writer's dataFormat
+                writer.setDataFormat(isDataFormat);
+            } catch (final IOException e) {
+                logger
+                        .log(
+                                Level.SEVERE,
+                                "Error when writing the text content of the current \"doc\" tag.",
+                                e);
             }
+            writer.endElement(APP_NAMESPACE, "doc");
         }
     }
 
+    /**
+     * Writes the given node using the given SAX writer. It detects the type of
+     * node (CDATASection, Entity, Comment, Text, Node).
+     * 
+     * @param writer
+     *            The SAX writer
+     * @param node
+     *            the given Node to write.
+     * @throws IOException
+     * @throws SAXException
+     */
+    private void writeElement(XmlWriter writer, Node node) throws IOException,
+            SAXException {
+        if (node instanceof CDATASection) {
+            CDATASection section = (CDATASection) node;
+            writer.getWriter().write("<![CDATA[");
+            writer.getWriter().write(section.getData());
+            writer.getWriter().write("]]>");
+        } else if (node instanceof Text) {
+            Text text = (Text) node;
+            writer.getWriter().write(text.getNodeValue());
+        } else if (node instanceof EntityReference) {
+            EntityReference entity = (EntityReference) node;
+            writer.getWriter().write("&");
+            writer.getWriter().write(entity.getNodeName());
+            writer.getWriter().write(";");
+        } else if (node instanceof Comment) {
+            Comment comment = (Comment) node;
+            writer.getWriter().write("<!-- ");
+            writer.getWriter().write(comment.getData());
+            writer.getWriter().write(" -->");
+        } else {
+            // Check that the node contains attributes, and convert it into the
+            // SAX model.
+            AttributesImpl attributes = null;
+            if (node.hasAttributes()) {
+                attributes = new AttributesImpl();
+                for (int i = 0; i < node.getAttributes().getLength(); i++) {
+                    Node attribute = node.getAttributes().item(i);
+                    // NB : the type of the attribute is set to null.
+                    attributes.addAttribute(attribute.getNamespaceURI(),
+                            attribute.getLocalName(), "", null, attribute
+                                    .getNodeValue());
+                }
+            }
+
+            if (node.getChildNodes() != null
+                    && node.getChildNodes().getLength() > 0) {
+                // This node contains children nodes.
+                if (attributes == null) {
+                    writer.startElement(node.getNamespaceURI(), node
+                            .getLocalName());
+                } else {
+                    writer.startElement(node.getNamespaceURI(), node
+                            .getLocalName(), node.getPrefix(), attributes);
+                }
+                // Add the children nodes.
+                for (int i = 0; i < node.getChildNodes().getLength(); i++) {
+                    writeElement(writer, node.getChildNodes().item(i));
+                }
+                writer.endElement(node.getNamespaceURI(), node.getLocalName());
+            } else {
+                // This node is empty.
+                if (attributes == null) {
+                    writer.emptyElement(node.getNamespaceURI(), node
+                            .getLocalName());
+                } else {
+                    writer.emptyElement(node.getNamespaceURI(), node
+                            .getLocalName(), node.getPrefix(), attributes);
+                }
+            }
+        }
+    }
 }

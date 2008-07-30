@@ -21,7 +21,10 @@ package org.restlet.ext.wadl;
 import static org.restlet.ext.wadl.WadlRepresentation.APP_NAMESPACE;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.restlet.util.XmlWriter;
 import org.xml.sax.SAXException;
@@ -41,6 +44,12 @@ public class ApplicationInfo extends DocumentedInfo {
 
     /** List of methods. */
     private List<MethodInfo> methods;
+
+    /**
+     * Map of namespaces used in the WADL document. The key is the URI of the
+     * namespace and the value, the prefix.
+     */
+    private Map<String, String> namespaces;
 
     /** List of representations. */
     private List<RepresentationInfo> representations;
@@ -115,6 +124,25 @@ public class ApplicationInfo extends DocumentedInfo {
             }
         }
         return m;
+    }
+
+    /**
+     * Returns the map of namespaces used in the WADL document.
+     * 
+     * @return The ap of namespaces used in the WADL document.
+     */
+    public Map<String, String> getNamespaces() {
+        // Lazy initialization with double-check.
+        Map<String, String> n = this.namespaces;
+        if (n == null) {
+            synchronized (this) {
+                n = this.namespaces;
+                if (n == null) {
+                    this.namespaces = n = new HashMap<String, String>();
+                }
+            }
+        }
+        return n;
     }
 
     /**
@@ -205,6 +233,17 @@ public class ApplicationInfo extends DocumentedInfo {
     }
 
     /**
+     * Sets the map of namespaces used in the WADL document. The key is the URI
+     * of the namespace and the value, the prefix.
+     * 
+     * @param namespaces
+     *            The map of namespaces used in the WADL document.
+     */
+    public void setNamespaces(Map<String, String> namespaces) {
+        this.namespaces = namespaces;
+    }
+
+    /**
      * sets the list of representation elements.
      * 
      * @param representations
@@ -242,6 +281,10 @@ public class ApplicationInfo extends DocumentedInfo {
      * @throws SAXException
      */
     public void writeElement(XmlWriter writer) throws SAXException {
+        for (Entry<String, String> entry : getNamespaces().entrySet()) {
+            writer.forceNSDecl(entry.getKey(), entry.getValue());
+        }
+
         writer.startElement(APP_NAMESPACE, "application");
 
         for (final DocumentationInfo documentationInfo : getDocumentations()) {

@@ -21,7 +21,9 @@ package org.restlet.ext.wadl;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -33,12 +35,17 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
+import org.restlet.resource.DomRepresentation;
 import org.restlet.resource.InputRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.resource.SaxRepresentation;
 import org.restlet.resource.TransformRepresentation;
 import org.restlet.util.Engine;
 import org.restlet.util.XmlWriter;
+import org.w3c.dom.Attr;
+import org.w3c.dom.CDATASection;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.ext.LexicalHandler;
@@ -56,12 +63,13 @@ public class WadlRepresentation extends SaxRepresentation {
     // -------------------
     private static class ContentReader extends DefaultHandler implements
             LexicalHandler {
+        public enum MixedContentState {
+            CDATA, COMMENT, ELEMENT, ENTITY, NONE, TEXT
+        }
+
         public enum State {
             APPLICATION, DOCUMENTATION, FAULT, GRAMMARS, INCLUDE, LINK, METHOD, NONE, OPTION, PARAMETER, REPRESENTATION, REQUEST, RESOURCE, RESOURCES, RESOURCETYPE, RESPONSE
         }
-
-        /** Glean the content of the current parsed element. */
-        private StringBuilder contentBuffer;
 
         /** The current parsed "application" tag. */
         private ApplicationInfo currentApplication;
@@ -83,6 +91,12 @@ public class WadlRepresentation extends SaxRepresentation {
 
         /** The current parsed "method" tag. */
         private MethodInfo currentMethod;
+
+        /** The current mixed content CDataSection. */
+        private CDATASection currentMixedContentCDataSection;
+
+        /** The current mixed content node. */
+        private Node currentMixedContentNode;
 
         /** The current parsed "option" tag. */
         private OptionInfo currentOption;
@@ -108,6 +122,21 @@ public class WadlRepresentation extends SaxRepresentation {
         /** The current parsed "response" tag. */
         private ResponseInfo currentResponse;
 
+        /** The document used to create the mixed content. */
+        private Document mixedContentDocument;
+
+        /** The stack of mixed content parser states. */
+        private final List<MixedContentState> mixedContentStates;
+
+        /** The top node of mixed content nodes. */
+        private Node mixedContentTopNode;
+
+        /**
+         * Map of namespaces used in the WADL document. The key is the URI of
+         * the namespace and the value, the prefix.
+         */
+        private Map<String, String> namespaces;
+
         /** The stack of parser states. */
         private final List<State> states;
 
@@ -124,6 +153,8 @@ public class WadlRepresentation extends SaxRepresentation {
         public ContentReader(WadlRepresentation wadlRepresentation) {
             this.states = new ArrayList<State>();
             this.states.add(State.NONE);
+            this.mixedContentStates = new ArrayList<MixedContentState>();
+            this.mixedContentStates.add(MixedContentState.NONE);
             this.currentApplication = null;
             this.currentDocumentation = null;
             this.currentFault = null;
@@ -139,6 +170,13 @@ public class WadlRepresentation extends SaxRepresentation {
             this.currentResources = null;
             this.currentResourceType = null;
             this.currentResponse = null;
+            try {
+                this.mixedContentDocument = new DomRepresentation(
+                        MediaType.TEXT_XML).getDocument();
+            } catch (IOException e) {
+            }
+            this.currentMixedContentCDataSection = null;
+            this.namespaces = new HashMap<String, String>();
             this.wadlRepresentation = wadlRepresentation;
         }
 
@@ -155,16 +193,44 @@ public class WadlRepresentation extends SaxRepresentation {
         @Override
         public void characters(char[] ch, int start, int length)
                 throws SAXException {
-            this.contentBuffer.append(ch, start, length);
+            if (getState() == State.DOCUMENTATION) {
+                if (getMixedContentState() == MixedContentState.CDATA) {
+                    this.currentMixedContentCDataSection.appendData(new String(
+                            ch, start, length));
+                } else if (getMixedContentState() != MixedContentState.ENTITY) {
+                    this.currentMixedContentNode
+                            .appendChild(this.mixedContentDocument
+                                    .createTextNode(new String(ch, start,
+                                            length)));
+                }
+            }
         }
 
+        /**
+         * Receive notification of a comment section.
+         * 
+         * @param ch
+         *            The characters from the XML document.
+         * @param start
+         *            The start position in the array.
+         * @param length
+         *            The number of characters to read from the array.
+         */
         public void comment(char[] ch, int start, int length)
                 throws SAXException {
+            if (getState() == State.DOCUMENTATION) {
+                this.currentMixedContentNode
+                        .appendChild(this.mixedContentDocument
+                                .createComment(new String(ch, start, length)));
+            }
         }
 
+        /**
+         * Receive notification of the end of a CDATA sectionn.
+         */
         public void endCDATA() throws SAXException {
             if (getState() == State.DOCUMENTATION) {
-                this.contentBuffer.append("]]>");
+                popMixedContentState();
             }
         }
 
@@ -174,7 +240,10 @@ public class WadlRepresentation extends SaxRepresentation {
         @Override
         public void endDocument() throws SAXException {
             popState();
-            this.contentBuffer = null;
+            if (this.namespaces != null && !this.namespaces.isEmpty()
+                    && this.currentApplication != null) {
+                this.currentApplication.setNamespaces(namespaces);
+            }
             this.wadlRepresentation.setApplication(this.currentApplication);
         }
 
@@ -199,12 +268,11 @@ public class WadlRepresentation extends SaxRepresentation {
         public void endElement(String uri, String localName, String qName)
                 throws SAXException {
             if (uri.equalsIgnoreCase(APP_NAMESPACE)) {
-                if (localName.equals("currentApplication")) {
+                if (localName.equals("application")) {
                     popState();
                 } else if (localName.equals("doc")) {
-                    // Get the current text.
-                    this.currentDocumentation.setTextContent(this.contentBuffer
-                            .toString());
+                    this.currentDocumentation
+                            .setMixedContent(mixedContentTopNode);
                     popState();
                 } else if (localName.equals("fault")) {
                     popState();
@@ -234,10 +302,33 @@ public class WadlRepresentation extends SaxRepresentation {
                 } else if (localName.equals("response")) {
                     popState();
                 }
+            } else {
+                if (getState() == State.DOCUMENTATION) {
+                    popMixedContentState();
+                    this.currentMixedContentNode = this.currentMixedContentNode
+                            .getParentNode();
+                }
             }
         }
 
+        /**
+         * Receive notification of the end of an entity section.
+         * 
+         * @param name
+         *            The name of the entity.
+         */
         public void endEntity(String name) throws SAXException {
+            popMixedContentState();
+        }
+
+        /**
+         * Returns the current state when processing mixed content sections.
+         * 
+         * @return The current state when processing mixed content sections.
+         */
+        private MixedContentState getMixedContentState() {
+            final MixedContentState result = this.mixedContentStates.get(0);
+            return result;
         }
 
         /**
@@ -245,7 +336,8 @@ public class WadlRepresentation extends SaxRepresentation {
          * 
          * @param parameterStyle
          *            The given string.
-         * @return
+         * @return The parameterStyle value that corresponds to the given style
+         *         name, or null otherwise.
          */
         public ParameterStyle getParameterStyle(String parameterStyle) {
             ParameterStyle result = null;
@@ -265,9 +357,9 @@ public class WadlRepresentation extends SaxRepresentation {
         }
 
         /**
-         * Returns the state at the beginning of the stack
+         * Returns the current state when processing the WADL document.
          * 
-         * @return
+         * @return the current state when processing the WADL document.
          */
         private State getState() {
             final State result = this.states.get(0);
@@ -275,9 +367,20 @@ public class WadlRepresentation extends SaxRepresentation {
         }
 
         /**
-         * Returns the state at the beginning of the stack
+         * Drops the current state from the stack and returns it. This state
+         * becomes the former current state.
          * 
-         * @return
+         * @return the former current state.
+         */
+        private MixedContentState popMixedContentState() {
+            return this.mixedContentStates.remove(0);
+        }
+
+        /**
+         * Drops the current state from the stack and returns it. This state
+         * becomes the former current state.
+         * 
+         * @return the former current state.
          */
         private State popState() {
             return this.states.remove(0);
@@ -287,14 +390,32 @@ public class WadlRepresentation extends SaxRepresentation {
          * Adds the given state.
          * 
          * @param state
+         *            The given state.
+         */
+        private void pushMixedContentState(MixedContentState state) {
+            this.mixedContentStates.add(0, state);
+        }
+
+        /**
+         * Adds the given state.
+         * 
+         * @param state
+         *            The given state.
          */
         private void pushState(State state) {
             this.states.add(0, state);
         }
 
+        /**
+         * Receive notification of the beginning of a CDATA section.
+         */
         public void startCDATA() throws SAXException {
             if (getState() == State.DOCUMENTATION) {
-                this.contentBuffer.append("<![CDATA[");
+                pushMixedContentState(MixedContentState.CDATA);
+                this.currentMixedContentCDataSection = this.mixedContentDocument
+                        .createCDATASection("");
+                this.currentMixedContentNode
+                        .appendChild(this.currentMixedContentCDataSection);
             }
         }
 
@@ -303,7 +424,6 @@ public class WadlRepresentation extends SaxRepresentation {
          */
         @Override
         public void startDocument() throws SAXException {
-            this.contentBuffer = new StringBuilder();
         }
 
         public void startDTD(String name, String publicId, String systemId)
@@ -332,9 +452,6 @@ public class WadlRepresentation extends SaxRepresentation {
         @Override
         public void startElement(String uri, String localName, String qName,
                 Attributes attrs) throws SAXException {
-            if (getState() != State.DOCUMENTATION) {
-                this.contentBuffer.delete(0, this.contentBuffer.length() + 1);
-            }
 
             if (uri.equalsIgnoreCase(APP_NAMESPACE)) {
                 if (localName.equals("application")) {
@@ -342,6 +459,10 @@ public class WadlRepresentation extends SaxRepresentation {
                     pushState(State.APPLICATION);
                 } else if (localName.equals("doc")) {
                     this.currentDocumentation = new DocumentationInfo();
+                    this.mixedContentTopNode = this.mixedContentDocument
+                            .createDocumentFragment();
+                    this.currentMixedContentNode = mixedContentTopNode;
+                    this.currentMixedContentCDataSection = null;
 
                     if (attrs.getIndex("xml:lang") != -1) {
                         this.currentDocumentation.setLanguage(Language
@@ -669,19 +790,66 @@ public class WadlRepresentation extends SaxRepresentation {
                     }
                     pushState(State.RESPONSE);
                 }
+            } else {
+                if (getState() == State.DOCUMENTATION) {
+                    // We are handling a new element
+                    pushMixedContentState(MixedContentState.ELEMENT);
+                    Node node = null;
+                    if (("".equals(qName) || qName == null)) {
+                        node = this.mixedContentDocument.createElementNS(uri,
+                                localName);
+                    } else {
+                        node = this.mixedContentDocument.createElementNS(uri,
+                                qName);
+                    }
+
+                    for (int i = 0; i < attrs.getLength(); i++) {
+                        Attr attr = this.mixedContentDocument
+                                .createAttributeNS(attrs.getURI(i), attrs
+                                        .getLocalName(i));
+                        attr.setNodeValue(attrs.getValue(i));
+                        node.getAttributes().setNamedItemNS(attr);
+                    }
+                    // This element becomes the current one and is added to its
+                    // parent.
+                    this.currentMixedContentNode.appendChild(node);
+                    this.currentMixedContentNode = node;
+                }
             }
         }
 
+        /**
+         * Receive notification of the beginning of an entity.
+         * 
+         * @param name
+         *            The name of the entity.
+         */
         public void startEntity(String name) throws SAXException {
+            pushMixedContentState(MixedContentState.ENTITY);
+            this.currentMixedContentNode.appendChild(mixedContentDocument
+                    .createEntityReference(name));
+        }
+
+        /**
+         * Receive notification of the beginning of a prefix-URI Namespace
+         * mapping.
+         * 
+         * @param name
+         *            The name of the entity.
+         */
+        @Override
+        public void startPrefixMapping(String arg0, String arg1)
+                throws SAXException {
+            this.namespaces.put(arg1, arg0);
         }
     }
+
+    /** Web Application Description Language namespace. */
+    public static final String APP_NAMESPACE = "http://research.sun.com/wadl/2006/10";
 
     /** Obtain a suitable logger. */
     private static Logger logger = Logger.getLogger(WadlRepresentation.class
             .getCanonicalName());
-
-    /** Web Application Description Language namespace. */
-    public static final String APP_NAMESPACE = "http://research.sun.com/wadl/2006/10";
 
     /** The root element of the WADL document. */
     private ApplicationInfo application;
