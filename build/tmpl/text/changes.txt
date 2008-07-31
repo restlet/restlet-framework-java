@@ -78,7 +78,9 @@ Changes log
        	- Added a org.restlet.service.Service class, super class of all
        	  existing service classes, with "enabled" and "started" 
        	  properties. Enabled services are automatically started by
-       	  their parent application or component. 
+       	  their parent application or component.
+       	- Added an org.restlet.data.Range class to represent content
+       	  ranges.
     - NRE and Extension Enhancements
         - Added a static HttpServletRequest getRequest(Request) method
           to the Servlet extension.
