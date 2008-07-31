@@ -94,6 +94,24 @@ import com.noelios.restlet.util.SecurityUtils;
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class Engine extends org.restlet.util.Engine {
+
+    public static final String DESCRIPTOR_PATH = "META-INF/services";
+
+    public static final String DESCRIPTOR_AUTHENTICATION = "com.noelios.restlet.AuthenticationHelper";
+
+    public static final String DESCRIPTOR_CLIENT = "com.noelios.restlet.ClientHelper";
+
+    public static final String DESCRIPTOR_SERVER = "com.noelios.restlet.ServerHelper";
+
+    public static final String DESCRIPTOR_AUTHENTICATION_PATH = DESCRIPTOR_PATH
+            + "/" + DESCRIPTOR_AUTHENTICATION;
+
+    public static final String DESCRIPTOR_CLIENT_PATH = DESCRIPTOR_PATH + "/"
+            + DESCRIPTOR_CLIENT;
+
+    public static final String DESCRIPTOR_SERVER_PATH = DESCRIPTOR_PATH + "/"
+            + DESCRIPTOR_SERVER;
+
     /** Obtain a suitable logger. */
     private static Logger logger = Logger.getLogger(Engine.class
             .getCanonicalName());
@@ -230,8 +248,16 @@ public class Engine extends org.restlet.util.Engine {
         this.registeredAuthentications = new CopyOnWriteArrayList<AuthenticationHelper>();
 
         if (discoverHelpers) {
-            discoverConnectors();
-            discoverAuthentications();
+            try {
+                discoverConnectors();
+                discoverAuthentications();
+            } catch (IOException e) {
+                logger
+                        .log(
+                                Level.WARNING,
+                                "An error occured while discovering the engine helpers.",
+                                e);
+            }
         }
     }
 
@@ -404,14 +430,16 @@ public class Engine extends org.restlet.util.Engine {
 
     /**
      * Discovers the authentication helpers and register the default helpers.
+     * 
+     * @throws IOException
      */
-    private void discoverAuthentications() {
+    private void discoverAuthentications() throws IOException {
         // Find the factory class name
         final ClassLoader classLoader = org.restlet.util.Engine
                 .getClassLoader();
 
-        discoverHelpers(classLoader,
-                "META-INF/services/com.noelios.restlet.AuthenticationHelper",
+        registerHelpers(classLoader, classLoader
+                .getResources(DESCRIPTOR_AUTHENTICATION_PATH),
                 getRegisteredAuthentications(), null);
 
         // Register the default helpers that will be used if no
@@ -424,18 +452,22 @@ public class Engine extends org.restlet.util.Engine {
      * 
      * @param classLoader
      *            Classloader to search.
+     * @throws IOException
      */
-    private void discoverClientConnectors(ClassLoader classLoader) {
-        discoverHelpers(classLoader,
-                "META-INF/services/com.noelios.restlet.ClientHelper",
-                getRegisteredClients(), Client.class);
+    private void discoverClientConnectors(ClassLoader classLoader)
+            throws IOException {
+        registerHelpers(classLoader, classLoader
+                .getResources(DESCRIPTOR_CLIENT_PATH), getRegisteredClients(),
+                Client.class);
     }
 
     /**
      * Discovers the server and client connectors and register the default
      * connectors.
+     * 
+     * @throws IOException
      */
-    private void discoverConnectors() {
+    private void discoverConnectors() throws IOException {
         // Find the factory class name
         final ClassLoader classLoader = org.restlet.util.Engine
                 .getClassLoader();
@@ -452,83 +484,17 @@ public class Engine extends org.restlet.util.Engine {
     }
 
     /**
-     * Looks for pluggable helpers in the classpath and add them to the current
-     * list.
-     * 
-     * @param classLoader
-     *            Classloader to search.
-     * @param descriptor
-     *            The descriptor location to parse.
-     * @param helpers
-     *            The list of helpers to update.
-     * @param constructorClass
-     *            The constructor parameter class to look for.
-     */
-    @SuppressWarnings("unchecked")
-    private void discoverHelpers(ClassLoader classLoader, String descriptor,
-            List helpers, Class constructorClass) {
-        try {
-            for (final Enumeration<URL> configUrls = classLoader
-                    .getResources(descriptor); configUrls.hasMoreElements();) {
-                final URL configURL = configUrls.nextElement();
-
-                BufferedReader reader = null;
-                try {
-                    reader = new BufferedReader(new InputStreamReader(configURL
-                            .openStream(), "utf-8"));
-                    String line = reader.readLine();
-
-                    while (line != null) {
-                        final String provider = getProviderClassName(line);
-
-                        if ((provider != null) && (!provider.equals(""))) {
-                            // Instantiate the factory
-                            try {
-                                final Class providerClass = Class
-                                        .forName(provider);
-
-                                if (constructorClass == null) {
-                                    helpers.add(providerClass.newInstance());
-                                } else {
-                                    helpers.add(providerClass.getConstructor(
-                                            constructorClass).newInstance(
-                                            constructorClass.cast(null)));
-                                }
-                            } catch (final Exception e) {
-                                logger.log(Level.SEVERE,
-                                        "Unable to register the connector "
-                                                + provider, e);
-                            }
-                        }
-
-                        line = reader.readLine();
-                    }
-                } catch (final IOException e) {
-                    logger.log(Level.SEVERE,
-                            "Unable to read the provider descriptor: "
-                                    + configURL.toString());
-                } finally {
-                    if (reader != null) {
-                        reader.close();
-                    }
-                }
-            }
-        } catch (final IOException ioe) {
-            logger.log(Level.SEVERE,
-                    "Exception while detecting the client connectors.", ioe);
-        }
-    }
-
-    /**
      * Discovers server connectors in the classpath.
      * 
      * @param classLoader
      *            Classloader to search.
+     * @throws IOException
      */
-    private void discoverServerConnectors(ClassLoader classLoader) {
-        discoverHelpers(classLoader,
-                "META-INF/services/com.noelios.restlet.ServerHelper",
-                getRegisteredServers(), Server.class);
+    private void discoverServerConnectors(ClassLoader classLoader)
+            throws IOException {
+        registerHelpers(classLoader, classLoader
+                .getResources(DESCRIPTOR_SERVER_PATH), getRegisteredServers(),
+                Server.class);
     }
 
     /**
@@ -1150,7 +1116,7 @@ public class Engine extends org.restlet.util.Engine {
      * Registers the default authentication helpers.
      */
     @SuppressWarnings("deprecation")
-    private void registerDefaultAuthentications() {
+    public void registerDefaultAuthentications() {
         getRegisteredAuthentications().add(new HttpBasicHelper());
         getRegisteredAuthentications().add(new HttpDigestHelper());
         getRegisteredAuthentications().add(new SmtpPlainHelper());
@@ -1166,11 +1132,98 @@ public class Engine extends org.restlet.util.Engine {
     /**
      * Registers the default client and server connectors.
      */
-    private void registerDefaultConnectors() {
+    public void registerDefaultConnectors() {
         getRegisteredClients().add(new StreamClientHelper(null));
         getRegisteredClients().add(new ClapClientHelper(null));
         getRegisteredClients().add(new FileClientHelper(null));
         getRegisteredServers().add(new StreamServerHelper(null));
+    }
+
+    /**
+     * Registers a list of helpers.
+     * 
+     * @param classLoader
+     *            The classloader to use.
+     * @param configUrls
+     *            Configuration URLs to parse
+     * @param helpers
+     *            The list of helpers to update.
+     * @param constructorClass
+     *            The constructor parameter class to look for.
+     */
+    @SuppressWarnings("unchecked")
+    public void registerHelpers(ClassLoader classLoader,
+            Enumeration<URL> configUrls, List helpers, Class constructorClass) {
+        if (configUrls != null) {
+            for (final Enumeration<URL> configEnum = configUrls; configEnum
+                    .hasMoreElements();) {
+                registerHelper(classLoader, configEnum.nextElement(), helpers,
+                        constructorClass);
+            }
+        }
+    }
+
+    /**
+     * Registers a helper.
+     * 
+     * @param classLoader
+     *            The classloader to use.
+     * @param configUrl
+     *            Configuration URL to parse
+     * @param helpers
+     *            The list of helpers to update.
+     * @param constructorClass
+     *            The constructor parameter class to look for.
+     */
+    @SuppressWarnings("unchecked")
+    public void registerHelper(ClassLoader classLoader, URL configUrl,
+            List helpers, Class constructorClass) {
+        try {
+            BufferedReader reader = null;
+            try {
+                reader = new BufferedReader(new InputStreamReader(configUrl
+                        .openStream(), "utf-8"));
+                String line = reader.readLine();
+
+                while (line != null) {
+                    final String provider = getProviderClassName(line);
+
+                    if ((provider != null) && (!provider.equals(""))) {
+                        // Instantiate the factory
+                        try {
+                            final Class providerClass = classLoader
+                                    .loadClass(provider);
+
+                            if (constructorClass == null) {
+                                helpers.add(providerClass.newInstance());
+                            } else {
+                                helpers.add(providerClass.getConstructor(
+                                        constructorClass).newInstance(
+                                        constructorClass.cast(null)));
+                            }
+                        } catch (final Exception e) {
+                            logger
+                                    .log(Level.SEVERE,
+                                            "Unable to register the helper "
+                                                    + provider, e);
+                        }
+                    }
+
+                    line = reader.readLine();
+                }
+            } catch (final IOException e) {
+                logger.log(Level.SEVERE,
+                        "Unable to read the provider descriptor: "
+                                + configUrl.toString());
+            } finally {
+                if (reader != null) {
+                    reader.close();
+                }
+            }
+        } catch (final IOException ioe) {
+            logger.log(Level.SEVERE, "Exception while detecting the helpers.",
+                    ioe);
+        }
     }
 
     /**

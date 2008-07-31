@@ -597,3 +597,6 @@ Export-Package:
    org.apache.commons.logging,
    javax.servlet.jsp"
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Import-Package: javax.servlet,
+ javax.servlet.http,
+ javax.servlet.resources

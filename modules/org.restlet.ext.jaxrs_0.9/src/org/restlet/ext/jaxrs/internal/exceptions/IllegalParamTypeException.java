@@ -25,6 +25,8 @@ package org.restlet.ext.jaxrs.internal.exceptions;
  */
 public abstract class IllegalParamTypeException extends JaxRsException {
 
+    private static final long serialVersionUID = 1L;
+
     /**
      * @param message
      */

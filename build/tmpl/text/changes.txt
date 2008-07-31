@@ -112,6 +112,11 @@ Changes log
           Contribution from James Maki. 
     - Misc
         - Refactored WAR client to remove remaining class in NRE core.
+        - Refactored OSGi support to not require one activator for each
+          bundle/extension anymore. Only the NRE bundle has an activator 
+          which introspects the installed bundles for the usual 
+          descriptor files in "META-INF/services" directories. Suggested
+          by Hendy Irawan.
 
 - 1.1 Milestone 4 (2008-05-20)
     - Bugs fixed
