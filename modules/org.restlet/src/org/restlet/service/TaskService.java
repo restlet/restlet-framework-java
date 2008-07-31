@@ -29,7 +29,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.restlet.Application;
 import org.restlet.Context;
@@ -63,58 +62,34 @@ public class TaskService extends Service implements ExecutorService {
      * @author Doug Lea (initial code in public domain)
      */
     private static class RestletThreadFactory implements ThreadFactory {
-        static final AtomicInteger restletPoolNumber = new AtomicInteger(1);
+        final ThreadFactory factory = Executors.defaultThreadFactory();
 
-        final ThreadGroup group;
-
-        final String namePrefix;
-
-        final AtomicInteger threadNumber = new AtomicInteger(1);
-
-        /**
-         * Constructor.
-         */
-        public RestletThreadFactory() {
-            SecurityManager s = System.getSecurityManager();
-            group = (s != null) ? s.getThreadGroup() : Thread.currentThread()
-                    .getThreadGroup();
-            namePrefix = "restlet-" + restletPoolNumber.getAndIncrement()
-                    + "-thread-";
-        }
-
-        /**
-         * Creates and name a new thread.
-         * 
-         * @param runnable
-         *            The runnable task.
-         */
         public Thread newThread(Runnable runnable) {
-            Thread t = new Thread(group, runnable, namePrefix
-                    + threadNumber.getAndIncrement(), 0);
-            if (t.isDaemon())
-                t.setDaemon(false);
-            if (t.getPriority() != Thread.NORM_PRIORITY)
-                t.setPriority(Thread.NORM_PRIORITY);
+            Thread t = factory.newThread(runnable);
+
+            // Default factory is documented as producing names of the
+            // form "pool-N-thread-M".
+            t.setName(t.getName().replaceFirst("pool", "restlet"));
             return t;
         }
     }
 
     /**
-     * Wraps a JDK's executor service to ensure that the threads executing the
+     * Wraps a JDK executor service to ensure that the threads executing the
      * tasks will have the thread local variables copied from the calling
      * thread. This will ensure that call to static methods like
      * {@link Application#getCurrent()} still work.
      * 
-     * @param jdkExecutorService
+     * @param executorService
      *            The JDK service to wrap.
      * @return The wrapper service to use.
      */
-    public static ExecutorService wrap(final ExecutorService jdkExecutorService) {
+    public static ExecutorService wrap(final ExecutorService executorService) {
         return new AbstractExecutorService() {
 
             public boolean awaitTermination(long timeout, TimeUnit unit)
                     throws InterruptedException {
-                return jdkExecutorService.awaitTermination(timeout, unit);
+                return executorService.awaitTermination(timeout, unit);
             }
 
             public void execute(final Runnable runnable) {
@@ -124,7 +99,7 @@ public class TaskService extends Service implements ExecutorService {
                 final Integer currentVirtualHost = VirtualHost.getCurrent();
                 final Response currentResponse = Response.getCurrent();
 
-                jdkExecutorService.execute(new Runnable() {
+                executorService.execute(new Runnable() {
                     public void run() {
                         // Copy the thread local variables
                         Response.setCurrent(currentResponse);
@@ -147,22 +122,28 @@ public class TaskService extends Service implements ExecutorService {
             }
 
             public boolean isShutdown() {
-                return jdkExecutorService.isShutdown();
+                return executorService.isShutdown();
             }
 
             public boolean isTerminated() {
-                return jdkExecutorService.isTerminated();
+                return executorService.isTerminated();
             }
 
             public void shutdown() {
-                jdkExecutorService.shutdown();
+                executorService.shutdown();
             }
 
             public List<Runnable> shutdownNow() {
-                return jdkExecutorService.shutdownNow();
+                return executorService.shutdownNow();
             }
         };
     }
+
+    /**
+     * Allow {@link #shutdown()} and {@link #shutdownNow()} methods to
+     * effectively shutdown the wrapped executor service.
+     */
+    private volatile boolean shutdownAllowed;
 
     /** The wrapped JDK executor service. */
     private volatile ExecutorService wrapped;
@@ -171,6 +152,7 @@ public class TaskService extends Service implements ExecutorService {
      * Constructor.
      */
     public TaskService() {
+        this.shutdownAllowed = false;
         setWrapped(wrap(createExecutorService()));
     }
 
@@ -304,6 +286,17 @@ public class TaskService extends Service implements ExecutorService {
     }
 
     /**
+     * Indicates if the {@link #shutdown()} and {@link #shutdownNow()} methods
+     * are allowed to effectively shutdown the wrapped executor service. Return
+     * false by default.
+     * 
+     * @return True if shutdown is allowed.
+     */
+    public boolean isShutdownAllowed() {
+        return shutdownAllowed;
+    }
+
+    /**
      * Returns true if this executor has been shut down.
      * 
      * @return True if this executor has been shut down.
@@ -324,6 +317,17 @@ public class TaskService extends Service implements ExecutorService {
     }
 
     /**
+     * Indicates if the {@link #shutdown()} and {@link #shutdownNow()} methods
+     * are allowed to effectively shutdown the wrapped executor service.
+     * 
+     * @param allowShutdown
+     *            True if shutdown is allowed.
+     */
+    public void setShutdownAllowed(boolean allowShutdown) {
+        this.shutdownAllowed = allowShutdown;
+    }
+
+    /**
      * Sets the wrapped JDK executor service.
      * 
      * @param wrapped
@@ -338,7 +342,9 @@ public class TaskService extends Service implements ExecutorService {
      * executed, but no new tasks will be accepted.
      */
     public void shutdown() {
-        getWrapped().shutdown();
+        if (isShutdownAllowed()) {
+            getWrapped().shutdown();
+        }
     }
 
     /**
@@ -349,7 +355,7 @@ public class TaskService extends Service implements ExecutorService {
      * @return The list of tasks that never commenced execution;
      */
     public List<Runnable> shutdownNow() {
-        return getWrapped().shutdownNow();
+        return isShutdownAllowed() ? getWrapped().shutdownNow() : null;
     }
 
     @Override

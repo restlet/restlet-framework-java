@@ -101,7 +101,7 @@ Changes log
           reduce log size. Contributed by Bruno Dumon.
         - Made the com.noelios.ext.ssl extension public to provide more 
           flexibility in configuring SSL certificates. Depends on 
-          jSSLutils library 0.3. Contributed by Bruno Harbulot.
+          jSSLutils library 0.4. Contributed by Bruno Harbulot.
         - Added a port of Restlet to GWT. This is a subset of the 
           Restlet API and Engine, mostly the client side working on top
           of GWT 1.5 RC1.
