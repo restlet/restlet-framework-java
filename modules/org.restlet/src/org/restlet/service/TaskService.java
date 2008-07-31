@@ -19,6 +19,7 @@
 package org.restlet.service;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.Callable;
@@ -356,7 +357,8 @@ public class TaskService extends Service implements ExecutorService {
      * @return The list of tasks that never commenced execution;
      */
     public List<Runnable> shutdownNow() {
-        return isShutdownAllowed() ? getWrapped().shutdownNow() : null;
+        return isShutdownAllowed() ? getWrapped().shutdownNow() : Collections
+                .<Runnable> emptyList();
     }
 
     @Override
