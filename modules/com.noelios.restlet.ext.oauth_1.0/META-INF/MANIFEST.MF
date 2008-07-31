@@ -26,11 +26,9 @@ Import-Package: com.noelios.restlet,
  org.apache.commons.dbcp,
  org.apache.commons.pool,
  org.apache.commons.pool.impl,
- org.osgi.framework,
  org.restlet,
  org.restlet.data,
  org.restlet.resource,
  org.restlet.service,
  org.restlet.util
-Bundle-Activator: com.noelios.restlet.ext.oauth.internal.Activator
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
