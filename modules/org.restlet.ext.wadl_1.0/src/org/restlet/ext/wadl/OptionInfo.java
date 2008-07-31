@@ -21,6 +21,7 @@ package org.restlet.ext.wadl;
 import static org.restlet.ext.wadl.WadlRepresentation.APP_NAMESPACE;
 
 import java.util.List;
+import java.util.Map;
 
 import org.restlet.util.XmlWriter;
 import org.xml.sax.SAXException;
@@ -36,18 +37,39 @@ public class OptionInfo extends DocumentedInfo {
     /** Value of this option element. */
     private String value;
 
+    /**
+     * Constructor.
+     */
     public OptionInfo() {
         super();
     }
 
+    /**
+     * Constructor with a single documentation element.
+     * 
+     * @param documentation
+     *            A single documentation element.
+     */
     public OptionInfo(DocumentationInfo documentation) {
         super(documentation);
     }
 
+    /**
+     * Constructor with a list of documentation elements.
+     * 
+     * @param documentations
+     *            The list of documentation elements.
+     */
     public OptionInfo(List<DocumentationInfo> documentations) {
         super(documentations);
     }
 
+    /**
+     * Constructor with a single documentation element.
+     * 
+     * @param documentation
+     *            A single documentation element.
+     */
     public OptionInfo(String documentation) {
         super(documentation);
     }
@@ -69,6 +91,12 @@ public class OptionInfo extends DocumentedInfo {
      */
     public void setValue(String value) {
         this.value = value;
+    }
+
+    @Override
+    public void updateNamespaces(Map<String, String> namespaces) {
+        namespaces.putAll(resolveNamespaces());
+
     }
 
     /**

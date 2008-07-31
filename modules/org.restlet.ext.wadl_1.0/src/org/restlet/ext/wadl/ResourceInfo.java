@@ -23,6 +23,7 @@ import static org.restlet.ext.wadl.WadlRepresentation.APP_NAMESPACE;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
@@ -57,18 +58,39 @@ public class ResourceInfo extends DocumentedInfo {
     /** List of references to resource type elements. */
     private List<Reference> type;
 
+    /**
+     * Constructor.
+     */
     public ResourceInfo() {
         super();
     }
 
+    /**
+     * Constructor with a single documentation element.
+     * 
+     * @param documentation
+     *            A single documentation element.
+     */
     public ResourceInfo(DocumentationInfo documentation) {
         super(documentation);
     }
 
+    /**
+     * Constructor with a list of documentation elements.
+     * 
+     * @param documentations
+     *            The list of documentation elements.
+     */
     public ResourceInfo(List<DocumentationInfo> documentations) {
         super(documentations);
     }
 
+    /**
+     * Constructor with a single documentation element.
+     * 
+     * @param documentation
+     *            A single documentation element.
+     */
     public ResourceInfo(String documentation) {
         super(documentation);
     }
@@ -245,6 +267,21 @@ public class ResourceInfo extends DocumentedInfo {
      */
     public void setType(List<Reference> type) {
         this.type = type;
+    }
+
+    @Override
+    public void updateNamespaces(Map<String, String> namespaces) {
+        namespaces.putAll(resolveNamespaces());
+
+        for (final ParameterInfo parameterInfo : getParameters()) {
+            parameterInfo.updateNamespaces(namespaces);
+        }
+        for (final ResourceInfo resourceInfo : getChildResources()) {
+            resourceInfo.updateNamespaces(namespaces);
+        }
+        for (final MethodInfo methodInfo : getMethods()) {
+            methodInfo.updateNamespaces(namespaces);
+        }
     }
 
     /**

@@ -22,6 +22,7 @@ import static org.restlet.ext.wadl.WadlRepresentation.APP_NAMESPACE;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.restlet.util.XmlWriter;
 import org.xml.sax.SAXException;
@@ -42,18 +43,39 @@ public class ResponseInfo extends DocumentedInfo {
     /** List of representations. */
     private List<RepresentationInfo> representations;
 
+    /**
+     * Constructor.
+     */
     public ResponseInfo() {
         super();
     }
 
+    /**
+     * Constructor with a single documentation element.
+     * 
+     * @param documentation
+     *            A single documentation element.
+     */
     public ResponseInfo(DocumentationInfo documentation) {
         super(documentation);
     }
 
+    /**
+     * Constructor with a list of documentation elements.
+     * 
+     * @param documentations
+     *            The list of documentation elements.
+     */
     public ResponseInfo(List<DocumentationInfo> documentations) {
         super(documentations);
     }
 
+    /**
+     * Constructor with a single documentation element.
+     * 
+     * @param documentation
+     *            A single documentation element.
+     */
     public ResponseInfo(String documentation) {
         super(documentation);
     }
@@ -148,6 +170,23 @@ public class ResponseInfo extends DocumentedInfo {
         this.representations = representations;
     }
 
+    @Override
+    public void updateNamespaces(Map<String, String> namespaces) {
+        namespaces.putAll(resolveNamespaces());
+
+        for (final RepresentationInfo representationInfo : getRepresentations()) {
+            representationInfo.updateNamespaces(namespaces);
+        }
+
+        for (final FaultInfo faultInfo : getFaults()) {
+            faultInfo.updateNamespaces(namespaces);
+        }
+
+        for (final ParameterInfo parameterInfo : getParameters()) {
+            parameterInfo.updateNamespaces(namespaces);
+        }
+    }
+
     /**
      * Writes the current object as an XML element using the given SAX writer.
      * 
@@ -182,4 +221,5 @@ public class ResponseInfo extends DocumentedInfo {
             writer.endElement(APP_NAMESPACE, "response");
         }
     }
+
 }

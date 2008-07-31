@@ -22,6 +22,7 @@ import static org.restlet.ext.wadl.WadlRepresentation.APP_NAMESPACE;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.restlet.util.XmlWriter;
 import org.xml.sax.SAXException;
@@ -38,18 +39,39 @@ public class GrammarsInfo extends DocumentedInfo {
     /** Definitions of data format descriptions to be included by reference. */
     private List<IncludeInfo> includes;
 
+    /**
+     * Constructor.
+     */
     public GrammarsInfo() {
         super();
     }
 
+    /**
+     * Constructor with a single documentation element.
+     * 
+     * @param documentation
+     *            A single documentation element.
+     */
     public GrammarsInfo(DocumentationInfo documentation) {
         super(documentation);
     }
 
+    /**
+     * Constructor with a list of documentation elements.
+     * 
+     * @param documentations
+     *            The list of documentation elements.
+     */
     public GrammarsInfo(List<DocumentationInfo> documentations) {
         super(documentations);
     }
 
+    /**
+     * Constructor with a single documentation element.
+     * 
+     * @param documentation
+     *            A single documentation element.
+     */
     public GrammarsInfo(String documentation) {
         super(documentation);
     }
@@ -83,6 +105,15 @@ public class GrammarsInfo extends DocumentedInfo {
         this.includes = includes;
     }
 
+    @Override
+    public void updateNamespaces(Map<String, String> namespaces) {
+        namespaces.putAll(resolveNamespaces());
+
+        for (final IncludeInfo includeInfo : getIncludes()) {
+            includeInfo.updateNamespaces(namespaces);
+        }
+    }
+
     /**
      * Writes the current object as an XML element using the given SAX writer.
      * 
@@ -108,4 +139,5 @@ public class GrammarsInfo extends DocumentedInfo {
             writer.endElement(APP_NAMESPACE, "grammars");
         }
     }
+
 }

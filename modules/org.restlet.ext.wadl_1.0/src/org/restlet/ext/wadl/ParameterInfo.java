@@ -22,6 +22,7 @@ import static org.restlet.ext.wadl.WadlRepresentation.APP_NAMESPACE;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.restlet.util.XmlWriter;
 import org.xml.sax.SAXException;
@@ -78,7 +79,6 @@ public class ParameterInfo extends DocumentedInfo {
 
     /**
      * Constructor.
-     * 
      */
     public ParameterInfo() {
         super();
@@ -91,10 +91,15 @@ public class ParameterInfo extends DocumentedInfo {
      *            A single documentation element.
      */
     public ParameterInfo(DocumentationInfo documentation) {
-        super();
-        getDocumentations().add(documentation);
+        super(documentation);
     }
 
+    /**
+     * Constructor with a list of documentation elements.
+     * 
+     * @param documentations
+     *            The list of documentation elements.
+     */
     public ParameterInfo(List<DocumentationInfo> documentations) {
         super(documentations);
     }
@@ -106,28 +111,7 @@ public class ParameterInfo extends DocumentedInfo {
      *            A single documentation element.
      */
     public ParameterInfo(String documentation) {
-        super();
-        getDocumentations().add(new DocumentationInfo(documentation));
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param name
-     *            The name of the parameter.
-     * @param required
-     *            True if thes parameter is required.
-     * @param type
-     *            The type of the parameter.
-     * @param documentation
-     *            A single documentation element.
-     */
-    public ParameterInfo(String name, boolean required, String type,
-            String documentation) {
         super(documentation);
-        this.name = name;
-        this.required = required;
-        this.type = type;
     }
 
     /**
@@ -150,6 +134,26 @@ public class ParameterInfo extends DocumentedInfo {
         this.name = name;
         this.required = required;
         this.style = style;
+        this.type = type;
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param name
+     *            The name of the parameter.
+     * @param required
+     *            True if thes parameter is required.
+     * @param type
+     *            The type of the parameter.
+     * @param documentation
+     *            A single documentation element.
+     */
+    public ParameterInfo(String name, boolean required, String type,
+            String documentation) {
+        super(documentation);
+        this.name = name;
+        this.required = required;
         this.type = type;
     }
 
@@ -387,6 +391,19 @@ public class ParameterInfo extends DocumentedInfo {
         this.type = type;
     }
 
+    @Override
+    public void updateNamespaces(Map<String, String> namespaces) {
+        namespaces.putAll(resolveNamespaces());
+
+        if (getLink() != null) {
+            getLink().updateNamespaces(namespaces);
+        }
+
+        for (final OptionInfo optionInfo : getOptions()) {
+            optionInfo.updateNamespaces(namespaces);
+        }
+    }
+
     /**
      * Writes the current object as an XML element using the given SAX writer.
      * 
@@ -457,5 +474,4 @@ public class ParameterInfo extends DocumentedInfo {
             writer.endElement(APP_NAMESPACE, "param");
         }
     }
-
 }

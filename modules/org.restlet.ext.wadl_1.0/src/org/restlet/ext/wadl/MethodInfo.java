@@ -21,6 +21,7 @@ package org.restlet.ext.wadl;
 import static org.restlet.ext.wadl.WadlRepresentation.APP_NAMESPACE;
 
 import java.util.List;
+import java.util.Map;
 
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
@@ -50,18 +51,39 @@ public class MethodInfo extends DocumentedInfo {
     /** Reference to a method definition element. */
     private Reference targetRef;
 
+    /**
+     * Constructor.
+     */
     public MethodInfo() {
         super();
     }
 
+    /**
+     * Constructor with a single documentation element.
+     * 
+     * @param documentation
+     *            A single documentation element.
+     */
     public MethodInfo(DocumentationInfo documentation) {
         super(documentation);
     }
 
+    /**
+     * Constructor with a list of documentation elements.
+     * 
+     * @param documentations
+     *            The list of documentation elements.
+     */
     public MethodInfo(List<DocumentationInfo> documentations) {
         super(documentations);
     }
 
+    /**
+     * Constructor with a single documentation element.
+     * 
+     * @param documentation
+     *            A single documentation element.
+     */
     public MethodInfo(String documentation) {
         super(documentation);
     }
@@ -143,7 +165,7 @@ public class MethodInfo extends DocumentedInfo {
     }
 
     /**
-     * Setst the output of the method.
+     * Sets the output of the method.
      * 
      * @param response
      *            The output of the method.
@@ -160,6 +182,19 @@ public class MethodInfo extends DocumentedInfo {
      */
     public void setTargetRef(Reference targetRef) {
         this.targetRef = targetRef;
+    }
+
+    @Override
+    public void updateNamespaces(Map<String, String> namespaces) {
+        namespaces.putAll(resolveNamespaces());
+
+        if (getRequest() != null) {
+            getRequest().updateNamespaces(namespaces);
+        }
+
+        if (getResponse() != null) {
+            getResponse().updateNamespaces(namespaces);
+        }
     }
 
     /**

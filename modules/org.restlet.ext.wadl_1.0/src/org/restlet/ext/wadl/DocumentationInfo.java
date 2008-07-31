@@ -31,6 +31,7 @@ import org.restlet.util.XmlWriter;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Comment;
 import org.w3c.dom.Document;
+import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.EntityReference;
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
@@ -191,12 +192,9 @@ public class DocumentationInfo {
                 // Used to restore the SAX writer's dataFormat
                 boolean isDataFormat = writer.isDataFormat();
                 writer.setDataFormat(false);
-                // Walk along the tree of nodes.
-                for (int i = 0; i < getMixedContent().getChildNodes()
-                        .getLength(); i++) {
-                    writeElement(writer, getMixedContent().getChildNodes()
-                            .item(i));
-                }
+
+                writeElement(writer, getMixedContent());
+
                 // Restore the SAX writer's dataFormat
                 writer.setDataFormat(isDataFormat);
             } catch (final IOException e) {
@@ -212,7 +210,7 @@ public class DocumentationInfo {
 
     /**
      * Writes the given node using the given SAX writer. It detects the type of
-     * node (CDATASection, Entity, Comment, Text, Node).
+     * node (CDATASection, Entity, Comment, Text, DocumentFragment, Node).
      * 
      * @param writer
      *            The SAX writer
@@ -241,6 +239,12 @@ public class DocumentationInfo {
             writer.getWriter().write("<!-- ");
             writer.getWriter().write(comment.getData());
             writer.getWriter().write(" -->");
+        } else if (node instanceof DocumentFragment) {
+            DocumentFragment documentFragment = (DocumentFragment) node;
+            // Walk along the tree of nodes.
+            for (int i = 0; i < documentFragment.getChildNodes().getLength(); i++) {
+                writeElement(writer, documentFragment.getChildNodes().item(i));
+            }
         } else {
             // Check that the node contains attributes, and convert it into the
             // SAX model.

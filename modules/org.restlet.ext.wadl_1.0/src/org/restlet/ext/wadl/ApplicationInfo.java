@@ -63,18 +63,39 @@ public class ApplicationInfo extends DocumentedInfo {
      */
     private List<ResourceTypeInfo> resourceTypes;
 
+    /**
+     * Constructor.
+     */
     public ApplicationInfo() {
         super();
     }
 
+    /**
+     * Constructor with a single documentation element.
+     * 
+     * @param documentation
+     *            A single documentation element.
+     */
     public ApplicationInfo(DocumentationInfo documentation) {
         super(documentation);
     }
 
+    /**
+     * Constructor with a list of documentation elements.
+     * 
+     * @param documentations
+     *            The list of documentation elements.
+     */
     public ApplicationInfo(List<DocumentationInfo> documentations) {
         super(documentations);
     }
 
+    /**
+     * Constructor with a single documentation element.
+     * 
+     * @param documentation
+     *            A single documentation element.
+     */
     public ApplicationInfo(String documentation) {
         super(documentation);
     }
@@ -244,7 +265,7 @@ public class ApplicationInfo extends DocumentedInfo {
     }
 
     /**
-     * sets the list of representation elements.
+     * Sets the list of representation elements.
      * 
      * @param representations
      *            The list of representation elements.
@@ -264,13 +285,42 @@ public class ApplicationInfo extends DocumentedInfo {
     }
 
     /**
-     * sets the list of resource type elements.
+     * Sets the list of resource type elements.
      * 
      * @param resourceTypes
      *            The list of resource type elements.
      */
     public void setResourceTypes(List<ResourceTypeInfo> resourceTypes) {
         this.resourceTypes = resourceTypes;
+    }
+
+    @Override
+    public void updateNamespaces(Map<String, String> namespaces) {
+        namespaces.putAll(resolveNamespaces());
+
+        if (getGrammars() != null) {
+            getGrammars().updateNamespaces(namespaces);
+        }
+
+        for (final MethodInfo methodInfo : getMethods()) {
+            methodInfo.updateNamespaces(namespaces);
+        }
+
+        for (final RepresentationInfo representationInfo : getRepresentations()) {
+            representationInfo.updateNamespaces(namespaces);
+        }
+
+        if (getResources() != null) {
+            getResources().updateNamespaces(namespaces);
+        }
+
+        for (final ResourceTypeInfo resourceTypeInfo : getResourceTypes()) {
+            resourceTypeInfo.updateNamespaces(namespaces);
+        }
+
+        for (final FaultInfo faultInfo : getFaults()) {
+            faultInfo.updateNamespaces(namespaces);
+        }
     }
 
     /**
@@ -281,6 +331,8 @@ public class ApplicationInfo extends DocumentedInfo {
      * @throws SAXException
      */
     public void writeElement(XmlWriter writer) throws SAXException {
+        updateNamespaces(getNamespaces());
+
         for (Entry<String, String> entry : getNamespaces().entrySet()) {
             writer.forceNSDecl(entry.getKey(), entry.getValue());
         }
@@ -317,4 +369,5 @@ public class ApplicationInfo extends DocumentedInfo {
 
         writer.endElement(APP_NAMESPACE, "application");
     }
+
 }

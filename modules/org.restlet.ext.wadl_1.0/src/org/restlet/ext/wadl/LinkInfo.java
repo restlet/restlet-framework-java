@@ -21,6 +21,7 @@ package org.restlet.ext.wadl;
 import static org.restlet.ext.wadl.WadlRepresentation.APP_NAMESPACE;
 
 import java.util.List;
+import java.util.Map;
 
 import org.restlet.data.Reference;
 import org.restlet.util.XmlWriter;
@@ -50,18 +51,39 @@ public class LinkInfo extends DocumentedInfo {
      */
     private String reverseRelationship;
 
+    /**
+     * Constructor.
+     */
     public LinkInfo() {
         super();
     }
 
+    /**
+     * Constructor with a single documentation element.
+     * 
+     * @param documentation
+     *            A single documentation element.
+     */
     public LinkInfo(DocumentationInfo documentation) {
         super(documentation);
     }
 
+    /**
+     * Constructor with a list of documentation elements.
+     * 
+     * @param documentations
+     *            The list of documentation elements.
+     */
     public LinkInfo(List<DocumentationInfo> documentations) {
         super(documentations);
     }
 
+    /**
+     * Constructor with a single documentation element.
+     * 
+     * @param documentation
+     *            A single documentation element.
+     */
     public LinkInfo(String documentation) {
         super(documentation);
     }
@@ -104,7 +126,7 @@ public class LinkInfo extends DocumentedInfo {
     }
 
     /**
-     * The reference to the resource type of the linked resource.
+     * Sets the reference to the resource type of the linked resource.
      * 
      * @param resourceType
      *            The reference to the resource type of the linked resource.
@@ -121,6 +143,11 @@ public class LinkInfo extends DocumentedInfo {
      */
     public void setReverseRelationship(String reverseRelationship) {
         this.reverseRelationship = reverseRelationship;
+    }
+
+    @Override
+    public void updateNamespaces(Map<String, String> namespaces) {
+        namespaces.putAll(resolveNamespaces());
     }
 
     /**
@@ -160,5 +187,4 @@ public class LinkInfo extends DocumentedInfo {
             writer.endElement(APP_NAMESPACE, "link");
         }
     }
-
 }

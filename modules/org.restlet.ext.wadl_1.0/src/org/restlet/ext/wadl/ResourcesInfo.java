@@ -22,6 +22,7 @@ import static org.restlet.ext.wadl.WadlRepresentation.APP_NAMESPACE;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.restlet.data.Reference;
 import org.restlet.util.XmlWriter;
@@ -40,18 +41,39 @@ public class ResourcesInfo extends DocumentedInfo {
     /** List of child resources. */
     private List<ResourceInfo> resources;
 
+    /**
+     * Constructor.
+     */
     public ResourcesInfo() {
         super();
     }
 
+    /**
+     * Constructor with a single documentation element.
+     * 
+     * @param documentation
+     *            A single documentation element.
+     */
     public ResourcesInfo(DocumentationInfo documentation) {
         super(documentation);
     }
 
+    /**
+     * Constructor with a list of documentation elements.
+     * 
+     * @param documentations
+     *            The list of documentation elements.
+     */
     public ResourcesInfo(List<DocumentationInfo> documentations) {
         super(documentations);
     }
 
+    /**
+     * Constructor with a single documentation element.
+     * 
+     * @param documentation
+     *            A single documentation element.
+     */
     public ResourcesInfo(String documentation) {
         super(documentation);
     }
@@ -102,6 +124,15 @@ public class ResourcesInfo extends DocumentedInfo {
      */
     public void setResources(List<ResourceInfo> resources) {
         this.resources = resources;
+    }
+
+    @Override
+    public void updateNamespaces(Map<String, String> namespaces) {
+        namespaces.putAll(resolveNamespaces());
+
+        for (final ResourceInfo resourceInfo : getResources()) {
+            resourceInfo.updateNamespaces(namespaces);
+        }
     }
 
     /**

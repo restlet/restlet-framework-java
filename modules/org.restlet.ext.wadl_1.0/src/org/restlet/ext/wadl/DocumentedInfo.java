@@ -18,13 +18,17 @@
 package org.restlet.ext.wadl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import org.w3c.dom.Node;
 
 /**
  * Superclass of WADL elements that supports dcumentation.
  * 
  */
-public class DocumentedInfo {
+public abstract class DocumentedInfo {
     /** Doc elements used to document that element. */
     private List<DocumentationInfo> documentations;
 
@@ -36,10 +40,10 @@ public class DocumentedInfo {
     }
 
     /**
-     * Constructor.
+     * Constructor with a single documentation element.
      * 
      * @param documentation
-     *            A single DocumentationInfo element.
+     *            A single documentation element.
      */
     public DocumentedInfo(DocumentationInfo documentation) {
         super();
@@ -47,10 +51,10 @@ public class DocumentedInfo {
     }
 
     /**
-     * Constructor.
+     * Constructor with a list of documentation elements.
      * 
      * @param documentations
-     *            The list of DocumentationInfo elements.
+     *            The list of documentation elements.
      */
     public DocumentedInfo(List<DocumentationInfo> documentations) {
         super();
@@ -58,10 +62,10 @@ public class DocumentedInfo {
     }
 
     /**
-     * Constructor.
+     * Constructor with a single documentation element.
      * 
      * @param documentation
-     *            A single DocumentationInfo element.
+     *            A single documentation element.
      */
     public DocumentedInfo(String documentation) {
         this(new DocumentationInfo(documentation));
@@ -84,6 +88,43 @@ public class DocumentedInfo {
             }
         }
         return d;
+    }
+
+    /**
+     * Returns the list of namespaces used in the documentation elements as a
+     * map. The key is the URI of the namespace and the value, the prefix.
+     * 
+     * @return The list of namespaces used in the documentation elements as a
+     *         map.
+     */
+    public Map<String, String> resolveNamespaces() {
+        Map<String, String> result = new HashMap<String, String>();
+        for (DocumentationInfo documentationInfo : getDocumentations()) {
+            if (documentationInfo.getMixedContent() != null) {
+                resolveNamespaces(documentationInfo.getMixedContent(), result);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Completes the given map of namespaces with the namespaces of the given
+     * node.
+     * 
+     * @param node
+     *            The node to analyse.
+     * @param namespaces
+     *            the map of namespaces to complete.
+     */
+    private void resolveNamespaces(Node node, Map<String, String> namespaces) {
+        if (node.getNamespaceURI() != null) {
+            namespaces.put(node.getNamespaceURI(), node.getPrefix());
+        }
+        if (node.getChildNodes() != null) {
+            for (int i = 0; i < node.getChildNodes().getLength(); i++) {
+                resolveNamespaces(node.getChildNodes().item(i), namespaces);
+            }
+        }
     }
 
     /**
@@ -118,4 +159,13 @@ public class DocumentedInfo {
         this.documentations = doc;
     }
 
+    /**
+     * Completes the given map of namespaces with the namespaces used in the
+     * documentation elements. The key is the URI of the namespace and the
+     * value, the prefix.
+     * 
+     * @param namespaces
+     *            The given map of namespaces to complete.
+     */
+    public abstract void updateNamespaces(Map<String, String> namespaces);
 }

@@ -23,6 +23,7 @@ import static org.restlet.ext.wadl.WadlRepresentation.APP_NAMESPACE;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
@@ -58,18 +59,39 @@ public class RepresentationInfo extends DocumentedInfo {
     /** Qualified name of the root element for this XML-based representation. */
     private String xmlElement;
 
+    /**
+     * Constructor.
+     */
     public RepresentationInfo() {
         super();
     }
 
+    /**
+     * Constructor with a single documentation element.
+     * 
+     * @param documentation
+     *            A single documentation element.
+     */
     public RepresentationInfo(DocumentationInfo documentation) {
         super(documentation);
     }
 
+    /**
+     * Constructor with a list of documentation elements.
+     * 
+     * @param documentations
+     *            The list of documentation elements.
+     */
     public RepresentationInfo(List<DocumentationInfo> documentations) {
         super(documentations);
     }
 
+    /**
+     * Constructor with a single documentation element.
+     * 
+     * @param documentation
+     *            A single documentation element.
+     */
     public RepresentationInfo(String documentation) {
         super(documentation);
     }
@@ -223,6 +245,15 @@ public class RepresentationInfo extends DocumentedInfo {
      */
     public void setXmlElement(String xmlElement) {
         this.xmlElement = xmlElement;
+    }
+
+    @Override
+    public void updateNamespaces(Map<String, String> namespaces) {
+        namespaces.putAll(resolveNamespaces());
+
+        for (final ParameterInfo parameterInfo : getParameters()) {
+            parameterInfo.updateNamespaces(namespaces);
+        }
     }
 
     /**

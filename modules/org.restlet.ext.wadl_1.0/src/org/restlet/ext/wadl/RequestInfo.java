@@ -22,6 +22,7 @@ import static org.restlet.ext.wadl.WadlRepresentation.APP_NAMESPACE;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.restlet.util.XmlWriter;
 import org.xml.sax.SAXException;
@@ -39,18 +40,39 @@ public class RequestInfo extends DocumentedInfo {
     /** List of supported input representations. */
     private List<RepresentationInfo> representations;
 
+    /**
+     * Constructor.
+     */
     public RequestInfo() {
         super();
     }
 
+    /**
+     * Constructor with a single documentation element.
+     * 
+     * @param documentation
+     *            A single documentation element.
+     */
     public RequestInfo(DocumentationInfo documentation) {
         super(documentation);
     }
 
+    /**
+     * Constructor with a list of documentation elements.
+     * 
+     * @param documentations
+     *            The list of documentation elements.
+     */
     public RequestInfo(List<DocumentationInfo> documentations) {
         super(documentations);
     }
 
+    /**
+     * Constructor with a single documentation element.
+     * 
+     * @param documentation
+     *            A single documentation element.
+     */
     public RequestInfo(String documentation) {
         super(documentation);
     }
@@ -111,6 +133,19 @@ public class RequestInfo extends DocumentedInfo {
      */
     public void setRepresentations(List<RepresentationInfo> representations) {
         this.representations = representations;
+    }
+
+    @Override
+    public void updateNamespaces(Map<String, String> namespaces) {
+        namespaces.putAll(resolveNamespaces());
+
+        for (final ParameterInfo parameterInfo : getParameters()) {
+            parameterInfo.updateNamespaces(namespaces);
+        }
+        for (final RepresentationInfo representationInfo : getRepresentations()) {
+            representationInfo.updateNamespaces(namespaces);
+        }
+
     }
 
     /**

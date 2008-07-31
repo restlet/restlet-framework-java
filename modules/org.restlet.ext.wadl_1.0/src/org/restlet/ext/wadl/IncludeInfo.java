@@ -21,6 +21,7 @@ package org.restlet.ext.wadl;
 import static org.restlet.ext.wadl.WadlRepresentation.APP_NAMESPACE;
 
 import java.util.List;
+import java.util.Map;
 
 import org.restlet.data.Reference;
 import org.restlet.util.XmlWriter;
@@ -37,18 +38,39 @@ public class IncludeInfo extends DocumentedInfo {
     /** URI for the referenced definitions. */
     private Reference targetRef;
 
+    /**
+     * Constructor.
+     */
     public IncludeInfo() {
         super();
     }
 
+    /**
+     * Constructor with a single documentation element.
+     * 
+     * @param documentation
+     *            A single documentation element.
+     */
     public IncludeInfo(DocumentationInfo documentation) {
         super(documentation);
     }
 
+    /**
+     * Constructor with a list of documentation elements.
+     * 
+     * @param documentations
+     *            The list of documentation elements.
+     */
     public IncludeInfo(List<DocumentationInfo> documentations) {
         super(documentations);
     }
 
+    /**
+     * Constructor with a single documentation element.
+     * 
+     * @param documentation
+     *            A single documentation element.
+     */
     public IncludeInfo(String documentation) {
         super(documentation);
     }
@@ -70,6 +92,11 @@ public class IncludeInfo extends DocumentedInfo {
      */
     public void setTargetRef(Reference href) {
         this.targetRef = href;
+    }
+
+    @Override
+    public void updateNamespaces(Map<String, String> namespaces) {
+        namespaces.putAll(resolveNamespaces());
     }
 
     /**
