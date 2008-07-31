@@ -52,6 +52,7 @@ import org.restlet.data.Response;
  * 
  * @author Jerome Louvel
  * @author Doug Lea (docs of ExecutorService in public domain)
+ * @author Tim Peierls
  */
 public class TaskService extends Service implements ExecutorService {
 
@@ -59,7 +60,7 @@ public class TaskService extends Service implements ExecutorService {
      * The default thread factory
      * 
      * @author Jerome Louvel
-     * @author Doug Lea (initial code in public domain)
+     * @author Tim Peierls
      */
     private static class RestletThreadFactory implements ThreadFactory {
         final ThreadFactory factory = Executors.defaultThreadFactory();
