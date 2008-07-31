@@ -46,9 +46,9 @@ public class ComponentStatusFilter extends StatusFilter {
      *            The component.
      */
     public ComponentStatusFilter(Component component) {
-        super(component.getContext(), component.getStatusService()
-                .isOverwrite(), component.getStatusService().getContactEmail(),
-                "/");
+        super(component.getContext().createChildContext(), component
+                .getStatusService().isOverwrite(), component.getStatusService()
+                .getContactEmail(), "/");
         this.component = component;
     }
 

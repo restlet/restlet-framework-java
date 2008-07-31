@@ -165,8 +165,10 @@ public class Component extends Restlet {
             this.helper = Engine.getInstance().createHelper(this);
 
             if (this.helper != null) {
-                this.defaultHost = new VirtualHost(getContext());
-                this.internalRouter = new Router(getContext()) {
+                this.defaultHost = new VirtualHost(getContext()
+                        .createChildContext());
+                this.internalRouter = new Router(getContext()
+                        .createChildContext()) {
 
                     @Override
                     public Route attach(Restlet target) {

@@ -196,8 +196,8 @@ public class ComponentHelper extends ChainHelper<Component> {
         } else {
             // Logging of calls
             if (getHelped().getLogService().isEnabled()) {
-                addFilter(createLogFilter(getHelped().getContext(), getHelped()
-                        .getLogService()));
+                addFilter(createLogFilter(getHelped().getContext()
+                        .createChildContext(), getHelped().getLogService()));
             }
 
             // Addition of status pages
