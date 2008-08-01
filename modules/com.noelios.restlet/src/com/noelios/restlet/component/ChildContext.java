@@ -105,6 +105,11 @@ public class ChildContext extends Context {
                 : null;
     }
 
+    @Override
+    public Context createChildContext() {
+        return new ChildContext(null, this);
+    }
+
     /**
      * Returns the child.
      * 
