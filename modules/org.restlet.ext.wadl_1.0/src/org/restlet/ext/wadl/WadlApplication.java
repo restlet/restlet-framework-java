@@ -651,12 +651,12 @@ public class WadlApplication extends Application {
 
         // Handle OPTIONS requests.
         Reference rr = request.getResourceRef();
-        String rp = rr.getRemainingPart();
+        String rp = rr.getRemainingPart(false, false);
         if (isAutoDescribed()
                 && Method.OPTIONS.equals(request.getMethod())
                 && (Status.CLIENT_ERROR_NOT_FOUND.equals(response.getStatus()) || !response
                         .isEntityAvailable())
-                && (rp.equals("/*") || rp.equals("*"))) {
+                && ("/".equals(rp) || "".equals(rp))) {
             // Make sure that the base of the "resources" element ends with a
             // "/".
             if (!rr.getBaseRef().getIdentifier().endsWith("/")) {
