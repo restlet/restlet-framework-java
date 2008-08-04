@@ -1,11 +1,11 @@
-/*
+/**
  * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the following
- * open source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). 
- * You can select the license that you prefer but you may not use this file 
- * except in compliance with one of these Licenses.
- *
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
+ * 
  * You can obtain a copy of the LGPL 3.0 license at
  * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
@@ -15,13 +15,13 @@
  * You can obtain a copy of the CDDL 1.0 license at
  * http://www.sun.com/cddl/cddl.html
  * 
- * See the Licenses for the specific language governing permissions and 
- * limitations under the Licenses. 
- *
- * Alternatively, you can obtain a royaltee free commercial license with 
- * less limitations, transferable or non-transferable, directly at
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
  * http://www.noelios.com/products/restlet-engine/.
- *
+ * 
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
@@ -33,7 +33,9 @@ import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Context;
 import org.restlet.Server;
+import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
+import org.restlet.util.Series;
 
 import com.noelios.restlet.ClientHelper;
 import com.noelios.restlet.Engine;
@@ -62,9 +64,16 @@ public abstract class SslBaseConnectorsTestCase extends TestCase {
 
     protected abstract void call(String uri) throws Exception;
 
-    protected abstract void configureSslParameters(Context context);
-
     protected abstract Application createApplication(Component component);
+
+    protected void configureSslParameters(Context context) {
+        Series<Parameter> parameters = context.getParameters();
+        parameters.add("sslContextFactory",
+                "com.noelios.restlet.util.DefaultSslContextFactory");
+        parameters.add("keystorePath", "dummy.jks");
+        parameters.add("keystorePassword", "testtest");
+        parameters.add("keyPassword", "testtest");
+    }
 
     // Helper methods
     private void runTest(ServerHelper server, ClientHelper client)
@@ -87,20 +96,14 @@ public abstract class SslBaseConnectorsTestCase extends TestCase {
     }
 
     private String start() throws Exception {
-        System.setProperty("javax.net.ssl.keyStorePassword", System
-                .getProperty("javax.net.ssl.keyStorePassword", "testtest"));
-        System.setProperty("javax.net.ssl.trustStorePassword", System
-                .getProperty("javax.net.ssl.trustStorePassword", "testtest"));
-        System.setProperty("javax.net.ssl.keyStore", System.getProperty(
-                "javax.net.ssl.keyStore", "dummy.jks"));
-        System.setProperty("javax.net.ssl.trustStore", System.getProperty(
-                "javax.net.ssl.trustStore", "dummy.jks"));
+        System.setProperty("javax.net.ssl.trustStore", "dummy.jks");
+        System.setProperty("javax.net.ssl.trustStorePassword", "testtest");
 
         this.component = new Component();
-        configureSslParameters(this.component.getContext());
 
         final Server server = this.component.getServers()
                 .add(Protocol.HTTPS, 0);
+        configureSslParameters(server.getContext());
         final Application application = createApplication(this.component);
 
         this.component.getDefaultHost().attach(application);
