@@ -47,7 +47,7 @@ import org.restlet.resource.Variant;
 /**
  * Resource that is able to automatically describe itself with WADL. This
  * description can be customized by overriding the {@link #describe()} and
- * {@link #describeMethod(Method)} methods.
+ * {@link #describeMethod(Method, MethodInfo)} methods.
  * 
  * When used to describe a class of resources in the context of a parent
  * application, a special instance will be created using the default constructor
@@ -411,7 +411,7 @@ public class WadlResource extends Resource {
     /**
      * Indicates if the given method exposes its WADL description. By default,
      * HEAD and OPTIONS are not exposed. This method is called by
-     * {@link #describeMethod(Method)}.
+     * {@link #describe(String, ResourceInfo)}.
      * 
      * @param method
      *            The method

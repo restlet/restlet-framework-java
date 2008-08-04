@@ -644,7 +644,7 @@ public class WadlApplication extends Application {
      * special case of the OPTIONS methods with "*" as the target resource
      * reference value. In this case, the application is automatically
      * introspected and described as a WADL representation based on the result
-     * of the {@link #getApplicationInfo()} method.<br>
+     * of the {@link #getApplicationInfo(Request, Response)} method.<br>
      * The automatic introspection happens only if the request hasn't already
      * been successfully handled. That is to say, it lets users to provide their
      * own handling of OPTIONS requests.
