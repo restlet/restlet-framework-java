@@ -76,6 +76,7 @@ public class ContentType {
             final String charSet = this.mediaType.getParameters()
                     .getFirstValue("charset");
             if (charSet != null) {
+                this.mediaType.getParameters().removeAll("charset");
                 this.characterSet = new CharacterSet(charSet);
             }
         } catch (final IOException ioe) {

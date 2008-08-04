@@ -38,7 +38,6 @@ import java.nio.channels.WritableByteChannel;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.restlet.data.CharacterSet;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
 import org.restlet.data.Method;
@@ -89,10 +88,12 @@ public abstract class HttpClientCall extends HttpCall {
                 final ContentType contentType = new ContentType(header
                         .getValue());
                 result.setMediaType(contentType.getMediaType());
-                final CharacterSet characterSet = contentType.getCharacterSet();
-                if (characterSet != null) {
-                    result.setCharacterSet(characterSet);
+
+                if ((result.getCharacterSet() == null)
+                        || (contentType.getCharacterSet() != null)) {
+                    result.setCharacterSet(contentType.getCharacterSet());
                 }
+
                 entityHeaderFound = true;
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_CONTENT_LENGTH)) {
@@ -142,7 +143,7 @@ public abstract class HttpClientCall extends HttpCall {
             }
         }
 
-        // If no representation was initially expected and no entity header 
+        // If no representation was initially expected and no entity header
         // is found, then do not return any representation
         if ((representation == null) && !entityHeaderFound) {
             result = null;

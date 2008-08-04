@@ -36,6 +36,7 @@ Changes log
         - Each connector now has its own instance of Context to allow
           setting of different parameter values on different 
           connectors.
+        - 
     - API Enhancements
         - Added a "Request.originalRef" property containing the URI 
           reference originally requested by the client. Clarified the

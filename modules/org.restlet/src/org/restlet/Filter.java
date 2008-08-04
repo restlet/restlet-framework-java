@@ -237,15 +237,14 @@ public abstract class Filter extends Restlet {
      * Sets the next Restlet.
      * 
      * In addition, this method will set the context of the next Restlet if it
-     * is empty by creating a protected context via the
-     * {@link Context#createChildContext()} method.
+     * is null by passing a reference to its own context.
      * 
      * @param next
      *            The next Restlet.
      */
     public void setNext(Restlet next) {
-        if ((next.getContext() == null) && (getContext() != null)) {
-            next.setContext(getContext().createChildContext());
+        if ((next != null) && (next.getContext() == null)) {
+            next.setContext(getContext());
         }
 
         this.next = next;
