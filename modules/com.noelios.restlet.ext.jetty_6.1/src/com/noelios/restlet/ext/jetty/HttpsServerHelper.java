@@ -89,10 +89,16 @@ import com.noelios.restlet.util.SslContextFactory;
  * <td>SSL certificate algorithm.</td>
  * </tr>
  * <tr>
- * <td>sslProtocol</td>
+ * <td>disabledCipherSuites</td>
  * <td>String</td>
- * <td>TLS</td>
- * <td>SSL protocol.</td>
+ * <td>null</td>
+ * <td>Whitespace-separated list of disabled cipher suites and/or can be specified multiple times.</td>
+ * </tr>
+ * <tr>
+ * <td>needClientAuthentication</td>
+ * <td>boolean</td>
+ * <td>false</td>
+ * <td>Indicates if we require client certificate authentication.</td>
  * </tr>
  * <tr>
  * <td>secureRandomAlgorithm</td>
@@ -107,17 +113,10 @@ import com.noelios.restlet.util.SslContextFactory;
  * <td>Java security provider name (see java.security.Provider class).</td>
  * </tr>
  * <tr>
- * <td>needClientAuthentication</td>
- * <td>boolean</td>
- * <td>false</td>
- * <td>Indicates if we require client certificate authentication.</td>
- * </tr>
- * <tr>
- * <td>wantClientAuthentication</td>
- * <td>boolean</td>
- * <td>false</td>
- * <td>Indicates if we would like client certificate authentication (only for
- * the BIO connector type).</td>
+ * <td>sslProtocol</td>
+ * <td>String</td>
+ * <td>TLS</td>
+ * <td>SSL protocol.</td>
  * </tr>
  * <tr>
  * <td>type</td>
@@ -126,6 +125,13 @@ import com.noelios.restlet.util.SslContextFactory;
  * <td>The type of Jetty connector to use.<br>
  * 1 : Selecting NIO connector (Jetty's SslSelectChannelConnector class).<br>
  * 2 : Blocking BIO connector (Jetty's SslSocketConnector class).</td>
+ * </tr>
+ * <tr>
+ * <td>wantClientAuthentication</td>
+ * <td>boolean</td>
+ * <td>false</td>
+ * <td>Indicates if we would like client certificate authentication (only for
+ * the BIO connector type).</td>
  * </tr>
  * </table>
  * 
@@ -158,7 +164,7 @@ public class HttpsServerHelper extends JettyServerHelper {
                 .getSslContextFactory(this);
 
         final String[] excludedCipherSuites = HttpsUtils
-                .getExcludedCipherSuites(this);
+                .getDisabledCipherSuites(this);
 
         // Create and configure the Jetty HTTP connector
         switch (getType()) {

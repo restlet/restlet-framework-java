@@ -1,11 +1,11 @@
 /*
  * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the following
- * open source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). 
- * You can select the license that you prefer but you may not use this file 
- * except in compliance with one of these Licenses.
- *
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
+ * 
  * You can obtain a copy of the LGPL 3.0 license at
  * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
@@ -15,13 +15,13 @@
  * You can obtain a copy of the CDDL 1.0 license at
  * http://www.sun.com/cddl/cddl.html
  * 
- * See the Licenses for the specific language governing permissions and 
- * limitations under the Licenses. 
- *
- * Alternatively, you can obtain a royaltee free commercial license with 
- * less limitations, transferable or non-transferable, directly at
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
  * http://www.noelios.com/products/restlet-engine/.
- *
+ * 
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
@@ -52,7 +52,7 @@ public class HttpsUtils extends HttpUtils {
      * Extract the SSL key size of a given cipher suite.
      * 
      * @param sslCipherSuite
-     *                The SSL cipher suite.
+     *            The SSL cipher suite.
      * @return The SSL key size.
      */
     public static Integer extractKeySize(String sslCipherSuite) {
@@ -117,12 +117,54 @@ public class HttpsUtils extends HttpUtils {
     }
 
     /**
+     * Returns the list of disabled cipher suites.
+     * 
+     * @param helper
+     *            The helper to use.
+     * @return The list of disabled cipher suites.
+     */
+    public static String[] getDisabledCipherSuites(Helper<?> helper) {
+        List<String> disabledCipherSuites = new ArrayList<String>();
+        String[] disabledCipherSuitesParams = helper.getHelpedParameters()
+                .getValuesArray("disabledCipherSuites");
+        for (String disabledCipherSuitesParam : disabledCipherSuitesParams) {
+            StringTokenizer st = new StringTokenizer(disabledCipherSuitesParam);
+            while (st.hasMoreElements()) {
+                disabledCipherSuites.add(st.nextToken());
+            }
+        }
+        return disabledCipherSuites.size() > 0 ? disabledCipherSuites
+                .toArray(new String[0]) : null;
+    }
+
+    /**
+     * Returns the list of enabled cipher suites.
+     * 
+     * @param helper
+     *            The helper to use.
+     * @return The list of enabled cipher suites.
+     */
+    public static String[] getEnabledCipherSuites(Helper<?> helper) {
+        List<String> enabledCipherSuites = new ArrayList<String>();
+        String[] enabledCipherSuitesParams = helper.getHelpedParameters()
+                .getValuesArray("enabledCipherSuites");
+        for (String enabledCipherSuitesParam : enabledCipherSuitesParams) {
+            StringTokenizer st = new StringTokenizer(enabledCipherSuitesParam);
+            while (st.hasMoreElements()) {
+                enabledCipherSuites.add(st.nextToken());
+            }
+        }
+        return enabledCipherSuites.size() > 0 ? enabledCipherSuites
+                .toArray(new String[0]) : null;
+    }
+
+    /**
      * Returns the SSL context factory. It first look for a "sslContextFactory"
      * attribute (instance), then for a "sslContextFactory" parameter (class
      * name to instantiate).
      * 
      * @param helper
-     *                The helper to use.
+     *            The helper to use.
      * 
      * @return The SSL context factory.
      */
@@ -172,47 +214,5 @@ public class HttpsUtils extends HttpUtils {
         }
 
         return result;
-    }
-
-    /**
-     * Returns the list of enabled cipher suites.
-     * 
-     * @param helper
-     *                The helper to use.
-     * @return the list of enabled cipher suites.
-     */
-    public static String[] getEnabledCipherSuites(Helper<?> helper) {
-        List<String> enabledCipherSuites = new ArrayList<String>();
-        String[] enabledCipherSuitesParams = helper.getHelpedParameters()
-                .getValuesArray("enabledCipherSuites");
-        for (String enabledCipherSuitesParam : enabledCipherSuitesParams) {
-            StringTokenizer st = new StringTokenizer(enabledCipherSuitesParam);
-            while (st.hasMoreElements()) {
-                enabledCipherSuites.add(st.nextToken());
-            }
-        }
-        return enabledCipherSuites.size() > 0 ? enabledCipherSuites
-                .toArray(new String[0]) : null;
-    }
-
-    /**
-     * Returns the list of excluded cipher suites.
-     * 
-     * @param helper
-     *                The helper to use.
-     * @return the list of excluded cipher suites.
-     */
-    public static String[] getExcludedCipherSuites(Helper<?> helper) {
-        List<String> enabledCipherSuites = new ArrayList<String>();
-        String[] enabledCipherSuitesParams = helper.getHelpedParameters()
-                .getValuesArray("excludedCipherSuites");
-        for (String enabledCipherSuitesParam : enabledCipherSuitesParams) {
-            StringTokenizer st = new StringTokenizer(enabledCipherSuitesParam);
-            while (st.hasMoreElements()) {
-                enabledCipherSuites.add(st.nextToken());
-            }
-        }
-        return enabledCipherSuites.size() > 0 ? enabledCipherSuites
-                .toArray(new String[0]) : null;
     }
 }

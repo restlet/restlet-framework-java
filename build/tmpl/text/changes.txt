@@ -81,6 +81,9 @@ Changes log
        	  their parent application or component.
        	- Added an org.restlet.data.Range class to represent content
        	  ranges.
+       	- Added "enabledCipherSuites" and "disabledCipherSuites" 
+       	  parameters to HTTPS connectors supporting those settings.
+       	  Contributed by Bruno Harbulot.
     - NRE and Extension Enhancements
         - Added a static HttpServletRequest getRequest(Request) method
           to the Servlet extension.

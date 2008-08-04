@@ -106,16 +106,29 @@ import com.noelios.restlet.util.SslContextFactory;
  * <td>SSL certificate algorithm.</td>
  * </tr>
  * <tr>
- * <td>sslProtocol</td>
+ * <td>enabledCipherSuites</td>
  * <td>String</td>
- * <td>TLS</td>
- * <td>SSL protocol.</td>
+ * <td>null</td>
+ * <td>Whitespace-separated list of enabled cipher suites and/or can be specified multiple times.</td>
+ * </tr>
+ * <tr>
+ * <td>disabledCipherSuites</td>
+ * <td>String</td>
+ * <td>null</td>
+ * <td>Whitespace-separated list of disabled cipher suites and/or can be specified multiple times.
+ * It affects the cipher suites manually enabled or the default ones.</td>
  * </tr>
  * <tr>
  * <td>needClientAuthentication</td>
  * <td>boolean</td>
  * <td>false</td>
  * <td>Indicates if we require client certificate authentication.</td>
+ * </tr>
+ * <tr>
+ * <td>sslProtocol</td>
+ * <td>String</td>
+ * <td>TLS</td>
+ * <td>SSL protocol.</td>
  * </tr>
  * <tr>
  * <td>wantClientAuthentication</td>
@@ -286,7 +299,7 @@ public class HttpsServerHelper extends SimpleServerHelper {
          */
         String[] enabledCipherSuites = HttpsUtils.getEnabledCipherSuites(this);
         String[] excludedCipherSuites = HttpsUtils
-                .getExcludedCipherSuites(this);
+                .getDisabledCipherSuites(this);
         if (excludedCipherSuites != null) {
             if (enabledCipherSuites == null) {
                 enabledCipherSuites = serverSocket.getEnabledCipherSuites();

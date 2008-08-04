@@ -95,16 +95,22 @@ import com.sun.grizzly.filter.SSLReadFilter;
  * <td>SSL certificate algorithm.</td>
  * </tr>
  * <tr>
- * <td>sslProtocol</td>
+ * <td>enabledCipherSuites</td>
  * <td>String</td>
- * <td>TLS</td>
- * <td>SSL protocol.</td>
+ * <td>null</td>
+ * <td>Whitespace-separated list of enabled cipher suites and/or can be specified multiple times.</td>
  * </tr>
  * <tr>
  * <td>needClientAuthentication</td>
  * <td>boolean</td>
  * <td>false</td>
  * <td>Indicates if we require client certificate authentication.</td>
+ * </tr>
+ * <tr>
+ * <td>sslProtocol</td>
+ * <td>String</td>
+ * <td>TLS</td>
+ * <td>SSL protocol.</td>
  * </tr>
  * <tr>
  * <td>wantClientAuthentication</td>
