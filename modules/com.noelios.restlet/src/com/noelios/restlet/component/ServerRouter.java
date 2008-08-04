@@ -88,7 +88,8 @@ public class ServerRouter extends Router {
         }
 
         // If no host matches, display and error page with a precise message
-        final Restlet noHostMatched = new Restlet(getComponent().getContext()) {
+        final Restlet noHostMatched = new Restlet(getComponent().getContext()
+                .createChildContext()) {
             @Override
             public void handle(Request request, Response response) {
                 response.setStatus(Status.CLIENT_ERROR_NOT_FOUND,

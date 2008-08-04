@@ -68,8 +68,6 @@ public class ComponentContext extends Context {
      * 
      * @param componentHelper
      *            The component helper.
-     * @param logger
-     *            The logger instance of use.
      */
     public ComponentContext(ComponentHelper componentHelper) {
         super(getLoggerName(componentHelper.getHelped()));

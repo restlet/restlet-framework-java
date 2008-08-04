@@ -560,7 +560,7 @@ public class Engine extends org.restlet.util.Engine {
                 context
                         .getLogger()
                         .severe(
-                                "For security reasons, don't pass the component context to child Restlets anymore. Use the Context#createChildContext() method instead.");
+                                "For security reasons, don't pass the component context to child Restlets anymore. Use the Context#createChildContext() method instead." + restlet.getClass());
             }
         }
     }
