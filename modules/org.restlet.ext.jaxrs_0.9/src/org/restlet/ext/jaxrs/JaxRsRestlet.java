@@ -177,14 +177,14 @@ public class JaxRsRestlet extends Restlet {
      * has a role, the request is returned with HTTP status 500 (Internal Server
      * Error), see {@link SecurityContext#isUserInRole(String)}. You may set a
      * {@link RoleChecker} by using the constructor
-     * {@link JaxRsRestlet#JaxRsRouter(Context, RoleChecker, MetadataService)}
-     * or method {@link #setRoleChecker(RoleChecker)}.
+     * {@link #JaxRsRestlet(Context, RoleChecker, MetadataService)} or method
+     * {@link #setRoleChecker(RoleChecker)}.
      * 
      * @param context
-     *                the context from the parent, see
-     *                {@link Restlet#Restlet(Context)}.
+     *            the context from the parent, see
+     *            {@link Restlet#Restlet(Context)}.
      * @param metadataService
-     *                the metadata service of the {@link JaxRsApplication}.
+     *            the metadata service of the {@link JaxRsApplication}.
      * @see #JaxRsRestlet(Context, RoleChecker, MetadataService)
      */
     public JaxRsRestlet(Context context, MetadataService metadataService) {
@@ -196,15 +196,15 @@ public class JaxRsRestlet extends Restlet {
      * providers are loaded.
      * 
      * @param context
-     *                the context from the parent, see
-     *                {@link Restlet#Restlet(Context)}.
+     *            the context from the parent, see
+     *            {@link Restlet#Restlet(Context)}.
      * @param roleChecker
-     *                The RoleChecker to use. If you don't need the access
-     *                control, you can use the {@link RoleChecker#FORBID_ALL},
-     *                the {@link RoleChecker#ALLOW_ALL} or the
-     *                {@link RoleChecker#REJECT_WITH_ERROR}.
+     *            The RoleChecker to use. If you don't need the access control,
+     *            you can use the {@link RoleChecker#FORBID_ALL}, the
+     *            {@link RoleChecker#ALLOW_ALL} or the
+     *            {@link RoleChecker#REJECT_WITH_ERROR}.
      * @param metadataService
-     *                the metadata service of the {@link JaxRsApplication}.
+     *            the metadata service of the {@link JaxRsApplication}.
      * @see #JaxRsRestlet(Context, MetadataService)
      */
     public JaxRsRestlet(Context context, RoleChecker roleChecker,
@@ -249,14 +249,14 @@ public class JaxRsRestlet extends Restlet {
      * logged and false is returned.
      * 
      * @param rootResourceClass
-     *                the JAX-RS root resource class to add. If the root
-     *                resource class is already available in this JaxRsRestlet,
-     *                it is ignored for later calls of this method.
+     *            the JAX-RS root resource class to add. If the root resource
+     *            class is already available in this JaxRsRestlet, it is ignored
+     *            for later calls of this method.
      * @return true if the class is added or was already included, or false if
      *         the given class is not a valid root resource class (a warning was
      *         logged).
      * @throws IllegalArgumentException
-     *                 if the root resource class is null.
+     *             if the root resource class is null.
      */
     public boolean addRootResourceClass(Class<?> rootResourceClass)
             throws IllegalArgumentException {
@@ -336,10 +336,10 @@ public class JaxRsRestlet extends Restlet {
      * Adds the provider object to this JaxRsRestlet.
      * 
      * @param jaxRsProviderClass
-     *                the JAX-RS provider class.
+     *            the JAX-RS provider class.
      * @return true, if the provider is ok and added, otherwise false.
      * @throws IllegalArgumentException
-     *                 if null was given
+     *             if null was given
      * @see javax.ws.rs.ext.Provider
      */
     public boolean addProvider(Class<?> jaxRsProviderClass)
@@ -351,10 +351,10 @@ public class JaxRsRestlet extends Restlet {
      * Adds the provider object to this JaxRsRestlet.
      * 
      * @param jaxRsProviderClass
-     *                the JAX-RS provider class.
+     *            the JAX-RS provider class.
      * @return true, if the provider is ok and added, otherwise false.
      * @throws IllegalArgumentException
-     *                 if null was given
+     *             if null was given
      * @see {@link javax.ws.rs.ext.Provider}
      */
     private boolean addProvider(Class<?> jaxRsProviderClass,
@@ -431,9 +431,9 @@ public class JaxRsRestlet extends Restlet {
      * return the result.
      * 
      * @param request
-     *                The {@link Request} to handle.
+     *            The {@link Request} to handle.
      * @param response
-     *                The {@link Response} to update.
+     *            The {@link Response} to update.
      */
     @Override
     public void handle(Request request, Response response) {
@@ -500,7 +500,7 @@ public class JaxRsRestlet extends Restlet {
      * 3.7.2 "Request Matching", Part 1: "Identify the root resource class"
      * 
      * @param u
-     *                the remaining path after the base ref
+     *            the remaining path after the base ref
      * @return The identified root resource object, the remaining path after
      *         identifying and the matched template parameters; see
      *         {@link RroRemPathAndMatchedPath}.
@@ -619,8 +619,8 @@ public class JaxRsRestlet extends Restlet {
      * 
      * @return Resource Object and Method, that handle the request.
      * @throws RequestHandledException
-     *                 for example if the method was OPTIONS, but no special
-     *                 Resource Method for OPTIONS is available.
+     *             for example if the method was OPTIONS, but no special
+     *             Resource Method for OPTIONS is available.
      * @throws ResourceMethodNotFoundException
      */
     private ResObjAndMeth identifyMethod(ResObjAndRemPath resObjAndRemPath,
@@ -691,14 +691,14 @@ public class JaxRsRestlet extends Restlet {
      * exceptions.
      * 
      * @param resourceMethod
-     *                the (sub) resource method to invoke
+     *            the (sub) resource method to invoke
      * @param resourceObject
-     *                the resource object to invoke the method on.
+     *            the resource object to invoke the method on.
      * @return the object returned by the (sub) resource method.
      * @throws RequestHandledException
-     *                 if the request is already handled
+     *             if the request is already handled
      * @throws WebApplicationException
-     *                 if a JAX-RS class throws an WebApplicationException
+     *             if a JAX-RS class throws an WebApplicationException
      */
     private Object invokeMethod(ResourceMethod resourceMethod,
             ResourceObject resourceObject) throws WebApplicationException,
@@ -727,11 +727,11 @@ public class JaxRsRestlet extends Restlet {
      * necessary converting.
      * 
      * @param result
-     *                the object returned by the resource method
+     *            the object returned by the resource method
      * @param resourceMethod
-     *                the resource method; it is needed for the conversion.
-     *                Could be null, if an exception is handled, e.g. a
-     *                {@link WebApplicationException}.
+     *            the resource method; it is needed for the conversion. Could be
+     *            null, if an exception is handled, e.g. a
+     *            {@link WebApplicationException}.
      */
     private void handleResult(Object result, ResourceMethod resourceMethod) {
         Response restletResponse = tlContext.get().getResponse();
@@ -762,12 +762,12 @@ public class JaxRsRestlet extends Restlet {
      * {@link Response}.
      * 
      * @param jaxRsResponse
-     *                The response returned by the resource method, perhaps as
-     *                attribute of a {@link WebApplicationException}.
+     *            The response returned by the resource method, perhaps as
+     *            attribute of a {@link WebApplicationException}.
      * @param resourceMethod
-     *                The resource method creating the response. Could be null,
-     *                if an exception is handled, e.g. a
-     *                {@link WebApplicationException}.
+     *            The resource method creating the response. Could be null, if
+     *            an exception is handled, e.g. a
+     *            {@link WebApplicationException}.
      */
     private void jaxRsRespToRestletResp(
             javax.ws.rs.core.Response jaxRsResponse,
@@ -793,21 +793,19 @@ public class JaxRsRestlet extends Restlet {
      * Restlet {@link Representation}.
      * 
      * @param entity
-     *                the entity to convert.
+     *            the entity to convert.
      * @param resourceMethod
-     *                The resource method created the entity. Could be null, if
-     *                an exception is handled, e.g. a
-     *                {@link WebApplicationException}.
+     *            The resource method created the entity. Could be null, if an
+     *            exception is handled, e.g. a {@link WebApplicationException}.
      * @param jaxRsResponseMediaType
-     *                The MediaType of the JAX-RS
-     *                {@link javax.ws.rs.core.Response}. May be null.
+     *            The MediaType of the JAX-RS {@link javax.ws.rs.core.Response}.
+     *            May be null.
      * @param jaxRsRespHeaders
-     *                The headers added to the {@link javax.ws.rs.core.Response}
-     *                by the {@link ResponseBuilder}.
+     *            The headers added to the {@link javax.ws.rs.core.Response} by
+     *            the {@link ResponseBuilder}.
      * @param accMediaTypes
-     *                the accepted media type from the current call context, or
-     *                the returned of the JAX-RS
-     *                {@link javax.ws.rs.core.Response}.
+     *            the accepted media type from the current call context, or the
+     *            returned of the JAX-RS {@link javax.ws.rs.core.Response}.
      * @return the corresponding Restlet Representation. Returns
      *         <code>null</code> only if null was given.
      * @throws WebApplicationException
@@ -897,10 +895,10 @@ public class JaxRsRestlet extends Restlet {
      * section 3.8 "Determining the MediaType of Responses"
      * 
      * @param resourceMethod
-     *                The ResourceMethod that created the entity.
+     *            The ResourceMethod that created the entity.
      * @param mbws
-     *                The {@link MessageBodyWriter}s, that support the class of
-     *                the returned entity object.
+     *            The {@link MessageBodyWriter}s, that support the class of the
+     *            returned entity object.
      * @return the determined {@link MediaType}
      * @throws RequestHandledException
      * @throws WebApplicationException
@@ -953,8 +951,8 @@ public class JaxRsRestlet extends Restlet {
      * @param ite
      * @param methodName
      * @throws RequestHandledException
-     *                 throws this message to exit the method and indicate, that
-     *                 the request was handled.
+     *             throws this message to exit the method and indicate, that the
+     *             request was handled.
      * @throws RequestHandledException
      */
     private RequestHandledException handleInvocationTargetExc(
@@ -976,14 +974,14 @@ public class JaxRsRestlet extends Restlet {
      * Instantiates the root resource class and handles thrown exceptions.
      * 
      * @param rrc
-     *                the root resource class to instantiate
+     *            the root resource class to instantiate
      * @return the instance of the root resource
      * @throws WebApplicationException
-     *                 if a WebApplicationException was thrown while creating
-     *                 the instance.
+     *             if a WebApplicationException was thrown while creating the
+     *             instance.
      * @throws RequestHandledException
-     *                 If an Exception was thrown and the request is already
-     *                 handeled.
+     *             If an Exception was thrown and the request is already
+     *             handeled.
      */
     private ResourceObject instantiateRrc(RootResourceClass rrc)
             throws WebApplicationException, RequestHandledException {
@@ -1112,12 +1110,11 @@ public class JaxRsRestlet extends Restlet {
      * Sets the {@link RoleChecker} to use.
      * 
      * @param roleChecker
-     *                the roleChecker to set. Must not be null. Take a look at
-     *                {@link RoleChecker#ALLOW_ALL},
-     *                {@link RoleChecker#FORBID_ALL} and
-     *                {@link RoleChecker#REJECT_WITH_ERROR}.
+     *            the roleChecker to set. Must not be null. Take a look at
+     *            {@link RoleChecker#ALLOW_ALL}, {@link RoleChecker#FORBID_ALL}
+     *            and {@link RoleChecker#REJECT_WITH_ERROR}.
      * @throws IllegalArgumentException
-     *                 If the given roleChecker is null.
+     *             If the given roleChecker is null.
      * @see RoleChecker
      * @see #getRoleChecker()
      */
@@ -1173,8 +1170,8 @@ public class JaxRsRestlet extends Restlet {
      * instantiation.
      * 
      * @param objectFactory
-     *                the ObjectFactory for root resource class and provider
-     *                instantiation.
+     *            the ObjectFactory for root resource class and provider
+     *            instantiation.
      */
     public void setObjectFactory(ObjectFactory objectFactory) {
         this.objectFactory = objectFactory;
