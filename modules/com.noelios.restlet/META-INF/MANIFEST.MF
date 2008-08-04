@@ -11,3 +11,4 @@ Export-Package: com.noelios.restlet,
  com.noelios.restlet.http,
  com.noelios.restlet.local,
  com.noelios.restlet.util
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

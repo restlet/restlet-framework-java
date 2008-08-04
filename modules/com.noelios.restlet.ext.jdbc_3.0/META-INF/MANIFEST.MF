@@ -7,4 +7,6 @@ Bundle-Vendor: Noelios Technologies
 Export-Package: com.noelios.restlet.ext.jdbc
 Require-Bundle: org.apache.commons.dbcp;visibility:=reexport,
  org.apache.commons.pool;visibility:=reexport,
- com.noelios.restlet;visibility:=reexport
+ com.noelios.restlet;visibility:=reexport,
+ com.sun.rowset;visibility:=reexport
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

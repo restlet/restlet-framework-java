@@ -12,3 +12,4 @@ Require-Bundle: com.noelios.restlet,
  org.junit4,
  org.restlet.ext.freemarker
 Export-Package: com.noelios.restlet.test
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

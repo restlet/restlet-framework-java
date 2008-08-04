@@ -10,3 +10,4 @@ Require-Bundle: com.noelios.restlet,
  org.junit4,
  org.restlet.ext.freemarker,
  org.restlet.ext.velocity
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

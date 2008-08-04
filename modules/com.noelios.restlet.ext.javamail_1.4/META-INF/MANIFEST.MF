@@ -7,3 +7,4 @@ Bundle-Vendor: Noelios Technologies
 Require-Bundle: com.noelios.restlet;visibility:=reexport,
  javax.mail;visibility:=reexport
 Export-Package: com.noelios.restlet.ext.javamail
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

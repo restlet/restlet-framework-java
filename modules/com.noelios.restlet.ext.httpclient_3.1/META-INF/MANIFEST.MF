@@ -7,3 +7,4 @@ Bundle-Vendor: Noelios Technologies
 Require-Bundle: com.noelios.restlet;visibility:=reexport,
  org.apache.commons.httpclient;visibility:=reexport
 Export-Package: com.noelios.restlet.ext.httpclient
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
