@@ -36,7 +36,9 @@ Changes log
         - Each connector now has its own instance of Context to allow
           setting of different parameter values on different 
           connectors.
-        - 
+        - Fixed issue with character sets and proxies where a character
+          set could be written twice in HTTP headers. Reported by Alex
+          Milowski.
     - API Enhancements
         - Added a "Request.originalRef" property containing the URI 
           reference originally requested by the client. Clarified the
