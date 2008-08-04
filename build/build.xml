@@ -18,7 +18,7 @@
 
    <!-- General properties -->
    <property name="author" value="Jerome Louvel" />
-   <property name="vendor" value="Noelios Consulting" />
+   <property name="vendor" value="Noelios Technologies" />
    <property name="excludes" value="**/.emptyDir **/package.html **/overview.html" />
    <property name="restlet-api" value="Restlet API" />
    <property name="restlet-ext" value="Restlet Extensions" />
@@ -843,7 +843,7 @@
          </sourcepath>
 
          <bottom>
-            <![CDATA[<i>Copyright &#169; 2005-2007 <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.</i>]]>
+            <![CDATA[<i>Copyright &#169; 2005-2007 <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
          </bottom>
 
          <group title="${restlet-api}">
@@ -870,7 +870,7 @@
          </sourcepath>
    
          <bottom>
-            <![CDATA[<i>Copyright &#169; 2005-2007 <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.</i>]]>
+            <![CDATA[<i>Copyright &#169; 2005-2007 <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
          </bottom>
    
          <group title="${restlet-nre-impl}">
@@ -914,7 +914,7 @@
          </sourcepath>
 
          <bottom>
-            <![CDATA[<i>Copyright &#169; 2005-2007 <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.</i>]]>
+            <![CDATA[<i>Copyright &#169; 2005-2007 <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
          </bottom>
 
          <group title="${restlet-ext}">

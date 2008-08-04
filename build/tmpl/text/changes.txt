@@ -1582,7 +1582,7 @@ Changes log
  - Improved automatic server-side negotiation when no preferences are provided by the client
  
 0.19 beta (2006-01-10)
- - Added a Samples application page detailling the source code of the Restlet and Noelios Consulting Web sites 
+ - Added a Samples application page detailling the source code of the Restlet and Noelios Technologies Web sites 
    (suggested by Michael Mayer)
  - Added "conditions" property to UniformCall and a Conditions interface to support conditional REST methods. 
    This is currently used by the server-side negotiation logic to prevent sending again an unmodified 

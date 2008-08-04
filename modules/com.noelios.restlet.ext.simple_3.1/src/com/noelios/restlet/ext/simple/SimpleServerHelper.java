@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2007 Noelios Consulting.
+ * Copyright 2005-2007 Noelios Technologies.
  * 
  * The contents of this file are subject to the terms of the Common Development
  * and Distribution License (the "License"). You may not use this file except in
@@ -70,7 +70,7 @@ import com.noelios.restlet.http.HttpServerHelper;
  * @author Lars Heuer (heuer[at]semagia.com) <a
  *         href="http://semagia.com/">Semagia</a>
  * @author Jerome Louvel (contact@noelios.com) <a
- *         href="http://www.noelios.com">Noelios Consulting</a>
+ *         href="http://www.noelios.com">Noelios Technologies</a>
  */
 public abstract class SimpleServerHelper extends HttpServerHelper {
 	/**

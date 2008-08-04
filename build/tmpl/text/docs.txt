@@ -24,7 +24,7 @@ Also, if you need help you can ask questions into our discussion list. See
 subscription details at http://www.restlet.org/discuss. You can also report
 issues (bugs and enhancement requests) using our bugzilla database at 
 http://restlet.tigris.org/servlets/ProjectIssues. Finally, if you need 
-professional and timely assistance, you can contact Noelios Consulting at 
+professional and timely assistance, you can contact Noelios Technologies at 
 http://www.noelios.com/.
 
  

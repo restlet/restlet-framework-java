@@ -20,7 +20,7 @@ Features
     * Deployment as native services using Java Service Wrapper
     * Supports blocking and non-blocking NIO modes
     * Clean Restlet API as a full alternative to the Servlet API
-    * Noelios Restlet Engine (NRE) is the Reference Implementation (provided by Noelios Consulting)
+    * Noelios Restlet Engine (NRE) is the Reference Implementation (provided by Noelios Technologies)
 
 Dependencies
     * For all applications: Java SE 5.0 or above. JDK 1.4 support is also available via Retroweaver.
@@ -35,4 +35,4 @@ Licensing
     * Commercial licenses can be discussed for trademark usage and alternative usage models.
 
 
-Copyright © 2005-2007 Jérôme Louvel. Restlet is a registered trademark of Noelios Consulting.
+Copyright © 2005-2007 Jérôme Louvel. Restlet is a registered trademark of Noelios Technologies.

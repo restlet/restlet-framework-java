@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2007 Noelios Consulting.
+ * Copyright 2005-2007 Noelios Technologies.
  *
  * The contents of this file are subject to the terms
  * of the Common Development and Distribution License

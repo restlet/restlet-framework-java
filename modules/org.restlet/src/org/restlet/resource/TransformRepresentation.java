@@ -30,7 +30,7 @@ import org.restlet.data.Response;
  * case, you should instead use the {@link org.restlet.Transformer} filter.
  * 
  * @author Jerome Louvel (contact@noelios.com) <a
- *         href="http://www.noelios.com/">Noelios Consulting</a>
+ *         href="http://www.noelios.com/">Noelios Technologies</a>
  */
 public class TransformRepresentation extends OutputRepresentation {
     /** The source representation to transform. */
