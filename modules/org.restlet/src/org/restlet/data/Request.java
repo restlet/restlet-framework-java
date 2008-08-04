@@ -149,7 +149,6 @@ public class Request extends Message {
     /**
      * Sets the ranges to return from the target resource's representation.
      * 
-     * @return The ranges to return.
      */
     public void setRanges(List<Range> range) {
         this.ranges = range;

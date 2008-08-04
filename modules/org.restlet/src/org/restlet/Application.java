@@ -72,8 +72,7 @@ public class Application extends Restlet {
      * 
      * Warning: this method should only be used under duress. You should by
      * default prefer obtaining the current application using methods such as
-     * {@link org.restlet.resource.Resource#getApplication()} or
-     * {@link Context#getApplication()}.
+     * {@link org.restlet.resource.Resource#getApplication()}
      * 
      * @return The current context.
      */

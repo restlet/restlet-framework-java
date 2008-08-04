@@ -145,16 +145,17 @@ public class Range {
     }
 
     /**
-     * Indicates if the
+     * Indicates if the given index is included in the range.
      * 
      * @param index
      *            The index to test.
+     * @param totalLength
      * 
-     * @return
+     * @return True if the given index is included in the range, false
+     *         otherwise.
      */
     public boolean isIncluded(long index, long totalLength) {
 
-        
         return false;
     }
 }

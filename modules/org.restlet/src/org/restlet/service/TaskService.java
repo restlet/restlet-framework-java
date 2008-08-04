@@ -186,8 +186,9 @@ public class TaskService extends Service implements ExecutorService {
 
     /**
      * Creates a new JDK executor service that will be wrapped. By default it
-     * calls {@link Executors#newCachedThreadPool(ThreadFactory))}, passing the
+     * calls {@link Executors#newCachedThreadPool(ThreadFactory)}, passing the
      * result of {@link #createThreadFactory()} as a parameter.
+     * 
      * 
      * @return A new JDK executor service.
      */
