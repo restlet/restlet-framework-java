@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2008 Noelios Consulting.
+ * Copyright 2005-2008 Noelios Technologies.
  * 
  * The contents of this file are subject to the terms of the Common Development
  * and Distribution License (the "License"). You may not use this file except in
@@ -18,6 +18,8 @@
 
 package com.noelios.restlet.http;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -41,7 +43,7 @@ public class HttpsUtils extends HttpUtils {
      * Extract the SSL key size of a given cipher suite.
      * 
      * @param sslCipherSuite
-     *            The SSL cipher suite.
+     *                The SSL cipher suite.
      * @return The SSL key size.
      */
     public static Integer extractKeySize(String sslCipherSuite) {
@@ -111,7 +113,7 @@ public class HttpsUtils extends HttpUtils {
      * name to instantiate).
      * 
      * @param helper
-     *            The helper to use.
+     *                The helper to use.
      * 
      * @return The SSL context factory.
      */
@@ -161,5 +163,47 @@ public class HttpsUtils extends HttpUtils {
         }
 
         return result;
+    }
+
+    /**
+     * Returns the list of enabled cipher suites.
+     * 
+     * @param helper
+     *                The helper to use.
+     * @return the list of enabled cipher suites.
+     */
+    public static String[] getEnabledCipherSuites(Helper<?> helper) {
+        List<String> enabledCipherSuites = new ArrayList<String>();
+        String[] enabledCipherSuitesParams = helper.getHelpedParameters()
+                .getValuesArray("enabledCipherSuites");
+        for (String enabledCipherSuitesParam : enabledCipherSuitesParams) {
+            StringTokenizer st = new StringTokenizer(enabledCipherSuitesParam);
+            while (st.hasMoreElements()) {
+                enabledCipherSuites.add(st.nextToken());
+            }
+        }
+        return enabledCipherSuites.size() > 0 ? enabledCipherSuites
+                .toArray(new String[0]) : null;
+    }
+
+    /**
+     * Returns the list of excluded cipher suites.
+     * 
+     * @param helper
+     *                The helper to use.
+     * @return the list of excluded cipher suites.
+     */
+    public static String[] getExcludedCipherSuites(Helper<?> helper) {
+        List<String> enabledCipherSuites = new ArrayList<String>();
+        String[] enabledCipherSuitesParams = helper.getHelpedParameters()
+                .getValuesArray("excludedCipherSuites");
+        for (String enabledCipherSuitesParam : enabledCipherSuitesParams) {
+            StringTokenizer st = new StringTokenizer(enabledCipherSuitesParam);
+            while (st.hasMoreElements()) {
+                enabledCipherSuites.add(st.nextToken());
+            }
+        }
+        return enabledCipherSuites.size() > 0 ? enabledCipherSuites
+                .toArray(new String[0]) : null;
     }
 }

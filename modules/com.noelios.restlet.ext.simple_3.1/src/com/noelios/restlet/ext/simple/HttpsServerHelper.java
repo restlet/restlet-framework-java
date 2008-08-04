@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2008 Noelios Consulting.
+ * Copyright 2005-2008 Noelios Technologies.
  * 
  * The contents of this file are subject to the terms of the Common Development
  * and Distribution License (the "License"). You may not use this file except in
@@ -22,6 +22,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.net.InetAddress;
 import java.security.KeyStore;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -39,8 +42,7 @@ import com.noelios.restlet.util.SslContextFactory;
 
 /**
  * Simple HTTP server connector. Here is the list of additional parameters that
- * are supported:
- * <table>
+ * are supported: <table>
  * <tr>
  * <th>Parameter name</th>
  * <th>Value type</th>
@@ -59,8 +61,8 @@ import com.noelios.restlet.util.SslContextFactory;
  * <td>sslContextFactory</td>
  * <td>String</td>
  * <td>null</td>
- * <td>Let you specify a {@link SslContextFactory} class name as a parameter, or
- * an instance as an attribute for a more complete and flexible SSL context
+ * <td>Let you specify a {@link SslContextFactory} class name as a parameter,
+ * or an instance as an attribute for a more complete and flexible SSL context
  * setting. If set, it takes precedance over the other SSL parameters below.</td>
  * </tr>
  * <tr>
@@ -123,7 +125,7 @@ public class HttpsServerHelper extends SimpleServerHelper {
      * Constructor.
      * 
      * @param server
-     *            The server to help.
+     *                The server to help.
      */
     public HttpsServerHelper(Server server) {
         super(server);
@@ -265,6 +267,31 @@ public class HttpsServerHelper extends SimpleServerHelper {
             serverSocket.setNeedClientAuth(true);
         } else if (isWantClientAuthentication()) {
             serverSocket.setWantClientAuth(true);
+        }
+
+        /*
+         * Gets the list of enabled and excluded cipher suites. If excluded
+         * cipher suites are specified, they are removed from the list of
+         * enabled cipher suites (which is the default one if none is
+         * specified).
+         */
+        String[] enabledCipherSuites = HttpsUtils.getEnabledCipherSuites(this);
+        String[] excludedCipherSuites = HttpsUtils
+                .getExcludedCipherSuites(this);
+        if (excludedCipherSuites != null) {
+            if (enabledCipherSuites == null) {
+                enabledCipherSuites = serverSocket.getEnabledCipherSuites();
+            }
+            List<String> enabledCipherSuitesList = new ArrayList<String>(Arrays
+                    .asList(enabledCipherSuites));
+            for (String excludedCipherSuite : excludedCipherSuites) {
+                enabledCipherSuitesList.remove(excludedCipherSuite);
+            }
+            enabledCipherSuites = enabledCipherSuitesList
+                    .toArray(enabledCipherSuites);
+        }
+        if (enabledCipherSuites != null) {
+            serverSocket.setEnabledCipherSuites(enabledCipherSuites);
         }
 
         serverSocket.setSoTimeout(60000);

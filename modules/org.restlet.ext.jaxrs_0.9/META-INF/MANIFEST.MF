@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Restlet Extension - JAX-RS
 Bundle-SymbolicName: org.restlet.ext.jaxrs
 Bundle-Version: 1.1
-Bundle-Vendor: Noelios Consulting
+Bundle-Vendor: Noelios Technologies
 Export-Package: org.restlet.ext.jaxrs;
   uses:="org.restlet.ext.jaxrs.internal.wrappers,
    org.restlet.ext.jaxrs.internal.exceptions,

@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Restlet Examples
 Bundle-SymbolicName: org.restlet.example
 Bundle-Version: 1.1
-Bundle-Vendor: Noelios Consulting
+Bundle-Vendor: Noelios Technologies
 Export-Package: org.restlet.example,
  org.restlet.example.book.rest.ch2,
  org.restlet.example.book.rest.ch3;uses:="org.restlet.resource,org.restlet.data",

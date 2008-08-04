@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2008 Noelios Consulting.
+ * Copyright 2005-2008 Noelios Technologies.
  * 
  * The contents of this file are subject to the terms of the Common Development
  * and Distribution License (the "License"). You may not use this file except in
@@ -344,7 +344,7 @@ public class JaxRsUriBuilder extends UriBuilder {
      * @see UriInfo#getConnegExtension()
      * @see javax.ws.rs.core.UriBuilder#extension(java.lang.String)
      */
-    @Override // LATER Methode gelöscht aus API
+    @Override // LATER Methode gelï¿½scht aus API
     public UriBuilder extension(String extension) {
         final StringBuilder path = getPath();
         final int lastPathSt = path.lastIndexOf("/");

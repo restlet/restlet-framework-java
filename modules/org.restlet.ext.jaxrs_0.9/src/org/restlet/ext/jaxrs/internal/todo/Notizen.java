@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2008 Noelios Consulting.
+ * Copyright 2005-2008 Noelios Technologies.
  * 
  * The contents of this file are subject to the terms of the Common Development
  * and Distribution License (the "License"). You may not use this file except in
@@ -30,7 +30,7 @@ public class Notizen {
     // REQUESTED what to do, if an ExceptionMapper throws an
     // Exception. I think rethrow (easy to implement the wished rethrow)
 
-    // REQUESTED darf ein ExceptionMapper null zurueckgeben? Könnte man als
+    // REQUESTED darf ein ExceptionMapper null zurueckgeben? Kï¿½nnte man als
     // Indikator verwenden, die Exception weiterzugeben
 
     // REQUEST could the implementation see, what is required to add

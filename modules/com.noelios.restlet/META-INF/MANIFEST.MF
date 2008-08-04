@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Noelios Restlet Engine
 Bundle-SymbolicName: com.noelios.restlet
 Bundle-Version: 1.1
-Bundle-Vendor: Noelios Consulting
+Bundle-Vendor: Noelios Technologies
 Export-Package: com.noelios.restlet;
   uses:="com.noelios.restlet.authentication,
    org.restlet.resource,

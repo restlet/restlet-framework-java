@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2008 Noelios Consulting.
+ * Copyright 2005-2008 Noelios Technologies.
  * 
  * The contents of this file are subject to the terms of the Common Development
  * and Distribution License (the "License"). You may not use this file except in
@@ -40,8 +40,7 @@ import com.sun.grizzly.filter.SSLReadFilter;
 
 /**
  * HTTPS connector based on Grizzly. Here is the list of additional parameters
- * that are supported:
- * <table>
+ * that are supported: <table>
  * <tr>
  * <th>Parameter name</th>
  * <th>Value type</th>
@@ -52,8 +51,8 @@ import com.sun.grizzly.filter.SSLReadFilter;
  * <td>sslContextFactory</td>
  * <td>String</td>
  * <td>null</td>
- * <td>Let you specify a {@link SslContextFactory} class name as a parameter, or
- * an instance as an attribute for a more complete and flexible SSL context
+ * <td>Let you specify a {@link SslContextFactory} class name as a parameter,
+ * or an instance as an attribute for a more complete and flexible SSL context
  * setting. If set, it takes precedance over the other SSL parameters below.</td>
  * </tr>
  * <tr>
@@ -115,7 +114,7 @@ public class HttpsServerHelper extends GrizzlyServerHelper {
      * Constructor.
      * 
      * @param server
-     *            The helped server.
+     *                The helped server.
      */
     public HttpsServerHelper(Server server) {
         super(server);
@@ -153,6 +152,12 @@ public class HttpsServerHelper extends GrizzlyServerHelper {
         // Create the Grizzly filters
         final SSLReadFilter readFilter = new SSLReadFilter();
         readFilter.setSSLContext(sslContext);
+
+        final String[] enabledCipherSuites = HttpsUtils
+                .getEnabledCipherSuites(this);
+        if (enabledCipherSuites != null) {
+            readFilter.setEnabledCipherSuites(enabledCipherSuites);
+        }
 
         if (isNeedClientAuthentication()) {
             readFilter.setNeedClientAuth(isNeedClientAuthentication());

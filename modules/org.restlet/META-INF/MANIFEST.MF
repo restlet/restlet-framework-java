@@ -4,7 +4,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Restlet API
 Bundle-SymbolicName: org.restlet
 Bundle-Version: 1.1
-Bundle-Vendor: Noelios Consulting
+Bundle-Vendor: Noelios Technologies
 Export-Package: org.restlet;
   uses:="org.restlet.service,
    org.restlet.util,

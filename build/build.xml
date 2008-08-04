@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0"?>
 
-<!-- =============================================================
-     Restlet build script - Copyright 2005-2008 Noelios Consulting
-     ============================================================= -->
+<!-- ===============================================================
+     Restlet build script - Copyright 2005-2008 Noelios Technologies
+     =============================================================== -->
 
 <project name="Restlet" default="rebuild">
 	<!-- ============================ -->
@@ -30,7 +30,7 @@
 
 	<!-- General properties -->
 	<property name="author" value="Jerome Louvel" />
-	<property name="vendor" value="Noelios Consulting" />
+	<property name="vendor" value="Noelios Technologies" />
 	<property name="excludes" value="**/.emptyDir **/package.html **/overview.html" />
 	<property name="restlet-api" value="Restlet API" />
 	<property name="restlet-ext-api" value="Restlet API extensions" />
@@ -1121,7 +1121,7 @@
 			</sourcepath>
 
 			<bottom>
-				<![CDATA[<i>Copyright &#169; 2005-2008 <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.</i>]]>
+				<![CDATA[<i>Copyright &#169; 2005-2008 <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
          	</bottom>
 
 			<group title="${restlet-api}">
@@ -1137,7 +1137,7 @@
 			</sourcepath>
 
 			<bottom>
-				<![CDATA[<i>Copyright &#169; 2005-2008 <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.</i>]]>
+				<![CDATA[<i>Copyright &#169; 2005-2008 <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
         	</bottom>
 
 			<group title="${restlet-nre}">
@@ -1180,7 +1180,7 @@
 			</sourcepath>
 
 			<bottom>
-				<![CDATA[<i>Copyright &#169; 2005-2008 <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.</i>]]>
+				<![CDATA[<i>Copyright &#169; 2005-2008 <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
          	</bottom>
 
 			<group title="${restlet-ext-api}">
@@ -1217,7 +1217,7 @@
 			</sourcepath>
 
 			<bottom>
-				<![CDATA[<i>Copyright &#169; 2005-2008 <a target="_top" href="http://www.noelios.com">Noelios Consulting</a>.</i>]]>
+				<![CDATA[<i>Copyright &#169; 2005-2008 <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
         	</bottom>
 
 			<group title="${restlet-gwt}">

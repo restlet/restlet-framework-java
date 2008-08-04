@@ -7,7 +7,7 @@ SetCompressor lzma
 # Defines
 !define VERSION "@version-full@"
 !define REGKEY "SOFTWARE\Noelios\$(^Name)"
-!define COMPANY "Noelios Consulting"
+!define COMPANY "Noelios Technologies"
 !define URL http://www.restlet.org
 
 Caption "Noelios Restlet Engine @version-full@"

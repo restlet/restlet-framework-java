@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Noelios Restlet Engine - Extension - JavaMail
 Bundle-SymbolicName: com.noelios.restlet.ext.javamail
 Bundle-Version: 1.1
-Bundle-Vendor: Noelios Consulting
+Bundle-Vendor: Noelios Technologies
 Export-Package: com.noelios.restlet.ext.javamail;
   uses:="org.restlet.resource,
    org.restlet,

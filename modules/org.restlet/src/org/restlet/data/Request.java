@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2008 Noelios Consulting.
+ * Copyright 2005-2008 Noelios Technologies.
  * 
  * The contents of this file are subject to the terms of the Common Development
  * and Distribution License (the "License"). You may not use this file except in
@@ -19,6 +19,7 @@
 package org.restlet.data;
 
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.restlet.Context;
 import org.restlet.resource.Representation;
@@ -113,6 +114,37 @@ public class Request extends Message {
 
     /** The original reference. */
     private volatile Reference originalRef;
+
+    /** The ranges to return from the target resource's representation. */
+    private volatile List<Range> ranges;
+
+    /**
+     * Returns the ranges to return from the target resource's representation.
+     * 
+     * @return The ranges to return.
+     */
+    public List<Range> getRanges() {
+        // Lazy initialization with double-check.
+        List<Range> r = this.ranges;
+        if (r == null) {
+            synchronized (this) {
+                r = this.ranges;
+                if (r == null) {
+                    this.ranges = r = new CopyOnWriteArrayList<Range>();
+                }
+            }
+        }
+        return r;
+    }
+
+    /**
+     * Sets the ranges to return from the target resource's representation.
+     * 
+     * @return The ranges to return.
+     */
+    public void setRanges(List<Range> range) {
+        this.ranges = range;
+    }
 
     /** The referrer reference. */
     private volatile Reference referrerRef;

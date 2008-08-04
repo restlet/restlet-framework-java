@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Noelios Restlet Engine - Extension - JMX
 Bundle-SymbolicName: com.noelios.restlet.ext.jmx
 Bundle-Version: 1.1
-Bundle-Vendor: Noelios Consulting
+Bundle-Vendor: Noelios Technologies
 Import-Package: com.noelios.restlet,
  com.noelios.restlet.application,
  com.noelios.restlet.authentication,

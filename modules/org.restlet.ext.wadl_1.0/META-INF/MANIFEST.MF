@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Restlet Extension - WADL
 Bundle-SymbolicName: org.restlet.ext.wadl
 Bundle-Version: 1.1
-Bundle-Vendor: Noelios Consulting
+Bundle-Vendor: Noelios Technologies
 Export-Package: org.restlet.ext.wadl;uses:="org.restlet,org.restlet.resource,org.restlet.data"
 Import-Package: org.restlet,
  org.restlet.data,

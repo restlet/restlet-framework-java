@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Restlet - Extension - Shell
 Bundle-SymbolicName: org.restlet.ext.shell
 Bundle-Version: 1.1
-Bundle-Vendor: Noelios Consulting
+Bundle-Vendor: Noelios Technologies
 Export-Package: org.restlet.ext.shell,
  org.restlet.ext.shell.connectors,
  org.restlet.ext.shell.helpers,

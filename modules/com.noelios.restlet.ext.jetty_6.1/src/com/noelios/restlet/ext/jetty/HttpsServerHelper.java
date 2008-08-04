@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2008 Noelios Consulting.
+ * Copyright 2005-2008 Noelios Technologies.
  * 
  * The contents of this file are subject to the terms of the Common Development
  * and Distribution License (the "License"). You may not use this file except in
@@ -34,8 +34,7 @@ import com.noelios.restlet.util.SslContextFactory;
 
 /**
  * Jetty HTTPS server connector. Here is the list of additional parameters that
- * are supported:
- * <table>
+ * are supported: <table>
  * <tr>
  * <th>Parameter name</th>
  * <th>Value type</th>
@@ -46,8 +45,8 @@ import com.noelios.restlet.util.SslContextFactory;
  * <td>sslContextFactory</td>
  * <td>String</td>
  * <td>null</td>
- * <td>Let you specify a {@link SslContextFactory} class name as a parameter, or
- * an instance as an attribute for a more complete and flexible SSL context
+ * <td>Let you specify a {@link SslContextFactory} class name as a parameter,
+ * or an instance as an attribute for a more complete and flexible SSL context
  * setting. If set, it takes precedance over the other SSL parameters below.</td>
  * </tr>
  * <tr>
@@ -131,7 +130,7 @@ public class HttpsServerHelper extends JettyServerHelper {
      * Constructor.
      * 
      * @param server
-     *            The server to help.
+     *                The server to help.
      */
     public HttpsServerHelper(Server server) {
         super(server);
@@ -148,6 +147,9 @@ public class HttpsServerHelper extends JettyServerHelper {
         AbstractConnector result = null;
         final SslContextFactory sslContextFactory = HttpsUtils
                 .getSslContextFactory(this);
+
+        final String[] excludedCipherSuites = HttpsUtils
+                .getExcludedCipherSuites(this);
 
         // Create and configure the Jetty HTTP connector
         switch (getType()) {
@@ -188,6 +190,10 @@ public class HttpsServerHelper extends JettyServerHelper {
                 nioResult.setNeedClientAuth(true);
             } else if (isWantClientAuthentication()) {
                 nioResult.setWantClientAuth(true);
+            }
+
+            if (excludedCipherSuites != null) {
+                nioResult.setExcludeCipherSuites(excludedCipherSuites);
             }
 
             result = nioResult;
@@ -232,6 +238,10 @@ public class HttpsServerHelper extends JettyServerHelper {
                 bioResult.setNeedClientAuth(true);
             } else if (isWantClientAuthentication()) {
                 bioResult.setWantClientAuth(true);
+            }
+
+            if (excludedCipherSuites != null) {
+                bioResult.setExcludeCipherSuites(excludedCipherSuites);
             }
 
             result = bioResult;
@@ -293,7 +303,8 @@ public class HttpsServerHelper extends JettyServerHelper {
      * @return The name of the RNG algorithm.
      */
     public String getSecureRandomAlgorithm() {
-        return getHelpedParameters().getFirstValue("secureRandomAlgorithm", null);
+        return getHelpedParameters().getFirstValue("secureRandomAlgorithm",
+                null);
     }
 
     /**
@@ -320,7 +331,8 @@ public class HttpsServerHelper extends JettyServerHelper {
      * @return The type of Jetty connector to use.
      */
     public int getType() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue("type", "2"));
+        return Integer.parseInt(getHelpedParameters()
+                .getFirstValue("type", "2"));
     }
 
     /**
@@ -340,8 +352,8 @@ public class HttpsServerHelper extends JettyServerHelper {
      *         one.
      */
     public boolean isUseNio() {
-        return Boolean.parseBoolean(getHelpedParameters().getFirstValue("useNio",
-                "true"));
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
+                "useNio", "true"));
     }
 
     /**

@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2008 Noelios Consulting.
+ * Copyright 2005-2008 Noelios Technologies.
  * 
  * The contents of this file are subject to the terms of the Common Development
  * and Distribution License (the "License"). You may not use this file except in
@@ -135,4 +135,17 @@ public class Range {
         this.length = length;
     }
 
+    /**
+     * Indicates if the
+     * 
+     * @param index
+     *            The index to test.
+     * 
+     * @return
+     */
+    public boolean isIncluded(long index, long totalLength) {
+
+        
+        return false;
+    }
 }

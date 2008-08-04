@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Restlet API - Tests
 Bundle-SymbolicName: org.restlet.test
 Bundle-Version: 1.1
-Bundle-Vendor: Noelios Consulting
+Bundle-Vendor: Noelios Technologies
 Import-Package: com.google.gwt.core.client,
  com.google.gwt.user.client,
  com.google.gwt.user.client.ui,

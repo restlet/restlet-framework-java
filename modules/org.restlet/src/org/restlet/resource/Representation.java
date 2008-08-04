@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2008 Noelios Consulting.
+ * Copyright 2005-2008 Noelios Technologies.
  * 
  * The contents of this file are subject to the terms of the Common Development
  * and Distribution License (the "License"). You may not use this file except in
@@ -27,8 +27,10 @@ import java.io.Writer;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.Date;
+import java.util.List;
 
 import org.restlet.data.MediaType;
+import org.restlet.data.Range;
 import org.restlet.data.Tag;
 
 /**
@@ -50,7 +52,9 @@ import org.restlet.data.Tag;
  * less precise names for a representation include: document, file, and HTTP
  * message entity, instance, or variant." Roy T. Fielding
  * 
- * @see <a href="http://roy.gbiv.com/pubs/dissertation/rest_arch_style.htm#sec_5_2_1_2">Source dissertation</a>
+ * @see <a href=
+ *      "http://roy.gbiv.com/pubs/dissertation/rest_arch_style.htm#sec_5_2_1_2"
+ *      >Source dissertation< /a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public abstract class Representation extends Variant {
@@ -228,6 +232,21 @@ public abstract class Representation extends Variant {
      * @throws IOException
      */
     public abstract InputStream getStream() throws IOException;
+
+    /**
+     * Returns a stream with the representation's content. This method is
+     * ensured to return a fresh stream for each invocation unless it is a
+     * transient representation, in which case null is returned.
+     * 
+     * @param ranges
+     *            The ranges to actually return from the stream.
+     * @return A stream with the representation's content.
+     * @throws IOException
+     */
+    public InputStream getStream(List<Range> ranges) throws IOException {
+
+        return null;
+    }
 
     /**
      * Returns the tag.

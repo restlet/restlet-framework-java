@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2008 Noelios Consulting.
+ * Copyright 2005-2008 Noelios Technologies.
  * 
  * The contents of this file are subject to the terms of the Common Development
  * and Distribution License (the "License"). You may not use this file except in
@@ -30,7 +30,7 @@ import simple.http.Response;
  * Simple protocol handler delegating the calls to the Restlet server helper.
  * 
  * @author Jerome Louvel (contact@noelios.com) <a
- *         href="http://www.noelios.com/">Noelios Consulting</a>
+ *         href="http://www.noelios.com/">Noelios Technologies</a>
  */
 public class SimpleProtocolHandler implements ProtocolHandler {
     /** The delegate Restlet server helper. */

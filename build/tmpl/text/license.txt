@@ -4,13 +4,13 @@ License agreement
 =================
 
 
-Version 5.0, April 2008
+Version 5.1, August 2008
 
 This software distribution, including the "Restlet API" and the "Noelios 
 Restlet Engine", is provided to you under either the LGPL license version 
 3.0 or the LGPL license version 2.1 or the CDDL license version 1.0.
 
-In addition, we want to expressly mention that Noelios Consulting, the main 
+In addition, we want to expressly mention that Noelios Technologies, the main 
 copyright holder of the source code, has no intention to release future 
 versions of the Restlet open source project under more restrictive licences 
 (such as GPL). If we change the license again in the future, it could only 
@@ -851,7 +851,7 @@ COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0
 
             You may not offer or impose any terms on any Covered
             Software in Source Code form that alters or restricts the
-            applicable version of this License or the recipientsÕ
+            applicable version of this License or the recipientsï¿½
             rights hereunder. You may choose to offer, and to charge a
             fee for, warranty, support, indemnity or liability
             obligations to one or more recipients of Covered Software.
@@ -873,7 +873,7 @@ COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0
             different from this License, provided that You are in
             compliance with the terms of this License and that the
             license for the Executable form does not attempt to limit
-            or alter the recipientÕs rights in the Source Code form
+            or alter the recipientï¿½s rights in the Source Code form
             from the rights set forth in this License. If You
             distribute the Covered Software in Executable form under a
             different license, You must make it absolutely clear that
@@ -993,7 +993,7 @@ COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0
       COMMERCIAL DAMAGES OR LOSSES, EVEN IF SUCH PARTY SHALL HAVE BEEN
       INFORMED OF THE POSSIBILITY OF SUCH DAMAGES. THIS LIMITATION OF
       LIABILITY SHALL NOT APPLY TO LIABILITY FOR DEATH OR PERSONAL
-      INJURY RESULTING FROM SUCH PARTYÕS NEGLIGENCE TO THE EXTENT
+      INJURY RESULTING FROM SUCH PARTYï¿½S NEGLIGENCE TO THE EXTENT
       APPLICABLE LAW PROHIBITS SUCH LIMITATION. SOME JURISDICTIONS DO
       NOT ALLOW THE EXCLUSION OR LIMITATION OF INCIDENTAL OR
       CONSEQUENTIAL DAMAGES, SO THIS EXCLUSION AND LIMITATION MAY NOT
@@ -1003,7 +1003,7 @@ COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0
 
       The Covered Software is a "commercial item," as that term is
       defined in 48 C.F.R. 2.101 (Oct. 1995), consisting of "commercial
-      computer software" (as that term is defined at 48 C.F.R. ¤
+      computer software" (as that term is defined at 48 C.F.R. ï¿½
       252.227-7014(a)(1)) and "commercial computer software
       documentation" as such terms are used in 48 C.F.R. 12.212 (Sept.
       1995). Consistent with 48 C.F.R. 12.212 and 48 C.F.R. 227.7202-1
@@ -1022,12 +1022,12 @@ COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0
       governed by the law of the jurisdiction specified in a notice
       contained within the Original Software (except to the extent
       applicable law, if any, provides otherwise), excluding such
-      jurisdictionÕs conflict-of-law provisions. Any litigation
+      jurisdictionï¿½s conflict-of-law provisions. Any litigation
       relating to this License shall be subject to the jurisdiction of
       the courts located in the jurisdiction and venue specified in a
       notice contained within the Original Software, with the losing
       party responsible for costs, including, without limitation, court
-      costs and reasonable attorneysÕ fees and expenses. The
+      costs and reasonable attorneysï¿½ fees and expenses. The
       application of the United Nations Convention on Contracts for the
       International Sale of Goods is expressly excluded. Any law or
       regulation which provides that the language of a contract shall
