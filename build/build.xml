@@ -1208,7 +1208,7 @@
 			<link href="http://www.json.org/javadoc/" />
 			<link href="http://www.restlet.org/documentation/${version-minor}/api/" packagelistLoc="${docs-api}" offline="true" />
 			<link href="http://www.restlet.org/documentation/${version-minor}/nre/" packagelistLoc="${docs-nre}" offline="true" />
-			<link href="http://www.simpleframework.org/javadoc/" />
+			<link href="http://www.simpleframework.org/doc/javadoc/" />
 		</javadoc>
 
 		<javadoc packagenames="org.restlet.gwt.*" excludepackagenames="${exclude-packages}" destdir="${docs-gwt}" classpathref="path-all" author="true" version="true" use="true" windowtitle="Restlet-GWT module ${version-full}" doctitle="Restlet-GWT module ${version-full}" overview="${temp}/javadocs/overview-gwt.html" stylesheetfile="${tmpl}/javadocs/stylesheet.css" verbose="${verbose}">
