@@ -28,3 +28,4 @@ Export-Package: org.apache.mina.common,
  org.apache.mina.protocol.vmpipe,
  org.apache.mina.registry,
  org.apache.mina.util
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

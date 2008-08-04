@@ -44,3 +44,4 @@ Export-Package:
  org.springframework.util.xml,
  org.springframework.validation
 Require-Bundle: org.apache.commons.logging
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

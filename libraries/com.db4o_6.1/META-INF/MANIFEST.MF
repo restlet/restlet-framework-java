@@ -40,3 +40,4 @@ Export-Package:
  com.db4o.replication,
  com.db4o.types
 Require-Bundle: edu.purdue.cs.bloat;visibility:=reexport
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

@@ -27,3 +27,4 @@ Export-Package: org.mortbay.component,
  org.mortbay.util,
  org.mortbay.util.ajax,
  org.mortbay.xml
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

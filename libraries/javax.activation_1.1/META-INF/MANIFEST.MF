@@ -8,3 +8,4 @@ Bundle-Vendor: Sun Microsystems Inc.
 Export-Package: com.sun.activation.registries,
  com.sun.activation.viewers,
  javax.activation
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

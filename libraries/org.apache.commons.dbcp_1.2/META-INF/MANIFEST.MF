@@ -12,3 +12,4 @@ Export-Package: .,
  org.apache.commons.jocl
 Require-Bundle: org.apache.commons.pool,
  org.apache.commons.logging
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

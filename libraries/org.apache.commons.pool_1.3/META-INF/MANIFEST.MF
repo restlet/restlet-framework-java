@@ -8,3 +8,4 @@ Bundle-Vendor: Apache Software Foundation
 Export-Package: org.apache.commons.pool,
  org.apache.commons.pool.impl
 Require-Bundle: org.apache.commons.logging
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

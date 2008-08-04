@@ -11,3 +11,4 @@ Export-Package: javax.servlet,
  javax.servlet.jsp.resources,
  javax.servlet.jsp.tagext,
  javax.servlet.resources
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

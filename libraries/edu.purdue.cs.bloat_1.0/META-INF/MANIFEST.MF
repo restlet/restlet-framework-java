@@ -26,3 +26,4 @@ Export-Package:
  EDU.purdue.cs.bloat.trans,
  EDU.purdue.cs.bloat.tree,
  EDU.purdue.cs.bloat.util
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

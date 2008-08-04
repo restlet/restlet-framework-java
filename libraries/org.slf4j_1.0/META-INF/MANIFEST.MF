@@ -8,3 +8,4 @@ Bundle-Vendor: slf4j.org
 Export-Package: org.slf4j,
  org.slf4j.impl,
  org.slf4j.spi
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

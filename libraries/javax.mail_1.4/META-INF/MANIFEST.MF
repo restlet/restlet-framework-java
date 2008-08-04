@@ -17,3 +17,4 @@ Export-Package: com.sun.mail.handlers,
  javax.mail.internet,
  javax.mail.search
 Require-Bundle: javax.activation
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

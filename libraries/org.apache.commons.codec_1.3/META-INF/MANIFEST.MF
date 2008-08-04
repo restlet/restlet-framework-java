@@ -10,3 +10,4 @@ Export-Package: org.apache.commons.codec,
  org.apache.commons.codec.digest,
  org.apache.commons.codec.language,
  org.apache.commons.codec.net
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

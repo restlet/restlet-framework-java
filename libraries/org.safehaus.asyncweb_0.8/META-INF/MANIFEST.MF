@@ -26,3 +26,4 @@ Require-Bundle: edu.oswego.cs.dl.util.concurrent,
  org.apache.commons.logging,
  org.apache.mina,
  org.slf4j
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
