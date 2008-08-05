@@ -32,6 +32,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
@@ -41,6 +42,7 @@ import java.util.Date;
 
 import org.restlet.data.LocalReference;
 import org.restlet.data.MediaType;
+import org.restlet.data.Range;
 import org.restlet.util.ByteUtils;
 
 /**
@@ -183,6 +185,11 @@ public class FileRepresentation extends Representation {
     }
 
     @Override
+    public InputStream getStream(Range range) throws IOException {
+        return ByteUtils.getStream(getStream(), getSize(), range);
+    }
+
+    @Override
     public String getText() throws IOException {
         return ByteUtils.toString(getStream(), getCharacterSet());
     }
@@ -235,6 +242,12 @@ public class FileRepresentation extends Representation {
     @Override
     public void write(Writer writer) throws IOException {
         ByteUtils.write(getReader(), writer);
+    }
+
+    @Override
+    public void write(OutputStream outputStream, Range range)
+            throws IOException {
+        ByteUtils.write(getStream(range), outputStream);
     }
 
 }

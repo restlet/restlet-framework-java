@@ -92,6 +92,8 @@ Changes log
        	- Added "enabledCipherSuites" and "disabledCipherSuites" 
        	  parameters to HTTPS connectors supporting those settings.
        	  Contributed by Bruno Harbulot.
+        - Added abstract Representation#getStream(Range) and 
+          Representation#write(OutputStream, Range) methods.
     - NRE and Extension Enhancements
         - Added a static HttpServletRequest getRequest(Request) method
           to the Servlet extension.

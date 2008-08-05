@@ -34,6 +34,7 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 
 import org.restlet.data.MediaType;
+import org.restlet.data.Range;
 import org.restlet.util.ByteUtils;
 
 /**
@@ -63,8 +64,19 @@ public abstract class CharacterRepresentation extends Representation {
     }
 
     @Override
+    public InputStream getStream(Range range) throws IOException {
+        return ByteUtils.getStream(getStream(), getSize(), range);
+    }
+
+    @Override
     public void write(OutputStream outputStream) throws IOException {
         ByteUtils.write(getStream(), outputStream);
+    }
+
+    @Override
+    public void write(OutputStream outputStream, Range range)
+            throws IOException {
+        ByteUtils.write(getStream(range), outputStream);
     }
 
     @Override

@@ -41,6 +41,7 @@ import org.restlet.data.CharacterSet;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
+import org.restlet.data.Range;
 import org.restlet.data.Reference;
 import org.restlet.data.Tag;
 import org.restlet.resource.Representation;
@@ -49,7 +50,8 @@ import org.restlet.resource.Representation;
  * Representation wrapper. Useful for application developer who need to enrich
  * the representation with application related properties and behavior.
  * 
- * @see <a href="http://c2.com/cgi/wiki?DecoratorPattern">The decorator (aka wrapper) pattern</a>
+ * @see <a href="http://c2.com/cgi/wiki?DecoratorPattern">The decorator (aka
+ *      wrapper) pattern< /a>
  * @author Jerome Louvel
  */
 public class WrapperRepresentation extends Representation {
@@ -127,6 +129,11 @@ public class WrapperRepresentation extends Representation {
     }
 
     @Override
+    public InputStream getStream(Range range) throws IOException {
+        return getWrappedRepresentation().getStream(range);
+    }
+
+    @Override
     public Tag getTag() {
         return getWrappedRepresentation().getTag();
     }
@@ -186,6 +193,11 @@ public class WrapperRepresentation extends Representation {
     }
 
     @Override
+    public void setEncodings(List<Encoding> encodings) {
+        getWrappedRepresentation().setEncodings(encodings);
+    }
+
+    @Override
     public void setExpirationDate(Date expirationDate) {
         getWrappedRepresentation().setExpirationDate(expirationDate);
     }
@@ -198,6 +210,11 @@ public class WrapperRepresentation extends Representation {
     @Override
     public void setIdentifier(String identifierUri) {
         getWrappedRepresentation().setIdentifier(identifierUri);
+    }
+
+    @Override
+    public void setLanguages(List<Language> languages) {
+        getWrappedRepresentation().setLanguages(languages);
     }
 
     @Override
@@ -228,6 +245,12 @@ public class WrapperRepresentation extends Representation {
     @Override
     public void write(OutputStream outputStream) throws IOException {
         getWrappedRepresentation().write(outputStream);
+    }
+
+    @Override
+    public void write(OutputStream outputStream, Range range)
+            throws IOException {
+        getWrappedRepresentation().write(outputStream, range);
     }
 
     @Override

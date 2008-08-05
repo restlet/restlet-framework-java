@@ -36,7 +36,6 @@ import java.io.Writer;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.Date;
-import java.util.List;
 
 import org.restlet.data.MediaType;
 import org.restlet.data.Range;
@@ -97,7 +96,17 @@ public abstract class Representation extends Variant {
         }
 
         @Override
+        public InputStream getStream(Range range) throws IOException {
+            return null;
+        }
+
+        @Override
         public void write(OutputStream outputStream) throws IOException {
+            // Do nothing
+        }
+
+        @Override
+        public void write(OutputStream outputStream, Range range) {
             // Do nothing
         }
 
@@ -243,19 +252,14 @@ public abstract class Representation extends Variant {
     public abstract InputStream getStream() throws IOException;
 
     /**
-     * Returns a stream with the representation's content. This method is
-     * ensured to return a fresh stream for each invocation unless it is a
-     * transient representation, in which case null is returned.
+     * Returns a stream exposing only a range of a given source stream.
      * 
-     * @param ranges
-     *            The ranges to actually return from the stream.
-     * @return A stream with the representation's content.
+     * @param range
+     *            The range to return from the full stream.
+     * @return A stream with the filtered representation's content.
      * @throws IOException
      */
-    public InputStream getStream(List<Range> ranges) throws IOException {
-
-        return null;
-    }
+    public abstract InputStream getStream(Range range) throws IOException;
 
     /**
      * Returns the tag.
@@ -440,6 +444,18 @@ public abstract class Representation extends Variant {
      * @throws IOException
      */
     public abstract void write(OutputStream outputStream) throws IOException;
+
+    /**
+     * Writes a range of the representation's content to a byte stream.
+     * 
+     * @param outputStream
+     *            The output stream.
+     * @param range
+     *            The range to filter.
+     * @throws IOException
+     */
+    public abstract void write(OutputStream outputStream, Range range)
+            throws IOException;
 
     /**
      * Writes the representation to a byte channel. This method is ensured to
