@@ -148,8 +148,8 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
      *         response entities.
      */
     public int getChunkLength() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue("chunkLength",
-                "0"));
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "chunkLength", "0"));
     }
 
     /**
@@ -175,8 +175,8 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
      * @return The hostname verifier or null.
      */
     public HostnameVerifier getHostnameVerifier() {
-        return (HostnameVerifier) getContext().getAttributes().get(
-                "hostnameVerifier");
+        return (HostnameVerifier) ((getContext() == null) ? null : getContext()
+                .getAttributes().get("hostnameVerifier"));
     }
 
     /**
@@ -186,8 +186,8 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
      * @return The read timeout value.
      */
     public int getReadTimeout() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue("readTimeout",
-                "0"));
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "readTimeout", "0"));
     }
 
     /**
@@ -218,8 +218,8 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
      * @return True if the protocol is allowed to use caching whenever it can.
      */
     public boolean isUseCaches() {
-        return Boolean.parseBoolean(getHelpedParameters().getFirstValue("useCaches",
-                "false"));
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
+                "useCaches", "false"));
     }
 
     @Override

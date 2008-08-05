@@ -1,5 +1,5 @@
-/*/**
- * Copyright 2005-2008 Noelios Technologies.
+/*
+ * / Copyright 2005-2008 Noelios Technologies.
  * 
  * The contents of this file are subject to the terms of the following open
  * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
@@ -169,8 +169,8 @@ public class HttpsUtils extends HttpUtils {
      * @return The SSL context factory.
      */
     public static SslContextFactory getSslContextFactory(Helper<?> helper) {
-        SslContextFactory result = (SslContextFactory) helper.getContext()
-                .getAttributes().get("sslContextFactory");
+        SslContextFactory result = (SslContextFactory) ((helper.getContext() == null) ? null
+                : helper.getContext()).getAttributes().get("sslContextFactory");
 
         if (result == null) {
             String[] sslContextFactoryNames = helper.getHelpedParameters()
