@@ -66,29 +66,31 @@ public class HttpParserFilter implements ProtocolFilter {
         final ByteBuffer byteBuffer = ((WorkerThread) Thread.currentThread())
                 .getByteBuffer();
         byteBuffer.flip();
-        final SelectionKey key = context.getSelectionKey();
-        final GrizzlyServerCall serverCall = new GrizzlyServerCall(this.helper
-                .getHelped(), byteBuffer, key,
-                (this.helper instanceof HttpsServerHelper));
-
-        final boolean keepAlive = false;
-
-        // Handle the call
-        this.helper.handle(serverCall);
-
-        // TODO Should we use httpCall#isKeepAlive?
-        // TODO The "keepAlive" boolean is always set to false at this time.
-        // Prepare for additional calls?
-        if (keepAlive) {
-            context
-                    .setKeyRegistrationState(Context.KeyRegistrationState.REGISTER);
-        } else {
-            // This seems to close the connection too soon and the client
-            // ends up with Connection reset errors or other connection
-            // related side effects:
-            //
-            //context.setKeyRegistrationState(Context.KeyRegistrationState.CANCEL
-            // );
+        if (byteBuffer.hasRemaining()) {
+	        final SelectionKey key = context.getSelectionKey();
+	        final GrizzlyServerCall serverCall = new GrizzlyServerCall(this.helper
+	                .getHelped(), byteBuffer, key,
+	                (this.helper instanceof HttpsServerHelper));
+	
+	        final boolean keepAlive = false;
+	
+	        // Handle the call
+	        this.helper.handle(serverCall);
+	
+	        // TODO Should we use httpCall#isKeepAlive?
+	        // TODO The "keepAlive" boolean is always set to false at this time.
+	        // Prepare for additional calls?
+	        if (keepAlive) {
+	            context
+	                    .setKeyRegistrationState(Context.KeyRegistrationState.REGISTER);
+	        } else {
+	            // This seems to close the connection too soon and the client
+	            // ends up with Connection reset errors or other connection
+	            // related side effects:
+	            //
+	            //context.setKeyRegistrationState(Context.KeyRegistrationState.CANCEL
+	            // );
+	        }
         }
 
         // Clean up

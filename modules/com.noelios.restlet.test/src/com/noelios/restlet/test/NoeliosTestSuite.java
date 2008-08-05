@@ -50,6 +50,7 @@ public class NoeliosTestSuite extends TestSuite {
     public NoeliosTestSuite() {
         addTestSuite(AuthenticationTestCase.class);
         addTestSuite(Base64TestCase.class);
+        addTestSuite(ChunkedEncodingPutTestCase.class);
         addTestSuite(ChunkedEncodingTestCase.class);
         addTestSuite(ChunkedInputStreamTestCase.class);
         addTestSuite(ChunkedOutputStreamTestCase.class);
@@ -65,8 +66,8 @@ public class NoeliosTestSuite extends TestSuite {
         addTestSuite(PostPutTestCase.class);
         addTestSuite(PreferencesTestCase.class);
         addTestSuite(RemoteClientAddressTestCase.class);
-        // addTestSuite(SslGetTestCase.class);
-        // addTestSuite(SslContextGetTestCase.class);
+        addTestSuite(SslGetTestCase.class);
         addTestSuite(TunnelFilterTestCase.class);
+        addTestSuite(UserAgentTunnelFilterTestCase.class);
     }
 }

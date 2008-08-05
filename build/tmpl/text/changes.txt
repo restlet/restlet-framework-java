@@ -42,6 +42,8 @@ Changes log
         - The Router.defaultMatchQuery property wasn't properly taken
           into account by the Route class. Now it sets the default 
           value for Route.matchQuery property.
+        - Fixed bug in Grizzly connector causing some requests to hand.
+          Contributed by Bruno Harbulot.
     - API Enhancements
         - Added a "Request.originalRef" property containing the URI 
           reference originally requested by the client. Clarified the

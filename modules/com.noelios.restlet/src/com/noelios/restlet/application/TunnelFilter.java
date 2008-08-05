@@ -338,8 +338,9 @@ public class TunnelFilter extends Filter {
                 // Get the old Accept header value
                 final Form headers = (Form) request.getAttributes().get(
                         HttpConstants.ATTRIBUTE_HEADERS);
-                final String acceptOld = headers
-                        .getFirstValue(HttpConstants.HEADER_ACCEPT);
+
+                final String acceptOld = (headers != null) ? headers
+                        .getFirstValue(HttpConstants.HEADER_ACCEPT) : null;
 
                 BufferedReader reader;
                 try {
@@ -349,7 +350,8 @@ public class TunnelFilter extends Filter {
 
                     boolean processAcceptHeader = true;
 
-                    // Read the entire file, excluding comment lines starting
+                    // Read the entire file, excluding comment lines
+                    // starting
                     // with "#" character.
                     String line = reader.readLine();
                     for (; line != null; line = reader.readLine()) {

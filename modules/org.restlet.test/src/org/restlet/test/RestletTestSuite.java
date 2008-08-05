@@ -53,16 +53,18 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(AtomTestCase.class);
         addTestSuite(ByteUtilsTestCase.class);
         addTestSuite(CallTestCase.class);
-        addTestSuite(CookieTestCase.class);
         addTestSuite(ComponentXmlTestCase.class);
+        addTestSuite(CookieTestCase.class);
         addTestSuite(DirectoryTestCase.class);
         addTestSuite(FileClientTestCase.class);
         addTestSuite(FileReferenceTestCase.class);
         addTestSuite(FileRepresentationTestCase.class);
         addTestSuite(FilterTestCase.class);
         addTestSuite(FreeMarkerTestCase.class);
+        addTestSuite(HeaderTestCase.class);
         addTestSuite(HttpBasicTestCase.class);
         addTestSuite(MediaTypeTestCase.class);
+        addTestSuite(ProductTokenTestCase.class);
         addTestSuite(RedirectTestCase.class);
         addTestSuite(ReferenceTestCase.class);
         addTestSuite(ResolvingTransformerTestCase.class);
@@ -72,6 +74,7 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(RouteListTestCase.class);
         addTestSuite(SpringTestCase.class);
         addTestSuite(StatusTestCase.class);
+        // addTestSuite(TemplateFilterTestCase.class);
         addTestSuite(TemplateTestCase.class);
         addTestSuite(TransformerTestCase.class);
         addTestSuite(VelocityTestCase.class);
