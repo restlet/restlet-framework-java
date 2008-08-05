@@ -20,7 +20,7 @@
  * 
  * Alternatively, you can obtain a royaltee free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.noelios.com/products/restlet-engine/.
+ * http://www.noelios.com/products/restlet-engine
  * 
  * Restlet is a registered trademark of Noelios Technologies.
  */
@@ -65,6 +65,7 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(HttpBasicTestCase.class);
         addTestSuite(MediaTypeTestCase.class);
         addTestSuite(ProductTokenTestCase.class);
+        addTestSuite(RangeTestCase.class);
         addTestSuite(RedirectTestCase.class);
         addTestSuite(ReferenceTestCase.class);
         addTestSuite(ResolvingTransformerTestCase.class);

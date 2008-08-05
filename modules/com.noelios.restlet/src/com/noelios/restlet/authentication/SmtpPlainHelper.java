@@ -20,7 +20,7 @@
  * 
  * Alternatively, you can obtain a royaltee free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.noelios.com/products/restlet-engine/.
+ * http://www.noelios.com/products/restlet-engine
  * 
  * Restlet is a registered trademark of Noelios Technologies.
  */
