@@ -229,12 +229,17 @@ public class TaskService extends Service implements ExecutorService {
      * Executes the given tasks, returning a list of Futures holding their
      * status and results when all complete.
      * 
+     * Due to a breaking change between Java SE versions 5 and 6, and in order
+     * to maintain compatibility both at the source and binary level, we have
+     * removed the generic information from this method. You can check the
+     * {@link ExecutorService} interface for typing details.
+     * 
      * @param tasks
      *            The task to execute.
      * @return The list of futures.
      */
-    public <T> List<Future<T>> invokeAll(Collection<Callable<T>> tasks)
-            throws InterruptedException {
+    @SuppressWarnings("unchecked")
+    public List invokeAll(Collection tasks) throws InterruptedException {
         return getWrapped().invokeAll(tasks);
     }
 
@@ -247,6 +252,11 @@ public class TaskService extends Service implements ExecutorService {
      * exception. The results of this method are undefined if the given
      * collection is modified while this operation is in progress.
      * 
+     * Due to a breaking change between Java SE versions 5 and 6, and in order
+     * to maintain compatibility both at the source and binary level, we have
+     * removed the generic information from this method. You can check the
+     * {@link ExecutorService} interface for typing details.
+     * 
      * @param tasks
      *            The task to execute.
      * @param timeout
@@ -255,8 +265,9 @@ public class TaskService extends Service implements ExecutorService {
      *            The time unit.
      * @return The list of futures.
      */
-    public <T> List<Future<T>> invokeAll(Collection<Callable<T>> tasks,
-            long timeout, TimeUnit unit) throws InterruptedException {
+    @SuppressWarnings("unchecked")
+    public List invokeAll(Collection tasks, long timeout, TimeUnit unit)
+            throws InterruptedException {
         return getWrapped().invokeAll(tasks, timeout, unit);
     }
 
@@ -267,13 +278,19 @@ public class TaskService extends Service implements ExecutorService {
      * cancelled. The results of this method are undefined if the given
      * collection is modified while this operation is in progress.
      * 
+     * Due to a breaking change between Java SE versions 5 and 6, and in order
+     * to maintain compatibility both at the source and binary level, we have
+     * removed the generic information from this method. You can check the
+     * {@link ExecutorService} interface for typing details.
+     * 
      * @param tasks
      *            The task to execute.
      * @return The result returned by one of the tasks.
      */
-    public <T> T invokeAny(Collection<Callable<T>> tasks)
-            throws InterruptedException, ExecutionException {
-        return getWrapped().invokeAny(tasks);
+    @SuppressWarnings("unchecked")
+    public Callable invokeAny(Collection tasks) throws InterruptedException,
+            ExecutionException {
+        return (Callable) getWrapped().invokeAny(tasks);
     }
 
     /**
@@ -283,6 +300,11 @@ public class TaskService extends Service implements ExecutorService {
      * not completed are cancelled. The results of this method are undefined if
      * the given collection is modified while this operation is in progress.
      * 
+     * Due to a breaking change between Java SE versions 5 and 6, and in order
+     * to maintain compatibility both at the source and binary level, we have
+     * removed the generic information from this method. You can check the
+     * {@link ExecutorService} interface for typing details.
+     * 
      * @param tasks
      *            The task to execute.
      * @param timeout
@@ -291,10 +313,10 @@ public class TaskService extends Service implements ExecutorService {
      *            The time unit.
      * @return The result returned by one of the tasks.
      */
-    public <T> T invokeAny(Collection<Callable<T>> tasks, long timeout,
-            TimeUnit unit) throws InterruptedException, ExecutionException,
-            TimeoutException {
-        return getWrapped().invokeAny(tasks, timeout, unit);
+    @SuppressWarnings("unchecked")
+    public Callable invokeAny(Collection tasks, long timeout, TimeUnit unit)
+            throws InterruptedException, ExecutionException, TimeoutException {
+        return (Callable) getWrapped().invokeAny(tasks, timeout, unit);
     }
 
     /**
