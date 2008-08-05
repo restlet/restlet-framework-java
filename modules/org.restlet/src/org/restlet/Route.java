@@ -124,7 +124,7 @@ public class Route extends Filter {
      * Indicates whether the query part should be taken into account when
      * matching a reference with the template.
      */
-    private volatile boolean matchQuery = true;
+    private volatile boolean matchQuery;
 
     /** The list of query parameters to extract. */
     private volatile List<ExtractInfo> queryExtracts;
@@ -179,6 +179,8 @@ public class Route extends Filter {
      */
     public Route(Router router, Template template, Restlet next) {
         super(router == null ? null : router.getContext(), next);
+        this.matchQuery = (router == null) ? true : router
+                .getDefaultMatchQuery();
         this.router = router;
         this.template = template;
     }
