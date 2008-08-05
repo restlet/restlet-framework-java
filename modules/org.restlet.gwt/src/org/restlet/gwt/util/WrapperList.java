@@ -33,6 +33,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
+import org.restlet.gwt.internal.util.ListUtils;
+
 /**
  * List wrapper. Modifiable list that delegates all methods to a wrapped list.
  * This allows an easy subclassing.
@@ -313,8 +315,10 @@ public class WrapperList<E> implements List<E> {
     }
 
     /**
-     * Returns a view of the portion of this list between the specified
-     * fromIndex, inclusive, and toIndex, exclusive.
+     * Returns a COPY of the portion of this list between the specified
+     * fromIndex, inclusive, and toIndex, exclusive.  The GWT implementation
+     * differs from the Java implementation in that it returns a COPY and
+     * not a view onto the original list. 
      * 
      * @param fromIndex
      *            The start position.
@@ -323,7 +327,7 @@ public class WrapperList<E> implements List<E> {
      * @return The sub-list.
      */
     public List<E> subList(int fromIndex, int toIndex) {
-        return new WrapperList<E>(getDelegate().subList(fromIndex, toIndex));
+        return ListUtils.copySubList(this, fromIndex, toIndex);
     }
 
     /**

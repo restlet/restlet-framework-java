@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.restlet.gwt.data.Parameter;
+import org.restlet.gwt.internal.util.ListUtils;
 
 /**
  * Modifiable list of entries with many helper methods. Note that this class
@@ -506,9 +507,11 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
     }
 
     /**
-     * Returns a view of the portion of this list between the specified
-     * fromIndex, inclusive, and toIndex, exclusive.
-     * 
+     * Returns a COPY of the portion of this list between the specified
+     * fromIndex, inclusive, and toIndex, exclusive. The GWT implementation
+     * differs from the Java implementation in that it returns a COPY and not a
+     * view onto the original list.
+     *  
      * @param fromIndex
      *            The start position.
      * @param toIndex
@@ -517,7 +520,8 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      */
     @Override
     public Series<E> subList(int fromIndex, int toIndex) {
-        return createSeries(getDelegate().subList(fromIndex, toIndex));
+        return createSeries(ListUtils.copySubList(getDelegate(),
+                fromIndex, toIndex));
     }
 
     /**

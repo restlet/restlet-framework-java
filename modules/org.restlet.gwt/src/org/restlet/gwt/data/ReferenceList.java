@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.gwt.internal.util.LineReader;
+import org.restlet.gwt.internal.util.ListUtils;
 import org.restlet.gwt.resource.Representation;
 import org.restlet.gwt.resource.StringRepresentation;
 import org.restlet.gwt.util.WrapperList;
@@ -189,18 +190,21 @@ public class ReferenceList extends WrapperList<Reference> {
     }
 
     /**
-     * Returns a view of the portion of this list between the specified
-     * fromIndex, inclusive, and toIndex, exclusive.
+     * Returns a COPY of the portion of this list between the specified
+     * fromIndex, inclusive, and toIndex, exclusive. The GWT implementation
+     * differs from the Java implementation in that it returns a COPY and not a
+     * view onto the original list.
      * 
      * @param fromIndex
-     *            The start position.
+     *                The start position.
      * @param toIndex
-     *            The end position (exclusive).
+     *                The end position (exclusive).
      * @return The sub-list.
      */
     @Override
     public ReferenceList subList(int fromIndex, int toIndex) {
-        return new ReferenceList(getDelegate().subList(fromIndex, toIndex));
+        return new ReferenceList(ListUtils.copySubList(getDelegate(),
+                fromIndex, toIndex));
     }
 
 }
