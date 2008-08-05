@@ -41,7 +41,7 @@ import org.xml.sax.SAXException;
 /**
  * Source feed's metadata for entries copied from another feed.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Source {
 

@@ -51,7 +51,7 @@ import org.restlet.data.Protocol;
  * 
  * @see <a href="http://roy.gbiv.com/pubs/dissertation/software_arch.htm#sec_1_2_2">Source dissertation</a>
  * @see <a href="http://roy.gbiv.com/pubs/dissertation/rest_arch_style.htm#sec_5_2_2">Source dissertation</a>
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public abstract class Connector extends Restlet {
     /** The list of protocols simultaneously supported. */

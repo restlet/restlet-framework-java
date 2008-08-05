@@ -39,7 +39,7 @@ import org.restlet.util.ByteUtils;
 /**
  * Representation based on a BIO character stream.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public abstract class CharacterRepresentation extends Representation {
     /**

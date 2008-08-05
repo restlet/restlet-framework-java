@@ -59,7 +59,7 @@ import com.noelios.restlet.http.HttpServerCall;
 /**
  * Call that is used by the Servlet HTTP server connector.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class ServletCall extends HttpServerCall {
 

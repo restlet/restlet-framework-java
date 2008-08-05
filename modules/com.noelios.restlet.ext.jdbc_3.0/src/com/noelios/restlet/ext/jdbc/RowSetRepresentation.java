@@ -50,7 +50,7 @@ import com.sun.rowset.WebRowSetImpl;
  *      "http://java.sun.com/j2se/1.5.0/docs/api/javax/sql/rowset/WebRowSet.html"
  *      >WebRowSet Interface< /a>
  * @author Thierry Boileau
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class RowSetRepresentation extends OutputRepresentation {
     /**

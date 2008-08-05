@@ -35,7 +35,7 @@ import org.restlet.ext.wadl.WadlComponent;
 /**
  * Unit test case for the WADL extension.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class WadlTestCase extends TestCase {
 

@@ -41,7 +41,7 @@ import org.restlet.resource.TransformRepresentation;
 /**
  * Test case for the Transformer class.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class TransformerTestCase extends TestCase {
     class FailureTracker {

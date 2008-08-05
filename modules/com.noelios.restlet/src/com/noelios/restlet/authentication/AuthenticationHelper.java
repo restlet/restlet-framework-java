@@ -42,7 +42,7 @@ import org.restlet.util.Series;
 /**
  * Base class for authentication helpers.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public abstract class AuthenticationHelper {
 

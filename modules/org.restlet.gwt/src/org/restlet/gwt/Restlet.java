@@ -37,7 +37,7 @@ import org.restlet.gwt.data.Status;
  * is typically provided by a parent Component as a way to encapsulate access to
  * shared features such as logging and client connectors.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Restlet extends Uniform {
     /** Error message. */

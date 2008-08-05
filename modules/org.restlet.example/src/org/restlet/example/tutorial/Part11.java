@@ -44,7 +44,7 @@ import org.restlet.data.Response;
 /**
  * Routers and hierarchical URIs
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Part11 extends Application {
 

@@ -38,7 +38,7 @@ import org.springframework.core.io.ClassPathResource;
 /**
  * Unit test case for the Spring extension.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class SpringTestCase extends TestCase {
 

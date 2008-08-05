@@ -40,7 +40,7 @@ import org.restlet.data.Reference;
 /**
  * Various HTTP utilities.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class HttpUtils {
     /**

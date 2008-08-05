@@ -80,7 +80,7 @@ import org.restlet.util.Resolver;
  * should be especially careful when storing state in member variables.
  * 
  * @see <a href="http://www.restlet.org/documentation/1.1/tutorial#part09">Tutorial : Guarding access to sensitive resources</a>
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Guard extends Filter {
 

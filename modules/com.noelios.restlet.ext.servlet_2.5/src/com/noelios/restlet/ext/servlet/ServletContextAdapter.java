@@ -38,7 +38,7 @@ import org.restlet.Uniform;
  * component's connectors, reusing the Servlet's logging mechanism and adding
  * the Servlet's initialization parameters to the context's parameters.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class ServletContextAdapter extends Context {
     /** The Servlet context. */

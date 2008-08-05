@@ -120,6 +120,38 @@ public class Range {
     }
 
     /**
+     * Indicates if the given index is included in the range.
+     * 
+     * @param position
+     *            The position to test.
+     * @param totalSize
+     * 
+     * @return True if the given index is included in the range, false
+     *         otherwise.
+     */
+    public boolean isIncluded(long position, long totalSize) {
+        boolean result = false;
+
+        if (getIndex() == INDEX_LAST) {
+            // The range starts from the end
+            result = (0 <= position) && (position < totalSize);
+
+            if (result) {
+                result = position >= (totalSize - getLength());
+            }
+        } else {
+            // The range starts from the beginning
+            result = position >= getIndex();
+
+            if (result && (getLength() != LENGTH_MAX)) {
+                result = position < getIndex() + getLength();
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * Sets the index from which to start the range. If the index is superior or
      * equal to zero, the index will define the start of the range. If its value
      * is {@value #INDEX_LAST} (-1), then it defines the end of the range. The
@@ -142,20 +174,5 @@ public class Range {
      */
     public void setLength(long length) {
         this.length = length;
-    }
-
-    /**
-     * Indicates if the given index is included in the range.
-     * 
-     * @param index
-     *            The index to test.
-     * @param totalLength
-     * 
-     * @return True if the given index is included in the range, false
-     *         otherwise.
-     */
-    public boolean isIncluded(long index, long totalLength) {
-
-        return false;
     }
 }

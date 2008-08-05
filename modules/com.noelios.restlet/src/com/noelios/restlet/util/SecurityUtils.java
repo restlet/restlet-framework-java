@@ -38,7 +38,7 @@ import javax.crypto.spec.SecretKeySpec;
 /**
  * Security data manipulation utilities.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class SecurityUtils {
     /**

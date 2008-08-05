@@ -33,7 +33,7 @@ import junit.framework.TestSuite;
 /**
  * Suite of unit tests for the Noelios Restlet Engine.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class NoeliosTestSuite extends TestSuite {
 

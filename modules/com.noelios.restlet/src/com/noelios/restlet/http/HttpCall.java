@@ -44,7 +44,7 @@ import org.restlet.util.Series;
 /**
  * Low-level call for the HTTP connectors.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public abstract class HttpCall {
 

@@ -38,7 +38,7 @@ import org.restlet.data.MediaType;
 /**
  * Representation based on a serializable Java object.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  * @param <T>
  *            The class to serialize, see {@link Serializable}
  */

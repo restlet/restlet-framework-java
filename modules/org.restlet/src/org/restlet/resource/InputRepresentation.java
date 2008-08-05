@@ -39,7 +39,7 @@ import org.restlet.util.ByteUtils;
 /**
  * Transient representation based on a BIO input stream.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class InputRepresentation extends StreamRepresentation {
     /** Obtain a suitable logger. */

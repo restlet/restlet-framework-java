@@ -41,7 +41,7 @@ import org.restlet.resource.FileRepresentation;
 /**
  * Unit test case for the Atom extension.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class AtomTestCase extends TestCase {
 

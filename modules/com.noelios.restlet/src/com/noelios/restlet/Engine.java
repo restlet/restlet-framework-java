@@ -100,7 +100,7 @@ import com.noelios.restlet.util.SecurityUtils;
 /**
  * Restlet factory supported by the engine.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Engine extends org.restlet.util.Engine {
 

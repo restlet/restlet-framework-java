@@ -39,7 +39,7 @@ import org.springframework.core.io.AbstractResource;
  * closer to Restlet's Representations.
  * 
  * @see <a href="http://www.springframework.org/">Spring home page< /a>
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class SpringResource extends AbstractResource {
     /** The description. */

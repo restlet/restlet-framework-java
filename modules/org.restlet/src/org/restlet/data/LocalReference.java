@@ -34,7 +34,7 @@ import java.io.File;
  * the three following schemes: {@link Protocol#CLAP}, {@link Protocol#FILE},
  * {@link Protocol#JAR} and {@link Protocol#RIAP}.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public final class LocalReference extends Reference {
     /**

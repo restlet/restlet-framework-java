@@ -36,7 +36,7 @@ import java.util.TreeMap;
  * Map wrapper. Modifiable map that delegates all methods to a wrapped map. This
  * allows an easy subclassing.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  * @see java.util.Collections
  * @see java.util.List
  */

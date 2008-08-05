@@ -38,7 +38,7 @@ import org.restlet.data.Protocol;
 /**
  * URI rewriting and redirection.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Part10 extends Application {
 

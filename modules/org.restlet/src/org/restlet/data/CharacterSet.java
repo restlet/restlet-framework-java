@@ -30,7 +30,7 @@ package org.restlet.data;
 /**
  * Character set used to encode characters in textual representations.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public final class CharacterSet extends Metadata {
     /** All character sets acceptable. */

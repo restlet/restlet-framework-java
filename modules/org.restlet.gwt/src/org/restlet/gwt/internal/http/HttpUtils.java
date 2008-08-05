@@ -38,7 +38,7 @@ import org.restlet.gwt.data.Reference;
 /**
  * HTTP-style header manipulation utilities.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class HttpUtils {
     /**

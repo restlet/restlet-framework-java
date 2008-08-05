@@ -35,7 +35,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * of one or more parts: A primary language tag and a possibly empty series of
  * subtags. When formatted as a string, parts are separated by hyphens.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public final class Language extends Metadata {
     /** All languages acceptable. */

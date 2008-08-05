@@ -36,7 +36,7 @@ import org.restlet.util.Series;
 /**
  * Authentication response sent by client to an origin server.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public final class ChallengeResponse {
     /**

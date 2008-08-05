@@ -70,7 +70,7 @@ import org.restlet.util.Engine;
  * should be especially careful when storing state in member variables.
  * 
  * @see <a href="http://www.restlet.org/documentation/1.1/tutorial#part06">Tutorial : Serving static files</a>
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Directory extends Finder {
 

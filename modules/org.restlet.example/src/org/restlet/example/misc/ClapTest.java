@@ -37,7 +37,7 @@ import org.restlet.data.Protocol;
  * HTTP server exposing a Directory of resources based on a local CLAP client
  * (ClassLoader Access Protocol).
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class ClapTest {
     public static void main(String[] args) throws Exception {

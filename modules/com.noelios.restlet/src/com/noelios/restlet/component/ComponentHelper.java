@@ -44,7 +44,7 @@ import com.noelios.restlet.StatusFilter;
 /**
  * Component helper.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class ComponentHelper extends ChainHelper<Component> {
     /** The internal client router. */

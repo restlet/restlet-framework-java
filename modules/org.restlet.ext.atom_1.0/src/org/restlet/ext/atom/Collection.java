@@ -43,7 +43,7 @@ import org.xml.sax.helpers.AttributesImpl;
 /**
  * Atom Protocol collection, part of a workspace.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Collection {
 

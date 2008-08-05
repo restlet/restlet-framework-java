@@ -36,7 +36,7 @@ import com.noelios.restlet.Engine;
 /**
  * HTTP client helper based on BIO sockets.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class StreamClientHelper extends HttpClientHelper {
     /**

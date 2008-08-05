@@ -41,7 +41,7 @@ import org.restlet.util.Helper;
 /**
  * Chain helper serving as base class for Application and Component helpers.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public abstract class ChainHelper<T extends Restlet> extends Helper<T> {
     /** The first Restlet. */

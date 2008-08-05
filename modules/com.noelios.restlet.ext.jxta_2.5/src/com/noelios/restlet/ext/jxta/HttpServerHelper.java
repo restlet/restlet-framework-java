@@ -43,7 +43,7 @@ import org.restlet.data.Protocol;
 /**
  * Concrete JXTA-based HTTP server connector helper.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class HttpServerHelper extends JxtaServerHelper {
 

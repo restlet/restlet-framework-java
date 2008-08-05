@@ -36,7 +36,7 @@ import org.restlet.data.Protocol;
 /**
  * Modifiable list of client connectors.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public final class ClientList extends WrapperList<Client> {
 

@@ -36,7 +36,7 @@ import com.google.gwt.xml.client.XMLParser;
  * XML representation based on an XML DOM document. DOM is a standard XML object
  * model defined by the W3C.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class XmlRepresentation extends Representation {
     /** The wrapped DOM document. */

@@ -32,7 +32,7 @@ import org.restlet.util.Engine;
 /**
  * Cookie provided by a client.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Cookie extends Parameter {
     /** The domain name. */

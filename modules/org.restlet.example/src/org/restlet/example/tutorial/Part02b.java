@@ -37,7 +37,7 @@ import org.restlet.resource.Representation;
 /**
  * Retrieving the content of a Web page (detailled).
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Part02b {
     public static void main(String[] args) throws Exception {

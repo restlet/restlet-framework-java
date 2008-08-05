@@ -57,7 +57,7 @@ import com.noelios.restlet.util.KeepAliveInputStream;
  * 
  * @author Lars Heuer (heuer[at]semagia.com) <a
  *         href="http://semagia.com/">Semagia</a>
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class SimpleCall extends HttpServerCall {
 

@@ -70,7 +70,7 @@ public class TransformRepresentation extends OutputRepresentation {
     /**
      * URI resolver based on a Restlet Context instance.
      * 
-     * @author Jerome Louvel (contact@noelios.com)
+     * @author Jerome Louvel
      */
     private final static class ContextResolver implements URIResolver {
         /** The Restlet context. */

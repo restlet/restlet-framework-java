@@ -106,7 +106,7 @@ import org.w3c.dom.NodeList;
  *      href="http://roy.gbiv.com/pubs/dissertation/software_arch.htm#sec_1_2_1"
  *      >Source dissertation< /a>
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Component extends Restlet {
     /**

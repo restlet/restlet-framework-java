@@ -38,7 +38,7 @@ import org.restlet.ext.json.JsonRepresentation;
 /**
  * Searching the web with Yahoo!'s web service using JSON.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Example2_9 {
     static final String BASE_URI = "http://api.search.yahoo.com/WebSearchService/V1/webSearch";

@@ -47,7 +47,7 @@ import org.restlet.resource.Representation;
  * should be especially careful when storing state in member variables.
  * 
  * @see <a href="http://roy.gbiv.com/pubs/dissertation/rest_arch_style.htm#sec_5_1_5">Source dissertation</a>
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public abstract class Uniform {
     /**

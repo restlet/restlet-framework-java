@@ -37,7 +37,7 @@ import org.restlet.data.Response;
 /**
  * Listening to Web browsers.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Part03 {
     public static void main(String[] args) throws Exception {

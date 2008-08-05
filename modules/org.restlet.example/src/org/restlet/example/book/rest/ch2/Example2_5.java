@@ -41,7 +41,7 @@ import org.w3c.dom.Node;
 /**
  * Getting your list of recent bookmarks on del.icio.us.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Example2_5 {
     public static void main(String[] args) throws Exception {

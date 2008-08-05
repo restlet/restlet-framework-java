@@ -56,7 +56,7 @@ import org.restlet.resource.Representation;
  * 
  * @author Lars Heuer (heuer[at]semagia.com) <a
  *         href="http://semagia.com/">Semagia</a>
- * @author Jerome Louvel (contact@noelios.com) <a
+ * @author Jerome Louvel <a
  *         href="http://www.noelios.com">Noelios Technologies</a>
  */
 public class Encoder extends Filter {

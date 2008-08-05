@@ -41,7 +41,7 @@ import org.restlet.gwt.util.Series;
 /**
  * Form reader.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class FormReader {
     /** The encoding to use, decoding is enabled, see {@link #decode}. */

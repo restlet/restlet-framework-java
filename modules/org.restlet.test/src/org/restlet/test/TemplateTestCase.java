@@ -40,7 +40,7 @@ import org.restlet.util.Variable;
 /**
  * Test case for URI templates.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class TemplateTestCase extends TestCase {
 

@@ -50,7 +50,7 @@ import org.xml.sax.SAXException;
  * XML representation based on a DOM document. DOM is a standard XML object
  * model defined by the W3C.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class DomRepresentation extends XmlRepresentation {
     /** The wrapped DOM document. */

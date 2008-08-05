@@ -60,7 +60,7 @@ import com.sun.grizzly.util.SSLOutputWriter;
 /**
  * HTTP server call specialized for Grizzly.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class GrizzlyServerCall extends HttpServerCall {
 

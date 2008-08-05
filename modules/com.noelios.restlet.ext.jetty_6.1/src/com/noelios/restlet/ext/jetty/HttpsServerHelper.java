@@ -138,7 +138,7 @@ import com.noelios.restlet.util.SslContextFactory;
  * @see <a
  *      href="http://docs.codehaus.org/display/JETTY/How+to+configure+SSL">How
  *      to configure SSL for Jetty< /a>
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class HttpsServerHelper extends JettyServerHelper {
     /**

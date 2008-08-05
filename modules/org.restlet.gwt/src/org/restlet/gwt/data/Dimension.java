@@ -30,7 +30,7 @@ package org.restlet.gwt.data;
 /**
  * Dimension on which the representations of a resource may vary.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  * @author Piyush Purang (ppurang@gmail.com)
  * @see <a
  *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.44"

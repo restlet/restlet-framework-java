@@ -44,7 +44,7 @@ import org.restlet.resource.Representation;
  * stored is determined by the factory used to create them; a given part may be
  * in memory, on disk, or somewhere else.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class RestletFileUpload extends FileUpload {
     /**

@@ -56,7 +56,7 @@ import org.restlet.data.Protocol;
  * </table>
  * 
  * @see <a href="http://jetty.mortbay.org/jetty6/">Jetty home page< /a>
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class HttpServerHelper extends JettyServerHelper {
     /**

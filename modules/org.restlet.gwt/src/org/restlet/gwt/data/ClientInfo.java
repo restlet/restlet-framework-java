@@ -35,7 +35,7 @@ import org.restlet.gwt.util.Engine;
 /**
  * Client specific data related to a call.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public final class ClientInfo {
     /** The character set preferences. */

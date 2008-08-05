@@ -50,7 +50,7 @@ import org.xml.sax.helpers.DefaultHandler;
 /**
  * Represents an Atom introspection document.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Service extends SaxRepresentation {
     // --------------------

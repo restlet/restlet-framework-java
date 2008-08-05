@@ -37,7 +37,7 @@ import org.restlet.data.Response;
 /**
  * Restlets components.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Part05 {
     public static void main(String[] args) throws Exception {

@@ -35,7 +35,7 @@ import org.restlet.gwt.util.Engine;
  * Multi-usage parameter. Note that the name and value properties are thread
  * safe, stored in volatile members.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Parameter implements Comparable<Parameter> {
     /** The name. */

@@ -37,7 +37,7 @@ import org.restlet.data.Protocol;
 /**
  * Modifiable list of server connectors.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public final class ServerList extends WrapperList<Server> {
 

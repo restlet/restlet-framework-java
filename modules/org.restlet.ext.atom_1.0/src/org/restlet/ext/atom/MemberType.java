@@ -33,7 +33,7 @@ import org.xml.sax.SAXException;
 /**
  * Collection member types.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public enum MemberType {
     ENTRY, MEDIA;

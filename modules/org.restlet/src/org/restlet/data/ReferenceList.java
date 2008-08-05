@@ -40,7 +40,7 @@ import org.restlet.util.WrapperList;
 /**
  * List of URI references.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class ReferenceList extends WrapperList<Reference> {
     /** The list's identifier. */

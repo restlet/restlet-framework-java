@@ -35,7 +35,7 @@ import org.restlet.resource.Variant;
 /**
  * Amazon S3 object.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class S3Object extends S3Authorized {
 

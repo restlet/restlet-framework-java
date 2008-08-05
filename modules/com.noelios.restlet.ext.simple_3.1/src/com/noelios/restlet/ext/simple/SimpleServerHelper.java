@@ -79,7 +79,7 @@ import com.noelios.restlet.http.HttpServerHelper;
  * 
  * @author Lars Heuer (heuer[at]semagia.com) <a
  *         href="http://semagia.com/">Semagia</a>
- * @author Jerome Louvel (contact@noelios.com) <a
+ * @author Jerome Louvel <a
  *         href="http://www.noelios.com">Noelios Technologies</a>
  */
 public abstract class SimpleServerHelper extends HttpServerHelper {

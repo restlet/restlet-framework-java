@@ -32,7 +32,7 @@ import org.restlet.Client;
 /**
  * Client connector helper.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class ClientHelper extends ConnectorHelper<Client> {
 

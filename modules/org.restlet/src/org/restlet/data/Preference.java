@@ -32,7 +32,7 @@ import org.restlet.util.Series;
 /**
  * Metadata preference definition.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public final class Preference<T extends Metadata> {
     /** The metadata associated with this preference. */

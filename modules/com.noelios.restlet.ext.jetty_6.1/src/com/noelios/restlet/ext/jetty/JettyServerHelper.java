@@ -140,14 +140,14 @@ import org.mortbay.thread.BoundedThreadPool;
  * </table>
  * 
  * @see <a href="http://jetty.mortbay.org/">Jetty home page< /a>
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public abstract class JettyServerHelper extends
         com.noelios.restlet.http.HttpServerHelper {
     /**
      * Jetty server wrapped by a parent Restlet HTTP server connector.
      * 
-     * @author Jerome Louvel (contact@noelios.com)
+     * @author Jerome Louvel
      */
     private static class WrappedServer extends org.mortbay.jetty.Server {
         JettyServerHelper helper;

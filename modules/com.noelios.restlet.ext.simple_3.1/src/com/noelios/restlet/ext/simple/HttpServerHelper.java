@@ -40,7 +40,7 @@ import simple.http.connect.ConnectionFactory;
  * Simple HTTPS server connector.
  * 
  * @author Lars Heuer (heuer[at]semagia.com)
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class HttpServerHelper extends SimpleServerHelper {
     /**

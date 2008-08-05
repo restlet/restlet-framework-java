@@ -33,7 +33,7 @@ import org.restlet.data.Protocol;
 /**
  * JXTA test client.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class TestClient {
 

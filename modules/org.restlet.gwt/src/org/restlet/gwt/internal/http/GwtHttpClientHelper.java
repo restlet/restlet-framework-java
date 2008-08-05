@@ -50,7 +50,7 @@ import org.restlet.gwt.data.Request;
  * </tr>
  * </table>
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class GwtHttpClientHelper extends HttpClientHelper {
     /**

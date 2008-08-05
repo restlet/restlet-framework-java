@@ -42,7 +42,7 @@ import com.noelios.restlet.http.PreferenceUtils;
 /**
  * Unit tests for the header.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class HeaderTestCase extends TestCase {
     public void testInvalidDate() {

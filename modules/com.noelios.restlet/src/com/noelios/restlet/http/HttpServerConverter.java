@@ -52,7 +52,7 @@ import com.noelios.restlet.authentication.AuthenticationUtils;
 /**
  * Converter of low-level HTTP server calls into high-level uniform calls.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class HttpServerConverter extends HttpConverter {
     /**

@@ -48,7 +48,7 @@ import org.restlet.util.Series;
  * threads concurrently access objects and modify these collections, they should
  * synchronize on the lock of the Context instance.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Context {
     private static final ThreadLocal<Context> CURRENT = new ThreadLocal<Context>();

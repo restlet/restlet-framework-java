@@ -42,7 +42,7 @@ import freemarker.template.Configuration;
 /**
  * Unit test for the FreeMarker extension.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class FreeMarkerTestCase extends TestCase {
     public static void main(String[] args) {

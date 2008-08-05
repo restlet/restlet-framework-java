@@ -37,7 +37,7 @@ import org.xml.sax.SAXException;
  * Element that describes a person, corporation, or similar entity (hereafter,
  * 'person').
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Person {
 

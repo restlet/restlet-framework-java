@@ -25,40 +25,13 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.gwt.internal.util;
+package org.restlet.test;
 
 /**
- * Character reader.
+ * Test {@link org.restlet.data.Range}.
  * 
  * @author Jerome Louvel
  */
-public class CharacterReader {
-
-    /** The text to read. */
-    private final String text;
-
-    /** The next position to read. */
-    private int position;
-
-    /**
-     * Constructor.
-     * 
-     * @param text
-     *            The source text to read.
-     */
-    public CharacterReader(String text) {
-        this.text = text;
-        this.position = 0;
-    }
-
-    /**
-     * Reads the next character in the source text.
-     * 
-     * @return The next character or -1 if end of text is reached.
-     */
-    public int read() {
-        return (this.position == this.text.length()) ? -1 : this.text
-                .charAt(this.position++);
-    }
+public class RangeTestCase extends RestletTestCase {
 
 }

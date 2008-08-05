@@ -40,7 +40,7 @@ import org.restlet.resource.Variant;
 /**
  * Related to the part 12 of the tutorial.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class UserResource extends Resource {
     String userName;

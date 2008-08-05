@@ -43,7 +43,7 @@ import org.restlet.resource.StringRepresentation;
 /**
  * Unit tests for the RedirectRestlet.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class RedirectTestCase extends TestCase {
     private void testCall(Context context, Method method, String uri)

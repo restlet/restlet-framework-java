@@ -32,7 +32,7 @@ import java.io.IOException;
 /**
  * HTTP-style header reader.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class HeaderReader {
     /** The header to read. */

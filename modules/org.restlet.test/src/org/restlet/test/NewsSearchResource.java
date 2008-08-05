@@ -32,7 +32,7 @@ import org.restlet.resource.Resource;
 /**
  * Empty resource for the WADL test case.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class NewsSearchResource extends Resource {
 

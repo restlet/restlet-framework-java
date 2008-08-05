@@ -87,8 +87,8 @@ import org.restlet.util.Series;
  * @see <a href="http://www.restlet.org/documentation/1.1/tutorial#part12">Tutorial : Reaching target Resources</a>
  * @see org.restlet.resource.Representation
  * @see org.restlet.Finder
- * @author Jerome Louvel (contact@noelios.com)
- * @author Thierry Boileau (thboileau@gmail.com)
+ * @author Jerome Louvel
+ * @author Thierry Boileau
  * @author Konstantin Laufer (laufer@cs.luc.edu)
  */
 public class Resource extends Handler {

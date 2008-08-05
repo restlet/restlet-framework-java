@@ -36,7 +36,7 @@ import org.restlet.data.Response;
 /**
  * Trace Restlet.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class TraceRestlet extends Restlet {
     public TraceRestlet(Context context) {

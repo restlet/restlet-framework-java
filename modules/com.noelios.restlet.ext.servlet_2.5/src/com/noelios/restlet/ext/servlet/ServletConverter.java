@@ -79,7 +79,7 @@ import com.noelios.restlet.http.HttpServerConverter;
  * }
  * </pre>
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class ServletConverter extends HttpServerConverter {
     /** The target Restlet. */

@@ -40,7 +40,7 @@ import com.noelios.restlet.util.FormReader;
 /**
  * Unit tests for the Form class.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class FormTestCase extends TestCase {
     /**

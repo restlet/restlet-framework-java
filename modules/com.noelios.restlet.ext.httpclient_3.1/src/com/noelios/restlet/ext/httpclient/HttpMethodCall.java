@@ -64,7 +64,7 @@ import com.noelios.restlet.http.HttpClientCall;
 /**
  * HTTP client connector call based on Apache HTTP Client's HttpMethod class.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class HttpMethodCall extends HttpClientCall {
 

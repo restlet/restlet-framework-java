@@ -33,7 +33,7 @@ import org.restlet.Context;
 /**
  * Context allowing access to the component's connectors.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class ComponentContext extends Context {
     /**

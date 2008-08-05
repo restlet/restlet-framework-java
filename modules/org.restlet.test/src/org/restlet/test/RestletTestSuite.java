@@ -36,7 +36,7 @@ import org.restlet.test.spring.AllSpringTests;
 /**
  * Suite of unit tests for the Restlet RI.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class RestletTestSuite extends TestSuite {
     /**

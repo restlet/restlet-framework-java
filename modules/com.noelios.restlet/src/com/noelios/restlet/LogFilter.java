@@ -51,7 +51,7 @@ import com.noelios.restlet.util.IdentClient;
  * @see <a
  *      href="http://www.restlet.org/documentation/1.1/tutorial#part07">Tutorial
  *      : Filters and call logging< /a>
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class LogFilter extends Filter {
     /** Obtain a suitable logger. */

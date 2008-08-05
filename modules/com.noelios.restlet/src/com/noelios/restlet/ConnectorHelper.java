@@ -37,7 +37,7 @@ import org.restlet.util.Helper;
 /**
  * Base connector helper.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public abstract class ConnectorHelper<T extends Connector> extends Helper<T> {
     /** The protocols simultaneously supported. */

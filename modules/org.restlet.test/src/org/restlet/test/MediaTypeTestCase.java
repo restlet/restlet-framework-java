@@ -35,7 +35,7 @@ import org.restlet.util.Series;
 /**
  * Test {@link org.restlet.data.MediaType}.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class MediaTypeTestCase extends RestletTestCase {
     protected final static String DEFAULT_SCHEME = "http";

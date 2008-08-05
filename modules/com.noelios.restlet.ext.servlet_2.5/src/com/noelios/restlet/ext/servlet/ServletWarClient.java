@@ -49,7 +49,7 @@ import com.noelios.restlet.ClientHelper;
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class ServletWarClient extends Client {
     /** The helper provided by the implementation. */

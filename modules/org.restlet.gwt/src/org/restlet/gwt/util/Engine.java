@@ -50,7 +50,7 @@ import org.restlet.gwt.resource.Variant;
  * Facade to the engine implementating the Restlet API. Note that this is an SPI
  * class that is not intended for public usage.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public abstract class Engine {
 

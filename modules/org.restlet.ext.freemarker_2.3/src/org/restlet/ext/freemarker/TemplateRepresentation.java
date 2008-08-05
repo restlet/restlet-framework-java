@@ -55,7 +55,7 @@ import freemarker.template.TemplateScalarModel;
  * representations.
  * 
  * @see <a href="http://freemarker.org/">FreeMarker home page< /a>
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class TemplateRepresentation extends OutputRepresentation {
 

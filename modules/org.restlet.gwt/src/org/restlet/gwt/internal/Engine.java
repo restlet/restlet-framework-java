@@ -60,7 +60,7 @@ import org.restlet.gwt.resource.Variant;
 /**
  * Restlet factory supported by the engine.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Engine extends org.restlet.gwt.util.Engine {
     /** Complete version. */

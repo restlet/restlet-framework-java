@@ -64,7 +64,7 @@ import com.noelios.restlet.ServerHelper;
  * </tr>
  * </table>
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class HttpServerHelper extends ServerHelper {
     /** The converter from HTTP calls to uniform calls. */

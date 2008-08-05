@@ -35,7 +35,7 @@ import com.noelios.restlet.Engine;
  * Access log record formatter which writes a header describing the default log
  * format.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class DefaultAccessLogFormatter extends AccessLogFormatter {
 

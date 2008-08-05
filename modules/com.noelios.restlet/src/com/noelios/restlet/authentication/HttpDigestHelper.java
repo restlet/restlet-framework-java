@@ -48,7 +48,7 @@ import com.noelios.restlet.util.SecurityUtils;
 /**
  * Implements the HTTP DIGEST authentication.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class HttpDigestHelper extends AuthenticationHelper {
 

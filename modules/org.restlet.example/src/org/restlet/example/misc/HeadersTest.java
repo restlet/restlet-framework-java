@@ -40,7 +40,7 @@ import org.restlet.util.Series;
 /**
  * Display the HTTP accept header sent by the Web browsers.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class HeadersTest {
     public static void main(String[] args) throws Exception {

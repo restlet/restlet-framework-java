@@ -43,14 +43,14 @@ import org.restlet.util.Series;
  * 
  * @see org.restlet.data.Response
  * @see org.restlet.Uniform
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Request extends Message {
 
     /**
      * Private cookie series.
      * 
-     * @author Jerome Louvel (contact@noelios.com)
+     * @author Jerome Louvel
      */
     private static class CookieSeries extends Series<Cookie> {
         /**

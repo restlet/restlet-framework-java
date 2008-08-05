@@ -45,7 +45,7 @@ import org.restlet.resource.Representation;
 /**
  * Test case for the Velocity extension.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class VelocityTestCase extends TestCase {
 

@@ -57,7 +57,7 @@ import org.restlet.util.Resolver;
  * representations.
  * 
  * @see <a href="http://velocity.apache.org/">Velocity home page< /a>
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class TemplateRepresentation extends OutputRepresentation {
     /**

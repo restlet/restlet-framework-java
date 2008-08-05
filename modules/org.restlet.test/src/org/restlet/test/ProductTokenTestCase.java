@@ -39,7 +39,7 @@ import org.restlet.util.Engine;
 /**
  * Test {@link org.restlet.data.Product}.
  * 
- * @author Thierry Boileau (contact@noelios.com)
+ * @author Thierry Boileau
  */
 public class ProductTokenTestCase extends RestletTestCase {
 

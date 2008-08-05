@@ -109,7 +109,7 @@ import com.noelios.restlet.Engine;
  * 
  * @see com.noelios.restlet.ext.jdbc.RowSetRepresentation
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  * @author Thierry Boileau
  */
 public class JdbcClientHelper extends ClientHelper {

@@ -41,7 +41,7 @@ import org.restlet.util.DateUtils;
 /**
  * Cookie header reader.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class CookieReader extends HeaderReader {
     private static final String NAME_DOMAIN = "$Domain";

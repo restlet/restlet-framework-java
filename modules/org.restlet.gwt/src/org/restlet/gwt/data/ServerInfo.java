@@ -30,7 +30,7 @@ package org.restlet.gwt.data;
 /**
  * Server specific data related to a call.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public final class ServerInfo {
     /** The IP address. */

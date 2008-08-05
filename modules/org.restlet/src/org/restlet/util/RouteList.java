@@ -46,7 +46,7 @@ import org.restlet.data.Response;
  * Note that structural changes to this list are thread-safe, using an
  * underlying {@link java.util.concurrent.CopyOnWriteArrayList}.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  * @see java.util.Collections
  * @see java.util.List
  */

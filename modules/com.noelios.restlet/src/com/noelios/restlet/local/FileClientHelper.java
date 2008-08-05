@@ -64,7 +64,7 @@ import org.restlet.util.ByteUtils;
 /**
  * Connector to the file resources accessible
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  * @author Thierry Boileau
  */
 public class FileClientHelper extends LocalClientHelper {

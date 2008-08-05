@@ -31,7 +31,7 @@ package org.restlet.gwt.data;
  * Product tokens are used to allow communicating applications to identify
  * themselves by software name and version.
  * 
- * @author Thierry Boileau (contact@noelios.com)
+ * @author Thierry Boileau
  * @see <a *
  *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.43" *
  *      >User-Agent< /a>

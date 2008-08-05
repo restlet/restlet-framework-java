@@ -33,7 +33,7 @@ import org.restlet.util.Series;
 /**
  * Authentication challenge sent by an origin server to a client.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public final class ChallengeRequest {
     /** The challenge scheme. */

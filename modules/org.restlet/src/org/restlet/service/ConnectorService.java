@@ -40,7 +40,7 @@ import org.restlet.resource.Representation;
  * won't automatically follow redirections. This will ensure a consistent
  * behavior and portability of applications.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class ConnectorService extends Service {
     /** The list of required client protocols. */

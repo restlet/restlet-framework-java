@@ -63,7 +63,7 @@ import org.restlet.resource.Resource;
  * @see java.util.regex.Pattern
  * @see <a href="http://en.wikipedia.org/wiki/Virtual_hosting">Wikipedia - Virtual Hosting</a>
  * @see <a href="http://httpd.apache.org/docs/2.2/vhosts/">Apache - Virtual Hosting</a>
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class VirtualHost extends Router {
     private static final ThreadLocal<Integer> CURRENT = new ThreadLocal<Integer>();

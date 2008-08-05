@@ -121,7 +121,7 @@ import com.sun.grizzly.filter.SSLReadFilter;
  * </tr>
  * </table>
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class HttpsServerHelper extends GrizzlyServerHelper {
 

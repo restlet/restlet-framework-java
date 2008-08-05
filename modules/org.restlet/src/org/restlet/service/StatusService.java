@@ -54,7 +54,7 @@ import org.restlet.resource.Representation;
  * Then, just create a instance of your class and set it on your Component or
  * Application via the setStatusService() methods.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class StatusService extends Service {
     /** The email address to contact in case of error. */

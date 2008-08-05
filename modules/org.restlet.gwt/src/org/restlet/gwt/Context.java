@@ -47,7 +47,7 @@ import org.restlet.gwt.util.Series;
  * either immutable, thread-safe themselves or guarded by a commonly agreed
  * lock.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Context {
 

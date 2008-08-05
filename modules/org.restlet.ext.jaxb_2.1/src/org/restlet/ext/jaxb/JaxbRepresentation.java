@@ -58,7 +58,7 @@ import org.w3c.dom.Document;
  * XML and JAXB element class trees.
  * 
  * @author Overstock.com
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  * @param <T>
  *            The type to wrap.
  */

@@ -46,7 +46,7 @@ import org.restlet.gwt.resource.StringRepresentation;
  * @see <a
  *      href="http://roy.gbiv.com/pubs/dissertation/rest_arch_style.htm#sec_5_1_5"
  *      >Source dissertation< /a>
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public abstract class Uniform {
     /**

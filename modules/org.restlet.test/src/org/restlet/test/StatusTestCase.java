@@ -32,7 +32,7 @@ import org.restlet.data.Status;
 /**
  * Test {@link org.restlet.data.Status}.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class StatusTestCase extends RestletTestCase {
 

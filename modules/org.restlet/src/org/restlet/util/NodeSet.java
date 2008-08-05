@@ -37,7 +37,7 @@ import org.w3c.dom.NodeList;
  * DOM nodes set that implements the standard List interface for easier
  * iteration.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class NodeSet extends AbstractList<Node> implements List<Node>, NodeList {
 

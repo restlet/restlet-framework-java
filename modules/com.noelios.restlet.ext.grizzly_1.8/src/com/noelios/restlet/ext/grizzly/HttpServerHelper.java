@@ -42,7 +42,7 @@ import com.sun.grizzly.filter.ReadFilter;
 /**
  * HTTP connector based on Grizzly.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class HttpServerHelper extends GrizzlyServerHelper {
 

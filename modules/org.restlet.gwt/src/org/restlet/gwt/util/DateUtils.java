@@ -37,7 +37,7 @@ import com.google.gwt.i18n.client.DateTimeFormat;
 /**
  * Date manipulation utilities.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  * @author Piyush Purang (ppurang@gmail.com)
  */
 public final class DateUtils {

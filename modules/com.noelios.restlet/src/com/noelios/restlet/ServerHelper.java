@@ -36,7 +36,7 @@ import org.restlet.data.Response;
 /**
  * Server connector helper.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class ServerHelper extends ConnectorHelper<Server> {
 

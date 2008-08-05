@@ -34,7 +34,7 @@ import org.restlet.data.LocalReference;
 /**
  * Unit test case for the File Reference parsing.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class FileReferenceTestCase extends TestCase {
 

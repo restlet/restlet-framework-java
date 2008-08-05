@@ -43,7 +43,7 @@ import com.db4o.config.Configuration;
 /**
  * The main Web application.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Application extends org.restlet.Application {
 

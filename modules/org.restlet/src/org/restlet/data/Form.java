@@ -39,7 +39,7 @@ import org.restlet.util.Series;
 /**
  * Form which is a specialized modifiable list of parameters.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Form extends Series<Parameter> {
     /**

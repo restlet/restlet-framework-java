@@ -51,7 +51,7 @@ import com.noelios.restlet.util.SecurityUtils;
 /**
  * Implements the HTTP authentication for the Amazon S3 service.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class HttpAmazonS3Helper extends AuthenticationHelper {
 

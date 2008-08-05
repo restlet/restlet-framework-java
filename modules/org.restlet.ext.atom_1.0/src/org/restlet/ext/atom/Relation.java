@@ -30,7 +30,7 @@ package org.restlet.ext.atom;
 /**
  * Enumeration of relation types.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public enum Relation {
     /**

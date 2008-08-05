@@ -36,7 +36,7 @@ import org.restlet.data.Protocol;
 /**
  * Reaching target Resources
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Part12 extends Application {
 

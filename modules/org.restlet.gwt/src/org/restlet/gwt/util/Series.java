@@ -43,7 +43,7 @@ import org.restlet.gwt.data.Parameter;
  * instance of this class as any other java.util.List, in particular all the
  * helper methods in java.util.Collections.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  * @param <E>
  *            The contained type
  * @see Parameter

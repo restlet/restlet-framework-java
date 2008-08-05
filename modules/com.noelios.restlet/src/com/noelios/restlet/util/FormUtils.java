@@ -41,7 +41,7 @@ import org.restlet.resource.Representation;
 /**
  * Representation of a Web form containing submitted parameters.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class FormUtils {
     /**

@@ -40,7 +40,7 @@ import java.util.WeakHashMap;
 /**
  * Date manipulation utilities.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  * @author Piyush Purang (ppurang@gmail.com)
  */
 public final class DateUtils {

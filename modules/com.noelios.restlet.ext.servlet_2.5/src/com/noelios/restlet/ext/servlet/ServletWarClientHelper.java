@@ -70,7 +70,7 @@ import com.noelios.restlet.local.FileClientHelper;
  }
  </code>
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class ServletWarClientHelper extends FileClientHelper {
     /** The Servlet context to use. */

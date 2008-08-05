@@ -31,7 +31,7 @@ package org.restlet.gwt.data;
  * Protocol used by client and server connectors. Connectors enable the
  * communication between components by implementing standard protocols.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public final class Protocol extends Metadata {
 

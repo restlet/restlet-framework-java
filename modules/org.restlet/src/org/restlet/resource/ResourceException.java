@@ -32,7 +32,7 @@ import org.restlet.data.Status;
 /**
  * Encapsulates a response status and the optional cause as a checked exception.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class ResourceException extends Exception {
 

@@ -38,7 +38,7 @@ import java.util.Vector;
  * This allows an easy subclassing. By default, it wraps a thread-safe
  * {@link Vector} instance.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  * @see java.util.Collections
  * @see java.util.List
  */

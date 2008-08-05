@@ -38,7 +38,7 @@ import com.noelios.restlet.http.StreamServerHelper;
 /**
  * Base JXTA connector.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public abstract class JxtaServerHelper extends StreamServerHelper {
 

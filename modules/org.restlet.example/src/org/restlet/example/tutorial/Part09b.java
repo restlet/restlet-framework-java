@@ -39,7 +39,7 @@ import org.restlet.data.Status;
 /**
  * Authenticating to an HTTP server.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Part09b {
     public static void main(String[] args) throws Exception {

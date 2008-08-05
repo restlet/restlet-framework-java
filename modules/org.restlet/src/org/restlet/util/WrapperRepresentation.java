@@ -50,7 +50,7 @@ import org.restlet.resource.Representation;
  * the representation with application related properties and behavior.
  * 
  * @see <a href="http://c2.com/cgi/wiki?DecoratorPattern">The decorator (aka wrapper) pattern</a>
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class WrapperRepresentation extends Representation {
     /** The wrapped representation. */

@@ -37,7 +37,7 @@ import org.restlet.resource.Representation;
  * Provides access to the representation information needed by the FileUpload
  * processor.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class RepresentationContext implements RequestContext {
     /** The representation to adapt. */

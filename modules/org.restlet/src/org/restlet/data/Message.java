@@ -39,7 +39,7 @@ import org.restlet.resource.StringRepresentation;
 /**
  * Generic message exchanged between client and server connectors.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public abstract class Message {
     /** The modifiable attributes map. */

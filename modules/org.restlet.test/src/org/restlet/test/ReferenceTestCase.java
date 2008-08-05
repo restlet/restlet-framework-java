@@ -37,7 +37,7 @@ import org.restlet.data.Reference;
 /**
  * Test {@link org.restlet.data.Reference}.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  * @author Lars Heuer (heuer[at]semagia.com) <a
  *         href="http://www.semagia.com/">Semagia</a>
  */

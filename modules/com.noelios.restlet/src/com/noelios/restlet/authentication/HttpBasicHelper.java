@@ -42,7 +42,7 @@ import com.noelios.restlet.util.Base64;
 /**
  * Implements the HTTP BASIC authentication.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class HttpBasicHelper extends AuthenticationHelper {
 

@@ -53,7 +53,7 @@ import org.restlet.service.MetadataService;
  * requests need to have a "org.restlet.clap.classloader" attribute set with the
  * instance of your classloader.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class ClapClientHelper extends LocalClientHelper {
     /**

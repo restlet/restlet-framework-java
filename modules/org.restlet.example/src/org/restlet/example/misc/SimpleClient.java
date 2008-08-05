@@ -37,7 +37,7 @@ import org.restlet.data.Response;
 /**
  * Simple HTTP client calling the simple server.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class SimpleClient {
     public static void main(String[] args) throws Exception {

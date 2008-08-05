@@ -55,7 +55,7 @@ import org.restlet.util.Variable;
  * should be especially careful when storing state in member variables.
  * 
  * @see org.restlet.util.Template
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Route extends Filter {
     /** Internal class holding extraction information. */

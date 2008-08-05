@@ -42,7 +42,7 @@ import org.restlet.util.Series;
 /**
  * Test the Amazon Web Service authentication.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class AwsTest {
     public static void main(String[] args) throws Exception {

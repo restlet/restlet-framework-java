@@ -32,7 +32,7 @@ import java.util.Date;
 /**
  * URI saved and annotated by a user.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Bookmark {
 

@@ -37,7 +37,7 @@ import org.restlet.data.Response;
 /**
  * JXTA test server.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class TestServer {
 

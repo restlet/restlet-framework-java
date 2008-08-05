@@ -41,7 +41,7 @@ import org.xml.sax.helpers.AttributesImpl;
 /**
  * Either contains or links to the content of the entry.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Content {
 

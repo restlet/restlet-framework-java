@@ -39,7 +39,7 @@ import org.restlet.resource.Representation;
 /**
  * Amazon S3 client. Support class handling authorized requests.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class S3Authorized {
     public final static String PUBLIC_KEY = "0F9DBXKB5274JKTJ8DG2";

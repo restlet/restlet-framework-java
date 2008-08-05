@@ -61,7 +61,7 @@ import org.xml.sax.SAXException;
  * Representation based on an XML document. It knows how to evaluate XPath
  * expressions and how to manage a namespace context.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public abstract class XmlRepresentation extends OutputRepresentation implements
         NamespaceContext {

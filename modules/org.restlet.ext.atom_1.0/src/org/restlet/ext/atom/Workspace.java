@@ -39,7 +39,7 @@ import org.xml.sax.SAXException;
 /**
  * Workspace containing collections of members entries.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Workspace {
 

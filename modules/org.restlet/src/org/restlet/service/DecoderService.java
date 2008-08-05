@@ -30,7 +30,7 @@ package org.restlet.service;
 /**
  * Service automatically decoding or decompressing request entities.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class DecoderService extends Service {
 

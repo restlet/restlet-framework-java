@@ -119,7 +119,7 @@ import org.restlet.util.Variable;
  * the template aims at catching a sequence of characters and are accessible via
  * the {@link ClientInfo#getAgentAttributes()} method.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public final class ClientInfo {
     /** The character set preferences. */

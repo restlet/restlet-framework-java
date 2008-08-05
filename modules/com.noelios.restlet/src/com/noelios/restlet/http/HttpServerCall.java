@@ -50,7 +50,7 @@ import org.restlet.service.ConnectorService;
 /**
  * Abstract HTTP server connector call.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public abstract class HttpServerCall extends HttpCall {
 

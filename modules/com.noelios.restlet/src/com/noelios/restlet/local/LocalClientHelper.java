@@ -67,7 +67,7 @@ import com.noelios.restlet.ClientHelper;
  * </table>
  * 
  * @see org.restlet.data.LocalReference
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  * @author Thierry Boileau
  */
 public class LocalClientHelper extends ClientHelper {

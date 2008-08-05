@@ -45,7 +45,7 @@ import org.restlet.util.Template;
  * 
  * @see org.restlet.util.Template
  * @see <a href="http://www.restlet.org/documentation/1.1/tutorial#part10">Tutorial: URI rewriting and redirection</a>
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Redirector extends Restlet {
     /**

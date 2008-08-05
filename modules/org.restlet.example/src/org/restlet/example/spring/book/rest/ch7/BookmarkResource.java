@@ -43,7 +43,7 @@ import org.restlet.resource.Variant;
 /**
  * Resource for a user's bookmark.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  * @author Konstantin Laufer (laufer@cs.luc.edu)
  */
 public class BookmarkResource extends UserResource {

@@ -41,7 +41,7 @@ import org.restlet.data.Status;
 /**
  * Simple HTTP server invoked by the simple client.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class SimpleServer {
     public static void main(String[] args) {

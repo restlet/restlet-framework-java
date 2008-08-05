@@ -33,7 +33,7 @@ import java.util.List;
 /**
  * User account.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class User {
 

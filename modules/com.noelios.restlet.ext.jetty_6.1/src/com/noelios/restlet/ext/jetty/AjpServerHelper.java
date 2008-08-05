@@ -36,7 +36,7 @@ import org.restlet.data.Protocol;
  * Jetty AJP server connector.
  * 
  * @see <a href="http://jetty.mortbay.org/jetty6/">Jetty home page< /a>
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class AjpServerHelper extends JettyServerHelper {
     /**

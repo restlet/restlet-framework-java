@@ -33,7 +33,7 @@ import org.restlet.data.Protocol;
 /**
  * Retrieving the content of a Web page.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Part02a {
     public static void main(String[] args) throws Exception {

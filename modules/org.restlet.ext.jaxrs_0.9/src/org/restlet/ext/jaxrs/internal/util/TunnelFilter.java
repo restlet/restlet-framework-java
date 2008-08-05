@@ -51,7 +51,7 @@ import org.restlet.service.TunnelService;
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  * @author Stephan Koops
  */
 public class TunnelFilter extends Filter {

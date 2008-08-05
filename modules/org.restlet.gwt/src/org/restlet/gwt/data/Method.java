@@ -30,7 +30,7 @@ package org.restlet.gwt.data;
 /**
  * Method to execute when handling a call.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public final class Method extends Metadata {
     private static final String BASE_HTTP = "http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html";

@@ -32,7 +32,7 @@ import org.restlet.util.Engine;
 /**
  * Cookie setting provided by a server.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public final class CookieSetting extends Cookie {
     /**

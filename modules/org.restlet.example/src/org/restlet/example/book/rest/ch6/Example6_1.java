@@ -35,7 +35,7 @@ import org.restlet.data.Reference;
 /**
  * Sample map client to create a user account
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Example6_1 {
     public void makeUser(String user, String password) {

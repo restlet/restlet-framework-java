@@ -50,7 +50,7 @@ import org.restlet.util.WrapperRepresentation;
 /**
  * Content that encodes a wrapped content. Allows to apply only one encoding.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class EncodeRepresentation extends WrapperRepresentation {
     /**

@@ -40,7 +40,7 @@ import org.restlet.resource.Variant;
 /**
  * Resource for a user's list of bookmarks.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  * @author Konstantin Laufer (laufer@cs.luc.edu)
  */
 public class BookmarksResource extends UserResource {

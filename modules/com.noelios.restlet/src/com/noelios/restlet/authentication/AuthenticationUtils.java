@@ -45,7 +45,7 @@ import com.noelios.restlet.Engine;
 /**
  * Authentication utilities.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  * @author Ray Waldin (ray@waldin.net)
  */
 public class AuthenticationUtils {

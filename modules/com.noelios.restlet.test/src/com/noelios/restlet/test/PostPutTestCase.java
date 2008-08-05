@@ -40,7 +40,7 @@ import org.restlet.data.Response;
 /**
  * Unit tests for POST and PUT requests.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class PostPutTestCase extends BaseConnectorsTestCase {
     @Override

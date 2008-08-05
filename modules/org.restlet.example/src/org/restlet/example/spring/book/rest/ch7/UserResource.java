@@ -51,7 +51,7 @@ import com.db4o.query.Predicate;
 /**
  * Resource for a persistent user.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  * @author Konstantin Laufer (laufer@cs.luc.edu)
  */
 public class UserResource extends Resource {

@@ -39,7 +39,7 @@ import org.xml.sax.helpers.AttributesImpl;
 /**
  * Defines a reference from an entry or feed to a Web resource.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Link {
 

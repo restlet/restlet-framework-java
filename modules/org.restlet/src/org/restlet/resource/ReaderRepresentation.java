@@ -39,7 +39,7 @@ import org.restlet.util.ByteUtils;
 /**
  * Transient representation based on a BIO characters reader.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class ReaderRepresentation extends CharacterRepresentation {
     /** Obtain a suitable logger. */

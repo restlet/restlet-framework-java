@@ -40,7 +40,7 @@ import com.noelios.restlet.util.Base64;
 /**
  * Implements the SMTP PLAIN authentication.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class SmtpPlainHelper extends AuthenticationHelper {
 

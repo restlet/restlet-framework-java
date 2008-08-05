@@ -46,7 +46,7 @@ import org.restlet.util.ByteUtils;
 /**
  * Representation based on a file.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class FileRepresentation extends Representation {
     /**

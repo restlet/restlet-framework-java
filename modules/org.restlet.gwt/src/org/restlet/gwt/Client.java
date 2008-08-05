@@ -40,7 +40,7 @@ import org.restlet.gwt.util.Engine;
  * Connector acting as a generic client. It internally uses one of the available
  * connectors registered with the current Restlet implementation.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Client extends Connector {
     /**

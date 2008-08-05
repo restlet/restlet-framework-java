@@ -38,7 +38,7 @@ import org.w3c.dom.Node;
 /**
  * Amazon S3 bucket.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class S3Bucket extends S3Authorized {
 

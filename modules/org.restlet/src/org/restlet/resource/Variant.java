@@ -47,7 +47,7 @@ import org.restlet.util.WrapperList;
  * the representation's content itself. For this, you need to use the
  * Representation subclass.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Variant {
     /**

@@ -38,7 +38,7 @@ import com.noelios.restlet.ChainHelper;
 /**
  * Application implementation.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class ApplicationHelper extends ChainHelper<Application> {
     /**

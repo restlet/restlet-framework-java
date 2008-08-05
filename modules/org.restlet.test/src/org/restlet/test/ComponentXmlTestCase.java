@@ -42,7 +42,7 @@ import org.restlet.data.Response;
 /**
  * Unit test case for the configuration of a component with an XML file.
  * 
- * @author Thierry Boileau (contact@noelios.com)
+ * @author Thierry Boileau
  */
 public class ComponentXmlTestCase extends TestCase {
 

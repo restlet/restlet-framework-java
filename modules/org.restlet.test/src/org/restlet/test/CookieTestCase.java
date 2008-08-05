@@ -32,7 +32,7 @@ import org.restlet.data.Cookie;
 /**
  * Test {@link org.restlet.data.Cookie}.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class CookieTestCase extends RestletTestCase {
 

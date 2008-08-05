@@ -45,7 +45,7 @@ import com.noelios.restlet.http.CookieUtils;
 /**
  * Unit tests for the Cookie related classes.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class CookiesTestCase extends TestCase {
     /**

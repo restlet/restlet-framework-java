@@ -48,7 +48,7 @@ import com.noelios.restlet.util.KeepAliveOutputStream;
 /**
  * HTTP client call based on streams.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class StreamClientCall extends HttpClientCall {
 

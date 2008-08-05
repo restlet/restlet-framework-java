@@ -38,7 +38,7 @@ import com.sun.grizzly.util.WorkerThread;
 /**
  * HTTP parser filter for Grizzly.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class HttpParserFilter implements ProtocolFilter {
 

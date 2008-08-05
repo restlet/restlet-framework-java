@@ -73,7 +73,7 @@ import org.restlet.util.Template;
  * thread. Therefore, it doesn't have to be thread-safe.<br>
  * 
  * @see org.restlet.Finder
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public abstract class Handler {
     /** The parent context. */

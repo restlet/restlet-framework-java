@@ -58,7 +58,7 @@ import org.xml.sax.InputSource;
  * reading and also the write(XmlWriter writer) method when serialization is
  * requested.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class SaxRepresentation extends XmlRepresentation {
 

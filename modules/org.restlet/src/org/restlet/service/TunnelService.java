@@ -102,7 +102,7 @@ import org.restlet.data.Request;
  * set of (key:value) pairs is the simple list of key:value just above the
  * "accept" line.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class TunnelService extends Service {
 

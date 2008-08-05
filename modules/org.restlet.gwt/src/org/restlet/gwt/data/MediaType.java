@@ -37,7 +37,7 @@ import org.restlet.gwt.util.Series;
  * Media type used in representations and preferences.
  * 
  * @see <a href="http://en.wikipedia.org/wiki/MIME">MIME types on Wikipedia< /a>
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public final class MediaType extends Metadata {
 

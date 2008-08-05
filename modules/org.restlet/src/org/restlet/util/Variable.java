@@ -33,7 +33,7 @@ import org.restlet.data.Reference;
  * Variable descriptor for reference templates.
  * 
  * @see Template
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public final class Variable {
 

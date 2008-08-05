@@ -41,7 +41,7 @@ import com.sun.grizzly.TCPSelectorHandler;
 /**
  * Base Grizzly connector.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public abstract class GrizzlyServerHelper extends HttpServerHelper {
     /** The Grizzly controller. */

@@ -42,7 +42,7 @@ import com.noelios.restlet.TemplateDispatcher;
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state as member variables.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class ChildClientDispatcher extends TemplateDispatcher {
     /**

@@ -38,7 +38,7 @@ package org.restlet.data;
  * representation." Roy T. Fielding
  * 
  * @see <a href="http://roy.gbiv.com/pubs/dissertation/rest_arch_style.htm#sec_5_2_1_2">Source dissertation</a>
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Metadata {
     /** The metadata name like "text/html" or "compress" or "iso-8851-1". */

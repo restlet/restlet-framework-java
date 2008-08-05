@@ -30,7 +30,7 @@ package org.restlet.gwt.internal.util;
 /**
  * Line reader.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class LineReader extends CharacterReader {
 

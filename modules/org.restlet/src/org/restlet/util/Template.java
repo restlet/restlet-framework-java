@@ -56,7 +56,7 @@ import org.restlet.data.Response;
  * 
  * @see Resolver
  * @see <a href="http://bitworking.org/projects/URI-Templates/">URI Template specification</a>
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Template {
 

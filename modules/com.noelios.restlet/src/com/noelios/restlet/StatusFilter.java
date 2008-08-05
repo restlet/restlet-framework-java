@@ -54,7 +54,7 @@ import org.restlet.resource.StringRepresentation;
  * @see <a
  *      href="http://www.restlet.org/documentation/1.1/tutorial#part08">Tutorial
  *      : Displaying error pages< /a>
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class StatusFilter extends Filter {
     /** Email address of the administrator to contact in case of error. */

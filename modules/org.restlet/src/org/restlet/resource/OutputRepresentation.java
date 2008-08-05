@@ -40,7 +40,7 @@ import org.restlet.util.ByteUtils;
  * Representation.write(OutputStream) method. This method will later be called
  * back by the connectors when the actual representation's content is needed.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public abstract class OutputRepresentation extends StreamRepresentation {
     /**

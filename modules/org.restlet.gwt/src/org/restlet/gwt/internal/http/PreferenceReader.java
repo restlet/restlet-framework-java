@@ -43,7 +43,7 @@ import org.restlet.gwt.util.Series;
  * Preference header reader. Works for character sets, encodings, languages or
  * media types.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class PreferenceReader<T extends Metadata> extends HeaderReader {
     public static final int TYPE_CHARACTER_SET = 1;

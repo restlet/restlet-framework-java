@@ -42,7 +42,7 @@ import com.google.gwt.http.client.Response;
 /**
  * HTTP client connector call based on GWT's HTTP module.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class GwtHttpClientCall extends HttpClientCall {
 

@@ -40,14 +40,14 @@ import org.restlet.data.Metadata;
 /**
  * Service providing access to metadata and their associated extension names.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class MetadataService extends Service {
     /**
      * Associates an extension name and a metadata.
      * 
      * @author Alex Milowski (alexml@milowski.org)
-     * @author Thierry Boileau (contact@noelios.com)
+     * @author Thierry Boileau
      */
     private class MetadataExtension {
         /** The mapped metadata. */

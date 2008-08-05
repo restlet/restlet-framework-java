@@ -40,7 +40,7 @@ import org.restlet.data.Protocol;
 /**
  * Guard access to a Restlet.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Part09a extends Application {
 

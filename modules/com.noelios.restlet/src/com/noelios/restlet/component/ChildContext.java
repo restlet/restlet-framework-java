@@ -37,7 +37,7 @@ import org.restlet.Uniform;
  * Context based on a parent component's context but dedicated to a child
  * Restlet, typically to an application.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class ChildContext extends Context {
 

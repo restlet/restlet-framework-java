@@ -50,7 +50,7 @@ import org.springframework.context.support.GenericApplicationContext;
  *         &quot;clap://thread/config/applicationContext.xml&quot;);
  * </pre>
  * 
- * @author Jerome Louvel (contact@noelios.com)</a>
+ * @author Jerome Louvel</a>
  */
 public class SpringContext extends GenericApplicationContext {
     /** The parent Restlet context. */

@@ -30,7 +30,7 @@ package com.noelios.restlet.http;
 /**
  * Constants related to the HTTP protocol.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public final class HttpConstants {
     // ---------------------

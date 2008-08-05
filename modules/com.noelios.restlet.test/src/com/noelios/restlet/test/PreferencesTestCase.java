@@ -42,7 +42,7 @@ import com.noelios.restlet.http.PreferenceUtils;
 /**
  * Unit tests for the Preference related classes.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class PreferencesTestCase extends TestCase {
     /**

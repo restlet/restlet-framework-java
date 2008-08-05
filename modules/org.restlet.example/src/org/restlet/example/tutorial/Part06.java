@@ -38,7 +38,7 @@ import org.restlet.data.Protocol;
 /**
  * Server static files using an application.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Part06 {
     public static void main(String[] args) throws Exception {

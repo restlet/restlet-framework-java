@@ -50,7 +50,7 @@ import com.noelios.restlet.authentication.AuthenticationUtils;
 /**
  * Request wrapper for server HTTP calls.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class HttpRequest extends Request {
     /** Indicates if the client data was parsed and added. */

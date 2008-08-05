@@ -43,7 +43,7 @@ import org.restlet.data.MediaType;
  * Represents an Unicode string that can be converted to any character set
  * supported by Java.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class StringRepresentation extends StreamRepresentation {
 

@@ -54,7 +54,7 @@ import com.noelios.restlet.authentication.AuthenticationUtils;
 /**
  * Converter of high-level uniform calls into low-level HTTP client calls.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class HttpClientConverter extends HttpConverter {
     /**

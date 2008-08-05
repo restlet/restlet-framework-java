@@ -51,7 +51,7 @@ import org.restlet.util.WrapperRepresentation;
  * If at least one encoding of the wrapped representation is not supported, then
  * the wrapped representation is not decoded.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class DecodeRepresentation extends WrapperRepresentation {
     /**

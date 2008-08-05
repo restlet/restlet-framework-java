@@ -109,7 +109,7 @@ import com.google.gwt.http.client.URL;
  * Note that the name and value properties are thread safe, stored in volatile
  * members.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  * @see <a href="http://www.faqs.org/rfcs/rfc3986.html">RFC 3986< /a>
  */
 public class Reference {

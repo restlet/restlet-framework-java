@@ -63,7 +63,7 @@ import com.noelios.restlet.http.PreferenceUtils;
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class TunnelFilter extends Filter {
 

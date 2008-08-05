@@ -42,7 +42,7 @@ import org.xml.sax.SAXException;
  * Represents an individual entry, acting as a component for metadata and data
  * associated with the entry.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Entry {
 

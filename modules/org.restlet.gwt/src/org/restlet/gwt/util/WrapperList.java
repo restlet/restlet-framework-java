@@ -37,7 +37,7 @@ import java.util.ListIterator;
  * List wrapper. Modifiable list that delegates all methods to a wrapped list.
  * This allows an easy subclassing.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  * @see java.util.Collections
  * @see java.util.List
  */

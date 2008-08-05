@@ -39,7 +39,7 @@ import java.util.logging.Logger;
 /**
  * Simple IDENT client. Follow the RFC 1413.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class IdentClient {
     /** The timeout while attempting to connect to the Ident server. */

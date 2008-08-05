@@ -30,7 +30,7 @@ package org.restlet.data;
 /**
  * Status to return after handling a call.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public final class Status extends Metadata {
     private static final String BASE_HTTP = "http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html";

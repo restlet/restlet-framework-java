@@ -50,7 +50,7 @@ import org.restlet.resource.Representation;
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class WadlComponent extends Component {
 

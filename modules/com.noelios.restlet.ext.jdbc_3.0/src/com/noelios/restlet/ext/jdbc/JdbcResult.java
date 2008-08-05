@@ -36,7 +36,7 @@ import java.sql.Statement;
  * JDBC result wrapper. Used by the JDBC client connector as a response entity
  * of JDBC calls.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class JdbcResult implements Serializable {
     private static final long serialVersionUID = 1L;

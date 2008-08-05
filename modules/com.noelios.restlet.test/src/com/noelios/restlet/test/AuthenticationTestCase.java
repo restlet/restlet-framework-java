@@ -37,7 +37,7 @@ import com.noelios.restlet.authentication.AuthenticationUtils;
 /**
  * Unit tests for the SecurityData related classes.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class AuthenticationTestCase extends TestCase {
 

@@ -64,7 +64,7 @@ package org.restlet.service;
  * 
  * @see <a href="http://www.restlet.org/documentation/1.1/tutorial#part07">Tutorial: Access logging</a>
  * @see <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/logging/package-summary.html">java.util.logging</a>
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class LogService extends Service {
     /** The access logger name. */

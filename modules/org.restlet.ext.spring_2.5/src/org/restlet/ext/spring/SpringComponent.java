@@ -75,7 +75,7 @@ import org.restlet.data.Protocol;
  * should be especially careful when storing state in member variables.
  * 
  * @see <a href="http://www.springframework.org/">Spring home page< /a>
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class SpringComponent extends org.restlet.Component {
 

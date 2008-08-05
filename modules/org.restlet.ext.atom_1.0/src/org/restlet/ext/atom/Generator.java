@@ -38,7 +38,7 @@ import org.xml.sax.helpers.AttributesImpl;
  * Identifies the agent used to generate a feed, for debugging and other
  * purposes.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Generator {
 

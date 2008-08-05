@@ -33,7 +33,7 @@ import org.restlet.data.Protocol;
 /**
  * Concrete JXTA-based HTTP client connector helper.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class HttpClientHelper extends JxtaClientHelper {
 

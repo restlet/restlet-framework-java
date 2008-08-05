@@ -38,7 +38,7 @@ import com.google.gwt.json.client.JSONValue;
  * is a common serialization format similar to XML but lighter.
  * 
  * @see <a href="http://www.json.org">JSON<a/>
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class JsonRepresentation extends Representation {
     /** The source JSON representation. */

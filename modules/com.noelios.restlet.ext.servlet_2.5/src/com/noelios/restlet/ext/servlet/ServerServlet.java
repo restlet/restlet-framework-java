@@ -166,7 +166,7 @@ import com.noelios.restlet.http.HttpServerHelper;
  * the auto-wiring by setting the property to "false".
  * 
  * @see <a href="http://java.sun.com/j2ee/">J2EE home page< /a>
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class ServerServlet extends HttpServlet {
     /**

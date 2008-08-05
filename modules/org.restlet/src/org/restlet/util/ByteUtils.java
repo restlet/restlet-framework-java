@@ -61,7 +61,7 @@ import org.restlet.resource.WriterRepresentation;
 /**
  * Byte manipulation utilities.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public final class ByteUtils {
 
@@ -248,7 +248,7 @@ public final class ByteUtils {
      * Pipe stream that pipes output streams into input streams. Implementation
      * based on a shared synchronized queue.
      * 
-     * @author Jerome Louvel (contact@noelios.com)
+     * @author Jerome Louvel
      */
     private final static class PipeStream {
         private static final long QUEUE_TIMEOUT = 5;

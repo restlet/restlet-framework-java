@@ -37,7 +37,7 @@ import com.noelios.restlet.Engine;
 /**
  * Response wrapper for server HTTP calls.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class HttpResponse extends Response {
     /** The low-level HTTP call. */

@@ -44,7 +44,7 @@ import org.restlet.gwt.util.Series;
 /**
  * Low-level HTTP client call.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public abstract class HttpClientCall extends HttpCall {
     /**

@@ -30,7 +30,7 @@ package com.noelios.restlet.util;
 /**
  * String manipulation utilities.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class StringUtils {
     /**

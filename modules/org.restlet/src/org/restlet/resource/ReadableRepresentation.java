@@ -39,7 +39,7 @@ import org.restlet.util.ByteUtils;
 /**
  * Transient representation based on a readable NIO byte channel.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class ReadableRepresentation extends ChannelRepresentation {
     /** Obtain a suitable logger. */

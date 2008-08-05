@@ -42,7 +42,7 @@ import org.restlet.resource.StringRepresentation;
 /**
  * Unit test case for the File client connector.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class FileClientTestCase extends TestCase {
 

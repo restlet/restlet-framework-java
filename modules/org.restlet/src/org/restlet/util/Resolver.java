@@ -37,14 +37,14 @@ import org.restlet.data.Response;
 /**
  * Resolves a name into a value.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public abstract class Resolver<T> {
 
     /**
      * Resolves variable values based on a request and a response.
      * 
-     * @author Jerome Louvel (contact@noelios.com)
+     * @author Jerome Louvel
      */
     private static class CallResolver extends Resolver<String> {
         /** The request to use as a model. */
@@ -337,7 +337,7 @@ public abstract class Resolver<T> {
     /**
      * Resolves variable values based on a map.
      * 
-     * @author Jerome Louvel (contact@noelios.com)
+     * @author Jerome Louvel
      */
     private static class MapResolver extends Resolver<String> {
         /** The variables to use when formatting. */

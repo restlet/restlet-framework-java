@@ -44,7 +44,7 @@ import org.restlet.data.Response;
 /**
  * Test case for template filters.
  * 
- * @author Thierry Boileau (contact@noelios.com)
+ * @author Thierry Boileau
  */
 public class TemplateFilterTestCase extends TestCase {
 

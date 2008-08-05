@@ -30,7 +30,7 @@ package org.restlet.data;
 /**
  * Challenge scheme used to authenticate remote clients.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public final class ChallengeScheme extends Metadata {
     /** Custom scheme based on IP address or cookies or query params, etc. */

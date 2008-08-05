@@ -34,7 +34,7 @@ import org.restlet.gwt.util.Series;
 /**
  * Converter between high-level and low-level HTTP calls.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class HttpConverter {
     /** The context. */

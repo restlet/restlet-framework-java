@@ -30,7 +30,7 @@ package org.restlet.example.tutorial;
 /**
  * Constants for the tutorial examples.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Constants {
     public static final String ROOT_URI = "file:///c:/restlet/docs/api/";

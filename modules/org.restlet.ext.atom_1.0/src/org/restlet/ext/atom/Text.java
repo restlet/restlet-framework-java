@@ -41,7 +41,7 @@ import org.xml.sax.helpers.AttributesImpl;
  * A Text construct contains human-readable text, usually in small quantities.
  * The content of Text constructs is Language-Sensitive.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Text {
 

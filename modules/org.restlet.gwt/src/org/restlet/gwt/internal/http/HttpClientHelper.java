@@ -53,7 +53,7 @@ import org.restlet.gwt.internal.ClientHelper;
  * </tr>
  * </table>
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public abstract class HttpClientHelper extends ClientHelper {
     /** The converter from uniform calls to HTTP calls. */

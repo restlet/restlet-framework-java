@@ -36,7 +36,7 @@ import org.restlet.data.Preference;
 /**
  * Association of a media type and a character set.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class ContentType {
     /**

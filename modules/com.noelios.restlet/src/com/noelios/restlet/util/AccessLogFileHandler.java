@@ -34,7 +34,7 @@ import java.io.IOException;
  * useful in configuration files to differentiate from the
  * java.util.logging.FileHandler.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class AccessLogFileHandler extends java.util.logging.FileHandler {
     /**
