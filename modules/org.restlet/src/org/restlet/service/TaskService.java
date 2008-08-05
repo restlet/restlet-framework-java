@@ -288,9 +288,9 @@ public class TaskService extends Service implements ExecutorService {
      * @return The result returned by one of the tasks.
      */
     @SuppressWarnings("unchecked")
-    public Callable invokeAny(Collection tasks) throws InterruptedException,
+    public Object invokeAny(Collection tasks) throws InterruptedException,
             ExecutionException {
-        return (Callable) getWrapped().invokeAny(tasks);
+        return getWrapped().invokeAny(tasks);
     }
 
     /**
@@ -314,9 +314,18 @@ public class TaskService extends Service implements ExecutorService {
      * @return The result returned by one of the tasks.
      */
     @SuppressWarnings("unchecked")
-    public Callable invokeAny(Collection tasks, long timeout, TimeUnit unit)
+    public Object invokeAny(Collection tasks, long timeout, TimeUnit unit)
             throws InterruptedException, ExecutionException, TimeoutException {
-        return (Callable) getWrapped().invokeAny(tasks, timeout, unit);
+        return getWrapped().invokeAny(tasks, timeout, unit);
+    }
+
+    /**
+     * Returns true if this executor has been shut down.
+     * 
+     * @return True if this executor has been shut down.
+     */
+    public boolean isShutdown() {
+        return getWrapped().isShutdown();
     }
 
     /**
@@ -328,15 +337,6 @@ public class TaskService extends Service implements ExecutorService {
      */
     public boolean isShutdownAllowed() {
         return shutdownAllowed;
-    }
-
-    /**
-     * Returns true if this executor has been shut down.
-     * 
-     * @return True if this executor has been shut down.
-     */
-    public boolean isShutdown() {
-        return getWrapped().isShutdown();
     }
 
     /**
