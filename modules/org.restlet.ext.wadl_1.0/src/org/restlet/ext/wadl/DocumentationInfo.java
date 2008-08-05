@@ -90,7 +90,7 @@ public class DocumentationInfo {
      * @param mixedContent
      *            The mixed content.
      */
-    public DocumentationInfo(Text mixedContent) {
+    public DocumentationInfo(Node mixedContent) {
         super();
         this.mixedContent = mixedContent;
     }
