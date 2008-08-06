@@ -34,7 +34,6 @@ import java.io.Reader;
 import java.io.Writer;
 
 import org.restlet.data.MediaType;
-import org.restlet.data.Range;
 import org.restlet.util.ByteUtils;
 
 /**
@@ -64,19 +63,8 @@ public abstract class ChannelRepresentation extends Representation {
     }
 
     @Override
-    public InputStream getStream(Range range) throws IOException {
-        return ByteUtils.getStream(getStream(), getSize(), range);
-    }
-
-    @Override
     public void write(OutputStream outputStream) throws IOException {
         write(ByteUtils.getChannel(outputStream));
-    }
-
-    @Override
-    public void write(OutputStream outputStream, Range range)
-            throws IOException {
-        ByteUtils.write(getStream(range), outputStream);
     }
 
     @Override

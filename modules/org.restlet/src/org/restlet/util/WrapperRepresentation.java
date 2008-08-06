@@ -41,7 +41,6 @@ import org.restlet.data.CharacterSet;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
-import org.restlet.data.Range;
 import org.restlet.data.Reference;
 import org.restlet.data.Tag;
 import org.restlet.resource.Representation;
@@ -126,11 +125,6 @@ public class WrapperRepresentation extends Representation {
     @Override
     public InputStream getStream() throws IOException {
         return getWrappedRepresentation().getStream();
-    }
-
-    @Override
-    public InputStream getStream(Range range) throws IOException {
-        return getWrappedRepresentation().getStream(range);
     }
 
     @Override
@@ -245,12 +239,6 @@ public class WrapperRepresentation extends Representation {
     @Override
     public void write(OutputStream outputStream) throws IOException {
         getWrappedRepresentation().write(outputStream);
-    }
-
-    @Override
-    public void write(OutputStream outputStream, Range range)
-            throws IOException {
-        getWrappedRepresentation().write(outputStream, range);
     }
 
     @Override

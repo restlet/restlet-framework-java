@@ -28,15 +28,12 @@
 package org.restlet.resource;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 
 import org.restlet.data.MediaType;
-import org.restlet.data.Range;
 import org.restlet.util.ByteUtils;
 
 /**
@@ -64,17 +61,6 @@ public abstract class StreamRepresentation extends Representation {
     @Override
     public Reader getReader() throws IOException {
         return ByteUtils.getReader(getStream(), getCharacterSet());
-    }
-
-    @Override
-    public InputStream getStream(Range range) throws IOException {
-        return ByteUtils.getStream(getStream(), getSize(), range);
-    }
-
-    @Override
-    public void write(OutputStream outputStream, Range range)
-            throws IOException {
-        ByteUtils.write(getStream(range), outputStream);
     }
 
     @Override

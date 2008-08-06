@@ -96,17 +96,7 @@ public abstract class Representation extends Variant {
         }
 
         @Override
-        public InputStream getStream(Range range) throws IOException {
-            return null;
-        }
-
-        @Override
         public void write(OutputStream outputStream) throws IOException {
-            // Do nothing
-        }
-
-        @Override
-        public void write(OutputStream outputStream, Range range) {
             // Do nothing
         }
 
@@ -153,6 +143,12 @@ public abstract class Representation extends Variant {
     private volatile boolean isTransient;
 
     /**
+     * Indicates where in the full content the partial content available should
+     * be applied.
+     */
+    private volatile Range range;
+
+    /**
      * Default constructor.
      */
     public Representation() {
@@ -169,6 +165,7 @@ public abstract class Representation extends Variant {
         super(mediaType);
         this.available = true;
         this.isTransient = false;
+        this.range = null;
     }
 
     /**
@@ -219,6 +216,16 @@ public abstract class Representation extends Variant {
     }
 
     /**
+     * Returns the range where in the full content the partial content available
+     * should be applied.
+     * 
+     * @return The content range or null if the full content is available.
+     */
+    public Range getRange() {
+        return this.range;
+    }
+
+    /**
      * Returns a characters reader with the representation's content. This
      * method is ensured to return a fresh reader for each invocation unless it
      * is a transient representation, in which case null is returned. If the
@@ -250,16 +257,6 @@ public abstract class Representation extends Variant {
      * @throws IOException
      */
     public abstract InputStream getStream() throws IOException;
-
-    /**
-     * Returns a stream exposing only a range of a given source stream.
-     * 
-     * @param range
-     *            The range to return from the full stream.
-     * @return A stream with the filtered representation's content.
-     * @throws IOException
-     */
-    public abstract InputStream getStream(Range range) throws IOException;
 
     /**
      * Returns the tag.
@@ -401,6 +398,17 @@ public abstract class Representation extends Variant {
     }
 
     /**
+     * Sets the range where in the full content the partial content available
+     * should be applied.
+     * 
+     * @param range
+     *            The content range.
+     */
+    public void setRange(Range range) {
+        this.range = range;
+    }
+
+    /**
      * Sets the expected size in bytes if known, -1 otherwise.
      * 
      * @param expectedSize
@@ -444,18 +452,6 @@ public abstract class Representation extends Variant {
      * @throws IOException
      */
     public abstract void write(OutputStream outputStream) throws IOException;
-
-    /**
-     * Writes a range of the representation's content to a byte stream.
-     * 
-     * @param outputStream
-     *            The output stream.
-     * @param range
-     *            The range to filter.
-     * @throws IOException
-     */
-    public abstract void write(OutputStream outputStream, Range range)
-            throws IOException;
 
     /**
      * Writes the representation to a byte channel. This method is ensured to
