@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -289,9 +290,10 @@ public class ServerServlet extends HttpServlet {
                     // Set the context based on the Servlet's context
                     final ChildContext applicationContext = (ChildContext) application
                             .getContext();
+                    Logger logger = applicationContext == null ? context
+                            .getLogger() : applicationContext.getLogger();
                     application.setContext(new ChildContext(application,
-                            new ServletContextAdapter(this, context),
-                            applicationContext.getLogger()));
+                            new ServletContextAdapter(this, context), logger));
                 }
             } catch (final ClassNotFoundException e) {
                 log(
@@ -473,9 +475,9 @@ public class ServerServlet extends HttpServlet {
 
         if (component != null) {
             // First, let's create a pseudo server
-            final Server server = new Server(component.getContext(),
-                    (List<Protocol>) null, request.getLocalAddr(), request
-                            .getLocalPort(), component);
+            final Server server = new Server(component.getContext()
+                    .createChildContext(), (List<Protocol>) null, request
+                    .getLocalAddr(), request.getLocalPort(), component);
             result = new HttpServerHelper(server);
 
             // Attach the default hosted application(s) to the right path
