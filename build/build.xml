@@ -634,7 +634,7 @@
 		<attribute name="name" />
 		<sequential>
 			<compile srcdir="${mod}/${mod-@{name}-id}/src" destdir="${classes}/${mod-@{name}-id}" classpathref="mod-@{name}-path" />
-			<copy  todir="${classes}/${mod-@{name}-id}">
+			<copy todir="${classes}/${mod-@{name}-id}">
 				<fileset dir="${mod}/${mod-@{name}-id}/src" includes="**/*.properties" />
 			</copy>
 		</sequential>
@@ -1247,6 +1247,10 @@
 		<property name="server.testkeystore.location" location="${mod}/${mod-ri-test-id}/dummy.jks" />
 		<property name="server.testkeystore.password" value="testtest" />
 
+	   <!-- copy those necessary test files -->
+		<copy todir="${classes}/${mod-ri-test-id}">
+			<fileset dir="${mod}/${mod-ri-test-id}/" includes="**/dummy.jks" />
+		</copy>
 		<junit printsummary="true" fork="true" haltonfailure="true" filtertrace="true" showoutput="${verbose}">
 			<jvmarg value="-Djavax.net.ssl.keyStore=${server.testkeystore.location}" />
 			<jvmarg value="-Djavax.net.ssl.trustStore=${server.testkeystore.location}" />
