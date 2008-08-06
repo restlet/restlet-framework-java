@@ -147,6 +147,12 @@ public class HttpServerConverter extends HttpConverter {
                         HttpServerCall.formatContentDisposition(entity
                                 .getDownloadName()));
             }
+            // TODO manage comparison with the requested ranges
+            if (entity.getRange() != null) {
+                responseHeaders.add(HttpConstants.HEADER_CONTENT_RANGE,
+                        HttpServerCall.formatContentRange(entity.getRange(),
+                                entity.getSize()));
+            }
         }
     }
 

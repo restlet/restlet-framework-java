@@ -41,6 +41,7 @@ import org.restlet.Server;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
 import org.restlet.data.Parameter;
+import org.restlet.data.Range;
 import org.restlet.data.Response;
 import org.restlet.resource.InputRepresentation;
 import org.restlet.resource.ReadableRepresentation;
@@ -69,6 +70,61 @@ public abstract class HttpServerCall extends HttpCall {
         }
 
         b.append('"');
+
+        return b.toString();
+    }
+
+    /**
+     * Format {@code range} as a Content-Range header value
+     * 
+     * @param range
+     *            Range to format
+     * @param size
+     *            Total size of the entity
+     * @return {@code range} formatted
+     */
+    public static String formatContentRange(Range range, long size) {
+        final StringBuilder b = new StringBuilder("");
+
+        if (range.getIndex() >= Range.INDEX_FIRST) {
+            b.append(range.getIndex());
+            b.append("-");
+            if (range.getLength() != Range.LENGTH_MAX) {
+                b.append(range.getIndex() + range.getLength());
+            } else {
+                if (size != Representation.UNKNOWN_SIZE) {
+                    b.append(range.getIndex() + size);
+                } else {
+                    // TODO should be an error?
+                }
+            }
+        } else if (range.getIndex() == Range.INDEX_LAST) {
+            if (range.getLength() != Range.LENGTH_MAX) {
+                if (size != Representation.UNKNOWN_SIZE) {
+                    b.append(size - range.getLength());
+                    b.append("-");
+                    b.append(size);
+                } else {
+                    // TODO should be an error?
+                    b.append("-");
+                    b.append(range.getLength());
+                }
+            } else {
+                b.append(0);
+                b.append("-");
+                if (size != Representation.UNKNOWN_SIZE) {
+                    b.append(size);
+                } else {
+                    // TODO should be an error?
+                }
+            }
+        }
+
+        if (size != Representation.UNKNOWN_SIZE) {
+            b.append("/").append(size);
+        } else {
+            b.append("/*");
+        }
 
         return b.toString();
     }

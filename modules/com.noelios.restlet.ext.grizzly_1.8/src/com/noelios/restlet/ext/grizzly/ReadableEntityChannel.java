@@ -1,3 +1,5 @@
+<<<<<<< .mine
+=======
 /*
  * Copyright 2005-2008 Noelios Technologies.
  * 
@@ -25,6 +27,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
+>>>>>>> .r3563
 package com.noelios.restlet.ext.grizzly;
 
 import java.io.IOException;

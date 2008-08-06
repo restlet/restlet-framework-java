@@ -42,6 +42,7 @@ import org.restlet.data.Encoding;
 import org.restlet.data.Language;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
+import org.restlet.data.Range;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -140,7 +141,12 @@ public abstract class HttpClientCall extends HttpCall {
                 result.setDownloadName(parseContentDisposition(header
                         .getValue()));
                 entityHeaderFound = true;
+            } else if (header.getName().equalsIgnoreCase(
+                    HttpConstants.HEADER_CONTENT_RANGE)) {
+                result.setRange(parseContentRange(header.getValue()));
+                entityHeaderFound = true;
             }
+
         }
 
         // If no representation was initially expected and no entity header
@@ -187,6 +193,28 @@ public abstract class HttpClientCall extends HttpCall {
                             .substring(index + key.length(), value.length());
                 }
             }
+        }
+        return null;
+    }
+
+    /**
+     * Parse the Content-Range header value
+     * 
+     * @param value
+     *            Content-range header
+     * @return The Range that corresponds to the given header.
+     */
+    public static Range parseContentRange(String value) {
+        if (value != null) {
+            int index = value.indexOf("-");
+            int index1 = value.indexOf("/");
+
+            int startIndex = Integer.parseInt(value.substring(0, index));
+            int endIndex = Integer.parseInt(value.substring(index, index1));
+            // TODO ?
+            String strLength = value.substring(index1, value.length() - 1);
+
+            return new Range(startIndex, endIndex - startIndex);
         }
         return null;
     }

@@ -39,6 +39,7 @@ import org.restlet.data.Conditions;
 import org.restlet.data.Cookie;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
+import org.restlet.data.Range;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Tag;
@@ -46,6 +47,7 @@ import org.restlet.resource.Representation;
 import org.restlet.util.Series;
 
 import com.noelios.restlet.authentication.AuthenticationUtils;
+import com.noelios.restlet.util.RangeUtils;
 
 /**
  * Request wrapper for server HTTP calls.
@@ -70,6 +72,9 @@ public class HttpRequest extends Request {
 
     /** The low-level HTTP call. */
     private volatile HttpCall httpCall;
+
+    /** Indicates if the ranges data was parsed and added. */
+    private volatile boolean rangesAdded;
 
     /** Indicates if the referrer was parsed and added. */
     private volatile boolean referrerAdded;
@@ -400,6 +405,24 @@ public class HttpRequest extends Request {
      */
     public HttpCall getHttpCall() {
         return this.httpCall;
+    }
+
+    @Override
+    public List<Range> getRanges() {
+        List<Range> result = super.getRanges();
+
+        if (!this.rangesAdded) {
+            // Extract the header value
+            final String ranges = getHttpCall().getRequestHeaders().getValues(
+                    HttpConstants.HEADER_RANGE);
+
+            result = RangeUtils.parseRangeHeader(ranges);
+            setRanges(result);
+
+            this.rangesAdded = true;
+        }
+
+        return result;
     }
 
     /**

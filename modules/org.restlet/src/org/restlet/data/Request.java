@@ -127,33 +127,6 @@ public class Request extends Message {
     /** The ranges to return from the target resource's representation. */
     private volatile List<Range> ranges;
 
-    /**
-     * Returns the ranges to return from the target resource's representation.
-     * 
-     * @return The ranges to return.
-     */
-    public List<Range> getRanges() {
-        // Lazy initialization with double-check.
-        List<Range> r = this.ranges;
-        if (r == null) {
-            synchronized (this) {
-                r = this.ranges;
-                if (r == null) {
-                    this.ranges = r = new CopyOnWriteArrayList<Range>();
-                }
-            }
-        }
-        return r;
-    }
-
-    /**
-     * Sets the ranges to return from the target resource's representation.
-     * 
-     */
-    public void setRanges(List<Range> range) {
-        this.ranges = range;
-    }
-
     /** The referrer reference. */
     private volatile Reference referrerRef;
 
@@ -347,6 +320,25 @@ public class Request extends Message {
     }
 
     /**
+     * Returns the ranges to return from the target resource's representation.
+     * 
+     * @return The ranges to return.
+     */
+    public List<Range> getRanges() {
+        // Lazy initialization with double-check.
+        List<Range> r = this.ranges;
+        if (r == null) {
+            synchronized (this) {
+                r = this.ranges;
+                if (r == null) {
+                    this.ranges = r = new CopyOnWriteArrayList<Range>();
+                }
+            }
+        }
+        return r;
+    }
+
+    /**
      * Returns the referrer reference if available.
      * 
      * @return The referrer reference.
@@ -512,6 +504,14 @@ public class Request extends Message {
      */
     public void setOriginalRef(Reference originalRef) {
         this.originalRef = originalRef;
+    }
+
+    /**
+     * Sets the ranges to return from the target resource's representation.
+     * 
+     */
+    public void setRanges(List<Range> range) {
+        this.ranges = range;
     }
 
     /**

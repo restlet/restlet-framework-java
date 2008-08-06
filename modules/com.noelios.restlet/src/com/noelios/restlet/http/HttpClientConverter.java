@@ -41,6 +41,7 @@ import org.restlet.data.Dimension;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
+import org.restlet.data.Range;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -297,6 +298,31 @@ public class HttpClientConverter extends HttpConverter {
                     getLogger().log(Level.WARNING,
                             "Unable to format the HTTP Accept header", ioe);
                 }
+            }
+            // Add Ranges header
+            if (!request.getRanges().isEmpty()) {
+                final StringBuilder value = new StringBuilder();
+                for (int i = 0; i < request.getRanges().size(); i++) {
+                    if (i > 0) {
+                        value.append(", ");
+                    }
+                    Range range = request.getRanges().get(i);
+                    if (range.getIndex() >= Range.INDEX_FIRST) {
+                        value.append(range.getIndex());
+                        value.append("-");
+                        if (range.getLength() != Range.LENGTH_MAX) {
+                            value.append(range.getIndex() + range.getLength());
+                        }
+                    } else if (range.getIndex() == Range.INDEX_LAST) {
+                        value.append("-");
+                        if (range.getLength() != Range.LENGTH_MAX) {
+                            value.append(range.getLength());
+                        }
+                    }
+                }
+
+                requestHeaders
+                        .add(HttpConstants.HEADER_RANGE, value.toString());
             }
 
             // Add entity headers
