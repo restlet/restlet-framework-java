@@ -95,6 +95,13 @@ public class Range {
         this.length = length;
     }
 
+    @Override
+    public boolean equals(Object object) {
+        return (object instanceof Range)
+                && ((Range) object).getIndex() == getIndex()
+                && ((Range) object).getLength() == getLength();
+    }
+
     /**
      * Returns the index from which to start the range. If the index is superior
      * or equal to zero, the index will define the start of the range. If its
