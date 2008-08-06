@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.data.Range;
+import org.restlet.resource.Representation;
 
 /**
  * Range manipulation utilities.
@@ -38,6 +39,92 @@ import org.restlet.data.Range;
  * @author Jerome Louvel
  */
 public class RangeUtils {
+
+    /**
+     * Format {@code range} as a Content-Range header value
+     * 
+     * @param range
+     *            Range to format
+     * @param size
+     *            Total size of the entity
+     * @return {@code range} formatted
+     */
+    public static String formatContentRange(Range range, long size) {
+        final StringBuilder b = new StringBuilder("bytes ");
+
+        if (range.getIndex() >= Range.INDEX_FIRST) {
+            b.append(range.getIndex());
+            b.append("-");
+            if (range.getSize() != Range.SIZE_MAX) {
+                b.append(range.getIndex() + range.getSize());
+            } else {
+                if (size != Representation.UNKNOWN_SIZE) {
+                    b.append(range.getIndex() + size);
+                } else {
+                    // TODO should be an error?
+                }
+            }
+        } else if (range.getIndex() == Range.INDEX_LAST) {
+            if (range.getSize() != Range.SIZE_MAX) {
+                if (size != Representation.UNKNOWN_SIZE) {
+                    b.append(size - range.getSize());
+                    b.append("-");
+                    b.append(size);
+                } else {
+                    // TODO should be an error?
+                    b.append("-");
+                    b.append(range.getSize());
+                }
+            } else {
+                b.append(0);
+                b.append("-");
+                if (size != Representation.UNKNOWN_SIZE) {
+                    b.append(size);
+                } else {
+                    // TODO should be an error?
+                }
+            }
+        }
+
+        if (size != Representation.UNKNOWN_SIZE) {
+            b.append("/").append(size);
+        } else {
+            b.append("/*");
+        }
+
+        return b.toString();
+    }
+
+    /**
+     * Parse the Content-Range header value and update the given representation
+     * 
+     * @param value
+     *            Content-range header.
+     * @param representation
+     *            Representation to update.
+     * 
+     * @return The Range that corresponds to the given header.
+     */
+    public static void parseContentRange(String value,
+            Representation representation) {
+        String prefix = "bytes ";
+        if (value != null && value.startsWith(prefix)) {
+            value = value.substring(prefix.length());
+
+            int index = value.indexOf("-");
+            int index1 = value.indexOf("/");
+
+            int startIndex = Integer.parseInt(value.substring(0, index));
+            int endIndex = Integer.parseInt(value.substring(index + 1, index1));
+            String strLength = value.substring(index1, value.length() - 1);
+
+            representation
+                    .setRange(new Range(startIndex, endIndex - startIndex));
+            if (!("*".equals(strLength))) {
+                representation.setSize(Long.parseLong(strLength));
+            }
+        }
+    }
 
     /**
      * Parse the Range header and returns the list of corresponding Range
@@ -48,11 +135,9 @@ public class RangeUtils {
      * @return The list of corresponding Range objects.
      */
     public static List<Range> parseRangeHeader(String rangeHeader) {
-        List<Range> result = null;
+        List<Range> result = new ArrayList<Range>();
         String prefix = "bytes=";
         if (rangeHeader != null && rangeHeader.startsWith(prefix)) {
-            result = new ArrayList<Range>();
-
             rangeHeader = rangeHeader.substring(prefix.length());
 
             String[] array = rangeHeader.split(",");
