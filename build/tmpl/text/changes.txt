@@ -96,6 +96,9 @@ Changes log
           content available. Corresponds to Content-Range HTTP header.
           Also added a getAvailableSize() to return the range size in
           case it is set, or getSize() otherwise.
+        - Added a RangeService class and an Application.rangeService
+          property to control to automatic handling of range of 
+          response entities.
     - NRE and Extension Enhancements
         - Added a static HttpServletRequest getRequest(Request) method
           to the Servlet extension.

@@ -31,9 +31,10 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.service.ConnectorService;
 import org.restlet.service.DecoderService;
-import org.restlet.service.TaskService;
 import org.restlet.service.MetadataService;
+import org.restlet.service.RangeService;
 import org.restlet.service.StatusService;
+import org.restlet.service.TaskService;
 import org.restlet.service.TunnelService;
 import org.restlet.util.Engine;
 import org.restlet.util.Helper;
@@ -124,6 +125,9 @@ public class Application extends Restlet {
     /** The owner(s). */
     private volatile String owner;
 
+    /** The range service. */
+    private volatile RangeService rangeService;
+
     /** The root Restlet. */
     private volatile Restlet root;
 
@@ -172,9 +176,10 @@ public class Application extends Restlet {
         this.connectorService = new ConnectorService();
         this.converterService = new org.restlet.service.ConverterService();
         this.decoderService = new DecoderService();
-        this.taskService = new TaskService();
         this.metadataService = new MetadataService();
+        this.rangeService = new RangeService();
         this.statusService = new StatusService();
+        this.taskService = new TaskService();
         this.tunnelService = new TunnelService(true, true);
     }
 
@@ -273,6 +278,15 @@ public class Application extends Restlet {
      */
     public String getOwner() {
         return this.owner;
+    }
+
+    /**
+     * Returns the range service.
+     * 
+     * @return The range service.
+     */
+    public RangeService getRangeService() {
+        return rangeService;
     }
 
     /**
@@ -409,6 +423,16 @@ public class Application extends Restlet {
      */
     public void setOwner(String owner) {
         this.owner = owner;
+    }
+
+    /**
+     * Sets the range service.
+     * 
+     * @param rangeService
+     *            The range service.
+     */
+    public void setRangeService(RangeService rangeService) {
+        this.rangeService = rangeService;
     }
 
     /**
