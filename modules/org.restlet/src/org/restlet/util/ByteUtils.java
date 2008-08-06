@@ -28,7 +28,6 @@
 package org.restlet.util;
 
 import java.io.BufferedReader;
-import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -56,7 +55,6 @@ import java.util.logging.Logger;
 
 import org.restlet.Application;
 import org.restlet.data.CharacterSet;
-import org.restlet.data.Range;
 import org.restlet.resource.Representation;
 import org.restlet.resource.WriterRepresentation;
 
@@ -319,55 +317,6 @@ public final class ByteUtils {
             };
         }
 
-    }
-
-    /**
-     * Filters an input stream to expose only a given range.
-     * 
-     * @author Jerome Louvel
-     */
-    private static class RangeInputStream extends FilterInputStream {
-
-        private long position;
-
-        private Range range;
-
-        private long totalSize;
-
-        protected RangeInputStream(InputStream in, long totalSize, Range range) {
-            super(in);
-            this.range = range;
-            this.position = 0;
-            this.totalSize = totalSize;
-        }
-
-        @Override
-        public int available() throws IOException {
-            // Might need a smarter logic to restrict available bytes to the
-            // range
-            return super.available();
-        }
-
-        @Override
-        public synchronized void mark(int readlimit) {
-            if (range.getIndex() == Range.INDEX_LAST) {
-                super.mark(readlimit + (int) (totalSize - range.getLength()));
-            } else {
-                super.mark(readlimit + (int) range.getIndex());
-            }
-        }
-
-        @Override
-        public int read() throws IOException {
-            int result = super.read();
-
-            while ((result != -1)
-                    && !this.range.isIncluded(position++, totalSize)) {
-                result = super.read();
-            }
-
-            return result;
-        }
     }
 
     /**
@@ -658,23 +607,6 @@ public final class ByteUtils {
         });
 
         return pipedReader;
-    }
-
-    /**
-     * Returns a stream exposing only a range of a given source stream.
-     * 
-     * @param in
-     *            The source input stream.
-     * @param totalSize
-     *            The total size of the source stream.
-     * @param range
-     *            The range to satisfy.
-     * @return A stream with the representation's content.
-     * @throws IOException
-     */
-    public static InputStream getStream(InputStream in, long totalSize,
-            Range range) throws IOException {
-        return new RangeInputStream(in, totalSize, range);
     }
 
     /**
