@@ -99,6 +99,10 @@ Changes log
         - Added a RangeService class and an Application.rangeService
           property to control to automatic handling of range of 
           response entities.
+        - Added "resumeUpload" and "temporaryExtension" properties on
+          the Directory class to enable resumable uploads. This 
+          limit the number of concurrent uploads on the same file to
+          one client at a time. 
     - NRE and Extension Enhancements
         - Added a static HttpServletRequest getRequest(Request) method
           to the Servlet extension.

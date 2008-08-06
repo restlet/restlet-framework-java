@@ -63,13 +63,15 @@ import org.restlet.util.Engine;
  * method. The default sorting uses the friendly Alphanum algorithm based on
  * David Koelle's <a href="http://www.davekoelle.com/alphanum.html">original
  * idea</a>, using a different and faster implementation contributed by Rob
- * Heittman.
- * 
+ * Heittman.<br>
+ * <br>
  * Concurrency note: instances of this class or its subclasses can be invoked by
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
  * 
- * @see <a href="http://www.restlet.org/documentation/1.1/tutorial#part06">Tutorial : Serving static files</a>
+ * @see <a
+ *      href="http://www.restlet.org/documentation/1.1/tutorial#part06">Tutorial
+ *      : Serving static files< /a>
  * @author Jerome Louvel
  */
 public class Directory extends Finder {
@@ -229,8 +231,20 @@ public class Directory extends Finder {
     /** Indicates if the best content is automatically negotiated. */
     private volatile boolean negotiateContent;
 
+    /**
+     * Indicates if a failed upload can be resumed. This will prevent the
+     * deletion of the temporary file created. Defaults to "false".
+     */
+    private volatile boolean resumeUpload;
+
     /** The absolute root reference (file, clap URI). */
     private volatile Reference rootRef;
+
+    /**
+     * Name of the extension to use to store the temporary content while
+     * uploading content via the PUT method. Defaults to "tmp".
+     */
+    private volatile String temporaryExtension;
 
     /**
      * Constructor.
@@ -262,6 +276,8 @@ public class Directory extends Finder {
         this.listingAllowed = false;
         this.modifiable = false;
         this.negotiateContent = true;
+        this.resumeUpload = false;
+        this.temporaryExtension = "tmp";
     }
 
     /**
@@ -376,6 +392,16 @@ public class Directory extends Finder {
     }
 
     /**
+     * Returns the name of the extension to use to create a temporary upload
+     * file associated to another file in the same directory.
+     * 
+     * @return The name of the extension for temporary upload files.
+     */
+    public String getTemporaryExtension() {
+        return temporaryExtension;
+    }
+
+    /**
      * Indicates if the subdirectories are deeply accessible (true by default).
      * 
      * @return True if the subdirectories are deeply accessible.
@@ -413,6 +439,16 @@ public class Directory extends Finder {
      */
     public boolean isNegotiateContent() {
         return this.negotiateContent;
+    }
+
+    /**
+     * Indicates if a failed upload can be resumed. This will prevent the
+     * deletion of the temporary file created. Defaults to "false".
+     * 
+     * @return True if a failed upload can be resumed.
+     */
+    public boolean isResumeUpload() {
+        return resumeUpload;
     }
 
     /**
@@ -502,6 +538,19 @@ public class Directory extends Finder {
     }
 
     /**
+     * Indicates if a failed upload can be resumed. This will prevent the
+     * deletion of the temporary file created. Note that enabling this feature
+     * will prevent several users from updating the same resource at the same
+     * time.
+     * 
+     * @param resumeUpload
+     *            True if a failed upload can be resumed.
+     */
+    public void setResumeUpload(boolean resumeUpload) {
+        this.resumeUpload = resumeUpload;
+    }
+
+    /**
      * Sets the root URI from which the relative resource URIs will be lookep
      * up.
      * 
@@ -510,6 +559,17 @@ public class Directory extends Finder {
      */
     public void setRootRef(Reference rootRef) {
         this.rootRef = rootRef;
+    }
+
+    /**
+     * Sets the name of the extension to use to create a temporary upload file
+     * associated to another file in the same directory.
+     * 
+     * @param temporaryExtension
+     *            The name of the extension for temporary upload files.
+     */
+    public void setTemporaryExtension(String temporaryExtension) {
+        this.temporaryExtension = temporaryExtension;
     }
 
 }
