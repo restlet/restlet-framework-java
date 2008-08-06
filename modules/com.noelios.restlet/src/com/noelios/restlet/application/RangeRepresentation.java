@@ -29,9 +29,12 @@ package com.noelios.restlet.application;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.channels.WritableByteChannel;
 
 import org.restlet.data.Range;
 import org.restlet.resource.Representation;
+import org.restlet.util.ByteUtils;
 import org.restlet.util.WrapperRepresentation;
 
 /**
@@ -73,6 +76,16 @@ public class RangeRepresentation extends WrapperRepresentation {
     @Override
     public InputStream getStream() throws IOException {
         return new RangeInputStream(super.getStream(), getSize(), getRange());
+    }
+
+    @Override
+    public void write(OutputStream outputStream) throws IOException {
+        ByteUtils.write(getStream(), outputStream);
+    }
+
+    @Override
+    public void write(WritableByteChannel writableChannel) throws IOException {
+        write(ByteUtils.getStream(writableChannel));
     }
 
 }

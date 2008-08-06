@@ -42,7 +42,6 @@ import org.restlet.data.Encoding;
 import org.restlet.data.Language;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
-import org.restlet.data.Range;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -52,6 +51,8 @@ import org.restlet.resource.ReadableRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.service.ConnectorService;
 import org.restlet.util.Series;
+
+import com.noelios.restlet.util.RangeUtils;
 
 /**
  * Low-level HTTP client call.
@@ -143,7 +144,7 @@ public abstract class HttpClientCall extends HttpCall {
                 entityHeaderFound = true;
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_CONTENT_RANGE)) {
-                result.setRange(parseContentRange(header.getValue()));
+                RangeUtils.parseContentRange(header.getValue(), result);
                 entityHeaderFound = true;
             }
 
@@ -193,31 +194,6 @@ public abstract class HttpClientCall extends HttpCall {
                             .substring(index + key.length(), value.length());
                 }
             }
-        }
-        return null;
-    }
-
-    /**
-     * Parse the Content-Range header value
-     * 
-     * @param value
-     *            Content-range header
-     * @return The Range that corresponds to the given header.
-     */
-    public static Range parseContentRange(String value) {
-        String prefix = "bytes ";
-        if (value != null && value.startsWith(prefix)) {
-            value = value.substring(prefix.length());
-
-            int index = value.indexOf("-");
-            int index1 = value.indexOf("/");
-
-            int startIndex = Integer.parseInt(value.substring(0, index));
-            int endIndex = Integer.parseInt(value.substring(index + 1, index1));
-            // TODO ?
-            String strLength = value.substring(index1, value.length() - 1);
-
-            return new Range(startIndex, endIndex - startIndex);
         }
         return null;
     }

@@ -41,12 +41,13 @@ import org.restlet.Server;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
 import org.restlet.data.Parameter;
-import org.restlet.data.Range;
 import org.restlet.data.Response;
 import org.restlet.resource.InputRepresentation;
 import org.restlet.resource.ReadableRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.service.ConnectorService;
+
+import com.noelios.restlet.util.RangeUtils;
 
 /**
  * Abstract HTTP server connector call.
@@ -70,61 +71,6 @@ public abstract class HttpServerCall extends HttpCall {
         }
 
         b.append('"');
-
-        return b.toString();
-    }
-
-    /**
-     * Format {@code range} as a Content-Range header value
-     * 
-     * @param range
-     *            Range to format
-     * @param size
-     *            Total size of the entity
-     * @return {@code range} formatted
-     */
-    public static String formatContentRange(Range range, long size) {
-        final StringBuilder b = new StringBuilder("bytes ");
-
-        if (range.getIndex() >= Range.INDEX_FIRST) {
-            b.append(range.getIndex());
-            b.append("-");
-            if (range.getSize() != Range.SIZE_MAX) {
-                b.append(range.getIndex() + range.getSize());
-            } else {
-                if (size != Representation.UNKNOWN_SIZE) {
-                    b.append(range.getIndex() + size);
-                } else {
-                    // TODO should be an error?
-                }
-            }
-        } else if (range.getIndex() == Range.INDEX_LAST) {
-            if (range.getSize() != Range.SIZE_MAX) {
-                if (size != Representation.UNKNOWN_SIZE) {
-                    b.append(size - range.getSize());
-                    b.append("-");
-                    b.append(size);
-                } else {
-                    // TODO should be an error?
-                    b.append("-");
-                    b.append(range.getSize());
-                }
-            } else {
-                b.append(0);
-                b.append("-");
-                if (size != Representation.UNKNOWN_SIZE) {
-                    b.append(size);
-                } else {
-                    // TODO should be an error?
-                }
-            }
-        }
-
-        if (size != Representation.UNKNOWN_SIZE) {
-            b.append("/").append(size);
-        } else {
-            b.append("/*");
-        }
 
         return b.toString();
     }
@@ -252,7 +198,11 @@ public abstract class HttpServerCall extends HttpCall {
                         .getValue());
                 result.setMediaType(contentType.getMediaType());
                 result.setCharacterSet(contentType.getCharacterSet());
+            } else if (header.getName().equalsIgnoreCase(
+                    HttpConstants.HEADER_CONTENT_RANGE)) {
+                RangeUtils.parseContentRange(header.getValue(), result);
             }
+
         }
 
         return result;

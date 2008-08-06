@@ -51,6 +51,7 @@ import org.restlet.util.Series;
 
 import com.noelios.restlet.Engine;
 import com.noelios.restlet.authentication.AuthenticationUtils;
+import com.noelios.restlet.util.RangeUtils;
 
 /**
  * Converter of high-level uniform calls into low-level HTTP client calls.
@@ -299,7 +300,7 @@ public class HttpClientConverter extends HttpConverter {
                             "Unable to format the HTTP Accept header", ioe);
                 }
             }
-            // Add Ranges header
+            // Add Range header
             if (!request.getRanges().isEmpty()) {
                 final StringBuilder value = new StringBuilder("bytes=");
                 for (int i = 0; i < request.getRanges().size(); i++) {
@@ -376,6 +377,15 @@ public class HttpClientConverter extends HttpConverter {
                 if (request.getEntity().getSize() > 0) {
                     requestHeaders.add(HttpConstants.HEADER_CONTENT_LENGTH,
                             String.valueOf(request.getEntity().getSize()));
+                }
+
+                // TODO size or availableSize?
+                if (request.getEntity().getRange() != null) {
+                    requestHeaders
+                            .add(HttpConstants.HEADER_CONTENT_RANGE, RangeUtils
+                                    .formatContentRange(request.getEntity()
+                                            .getRange(), request.getEntity()
+                                            .getSize()));
                 }
             }
 

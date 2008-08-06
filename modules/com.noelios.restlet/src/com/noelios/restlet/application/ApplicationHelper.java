@@ -85,6 +85,16 @@ public class ApplicationHelper extends ChainHelper<Application> {
     }
 
     /**
+     * Creates a new Range filter. Allows overriding.
+     * 
+     * @param context
+     *            The parent context.
+     * @return The new range filter.
+     */
+    protected Filter createRangeFilter(Context context) {
+        return new RangeFilter(context);
+    }
+    /**
      * In addition to the default behavior, it saves the current application
      * instance into the current thread.
      * 
@@ -118,6 +128,11 @@ public class ApplicationHelper extends ChainHelper<Application> {
         // Addition of decoder filter
         if (getHelped().getDecoderService().isEnabled()) {
             addFilter(createDecoderFilter(getHelped()));
+        }
+
+        // Addition of decoder filter
+        if (getHelped().getRangeService().isEnabled()) {
+            addFilter(createRangeFilter(getContext()));
         }
 
         // Attach the Application's root Restlet

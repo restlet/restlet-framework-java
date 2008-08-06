@@ -409,15 +409,13 @@ public class HttpRequest extends Request {
 
     @Override
     public List<Range> getRanges() {
-        List<Range> result = super.getRanges();
+        final List<Range> result = super.getRanges();
 
         if (!this.rangesAdded) {
             // Extract the header value
             final String ranges = getHttpCall().getRequestHeaders().getValues(
                     HttpConstants.HEADER_RANGE);
-
-            result = RangeUtils.parseRangeHeader(ranges);
-            setRanges(result);
+            result.addAll(RangeUtils.parseRangeHeader(ranges));
 
             this.rangesAdded = true;
         }

@@ -48,6 +48,7 @@ import org.restlet.util.DateUtils;
 import org.restlet.util.Series;
 
 import com.noelios.restlet.authentication.AuthenticationUtils;
+import com.noelios.restlet.util.RangeUtils;
 
 /**
  * Converter of low-level HTTP server calls into high-level uniform calls.
@@ -150,8 +151,8 @@ public class HttpServerConverter extends HttpConverter {
             // TODO manage comparison with the requested ranges
             if (entity.getRange() != null) {
                 responseHeaders.add(HttpConstants.HEADER_CONTENT_RANGE,
-                        HttpServerCall.formatContentRange(entity.getRange(),
-                                entity.getSize()));
+                        RangeUtils.formatContentRange(entity.getRange(), entity
+                                .getSize()));
             }
         }
     }
