@@ -124,7 +124,10 @@ Changes log
         - Renamed the "org.restlet.ssl.hostnameVerifier" attribute into
           just "hostnameVerifier" for consistency with existing naming.
         - SpringBeanRouter can now search beans in ancestors. 
-          Contribution from James Maki. 
+          Contribution from James Maki.
+        - JaxbRepresentation now takes into account its "characterSet"
+          property to set the "jaxb.encoding" property on the JAXB 
+          marshaller internally used. Reported by Sanjay Acharya.
     - Misc
         - Refactored WAR client to remove remaining class in NRE core.
         - Refactored OSGi support to not require one activator for each
