@@ -169,6 +169,17 @@ public abstract class Representation extends Variant {
     }
 
     /**
+     * Returns the size effectively available. This returns the same value as
+     * {@link #getSize()} if no range is defined, otherwise it returns the size
+     * of the range using {@link Range#getSize()}.
+     * 
+     * @return The available size.
+     */
+    public long getAvailableSize() {
+        return (getRange() == null) ? getSize() : getRange().getSize();
+    }
+
+    /**
      * Returns a channel with the representation's content.<br>
      * If it is supported by a file, a read-only instance of FileChannel is
      * returned.<br>

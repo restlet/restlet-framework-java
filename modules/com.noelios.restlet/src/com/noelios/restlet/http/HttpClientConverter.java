@@ -310,13 +310,13 @@ public class HttpClientConverter extends HttpConverter {
                     if (range.getIndex() >= Range.INDEX_FIRST) {
                         value.append(range.getIndex());
                         value.append("-");
-                        if (range.getLength() != Range.LENGTH_MAX) {
-                            value.append(range.getIndex() + range.getLength());
+                        if (range.getSize() != Range.SIZE_MAX) {
+                            value.append(range.getIndex() + range.getSize());
                         }
                     } else if (range.getIndex() == Range.INDEX_LAST) {
                         value.append("-");
-                        if (range.getLength() != Range.LENGTH_MAX) {
-                            value.append(range.getLength());
+                        if (range.getSize() != Range.SIZE_MAX) {
+                            value.append(range.getSize());
                         }
                     }
                 }

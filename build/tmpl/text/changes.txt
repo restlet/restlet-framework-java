@@ -94,6 +94,8 @@ Changes log
        	  Contributed by Bruno Harbulot.
         - Added Representation.range property to indicates the partial
           content available. Corresponds to Content-Range HTTP header.
+          Also added a getAvailableSize() to return the range size in
+          case it is set, or getSize() otherwise.
     - NRE and Extension Enhancements
         - Added a static HttpServletRequest getRequest(Request) method
           to the Servlet extension.

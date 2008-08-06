@@ -76,7 +76,7 @@ public class RangeInputStream extends FilterInputStream {
     @Override
     public synchronized void mark(int readlimit) {
         if (range.getIndex() == Range.INDEX_LAST) {
-            super.mark(readlimit + (int) (totalSize - range.getLength()));
+            super.mark(readlimit + (int) (totalSize - range.getSize()));
         } else {
             super.mark(readlimit + (int) range.getIndex());
         }

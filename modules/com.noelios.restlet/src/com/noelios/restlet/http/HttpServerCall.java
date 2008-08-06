@@ -89,8 +89,8 @@ public abstract class HttpServerCall extends HttpCall {
         if (range.getIndex() >= Range.INDEX_FIRST) {
             b.append(range.getIndex());
             b.append("-");
-            if (range.getLength() != Range.LENGTH_MAX) {
-                b.append(range.getIndex() + range.getLength());
+            if (range.getSize() != Range.SIZE_MAX) {
+                b.append(range.getIndex() + range.getSize());
             } else {
                 if (size != Representation.UNKNOWN_SIZE) {
                     b.append(range.getIndex() + size);
@@ -99,15 +99,15 @@ public abstract class HttpServerCall extends HttpCall {
                 }
             }
         } else if (range.getIndex() == Range.INDEX_LAST) {
-            if (range.getLength() != Range.LENGTH_MAX) {
+            if (range.getSize() != Range.SIZE_MAX) {
                 if (size != Representation.UNKNOWN_SIZE) {
-                    b.append(size - range.getLength());
+                    b.append(size - range.getSize());
                     b.append("-");
                     b.append(size);
                 } else {
                     // TODO should be an error?
                     b.append("-");
-                    b.append(range.getLength());
+                    b.append(range.getSize());
                 }
             } else {
                 b.append(0);

@@ -45,9 +45,9 @@ public class Range {
     public final static long INDEX_LAST = -1;
 
     /**
-     * Maximum length available from the index.
+     * Maximum size available from the index.
      */
-    public final static long LENGTH_MAX = -1;
+    public final static long SIZE_MAX = -1;
 
     /**
      * Index from which to start the range. If the index is superior or equal to
@@ -58,28 +58,28 @@ public class Range {
     private volatile long index;
 
     /**
-     * Length of the range in number of bytes. If the length is the maximum
-     * available from the index, then use the {@value #LENGTH_MAX} constant.
+     * Size of the range in number of bytes. If the size is the maximum
+     * available from the index, then use the {@value #SIZE_MAX} constant.
      */
-    private volatile long length;
+    private volatile long size;
 
     /**
      * Default constructor defining a range starting on the first byte and with
-     * a maximum length, i.e. covering the whole entity.
+     * a maximum size, i.e. covering the whole entity.
      */
     public Range() {
-        this(INDEX_FIRST, LENGTH_MAX);
+        this(INDEX_FIRST, SIZE_MAX);
     }
 
     /**
      * Constructor defining a range starting on the first byte and with the
-     * given length.
+     * given size.
      * 
-     * @param length
-     *            Length of the range in number of bytes.
+     * @param size
+     *            Size of the range in number of bytes.
      */
-    public Range(long length) {
-        this(INDEX_FIRST, length);
+    public Range(long size) {
+        this(INDEX_FIRST, size);
     }
 
     /**
@@ -87,19 +87,19 @@ public class Range {
      * 
      * @param index
      *            Index from which to start the range
-     * @param length
-     *            Length of the range in number of bytes.
+     * @param size
+     *            Size of the range in number of bytes.
      */
-    public Range(long index, long length) {
+    public Range(long index, long size) {
         this.index = index;
-        this.length = length;
+        this.size = size;
     }
 
     @Override
     public boolean equals(Object object) {
         return (object instanceof Range)
                 && ((Range) object).getIndex() == getIndex()
-                && ((Range) object).getLength() == getLength();
+                && ((Range) object).getSize() == getSize();
     }
 
     /**
@@ -116,14 +116,14 @@ public class Range {
     }
 
     /**
-     * Returns the length of the range in number of bytes. If the length is the
-     * maximum available from the index, then use the {@value #LENGTH_MAX}
+     * Returns the size of the range in number of bytes. If the size is the
+     * maximum available from the index, then use the {@value #SIZE_MAX}
      * constant.
      * 
-     * @return The length of the range in number of bytes.
+     * @return The size of the range in number of bytes.
      */
-    public long getLength() {
-        return length;
+    public long getSize() {
+        return size;
     }
 
     /**
@@ -144,14 +144,14 @@ public class Range {
             result = (0 <= position) && (position < totalSize);
 
             if (result) {
-                result = position >= (totalSize - getLength());
+                result = position >= (totalSize - getSize());
             }
         } else {
             // The range starts from the beginning
             result = position >= getIndex();
 
-            if (result && (getLength() != LENGTH_MAX)) {
-                result = position < getIndex() + getLength();
+            if (result && (getSize() != SIZE_MAX)) {
+                result = position < getIndex() + getSize();
             }
         }
 
@@ -172,14 +172,13 @@ public class Range {
     }
 
     /**
-     * Sets the length of the range in number of bytes. If the length is the
-     * maximum available from the index, then use the {@value #LENGTH_MAX}
-     * constant.
+     * Sets the size of the range in number of bytes. If the size is the maximum
+     * available from the index, then use the {@value #SIZE_MAX} constant.
      * 
-     * @param length
-     *            The length of the range in number of bytes.
+     * @param size
+     *            The size of the range in number of bytes.
      */
-    public void setLength(long length) {
-        this.length = length;
+    public void setSize(long size) {
+        this.size = size;
     }
 }

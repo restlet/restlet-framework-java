@@ -66,7 +66,7 @@ public class RangeUtils {
                 } else if (value.endsWith("-")) {
                     index = Long.parseLong(value.substring(0,
                             value.length() - 2));
-                    length = Range.LENGTH_MAX;
+                    length = Range.SIZE_MAX;
                 } else {
                     String[] tab = value.split("-");
                     if (tab.length == 2) {

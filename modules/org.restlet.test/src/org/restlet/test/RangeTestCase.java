@@ -98,7 +98,7 @@ public class RangeTestCase extends TestCase {
                 } else if (value.endsWith("-")) {
                     index = Long.parseLong(value.substring(0,
                             value.length() - 2));
-                    length = Range.LENGTH_MAX;
+                    length = Range.SIZE_MAX;
                 } else {
                     String[] tab = value.split("-");
                     if (tab.length == 2) {
@@ -110,7 +110,7 @@ public class RangeTestCase extends TestCase {
                 boolean found = false;
                 for (Range range : ranges) {
                     found = (index == range.getIndex())
-                            && (length == range.getLength());
+                            && (length == range.getSize());
                     if (found) {
                         break;
                     }
@@ -153,7 +153,7 @@ public class RangeTestCase extends TestCase {
 
             request = new Request(Method.GET,
                     "http://localhost:8182/test?range=500-");
-            request.setRanges(Arrays.asList(new Range(500, Range.LENGTH_MAX)));
+            request.setRanges(Arrays.asList(new Range(500, Range.SIZE_MAX)));
             assertEquals(Status.SUCCESS_OK, client.handle(request).getStatus());
 
             request = new Request(Method.GET,
@@ -164,7 +164,7 @@ public class RangeTestCase extends TestCase {
             request = new Request(Method.GET,
                     "http://localhost:8182/test?range=500-1000&range=500-");
             request.setRanges(Arrays.asList(new Range(500, 500), new Range(500,
-                    Range.LENGTH_MAX)));
+                    Range.SIZE_MAX)));
             assertEquals(Status.SUCCESS_OK, client.handle(request).getStatus());
 
             component.stop();
