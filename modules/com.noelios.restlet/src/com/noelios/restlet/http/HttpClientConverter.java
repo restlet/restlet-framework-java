@@ -301,7 +301,7 @@ public class HttpClientConverter extends HttpConverter {
             }
             // Add Ranges header
             if (!request.getRanges().isEmpty()) {
-                final StringBuilder value = new StringBuilder();
+                final StringBuilder value = new StringBuilder("bytes=");
                 for (int i = 0; i < request.getRanges().size(); i++) {
                     if (i > 0) {
                         value.append(", ");

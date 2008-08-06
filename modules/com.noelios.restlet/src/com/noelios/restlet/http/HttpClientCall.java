@@ -205,12 +205,15 @@ public abstract class HttpClientCall extends HttpCall {
      * @return The Range that corresponds to the given header.
      */
     public static Range parseContentRange(String value) {
-        if (value != null) {
+        String prefix = "bytes ";
+        if (value != null && value.startsWith(prefix)) {
+            value = value.substring(prefix.length());
+
             int index = value.indexOf("-");
             int index1 = value.indexOf("/");
 
             int startIndex = Integer.parseInt(value.substring(0, index));
-            int endIndex = Integer.parseInt(value.substring(index, index1));
+            int endIndex = Integer.parseInt(value.substring(index + 1, index1));
             // TODO ?
             String strLength = value.substring(index1, value.length() - 1);
 

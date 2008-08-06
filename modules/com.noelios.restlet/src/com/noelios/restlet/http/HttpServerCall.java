@@ -84,7 +84,7 @@ public abstract class HttpServerCall extends HttpCall {
      * @return {@code range} formatted
      */
     public static String formatContentRange(Range range, long size) {
-        final StringBuilder b = new StringBuilder("");
+        final StringBuilder b = new StringBuilder("bytes ");
 
         if (range.getIndex() >= Range.INDEX_FIRST) {
             b.append(range.getIndex());
