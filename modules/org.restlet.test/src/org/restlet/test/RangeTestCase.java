@@ -46,6 +46,7 @@ import org.restlet.data.Range;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.resource.StringRepresentation;
 
 /**
  * Test {@link org.restlet.data.Range}.
@@ -53,13 +54,6 @@ import org.restlet.data.Status;
  * @author Jerome Louvel
  */
 public class RangeTestCase extends TestCase {
-
-    // Liste des tests à réaliser pour chaque couple connecteur client/serveur.
-    // 1- un client fait des GET avec différents exemples de ranges (et liste de
-    // ranges)
-    // * vérifier que le serveur les récupère bien
-    // * vérifier ensuite la réponse
-    // 2- un client fait des PUT avec une représentation partielle
 
     /**
      * Internal class used for test purpose
@@ -71,13 +65,19 @@ public class RangeTestCase extends TestCase {
         public Restlet createRoot() {
             Router router = new Router();
             router.attach("/test", new TestRangeRestlet());
+            router.attach("/testGet", new TestRangeGetRestlet());
             return router;
+        }
+
+        public TestRangeApplication() {
+            super();
+            getRangeService().setEnabled(true);
         }
     }
 
     /**
      * Internal class used for test purpose. It tests the list of ranges sent by
-     * the request and compares it with the values sent into the query
+     * the request and compares it with the values sent into the query.
      * 
      */
     private static class TestRangeRestlet extends Restlet {
@@ -130,6 +130,18 @@ public class RangeTestCase extends TestCase {
     }
 
     /**
+     * Internal class used for test purpose. It simply returns a string 10
+     * characters long.
+     * 
+     */
+    private static class TestRangeGetRestlet extends Restlet {
+        @Override
+        public void handle(Request request, Response response) {
+            response.setEntity(new StringRepresentation("1234567890"));
+        }
+    }
+
+    /**
      * Tests ranges withour representations.
      */
     @Test
@@ -141,6 +153,8 @@ public class RangeTestCase extends TestCase {
             component.getDefaultHost().attach(new TestRangeApplication());
             component.start();
             Client client = new Client(Protocol.HTTP);
+
+            // Test "range" header.
             Request request = new Request(Method.GET,
                     "http://localhost:8182/test?range=0-500");
             request.setRanges(Arrays.asList(new Range(0, 500)));
@@ -166,6 +180,38 @@ public class RangeTestCase extends TestCase {
             request.setRanges(Arrays.asList(new Range(500, 500), new Range(500,
                     Range.SIZE_MAX)));
             assertEquals(Status.SUCCESS_OK, client.handle(request).getStatus());
+
+            // Test partial Get.
+            request = new Request(Method.GET, "http://localhost:8182/testGet");
+            Response response = client.handle(request);
+            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            assertEquals("1234567890", response.getEntity().getText());
+
+            request = new Request(Method.GET, "http://localhost:8182/testGet");
+            request.setRanges(Arrays.asList(new Range(0, 10)));
+            response = client.handle(request);
+            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            assertEquals("1234567890", response.getEntity().getText());
+
+            request.setRanges(Arrays.asList(new Range(Range.INDEX_FIRST, 2)));
+            response = client.handle(request);
+            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            assertEquals("12", response.getEntity().getText());
+
+            request.setRanges(Arrays.asList(new Range(3, 2)));
+            response = client.handle(request);
+            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            assertEquals("34", response.getEntity().getText());
+
+            request.setRanges(Arrays.asList(new Range(3, 7)));
+            response = client.handle(request);
+            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            assertEquals("3456789", response.getEntity().getText());
+
+            request.setRanges(Arrays.asList(new Range(Range.INDEX_LAST, 7)));
+            response = client.handle(request);
+            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            assertEquals("4567890", response.getEntity().getText());
 
             component.stop();
         } catch (Exception e) {
