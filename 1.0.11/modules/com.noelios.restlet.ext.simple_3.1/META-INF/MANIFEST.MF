@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Noelios Restlet Engine - Extension - Simple
+Bundle-SymbolicName: com.noelios.restlet.ext.simple
+Bundle-Version: 1.0.0
+Bundle-Vendor: Noelios Technologies
+Require-Bundle: com.noelios.restlet;visibility:=reexport,
+ org.simpleframework;visibility:=reexport
+Export-Package: com.noelios.restlet.ext.simple
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
