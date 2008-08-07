@@ -116,7 +116,7 @@ public class RangeUtils {
 
             int startIndex = Integer.parseInt(value.substring(0, index));
             int endIndex = Integer.parseInt(value.substring(index + 1, index1));
-            String strLength = value.substring(index1, value.length() - 1);
+            String strLength = value.substring(index1 + 1, value.length());
 
             representation
                     .setRange(new Range(startIndex, endIndex - startIndex));
