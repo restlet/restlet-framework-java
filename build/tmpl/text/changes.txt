@@ -4,6 +4,8 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+
+- 1.1 Milestone 5 (2008-08-07)
     - Security warning
         - The handling of Context has been significantly refactored in 
           this release. A new Context#createChildContext() method has
