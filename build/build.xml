@@ -1253,6 +1253,7 @@
 			<jvmarg value="-Djavax.net.ssl.trustStorePassword=${server.testkeystore.password}" />
 			<jvmarg value="-Djavax.net.ssl.keyStorePassword=${server.testkeystore.password}" />
 			<classpath>
+				<path location="${mod}/${mod-ri-test-id}" />
 				<path refid="mod-api-test-path" />
 			</classpath>
 			<formatter type="plain" />
