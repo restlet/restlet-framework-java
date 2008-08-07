@@ -48,7 +48,7 @@ public class NoeliosTestSuite extends TestSuite {
 
     /** Constructor. */
     public NoeliosTestSuite() {
-        addTestSuite(AuthenticationTestCase.class);
+        /*addTestSuite(AuthenticationTestCase.class);
         addTestSuite(Base64TestCase.class);
         addTestSuite(ChunkedEncodingPutTestCase.class);
         addTestSuite(ChunkedEncodingTestCase.class);
@@ -65,10 +65,11 @@ public class NoeliosTestSuite extends TestSuite {
         addTestSuite(KeepAliveOutputStreamTestCase.class);
         addTestSuite(PostPutTestCase.class);
         addTestSuite(PreferencesTestCase.class);
-        addTestSuite(RemoteClientAddressTestCase.class);
+        addTestSuite(RemoteClientAddressTestCase.class);*/
         // TODO Fix integration in the build script
-        //addTestSuite(SslGetTestCase.class);
+        addTestSuite(SslGetTestCase.class);
+        /*
         addTestSuite(TunnelFilterTestCase.class);
-        addTestSuite(UserAgentTunnelFilterTestCase.class);
+        addTestSuite(UserAgentTunnelFilterTestCase.class); */
     }
 }

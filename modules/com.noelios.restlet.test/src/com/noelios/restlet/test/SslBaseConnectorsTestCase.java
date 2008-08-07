@@ -27,14 +27,20 @@
 
 package com.noelios.restlet.test;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+
 import junit.framework.TestCase;
 
 import org.restlet.Application;
+import org.restlet.Client;
 import org.restlet.Component;
 import org.restlet.Context;
 import org.restlet.Server;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
+import org.restlet.data.Response;
 import org.restlet.util.Series;
 
 import com.noelios.restlet.ClientHelper;
@@ -62,22 +68,28 @@ public abstract class SslBaseConnectorsTestCase extends TestCase {
 
     private final boolean enableSimpleServer = true;
 
-    protected abstract void call(String uri) throws Exception;
+    private final File testDir = new File(System.getProperty("java.io.tmpdir"),
+            "SslBaseConnectorsTestCase");
 
-    protected abstract Application createApplication(Component component);
+    private final File testKeystoreFile = new File(testDir, "dummy.jks");
+
+    protected abstract void call(String uri) throws Exception;
 
     protected void configureSslParameters(Context context) {
         Series<Parameter> parameters = context.getParameters();
         parameters.add("sslContextFactory",
                 "com.noelios.restlet.util.DefaultSslContextFactory");
-        parameters.add("keystorePath", "dummy.jks");
+        parameters.add("keystorePath", testKeystoreFile.getPath());
         parameters.add("keystorePassword", "testtest");
         parameters.add("keyPassword", "testtest");
     }
 
+    protected abstract Application createApplication(Component component);
+
     // Helper methods
     private void runTest(ServerHelper server, ClientHelper client)
             throws Exception {
+
         final Engine nre = new Engine(false);
         nre.getRegisteredServers().add(server);
         nre.getRegisteredClients().add(client);
@@ -93,10 +105,28 @@ public abstract class SslBaseConnectorsTestCase extends TestCase {
 
     @Override
     public void setUp() {
+        try {
+            if (!testKeystoreFile.exists()) {
+                // Prepare a temporary directory for the tests
+                this.testDir.delete();
+                this.testDir.mkdir();
+                // Copy the keystore into the test directory
+                Response response = new Client(Protocol.CLAP)
+                        .get("clap://class/dummy.jks");
+                OutputStream outputStream = new FileOutputStream(
+                        testKeystoreFile);
+                response.getEntity().write(outputStream);
+                outputStream.flush();
+                outputStream.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private String start() throws Exception {
-        System.setProperty("javax.net.ssl.trustStore", "dummy.jks");
+        System.setProperty("javax.net.ssl.trustStore", testKeystoreFile
+                .getPath());
         System.setProperty("javax.net.ssl.trustStorePassword", "testtest");
 
         this.component = new Component();
@@ -116,6 +146,12 @@ public abstract class SslBaseConnectorsTestCase extends TestCase {
         if ((this.component != null) && this.component.isStarted()) {
             this.component.stop();
         }
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
+        this.testDir.delete();
     }
 
     public void testSslGrizzlyAndApache() throws Exception {
