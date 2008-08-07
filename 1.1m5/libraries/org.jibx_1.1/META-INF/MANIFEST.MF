@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: JiBX: Binding XML to Java Code
+Bundle-SymbolicName: org.jibx
+Bundle-Version: 1.1
+Bundle-ClassPath: org.jibx.runtime.jar
+Bundle-Vendor: Dennis M. Sosnoski
+Export-Package: org.jibx.runtime,
+ org.jibx.runtime.impl;uses:="org.jibx.runtime,javax.xml.stream"
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
