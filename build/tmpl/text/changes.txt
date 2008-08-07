@@ -4,7 +4,16 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
-
+    - Bugs fixed
+        - 
+    - API Enhancements
+        - Added warning message when no client connector supports the 
+          request's protocol.
+    - NRE and Extension Enhancements
+        -     
+    - Misc
+        -     
+    
 - 1.1 Milestone 5 (2008-08-07)
     - Security warning
         - The handling of Context has been significantly refactored in 
@@ -160,7 +169,7 @@ Changes log
         - Series.getValues() was not respecting the 'ignoreCase' 
           parameter. Contributed by Stephan Koops.
         - Allowed only UTF-8 character set for JsonRepresentation. 
-          Reported by Michael B�ckling.
+          Reported by Michael B?ckling.
     - API Enhancements
         - Matrix parameters are now fully supported by the Reference 
           and the Form classes. Added many new methods, similar to the
@@ -253,7 +262,7 @@ Changes log
           Suggested by Hendy Irawan, with help from Edward Yakop.
         - Updated db4o 7.2 to latest stable build.
         - Added Spring example based on REST book chapter 7. 
-          Contributed by Konstantin L�ufer.
+          Contributed by Konstantin L?ufer.
         - Removed unecessary libraries from distribution.
         - The WAR client is now only available for Application deployed
           using ServletServer or a subclass. 
