@@ -125,7 +125,7 @@ public class ComponentClientDispatcher extends TemplateDispatcher {
                 }
             } else {
                 getLogger().warning(
-                        "No compoent is available to route the RIAP request.");
+                        "No component is available to route the RIAP request.");
             }
         } else {
             getComponentContext().getComponentHelper().getClientRouter()

@@ -29,7 +29,10 @@ package com.noelios.restlet.component;
 
 import org.restlet.Client;
 import org.restlet.Component;
+import org.restlet.Restlet;
 import org.restlet.Router;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 
 /**
  * Router that collects calls from all applications and dispatches them to the
@@ -55,6 +58,19 @@ public class ClientRouter extends Router {
         super((component == null) ? null : component.getContext()
                 .createChildContext());
         this.component = component;
+    }
+
+    @Override
+    public Restlet getNext(Request request, Response response) {
+        Restlet result = super.getNext(request, response);
+        if (result == null) {
+            getLogger()
+                    .warning(
+                            "The protocol used by this request is not declared in the list of client connectors. ("
+                                    + request.getResourceRef().getSchemeProtocol()
+                                    + ")");
+        }
+        return result;
     }
 
     /**
