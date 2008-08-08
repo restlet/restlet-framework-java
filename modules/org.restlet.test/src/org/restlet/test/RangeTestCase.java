@@ -103,7 +103,7 @@ public class RangeTestCase extends TestCase {
                     String[] tab = value.split("-");
                     if (tab.length == 2) {
                         index = Long.parseLong(tab[0]);
-                        length = index + Long.parseLong(tab[1]);
+                        length = Long.parseLong(tab[1]) - index;
                     }
                 }
 
@@ -182,7 +182,6 @@ public class RangeTestCase extends TestCase {
             assertEquals(Status.SUCCESS_OK, client.handle(request).getStatus());
 
             // Test partial Get.
-/*
             request = new Request(Method.GET, "http://localhost:8182/testGet");
             Response response = client.handle(request);
             assertEquals(Status.SUCCESS_OK, response.getStatus());
@@ -199,12 +198,12 @@ public class RangeTestCase extends TestCase {
             assertEquals(Status.SUCCESS_OK, response.getStatus());
             assertEquals("12", response.getEntity().getText());
 
-            request.setRanges(Arrays.asList(new Range(3, 2)));
+            request.setRanges(Arrays.asList(new Range(2, 2)));
             response = client.handle(request);
             assertEquals(Status.SUCCESS_OK, response.getStatus());
             assertEquals("34", response.getEntity().getText());
 
-            request.setRanges(Arrays.asList(new Range(3, 7)));
+            request.setRanges(Arrays.asList(new Range(2, 7)));
             response = client.handle(request);
             assertEquals(Status.SUCCESS_OK, response.getStatus());
             assertEquals("3456789", response.getEntity().getText());
@@ -213,7 +212,7 @@ public class RangeTestCase extends TestCase {
             response = client.handle(request);
             assertEquals(Status.SUCCESS_OK, response.getStatus());
             assertEquals("4567890", response.getEntity().getText());
-*/
+
             component.stop();
         } catch (Exception e) {
             e.printStackTrace();
