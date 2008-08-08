@@ -449,55 +449,55 @@ public class WadlApplication extends Application {
         final Handler handler = finder.createTarget(finder.getTargetClass(),
                 request, response);
 
-        if (handler != null) {
-            if (handler instanceof WadlResource) {
-                // This kind of resource gives more information
-                final WadlResource resource = (WadlResource) handler;
-                result = new ResourceInfo();
-                resource.describe(path, result);
-            } else {
-                result = new ResourceInfo();
-                result.setPath(path);
+        if (handler instanceof WadlResource) {
+            // This kind of resource gives more information
+            final WadlResource resource = (WadlResource) handler;
+            result = new ResourceInfo();
+            resource.describe(path, result);
+        } else {
+            result = new ResourceInfo();
+            result.setPath(path);
 
-                // The set of allowed methods
-                final List<Method> methods = new ArrayList<Method>();
+            // The set of allowed methods
+            final List<Method> methods = new ArrayList<Method>();
+            if (handler != null) {
                 methods.addAll(handler.getAllowedMethods());
+            }
 
-                Collections.sort(methods, new Comparator<Method>() {
-                    public int compare(Method m1, Method m2) {
-                        return m1.getName().compareTo(m2.getName());
-                    }
-                });
+            Collections.sort(methods, new Comparator<Method>() {
+                public int compare(Method m1, Method m2) {
+                    return m1.getName().compareTo(m2.getName());
+                }
+            });
 
-                if (handler instanceof Resource) {
-                    final Resource resource = (Resource) handler;
+            if (handler instanceof Resource) {
+                final Resource resource = (Resource) handler;
 
-                    for (final Method method : methods) {
-                        final MethodInfo methodInfo = new MethodInfo();
-                        methodInfo.setName(method);
-                        // Can document the list of supported variants.
-                        if (Method.GET.equals(method)) {
-                            final ResponseInfo responseInfo = new ResponseInfo();
-                            for (final Variant variant : resource.getVariants()) {
-                                final RepresentationInfo representationInfo = new RepresentationInfo();
-                                representationInfo.setMediaType(variant
-                                        .getMediaType());
-                                responseInfo.getRepresentations().add(
-                                        representationInfo);
-                            }
-                            methodInfo.setResponse(responseInfo);
+                for (final Method method : methods) {
+                    final MethodInfo methodInfo = new MethodInfo();
+                    methodInfo.setName(method);
+                    // Can document the list of supported variants.
+                    if (Method.GET.equals(method)) {
+                        final ResponseInfo responseInfo = new ResponseInfo();
+                        for (final Variant variant : resource.getVariants()) {
+                            final RepresentationInfo representationInfo = new RepresentationInfo();
+                            representationInfo.setMediaType(variant
+                                    .getMediaType());
+                            responseInfo.getRepresentations().add(
+                                    representationInfo);
                         }
+                        methodInfo.setResponse(responseInfo);
+                    }
 
-                        result.getMethods().add(methodInfo);
-                    }
-                } else {
-                    // Can only give information about the list of allowed
-                    // methods.
-                    for (final Method method : methods) {
-                        final MethodInfo methodInfo = new MethodInfo();
-                        methodInfo.setName(method);
-                        result.getMethods().add(methodInfo);
-                    }
+                    result.getMethods().add(methodInfo);
+                }
+            } else {
+                // Can only give information about the list of allowed
+                // methods.
+                for (final Method method : methods) {
+                    final MethodInfo methodInfo = new MethodInfo();
+                    methodInfo.setName(method);
+                    result.getMethods().add(methodInfo);
                 }
             }
         }
