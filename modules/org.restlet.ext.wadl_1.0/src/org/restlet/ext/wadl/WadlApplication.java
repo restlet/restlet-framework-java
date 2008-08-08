@@ -576,7 +576,11 @@ public class WadlApplication extends Application {
         List<ResourceInfo> result = new ArrayList<ResourceInfo>();
 
         for (final Route route : router.getRoutes()) {
-            result.add(getResourceInfo(route, "/", request, response));
+            ResourceInfo resourceInfo = getResourceInfo(route, "/", request,
+                    response);
+            if (resourceInfo != null) {
+                result.add(resourceInfo);
+            }
         }
 
         return result;
