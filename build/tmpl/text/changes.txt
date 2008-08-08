@@ -5,26 +5,27 @@ Changes log
 
 @version-full@ (@release-date@)
 [Bugs fixed]
+ - 
+
+1.0.11 (2008-08-08)
+[Bugs fixed]
  - Fixed potential bug with the "userinfo" deprecated format "login:password". 
    Reported by Eben.
  - Fixed potential bug when putting representation to a file when another one 
-   starts with the same name. Reported by Rémi Dewitte.
+   starts with the same name. Reported by Remi Dewitte.
  - Fixed bug with the support of media-type parameters when writing the response. 
    Reported by Zsolt Czinkos.
  - Fixed bug regarding the creation of directories (with no index name) via the 
-   Directory Restlet. Reported by Marc-Elian Bégin.
+   Directory Restlet. Reported by Marc-Elian Begin.
 [Enhancements]
  - Updated Jetty to version 6.1.11
- 
-[Other changes] 
- - 
 
 1.0.10 (2008-05-20)
 [Bugs fixed]
  - Status.valueOf() was return null for non standard status codes. 
    Reported by Stephan Koops.
  - Upgraded version of the freemarker library, renamed the library name
-   according to its Maven's groupId. Reported by Konstantin La�fer.
+   according to its Maven's groupId. Reported by Konstantin Laufer.
  - Fixed potential bug when PUT requests are made to a directory 
    without trailing slash character.
  - Directory did not transmit its negotiation content attribute to the 
@@ -285,7 +286,7 @@ Changes log
    the full content-type (with parameter) expected by the underlying Apache Commons-fileupload's 
    FileItem parser. Reported and contributed by Christian Ohr.
  - Fixed bug in ByteUtils.toString method, lack of a characterSet parameter in order 
-   to read the inner input stream correctly. Reported by �zg�n Atacan.
+   to read the inner input stream correctly. Reported by ?zg?n Atacan.
  - Updated patch providing a workaround to a JDK bug with AWS authorization header
    (see NRE SecurityUtils class). Applies only to the JVM delivered by Sun. Reported by 
    Justin C. van Vorst.
@@ -374,7 +375,7 @@ Changes log
  - Send the Vary header only to none-MSIE user agents as MSIE seems to support badly this header. Reported by Heinrich Klobuczek.
  - Enhanced but non completely fixed support of long URIs (due to regexp limitations). Reported by Ivan Gorgiev.
  - IllegalStateException is thrown each time a Web form is going to be parsed, but is not available. Reported by Ron Lancaster.
- - Fixed improper line returns in Linux shell script ("bin/linux/restlet.sh"). Reported by S�bastien Pierre.
+ - Fixed improper line returns in Linux shell script ("bin/linux/restlet.sh"). Reported by S?bastien Pierre.
  - Fixed hardcoded "handle" prefix in Finder.getMethod(). Reported by Brian Crow and Ron Lancaster.
  - Fixed handleXxx method invocation in Finder class (no argument, invocation on "target" resource). Reported and contributed by Brian Crow.
 
@@ -1372,7 +1373,7 @@ Changes log
  - Added hasTarget() method on Chainlet to indicate if a target was already attached.
  - Added new constructor to DefaultStatus taking an existing Status and a custom description. Also added setDescription() method.
  - Added new constructor for StringRepresentation accepting a simple string and using the "text/plain" media type by default.
- - Changed "J�r�me" to "Jerome" in source file. Compiling issue reported by Dave Pawson.
+ - Changed "J?r?me" to "Jerome" in source file. Compiling issue reported by Dave Pawson.
  - Renamed "tutorial" package into "example" and added a readme.txt file. Suggested by Dave Pawson.
  
 1.0 beta 9 (2006-04-14)
