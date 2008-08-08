@@ -12,6 +12,7 @@ import org.restlet.data.Response;
  * Restlet wrapper. Useful for application developer who need to provide the
  * WADL documentation for a Restlet instance.
  * 
+ * @author Thierry Boileau
  */
 public abstract class WadlWrapper extends Restlet implements WadlDescribable {
 
