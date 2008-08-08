@@ -50,7 +50,7 @@ public class Client extends Connector {
     private int connectTimeout = 0;
 
     /** The helper provided by the implementation. */
-    private volatile Helper<Client> helper;
+    private Helper<Client> helper;
 
     /**
      * Constructor.
