@@ -122,8 +122,8 @@ public class LocalClientHelper extends ClientHelper {
      *         seconds).
      */
     public int getTimeToLive() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue("timeToLive",
-                "600"));
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "timeToLive", "600"));
     }
 
     /**
@@ -162,9 +162,9 @@ public class LocalClientHelper extends ClientHelper {
                 final int dashIndex = tokens[j].indexOf('-');
                 if (dashIndex != -1) {
                     // We found a language extension with a region area
-                    // specified
+                    // specified.
                     // Try to find a language matching the primary part of the
-                    // extension
+                    // extension.
                     final String primaryPart = tokens[j]
                             .substring(0, dashIndex);
                     current = metadataService.getMetadata(primaryPart);

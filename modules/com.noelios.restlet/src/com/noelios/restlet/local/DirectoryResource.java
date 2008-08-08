@@ -202,8 +202,7 @@ public class DirectoryResource extends Resource {
             if (contextResponse.getEntity() != null) {
                 // As a convention, underlying client connectors return the
                 // directory listing with the media-type
-                // "MediaType.TEXT_URI_LIST"
-                // when handling directories
+                // "MediaType.TEXT_URI_LIST" when handling directories
                 if (MediaType.TEXT_URI_LIST.equals(contextResponse.getEntity()
                         .getMediaType())) {
                     this.directoryTarget = true;
@@ -245,7 +244,7 @@ public class DirectoryResource extends Resource {
                 // Let's try with the facultative index, in case the underlying
                 // client connector does not handle directory listing.
                 if (this.targetUri.endsWith("/")) {
-                    // In this case, the trailing "/" shows that the URIs must
+                    // In this case, the trailing "/" shows that the URI must
                     // point to a directory
                     if ((getDirectory().getIndexName() != null)
                             && (getDirectory().getIndexName().length() > 0)) {
@@ -266,8 +265,7 @@ public class DirectoryResource extends Resource {
                     }
                 } else {
                     // Try to determine if this target URI with no trailing "/"
-                    // is a
-                    // directory, in order to force the redirection.
+                    // is a directory, in order to force the redirection.
                     if ((getDirectory().getIndexName() != null)
                             && (getDirectory().getIndexName().length() > 0)) {
                         // Append the index name
@@ -290,15 +288,13 @@ public class DirectoryResource extends Resource {
             }
 
             // In case the request does not target a directory and the file has
-            // not
-            // been found, try with the tunnelled URI
+            // not been found, try with the tunnelled URI.
             if (isNegotiateContent() && !this.directoryTarget
                     && !this.fileTarget && (this.originalRef != null)) {
                 this.relativePart = request.getResourceRef().getRemainingPart();
 
                 // The target uri does not take into account the query and
-                // fragment
-                // parts of the resource.
+                // fragment parts of the resource.
                 this.targetUri = new Reference(directory.getRootRef()
                         .toString()
                         + this.relativePart).normalize().toString(false, false);
@@ -311,8 +307,7 @@ public class DirectoryResource extends Resource {
             }
 
             // Try to get the directory content, in case the request does not
-            // target
-            // a directory
+            // target a directory
             if (!this.directoryTarget) {
                 final int lastSlashIndex = this.targetUri.lastIndexOf('/');
                 if (lastSlashIndex == -1) {
@@ -356,7 +351,7 @@ public class DirectoryResource extends Resource {
 
         // Log results
         getLogger().info("Converted target URI: " + this.targetUri);
-        getLogger().info("Converted base name : " + this.baseName);
+        getLogger().fine("Converted base name : " + this.baseName);
     }
 
     /**
