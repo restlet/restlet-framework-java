@@ -96,6 +96,42 @@ public class RangeUtils {
     }
 
     /**
+     * Format {@code ranges} as a Range header value
+     * 
+     * @param ranges
+     *            List of ranges to format
+     * @return {@code ranges} formatted or null if the list is null or empty.
+     */
+    public static String formatRanges(List<Range> ranges) {
+        if (ranges == null || ranges.isEmpty()) {
+            return null;
+        }
+
+        final StringBuilder value = new StringBuilder("bytes=");
+        for (int i = 0; i < ranges.size(); i++) {
+            Range range = ranges.get(i);
+            if (i > 0) {
+                value.append(", ");
+            }
+
+            if (range.getIndex() >= Range.INDEX_FIRST) {
+                value.append(range.getIndex());
+                value.append("-");
+                if (range.getSize() != Range.SIZE_MAX) {
+                    value.append(range.getIndex() + range.getSize());
+                }
+            } else if (range.getIndex() == Range.INDEX_LAST) {
+                value.append("-");
+                if (range.getSize() != Range.SIZE_MAX) {
+                    value.append(range.getSize());
+                }
+            }
+        }
+
+        return value.toString();
+    }
+
+    /**
      * Parse the Content-Range header value and update the given representation
      * 
      * @param value
@@ -156,7 +192,7 @@ public class RangeUtils {
                     String[] tab = value.split("-");
                     if (tab.length == 2) {
                         index = Long.parseLong(tab[0]);
-                        length = index + Long.parseLong(tab[1]);
+                        length = Long.parseLong(tab[1]) - index;
                     }
                 }
                 result.add(new Range(index, length));

@@ -93,4 +93,36 @@ public class RangeInputStream extends FilterInputStream {
         return result;
     }
 
+    @Override
+    public int read(byte[] b, int off, int len) throws IOException {
+        long startIndex = (range.getIndex() != Range.INDEX_LAST) ? range
+                .getIndex() : totalSize - range.getSize();
+        long skipped = skip(startIndex - position);
+
+        // skip to the index of the range.
+        while ((skipped >= 0) && !(position >= startIndex)
+                && !this.range.isIncluded(position += skipped, totalSize)) {
+            skipped = skip(startIndex - position);
+        }
+
+        // read the number of bytes required, otherwise returns -1
+        long finalIndex = startIndex + range.getSize();
+        if (position >= finalIndex) {
+            return -1;
+        } else {
+            int n = super
+                    .read(
+                            b,
+                            off,
+                            ((position + len) > finalIndex) ? (int) (finalIndex - position)
+                                    : len);
+            if (n > 0) {
+                position += n;
+            }
+
+            return n;
+        }
+
+    }
+
 }
