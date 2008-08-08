@@ -5,7 +5,7 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Bugs fixed
-        - 
+        - Fixed NPE with WadlApplications that host Restlet subclasses.
     - API Enhancements
         - Added warning message when no client connector supports the 
           request's protocol.
