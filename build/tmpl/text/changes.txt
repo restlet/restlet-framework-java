@@ -9,6 +9,8 @@ Changes log
     - API Enhancements
         - Added warning message when no client connector supports the 
           request's protocol.
+        - Added the ability to provide Wadl documentation to any 
+          Restlet instances.
     - NRE and Extension Enhancements
         -     
     - Misc
