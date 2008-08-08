@@ -36,6 +36,7 @@ import java.util.logging.Level;
 import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Context;
+import org.restlet.Directory;
 import org.restlet.Filter;
 import org.restlet.Finder;
 import org.restlet.Handler;
@@ -462,6 +463,15 @@ public class WadlApplication extends Application {
             final List<Method> methods = new ArrayList<Method>();
             if (handler != null) {
                 methods.addAll(handler.getAllowedMethods());
+            } else {
+                if (finder instanceof Directory) {
+                    Directory directory = (Directory) finder;
+                    methods.add(Method.GET);
+                    if (directory.isModifiable()) {
+                        methods.add(Method.DELETE);
+                        methods.add(Method.PUT);
+                    }
+                }
             }
 
             Collections.sort(methods, new Comparator<Method>() {
@@ -746,12 +756,14 @@ public class WadlApplication extends Application {
             Response response) {
         Representation result = null;
 
-        if (MediaType.APPLICATION_WADL_XML.equals(variant.getMediaType())) {
-            result = new WadlRepresentation(getApplicationInfo(request,
-                    response));
-        } else if (MediaType.TEXT_HTML.equals(variant.getMediaType())) {
-            result = new WadlRepresentation(getApplicationInfo(request,
-                    response)).getHtmlRepresentation();
+        if (variant != null) {
+            if (MediaType.APPLICATION_WADL_XML.equals(variant.getMediaType())) {
+                result = new WadlRepresentation(getApplicationInfo(request,
+                        response));
+            } else if (MediaType.TEXT_HTML.equals(variant.getMediaType())) {
+                result = new WadlRepresentation(getApplicationInfo(request,
+                        response)).getHtmlRepresentation();
+            }
         }
 
         return result;
