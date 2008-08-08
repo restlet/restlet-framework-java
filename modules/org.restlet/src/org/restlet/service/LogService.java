@@ -53,7 +53,6 @@ package org.restlet.service;
  * <li>Referrer reference</li>
  * </ol>
  * <br>
- * <br>
  * If you use <a href="http://www.analog.cx">Analog</a> to generate your log
  * reports, and if you use the default log format, then you can simply specify
  * this string as a value of the LOGFORMAT command:

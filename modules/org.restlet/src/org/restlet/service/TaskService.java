@@ -47,13 +47,13 @@ import org.restlet.data.Response;
 
 /**
  * The service instance returned will not invoke the runnable task in the
- * current thread.
- * 
+ * current thread.<br>
+ * <br>
  * In addition to allowing pooling, this method will ensure that the threads
  * executing the tasks will have the thread local variables copied from the
  * calling thread. This will ensure that call to static methods like
- * {@link Application#getCurrent()} still work.
- * 
+ * {@link Application#getCurrent()} still work.<br>
+ * <br>
  * Also, note that this executor service will be shared among all Restlets and
  * Resources that are part of your context. In general this context corresponds
  * to a parent Application's context. If you want to have your own service

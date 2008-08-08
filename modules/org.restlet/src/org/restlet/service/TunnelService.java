@@ -32,11 +32,9 @@ import org.restlet.data.Request;
 
 /**
  * Service tunneling request method or client preferences. The tunneling can use
- * query parameters and file-like extensions.
- * <p>
- * This is particularly useful for browser-based applications that can't fully
- * control the HTTP requests sent.
- * <p>
+ * query parameters and file-like extensions. This is particularly useful for browser-based applications that can't fully
+ * control the HTTP requests sent.<br>
+ * <br>
  * Here is the list of the default parameter names supported:
  * <table>
  * <p>
@@ -50,7 +48,8 @@ import org.restlet.data.Request;
  * <td>methodParameter</td>
  * <td>method</td>
  * <td>See values in {@link org.restlet.data.Method}</td>
- * <td>For POST requests, specify the actual method to use (DELETE, PUT, etc.).</td>
+ * <td>For POST requests, let you specify the actual method to use (DELETE, PUT, MOVE, etc.).</td>
+ * <td>For GET requests, let you specify OPTIONS as the actual method to use.</td>
  * </tr>
  * <tr>
  * <td>characterSetParameter</td>
@@ -79,24 +78,25 @@ import org.restlet.data.Request;
  * value.</td>
  * </tr>
  * </table>
- * <p>
+ * <br>
  * The client preferences can also be updated based on the extensions available
  * in the last path segment. The syntax is similar to file extensions by allows
  * several extensions to be present, in any particular order: e.g.
  * "/path/foo.fr.txt"). This mechanism relies on the mapping between an
  * extension and a metadata (e.g. "txt" => "text/plain") declared by the
  * {@link MetadataService}.<br>
+ * <br>
  * The client preferences can also be updated according to the user agent
  * properties (its name, version, operating system, or other) available via the
  * {@link ClientInfo#getAgentAttributes()} method. The feature is based on a
  * property-like file called "accept.properties" and loaded from the classpath.
- * Here is an excerpt of such file :
- * 
+ * Here is an excerpt of such file :<br>
+ * <br>
  * <code>
  * agentName: firefox
  * accept: application/xhtml+xml,text/html,text/xml;q=0.9,application/xml;q=0.9
- * </code>
- * 
+ * </code><br>
+ * <br>
  * It allows to specify a complete "accept" header string for a set of
  * (key:value) pairs. The header value is given with the "accept" key, and the
  * set of (key:value) pairs is the simple list of key:value just above the

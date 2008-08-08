@@ -44,18 +44,22 @@ import org.restlet.util.Variable;
 
 /**
  * Client specific data related to a call.<br>
+ * <br>
  * When extracted from a request, most of these data are directly taken from the
  * underlying headers. There are some exceptions: agentAttributes and
  * mainAgentProduct which are taken from the agent name (for example the
  * "user-agent" header for HTTP requests).<br>
+ * <br>
  * As described by the HTTP specification, the "user-agent" can be seen as a
  * ordered list of products name (ie a name and a version) and/or comments.<br>
+ * <br>
  * Each HTTP client (mainly browsers and web crawlers) defines its own
  * "user-agent" header which can be seen as the "signature" of the client.
  * Unfortunately, there is no rule to identify clearly a kind a client and its
  * version (let's say firefox 2.x, Internet Explorer IE 7.0, Opera, etc)
  * according to its signature. Each signature follow its own rules which may
  * vary according to the version of the client.<br>
+ * <br>
  * In order to help retrieving interesting data such as product name (Firefox,
  * IE, etc), version, operating system, Restlet users has the ability to define
  * their own way to extract data from the "user-agent" header. It is based on a
@@ -64,9 +68,11 @@ import org.restlet.util.Variable;
  * describes a typical user-agent string and allows to use predefined variables
  * that help to retrieve the content of the agent name, version, operating
  * system.<br>
+ * <br>
  * The "user-agent" string is confronted to the each template from the beginning
  * of the property file to the end. The loop stops at the first matched
  * template.<br>
+ * <br>
  * Here is a sample of such template:<br>
  * 
  * <pre>
@@ -113,6 +119,7 @@ import org.restlet.util.Variable;
  * <td>A sequence of characters that can be empty</td>
  * </tr>
  * </table><br>
+ * <br>
  * These variables are used to generate a {@link Product} instance with the main
  * data (name, version, comment). This instance is accessible via the
  * {@link ClientInfo#getMainAgentProduct()} method. All other variables used in

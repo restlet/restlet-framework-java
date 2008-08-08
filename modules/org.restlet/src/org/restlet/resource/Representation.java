@@ -60,9 +60,7 @@ import org.restlet.data.Tag;
  * less precise names for a representation include: document, file, and HTTP
  * message entity, instance, or variant." Roy T. Fielding
  * 
- * @see <a href=
- *      "http://roy.gbiv.com/pubs/dissertation/rest_arch_style.htm#sec_5_2_1_2"
- *      >Source dissertation< /a>
+ * @see <a href="http://roy.gbiv.com/pubs/dissertation/rest_arch_style.htm#sec_5_2_1_2">Source dissertation</a>
  * @author Jerome Louvel
  */
 public abstract class Representation extends Variant {
