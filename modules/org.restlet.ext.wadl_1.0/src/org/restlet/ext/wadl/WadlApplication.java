@@ -531,7 +531,10 @@ public class WadlApplication extends Application {
             Request request, Response response) {
         ResourceInfo result = null;
 
-        if (restlet instanceof Finder) {
+        if (restlet instanceof WadlDescribable) {
+            result = ((WadlDescribable) restlet).getResourceInfo();
+            result.setPath(path);
+        } else if (restlet instanceof Finder) {
             result = getResourceInfo((Finder) restlet, path, request, response);
         } else if (restlet instanceof Router) {
             result = new ResourceInfo();
@@ -541,7 +544,6 @@ public class WadlApplication extends Application {
         } else if (restlet instanceof Filter) {
             result = getResourceInfo((Filter) restlet, path, request, response);
         }
-
         return result;
     }
 
@@ -691,6 +693,9 @@ public class WadlApplication extends Application {
 
             // Returns a WADL representation of the application.
             response.setEntity(wadlRepresent(request, response));
+            if (response.isEntityAvailable()) {
+                response.setStatus(Status.SUCCESS_OK);
+            }
         }
     }
 
