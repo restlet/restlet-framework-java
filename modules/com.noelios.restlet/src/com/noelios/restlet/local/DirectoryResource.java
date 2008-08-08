@@ -63,14 +63,51 @@ import org.restlet.resource.Variant;
  */
 public class DirectoryResource extends Resource {
 
+    /**
+     * Returns the set of extensions contained in a given directory entry name.
+     * 
+     * @param entryName
+     *            The directory entry name.
+     * @return The set of extensions.
+     */
+    public static Set<String> getExtensions(String entryName) {
+        Set<String> result = new TreeSet<String>();
+        String[] tokens = entryName.split("\\.");
+        for (int i = 1; i < tokens.length; i++) {
+            result.add(tokens[i].toLowerCase());
+        }
+        return result;
+    }
+
+    /** The base set of extensions. */
+    private Set<String> baseExtensions;
+
+    /**
+     * The local base name of the resource. For example, "foo.en" and
+     * "foo.en-GB.html" return "foo".
+     */
+    private String baseName;
+
     /** The parent directory handler. */
     private Directory directory;
 
+    /** If the resource is a directory, this contains its content. */
+    private ReferenceList directoryContent;
+
+    /**
+     * If the resource is a directory, the non-trailing slash caracter leads to
+     * redirection.
+     */
+    private boolean directoryRedirection;
+
+    /** The context's directory URI (file, clap URI). */
+    private String directoryUri;
+
+    /** If the resource is a file, this contains its content. */
+    private Representation fileContent;
+
     /** The resource path relative to the directory URI. */
     private String relativePart;
-
-    /** The context's target URI (file, clap URI). */
-    private String targetUri;
 
     /** Indicates if the target resource is a directory. */
     private boolean targetDirectory;
@@ -81,32 +118,11 @@ public class DirectoryResource extends Resource {
     /** Indicates if the target resource is a directory with an index. */
     private boolean targetIndex;
 
-    /** The context's directory URI (file, clap URI). */
-    private String directoryUri;
-
-    /**
-     * The local base name of the resource. For example, "foo.en" and
-     * "foo.en-GB.html" return "foo".
-     */
-    private String baseName;
-
-    /** The base set of extensions. */
-    private Set<String> baseExtensions;
+    /** The context's target URI (file, clap URI). */
+    private String targetUri;
 
     /** The unique representation of the target URI, if it exists. */
     private Reference uniqueReference;
-
-    /** If the resource is a directory, this contains its content. */
-    private ReferenceList directoryContent;
-
-    /** If the resource is a file, this contains its content. */
-    private Representation fileContent;
-
-    /**
-     * If the resource is a directory, the non-trailing slash caracter leads to
-     * redirection.
-     */
-    private boolean directoryRedirection;
 
     /**
      * Constructor.
@@ -186,7 +202,7 @@ public class DirectoryResource extends Resource {
             // Let's try with the facultative index, in case the underlying
             // client connector does not handle directory listing.
             if (this.targetUri.endsWith("/")) {
-                // In this case, the trailing "/" shows that the URIs must
+                // In this case, the trailing "/" shows that the URI must
                 // point to a directory
                 if (getDirectory().getIndexName() != null
                         && getDirectory().getIndexName().length() > 0) {
@@ -227,6 +243,8 @@ public class DirectoryResource extends Resource {
             }
         }
 
+        // Try to get the directory content, in case the request does not
+        // target a directory
         if (!this.targetDirectory) {
             int lastSlashIndex = targetUri.lastIndexOf('/');
             if (lastSlashIndex == -1) {
@@ -261,7 +279,7 @@ public class DirectoryResource extends Resource {
 
         // Log results
         getLogger().info("Converted base path: " + this.targetUri);
-        getLogger().info("Converted base name: " + this.baseName);
+        getLogger().fine("Converted base name: " + this.baseName);
     }
 
     /**
@@ -286,31 +304,16 @@ public class DirectoryResource extends Resource {
         return getDirectory().isModifiable();
     }
 
-    @Override
-    public void handleGet() {
-        if (directoryRedirection) {
-            // If this request targets a directory and if the target URI does
-            // not end with a tailing "/", the client is told to redirect to a
-            // correct URI.
-            getResponse().redirectPermanent(
-                    getRequest().getResourceRef().getIdentifier() + "/");
-        } else {
-            super.handleGet();
-        }
-
-    }
-
     /**
      * Asks the resource to delete itself and all its representations.
      */
     @Override
     public void delete() {
-        Status status;
-
-        if (directoryRedirection && !targetIndex) {
-            getResponse().setStatus(Status.REDIRECTION_SEE_OTHER);
-            getResponse().setRedirectRef(this.targetUri);
+        if (directoryRedirection) {
+            getResponse().redirectSeeOther(
+                    getRequest().getResourceRef().getIdentifier() + "/");
         } else {
+            Status status;
             // We allow the transfer of the PUT calls only if the readOnly flag
             // is not set
             if (!getDirectory().isModifiable()) {
@@ -355,40 +358,6 @@ public class DirectoryResource extends Resource {
     }
 
     /**
-     * Puts a variant representation in the resource.
-     * 
-     * @param variant
-     *            A new or updated variant representation.
-     */
-    @Override
-    public void put(Representation variant) {
-        Status status;
-
-        if (directoryRedirection && !targetIndex) {
-            getResponse().setStatus(Status.REDIRECTION_SEE_OTHER);
-            getResponse().setRedirectRef(this.targetUri);
-        } else {
-            // We allow the transfer of the PUT calls only if the readOnly flag
-            // is
-            // not set
-            if (!getDirectory().isModifiable()) {
-                status = new Status(Status.CLIENT_ERROR_FORBIDDEN,
-                        "No modification allowed.");
-            } else {
-                Request contextRequest = new Request(Method.PUT, this.targetUri);
-                contextRequest.setEntity(variant);
-                Response contextResponse = new Response(contextRequest);
-                contextRequest.setResourceRef(this.targetUri);
-                getDispatcher().handle(contextRequest, contextResponse);
-                status = contextResponse.getStatus();
-            }
-
-            getResponse().setStatus(status);
-        }
-
-    }
-
-    /**
      * Returns the local base name of the file. For example, "foo.en" and
      * "foo.en-GB.html" return "foo".
      * 
@@ -423,6 +392,72 @@ public class DirectoryResource extends Resource {
      */
     private Uniform getDispatcher() {
         return getDirectory().getContext().getDispatcher();
+    }
+
+    /**
+     * Allows to sort the list of references set by the resource.
+     * 
+     * @return A Comparator instance imposing a sort order of references or null
+     *         if no special order is wanted.
+     */
+    private Comparator<Reference> getReferencesComparator() {
+        // Sort the list of references by their identifier.
+        Comparator<Reference> identifiersComparator = new Comparator<Reference>() {
+            public int compare(Reference rep0, Reference rep1) {
+                boolean bRep0Null = (rep0.getIdentifier() == null);
+                boolean bRep1Null = (rep1.getIdentifier() == null);
+
+                if (bRep0Null && bRep1Null) {
+                    return 0;
+                } else {
+                    if (bRep0Null) {
+                        return -1;
+                    } else {
+                        if (bRep1Null) {
+                            return 1;
+                        } else {
+                            return rep0.toString(false, false).compareTo(
+                                    rep1.toString(false, false));
+                        }
+                    }
+                }
+            }
+        };
+        return identifiersComparator;
+    }
+
+    /**
+     * Allows to sort the list of representations set by the resource.
+     * 
+     * @return A Comparator instance imposing a sort order of representations or
+     *         null if no special order is wanted.
+     */
+    private Comparator<Representation> getRepresentationsComparator() {
+        // Sort the list of representations by their identifier.
+        Comparator<Representation> identifiersComparator = new Comparator<Representation>() {
+            public int compare(Representation rep0, Representation rep1) {
+                boolean bRep0Null = (rep0.getIdentifier() == null);
+                boolean bRep1Null = (rep1.getIdentifier() == null);
+
+                if (bRep0Null && bRep1Null) {
+                    return 0;
+                } else {
+                    if (bRep0Null) {
+                        return -1;
+                    } else {
+                        if (bRep1Null) {
+                            return 1;
+                        } else {
+                            return rep0.getIdentifier().getLastSegment()
+                                    .compareTo(
+                                            rep1.getIdentifier()
+                                                    .getLastSegment());
+                        }
+                    }
+                }
+            }
+        };
+        return identifiersComparator;
     }
 
     /**
@@ -527,72 +562,6 @@ public class DirectoryResource extends Resource {
     }
 
     /**
-     * Allows to sort the list of representations set by the resource.
-     * 
-     * @return A Comparator instance imposing a sort order of representations or
-     *         null if no special order is wanted.
-     */
-    private Comparator<Representation> getRepresentationsComparator() {
-        // Sort the list of representations by their identifier.
-        Comparator<Representation> identifiersComparator = new Comparator<Representation>() {
-            public int compare(Representation rep0, Representation rep1) {
-                boolean bRep0Null = (rep0.getIdentifier() == null);
-                boolean bRep1Null = (rep1.getIdentifier() == null);
-
-                if (bRep0Null && bRep1Null) {
-                    return 0;
-                } else {
-                    if (bRep0Null) {
-                        return -1;
-                    } else {
-                        if (bRep1Null) {
-                            return 1;
-                        } else {
-                            return rep0.getIdentifier().getLastSegment()
-                                    .compareTo(
-                                            rep1.getIdentifier()
-                                                    .getLastSegment());
-                        }
-                    }
-                }
-            }
-        };
-        return identifiersComparator;
-    }
-
-    /**
-     * Allows to sort the list of references set by the resource.
-     * 
-     * @return A Comparator instance imposing a sort order of references or null
-     *         if no special order is wanted.
-     */
-    private Comparator<Reference> getReferencesComparator() {
-        // Sort the list of references by their identifier.
-        Comparator<Reference> identifiersComparator = new Comparator<Reference>() {
-            public int compare(Reference rep0, Reference rep1) {
-                boolean bRep0Null = (rep0.getIdentifier() == null);
-                boolean bRep1Null = (rep1.getIdentifier() == null);
-
-                if (bRep0Null && bRep1Null) {
-                    return 0;
-                } else {
-                    if (bRep0Null) {
-                        return -1;
-                    } else {
-                        if (bRep1Null) {
-                            return 1;
-                        } else {
-                            return rep0.toString(false, false).compareTo(
-                                    rep1.toString(false, false));
-                        }
-                    }
-                }
-            }
-        };
-        return identifiersComparator;
-    }
-
-    /**
      * Returns the references of the representations of the target resource
      * according to the directory handler property
      * 
@@ -669,20 +638,50 @@ public class DirectoryResource extends Resource {
         return result;
     }
 
-    /**
-     * Returns the set of extensions contained in a given directory entry name.
-     * 
-     * @param entryName
-     *            The directory entry name.
-     * @return The set of extensions.
-     */
-    public static Set<String> getExtensions(String entryName) {
-        Set<String> result = new TreeSet<String>();
-        String[] tokens = entryName.split("\\.");
-        for (int i = 1; i < tokens.length; i++) {
-            result.add(tokens[i].toLowerCase());
+    @Override
+    public void handleGet() {
+        if (directoryRedirection) {
+            // If this request targets a directory and if the target URI does
+            // not end with a tailing "/", the client is told to redirect to a
+            // correct URI.
+            getResponse().redirectPermanent(
+                    getRequest().getResourceRef().getIdentifier() + "/");
+        } else {
+            super.handleGet();
         }
-        return result;
+
+    }
+
+    /**
+     * Puts a variant representation in the resource.
+     * 
+     * @param variant
+     *            A new or updated variant representation.
+     */
+    @Override
+    public void put(Representation variant) {
+        if (directoryRedirection) {
+            getResponse().redirectSeeOther(
+                    getRequest().getResourceRef().getIdentifier() + "/");
+        } else {
+            // We allow the transfer of the PUT calls only if the readOnly flag
+            // is not set
+            Status status;
+            if (!getDirectory().isModifiable()) {
+                status = new Status(Status.CLIENT_ERROR_FORBIDDEN,
+                        "No modification allowed.");
+            } else {
+                Request contextRequest = new Request(Method.PUT, this.targetUri);
+                contextRequest.setEntity(variant);
+                Response contextResponse = new Response(contextRequest);
+                contextRequest.setResourceRef(this.targetUri);
+                getDispatcher().handle(contextRequest, contextResponse);
+                status = contextResponse.getStatus();
+            }
+
+            getResponse().setStatus(status);
+        }
+
     }
 
     /**

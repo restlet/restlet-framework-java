@@ -642,10 +642,10 @@ public class FileClientHelper extends LocalClientHelper {
                             representation.getLanguages())) {
                 result = false;
             }
-            if (var.getMediaType() != null
-                    && representation.getMediaType() != null
-                    && !(var.getMediaType() != null && var.getMediaType()
-                            .includes(representation.getMediaType()))) {
+            if ((var.getMediaType() != null)
+                    && (representation.getMediaType() != null)
+                    && !(var.getMediaType().includes(representation
+                            .getMediaType()))) {
                 result = false;
             }
             if (!var.getEncodings().isEmpty()

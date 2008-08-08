@@ -130,9 +130,9 @@ public class LocalClientHelper extends ClientHelper {
                 int dashIndex = tokens[j].indexOf('-');
                 if (dashIndex != -1) {
                     // We found a language extension with a region area
-                    // specified
+                    // specified.
                     // Try to find a language matching the primary part of the
-                    // extension
+                    // extension.
                     String primaryPart = tokens[j].substring(0, dashIndex);
                     current = metadataService.getMetadata(primaryPart);
                     if (current instanceof Language)
@@ -140,10 +140,26 @@ public class LocalClientHelper extends ClientHelper {
                 }
             }
 
-            // If no language is defines, take the default language
+            // If no language is defined, take the default one
             if (variant.getLanguages().isEmpty()) {
-                variant.getLanguages()
-                        .add(metadataService.getDefaultLanguage());
+                final Language defaultLanguage = metadataService
+                        .getDefaultLanguage();
+
+                if ((defaultLanguage != null)
+                        && !defaultLanguage.equals(Language.ALL)) {
+                    variant.getLanguages().add(defaultLanguage);
+                }
+            }
+
+            // If no media type is defined, take the default one
+            if (variant.getMediaType() == null) {
+                final MediaType defaultMediaType = metadataService
+                        .getDefaultMediaType();
+
+                if ((defaultMediaType != null)
+                        && !defaultMediaType.equals(MediaType.ALL)) {
+                    variant.setMediaType(defaultMediaType);
+                }
             }
         }
     }
