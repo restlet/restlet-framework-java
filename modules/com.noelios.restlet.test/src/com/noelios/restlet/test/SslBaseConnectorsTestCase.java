@@ -46,6 +46,7 @@ import org.restlet.util.Series;
 import com.noelios.restlet.ClientHelper;
 import com.noelios.restlet.Engine;
 import com.noelios.restlet.ServerHelper;
+import com.noelios.restlet.local.ClapClientHelper;
 
 /**
  * Base test case that will call an abstract method for several client/server
@@ -91,6 +92,7 @@ public abstract class SslBaseConnectorsTestCase extends TestCase {
             throws Exception {
 
         final Engine nre = new Engine(false);
+        nre.getRegisteredClients().add(new ClapClientHelper(null));
         nre.getRegisteredServers().add(server);
         nre.getRegisteredClients().add(client);
         org.restlet.util.Engine.setInstance(nre);
@@ -151,6 +153,7 @@ public abstract class SslBaseConnectorsTestCase extends TestCase {
     @Override
     protected void tearDown() throws Exception {
         super.tearDown();
+        this.testKeystoreFile.delete();
         this.testDir.delete();
     }
 

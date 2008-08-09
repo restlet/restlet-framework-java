@@ -66,7 +66,7 @@ public class NoeliosTestSuite extends TestSuite {
         // addTestSuite(PostPutTestCase.class);
         addTestSuite(PreferencesTestCase.class);
         addTestSuite(RemoteClientAddressTestCase.class);
-        // addTestSuite(SslGetTestCase.class);
+        addTestSuite(SslGetTestCase.class);
         addTestSuite(TunnelFilterTestCase.class);
         addTestSuite(UserAgentTunnelFilterTestCase.class);
     }
