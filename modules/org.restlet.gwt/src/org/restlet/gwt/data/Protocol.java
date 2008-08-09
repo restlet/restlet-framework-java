@@ -94,10 +94,10 @@ public final class Protocol extends Metadata {
     }
 
     /** The default port if known or -1. */
-    private volatile int defaultPort;
+    private int defaultPort;
 
     /** The scheme name. */
-    private volatile String schemeName;
+    private String schemeName;
 
     /**
      * Constructor.

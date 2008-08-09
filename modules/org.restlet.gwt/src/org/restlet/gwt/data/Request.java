@@ -84,34 +84,34 @@ public class Request extends Message {
     }
 
     /** The client-specific information. */
-    private volatile ClientInfo clientInfo;
+    private ClientInfo clientInfo;
 
     /** The condition data. */
-    private volatile Conditions conditions;
+    private Conditions conditions;
 
     /** Indicates if the call came over a confidential channel. */
-    private volatile boolean confidential;
+    private boolean confidential;
 
     /** The cookies provided by the client. */
-    private volatile Series<Cookie> cookies;
+    private Series<Cookie> cookies;
 
     /** The host reference. */
-    private volatile Reference hostRef;
+    private Reference hostRef;
 
     /** The method. */
-    private volatile Method method;
+    private Method method;
 
     /** The original reference. */
-    private volatile Reference originalRef;
+    private Reference originalRef;
 
     /** The referrer reference. */
-    private volatile Reference referrerRef;
+    private Reference referrerRef;
 
     /** The resource reference. */
-    private volatile Reference resourceRef;
+    private Reference resourceRef;
 
     /** The application root reference. */
-    private volatile Reference rootRef;
+    private Reference rootRef;
 
     /**
      * Constructor.

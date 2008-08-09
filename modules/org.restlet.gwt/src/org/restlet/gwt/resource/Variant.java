@@ -48,21 +48,21 @@ import org.restlet.gwt.util.WrapperList;
  */
 public class Variant {
     /** The character set or null if not applicable. */
-    private volatile CharacterSet characterSet;
+    private CharacterSet characterSet;
 
     /** The additional content codings applied to the entity-body. */
-    private volatile List<Encoding> encodings;
+    private List<Encoding> encodings;
 
     /**
      * The identifier.
      */
-    private volatile Reference identifier;
+    private Reference identifier;
 
     /** The natural language(s) of the intended audience for this variant. */
-    private volatile List<Language> languages;
+    private List<Language> languages;
 
     /** The media type. */
-    private volatile MediaType mediaType;
+    private MediaType mediaType;
 
     /**
      * Default constructor.

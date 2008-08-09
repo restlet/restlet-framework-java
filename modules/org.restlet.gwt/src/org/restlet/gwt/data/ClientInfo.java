@@ -39,28 +39,28 @@ import org.restlet.gwt.util.Engine;
  */
 public final class ClientInfo {
     /** The character set preferences. */
-    private volatile List<Preference<CharacterSet>> acceptedCharacterSets;
+    private List<Preference<CharacterSet>> acceptedCharacterSets;
 
     /** The encoding preferences. */
-    private volatile List<Preference<Encoding>> acceptedEncodings;
+    private List<Preference<Encoding>> acceptedEncodings;
 
     /** The language preferences. */
-    private volatile List<Preference<Language>> acceptedLanguages;
+    private List<Preference<Language>> acceptedLanguages;
 
     /** The media preferences. */
-    private volatile List<Preference<MediaType>> acceptedMediaTypes;
+    private List<Preference<MediaType>> acceptedMediaTypes;
 
     /** The IP addresses. */
-    private volatile List<String> addresses;
+    private List<String> addresses;
 
     /** The agent name. */
-    private volatile String agent;
+    private String agent;
 
     /** The list of product tokens taken from the agent name. */
-    private volatile List<Product> agentProducts;
+    private List<Product> agentProducts;
 
     /** The port number. */
-    private volatile int port;
+    private int port;
 
     /**
      * Constructor.

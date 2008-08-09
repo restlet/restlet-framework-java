@@ -42,10 +42,10 @@ import com.google.gwt.json.client.JSONValue;
  */
 public class JsonRepresentation extends Representation {
     /** The source JSON representation. */
-    private volatile Representation jsonRepresentation;
+    private Representation jsonRepresentation;
 
     /** The wrapped JSON value. */
-    private volatile JSONValue value;
+    private JSONValue value;
 
     /**
      * Constructor for an empty document.

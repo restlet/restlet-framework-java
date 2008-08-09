@@ -38,7 +38,7 @@ import org.restlet.gwt.util.Series;
  */
 public class HttpConverter {
     /** The context. */
-    private volatile Context context;
+    private Context context;
 
     /**
      * Constructor.

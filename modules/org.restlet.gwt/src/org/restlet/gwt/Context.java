@@ -40,22 +40,16 @@ import org.restlet.gwt.util.Series;
  * by which a Restlet may access the software environment within the framework.
  * It is typically provided by the immediate parent Restlet (Component and
  * Application are the most common cases).<br>
- * <br>
- * Note that attributes and parameters of a context are stored in concurrent
- * collections that guarantee thread safe access and modification. If several
- * threads concurrently access objects from these collections, they should be
- * either immutable, thread-safe themselves or guarded by a commonly agreed
- * lock.
  * 
  * @author Jerome Louvel
  */
 public class Context {
 
     /** The modifiable attributes map. */
-    private volatile Map<String, Object> attributes;
+    private Map<String, Object> attributes;
 
     /** The modifiable series of parameters. */
-    private volatile Series<Parameter> parameters;
+    private Series<Parameter> parameters;
 
     /**
      * Constructor. Writes log messages to "org.restlet".

@@ -92,25 +92,25 @@ public abstract class Representation extends Variant {
     }
 
     /** Indicates if the representation's content is available. */
-    private volatile boolean available;
+    private boolean available;
 
     /** Indicates if the representation is downloadable. */
-    private volatile boolean downloadable;
+    private boolean downloadable;
 
     /**
      * Indicates the suggested download file name for the representation's
      * content.
      */
-    private volatile String downloadName;
+    private String downloadName;
 
     /** The expiration date. */
-    private volatile Date expirationDate;
+    private Date expirationDate;
 
     /** Indicates if the representation's content is transient. */
-    private volatile boolean isTransient;
+    private boolean isTransient;
 
     /** The modification date. */
-    private volatile Date modificationDate;
+    private Date modificationDate;
 
     /**
      * The expected size. Dynamic representations can have any size, but
@@ -118,10 +118,10 @@ public abstract class Representation extends Variant {
      * is specified by the user, it has a higher priority than any size that can
      * be guessed by the representation (like a file size).
      */
-    private volatile long size;
+    private long size;
 
     /** The tag. */
-    private volatile Tag tag;
+    private Tag tag;
 
     /**
      * Default constructor.

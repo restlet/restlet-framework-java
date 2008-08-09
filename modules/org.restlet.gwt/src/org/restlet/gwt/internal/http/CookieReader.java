@@ -70,10 +70,10 @@ public class CookieReader extends HeaderReader {
     private static final String NAME_VERSION = "$Version";
 
     /** The cached pair. Used by the readPair() method. */
-    private volatile Parameter cachedPair;
+    private Parameter cachedPair;
 
     /** The global cookie specification version. */
-    private volatile int globalVersion;
+    private int globalVersion;
 
     /**
      * Constructor.

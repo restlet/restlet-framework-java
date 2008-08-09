@@ -79,49 +79,49 @@ public abstract class HttpCall {
     }
 
     /** The client IP address. */
-    private volatile String clientAddress;
+    private String clientAddress;
 
     /** The client port. */
-    private volatile int clientPort;
+    private int clientPort;
 
     /** Indicates if the call is confidential. */
-    private volatile boolean confidential;
+    private boolean confidential;
 
     /** The hostRef domain. */
-    private volatile String hostDomain;
+    private String hostDomain;
 
     /** The hostRef port. */
-    private volatile int hostPort;
+    private int hostPort;
 
     /** The method. */
-    private volatile String method;
+    private String method;
 
     /** The exact protocol. */
-    private volatile Protocol protocol;
+    private Protocol protocol;
 
     /** The reason phrase. */
-    private volatile String reasonPhrase;
+    private String reasonPhrase;
 
     /** The request headers. */
     private final Series<Parameter> requestHeaders;
 
     /** The request URI. */
-    private volatile String requestUri;
+    private String requestUri;
 
     /** The response headers. */
     private final Series<Parameter> responseHeaders;
 
     /** The server IP address. */
-    private volatile String serverAddress;
+    private String serverAddress;
 
     /** The server port. */
-    private volatile int serverPort;
+    private int serverPort;
 
     /** The status code. */
-    private volatile int statusCode;
+    private int statusCode;
 
     /** The protocol version. */
-    private volatile String version;
+    private String version;
 
     /**
      * Constructor.

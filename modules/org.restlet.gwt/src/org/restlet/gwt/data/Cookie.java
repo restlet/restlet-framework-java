@@ -36,13 +36,13 @@ import org.restlet.gwt.util.Engine;
  */
 public class Cookie extends Parameter {
     /** The domain name. */
-    private volatile String domain;
+    private String domain;
 
     /** The validity path. */
-    private volatile String path;
+    private String path;
 
     /** The version number. */
-    private volatile int version;
+    private int version;
 
     /**
      * Constructor.

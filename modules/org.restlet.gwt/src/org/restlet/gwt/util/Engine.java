@@ -55,7 +55,7 @@ import org.restlet.gwt.resource.Variant;
 public abstract class Engine {
 
     /** The registered engine. */
-    private static volatile Engine instance = null;
+    private static Engine instance = null;
 
     /** Major version number. */
     public static final String MAJOR_NUMBER = "@major-number@";

@@ -40,7 +40,7 @@ import org.restlet.gwt.data.MediaType;
 public class StringRepresentation extends Representation {
 
     /** The string value. */
-    private volatile String text;
+    private String text;
 
     /**
      * Constructor. The following metadata are used by default: "text/plain"

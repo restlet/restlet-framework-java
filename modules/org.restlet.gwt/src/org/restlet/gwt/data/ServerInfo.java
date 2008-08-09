@@ -34,13 +34,13 @@ package org.restlet.gwt.data;
  */
 public final class ServerInfo {
     /** The IP address. */
-    private volatile String address;
+    private String address;
 
     /** The agent name. */
-    private volatile String agent;
+    private String agent;
 
     /** The port number. */
-    private volatile int port;
+    private int port;
 
     /**
      * Constructor.

@@ -45,16 +45,16 @@ import org.restlet.gwt.util.Series;
  */
 public class FormReader {
     /** The encoding to use, decoding is enabled, see {@link #decode}. */
-    private volatile CharacterSet characterSet;
+    private CharacterSet characterSet;
 
     /** Indicates if the parameters should be decoded. */
-    private volatile boolean decode;
+    private boolean decode;
 
     /** The form stream. */
-    private volatile String text;
+    private String text;
 
     /** The separator character used between parameters. */
-    private volatile char separator;
+    private char separator;
 
     /**
      * Constructor.<br>

@@ -282,7 +282,7 @@ public final class Method extends Metadata {
     }
 
     /** The URI of the specification describing the method. */
-    private volatile String uri;
+    private String uri;
 
     /**
      * Constructor.

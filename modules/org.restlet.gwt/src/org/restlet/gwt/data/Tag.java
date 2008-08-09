@@ -82,7 +82,7 @@ public final class Tag extends Metadata {
     }
 
     /** The tag weakness. */
-    private volatile boolean weak;
+    private boolean weak;
 
     /**
      * Default constructor. The opaque tag is set to null and the weakness

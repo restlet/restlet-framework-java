@@ -93,7 +93,7 @@ public final class Language extends Metadata {
     }
 
     /** The metadata main list of subtags taken from the metadata name. */
-    private volatile List<String> subTags;
+    private List<String> subTags;
 
     /**
      * Constructor.

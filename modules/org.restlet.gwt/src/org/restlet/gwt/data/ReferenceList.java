@@ -44,7 +44,7 @@ import org.restlet.gwt.util.WrapperList;
  */
 public class ReferenceList extends WrapperList<Reference> {
     /** The list's identifier. */
-    private volatile Reference identifier;
+    private Reference identifier;
 
     /**
      * Constructor.

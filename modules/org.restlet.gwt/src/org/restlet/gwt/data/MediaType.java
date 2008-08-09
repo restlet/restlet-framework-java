@@ -394,7 +394,7 @@ public final class MediaType extends Metadata {
     }
 
     /** The list of parameters. */
-    private volatile Series<Parameter> parameters;
+    private Series<Parameter> parameters;
 
     /**
      * Constructor.

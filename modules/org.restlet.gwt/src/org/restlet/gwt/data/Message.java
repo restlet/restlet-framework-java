@@ -42,19 +42,19 @@ import org.restlet.gwt.resource.XmlRepresentation;
  */
 public abstract class Message {
     /** The modifiable attributes map. */
-    private volatile Map<String, Object> attributes;
+    private Map<String, Object> attributes;
 
     /** The payload of the message. */
-    private volatile Representation entity;
+    private Representation entity;
 
     /** The optional cached Form. */
-    private volatile Form form;
+    private Form form;
 
     /** The optional cached JSON representation. */
-    private volatile JsonRepresentation jsonRepresentation;
+    private JsonRepresentation jsonRepresentation;
 
     /** The optional cached XML representation. */
-    private volatile XmlRepresentation xmlRepresentation;
+    private XmlRepresentation xmlRepresentation;
 
     /**
      * Constructor.

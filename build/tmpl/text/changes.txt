@@ -6,6 +6,9 @@ Changes log
 - @version-full@ (@release-date@)
     - Bugs fixed
         - Fixed NPE with WadlApplications that host Restlet subclasses.
+        - Removed all 'volatile' declaration in the Restlet-GWT module
+          to prevent compilation issues. Reported by Nitin Gupta and
+          fixed by Rob Heittman.
     - API Enhancements
         - Added warning message when no client connector supports the 
           request's protocol.

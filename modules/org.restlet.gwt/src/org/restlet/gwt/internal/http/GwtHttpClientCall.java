@@ -61,10 +61,10 @@ public class GwtHttpClientCall extends HttpClientCall {
     private final RequestBuilder requestBuilder;
 
     /** The GWT response. */
-    private volatile Response response;
+    private Response response;
 
     /** Indicates if the response headers were added. */
-    private volatile boolean responseHeadersAdded;
+    private boolean responseHeadersAdded;
 
     /**
      * Constructor.

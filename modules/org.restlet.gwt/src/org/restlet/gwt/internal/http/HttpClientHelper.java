@@ -57,7 +57,7 @@ import org.restlet.gwt.internal.ClientHelper;
  */
 public abstract class HttpClientHelper extends ClientHelper {
     /** The converter from uniform calls to HTTP calls. */
-    private volatile HttpClientConverter converter;
+    private HttpClientConverter converter;
 
     /**
      * Constructor.

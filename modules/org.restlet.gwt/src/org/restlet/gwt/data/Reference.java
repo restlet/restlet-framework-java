@@ -106,8 +106,6 @@ import com.google.gwt.http.client.URL;
  * single reference as the base of several relative references. If you modify
  * the base reference, all relative references are still accurate.
  * </p>
- * Note that the name and value properties are thread safe, stored in volatile
- * members.
  * 
  * @author Jerome Louvel
  * @see <a href="http://www.faqs.org/rfcs/rfc3986.html">RFC 3986< /a>
@@ -446,19 +444,19 @@ public class Reference {
     }
 
     /** The base reference for relative references. */
-    private volatile Reference baseRef;
+    private Reference baseRef;
 
     /** The fragment separator index. */
-    private volatile int fragmentIndex;
+    private int fragmentIndex;
 
     /** The internal reference. */
-    private volatile String internalRef;
+    private String internalRef;
 
     /** The query separator index. */
-    private volatile int queryIndex;
+    private int queryIndex;
 
     /** The scheme separator index. */
-    private volatile int schemeIndex;
+    private int schemeIndex;
 
     /**
      * Empty constructor.

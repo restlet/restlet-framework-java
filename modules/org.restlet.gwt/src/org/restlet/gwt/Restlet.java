@@ -44,10 +44,10 @@ public class Restlet extends Uniform {
     private static final String UNABLE_TO_START = "Unable to start the Restlet";
 
     /** The context. */
-    private volatile Context context;
+    private Context context;
 
     /** Indicates if the restlet was started. */
-    private volatile boolean started;
+    private boolean started;
 
     /**
      * Constructor. Note that usage of this constructor is not recommended as

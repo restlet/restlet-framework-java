@@ -103,7 +103,7 @@ public class Engine extends org.restlet.gwt.util.Engine {
     }
 
     /** List of available client connectors. */
-    private volatile List<ClientHelper> registeredClients;
+    private List<ClientHelper> registeredClients;
 
     /**
      * Constructor that will automatically attempt to discover connectors.

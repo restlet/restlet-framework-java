@@ -41,7 +41,7 @@ import org.restlet.gwt.data.Protocol;
  */
 public abstract class ConnectorHelper<T extends Connector> extends Helper<T> {
     /** The protocols simultaneously supported. */
-    private volatile List<Protocol> protocols;
+    private List<Protocol> protocols;
 
     /**
      * Constructor.

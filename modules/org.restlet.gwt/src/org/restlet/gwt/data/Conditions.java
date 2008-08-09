@@ -56,16 +56,16 @@ import org.restlet.gwt.util.DateUtils;
  */
 public final class Conditions {
     /** The "if-match" condition */
-    private volatile List<Tag> match;
+    private List<Tag> match;
 
     /** The "if-modified-since" condition */
-    private volatile Date modifiedSince;
+    private Date modifiedSince;
 
     /** The "if-none-match" condition */
-    private volatile List<Tag> noneMatch;
+    private List<Tag> noneMatch;
 
     /** The "if-unmodified-since" condition */
-    private volatile Date unmodifiedSince;
+    private Date unmodifiedSince;
 
     /**
      * Constructor.

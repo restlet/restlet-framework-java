@@ -36,13 +36,13 @@ import org.restlet.gwt.util.Series;
  */
 public final class Preference<T extends Metadata> {
     /** The metadata associated with this preference. */
-    private volatile T metadata;
+    private T metadata;
 
     /** The modifiable list of parameters. */
-    private volatile Series<Parameter> parameters;
+    private Series<Parameter> parameters;
 
     /** The quality/preference level. */
-    private volatile float quality;
+    private float quality;
 
     /**
      * Constructor.

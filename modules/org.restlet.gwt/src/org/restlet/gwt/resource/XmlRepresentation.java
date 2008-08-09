@@ -40,10 +40,10 @@ import com.google.gwt.xml.client.XMLParser;
  */
 public class XmlRepresentation extends Representation {
     /** The wrapped DOM document. */
-    private volatile Document dom;
+    private Document dom;
 
     /** The source XML representation. */
-    private volatile Representation xmlRepresentation;
+    private Representation xmlRepresentation;
 
     /**
      * Constructor for an empty document.
