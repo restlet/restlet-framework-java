@@ -32,8 +32,10 @@ import static org.restlet.ext.wadl.WadlRepresentation.APP_NAMESPACE;
 import java.util.List;
 import java.util.Map;
 
+import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
+import org.restlet.data.Status;
 import org.restlet.resource.Variant;
 import org.restlet.util.XmlWriter;
 import org.xml.sax.SAXException;
@@ -96,6 +98,24 @@ public class MethodInfo extends DocumentedInfo {
      */
     public MethodInfo(String documentation) {
         super(documentation);
+    }
+
+    /**
+     * Adds a new fault to the response.
+     * 
+     * @param status
+     *            The associated status code.
+     * @param mediaType
+     *            The fault representation's media type.
+     * @param documentation
+     *            A single documentation element.
+     * @return The created fault description.
+     */
+    public FaultInfo addFault(Status status, MediaType mediaType,
+            String documentation) {
+        FaultInfo result = new FaultInfo(status, mediaType, documentation);
+        getResponse().getFaults().add(result);
+        return result;
     }
 
     /**

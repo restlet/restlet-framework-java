@@ -530,7 +530,8 @@ public class WadlRepresentation extends SaxRepresentation {
                     }
                     pushState(State.DOCUMENTATION);
                 } else if (localName.equals("fault")) {
-                    this.currentFault = new FaultInfo();
+                    this.currentFault = new FaultInfo(null);
+
                     if (attrs.getIndex("id") != -1) {
                         this.currentFault.setIdentifier(attrs.getValue("id"));
                     }

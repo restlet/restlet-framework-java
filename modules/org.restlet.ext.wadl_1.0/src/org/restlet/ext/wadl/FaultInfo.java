@@ -32,6 +32,7 @@ import static org.restlet.ext.wadl.WadlRepresentation.APP_NAMESPACE;
 import java.util.Iterator;
 import java.util.List;
 
+import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.util.XmlWriter;
@@ -47,39 +48,66 @@ public class FaultInfo extends RepresentationInfo {
 
     /**
      * Constructor.
+     * 
+     * @param status
+     *            The associated status code.
      */
-    public FaultInfo() {
+    public FaultInfo(Status status) {
         super();
+        getStatuses().add(status);
     }
 
     /**
      * Constructor with a single documentation element.
      * 
+     * @param status
+     *            The associated status code.
      * @param documentation
      *            A single documentation element.
      */
-    public FaultInfo(DocumentationInfo documentation) {
+    public FaultInfo(Status status, DocumentationInfo documentation) {
         super(documentation);
+        getStatuses().add(status);
     }
 
     /**
      * Constructor with a list of documentation elements.
      * 
+     * @param status
+     *            The associated status code.
      * @param documentations
      *            The list of documentation elements.
      */
-    public FaultInfo(List<DocumentationInfo> documentations) {
+    public FaultInfo(Status status, List<DocumentationInfo> documentations) {
         super(documentations);
+        getStatuses().add(status);
     }
 
     /**
      * Constructor with a single documentation element.
      * 
+     * @param status
+     *            The associated status code.
      * @param documentation
      *            A single documentation element.
      */
-    public FaultInfo(String documentation) {
-        super(documentation);
+    public FaultInfo(Status status, String documentation) {
+        this(status, new DocumentationInfo(documentation));
+    }
+
+    /**
+     * Constructor with a single documentation element.
+     * 
+     * @param status
+     *            The associated status code.
+     * @param mediaType
+     *            The fault representation's media type.
+     * @param documentation
+     *            A single documentation element.
+     */
+    public FaultInfo(Status status, MediaType mediaType, String documentation) {
+        this(status, new DocumentationInfo(documentation));
+        setMediaType(mediaType);
     }
 
     /**
