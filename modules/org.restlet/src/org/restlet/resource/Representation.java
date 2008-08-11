@@ -37,6 +37,7 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.Date;
 
+import org.restlet.data.Digest;
 import org.restlet.data.MediaType;
 import org.restlet.data.Range;
 import org.restlet.data.Tag;
@@ -128,6 +129,11 @@ public abstract class Representation extends Variant {
     /** Indicates if the representation's content is available. */
     private volatile boolean available;
 
+    /**
+     * The representation digest if any.
+     */
+    private volatile Digest digest;
+
     /** Indicates if the representation is downloadable. */
     private volatile boolean downloadable;
 
@@ -162,6 +168,9 @@ public abstract class Representation extends Variant {
     public Representation(MediaType mediaType) {
         super(mediaType);
         this.available = true;
+        this.digest = null;
+        this.downloadable = false;
+        this.downloadName = null;
         this.isTransient = false;
         this.range = null;
     }
@@ -188,6 +197,15 @@ public abstract class Representation extends Variant {
      * @throws IOException
      */
     public abstract ReadableByteChannel getChannel() throws IOException;
+
+    /**
+     * Returns the representation digest if any.
+     * 
+     * @return The representation digest or null.
+     */
+    public Digest getDigest() {
+        return this.digest;
+    }
 
     /**
      * Returns the suggested download file name for this representation. This is
@@ -357,6 +375,16 @@ public abstract class Representation extends Variant {
      */
     public void setAvailable(boolean available) {
         this.available = available;
+    }
+
+    /**
+     * Sets the representation digest.
+     * 
+     * @param digest
+     *            The representation digest.
+     */
+    public void setDigest(Digest digest) {
+        this.digest = digest;
     }
 
     /**

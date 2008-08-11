@@ -16,6 +16,9 @@ Changes log
           request's protocol.
         - Added the ability to provide Wadl documentation to any 
           Restlet instances.
+        - Added an org.restlet.data.Digest class, a "digest" property 
+          to Representation and a DigestService for applications. 
+          Suggested by Chris Winters and Benoit Maujean.
     - NRE and Extension Enhancements
         - Refactored WADL extension based on John Logsdon's feed-back.
           Added convenience methods and constructors on FaultInfo, 

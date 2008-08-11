@@ -31,6 +31,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.service.ConnectorService;
 import org.restlet.service.DecoderService;
+import org.restlet.service.DigestService;
 import org.restlet.service.MetadataService;
 import org.restlet.service.RangeService;
 import org.restlet.service.StatusService;
@@ -51,9 +52,12 @@ import org.restlet.util.Helper;
  * <ul>
  * <li>"connectorService" to declare necessary client and server connectors.</li>
  * <li>"decoderService" to automatically decode or decompress request entities.</li>
+ * <li>"digestService" to verify the integrity of entities received by servers.</li>
  * <li>"metadataService" to provide access to metadata and their associated
  * extension names.</li>
+ * <li>"rangeService" to automatically exposes ranges of response entities.</li>
  * <li>"statusService" to provide common representations for exception status.</li>
+ * <li>"taskService" to run tasks asynchronously.</li>
  * <li>"tunnelService" to tunnel method names or client preferences via query
  * parameters.</li>
  * </ul>
@@ -112,6 +116,9 @@ public class Application extends Restlet {
 
     /** The description. */
     private volatile String description;
+
+    /** The digest service. */
+    private volatile DigestService digestService;
 
     /** The helper provided by the implementation. */
     private volatile Helper<Application> helper;
@@ -176,6 +183,7 @@ public class Application extends Restlet {
         this.connectorService = new ConnectorService();
         this.converterService = new org.restlet.service.ConverterService();
         this.decoderService = new DecoderService();
+        this.digestService = new DigestService();
         this.metadataService = new MetadataService();
         this.rangeService = new RangeService();
         this.statusService = new StatusService();
@@ -242,6 +250,15 @@ public class Application extends Restlet {
      */
     public String getDescription() {
         return this.description;
+    }
+
+    /**
+     * Returns the digest service. The service is enabled by default.
+     * 
+     * @return The digest service.
+     */
+    public DigestService getDigestService() {
+        return digestService;
     }
 
     /**
@@ -393,6 +410,16 @@ public class Application extends Restlet {
      */
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    /**
+     * Sets the digest service.
+     * 
+     * @param digestService
+     *            The digest service.
+     */
+    public void setDigestService(DigestService digestService) {
+        this.digestService = digestService;
     }
 
     /**
