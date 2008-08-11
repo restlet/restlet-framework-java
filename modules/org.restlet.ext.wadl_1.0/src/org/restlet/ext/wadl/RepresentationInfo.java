@@ -97,6 +97,16 @@ public class RepresentationInfo extends DocumentedInfo {
     }
 
     /**
+     * Constructor with a media type.
+     * 
+     * @param mediaType
+     *            The media type of the representation.
+     */
+    public RepresentationInfo(MediaType mediaType) {
+        setMediaType(mediaType);
+    }
+
+    /**
      * Constructor with a single documentation element.
      * 
      * @param documentation
@@ -114,16 +124,6 @@ public class RepresentationInfo extends DocumentedInfo {
      */
     public RepresentationInfo(Variant variant) {
         setMediaType(variant.getMediaType());
-    }
-
-    /**
-     * Constructor with a media type.
-     * 
-     * @param mediaType
-     *            The media type of the representation.
-     */
-    public RepresentationInfo(MediaType mediaType) {
-        setMediaType(mediaType);
     }
 
     /**
