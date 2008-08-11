@@ -37,6 +37,7 @@ import java.util.Map;
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
+import org.restlet.resource.Variant;
 import org.restlet.util.XmlWriter;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
@@ -103,6 +104,16 @@ public class RepresentationInfo extends DocumentedInfo {
      */
     public RepresentationInfo(String documentation) {
         super(documentation);
+    }
+
+    /**
+     * Constructor with a variant.
+     * 
+     * @param variant
+     *            The variant to describe.
+     */
+    public RepresentationInfo(Variant variant) {
+        setMediaType(variant.getMediaType());
     }
 
     /**

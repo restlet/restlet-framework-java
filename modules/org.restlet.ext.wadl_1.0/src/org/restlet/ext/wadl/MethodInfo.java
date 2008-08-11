@@ -34,6 +34,7 @@ import java.util.Map;
 
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
+import org.restlet.resource.Variant;
 import org.restlet.util.XmlWriter;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;
@@ -95,6 +96,78 @@ public class MethodInfo extends DocumentedInfo {
      */
     public MethodInfo(String documentation) {
         super(documentation);
+    }
+
+    /**
+     * Adds a new request parameter.
+     * 
+     * @param name
+     *            The name of the parameter.
+     * @param required
+     *            True if thes parameter is required.
+     * @param type
+     *            The type of the parameter.
+     * @param style
+     *            The style of the parameter.
+     * @param documentation
+     *            A single documentation element.
+     * @return The created parameter description.
+     */
+    public ParameterInfo addRequestParameter(String name, boolean required,
+            String type, ParameterStyle style, String documentation) {
+        ParameterInfo result = new ParameterInfo(name, required, type, style,
+                documentation);
+        getRequest().getParameters().add(result);
+        return result;
+    }
+
+    /**
+     * Adds a new request representation based on a given variant.
+     * 
+     * @param variant
+     *            The variant to describe.
+     * @return The created representation description.
+     */
+    public RepresentationInfo addRequestRepresentation(Variant variant) {
+        RepresentationInfo result = new RepresentationInfo(variant);
+        getRequest().getRepresentations().add(result);
+        return result;
+    }
+
+    /**
+     * Adds a new response parameter.
+     * 
+     * @param name
+     *            The name of the parameter.
+     * @param required
+     *            True if thes parameter is required.
+     * @param type
+     *            The type of the parameter.
+     * @param style
+     *            The style of the parameter.
+     * @param documentation
+     *            A single documentation element.
+     * @return The created parameter description.
+     */
+    public ParameterInfo addResponseParameter(String name, boolean required,
+            String type, ParameterStyle style, String documentation) {
+        ParameterInfo result = new ParameterInfo(name, required, type, style,
+                documentation);
+        getResponse().getParameters().add(result);
+        return result;
+    }
+
+    /**
+     * Adds a new response representation based on a given variant.
+     * 
+     * @param variant
+     *            The variant to describe.
+     * @return The created representation description.
+     */
+    public RepresentationInfo addResponseRepresentation(Variant variant) {
+        RepresentationInfo result = new RepresentationInfo(variant);
+        getResponse().getRepresentations().add(result);
+        return result;
     }
 
     /**

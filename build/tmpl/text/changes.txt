@@ -15,7 +15,12 @@ Changes log
         - Added the ability to provide Wadl documentation to any 
           Restlet instances.
     - NRE and Extension Enhancements
-        -     
+        - Refactored WADL extension based on John Logsdon feed-back.
+          Add convenience methods and constructors on MethodInfo and
+          RepresentationInfo. Removed unecessary methods on 
+          WadlResource like getRepresentationInfo(Variant) and
+          getParametersInfo(RequestInfo|ResponseInfo|Representation-
+          Info).
     - Misc
         -     
     
