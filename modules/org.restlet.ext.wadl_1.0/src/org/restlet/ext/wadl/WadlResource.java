@@ -111,11 +111,11 @@ public class WadlResource extends Resource {
      * Returns a WADL description of the current resource, leveraging the
      * {@link #getResourcePath()} method.
      * 
-     * @param resourceInfo
+     * @param info
      *            WADL description of the current resource to update.
      */
-    private void describe(ResourceInfo resourceInfo) {
-        describe(getResourcePath(), resourceInfo);
+    private void describe(ResourceInfo info) {
+        describe(getResourcePath(), info);
     }
 
     /**
@@ -123,11 +123,11 @@ public class WadlResource extends Resource {
      * 
      * @param path
      *            Path of the current resource.
-     * @param resourceInfo
+     * @param info
      *            WADL description of the current resource to update.
      */
-    public void describe(String path, ResourceInfo resourceInfo) {
-        resourceInfo.setPath(path);
+    public void describe(String path, ResourceInfo info) {
+        info.setPath(path);
 
         // Introspect the current resource to detect the allowed methods
         final List<Method> methodsList = new ArrayList<Method>();
@@ -142,7 +142,7 @@ public class WadlResource extends Resource {
 
         // Update the resource info with the description
         // of the allowed methods
-        final List<MethodInfo> methods = resourceInfo.getMethods();
+        final List<MethodInfo> methods = info.getMethods();
         MethodInfo methodInfo;
         for (final Method method : methodsList) {
             if (isDescribable(method)) {
@@ -152,7 +152,7 @@ public class WadlResource extends Resource {
             }
         }
 
-        resourceInfo.setParameters(getParametersInfo());
+        info.setParameters(getParametersInfo());
     }
 
     /**
@@ -180,10 +180,10 @@ public class WadlResource extends Resource {
     /**
      * Describes the DELETE method.
      * 
-     * @param methodInfo
+     * @param info
      *            The method description to update.
      */
-    protected void describeDelete(MethodInfo methodInfo) {
+    protected void describeDelete(MethodInfo info) {
     }
 
     /**
@@ -192,13 +192,13 @@ public class WadlResource extends Resource {
      * on the {@link #getVariants()} method. Thus in the majority of cases, the
      * method of the super class must be called when overriden.
      * 
-     * @param methodInfo
+     * @param info
      *            The method description to update.
      */
-    protected void describeGet(MethodInfo methodInfo) {
+    protected void describeGet(MethodInfo info) {
         // Describe each variant
         for (final Variant variant : getVariants()) {
-            methodInfo.addResponseRepresentation(variant);
+            info.addResponseRepresentation(variant);
         }
     }
 
@@ -207,24 +207,24 @@ public class WadlResource extends Resource {
      * 
      * @param method
      *            The method to describe.
-     * @param methodInfo
+     * @param info
      *            The method description to update.
      */
-    protected void describeMethod(Method method, MethodInfo methodInfo) {
-        methodInfo.setName(method);
-        methodInfo.setRequest(new RequestInfo());
-        methodInfo.setResponse(new ResponseInfo());
+    protected void describeMethod(Method method, MethodInfo info) {
+        info.setName(method);
+        info.setRequest(new RequestInfo());
+        info.setResponse(new ResponseInfo());
 
         if (Method.GET.equals(method)) {
-            describeGet(methodInfo);
+            describeGet(info);
         } else if (Method.POST.equals(method)) {
-            describePost(methodInfo);
+            describePost(info);
         } else if (Method.PUT.equals(method)) {
-            describePut(methodInfo);
+            describePut(info);
         } else if (Method.DELETE.equals(method)) {
-            describeDelete(methodInfo);
+            describeDelete(info);
         } else if (Method.OPTIONS.equals(method)) {
-            describeOptions(methodInfo);
+            describeOptions(info);
         }
     }
 
@@ -233,32 +233,32 @@ public class WadlResource extends Resource {
      * By default it describes the response with the available variants based on
      * the {@link #getWadlVariants()} method.
      * 
-     * @param methodInfo
+     * @param info
      *            The method description to update.
      */
-    protected void describeOptions(MethodInfo methodInfo) {
+    protected void describeOptions(MethodInfo info) {
         // Describe each variant
         for (final Variant variant : getWadlVariants()) {
-            methodInfo.addResponseRepresentation(variant);
+            info.addResponseRepresentation(variant);
         }
     }
 
     /**
      * Describes the POST method.
      * 
-     * @param methodInfo
+     * @param info
      *            The method description to update.
      */
-    protected void describePost(MethodInfo methodInfo) {
+    protected void describePost(MethodInfo info) {
     }
 
     /**
      * Describes the PUT method.
      * 
-     * @param methodInfo
+     * @param info
      *            The method description to update.
      */
-    protected void describePut(MethodInfo methodInfo) {
+    protected void describePut(MethodInfo info) {
     }
 
     /**
