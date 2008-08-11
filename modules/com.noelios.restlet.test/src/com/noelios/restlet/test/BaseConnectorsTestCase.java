@@ -86,6 +86,8 @@ public abstract class BaseConnectorsTestCase extends TestCase {
 
     @Override
     public void setUp() {
+        // Restore a clean engine
+        org.restlet.util.Engine.setInstance(new Engine());
     }
 
     private String start() throws Exception {
@@ -103,6 +105,14 @@ public abstract class BaseConnectorsTestCase extends TestCase {
         if ((this.component != null) && this.component.isStarted()) {
             this.component.stop();
         }
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
+
+        // Restore a clean engine
+        org.restlet.util.Engine.setInstance(new Engine());
     }
 
     public void testGrizzlyAndApache() throws Exception {
