@@ -117,6 +117,16 @@ public class RepresentationInfo extends DocumentedInfo {
     }
 
     /**
+     * Constructor with a media type.
+     * 
+     * @param mediaType
+     *            The media type of the representation.
+     */
+    public RepresentationInfo(MediaType mediaType) {
+        setMediaType(mediaType);
+    }
+
+    /**
      * Returns the identifier for that element.
      * 
      * @return The identifier for that element.
