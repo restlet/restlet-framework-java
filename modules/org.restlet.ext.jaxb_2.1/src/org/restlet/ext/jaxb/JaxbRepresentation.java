@@ -80,7 +80,11 @@ public class JaxbRepresentation<T> extends XmlRepresentation {
                 try {
                     m = getContext(getPackage()).createMarshaller();
                     m.setProperty("jaxb.formatted.output", isFormattedOutput());
-                    m.setProperty("jaxb.encoding", getCharacterSet().getName());
+
+                    if (getCharacterSet() != null) {
+                        m.setProperty("jaxb.encoding", getCharacterSet()
+                                .getName());
+                    }
                 } catch (final Exception e) {
                     logger.log(Level.WARNING, "Problem creating Marshaller", e);
                     return null;

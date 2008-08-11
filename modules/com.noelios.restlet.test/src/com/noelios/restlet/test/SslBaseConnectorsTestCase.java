@@ -107,6 +107,9 @@ public abstract class SslBaseConnectorsTestCase extends TestCase {
 
     @Override
     public void setUp() {
+        // Restore a clean engine
+        org.restlet.util.Engine.setInstance(new Engine());
+
         try {
             if (!testKeystoreFile.exists()) {
                 // Prepare a temporary directory for the tests
@@ -115,11 +118,17 @@ public abstract class SslBaseConnectorsTestCase extends TestCase {
                 // Copy the keystore into the test directory
                 Response response = new Client(Protocol.CLAP)
                         .get("clap://class/dummy.jks");
-                OutputStream outputStream = new FileOutputStream(
-                        testKeystoreFile);
-                response.getEntity().write(outputStream);
-                outputStream.flush();
-                outputStream.close();
+
+                if (response.getEntity() != null) {
+                    OutputStream outputStream = new FileOutputStream(
+                            testKeystoreFile);
+                    response.getEntity().write(outputStream);
+                    outputStream.flush();
+                    outputStream.close();
+                } else {
+                    throw new Exception(
+                            "Unable to find the dummy.jks file in the classpath.");
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -155,6 +164,9 @@ public abstract class SslBaseConnectorsTestCase extends TestCase {
         super.tearDown();
         this.testKeystoreFile.delete();
         this.testDir.delete();
+
+        // Restore a clean engine
+        org.restlet.util.Engine.setInstance(new Engine());
     }
 
     public void testSslGrizzlyAndApache() throws Exception {

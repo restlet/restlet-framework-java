@@ -9,6 +9,8 @@ Changes log
         - Removed all 'volatile' declaration in the Restlet-GWT module
           to prevent compilation issues. Reported by Nitin Gupta and
           fixed by Rob Heittman.
+        - Fixed NPE occuring in JaxbRepresentation due to recent usage
+          of representation's character set.
     - API Enhancements
         - Added warning message when no client connector supports the 
           request's protocol.

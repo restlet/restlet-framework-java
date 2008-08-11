@@ -138,8 +138,6 @@ public class RangeUtils {
      *            Content-range header.
      * @param representation
      *            Representation to update.
-     * 
-     * @return The Range that corresponds to the given header.
      */
     public static void parseContentRange(String value,
             Representation representation) {
