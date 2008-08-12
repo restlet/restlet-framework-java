@@ -11,6 +11,8 @@ Changes log
           fixed by Rob Heittman.
         - Fixed NPE occuring in JaxbRepresentation due to recent usage
           of representation's character set.
+        - Fixed NPE in HttpRequest when using a Server instance without
+          context. Reported by Bruno Dumon.
     - API Enhancements
         - Added warning message when no client connector supports the 
           request's protocol.
