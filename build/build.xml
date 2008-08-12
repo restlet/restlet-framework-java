@@ -193,6 +193,8 @@
 	</path>
 
 	<path id="mod-api-test-path">
+		<pathelement path="${mod}/${mod-api-id}/src" />
+
 		<pathelement path="${classes}/${mod-ri-id}" />
 		<pathelement path="${mod}/${mod-ri-id}/src" />
 
