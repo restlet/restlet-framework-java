@@ -164,10 +164,10 @@ public class WadlApplication extends Application {
                         .getResources().getResources()) {
                     attachResource(resource, null, this.router);
                 }
-            }
 
-            // Analyzes the WADL resources base
-            setBaseRef(wadlRep.getApplication().getResources().getBaseRef());
+                // Analyzes the WADL resources base
+                setBaseRef(wadlRep.getApplication().getResources().getBaseRef());
+            }
         } catch (final Exception e) {
             getLogger().log(Level.WARNING,
                     "Error during the attachment of the WADL application", e);
