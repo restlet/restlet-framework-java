@@ -634,9 +634,6 @@
 		<attribute name="name" />
 		<sequential>
 			<compile srcdir="${mod}/${mod-@{name}-id}/src" destdir="${classes}/${mod-@{name}-id}" classpathref="mod-@{name}-path" />
-			<copy todir="${classes}/${mod-@{name}-id}">
-				<fileset dir="${mod}/${mod-@{name}-id}/src" includes="**/*.properties" />
-			</copy>
 		</sequential>
 	</macrodef>
 
