@@ -34,6 +34,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PipedReader;
 import java.io.PipedWriter;
+import java.io.RandomAccessFile;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
@@ -813,6 +814,26 @@ public final class ByteUtils {
         final byte[] buffer = new byte[2048];
         while ((bytesRead = inputStream.read(buffer)) > 0) {
             outputStream.write(buffer, 0, bytesRead);
+        }
+        inputStream.close();
+    }
+
+    /**
+     * Writes an input stream to a random access file. When the reading is done,
+     * the input stream is closed.
+     * 
+     * @param inputStream
+     *            The input stream.
+     * @param randomAccessFile
+     *            The random access file.
+     * @throws IOException
+     */
+    public static void write(InputStream inputStream,
+            RandomAccessFile randomAccessFile) throws IOException {
+        int bytesRead;
+        final byte[] buffer = new byte[2048];
+        while ((bytesRead = inputStream.read(buffer)) > 0) {
+            randomAccessFile.write(buffer, 0, bytesRead);
         }
         inputStream.close();
     }
