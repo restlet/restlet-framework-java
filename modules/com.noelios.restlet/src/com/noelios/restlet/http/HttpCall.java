@@ -362,8 +362,19 @@ public abstract class HttpCall {
      * @return True if the given exception is caused by a broken connection.
      */
     public boolean isConnectionBroken(Exception exception) {
-        return (exception.getMessage() == null) ? false : exception
-                .getMessage().indexOf("Broken pipe") != -1;
+        boolean result = false;
+
+        if (exception.getMessage() != null) {
+            result = (exception.getMessage().indexOf("Broken pipe") != -1)
+                    || (exception
+                            .getMessage()
+                            .equals(
+                                    "Une connexion existante a dû être fermée par l'hôte distant") || (exception
+                            .getMessage()
+                            .equals("Une connexion établie a été abandonnée par un logiciel de votre ordinateur hôte")));
+        }
+
+        return result;
     }
 
     /**

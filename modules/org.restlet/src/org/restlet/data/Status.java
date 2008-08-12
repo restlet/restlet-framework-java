@@ -1573,7 +1573,8 @@ public final class Status extends Metadata {
      */
     @Override
     public String toString() {
-        return getName() + " (" + this.code + ")";
+        return getName() + " (" + this.code + ")"
+                + ((getDescription() == null) ? "" : " - " + getDescription());
     }
 
 }

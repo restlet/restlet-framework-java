@@ -54,7 +54,8 @@ public class FileRepresentation extends Representation {
      * name.
      * 
      * @param path
-     *            The path name or file URI of the represented file.
+     *            The path name or file URI of the represented file (either in
+     *            system format or in 'file:///' format).
      * @return The associated File instance.
      */
     private static File createFile(String path) {
@@ -72,7 +73,9 @@ public class FileRepresentation extends Representation {
      * Constructor that does not set an expiration date for {@code file}
      * 
      * @param file
+     *            The represented file.
      * @param mediaType
+     *            The representation's media type.
      * @see #FileRepresentation(File, MediaType, int)
      */
     public FileRepresentation(File file, MediaType mediaType) {
@@ -113,7 +116,10 @@ public class FileRepresentation extends Representation {
      * Constructor that does not set an expiration date for {@code path}
      * 
      * @param path
+     *            The path name or file URI of the represented file (either in
+     *            system format or in 'file:///' format).
      * @param mediaType
+     *            The representation's media type.
      * @see #FileRepresentation(String, MediaType, int)
      */
     public FileRepresentation(String path, MediaType mediaType) {
@@ -124,7 +130,8 @@ public class FileRepresentation extends Representation {
      * Constructor.
      * 
      * @param path
-     *            The path name or file URI of the represented file.
+     *            The path name or file URI of the represented file (either in
+     *            system format or in 'file:///' format).
      * @param mediaType
      *            The representation's media type.
      * @param timeToLive

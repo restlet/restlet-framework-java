@@ -41,6 +41,7 @@ import org.restlet.data.Digest;
 import org.restlet.data.MediaType;
 import org.restlet.data.Range;
 import org.restlet.data.Tag;
+import org.restlet.util.ByteUtils;
 
 /**
  * Current or intended state of a resource. The content of a representation can
@@ -173,6 +174,16 @@ public abstract class Representation extends Variant {
         this.downloadName = null;
         this.isTransient = false;
         this.range = null;
+    }
+
+    /**
+     * Exhauts the content of the representation by reading it and silently
+     * discarding anything read.
+     */
+    public void exhaust() throws IOException {
+        if (isAvailable()) {
+            ByteUtils.exhaust(getStream());
+        }
     }
 
     /**

@@ -22,6 +22,13 @@ Changes log
         - Added an org.restlet.data.Digest class, a "digest" property 
           to Representation and a DigestService for applications. 
           Suggested by Chris Winters and Benoit Maujean.
+        - Filtered broken connection based on French messages in 
+          addition to English ones.
+        - Vastly improved internal client performances on GET.
+        - Status#toString() now appends the description if available 
+          for more meaningful messages.
+        - Added Representation#exhaust() method to read and discard 
+          content optimally (better than getText()).
     - NRE and Extension Enhancements
         - Refactored WADL extension based on John Logsdon's feed-back.
           Added convenience methods and constructors on FaultInfo, 
@@ -30,7 +37,7 @@ Changes log
           getParametersInfo(RequestInfo|ResponseInfo|Representation-
           Info). Added MethodInfo#add*() short-cut methods.
     - Misc
-        -     
+        - 
     
 - 1.1 Milestone 5 (2008-08-07)
     - Security warning
