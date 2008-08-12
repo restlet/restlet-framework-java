@@ -27,7 +27,6 @@
 
 package com.noelios.restlet.http;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -51,10 +50,6 @@ public class InputEntityStream extends InputStream {
      *            The total size that should be read from the source stream.
      */
     public InputEntityStream(InputStream source, long size) {
-        if (!(source instanceof BufferedInputStream)) {
-            source = new BufferedInputStream(source);
-        }
-
         this.source = source;
         this.availableSize = size;
     }

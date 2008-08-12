@@ -27,6 +27,8 @@
 
 package com.noelios.restlet.http;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -81,9 +83,12 @@ public class StreamServerHelper extends HttpServerHelper {
          */
         public void run() {
             try {
-                this.helper.handle(new StreamServerCall(
-                        this.helper.getHelped(), this.socket.getInputStream(),
-                        this.socket.getOutputStream(), this.socket));
+                this.helper
+                        .handle(new StreamServerCall(this.helper.getHelped(),
+                                new BufferedInputStream(this.socket
+                                        .getInputStream()),
+                                new BufferedOutputStream(this.socket
+                                        .getOutputStream()), this.socket));
             } catch (final IOException ex) {
                 this.helper.getLogger().log(Level.WARNING,
                         "Unexpected error while handling a call", ex);

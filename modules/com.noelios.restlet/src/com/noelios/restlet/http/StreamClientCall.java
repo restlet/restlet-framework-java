@@ -27,6 +27,8 @@
 
 package com.noelios.restlet.http;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -289,8 +291,10 @@ public class StreamClientCall extends HttpClientCall {
 
             // Create the client socket
             this.socket = createSocket(hostDomain, hostPort);
-            this.requestStream = this.socket.getOutputStream();
-            this.responseStream = this.socket.getInputStream();
+            this.requestStream = new BufferedOutputStream(this.socket
+                    .getOutputStream());
+            this.responseStream = new BufferedInputStream(this.socket
+                    .getInputStream());
 
             // Write the request line
             getRequestHeadStream().write(getMethod().getBytes());
@@ -323,6 +327,7 @@ public class StreamClientCall extends HttpClientCall {
 
             // Write the end of the headers section
             HttpUtils.writeCRLF(getRequestHeadStream());
+            getRequestHeadStream().flush();
 
             // Write the request body
             result = super.sendRequest(request);
