@@ -58,10 +58,10 @@ public final class DateUtils {
      *      >Immutable Date< /a>
      */
     private static final class ImmutableDate extends Date {
+        private static final transient WeakHashMap<Date, ImmutableDate> CACHE = new WeakHashMap<Date, ImmutableDate>();
+
         // TODO Are we serializable?
         private static final long serialVersionUID = -5946186780670229206L;
-
-        private static final transient WeakHashMap<Date, ImmutableDate> CACHE = new WeakHashMap<Date, ImmutableDate>();
 
         /**
          * Returns an ImmutableDate object wrapping the given date.
@@ -77,9 +77,6 @@ public final class DateUtils {
             return CACHE.get(date);
         }
 
-        /** Delegate being wrapped */
-        private final Date delegate;
-
         /**
          * Private constructor. A factory method is provided.
          * 
@@ -87,19 +84,7 @@ public final class DateUtils {
          *            date to be made immutable
          */
         private ImmutableDate(Date date) {
-            this.delegate = (Date) date.clone();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public boolean after(Date when) {
-            return this.delegate.after(when);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public boolean before(Date when) {
-            return this.delegate.before(when);
+            super(date.getTime());
         }
 
         /** {@inheritDoc} */
@@ -109,45 +94,86 @@ public final class DateUtils {
                     "ImmutableDate is immutable");
         }
 
-        /** {@inheritDoc} */
+        /**
+         * As an ImmutableDate is immutable, this method throws an
+         * UnsupportedOperationException exception.
+         */
         @Override
-        public int compareTo(Date anotherDate) {
-            return this.delegate.compareTo(anotherDate);
+        public void setDate(int arg0) {
+            throw new UnsupportedOperationException(
+                    "ImmutableDate is immutable");
         }
 
-        /** {@inheritDoc} */
+        /**
+         * As an ImmutableDate is immutable, this method throws an
+         * UnsupportedOperationException exception.
+         */
         @Override
-        public boolean equals(Object obj) {
-            return this.delegate.equals(obj);
+        public void setHours(int arg0) {
+            throw new UnsupportedOperationException(
+                    "ImmutableDate is immutable");
         }
 
-        /** {@inheritDoc} */
+        /**
+         * As an ImmutableDate is immutable, this method throws an
+         * UnsupportedOperationException exception.
+         */
         @Override
-        public long getTime() {
-            return this.delegate.getTime();
+        public void setMinutes(int arg0) {
+            throw new UnsupportedOperationException(
+                    "ImmutableDate is immutable");
         }
 
-        /** {@inheritDoc} */
+        /**
+         * As an ImmutableDate is immutable, this method throws an
+         * UnsupportedOperationException exception.
+         */
         @Override
-        public int hashCode() {
-            return this.delegate.hashCode();
+        public void setMonth(int arg0) {
+            throw new UnsupportedOperationException(
+                    "ImmutableDate is immutable");
         }
 
-        /** {@inheritDoc} */
+        /**
+         * As an ImmutableDate is immutable, this method throws an
+         * UnsupportedOperationException exception.
+         */
         @Override
-        public String toString() {
-            return this.delegate.toString();
+        public void setSeconds(int arg0) {
+            throw new UnsupportedOperationException(
+                    "ImmutableDate is immutable");
         }
+
+        /**
+         * As an ImmutableDate is immutable, this method throws an
+         * UnsupportedOperationException exception.
+         */
+        @Override
+        public void setTime(long arg0) {
+            throw new UnsupportedOperationException(
+                    "ImmutableDate is immutable");
+        }
+
+        /**
+         * As an ImmutableDate is immutable, this method throws an
+         * UnsupportedOperationException exception.
+         */
+        @Override
+        public void setYear(int arg0) {
+            throw new UnsupportedOperationException(
+                    "ImmutableDate is immutable");
+        }
+
     }
 
-    /** Preferred HTTP date format (RFC 1123). */
-    public static final List<String> FORMAT_RFC_1123 = unmodifiableList("EEE, dd MMM yyyy HH:mm:ss zzz");
+    /** Obsoleted HTTP date format (ANSI C asctime() format). */
+    public static final List<String> FORMAT_ASC_TIME = unmodifiableList("EEE MMM dd HH:mm:ss yyyy");
 
     /** Obsoleted HTTP date format (RFC 1036). */
     public static final List<String> FORMAT_RFC_1036 = unmodifiableList("EEEE, dd-MMM-yy HH:mm:ss zzz");
 
-    /** Obsoleted HTTP date format (ANSI C asctime() format). */
-    public static final List<String> FORMAT_ASC_TIME = unmodifiableList("EEE MMM dd HH:mm:ss yyyy");
+    /** Preferred HTTP date format (RFC 1123). */
+    public static final List<String> FORMAT_RFC_1123 = unmodifiableList("EEE, dd MMM yyyy HH:mm:ss zzz");
 
     /** W3C date format (RFC 3339). */
     public static final List<String> FORMAT_RFC_3339 = unmodifiableList(
