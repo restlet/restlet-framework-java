@@ -118,7 +118,7 @@ public class RangeTestCase extends TestCase {
                     length = Long.parseLong(value.substring(1));
                 } else if (value.endsWith("-")) {
                     index = Long.parseLong(value.substring(0,
-                            value.length() - 2));
+                            value.length() - 1));
                     length = Range.SIZE_MAX;
                 } else {
                     String[] tab = value.split("-");
@@ -180,6 +180,7 @@ public class RangeTestCase extends TestCase {
     protected void setUp() throws Exception {
         component = new Component();
         component.getServers().add(Protocol.HTTP, 8182);
+        component.getClients().add(Protocol.FILE);
         component.getDefaultHost().attach(new TestRangeApplication());
         component.start();
     }
