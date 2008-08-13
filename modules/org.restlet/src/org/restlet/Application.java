@@ -31,7 +31,6 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.service.ConnectorService;
 import org.restlet.service.DecoderService;
-import org.restlet.service.DigestService;
 import org.restlet.service.MetadataService;
 import org.restlet.service.RangeService;
 import org.restlet.service.StatusService;
@@ -117,9 +116,6 @@ public class Application extends Restlet {
     /** The description. */
     private volatile String description;
 
-    /** The digest service. */
-    private volatile DigestService digestService;
-
     /** The helper provided by the implementation. */
     private volatile Helper<Application> helper;
 
@@ -183,7 +179,6 @@ public class Application extends Restlet {
         this.connectorService = new ConnectorService();
         this.converterService = new org.restlet.service.ConverterService();
         this.decoderService = new DecoderService();
-        this.digestService = new DigestService();
         this.metadataService = new MetadataService();
         this.rangeService = new RangeService();
         this.statusService = new StatusService();
@@ -250,15 +245,6 @@ public class Application extends Restlet {
      */
     public String getDescription() {
         return this.description;
-    }
-
-    /**
-     * Returns the digest service. The service is enabled by default.
-     * 
-     * @return The digest service.
-     */
-    public DigestService getDigestService() {
-        return digestService;
     }
 
     /**
@@ -410,16 +396,6 @@ public class Application extends Restlet {
      */
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    /**
-     * Sets the digest service.
-     * 
-     * @param digestService
-     *            The digest service.
-     */
-    public void setDigestService(DigestService digestService) {
-        this.digestService = digestService;
     }
 
     /**
@@ -576,6 +552,10 @@ public class Application extends Restlet {
 
             if (getTunnelService() != null) {
                 getTunnelService().stop();
+            }
+
+            if (getRangeService() != null) {
+                getRangeService().stop();
             }
 
             if (getHelper() != null) {

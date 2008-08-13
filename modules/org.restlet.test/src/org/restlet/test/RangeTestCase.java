@@ -27,6 +27,7 @@
 
 package org.restlet.test;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
@@ -36,9 +37,11 @@ import org.junit.Test;
 import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
+import org.restlet.Directory;
 import org.restlet.Restlet;
 import org.restlet.Router;
 import org.restlet.data.Form;
+import org.restlet.data.LocalReference;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
@@ -61,17 +64,34 @@ public class RangeTestCase extends TestCase {
      */
     private static class TestRangeApplication extends Application {
 
+        public TestRangeApplication() {
+            super();
+            getRangeService().setEnabled(true);
+        }
+
         @Override
         public Restlet createRoot() {
             Router router = new Router();
             router.attach("/test", new TestRangeRestlet());
             router.attach("/testGet", new TestRangeGetRestlet());
+            Directory directory = new Directory(getContext(), LocalReference
+                    .createFileReference(testDir));
+            directory.setResumeUpload(true);
+            directory.setModifiable(true);
+            router.attach("/testPut", directory);
             return router;
         }
+    }
 
-        public TestRangeApplication() {
-            super();
-            getRangeService().setEnabled(true);
+    /**
+     * Internal class used for test purpose. It simply returns a string 10
+     * characters long.
+     * 
+     */
+    private static class TestRangeGetRestlet extends Restlet {
+        @Override
+        public void handle(Request request, Response response) {
+            response.setEntity(new StringRepresentation("1234567890"));
         }
     }
 
@@ -129,24 +149,200 @@ public class RangeTestCase extends TestCase {
         }
     }
 
+    // Create a temporary directory for the tests
+    private static final File testDir = new File(System
+            .getProperty("java.io.tmpdir"), "rangeTestCase");
+
     /**
-     * Internal class used for test purpose. It simply returns a string 10
-     * characters long.
+     * Recursively delete a directory.
      * 
+     * @param dir
+     *            The directory to delete.
      */
-    private static class TestRangeGetRestlet extends Restlet {
-        @Override
-        public void handle(Request request, Response response) {
-            response.setEntity(new StringRepresentation("1234567890"));
+    private void deleteDir(File dir) {
+        if (dir.exists()) {
+            final File[] entries = dir.listFiles();
+
+            for (final File entrie : entries) {
+                if (entrie.isDirectory()) {
+                    deleteDir(entrie);
+                }
+
+                entrie.delete();
+            }
+        }
+
+        dir.delete();
+    }
+
+    /**
+     * Tests partial Put requests.
+     */
+    @Test
+    public void testPut() {
+        deleteDir(testDir);
+        try {
+            Component component = new Component();
+            component.getServers().add(Protocol.HTTP, 8182);
+            component.getClients().add(Protocol.FILE);
+            component.getDefaultHost().attach(new TestRangeApplication());
+            component.start();
+            Client client = new Client(Protocol.HTTP);
+
+            // PUT on a file that does not exist
+            Request request = new Request(Method.PUT,
+                    "http://localhost:8182/testPut/essai.txt");
+            request.setEntity(new StringRepresentation("1234567890"));
+            request.setRanges(Arrays.asList(new Range(0, 10)));
+            Response response = client.handle(request);
+            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            response = client.get(request.getResourceRef());
+            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            assertEquals("1234567890", response.getEntity().getText());
+
+            // Partial PUT on a file, the provided representation overflowed the
+            // existing file
+            request = new Request(Method.PUT,
+                    "http://localhost:8182/testPut/essai.txt");
+            request.setEntity(new StringRepresentation("0000000000"));
+            request.setRanges(Arrays.asList(new Range(1, 10)));
+            response = client.handle(request);
+            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            response = client.get(request.getResourceRef());
+            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            assertEquals("10000000000", response.getEntity().getText());
+
+            // Partial PUT on a file that does not exists, the provided range
+            // does not start at the 0 index.
+            request = new Request(Method.PUT,
+                    "http://localhost:8182/testPut/essai2.txt");
+            request.setEntity(new StringRepresentation("0000000000"));
+            request.setRanges(Arrays.asList(new Range(1, 10)));
+            response = client.handle(request);
+            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            request.setMethod(Method.GET);
+            response = client.handle(request);
+            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            assertEquals("0000000000", response.getEntity().getText());
+
+            // Partial PUT on a file, simple range
+            request = new Request(Method.PUT,
+                    "http://localhost:8182/testPut/essai.txt");
+            request.setEntity(new StringRepresentation("22"));
+            request.setRanges(Arrays.asList(new Range(2, 2)));
+            response = client.handle(request);
+            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            response = client.get(request.getResourceRef());
+            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            assertEquals("10220000000", response.getEntity().getText());
+
+            // Partial PUT on a file, the provided representation will be padded
+            // at the very end of the file.
+            request = new Request(Method.PUT,
+                    "http://localhost:8182/testPut/essai.txt");
+            request.setEntity(new StringRepresentation("888"));
+            request.setRanges(Arrays.asList(new Range(8, Range.SIZE_MAX)));
+            response = client.handle(request);
+            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            response = client.get(request.getResourceRef());
+            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            assertEquals("10220000888", response.getEntity().getText());
+
+            // Partial PUT on a file that does not exist, the range does not
+            // specify the range size.
+            request = new Request(Method.PUT,
+                    "http://localhost:8182/testPut/essai3.txt");
+            request.setEntity(new StringRepresentation("888"));
+            request.setRanges(Arrays.asList(new Range(8, Range.SIZE_MAX)));
+            response = client.handle(request);
+            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            request.setMethod(Method.GET);
+            response = client.handle(request);
+            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            assertEquals("888", response.getEntity().getText());
+
+            // Partial PUT on a file, the provided representation will be padded
+            // just before the end of the file.
+            request = new Request(Method.PUT,
+                    "http://localhost:8182/testPut/essai.txt");
+            request.setEntity(new StringRepresentation("99"));
+            request.setRanges(Arrays.asList(new Range(8, Range.SIZE_MAX)));
+            response = client.handle(request);
+            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            response = client.get(request.getResourceRef());
+            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            assertEquals("10220000998", response.getEntity().getText());
+
+            request = new Request(Method.GET,
+                    "http://localhost:8182/testPut/essai.txt");
+            request.setRanges(Arrays.asList(new Range(3, Range.SIZE_MAX)));
+            response = client.handle(request);
+            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            assertEquals("20000998", response.getEntity().getText());
+
+            component.stop();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        deleteDir(testDir);
+    }
+
+    /**
+     * Tests partial Get requests.
+     */
+    @Test
+    public void trestGet() {
+        try {
+            Component component = new Component();
+            component.getServers().add(Protocol.HTTP, 8182);
+            component.getDefaultHost().attach(new TestRangeApplication());
+            component.start();
+            Client client = new Client(Protocol.HTTP);
+            // Test partial Get.
+            Request request = new Request(Method.GET,
+                    "http://localhost:8182/testGet");
+            Response response = client.handle(request);
+            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            assertEquals("1234567890", response.getEntity().getText());
+
+            request = new Request(Method.GET, "http://localhost:8182/testGet");
+            request.setRanges(Arrays.asList(new Range(0, 10)));
+            response = client.handle(request);
+            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            assertEquals("1234567890", response.getEntity().getText());
+
+            request.setRanges(Arrays.asList(new Range(Range.INDEX_FIRST, 2)));
+            response = client.handle(request);
+            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            assertEquals("12", response.getEntity().getText());
+
+            request.setRanges(Arrays.asList(new Range(2, 2)));
+            response = client.handle(request);
+            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            assertEquals("34", response.getEntity().getText());
+
+            request.setRanges(Arrays.asList(new Range(2, 7)));
+            response = client.handle(request);
+            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            assertEquals("3456789", response.getEntity().getText());
+
+            request.setRanges(Arrays.asList(new Range(Range.INDEX_LAST, 7)));
+            response = client.handle(request);
+            assertEquals(Status.SUCCESS_OK, response.getStatus());
+            assertEquals("4567890", response.getEntity().getText());
+
+            component.stop();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
     /**
-     * Tests ranges withour representations.
+     * Tests ranges.
      */
     @Test
-    public void testRanges() {
-
+    public void trestRanges() {
         try {
             Component component = new Component();
             component.getServers().add(Protocol.HTTP, 8182);
@@ -180,38 +376,6 @@ public class RangeTestCase extends TestCase {
             request.setRanges(Arrays.asList(new Range(500, 500), new Range(500,
                     Range.SIZE_MAX)));
             assertEquals(Status.SUCCESS_OK, client.handle(request).getStatus());
-
-            // Test partial Get.
-            request = new Request(Method.GET, "http://localhost:8182/testGet");
-            Response response = client.handle(request);
-            assertEquals(Status.SUCCESS_OK, response.getStatus());
-            assertEquals("1234567890", response.getEntity().getText());
-
-            request = new Request(Method.GET, "http://localhost:8182/testGet");
-            request.setRanges(Arrays.asList(new Range(0, 10)));
-            response = client.handle(request);
-            assertEquals(Status.SUCCESS_OK, response.getStatus());
-            assertEquals("1234567890", response.getEntity().getText());
-
-            request.setRanges(Arrays.asList(new Range(Range.INDEX_FIRST, 2)));
-            response = client.handle(request);
-            assertEquals(Status.SUCCESS_OK, response.getStatus());
-            assertEquals("12", response.getEntity().getText());
-
-            request.setRanges(Arrays.asList(new Range(2, 2)));
-            response = client.handle(request);
-            assertEquals(Status.SUCCESS_OK, response.getStatus());
-            assertEquals("34", response.getEntity().getText());
-
-            request.setRanges(Arrays.asList(new Range(2, 7)));
-            response = client.handle(request);
-            assertEquals(Status.SUCCESS_OK, response.getStatus());
-            assertEquals("3456789", response.getEntity().getText());
-
-            request.setRanges(Arrays.asList(new Range(Range.INDEX_LAST, 7)));
-            response = client.handle(request);
-            assertEquals(Status.SUCCESS_OK, response.getStatus());
-            assertEquals("4567890", response.getEntity().getText());
 
             component.stop();
         } catch (Exception e) {
