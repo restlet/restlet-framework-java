@@ -30,11 +30,13 @@ package com.noelios.restlet.local;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -50,6 +52,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Preference;
 import org.restlet.data.Protocol;
+import org.restlet.data.Range;
 import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
 import org.restlet.data.Request;
@@ -290,172 +293,255 @@ public class FileClientHelper extends LocalClientHelper {
 
         if (request.getMethod().equals(Method.GET)
                 || request.getMethod().equals(Method.HEAD)) {
-            Representation output = null;
+            handleFileGet(request, response, path, file, metadataService);
+        } else if (request.getMethod().equals(Method.PUT)) {
+            handleFilePut(request, response, path, file, metadataService);
+        } else if (request.getMethod().equals(Method.DELETE)) {
+            handleFileDelete(response, file);
+        } else {
+            response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+            response.getAllowedMethods().add(Method.GET);
+            response.getAllowedMethods().add(Method.HEAD);
+            response.getAllowedMethods().add(Method.PUT);
+            response.getAllowedMethods().add(Method.DELETE);
+        }
+    }
 
-            // Get variants for a resource
-            boolean found = false;
-            final Iterator<Preference<MediaType>> iterator = request
-                    .getClientInfo().getAcceptedMediaTypes().iterator();
-            while (iterator.hasNext() && !found) {
-                final Preference<MediaType> pref = iterator.next();
-                found = pref.getMetadata().equals(MediaType.TEXT_URI_LIST);
+    /**
+     * Handles a DELETE call for the FILE protocol.
+     * 
+     * @param response
+     *            The response to update.
+     * @param file
+     *            The file or directory to delete.
+     */
+    private void handleFileDelete(Response response, File file) {
+        if (file.isDirectory()) {
+            if (file.listFiles().length == 0) {
+                if (file.delete()) {
+                    response.setStatus(Status.SUCCESS_NO_CONTENT);
+                } else {
+                    response.setStatus(Status.SERVER_ERROR_INTERNAL,
+                            "Couldn't delete the directory");
+                }
+            } else {
+                response.setStatus(Status.CLIENT_ERROR_FORBIDDEN,
+                        "Couldn't delete the non-empty directory");
             }
-            if (found) {
-                // Try to list all variants of this resource
+        } else {
+            if (file.delete()) {
+                response.setStatus(Status.SUCCESS_NO_CONTENT);
+            } else {
+                response.setStatus(Status.SERVER_ERROR_INTERNAL,
+                        "Couldn't delete the file");
+            }
+        }
+    }
+
+    /**
+     * Handles a GET call for the FILE protocol.
+     * 
+     * @param request
+     *            The request to update.
+     * @param response
+     *            The response to update.
+     * @param path
+     *            The encoded path of the requested file or directory.
+     * @param file
+     *            The requested file or directory.
+     * @param metadataService
+     *            The metadata service.
+     */
+    private void handleFileGet(Request request, Response response, String path,
+            File file, final MetadataService metadataService) {
+        Representation output = null;
+
+        // Get variants for a resource
+        boolean found = false;
+        final Iterator<Preference<MediaType>> iterator = request
+                .getClientInfo().getAcceptedMediaTypes().iterator();
+        while (iterator.hasNext() && !found) {
+            final Preference<MediaType> pref = iterator.next();
+            found = pref.getMetadata().equals(MediaType.TEXT_URI_LIST);
+        }
+        if (found) {
+            // Try to list all variants of this resource
+            // 1- set up base name as the longest part of the name without known
+            // extensions (beginning from the left)
+            final String baseName = getBaseName(file, metadataService);
+            // 2- looking for resources with the same base name
+            if (file.getParentFile() != null) {
+                final File[] files = file.getParentFile().listFiles();
+                if (files != null) {
+                    final ReferenceList rl = new ReferenceList(files.length);
+
+                    final String encodedParentDirectoryURI = path.substring(0,
+                            path.lastIndexOf("/"));
+                    final String encodedFileName = path.substring(path
+                            .lastIndexOf("/") + 1);
+
+                    for (final File entry : files) {
+                        if (baseName
+                                .equals(getBaseName(entry, metadataService))) {
+                            rl
+                                    .add(LocalReference
+                                            .createFileReference(encodedParentDirectoryURI
+                                                    + "/"
+                                                    + getReencodedVariantFileName(
+                                                            encodedFileName,
+                                                            entry.getName())));
+                        }
+                    }
+                    output = rl.getTextRepresentation();
+                }
+            }
+        } else {
+            if (file.exists()) {
+                if (file.isDirectory()) {
+                    // Return the directory listing
+                    final File[] files = file.listFiles();
+                    final ReferenceList rl = new ReferenceList(files.length);
+                    String directoryUri = request.getResourceRef().toString();
+
+                    // Ensures that the directory URI ends with a slash
+                    if (!directoryUri.endsWith("/")) {
+                        directoryUri += "/";
+                    }
+
+                    for (final File entry : files) {
+                        rl
+                                .add(directoryUri
+                                        + Reference.encode(entry.getName()));
+                    }
+
+                    output = rl.getTextRepresentation();
+                } else {
+                    // Return the file content
+                    output = new FileRepresentation(file, metadataService
+                            .getDefaultMediaType(), getTimeToLive());
+                    updateMetadata(metadataService, file.getName(), output);
+                }
+            } else {
+                // We look for the possible variant which has the same
+                // extensions in a distinct order.
                 // 1- set up base name as the longest part of the name without
                 // known extensions (beginning from the left)
                 final String baseName = getBaseName(file, metadataService);
-                // 2- looking for resources with the same base name
-                if (file.getParentFile() != null) {
-                    final File[] files = file.getParentFile().listFiles();
-                    if (files != null) {
-                        final ReferenceList rl = new ReferenceList(files.length);
+                final Set<String> extensions = getExtensions(file,
+                        metadataService);
+                // 2- loooking for resources with the same base name
+                final File[] files = file.getParentFile().listFiles();
+                File uniqueVariant = null;
 
-                        final String encodedParentDirectoryURI = path
-                                .substring(0, path.lastIndexOf("/"));
-                        final String encodedFileName = path.substring(path
-                                .lastIndexOf("/") + 1);
-
-                        for (final File entry : files) {
-                            if (baseName.equals(getBaseName(entry,
-                                    metadataService))) {
-                                rl
-                                        .add(LocalReference
-                                                .createFileReference(encodedParentDirectoryURI
-                                                        + "/"
-                                                        + getReencodedVariantFileName(
-                                                                encodedFileName,
-                                                                entry.getName())));
-                            }
-                        }
-                        output = rl.getTextRepresentation();
-                    }
-                }
-            } else {
-                if (file.exists()) {
-                    if (file.isDirectory()) {
-                        // Return the directory listing
-                        final File[] files = file.listFiles();
-                        final ReferenceList rl = new ReferenceList(files.length);
-                        String directoryUri = request.getResourceRef()
-                                .toString();
-
-                        // Ensures that the directory URI ends with a slash
-                        if (!directoryUri.endsWith("/")) {
-                            directoryUri += "/";
-                        }
-
-                        for (final File entry : files) {
-                            rl.add(directoryUri
-                                    + Reference.encode(entry.getName()));
-                        }
-
-                        output = rl.getTextRepresentation();
-                    } else {
-                        // Return the file content
-                        output = new FileRepresentation(file, metadataService
-                                .getDefaultMediaType(), getTimeToLive());
-                        updateMetadata(metadataService, file.getName(), output);
-                    }
-                } else {
-                    // We look for the possible variant which has the same
-                    // extensions in a distinct order.
-                    // 1- set up base name as the longest part of the name
-                    // without known extensions (beginning from the left)
-                    final String baseName = getBaseName(file, metadataService);
-                    final Set<String> extensions = getExtensions(file,
-                            metadataService);
-                    // 2- loooking for resources with the same base name
-                    final File[] files = file.getParentFile().listFiles();
-                    File uniqueVariant = null;
-
-                    if (files != null) {
-                        for (final File entry : files) {
-                            if (baseName.equals(getBaseName(entry,
-                                    metadataService))) {
-                                final Set<String> entryExtensions = getExtensions(
-                                        entry, metadataService);
-                                if (entryExtensions.containsAll(extensions)
-                                        && extensions
-                                                .containsAll(entryExtensions)) {
-                                    // The right representation has been found.
-                                    uniqueVariant = entry;
-                                    break;
-                                }
+                if (files != null) {
+                    for (final File entry : files) {
+                        if (baseName
+                                .equals(getBaseName(entry, metadataService))) {
+                            final Set<String> entryExtensions = getExtensions(
+                                    entry, metadataService);
+                            if (entryExtensions.containsAll(extensions)
+                                    && extensions.containsAll(entryExtensions)) {
+                                // The right representation has been found.
+                                uniqueVariant = entry;
+                                break;
                             }
                         }
                     }
-                    if (uniqueVariant != null) {
-                        // Return the file content
-                        output = new FileRepresentation(uniqueVariant,
-                                metadataService.getDefaultMediaType(),
-                                getTimeToLive());
-                        updateMetadata(metadataService, file.getName(), output);
-                    }
+                }
+                if (uniqueVariant != null) {
+                    // Return the file content
+                    output = new FileRepresentation(uniqueVariant,
+                            metadataService.getDefaultMediaType(),
+                            getTimeToLive());
+                    updateMetadata(metadataService, file.getName(), output);
                 }
             }
+        }
 
-            if (output == null) {
-                response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
-            } else {
-                output.setIdentifier(request.getResourceRef());
-                response.setEntity(output);
-                response.setStatus(Status.SUCCESS_OK);
-            }
-        } else if (request.getMethod().equals(Method.PUT)) {
-            // Deals with directory
-            boolean isDirectory = false;
-            if (file.exists()) {
-                if (file.isDirectory()) {
-                    isDirectory = true;
-                    response.setStatus(new Status(
-                            Status.CLIENT_ERROR_FORBIDDEN,
-                            "Can't put a new representation of a directory"));
-                }
-            } else {
-                // No existing file or directory found
-                if (path.endsWith("/")) {
-                    isDirectory = true;
-                    // Create a new directory and its necessary parents
-                    if (file.mkdirs()) {
-                        response.setStatus(Status.SUCCESS_NO_CONTENT);
-                    } else {
-                        getLogger().log(Level.WARNING,
-                                "Unable to create the new directory");
-                        response.setStatus(new Status(
-                                Status.SERVER_ERROR_INTERNAL,
-                                "Unable to create the new directory"));
-                    }
-                }
-            }
+        if (output == null) {
+            response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+        } else {
+            output.setIdentifier(request.getResourceRef());
+            response.setEntity(output);
+            response.setStatus(Status.SUCCESS_OK);
+        }
+    }
 
-            if (!isDirectory) {
-                // Several checks : first the consistency of the metadata and
-                // the filename
-                if (!checkMetadataConsistency(file.getName(), metadataService,
-                        request.getEntity())) {
-                    // ask the client to reiterate properly its request
-                    response.setStatus(new Status(Status.REDIRECTION_SEE_OTHER,
-                            "The metadata are not consistent with the URI"));
+    /**
+     * Handles a PUT call for the FILE protocol.
+     * 
+     * @param request
+     *            The request to update.
+     * @param response
+     *            The response to update.
+     * @param path
+     *            The encoded path of the requested file or directory.
+     * @param file
+     *            The requested file or directory.
+     * @param metadataService
+     *            The metadata service.
+     */
+    private void handleFilePut(Request request, Response response, String path,
+            File file, final MetadataService metadataService) {
+        // Deals with directory
+        boolean isDirectory = false;
+        if (file.exists()) {
+            if (file.isDirectory()) {
+                isDirectory = true;
+                response.setStatus(new Status(Status.CLIENT_ERROR_FORBIDDEN,
+                        "Can't put a new representation of a directory"));
+            }
+        } else {
+            // No existing file or directory found
+            if (path.endsWith("/")) {
+                isDirectory = true;
+                // Create a new directory and its necessary parents
+                if (file.mkdirs()) {
+                    response.setStatus(Status.SUCCESS_NO_CONTENT);
                 } else {
-                    // We look for the possible variants
-                    // 1- set up base name as the longest part of the name
-                    // without known extensions (beginning from the left)
-                    final String baseName = getBaseName(file, metadataService);
-                    final Set<String> extensions = getExtensions(file,
-                            metadataService);
-                    // 2- loooking for resources with the same base name
-                    final File[] files = file.getParentFile().listFiles();
-                    File uniqueVariant = null;
+                    getLogger().log(Level.WARNING,
+                            "Unable to create the new directory");
+                    response.setStatus(new Status(Status.SERVER_ERROR_INTERNAL,
+                            "Unable to create the new directory"));
+                }
+            }
+        }
 
-                    final List<File> variantsList = new ArrayList<File>();
-                    if (files != null) {
-                        for (final File entry : files) {
-                            if (baseName.equals(getBaseName(entry,
-                                    metadataService))) {
-                                final Set<String> entryExtensions = getExtensions(
-                                        entry, metadataService);
-                                if (entryExtensions.containsAll(extensions)) {
+        if (!isDirectory) {
+            // Several checks : first the consistency of the metadata and
+            // the filename
+            boolean partialPut = !request.getRanges().isEmpty();
+            if (!checkMetadataConsistency(file.getName(), metadataService,
+                    request.getEntity())) {
+                // ask the client to reiterate properly its request
+                response.setStatus(new Status(Status.REDIRECTION_SEE_OTHER,
+                        "The metadata are not consistent with the URI"));
+            } else {
+                // We look for the possible variants
+                // 1- set up base name as the longest part of the name
+                // without known extensions (beginning from the left)
+                final String baseName = getBaseName(file, metadataService);
+                final Set<String> extensions = getExtensions(file,
+                        metadataService);
+                // 2- loooking for resources with the same base name
+                final File[] files = file.getParentFile().listFiles();
+                File uniqueVariant = null;
+
+                final List<File> variantsList = new ArrayList<File>();
+                File tmpRangeFile = null;
+                if (files != null) {
+                    for (final File entry : files) {
+                        if (baseName
+                                .equals(getBaseName(entry, metadataService))) {
+                            final Set<String> entryExtensions = getExtensions(
+                                    entry, metadataService);
+                            if (entryExtensions.containsAll(extensions)) {
+                                if (partialPut
+                                        && entry.getName().endsWith("tmp")) {
+                                    // Case of a partial PUT, this is the
+                                    // temporary file.
+                                    tmpRangeFile = entry;
+                                } else {
                                     variantsList.add(entry);
                                     if (extensions.containsAll(entryExtensions)) {
                                         // The right representation has been
@@ -466,193 +552,251 @@ public class FileClientHelper extends LocalClientHelper {
                             }
                         }
                     }
-                    if (uniqueVariant != null) {
-                        file = uniqueVariant;
-                    } else {
-                        if (!variantsList.isEmpty()) {
-                            // Negociated resource (several variants, but not
-                            // the right one).
-                            // Check if the request could be completed or not.
-                            // The request could be more precise
-                            response
-                                    .setStatus(new Status(
-                                            Status.CLIENT_ERROR_NOT_ACCEPTABLE,
-                                            "Unable to process properly the request. Several variants exist but none of them suits precisely."));
-                        } else {
-                            // This resource does not exist, yet.
-                            // Complete it with the default metadata
-                            updateMetadata(metadataService, file.getName(),
-                                    request.getEntity());
-                            if (request.getEntity().getLanguages().isEmpty()) {
-                                if (metadataService.getDefaultLanguage() != null) {
-                                    request.getEntity().getLanguages().add(
-                                            metadataService
-                                                    .getDefaultLanguage());
-                                }
-                            }
-                            if (request.getEntity().getMediaType() == null) {
-                                request.getEntity().setMediaType(
-                                        metadataService.getDefaultMediaType());
-                            }
-                            if (request.getEntity().getEncodings().isEmpty()) {
-                                if ((metadataService.getDefaultEncoding() != null)
-                                        && !metadataService
-                                                .getDefaultEncoding().equals(
-                                                        Encoding.IDENTITY)) {
-                                    request.getEntity().getEncodings().add(
-                                            metadataService
-                                                    .getDefaultEncoding());
-                                }
-                            }
-                            // Update the URI
-                            final StringBuilder fileName = new StringBuilder(
-                                    baseName);
-                            if (metadataService.getExtension(request
-                                    .getEntity().getMediaType()) != null) {
-                                fileName.append("."
-                                        + metadataService.getExtension(request
-                                                .getEntity().getMediaType()));
-                            }
-                            for (final Language language : request.getEntity()
-                                    .getLanguages()) {
-                                if (metadataService.getExtension(language) != null) {
-                                    fileName.append("."
-                                            + metadataService
-                                                    .getExtension(language));
-                                }
-                            }
-                            for (final Encoding encoding : request.getEntity()
-                                    .getEncodings()) {
-                                if (metadataService.getExtension(encoding) != null) {
-                                    fileName.append("."
-                                            + metadataService
-                                                    .getExtension(encoding));
-                                }
-                            }
-                            file = new File(file.getParentFile(), fileName
-                                    .toString());
-                        }
-                    }
-                    // Before putting the file representation, we check that all
-                    // the extensions are known
-                    if (!checkExtensionsConsistency(file, metadataService)) {
+                }
+                if (uniqueVariant != null) {
+                    file = uniqueVariant;
+                } else {
+                    if (!variantsList.isEmpty()) {
+                        // Negociated resource (several variants, but not the
+                        // right one).
+                        // Check if the request could be completed or not.
+                        // The request could be more precise
                         response
                                 .setStatus(new Status(
-                                        Status.SERVER_ERROR_INTERNAL,
-                                        "Unable to process properly the URI. At least one extension is not known by the server."));
+                                        Status.CLIENT_ERROR_NOT_ACCEPTABLE,
+                                        "Unable to process properly the request. Several variants exist but none of them suits precisely."));
                     } else {
-                        File tmp = null;
+                        // This resource does not exist, yet.
+                        // Complete it with the default metadata
+                        updateMetadata(metadataService, file.getName(), request
+                                .getEntity());
+                        if (request.getEntity().getLanguages().isEmpty()) {
+                            if (metadataService.getDefaultLanguage() != null) {
+                                request.getEntity().getLanguages().add(
+                                        metadataService.getDefaultLanguage());
+                            }
+                        }
+                        if (request.getEntity().getMediaType() == null) {
+                            request.getEntity().setMediaType(
+                                    metadataService.getDefaultMediaType());
+                        }
+                        if (request.getEntity().getEncodings().isEmpty()) {
+                            if ((metadataService.getDefaultEncoding() != null)
+                                    && !metadataService.getDefaultEncoding()
+                                            .equals(Encoding.IDENTITY)) {
+                                request.getEntity().getEncodings().add(
+                                        metadataService.getDefaultEncoding());
+                            }
+                        }
+                        // Update the URI
+                        final StringBuilder fileName = new StringBuilder(
+                                baseName);
+                        if (metadataService.getExtension(request.getEntity()
+                                .getMediaType()) != null) {
+                            fileName.append("."
+                                    + metadataService.getExtension(request
+                                            .getEntity().getMediaType()));
+                        }
+                        for (final Language language : request.getEntity()
+                                .getLanguages()) {
+                            if (metadataService.getExtension(language) != null) {
+                                fileName.append("."
+                                        + metadataService
+                                                .getExtension(language));
+                            }
+                        }
+                        for (final Encoding encoding : request.getEntity()
+                                .getEncodings()) {
+                            if (metadataService.getExtension(encoding) != null) {
+                                fileName.append("."
+                                        + metadataService
+                                                .getExtension(encoding));
+                            }
+                        }
+                        file = new File(file.getParentFile(), fileName
+                                .toString());
+                    }
+                }
+                // Before putting the file representation, we check that all
+                // the extensions are known
+                if (!checkExtensionsConsistency(file, metadataService)) {
+                    response
+                            .setStatus(new Status(
+                                    Status.SERVER_ERROR_INTERNAL,
+                                    "Unable to process properly the URI. At least one extension is not known by the server."));
+                } else {
+                    File tmp = null;
 
-                        if (file.exists()) {
-                            FileOutputStream fos = null;
-                            // Replace the content of the file
-                            // First, create a temporary file
-                            try {
+                    if (file.exists()) {
+                        FileOutputStream fos = null;
+                        RandomAccessFile raf = null;
+                        // Replace the content of the file
+                        // First, create a temporary file
+                        try {
+                            if (partialPut) {
+                                // Support only one range.
+                                Range range = request.getRanges().get(0);
+
+                                if (tmpRangeFile == null) {
+                                    tmpRangeFile = new File(file
+                                            .getCanonicalPath().concat(".tmp"));
+                                    // Copy the file?? Caution, it's dangerous.
+                                    if (tmpRangeFile.createNewFile()) {
+                                        raf = new RandomAccessFile(tmpRangeFile, "rwd");
+                                        ByteUtils.write(new FileInputStream(file), raf);
+                                        raf.close();
+                                    } else {
+                                        // TODO Error
+                                    }
+                                }
+                                tmp = tmpRangeFile;
+                                raf = new RandomAccessFile(tmpRangeFile, "rwd");
+                                // Resume former upload.
+                                if (range.getIndex() == Range.INDEX_LAST) {
+                                    if (raf.length() <= range.getSize()) {
+                                        raf.seek(range.getSize());
+                                    } else {
+                                        raf
+                                                .seek(raf.length()
+                                                        - range.getSize());
+                                    }
+                                } else {
+                                    raf.seek(range.getIndex());
+                                }
+                                if (request.isEntityAvailable()) {
+                                    ByteUtils.write(request.getEntity()
+                                            .getStream(), raf);
+                                }
+                            } else {
                                 tmp = File.createTempFile("restlet-upload",
                                         "bin");
-
                                 if (request.isEntityAvailable()) {
                                     fos = new FileOutputStream(tmp);
                                     ByteUtils.write(request.getEntity()
                                             .getStream(), fos);
                                 }
+                            }
+
+                        } catch (final IOException ioe) {
+                            getLogger().log(Level.WARNING,
+                                    "Unable to create the temporary file", ioe);
+                            response.setStatus(new Status(
+                                    Status.SERVER_ERROR_INTERNAL,
+                                    "Unable to create a temporary file"));
+                        } finally {
+                            try {
+                                if (fos != null) {
+                                    fos.close();
+                                }
+                                if (raf != null) {
+                                    raf.close();
+                                }
                             } catch (final IOException ioe) {
                                 getLogger().log(Level.WARNING,
-                                        "Unable to create the temporary file",
+                                        "Unable to close the temporary file",
                                         ioe);
-                                response.setStatus(new Status(
-                                        Status.SERVER_ERROR_INTERNAL,
-                                        "Unable to create a temporary file"));
-                            } finally {
-                                try {
-                                    if (fos != null) {
-                                        fos.close();
-                                    }
-                                } catch (final IOException ioe) {
-                                    getLogger()
-                                            .log(
-                                                    Level.WARNING,
-                                                    "Unable to close the temporary file",
-                                                    ioe);
-                                    response.setStatus(
-                                            Status.SERVER_ERROR_INTERNAL, ioe);
-                                }
+                                response.setStatus(
+                                        Status.SERVER_ERROR_INTERNAL, ioe);
                             }
+                        }
 
-                            // Then delete the existing file
-                            if (file.delete()) {
-                                // Finally move the temporary file to the
-                                // existing file location
-                                boolean renameSuccessfull = false;
-                                if ((tmp != null) && tmp.renameTo(file)) {
-                                    if (request.getEntity() == null) {
-                                        response
-                                                .setStatus(Status.SUCCESS_NO_CONTENT);
-                                    } else {
-                                        response.setStatus(Status.SUCCESS_OK);
-                                    }
-                                    renameSuccessfull = true;
+                        // Then delete the existing file
+                        if (file.delete()) {
+                            // Finally move the temporary file to the
+                            // existing file location
+                            boolean renameSuccessfull = false;
+                            if ((tmp != null) && tmp.renameTo(file)) {
+                                if (request.getEntity() == null) {
+                                    response
+                                            .setStatus(Status.SUCCESS_NO_CONTENT);
                                 } else {
-                                    // Many aspects of the behavior of the
-                                    // method "renameTo" are inherently
-                                    // platform-dependent: The rename operation
-                                    // might not be able to move a file from one
-                                    // filesystem to another.
-                                    if ((tmp != null) && tmp.exists()) {
-                                        try {
-                                            final BufferedReader br = new BufferedReader(
-                                                    new FileReader(tmp));
-                                            final BufferedWriter wr = new BufferedWriter(
-                                                    new FileWriter(file));
-                                            String s;
-                                            while ((s = br.readLine()) != null) {
-                                                wr.append(s);
-                                            }
-
-                                            br.close();
-                                            wr.flush();
-                                            wr.close();
-                                            renameSuccessfull = true;
-                                            tmp.delete();
-                                        } catch (final Exception e) {
-                                            renameSuccessfull = false;
+                                    response.setStatus(Status.SUCCESS_OK);
+                                }
+                                renameSuccessfull = true;
+                            } else {
+                                // Many aspects of the behavior of the
+                                // method "renameTo" are inherently
+                                // platform-dependent: The rename operation
+                                // might not be able to move a file from one
+                                // filesystem to another.
+                                if ((tmp != null) && tmp.exists()) {
+                                    try {
+                                        final BufferedReader br = new BufferedReader(
+                                                new FileReader(tmp));
+                                        final BufferedWriter wr = new BufferedWriter(
+                                                new FileWriter(file));
+                                        String s;
+                                        while ((s = br.readLine()) != null) {
+                                            wr.append(s);
                                         }
-                                    }
-                                    if (!renameSuccessfull) {
-                                        getLogger()
-                                                .log(Level.WARNING,
-                                                        "Unable to move the temporary file to replace the existing file");
-                                        response
-                                                .setStatus(new Status(
-                                                        Status.SERVER_ERROR_INTERNAL,
-                                                        "Unable to move the temporary file to replace the existing file"));
+
+                                        br.close();
+                                        wr.flush();
+                                        wr.close();
+                                        renameSuccessfull = true;
+                                        tmp.delete();
+                                    } catch (final Exception e) {
+                                        renameSuccessfull = false;
                                     }
                                 }
-                            } else {
-                                getLogger().log(Level.WARNING,
-                                        "Unable to delete the existing file");
-                                response.setStatus(new Status(
-                                        Status.SERVER_ERROR_INTERNAL,
-                                        "Unable to delete the existing file"));
-                            }
-                        } else {
-                            final File parent = file.getParentFile();
-                            if ((parent != null) && !parent.exists()) {
-                                // Create the parent directories then the new
-                                // file
-                                if (!parent.mkdirs()) {
+                                if (!renameSuccessfull) {
                                     getLogger()
                                             .log(Level.WARNING,
-                                                    "Unable to create the parent directory");
+                                                    "Unable to move the temporary file to replace the existing file");
                                     response
                                             .setStatus(new Status(
                                                     Status.SERVER_ERROR_INTERNAL,
-                                                    "Unable to create the parent directory"));
+                                                    "Unable to move the temporary file to replace the existing file"));
                                 }
                             }
-                            FileOutputStream fos = null;
-                            // Create the new file
-                            try {
+                        } else {
+                            getLogger().log(Level.WARNING,
+                                    "Unable to delete the existing file");
+                            response.setStatus(new Status(
+                                    Status.SERVER_ERROR_INTERNAL,
+                                    "Unable to delete the existing file"));
+                        }
+                    } else {
+                        final File parent = file.getParentFile();
+                        if ((parent != null) && !parent.exists()) {
+                            // Create the parent directories then the new
+                            // file
+                            if (!parent.mkdirs()) {
+                                getLogger()
+                                        .log(Level.WARNING,
+                                                "Unable to create the parent directory");
+                                response
+                                        .setStatus(new Status(
+                                                Status.SERVER_ERROR_INTERNAL,
+                                                "Unable to create the parent directory"));
+                            }
+                        }
+                        FileOutputStream fos = null;
+                        // Create the new file
+                        try {
+                            if (partialPut) {
+                                RandomAccessFile raf = new RandomAccessFile(
+                                        file, "rwd");
+                                // Support only one range.
+                                Range range = request.getRanges().get(0);
+
+                                // Resume former upload.
+                                if (range.getIndex() == Range.INDEX_LAST) {
+                                    if (raf.length() <= range.getSize()) {
+                                        raf.seek(range.getSize());
+                                    } else {
+                                        raf
+                                                .seek(raf.length()
+                                                        - range.getSize());
+                                    }
+                                } else {
+                                    raf.seek(range.getIndex());
+                                }
+                                if (request.isEntityAvailable()) {
+                                    ByteUtils.write(request.getEntity()
+                                            .getStream(), raf);
+                                }
+                            } else {
                                 if (file.createNewFile()) {
                                     if (request.getEntity() == null) {
                                         response
@@ -671,62 +815,33 @@ public class FileClientHelper extends LocalClientHelper {
                                             Status.SERVER_ERROR_INTERNAL,
                                             "Unable to create the new file"));
                                 }
-                            } catch (final FileNotFoundException fnfe) {
-                                getLogger().log(Level.WARNING,
-                                        "Unable to create the new file", fnfe);
-                                response.setStatus(
-                                        Status.SERVER_ERROR_INTERNAL, fnfe);
+                            }
+                        } catch (final FileNotFoundException fnfe) {
+                            getLogger().log(Level.WARNING,
+                                    "Unable to create the new file", fnfe);
+                            response.setStatus(Status.SERVER_ERROR_INTERNAL,
+                                    fnfe);
+                        } catch (final IOException ioe) {
+                            getLogger().log(Level.WARNING,
+                                    "Unable to create the new file", ioe);
+                            response.setStatus(Status.SERVER_ERROR_INTERNAL,
+                                    ioe);
+                        } finally {
+                            try {
+                                if (fos != null) {
+                                    fos.close();
+                                }
                             } catch (final IOException ioe) {
                                 getLogger().log(Level.WARNING,
-                                        "Unable to create the new file", ioe);
+                                        "Unable to close the temporary file",
+                                        ioe);
                                 response.setStatus(
                                         Status.SERVER_ERROR_INTERNAL, ioe);
-                            } finally {
-                                try {
-                                    if (fos != null) {
-                                        fos.close();
-                                    }
-                                } catch (final IOException ioe) {
-                                    getLogger()
-                                            .log(
-                                                    Level.WARNING,
-                                                    "Unable to close the temporary file",
-                                                    ioe);
-                                    response.setStatus(
-                                            Status.SERVER_ERROR_INTERNAL, ioe);
-                                }
                             }
                         }
                     }
                 }
             }
-        } else if (request.getMethod().equals(Method.DELETE)) {
-            if (file.isDirectory()) {
-                if (file.listFiles().length == 0) {
-                    if (file.delete()) {
-                        response.setStatus(Status.SUCCESS_NO_CONTENT);
-                    } else {
-                        response.setStatus(Status.SERVER_ERROR_INTERNAL,
-                                "Couldn't delete the directory");
-                    }
-                } else {
-                    response.setStatus(Status.CLIENT_ERROR_FORBIDDEN,
-                            "Couldn't delete the non-empty directory");
-                }
-            } else {
-                if (file.delete()) {
-                    response.setStatus(Status.SUCCESS_NO_CONTENT);
-                } else {
-                    response.setStatus(Status.SERVER_ERROR_INTERNAL,
-                            "Couldn't delete the file");
-                }
-            }
-        } else {
-            response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-            response.getAllowedMethods().add(Method.GET);
-            response.getAllowedMethods().add(Method.HEAD);
-            response.getAllowedMethods().add(Method.PUT);
-            response.getAllowedMethods().add(Method.DELETE);
         }
     }
 }

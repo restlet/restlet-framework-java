@@ -29,8 +29,10 @@ package com.noelios.restlet.application;
 
 import org.restlet.Context;
 import org.restlet.Filter;
+import org.restlet.data.Range;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.data.Status;
 import org.restlet.service.RangeService;
 
 public class RangeFilter extends Filter {
@@ -48,26 +50,19 @@ public class RangeFilter extends Filter {
     @Override
     protected void afterHandle(Request request, Response response) {
         if (getRangeService().isEnabled() && response.isEntityAvailable()) {
-            if (response.getEntity().getRange() != null) {
-                // A partial representation is provided, we confront its value
-                // to the requested ranges (if any).
-                if (!request.getRanges().isEmpty()) {
-                    // At this time, list of ranges are not supported.
-                    if (!response.getEntity().getRange().equals(
-                            request.getRanges().get(0))) {
+            if (request.getRanges().size() == 1) {
+                // At this time, list of ranges are not supported.
+                Range requestedRange = request.getRanges().get(0);
+                if (!requestedRange.equals(response.getEntity().getRange())) {
+                    response.setEntity(new RangeRepresentation(response
+                            .getEntity(), requestedRange));
+                }
+            } else if (request.getRanges().size() > 1) {
+                // Return a server error as this isn't supported yet
+                response
+                        .setStatus(Status.CLIENT_ERROR_REQUESTED_RANGE_NOT_SATISFIABLE);
+                response.setEntity(null);
 
-                    }
-                } else {
-                    response.setEntity(new RangeRepresentation(response
-                            .getEntity()));
-                }
-            } else {
-                if (!request.getRanges().isEmpty()) {
-                    // A partial representation is requested.
-                    // At this time, list of ranges are not supported.
-                    response.setEntity(new RangeRepresentation(response
-                            .getEntity(), request.getRanges().get(0)));
-                }
             }
         }
     }

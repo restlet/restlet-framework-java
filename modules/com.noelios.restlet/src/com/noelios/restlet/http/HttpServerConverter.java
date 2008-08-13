@@ -37,6 +37,7 @@ import java.util.logging.Level;
 import org.restlet.Context;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.CookieSetting;
+import org.restlet.data.Digest;
 import org.restlet.data.Dimension;
 import org.restlet.data.Encoding;
 import org.restlet.data.Method;
@@ -153,6 +154,13 @@ public class HttpServerConverter extends HttpConverter {
                 responseHeaders.add(HttpConstants.HEADER_CONTENT_RANGE,
                         RangeUtils.formatContentRange(entity.getRange(), entity
                                 .getSize()));
+            }
+
+            if (entity.getDigest() != null
+                    && Digest.ALGORITHM_MD5.equals(entity.getDigest()
+                            .getAlgorithm())) {
+                responseHeaders.add(HttpConstants.HEADER_CONTENT_MD5, entity
+                        .getDigest().getValue());
             }
         }
     }

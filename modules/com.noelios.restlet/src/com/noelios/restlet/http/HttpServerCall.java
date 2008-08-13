@@ -38,6 +38,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.Server;
+import org.restlet.data.Digest;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
 import org.restlet.data.Parameter;
@@ -201,6 +202,10 @@ public abstract class HttpServerCall extends HttpCall {
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_CONTENT_RANGE)) {
                 RangeUtils.parseContentRange(header.getValue(), result);
+            } else if (header.getName().equalsIgnoreCase(
+                    HttpConstants.HEADER_CONTENT_MD5)) {
+                result.setDigest(new Digest(Digest.ALGORITHM_MD5, header
+                        .getValue()));
             }
 
         }

@@ -37,6 +37,7 @@ import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
+import org.restlet.data.Digest;
 import org.restlet.data.Dimension;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -365,6 +366,13 @@ public class HttpClientConverter extends HttpConverter {
                                     .formatContentRange(request.getEntity()
                                             .getRange(), request.getEntity()
                                             .getSize()));
+                }
+                // Add Checksum
+                if (request.getEntity().getDigest() != null
+                        && Digest.ALGORITHM_MD5.equals(request.getEntity()
+                                .getDigest().getAlgorithm())) {
+                    requestHeaders.add(HttpConstants.HEADER_CONTENT_MD5,
+                            request.getEntity().getDigest().getValue());
                 }
             }
 

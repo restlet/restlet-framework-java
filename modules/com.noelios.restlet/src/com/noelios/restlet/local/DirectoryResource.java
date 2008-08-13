@@ -709,10 +709,12 @@ public class DirectoryResource extends Resource {
                         getRequest().getResourceRef().getIdentifier() + "/");
             }
         } else {
-            // We allow the transfer of the PUT calls only if the readOnly flag
-            // is not set
+            // Transfer of PUT calls is only allowed if the readOnly flag is not
+            // set.
             final Request contextRequest = new Request(Method.PUT,
                     this.targetUri);
+            // Add support of partial PUT calls.
+            contextRequest.getRanges().addAll(getRequest().getRanges());
             contextRequest.setEntity(entity);
             final Response contextResponse = new Response(contextRequest);
             contextRequest.setResourceRef(this.targetUri);

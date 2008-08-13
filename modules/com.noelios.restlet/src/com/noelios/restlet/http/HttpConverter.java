@@ -73,6 +73,8 @@ public class HttpConverter {
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_ACCEPT_LANGUAGE)
                         || param.getName().equalsIgnoreCase(
+                                HttpConstants.HEADER_ACCEPT_RANGES)
+                        || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_ALLOW)
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_AUTHORIZATION)
@@ -86,6 +88,10 @@ public class HttpConverter {
                                 HttpConstants.HEADER_CONTENT_LENGTH)
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_CONTENT_LOCATION)
+                        || param.getName().equalsIgnoreCase(
+                                HttpConstants.HEADER_CONTENT_MD5)
+                        || param.getName().equalsIgnoreCase(
+                                HttpConstants.HEADER_CONTENT_RANGE)
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_CONTENT_TYPE)
                         || param.getName().equalsIgnoreCase(
@@ -111,6 +117,8 @@ public class HttpConverter {
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_LOCATION)
                         || param.getName().equalsIgnoreCase(
+                                HttpConstants.HEADER_RANGE)
+                        || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_REFERRER)
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_SERVER)
@@ -133,13 +141,7 @@ public class HttpConverter {
                 } else if (param.getName().equalsIgnoreCase(
                         HttpConstants.HEADER_AGE)
                         || param.getName().equalsIgnoreCase(
-                                HttpConstants.HEADER_ACCEPT_RANGES)
-                        || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_CACHE_CONTROL)
-                        || param.getName().equalsIgnoreCase(
-                                HttpConstants.HEADER_CONTENT_MD5)
-                        || param.getName().equalsIgnoreCase(
-                                HttpConstants.HEADER_CONTENT_RANGE)
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_EXPECT)
                         || param.getName().equalsIgnoreCase(
@@ -154,8 +156,6 @@ public class HttpConverter {
                                 HttpConstants.HEADER_PROXY_AUTHENTICATE)
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_PROXY_AUTHORIZATION)
-                        || param.getName().equalsIgnoreCase(
-                                HttpConstants.HEADER_RANGE)
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_RETRY_AFTER)
                         || param.getName().equalsIgnoreCase(

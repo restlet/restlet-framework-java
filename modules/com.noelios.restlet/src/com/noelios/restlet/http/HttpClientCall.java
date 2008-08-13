@@ -38,6 +38,7 @@ import java.nio.channels.WritableByteChannel;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.restlet.data.Digest;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
 import org.restlet.data.Method;
@@ -145,6 +146,11 @@ public abstract class HttpClientCall extends HttpCall {
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_CONTENT_RANGE)) {
                 RangeUtils.parseContentRange(header.getValue(), result);
+                entityHeaderFound = true;
+            } else if (header.getName().equalsIgnoreCase(
+                    HttpConstants.HEADER_CONTENT_MD5)) {
+                result.setDigest(new Digest(Digest.ALGORITHM_MD5, header
+                        .getValue()));
                 entityHeaderFound = true;
             }
 

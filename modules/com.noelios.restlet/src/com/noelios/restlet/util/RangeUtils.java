@@ -184,7 +184,7 @@ public class RangeUtils {
                     length = Long.parseLong(value.substring(1));
                 } else if (value.endsWith("-")) {
                     index = Long.parseLong(value.substring(0,
-                            value.length() - 2));
+                            value.length() - 1));
                     length = Range.SIZE_MAX;
                 } else {
                     String[] tab = value.split("-");
