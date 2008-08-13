@@ -18,6 +18,8 @@ Changes log
           requests. Reported by Zsolt Czinkos.
         - Refactored the ImmutableDate class since comparison operations
           ("after", etc) may fail. Reported by Mike Brzozowski.
+        - Fixed bug in InputEntityStream when entity was containing '0' 
+          bytes.
     - API Enhancements
         - Added warning message when no client connector supports the 
           request's protocol.

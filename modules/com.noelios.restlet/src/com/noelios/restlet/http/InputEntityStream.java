@@ -27,19 +27,17 @@
 
 package com.noelios.restlet.http;
 
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
 /**
  * Input stream based on a source stream that must only be partially read.
  */
-public class InputEntityStream extends InputStream {
+public class InputEntityStream extends FilterInputStream {
 
     /** The total size that should be read from the source stream. */
     private volatile long availableSize;
-
-    /** The source stream. */
-    private volatile InputStream source;
 
     /**
      * Constructor.
@@ -50,7 +48,7 @@ public class InputEntityStream extends InputStream {
      *            The total size that should be read from the source stream.
      */
     public InputEntityStream(InputStream source, long size) {
-        this.source = source;
+        super(source);
         this.availableSize = size;
     }
 
@@ -64,10 +62,10 @@ public class InputEntityStream extends InputStream {
         int result = -1;
 
         if (this.availableSize > 0) {
-            result = this.source.read();
+            result = super.in.read();
 
-            if (result > 0) {
-                this.availableSize = this.availableSize - 1;
+            if (result != -1) {
+                this.availableSize--;
             }
         }
 
@@ -79,11 +77,11 @@ public class InputEntityStream extends InputStream {
         int result = -1;
 
         if (this.availableSize > 0) {
-            result = this.source.read(b, off, Math.min(len,
+            result = super.in.read(b, off, Math.min(len,
                     (int) this.availableSize));
 
             if (result > 0) {
-                this.availableSize = this.availableSize - result;
+                this.availableSize -= result;
             }
         }
 
