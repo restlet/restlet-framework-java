@@ -231,7 +231,6 @@ public class Collection {
         }
 
         if (getMemberType() != null) {
-            // TODO ??
             getMemberType().writeElement(writer, APP_NAMESPACE);
         }
 

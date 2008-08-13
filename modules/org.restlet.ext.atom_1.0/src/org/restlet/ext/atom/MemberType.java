@@ -49,8 +49,11 @@ public enum MemberType {
      */
     public void writeElement(XmlWriter writer, String namespace)
             throws SAXException {
-        writer.startElement(namespace, "memberType");
-        writer.endElement(namespace, "memberType");
+        if (ENTRY.equals(this)) {
+            writer.dataElement(namespace, "member-type", "entry");
+        } else if (MEDIA.equals(this)) {
+            writer.dataElement(namespace, "member-type", "media");
+        }
     }
 
 }
