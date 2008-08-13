@@ -97,55 +97,38 @@ public final class ByteUtils {
 
         @Override
         public int read() throws IOException {
-            int result = 0;
-            Selector selector = null;
-            SelectionKey selectionKey = null;
+            int result = -1;
 
-            try {
-                // Are there available byte in the buffer?
-                if (this.bb.hasRemaining()) {
-                    // Yes, let's return the next one
-                    result = this.bb.get();
-                } else if (!this.endReached) {
-                    // No, let's try to read more
-                    int bytesRead = readChannel();
+            // Are there available byte in the buffer?
+            if (!this.bb.hasRemaining()) {
+                // Let's refill
+                refill();
+            }
 
-                    // If no bytes were read, try to register a select key to
-                    // get more
-                    if (bytesRead == 0) {
-                        selector = SelectorFactory.getSelector();
+            // Have we reached the end of channel?
+            if (!this.endReached) {
+                // Let's return the next one
+                result = this.bb.get() & 0xff;
+            }
 
-                        if (selector != null) {
-                            selectionKey = this.selectableChannel.register(
-                                    selector, SelectionKey.OP_READ);
-                            selector.select(10000);
-                        }
+            return result;
+        }
 
-                        bytesRead = readChannel();
-                    } else if (bytesRead == -1) {
-                        this.endReached = true;
-                    }
+        @Override
+        public int read(byte[] b, int off, int len) throws IOException {
+            int result = -1;
 
-                    if (this.bb.remaining() == 0) {
-                        result = -1;
-                    } else {
-                        result = this.bb.get();
-                    }
-                } else {
-                    result = -1;
-                }
-            } finally {
-                // Workaround for bug #6403933
-                if (selectionKey != null) {
-                    // The key you registered on the temporary selector
-                    selectionKey.cancel();
+            // Are there available byte in the buffer?
+            if (!this.bb.hasRemaining()) {
+                // Let's refill
+                refill();
+            }
 
-                    if (selector != null) {
-                        // Flush the cancelled key
-                        selector.selectNow();
-                        SelectorFactory.returnSelector(selector);
-                    }
-                }
+            // Have we reached the end of channel?
+            if (!this.endReached) {
+                // Let's return the next ones
+                result = Math.min(len, this.bb.remaining());
+                this.bb.get(b, off, result);
             }
 
             return result;
@@ -164,6 +147,52 @@ public final class ByteUtils {
             result = this.channel.read(this.bb);
             this.bb.flip();
             return result;
+        }
+
+        /**
+         * Refill the byte buffer by attempting to read the channel.
+         * 
+         * @throws IOException
+         */
+        private void refill() throws IOException {
+            // Let's clear the current buffer
+            this.bb.clear();
+
+            // No, let's try to read more
+            Selector selector = null;
+            SelectionKey selectionKey = null;
+
+            try {
+                int bytesRead = readChannel();
+
+                // If no bytes were read, try to register a select key to
+                // get more
+                if (bytesRead == 0) {
+                    selector = SelectorFactory.getSelector();
+
+                    if (selector != null) {
+                        selectionKey = this.selectableChannel.register(
+                                selector, SelectionKey.OP_READ);
+                        selector.select(10000);
+                    }
+
+                    bytesRead = readChannel();
+                } else if (bytesRead == -1) {
+                    this.endReached = true;
+                }
+            } finally {
+                // Workaround for bug #6403933
+                if (selectionKey != null) {
+                    // The key you registered on the temporary selector
+                    selectionKey.cancel();
+
+                    if (selector != null) {
+                        // Flush the cancelled key
+                        selector.selectNow();
+                        SelectorFactory.returnSelector(selector);
+                    }
+                }
+            }
         }
     }
 
@@ -203,12 +232,12 @@ public final class ByteUtils {
             super.close();
         }
 
-        @Override
-        public void write(byte b[], int off, int len) throws IOException {
-            this.bb.clear();
-            this.bb.put(b, off, len);
-            this.bb.flip();
-
+        /**
+         * Effectively write the current byte buffer.
+         * 
+         * @throws IOException
+         */
+        private void doWrite() throws IOException {
             if ((this.channel != null) && (this.bb != null)) {
                 try {
                     int bytesWritten;
@@ -240,8 +269,19 @@ public final class ByteUtils {
         }
 
         @Override
+        public void write(byte b[], int off, int len) throws IOException {
+            this.bb.clear();
+            this.bb.put(b, off, len);
+            this.bb.flip();
+            doWrite();
+        }
+
+        @Override
         public void write(int b) throws IOException {
-            write(new byte[] { (byte) b }, 0, 1);
+            this.bb.clear();
+            this.bb.put((byte) b);
+            this.bb.flip();
+            doWrite();
         }
     }
 

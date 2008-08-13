@@ -22,6 +22,8 @@ Changes log
           bytes.
         - Fixed instantion of application with a child context when 
           deployed in a servlet container. Reported by Vincent Ricard.
+        - Fixed bug in Grizzly connector causing retrieval of a request
+          entity to fail.
     - API Enhancements
         - Added warning message when no client connector supports the 
           request's protocol.
