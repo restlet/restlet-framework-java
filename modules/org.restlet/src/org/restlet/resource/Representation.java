@@ -35,6 +35,9 @@ import java.io.Reader;
 import java.io.Writer;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 
 import org.restlet.data.Digest;
@@ -62,7 +65,9 @@ import org.restlet.util.ByteUtils;
  * less precise names for a representation include: document, file, and HTTP
  * message entity, instance, or variant." Roy T. Fielding
  * 
- * @see <a href="http://roy.gbiv.com/pubs/dissertation/rest_arch_style.htm#sec_5_2_1_2">Source dissertation</a>
+ * @see <a href=
+ *      "http://roy.gbiv.com/pubs/dissertation/rest_arch_style.htm#sec_5_2_1_2"
+ *      >Source dissertation< /a>
  * @author Jerome Louvel
  */
 public abstract class Representation extends Variant {
@@ -174,6 +179,48 @@ public abstract class Representation extends Variant {
         this.downloadName = null;
         this.isTransient = false;
         this.range = null;
+    }
+
+    /**
+     * Check that the digest computed from the representation content and the
+     * actual digest of the representation are the same.
+     * 
+     * @param algorithm
+     *            The algorithm used to compute the digest to compare with.
+     * @return True if both digests are not null and equals.
+     * @throws NoSuchAlgorithmException
+     * @throws IOException
+     */
+    public boolean checkDigest(String algorithm)
+            throws NoSuchAlgorithmException, IOException {
+        return (getDigest() != null && getDigest().equals(
+                computeDigest(algorithm)));
+    }
+
+    /**
+     * Compute the representation digest according to the given algorithm. Since
+     * this method reads entirely the representation's stream, user must take
+     * care of the content of the representation in case the latter is
+     * transient.
+     * 
+     * {@link #isTransient}
+     * 
+     * @param algorithm
+     *            The algorithm used to compute the digest.
+     * @return The computed digest or null if the digest cannot be computed.
+     * @throws IOException
+     * @throws NoSuchAlgorithmException
+     */
+    public Digest computeDigest(String algorithm) throws IOException,
+            NoSuchAlgorithmException {
+        if (isAvailable()) {
+            MessageDigest md = MessageDigest.getInstance(algorithm);
+            DigestInputStream dis = new DigestInputStream(getStream(), md);
+            ByteUtils.exhaust(dis);
+            return new Digest(new String(md.digest()), algorithm);
+        } else {
+            return null;
+        }
     }
 
     /**
