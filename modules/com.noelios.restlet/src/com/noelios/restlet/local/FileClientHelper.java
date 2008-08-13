@@ -30,7 +30,6 @@ package com.noelios.restlet.local;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -65,12 +64,29 @@ import org.restlet.service.MetadataService;
 import org.restlet.util.ByteUtils;
 
 /**
- * Connector to the file resources accessible
+ * Connector to the file resources accessible. Here is the list of parameters
+ * that are supported:
+ * <table>
+ * <tr>
+ * <th>Parameter name</th>
+ * <th>Value type</th>
+ * <th>Default value</th>
+ * <th>Description</th>
+ * </tr>
+ * <tr>
+ * <td>temporaryExtension</td>
+ * <td>String</td>
+ * <td>tmp</td>
+ * <td>the name of the extension to use to store the temporary content while
+ * uploading content via the PUT method.</td>
+ * </tr>
+ * </table>
  * 
  * @author Jerome Louvel
  * @author Thierry Boileau
  */
 public class FileClientHelper extends LocalClientHelper {
+
     /**
      * Constructor.
      * 
@@ -245,6 +261,16 @@ public class FileClientHelper extends LocalClientHelper {
         }
 
         return encodedFileName.substring(0, j);
+    }
+
+    /**
+     * Returns the name of the extension to use to store the temporary content
+     * while uploading content via the PUT method. Defaults to "tmp".
+     * 
+     * @return The name of the extension to use to store the temporary content.
+     */
+    public String getTemporaryExtension() {
+        return getHelpedParameters().getFirstValue("temporaryExtension", "tmp");
     }
 
     /**
@@ -528,7 +554,6 @@ public class FileClientHelper extends LocalClientHelper {
                 File uniqueVariant = null;
 
                 final List<File> variantsList = new ArrayList<File>();
-                File tmpRangeFile = null;
                 if (files != null) {
                     for (final File entry : files) {
                         if (baseName
@@ -536,18 +561,10 @@ public class FileClientHelper extends LocalClientHelper {
                             final Set<String> entryExtensions = getExtensions(
                                     entry, metadataService);
                             if (entryExtensions.containsAll(extensions)) {
-                                if (partialPut
-                                        && entry.getName().endsWith("tmp")) {
-                                    // Case of a partial PUT, this is the
-                                    // temporary file.
-                                    tmpRangeFile = entry;
-                                } else {
-                                    variantsList.add(entry);
-                                    if (extensions.containsAll(entryExtensions)) {
-                                        // The right representation has been
-                                        // found.
-                                        uniqueVariant = entry;
-                                    }
+                                variantsList.add(entry);
+                                if (extensions.containsAll(entryExtensions)) {
+                                    // The right representation has been found.
+                                    uniqueVariant = entry;
                                 }
                             }
                         }
@@ -628,30 +645,35 @@ public class FileClientHelper extends LocalClientHelper {
                     File tmp = null;
 
                     if (file.exists()) {
-                        FileOutputStream fos = null;
-                        RandomAccessFile raf = null;
-                        // Replace the content of the file
-                        // First, create a temporary file
-                        try {
-                            if (partialPut) {
+                        if (partialPut) {
+                            RandomAccessFile raf = null;
+                            // Replace the content of the file
+                            // First, create a temporary file
+                            try {
+                                // The temporary file used for partial PUT.
+                                tmp = new File(file.getCanonicalPath() + "."
+                                        + getTemporaryExtension());
                                 // Support only one range.
                                 Range range = request.getRanges().get(0);
-
-                                if (tmpRangeFile == null) {
-                                    tmpRangeFile = new File(file
-                                            .getCanonicalPath().concat(".tmp"));
-                                    // Copy the file?? Caution, it's dangerous.
-                                    if (tmpRangeFile.createNewFile()) {
-                                        raf = new RandomAccessFile(tmpRangeFile, "rwd");
-                                        ByteUtils.write(new FileInputStream(file), raf);
-                                        raf.close();
-                                    } else {
-                                        // TODO Error
+                                if (!tmp.exists()) {
+                                    // Copy the target file.
+                                    final BufferedReader br = new BufferedReader(
+                                            new FileReader(file));
+                                    final BufferedWriter wr = new BufferedWriter(
+                                            new FileWriter(tmp));
+                                    String s;
+                                    while ((s = br.readLine()) != null) {
+                                        wr.append(s);
                                     }
+
+                                    br.close();
+                                    wr.flush();
+                                    wr.close();
                                 }
-                                tmp = tmpRangeFile;
-                                raf = new RandomAccessFile(tmpRangeFile, "rwd");
-                                // Resume former upload.
+
+                                raf = new RandomAccessFile(tmp, "rwd");
+
+                                // Go to the desired offset.
                                 if (range.getIndex() == Range.INDEX_LAST) {
                                     if (raf.length() <= range.getSize()) {
                                         raf.seek(range.getSize());
@@ -663,11 +685,37 @@ public class FileClientHelper extends LocalClientHelper {
                                 } else {
                                     raf.seek(range.getIndex());
                                 }
+
+                                // Write the entity to the temporary file.
                                 if (request.isEntityAvailable()) {
                                     ByteUtils.write(request.getEntity()
                                             .getStream(), raf);
                                 }
-                            } else {
+                            } catch (final IOException ioe) {
+                                getLogger().log(Level.WARNING,
+                                        "Unable to create the temporary file",
+                                        ioe);
+                                response.setStatus(new Status(
+                                        Status.SERVER_ERROR_INTERNAL,
+                                        "Unable to create a temporary file"));
+                            } finally {
+                                try {
+                                    if (raf != null) {
+                                        raf.close();
+                                    }
+                                } catch (final IOException ioe) {
+                                    getLogger()
+                                            .log(
+                                                    Level.WARNING,
+                                                    "Unable to close the temporary file",
+                                                    ioe);
+                                    response.setStatus(
+                                            Status.SERVER_ERROR_INTERNAL, ioe);
+                                }
+                            }
+                        } else {
+                            FileOutputStream fos = null;
+                            try {
                                 tmp = File.createTempFile("restlet-upload",
                                         "bin");
                                 if (request.isEntityAvailable()) {
@@ -675,28 +723,27 @@ public class FileClientHelper extends LocalClientHelper {
                                     ByteUtils.write(request.getEntity()
                                             .getStream(), fos);
                                 }
-                            }
-
-                        } catch (final IOException ioe) {
-                            getLogger().log(Level.WARNING,
-                                    "Unable to create the temporary file", ioe);
-                            response.setStatus(new Status(
-                                    Status.SERVER_ERROR_INTERNAL,
-                                    "Unable to create a temporary file"));
-                        } finally {
-                            try {
-                                if (fos != null) {
-                                    fos.close();
-                                }
-                                if (raf != null) {
-                                    raf.close();
-                                }
                             } catch (final IOException ioe) {
                                 getLogger().log(Level.WARNING,
-                                        "Unable to close the temporary file",
+                                        "Unable to create the temporary file",
                                         ioe);
-                                response.setStatus(
-                                        Status.SERVER_ERROR_INTERNAL, ioe);
+                                response.setStatus(new Status(
+                                        Status.SERVER_ERROR_INTERNAL,
+                                        "Unable to create a temporary file"));
+                            } finally {
+                                try {
+                                    if (fos != null) {
+                                        fos.close();
+                                    }
+                                } catch (final IOException ioe) {
+                                    getLogger()
+                                            .log(
+                                                    Level.WARNING,
+                                                    "Unable to close the temporary file",
+                                                    ioe);
+                                    response.setStatus(
+                                            Status.SERVER_ERROR_INTERNAL, ioe);
+                                }
                             }
                         }
 
@@ -714,11 +761,10 @@ public class FileClientHelper extends LocalClientHelper {
                                 }
                                 renameSuccessfull = true;
                             } else {
-                                // Many aspects of the behavior of the
-                                // method "renameTo" are inherently
-                                // platform-dependent: The rename operation
-                                // might not be able to move a file from one
-                                // filesystem to another.
+                                // Many aspects of the behavior of the method
+                                // "renameTo" are inherently platform-dependent:
+                                // the rename operation might not be able to
+                                // move a file from one filesystem to another.
                                 if ((tmp != null) && tmp.exists()) {
                                     try {
                                         final BufferedReader br = new BufferedReader(
@@ -757,10 +803,10 @@ public class FileClientHelper extends LocalClientHelper {
                                     "Unable to delete the existing file"));
                         }
                     } else {
+                        // The file does not exist yet.
                         final File parent = file.getParentFile();
                         if ((parent != null) && !parent.exists()) {
-                            // Create the parent directories then the new
-                            // file
+                            // Create the parent directories then the new file
                             if (!parent.mkdirs()) {
                                 getLogger()
                                         .log(Level.WARNING,
@@ -771,16 +817,15 @@ public class FileClientHelper extends LocalClientHelper {
                                                 "Unable to create the parent directory"));
                             }
                         }
-                        FileOutputStream fos = null;
                         // Create the new file
-                        try {
-                            if (partialPut) {
-                                RandomAccessFile raf = new RandomAccessFile(
-                                        file, "rwd");
+                        if (partialPut) {
+                            // This is a partial PUT
+                            RandomAccessFile raf = null;
+                            try {
+                                raf = new RandomAccessFile(file, "rwd");
                                 // Support only one range.
                                 Range range = request.getRanges().get(0);
-
-                                // Resume former upload.
+                                // Go to the desired offset.
                                 if (range.getIndex() == Range.INDEX_LAST) {
                                     if (raf.length() <= range.getSize()) {
                                         raf.seek(range.getSize());
@@ -792,11 +837,41 @@ public class FileClientHelper extends LocalClientHelper {
                                 } else {
                                     raf.seek(range.getIndex());
                                 }
+                                // Write the entity to the file.
                                 if (request.isEntityAvailable()) {
                                     ByteUtils.write(request.getEntity()
                                             .getStream(), raf);
                                 }
-                            } else {
+                            } catch (final FileNotFoundException fnfe) {
+                                getLogger().log(Level.WARNING,
+                                        "Unable to create the new file", fnfe);
+                                response.setStatus(
+                                        Status.SERVER_ERROR_INTERNAL, fnfe);
+                            } catch (final IOException ioe) {
+                                getLogger().log(Level.WARNING,
+                                        "Unable to create the new file", ioe);
+                                response.setStatus(
+                                        Status.SERVER_ERROR_INTERNAL, ioe);
+                            } finally {
+                                try {
+                                    if (raf != null) {
+                                        raf.close();
+                                    }
+                                } catch (final IOException ioe) {
+                                    getLogger()
+                                            .log(
+                                                    Level.WARNING,
+                                                    "Unable to close the new file",
+                                                    ioe);
+                                    response.setStatus(
+                                            Status.SERVER_ERROR_INTERNAL, ioe);
+                                }
+                            }
+
+                        } else {
+                            // This is simple PUT of the full entity
+                            FileOutputStream fos = null;
+                            try {
                                 if (file.createNewFile()) {
                                     if (request.getEntity() == null) {
                                         response
@@ -815,28 +890,30 @@ public class FileClientHelper extends LocalClientHelper {
                                             Status.SERVER_ERROR_INTERNAL,
                                             "Unable to create the new file"));
                                 }
-                            }
-                        } catch (final FileNotFoundException fnfe) {
-                            getLogger().log(Level.WARNING,
-                                    "Unable to create the new file", fnfe);
-                            response.setStatus(Status.SERVER_ERROR_INTERNAL,
-                                    fnfe);
-                        } catch (final IOException ioe) {
-                            getLogger().log(Level.WARNING,
-                                    "Unable to create the new file", ioe);
-                            response.setStatus(Status.SERVER_ERROR_INTERNAL,
-                                    ioe);
-                        } finally {
-                            try {
-                                if (fos != null) {
-                                    fos.close();
-                                }
+                            } catch (final FileNotFoundException fnfe) {
+                                getLogger().log(Level.WARNING,
+                                        "Unable to create the new file", fnfe);
+                                response.setStatus(
+                                        Status.SERVER_ERROR_INTERNAL, fnfe);
                             } catch (final IOException ioe) {
                                 getLogger().log(Level.WARNING,
-                                        "Unable to close the temporary file",
-                                        ioe);
+                                        "Unable to create the new file", ioe);
                                 response.setStatus(
                                         Status.SERVER_ERROR_INTERNAL, ioe);
+                            } finally {
+                                try {
+                                    if (fos != null) {
+                                        fos.close();
+                                    }
+                                } catch (final IOException ioe) {
+                                    getLogger()
+                                            .log(
+                                                    Level.WARNING,
+                                                    "Unable to close the new file",
+                                                    ioe);
+                                    response.setStatus(
+                                            Status.SERVER_ERROR_INTERNAL, ioe);
+                                }
                             }
                         }
                     }
