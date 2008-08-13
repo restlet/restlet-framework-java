@@ -208,27 +208,27 @@ public class RangeTestCase extends TestCase {
         request = new Request(Method.GET, "http://localhost:8182/testGet");
         request.setRanges(Arrays.asList(new Range(0, 10)));
         response = client.handle(request);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals(Status.SUCCESS_PARTIAL_CONTENT, response.getStatus());
         assertEquals("1234567890", response.getEntity().getText());
 
         request.setRanges(Arrays.asList(new Range(Range.INDEX_FIRST, 2)));
         response = client.handle(request);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals(Status.SUCCESS_PARTIAL_CONTENT, response.getStatus());
         assertEquals("12", response.getEntity().getText());
 
         request.setRanges(Arrays.asList(new Range(2, 2)));
         response = client.handle(request);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals(Status.SUCCESS_PARTIAL_CONTENT, response.getStatus());
         assertEquals("34", response.getEntity().getText());
 
         request.setRanges(Arrays.asList(new Range(2, 7)));
         response = client.handle(request);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals(Status.SUCCESS_PARTIAL_CONTENT, response.getStatus());
         assertEquals("3456789", response.getEntity().getText());
 
         request.setRanges(Arrays.asList(new Range(Range.INDEX_LAST, 7)));
         response = client.handle(request);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals(Status.SUCCESS_PARTIAL_CONTENT, response.getStatus());
         assertEquals("4567890", response.getEntity().getText());
     }
 
@@ -276,7 +276,7 @@ public class RangeTestCase extends TestCase {
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         request.setMethod(Method.GET);
         response = client.handle(request);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals(Status.SUCCESS_PARTIAL_CONTENT, response.getStatus());
         assertEquals("0000000000", response.getEntity().getText());
 
         // Partial PUT on a file, simple range
@@ -312,7 +312,7 @@ public class RangeTestCase extends TestCase {
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         request.setMethod(Method.GET);
         response = client.handle(request);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals(Status.SUCCESS_PARTIAL_CONTENT, response.getStatus());
         assertEquals("888", response.getEntity().getText());
 
         // Partial PUT on a file, the provided representation will be padded
@@ -331,7 +331,7 @@ public class RangeTestCase extends TestCase {
                 "http://localhost:8182/testPut/essai.txt");
         request.setRanges(Arrays.asList(new Range(3, Range.SIZE_MAX)));
         response = client.handle(request);
-        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals(Status.SUCCESS_PARTIAL_CONTENT, response.getStatus());
         assertEquals("20000998", response.getEntity().getText());
 
         deleteDir(testDir);

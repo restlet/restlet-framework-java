@@ -442,10 +442,6 @@ public class HttpClientConverter extends HttpConverter {
                     response.getEntity().release();
                     response.setEntity(null);
                 } else if (response.getStatus().equals(
-                        Status.SUCCESS_PARTIAL_CONTENT)) {
-                    response.getEntity().release();
-                    response.setEntity(null);
-                } else if (response.getStatus().equals(
                         Status.REDIRECTION_NOT_MODIFIED)) {
                     response.getEntity().release();
                 } else if (response.getStatus().isInformational()) {

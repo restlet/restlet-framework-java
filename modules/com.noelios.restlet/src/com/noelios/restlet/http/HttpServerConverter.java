@@ -152,7 +152,6 @@ public class HttpServerConverter extends HttpConverter {
                         HttpServerCall.formatContentDisposition(entity
                                 .getDownloadName()));
             }
-            // TODO manage comparison with the requested ranges
             if (entity.getRange() != null) {
                 try {
                     responseHeaders.add(HttpConstants.HEADER_CONTENT_RANGE,
@@ -345,17 +344,6 @@ public class HttpServerConverter extends HttpConverter {
                                             + response.getRequest()
                                                     .getResourceRef() + ".");
                     response.setEntity(null);
-                }
-            } else if (response.getStatus().equals(
-                    Status.SUCCESS_PARTIAL_CONTENT)) {
-                if (response.getEntity() != null) {
-                    getLogger()
-                            .warning(
-                                    "Responses with a 206 (Partial content) status aren't supported yet. Ignoring the entity for resource \""
-                                            + response.getRequest()
-                                                    .getResourceRef() + ".");
-                    response.setEntity(null);
-
                 }
             } else if (response.getStatus().equals(
                     Status.REDIRECTION_NOT_MODIFIED)) {

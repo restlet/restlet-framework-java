@@ -29,12 +29,18 @@ package com.noelios.restlet.application;
 
 import org.restlet.Context;
 import org.restlet.Filter;
+import org.restlet.data.Method;
 import org.restlet.data.Range;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.service.RangeService;
 
+/**
+ * Filter that is in charge to check the responses to requests for partial
+ * content.
+ * 
+ */
 public class RangeFilter extends Filter {
 
     /**
@@ -54,8 +60,20 @@ public class RangeFilter extends Filter {
                 // At this time, list of ranges are not supported.
                 Range requestedRange = request.getRanges().get(0);
                 if (!requestedRange.equals(response.getEntity().getRange())) {
+                    getLogger()
+                            .info(
+                                    "The range of the response entity is not equals to the requested one.");
                     response.setEntity(new RangeRepresentation(response
                             .getEntity(), requestedRange));
+                }
+                if (Method.GET.equals(request.getMethod())
+                        && response.getStatus().isSuccess()
+                        && !Status.SUCCESS_PARTIAL_CONTENT.equals(response
+                                .getStatus())) {
+                    response.setStatus(Status.SUCCESS_PARTIAL_CONTENT);
+                    getLogger()
+                            .info(
+                                    "The status of a response to a partial GET must be \"206 Partial content\".");
                 }
             } else if (request.getRanges().size() > 1) {
                 // Return a server error as this isn't supported yet

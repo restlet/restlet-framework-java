@@ -317,8 +317,7 @@ public abstract class HttpClientCall extends HttpCall {
                 && !response.getStatus()
                         .equals(Status.REDIRECTION_NOT_MODIFIED)
                 && !response.getStatus().equals(Status.SUCCESS_NO_CONTENT)
-                && !response.getStatus().equals(Status.SUCCESS_RESET_CONTENT)
-                && !response.getStatus().equals(Status.SUCCESS_PARTIAL_CONTENT)) {
+                && !response.getStatus().equals(Status.SUCCESS_RESET_CONTENT)) {
             // Make sure that an InputRepresentation will not be instantiated
             // while the stream is closed.
             final InputStream stream = getUnClosedResponseEntityStream(getResponseEntityStream(size));
