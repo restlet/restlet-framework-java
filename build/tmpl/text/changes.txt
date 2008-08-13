@@ -16,6 +16,8 @@ Changes log
         - Fixed NPE in WadlApplication. Reported by Vincent Ricard.
         - Fixed blockings in internal HTTP connectors while processing
           requests. Reported by Zsolt Czinkos.
+        - Refactored the ImmutableDate class since comparison operations
+          ("after", etc) may fail. Reported by Mike Brzozowski.
     - API Enhancements
         - Added warning message when no client connector supports the 
           request's protocol.
