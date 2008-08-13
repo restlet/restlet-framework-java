@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -51,7 +50,6 @@ import org.restlet.data.LocalReference;
 import org.restlet.data.Protocol;
 import org.restlet.util.Engine;
 
-import com.noelios.restlet.component.ChildContext;
 import com.noelios.restlet.component.ComponentContext;
 import com.noelios.restlet.http.HttpServerCall;
 import com.noelios.restlet.http.HttpServerHelper;
@@ -288,11 +286,8 @@ public class ServerServlet extends HttpServlet {
                             .newInstance();
 
                     // Set the context based on the Servlet's context
-                    final Context applicationContext = application.getContext();
-                    Logger logger = applicationContext == null ? context
-                            .getLogger() : applicationContext.getLogger();
-                    application.setContext(new ChildContext(application,
-                            new ServletContextAdapter(this, context), logger));
+                    application.setContext(new ServletContextAdapter(this,
+                            context));
                 }
             } catch (final ClassNotFoundException e) {
                 log(
