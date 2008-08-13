@@ -38,8 +38,7 @@ import simple.http.Response;
 /**
  * Simple protocol handler delegating the calls to the Restlet server helper.
  * 
- * @author Jerome Louvel <a
- *         href="http://www.noelios.com/">Noelios Technologies</a>
+ * @author Jerome Louvel
  */
 public class SimpleProtocolHandler implements ProtocolHandler {
     /** The delegate Restlet server helper. */

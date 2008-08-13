@@ -548,5 +548,6 @@ public abstract class HttpServerCall extends HttpCall {
         // Write the end of the headers section
         headStream.write(13); // CR
         headStream.write(10); // LF
+        headStream.flush();
     }
 }

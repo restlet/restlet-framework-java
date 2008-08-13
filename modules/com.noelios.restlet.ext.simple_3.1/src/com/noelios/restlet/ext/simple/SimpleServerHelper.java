@@ -77,10 +77,8 @@ import com.noelios.restlet.http.HttpServerHelper;
  * </tr>
  * </table>
  * 
- * @author Lars Heuer (heuer[at]semagia.com) <a
- *         href="http://semagia.com/">Semagia</a>
- * @author Jerome Louvel <a
- *         href="http://www.noelios.com">Noelios Technologies</a>
+ * @author Lars Heuer
+ * @author Jerome Louvel
  */
 public abstract class SimpleServerHelper extends HttpServerHelper {
     /**
@@ -128,8 +126,8 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
      * @return The default number of polling threads for a handler object.
      */
     public int getDefaultThreads() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue("defaultThreads",
-                "20"));
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "defaultThreads", "20"));
     }
 
     /**
@@ -147,8 +145,8 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
      * @return The maximum waiting time between polls of the input.
      */
     public int getMaxWaitTimeMs() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue("maxWaitTimeMs",
-                "200"));
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "maxWaitTimeMs", "200"));
     }
 
     /**
@@ -211,13 +209,17 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
 
     @Override
     public synchronized void start() throws Exception {
+        super.start();
+        getLogger().info("Starting the Simple server");
+
         // Sets the ephemeral port is necessary
         setEphemeralPort(getSocket());
-        super.start();
     }
 
     @Override
     public synchronized void stop() throws Exception {
+        getLogger().info("Stopping the Simple server");
+
         getSocket().close();
         setSocket(null);
         setHandler(null);

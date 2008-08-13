@@ -14,6 +14,8 @@ Changes log
         - Fixed NPE in HttpRequest when using a Server instance without
           context. Reported by Bruno Dumon.
         - Fixed NPE in WadlApplication. Reported by Vincent Ricard.
+        - Fixed blockings in internal HTTP connectors while processing
+          requests. Reported by Zsolt Czinkos.
     - API Enhancements
         - Added warning message when no client connector supports the 
           request's protocol.

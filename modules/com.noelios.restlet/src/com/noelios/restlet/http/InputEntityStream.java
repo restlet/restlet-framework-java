@@ -35,11 +35,11 @@ import java.io.InputStream;
  */
 public class InputEntityStream extends InputStream {
 
-    /** The source stream. */
-    private volatile InputStream source;
-
     /** The total size that should be read from the source stream. */
     private volatile long availableSize;
+
+    /** The source stream. */
+    private volatile InputStream source;
 
     /**
      * Constructor.
@@ -68,6 +68,22 @@ public class InputEntityStream extends InputStream {
 
             if (result > 0) {
                 this.availableSize = this.availableSize - 1;
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public int read(byte b[], int off, int len) throws IOException {
+        int result = -1;
+
+        if (this.availableSize > 0) {
+            result = this.source.read(b, off, Math.min(len,
+                    (int) this.availableSize));
+
+            if (result > 0) {
+                this.availableSize = this.availableSize - result;
             }
         }
 

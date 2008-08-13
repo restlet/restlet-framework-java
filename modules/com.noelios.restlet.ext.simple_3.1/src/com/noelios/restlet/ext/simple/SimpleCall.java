@@ -55,8 +55,7 @@ import com.noelios.restlet.util.KeepAliveInputStream;
 /**
  * Call that is used by the Simple HTTP server.
  * 
- * @author Lars Heuer (heuer[at]semagia.com) <a
- *         href="http://semagia.com/">Semagia</a>
+ * @author Lars Heuer
  * @author Jerome Louvel
  */
 public class SimpleCall extends HttpServerCall {

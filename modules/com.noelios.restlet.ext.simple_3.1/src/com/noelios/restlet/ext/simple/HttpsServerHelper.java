@@ -139,7 +139,7 @@ import com.noelios.restlet.util.SslContextFactory;
  * </tr>
  * </table>
  * 
- * @author Lars Heuer (heuer[at]semagia.com)
+ * @author Lars Heuer
  * @author Jerome Louvel
  */
 public class HttpsServerHelper extends SimpleServerHelper {
