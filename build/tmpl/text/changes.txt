@@ -20,6 +20,8 @@ Changes log
           ("after", etc) may fail. Reported by Mike Brzozowski.
         - Fixed bug in InputEntityStream when entity was containing '0' 
           bytes.
+        - Fixed instantion of application with a child context when 
+          deployed in a servlet container. Reported by Vincent Ricard.
     - API Enhancements
         - Added warning message when no client connector supports the 
           request's protocol.
