@@ -63,7 +63,7 @@ public class NoeliosTestSuite extends TestSuite {
         addTestSuite(InputEntityStreamTestCase.class);
         addTestSuite(KeepAliveInputStreamTestCase.class);
         addTestSuite(KeepAliveOutputStreamTestCase.class);
-        // addTestSuite(PostPutTestCase.class);
+        addTestSuite(PostPutTestCase.class);
         addTestSuite(PreferencesTestCase.class);
         addTestSuite(RemoteClientAddressTestCase.class);
         addTestSuite(SslGetTestCase.class);
