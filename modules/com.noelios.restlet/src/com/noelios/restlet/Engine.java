@@ -320,8 +320,9 @@ public class Engine extends org.restlet.util.Engine {
     @Override
     public void copyResponseHeaders(Response response,
             Series<Parameter> headers, Logger logger) {
-        HttpServerConverter.addResponseHeaders(response, headers);
-        HttpServerConverter.addEntityHeaders(response.getEntity(), headers);
+        HttpServerConverter.addResponseHeaders(response, headers, logger);
+        HttpServerConverter.addEntityHeaders(response.getEntity(), headers,
+                logger);
     }
 
     @Override
@@ -560,7 +561,8 @@ public class Engine extends org.restlet.util.Engine {
                 context
                         .getLogger()
                         .severe(
-                                "For security reasons, don't pass the component context to child Restlets anymore. Use the Context#createChildContext() method instead." + restlet.getClass());
+                                "For security reasons, don't pass the component context to child Restlets anymore. Use the Context#createChildContext() method instead."
+                                        + restlet.getClass());
             }
         }
     }

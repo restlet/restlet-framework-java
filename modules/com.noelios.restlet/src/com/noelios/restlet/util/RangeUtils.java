@@ -49,7 +49,8 @@ public class RangeUtils {
      *            Total size of the entity
      * @return {@code range} formatted
      */
-    public static String formatContentRange(Range range, long size) {
+    public static String formatContentRange(Range range, long size)
+            throws Exception {
         final StringBuilder b = new StringBuilder("bytes ");
 
         if (range.getIndex() >= Range.INDEX_FIRST) {
@@ -60,8 +61,6 @@ public class RangeUtils {
             } else {
                 if (size != Representation.UNKNOWN_SIZE) {
                     b.append(range.getIndex() + size);
-                } else {
-                    // TODO should be an error?
                 }
             }
         } else if (range.getIndex() == Range.INDEX_LAST) {
@@ -71,18 +70,13 @@ public class RangeUtils {
                     b.append("-");
                     b.append(size);
                 } else {
-                    // TODO should be an error?
                     b.append("-");
                     b.append(range.getSize());
                 }
             } else {
-                b.append(0);
-                b.append("-");
-                if (size != Representation.UNKNOWN_SIZE) {
-                    b.append(size);
-                } else {
-                    // TODO should be an error?
-                }
+                // This is not a valid range.
+                throw new IllegalArgumentException(
+                        "The range provides no index and no size, it is invalid.");
             }
         }
 
@@ -132,7 +126,7 @@ public class RangeUtils {
     }
 
     /**
-     * Parse the Content-Range header value and update the given representation
+     * Parse the Content-Range header value and update the given representation.
      * 
      * @param value
      *            Content-range header.

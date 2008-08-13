@@ -359,13 +359,19 @@ public class HttpClientConverter extends HttpConverter {
                             String.valueOf(request.getEntity().getSize()));
                 }
 
-                // TODO size or availableSize?
                 if (request.getEntity().getRange() != null) {
-                    requestHeaders
-                            .add(HttpConstants.HEADER_CONTENT_RANGE, RangeUtils
-                                    .formatContentRange(request.getEntity()
-                                            .getRange(), request.getEntity()
-                                            .getSize()));
+                    try {
+                        requestHeaders.add(HttpConstants.HEADER_CONTENT_RANGE,
+                                RangeUtils.formatContentRange(request
+                                        .getEntity().getRange(), request
+                                        .getEntity().getSize()));
+                    } catch (Exception e) {
+                        getLogger()
+                                .log(
+                                        Level.WARNING,
+                                        "Unable to format the HTTP Content-Range header",
+                                        e);
+                    }
                 }
                 // Add Checksum
                 if (request.getEntity().getDigest() != null
