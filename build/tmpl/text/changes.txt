@@ -45,7 +45,7 @@ Changes log
           getParametersInfo(RequestInfo|ResponseInfo|Representation-
           Info). Added MethodInfo#add*() short-cut methods.
     - Misc
-        - 
+        - Updated Grizzly to version 1.8.4.
     
 - 1.1 Milestone 5 (2008-08-07)
     - Security warning
