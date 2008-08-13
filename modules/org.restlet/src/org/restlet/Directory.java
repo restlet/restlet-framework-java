@@ -69,7 +69,9 @@ import org.restlet.util.Engine;
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
  * 
- * @see <a href="http://www.restlet.org/documentation/1.1/tutorial#part06">Tutorial: Serving static files</a>
+ * @see <a
+ *      href="http://www.restlet.org/documentation/1.1/tutorial#part06">Tutorial
+ *      : Serving static files< /a>
  * @author Jerome Louvel
  */
 public class Directory extends Finder {
@@ -239,12 +241,6 @@ public class Directory extends Finder {
     private volatile Reference rootRef;
 
     /**
-     * Name of the extension to use to store the temporary content while
-     * uploading content via the PUT method. Defaults to "tmp".
-     */
-    private volatile String temporaryExtension;
-
-    /**
      * Constructor.
      * 
      * @param context
@@ -275,7 +271,6 @@ public class Directory extends Finder {
         this.modifiable = false;
         this.negotiateContent = true;
         this.resumeUpload = false;
-        this.temporaryExtension = "tmp";
     }
 
     /**
@@ -387,16 +382,6 @@ public class Directory extends Finder {
      */
     public Reference getRootRef() {
         return this.rootRef;
-    }
-
-    /**
-     * Returns the name of the extension to use to create a temporary upload
-     * file associated to another file in the same directory.
-     * 
-     * @return The name of the extension for temporary upload files.
-     */
-    public String getTemporaryExtension() {
-        return temporaryExtension;
     }
 
     /**
@@ -557,17 +542,6 @@ public class Directory extends Finder {
      */
     public void setRootRef(Reference rootRef) {
         this.rootRef = rootRef;
-    }
-
-    /**
-     * Sets the name of the extension to use to create a temporary upload file
-     * associated to another file in the same directory.
-     * 
-     * @param temporaryExtension
-     *            The name of the extension for temporary upload files.
-     */
-    public void setTemporaryExtension(String temporaryExtension) {
-        this.temporaryExtension = temporaryExtension;
     }
 
 }
