@@ -113,7 +113,7 @@ import java.util.logging.Logger;
  * members.
  * 
  * @author Jerome Louvel
- * @see <a href="http://www.faqs.org/rfcs/rfc3986.html">RFC 3986</a>
+ * @see <a href="http://www.faqs.org/rfcs/rfc3986.html">RFC 3986< /a>
  */
 public class Reference {
 
@@ -537,7 +537,7 @@ public class Reference {
      *            The URI reference, either absolute or relative.
      */
     public Reference(Reference baseRef, String uriRef) {
-        checkValidity(uriRef);
+        uriRef = encodeInvalidCharacters(uriRef);
         this.baseRef = baseRef;
         this.internalRef = uriRef;
         updateIndexes();
@@ -661,25 +661,6 @@ public class Reference {
         return this;
     }
 
-    /**
-     * Checks if all characters are valid.
-     * 
-     * @param uriRef
-     *            The URI reference to check.
-     */
-    private void checkValidity(String uriRef) throws IllegalArgumentException {
-        if (uriRef != null) {
-            // Ensure that all characters are valid
-            for (int i = 0; i < uriRef.length(); i++) {
-                if (!isValid(uriRef.charAt(i))) {
-                    throw new IllegalArgumentException(
-                            "Invalid character detected in URI reference at index '"
-                                    + i + "': \"" + uriRef.charAt(i) + "\"");
-                }
-            }
-        }
-    }
-
     @Override
     public Reference clone() {
         final Reference newRef = new Reference();
@@ -697,6 +678,51 @@ public class Reference {
         newRef.queryIndex = this.queryIndex;
         newRef.schemeIndex = this.schemeIndex;
         return newRef;
+    }
+
+    /**
+     * Checks if all characters are valid and encodes invalid characters if
+     * necessary.
+     * 
+     * @param uriRef
+     *            The URI reference to check.
+     * @return The original reference, eventually with invalid URI characters
+     *         encoded.
+     */
+    private String encodeInvalidCharacters(String uriRef)
+            throws IllegalArgumentException {
+        String result = uriRef;
+
+        if (uriRef != null) {
+            boolean valid = true;
+
+            // Ensure that all characters are valid, otherwise encode them
+            for (int i = 0; valid && (i < uriRef.length()); i++) {
+                if (!isValid(uriRef.charAt(i))) {
+                    valid = false;
+                    Logger.getLogger(Reference.class.getCanonicalName()).fine(
+                            "Invalid character detected in URI reference at index '"
+                                    + i + "': \"" + uriRef.charAt(i)
+                                    + "\". It will be automatically encoded.");
+                }
+            }
+
+            if (!valid) {
+                StringBuilder sb = new StringBuilder();
+
+                for (int i = 0; (i < uriRef.length()); i++) {
+                    if (isValid(uriRef.charAt(i))) {
+                        sb.append(uriRef.charAt(i));
+                    } else {
+                        sb.append(encode(String.valueOf(uriRef.charAt(i))));
+                    }
+                }
+
+                result = sb.toString();
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -2312,7 +2338,7 @@ public class Reference {
      *             ('#').
      */
     public void setFragment(String fragment) {
-        checkValidity(fragment);
+        fragment = encodeInvalidCharacters(fragment);
 
         if ((fragment != null) && (fragment.indexOf('#') != -1)) {
             throw new IllegalArgumentException(
@@ -2433,7 +2459,7 @@ public class Reference {
      *             ('#').
      */
     public void setIdentifier(String identifier) {
-        checkValidity(identifier);
+        identifier = encodeInvalidCharacters(identifier);
 
         if (identifier == null) {
             identifier = "";
@@ -2560,7 +2586,7 @@ public class Reference {
      *            The query component for hierarchical identifiers.
      */
     public void setQuery(String query) {
-        checkValidity(query);
+        query = encodeInvalidCharacters(query);
         final boolean emptyQueryString = ((query == null) || (query.length() <= 0));
 
         if (hasQuery()) {
@@ -2625,7 +2651,7 @@ public class Reference {
      *            The relative part to set.
      */
     public void setRelativePart(String relativePart) {
-        checkValidity(relativePart);
+        relativePart = encodeInvalidCharacters(relativePart);
 
         if (relativePart == null) {
             relativePart = "";
@@ -2657,7 +2683,7 @@ public class Reference {
      *            The scheme component.
      */
     public void setScheme(String scheme) {
-        checkValidity(scheme);
+        scheme = encodeInvalidCharacters(scheme);
 
         if (scheme != null) {
             // URI specification indicates that scheme names should be
@@ -2695,7 +2721,7 @@ public class Reference {
      *            The scheme specific part.
      */
     public void setSchemeSpecificPart(String schemeSpecificPart) {
-        checkValidity(schemeSpecificPart);
+        schemeSpecificPart = encodeInvalidCharacters(schemeSpecificPart);
 
         if (schemeSpecificPart == null) {
             schemeSpecificPart = "";

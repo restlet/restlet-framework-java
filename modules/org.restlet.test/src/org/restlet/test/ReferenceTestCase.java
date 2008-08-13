@@ -614,16 +614,12 @@ public class ReferenceTestCase extends RestletTestCase {
     }
 
     public void testValidity() {
-        final String uri = "http ://domain.tld/whatever/";
+        String uri = "http ://domain.tld/whatever/";
+        Reference ref = new Reference(uri);
+        assertEquals("http+://domain.tld/whatever/", ref.toString());
 
-        try {
-            new Reference(uri);
-        } catch (final IllegalArgumentException iae) {
-            // As expected
-            return;
-        }
-
-        fail("An exception should have been thrown");
+        uri = "file:///C|/wherever\\whatever.swf";
+        ref = new Reference(uri);
+        assertEquals("file:///C%7C/wherever%5Cwhatever.swf", ref.toString());
     }
-
 }

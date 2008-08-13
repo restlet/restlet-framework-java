@@ -33,6 +33,10 @@ Changes log
           for more meaningful messages.
         - Added Representation#exhaust() method to read and discard 
           content optimally (better than getText()).
+        - Now a Reference that gets some invalid URI characters will
+          automatically encode those characters instead of throwing
+          an IllegalArgumentException. A message will still be logged
+          with a "fine" level. Suggested by Brad Peabody.
     - NRE and Extension Enhancements
         - Refactored WADL extension based on John Logsdon's feed-back.
           Added convenience methods and constructors on FaultInfo, 
