@@ -99,16 +99,16 @@ public final class ByteUtils {
         public int read() throws IOException {
             int result = -1;
 
-            // Are there available byte in the buffer?
-            if (!this.bb.hasRemaining()) {
-                // Let's refill
-                refill();
-            }
-
-            // Have we reached the end of channel?
             if (!this.endReached) {
-                // Let's return the next one
-                result = this.bb.get() & 0xff;
+                if (!this.bb.hasRemaining()) {
+                    // Let's refill
+                    refill();
+                }
+
+                if (!this.endReached) {
+                    // Let's return the next one
+                    result = this.bb.get() & 0xff;
+                }
             }
 
             return result;
@@ -118,17 +118,17 @@ public final class ByteUtils {
         public int read(byte[] b, int off, int len) throws IOException {
             int result = -1;
 
-            // Are there available byte in the buffer?
-            if (!this.bb.hasRemaining()) {
-                // Let's refill
-                refill();
-            }
-
-            // Have we reached the end of channel?
             if (!this.endReached) {
-                // Let's return the next ones
-                result = Math.min(len, this.bb.remaining());
-                this.bb.get(b, off, result);
+                if (!this.bb.hasRemaining()) {
+                    // Let's refill
+                    refill();
+                }
+
+                if (!this.endReached) {
+                    // Let's return the next ones
+                    result = Math.min(len, this.bb.remaining());
+                    this.bb.get(b, off, result);
+                }
             }
 
             return result;

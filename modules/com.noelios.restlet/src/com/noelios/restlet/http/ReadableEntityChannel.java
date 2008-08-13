@@ -120,21 +120,21 @@ public class ReadableEntityChannel extends SelectableChannel implements
     public int read(ByteBuffer dst) throws IOException {
         int result = -1;
 
-        if ((this.remainingBuffer != null)
-                && (this.remainingBuffer.hasRemaining())) {
-            // First make sure that the remaining buffer is empty
-            result = this.remainingBuffer.remaining();
-            final byte[] src = new byte[result];
-            this.remainingBuffer.get(src);
-            dst.put(src);
-        } else {
-            // Otherwise, read data from the source channel
-            if (this.availableSize > 0) {
+        if (this.availableSize > 0) {
+            if ((this.remainingBuffer != null)
+                    && (this.remainingBuffer.hasRemaining())) {
+                // First make sure that the remaining buffer is empty
+                result = this.remainingBuffer.remaining();
+                final byte[] src = new byte[result];
+                this.remainingBuffer.get(src);
+                dst.put(src);
+            } else {
+                // Otherwise, read data from the source channel
                 result = ((ReadableByteChannel) getSource()).read(dst);
+            }
 
-                if (result > 0) {
-                    this.availableSize -= result;
-                }
+            if (result > 0) {
+                this.availableSize -= result;
             }
         }
 
