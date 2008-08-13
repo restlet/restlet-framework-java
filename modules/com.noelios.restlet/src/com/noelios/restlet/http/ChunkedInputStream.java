@@ -39,8 +39,7 @@ import java.io.PushbackInputStream;
  * See section 3.6.1 of HTTP Protocol for more information on chunked encoding.
  * 
  * @author <a href="mailto:kevin.a.conaway@gmail.com">Kevin Conaway</a>
- * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html">HTTP/1.1
- *      Protocol< /a>
+ * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html">HTTP/1.1 Protocol</a>
  */
 public class ChunkedInputStream extends InputStream {
 

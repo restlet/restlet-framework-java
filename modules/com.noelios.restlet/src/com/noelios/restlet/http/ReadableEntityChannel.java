@@ -123,7 +123,8 @@ public class ReadableEntityChannel extends SelectableChannel implements
         if ((this.remainingBuffer != null)
                 && (this.remainingBuffer.hasRemaining())) {
             // First make sure that the remaining buffer is empty
-            final byte[] src = new byte[this.remainingBuffer.remaining()];
+            result = this.remainingBuffer.remaining();
+            final byte[] src = new byte[result];
             this.remainingBuffer.get(src);
             dst.put(src);
         } else {

@@ -155,9 +155,6 @@ public final class ByteUtils {
          * @throws IOException
          */
         private void refill() throws IOException {
-            // Let's clear the current buffer
-            this.bb.clear();
-
             // No, let's try to read more
             Selector selector = null;
             SelectionKey selectionKey = null;
@@ -851,7 +848,7 @@ public final class ByteUtils {
     public static void write(InputStream inputStream, OutputStream outputStream)
             throws IOException {
         int bytesRead;
-        final byte[] buffer = new byte[2048];
+        final byte[] buffer = new byte[4096];
         while ((bytesRead = inputStream.read(buffer)) > 0) {
             outputStream.write(buffer, 0, bytesRead);
         }
