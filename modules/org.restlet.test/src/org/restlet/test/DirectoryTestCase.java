@@ -139,16 +139,13 @@ public class DirectoryTestCase extends TestCase {
     private void deleteDir(File dir) {
         if (dir.exists()) {
             final File[] entries = dir.listFiles();
-
-            for (final File entrie : entries) {
-                if (entrie.isDirectory()) {
-                    deleteDir(entrie);
+            for (final File entry : entries) {
+                if (entry.isDirectory()) {
+                    deleteDir(entry);
                 }
-
-                entrie.delete();
+                entry.delete();
             }
         }
-
         dir.delete();
     }
 
