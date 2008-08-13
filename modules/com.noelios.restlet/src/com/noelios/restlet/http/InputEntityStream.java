@@ -52,6 +52,16 @@ public class InputEntityStream extends FilterInputStream {
         this.availableSize = size;
     }
 
+    @Override
+    public int available() throws IOException {
+        return Math.min((int) this.availableSize, super.available());
+    }
+
+    @Override
+    public void close() throws IOException {
+        // Don't close it directly
+    }
+
     /**
      * Reads a byte from the underlying stream.
      * 

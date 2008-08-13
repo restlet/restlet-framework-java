@@ -112,7 +112,8 @@ public class StreamServerCall extends HttpServerCall {
 
     @Override
     public String getClientAddress() {
-        return this.socket.getInetAddress().getHostAddress();
+        return (this.socket.getInetAddress() == null) ? null : this.socket
+                .getInetAddress().getHostAddress();
     }
 
     @Override
