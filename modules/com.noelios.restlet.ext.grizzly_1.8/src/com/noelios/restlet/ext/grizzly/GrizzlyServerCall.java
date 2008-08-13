@@ -53,6 +53,7 @@ import org.restlet.util.ByteUtils;
 import com.noelios.restlet.http.ChunkedInputStream;
 import com.noelios.restlet.http.ChunkedOutputStream;
 import com.noelios.restlet.http.HttpServerCall;
+import com.noelios.restlet.http.ReadableEntityChannel;
 import com.sun.grizzly.util.InputReader;
 import com.sun.grizzly.util.OutputWriter;
 import com.sun.grizzly.util.SSLOutputWriter;
