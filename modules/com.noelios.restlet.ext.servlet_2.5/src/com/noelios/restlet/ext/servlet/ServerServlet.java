@@ -288,8 +288,7 @@ public class ServerServlet extends HttpServlet {
                             .newInstance();
 
                     // Set the context based on the Servlet's context
-                    final ChildContext applicationContext = (ChildContext) application
-                            .getContext();
+                    final Context applicationContext = application.getContext();
                     Logger logger = applicationContext == null ? context
                             .getLogger() : applicationContext.getLogger();
                     application.setContext(new ChildContext(application,
@@ -320,8 +319,7 @@ public class ServerServlet extends HttpServlet {
         }
 
         if (application != null) {
-            final ChildContext applicationContext = (ChildContext) application
-                    .getContext();
+            final Context applicationContext = application.getContext();
 
             // Copy all the servlet parameters into the context
             String initParam;
@@ -592,7 +590,7 @@ public class ServerServlet extends HttpServlet {
 
                         if (result == null) {
                             result = createApplication(getComponent()
-                                    .getContext());
+                                    .getContext().createChildContext());
                             getServletContext().setAttribute(
                                     applicationAttributeName, result);
                         }

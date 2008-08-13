@@ -69,15 +69,15 @@ public class ServletContextAdapter extends Context {
      * 
      * @param servlet
      *            The parent Servlet.
-     * @param parentContext
-     *            The parent Context.
+     * @param context
+     *            The context.
      */
-    public ServletContextAdapter(Servlet servlet, Context parentContext) {
+    public ServletContextAdapter(Servlet servlet, Context context) {
         super(new ServletLogger(servlet.getServletConfig().getServletContext()));
         this.servletContext = servlet.getServletConfig().getServletContext();
-        this.clientDispatcher = (parentContext != null) ? parentContext
+        this.clientDispatcher = (context != null) ? context
                 .getClientDispatcher() : null;
-        this.serverDispatcher = (parentContext != null) ? parentContext
+        this.serverDispatcher = (context != null) ? context
                 .getServerDispatcher() : null;
     }
 
