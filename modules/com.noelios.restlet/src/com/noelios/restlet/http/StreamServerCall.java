@@ -95,13 +95,12 @@ public class StreamServerCall extends HttpServerCall {
     @Override
     public void complete() {
         try {
-            this.socket.getOutputStream().flush();
-
             // Exhaust the input stream before closing in case
             // the client is still writing to it
             ByteUtils.exhaust(getRequestEntityStream(getContentLength()));
 
             if (!this.socket.isClosed()) {
+                this.socket.getOutputStream().flush();
                 this.socket.shutdownOutput();
             }
         } catch (final IOException ex) {
@@ -162,12 +161,14 @@ public class StreamServerCall extends HttpServerCall {
     @Override
     public OutputStream getResponseEntityStream() {
         if (this.responseEntityStream == null) {
+            this.responseEntityStream = getResponseStream();
+            if (isKeepAlive()) {
+                this.responseEntityStream = new KeepAliveOutputStream(
+                        this.responseEntityStream);
+            }
             if (isResponseChunked()) {
                 this.responseEntityStream = new ChunkedOutputStream(
-                        getResponseStream());
-            } else {
-                this.responseEntityStream = new KeepAliveOutputStream(
-                        getResponseStream());
+                        this.responseEntityStream);
             }
         }
         return this.responseEntityStream;
