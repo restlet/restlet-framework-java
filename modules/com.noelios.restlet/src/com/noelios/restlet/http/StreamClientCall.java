@@ -149,14 +149,17 @@ public class StreamClientCall extends HttpClientCall {
     @Override
     public OutputStream getRequestEntityStream() {
         if (this.requestEntityStream == null) {
-            this.requestEntityStream = getRequestHeadStream();
-            if (isKeepAlive()) {
-                this.requestEntityStream = new KeepAliveOutputStream(
-                        this.requestEntityStream);
-            }
             if (isRequestChunked()) {
-                this.requestEntityStream = new ChunkedOutputStream(
-                        this.requestEntityStream);
+                if (isKeepAlive()) {
+                    this.requestEntityStream = new ChunkedOutputStream(
+                            new KeepAliveOutputStream(getRequestHeadStream()));
+                } else {
+                    this.requestEntityStream = new ChunkedOutputStream(
+                            getRequestHeadStream());
+                }
+            } else {
+                this.requestEntityStream = new KeepAliveOutputStream(
+                        getRequestHeadStream());
             }
         }
 
