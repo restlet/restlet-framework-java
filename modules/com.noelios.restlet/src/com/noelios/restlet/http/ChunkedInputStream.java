@@ -76,6 +76,27 @@ public class ChunkedInputStream extends InputStream {
     }
 
     /**
+     * Indicates if the source stream can be read and prepare it if necessary.
+     * 
+     * @return True if the source stream can be read.
+     * @throws IOException
+     */
+    private boolean canRead() throws IOException {
+        boolean result = false;
+        initialize();
+
+        if (!this.endReached) {
+            if (!chunkAvailable()) {
+                initializeChunk();
+            }
+
+            result = !this.endReached;
+        }
+
+        return result;
+    }
+
+    /**
      * Checkes if the source stream will return a CR+LF sequence next, without
      * actually reading it.
      * 
@@ -143,16 +164,31 @@ public class ChunkedInputStream extends InputStream {
     @Override
     public int read() throws IOException {
         int result = -1;
-        initialize();
 
-        if (!this.endReached) {
-            if (!chunkAvailable()) {
-                initializeChunk();
-            }
+        if (canRead()) {
+            result = this.source.read();
+            this.position++;
+        }
 
-            if (!this.endReached) {
-                result = this.source.read();
-                this.position++;
+        return result;
+    }
+
+    /**
+     * Read a byte array from the decoded chunked stream.
+     * 
+     * @return The next byte available or -1.
+     */
+    @Override
+    public int read(byte[] b, int off, int len) throws IOException {
+        int result = -1;
+
+        if (canRead()) {
+            result = this.source.read(b, off, Math.min(len,
+                    (int) (this.chunkSize - this.position)));
+            this.position += result;
+
+            if (len - result > 0) {
+                result += read(b, off + result, len - result);
             }
         }
 
