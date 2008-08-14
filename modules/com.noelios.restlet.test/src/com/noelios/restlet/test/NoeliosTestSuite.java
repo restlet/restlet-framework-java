@@ -51,7 +51,7 @@ public class NoeliosTestSuite extends TestSuite {
         addTestSuite(AuthenticationTestCase.class);
         addTestSuite(Base64TestCase.class);
         addTestSuite(ChunkedEncodingPutTestCase.class);
-        // addTestSuite(ChunkedEncodingTestCase.class);
+        addTestSuite(ChunkedEncodingTestCase.class);
         addTestSuite(ChunkedInputStreamTestCase.class);
         addTestSuite(ChunkedOutputStreamTestCase.class);
         addTestSuite(CookiesTestCase.class);
