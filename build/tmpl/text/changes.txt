@@ -26,8 +26,8 @@ Changes log
           entity to fail.
         - Fixed bug in chunked encoding reading, forgetting to read the
           trailing new line. That caused connection resets between the
-          JDK.net HTTP client and the Grizzly connector. Debugging help
-          from Kevin Conaway.
+          JDK.net HTTP client and the Grizzly connector. Reported by
+          Ralf Bommersbach. Debugging help from Kevin Conaway.
     - API Enhancements
         - Added warning message when no client connector supports the 
           request's protocol.
