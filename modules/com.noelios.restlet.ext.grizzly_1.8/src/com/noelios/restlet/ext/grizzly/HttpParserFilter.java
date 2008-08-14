@@ -1,11 +1,11 @@
 /*
  * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the following
- * open source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). 
- * You can select the license that you prefer but you may not use this file 
- * except in compliance with one of these Licenses.
- *
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
+ * 
  * You can obtain a copy of the LGPL 3.0 license at
  * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
@@ -15,13 +15,13 @@
  * You can obtain a copy of the CDDL 1.0 license at
  * http://www.sun.com/cddl/cddl.html
  * 
- * See the Licenses for the specific language governing permissions and 
- * limitations under the Licenses. 
- *
- * Alternatively, you can obtain a royaltee free commercial license with 
- * less limitations, transferable or non-transferable, directly at
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
  * http://www.noelios.com/products/restlet-engine
- *
+ * 
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
@@ -67,30 +67,26 @@ public class HttpParserFilter implements ProtocolFilter {
                 .getByteBuffer();
         byteBuffer.flip();
         if (byteBuffer.hasRemaining()) {
-	        final SelectionKey key = context.getSelectionKey();
-	        final GrizzlyServerCall serverCall = new GrizzlyServerCall(this.helper
-	                .getHelped(), byteBuffer, key,
-	                (this.helper instanceof HttpsServerHelper));
-	
-	        final boolean keepAlive = false;
-	
-	        // Handle the call
-	        this.helper.handle(serverCall);
-	
-	        // TODO Should we use httpCall#isKeepAlive?
-	        // TODO The "keepAlive" boolean is always set to false at this time.
-	        // Prepare for additional calls?
-	        if (keepAlive) {
-	            context
-	                    .setKeyRegistrationState(Context.KeyRegistrationState.REGISTER);
-	        } else {
-	            // This seems to close the connection too soon and the client
-	            // ends up with Connection reset errors or other connection
-	            // related side effects:
-	            //
-	            //context.setKeyRegistrationState(Context.KeyRegistrationState.CANCEL
-	            // );
-	        }
+            final SelectionKey key = context.getSelectionKey();
+            final GrizzlyServerCall serverCall = new GrizzlyServerCall(
+                    this.helper.getHelped(), byteBuffer, key,
+                    (this.helper instanceof HttpsServerHelper));
+
+            final boolean keepAlive = false;
+
+            // Handle the call
+            this.helper.handle(serverCall);
+
+            // TODO Should we use httpCall#isKeepAlive?
+            // TODO The "keepAlive" boolean is always set to false at this time.
+            // Prepare for additional calls?
+            if (keepAlive) {
+                context
+                        .setKeyRegistrationState(Context.KeyRegistrationState.REGISTER);
+            } else {
+                context
+                        .setKeyRegistrationState(Context.KeyRegistrationState.CANCEL);
+            }
         }
 
         // Clean up

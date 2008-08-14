@@ -37,7 +37,7 @@ public class Digest {
 
     @Override
     public boolean equals(Object obj) {
-        boolean result = (obj instanceof Digest) && obj != null;
+        boolean result = (obj instanceof Digest);
 
         if (result) {
             Digest objDigest = (Digest) obj;
