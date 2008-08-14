@@ -94,6 +94,7 @@ import com.noelios.restlet.http.StreamServerHelper;
 import com.noelios.restlet.local.ClapClientHelper;
 import com.noelios.restlet.local.DirectoryResource;
 import com.noelios.restlet.local.FileClientHelper;
+import com.noelios.restlet.util.Base64;
 import com.noelios.restlet.util.FormUtils;
 import com.noelios.restlet.util.SecurityUtils;
 
@@ -104,19 +105,19 @@ import com.noelios.restlet.util.SecurityUtils;
  */
 public class Engine extends org.restlet.util.Engine {
 
-    public static final String DESCRIPTOR_PATH = "META-INF/services";
-
     public static final String DESCRIPTOR_AUTHENTICATION = "com.noelios.restlet.AuthenticationHelper";
 
-    public static final String DESCRIPTOR_CLIENT = "com.noelios.restlet.ClientHelper";
-
-    public static final String DESCRIPTOR_SERVER = "com.noelios.restlet.ServerHelper";
+    public static final String DESCRIPTOR_PATH = "META-INF/services";
 
     public static final String DESCRIPTOR_AUTHENTICATION_PATH = DESCRIPTOR_PATH
             + "/" + DESCRIPTOR_AUTHENTICATION;
 
+    public static final String DESCRIPTOR_CLIENT = "com.noelios.restlet.ClientHelper";
+
     public static final String DESCRIPTOR_CLIENT_PATH = DESCRIPTOR_PATH + "/"
             + DESCRIPTOR_CLIENT;
+
+    public static final String DESCRIPTOR_SERVER = "com.noelios.restlet.ServerHelper";
 
     public static final String DESCRIPTOR_SERVER_PATH = DESCRIPTOR_PATH + "/"
             + DESCRIPTOR_SERVER;
@@ -1151,30 +1152,6 @@ public class Engine extends org.restlet.util.Engine {
     }
 
     /**
-     * Registers a list of helpers.
-     * 
-     * @param classLoader
-     *            The classloader to use.
-     * @param configUrls
-     *            Configuration URLs to parse
-     * @param helpers
-     *            The list of helpers to update.
-     * @param constructorClass
-     *            The constructor parameter class to look for.
-     */
-    @SuppressWarnings("unchecked")
-    public void registerHelpers(ClassLoader classLoader,
-            Enumeration<URL> configUrls, List helpers, Class constructorClass) {
-        if (configUrls != null) {
-            for (final Enumeration<URL> configEnum = configUrls; configEnum
-                    .hasMoreElements();) {
-                registerHelper(classLoader, configEnum.nextElement(), helpers,
-                        constructorClass);
-            }
-        }
-    }
-
-    /**
      * Registers a helper.
      * 
      * @param classLoader
@@ -1238,6 +1215,30 @@ public class Engine extends org.restlet.util.Engine {
     }
 
     /**
+     * Registers a list of helpers.
+     * 
+     * @param classLoader
+     *            The classloader to use.
+     * @param configUrls
+     *            Configuration URLs to parse
+     * @param helpers
+     *            The list of helpers to update.
+     * @param constructorClass
+     *            The constructor parameter class to look for.
+     */
+    @SuppressWarnings("unchecked")
+    public void registerHelpers(ClassLoader classLoader,
+            Enumeration<URL> configUrls, List helpers, Class constructorClass) {
+        if (configUrls != null) {
+            for (final Enumeration<URL> configEnum = configUrls; configEnum
+                    .hasMoreElements();) {
+                registerHelper(classLoader, configEnum.nextElement(), helpers,
+                        constructorClass);
+            }
+        }
+    }
+
+    /**
      * Registers a factory that is used by the URL class to create the
      * {@link URLConnection} instances when the {@link URL#openConnection()} or
      * {@link URL#openStream()} methods are invoked.
@@ -1291,6 +1292,11 @@ public class Engine extends org.restlet.util.Engine {
             }
 
         });
+    }
+
+    @Override
+    public String toBase64(byte[] target) {
+        return Base64.encode(target, false);
     }
 
     @Override

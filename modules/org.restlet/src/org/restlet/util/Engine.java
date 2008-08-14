@@ -524,6 +524,15 @@ public abstract class Engine {
             throws IllegalArgumentException;
 
     /**
+     * Converts the given bytes array into a Base64 String.
+     * 
+     * @param target
+     *            The bytes array to encode.
+     * @return The Base64 String.
+     */
+    public abstract String toBase64(byte[] target);
+
+    /**
      * Returns the MD5 digest of the target string. Target is decoded to bytes
      * using the US-ASCII charset. The returned hexidecimal String always
      * contains 32 lowercase alphanumeric characters. For example, if target is

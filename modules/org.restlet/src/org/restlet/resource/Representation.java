@@ -45,6 +45,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Range;
 import org.restlet.data.Tag;
 import org.restlet.util.ByteUtils;
+import org.restlet.util.Engine;
 
 /**
  * Current or intended state of a resource. The content of a representation can
@@ -217,7 +218,8 @@ public abstract class Representation extends Variant {
             MessageDigest md = MessageDigest.getInstance(algorithm);
             DigestInputStream dis = new DigestInputStream(getStream(), md);
             ByteUtils.exhaust(dis);
-            return new Digest(new String(md.digest()), algorithm);
+            return new Digest(algorithm, Engine.getInstance().toBase64(
+                    md.digest()));
         } else {
             return null;
         }

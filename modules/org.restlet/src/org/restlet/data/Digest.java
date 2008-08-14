@@ -35,6 +35,18 @@ package org.restlet.data;
  */
 public class Digest {
 
+    @Override
+    public boolean equals(Object obj) {
+        boolean result = (obj instanceof Digest) && obj != null;
+
+        if (result) {
+            Digest objDigest = (Digest) obj;
+            result = (objDigest.getAlgorithm().equals(this.getAlgorithm()) && (objDigest
+                    .getValue().equals(this.getValue())));
+        }
+        return result;
+    }
+
     /** Digest algorightm defined in RFC 1319. */
     public static final String ALGORITHM_MD2 = "MD2";
 
