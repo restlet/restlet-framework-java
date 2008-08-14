@@ -244,6 +244,11 @@ public class HttpServerConverter extends HttpConverter {
                 responseHeaders.add(HttpConstants.HEADER_VARY, vary);
             }
         }
+
+        // Add the accept-ranges header
+        if (response.getServerInfo().isAcceptRanges()) {
+            responseHeaders.add(HttpConstants.HEADER_ACCEPT_RANGES, "bytes");
+        }
     }
 
     /**

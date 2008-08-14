@@ -55,32 +55,36 @@ public class RangeFilter extends Filter {
 
     @Override
     protected void afterHandle(Request request, Response response) {
-        if (getRangeService().isEnabled() && response.isEntityAvailable()) {
-            if (request.getRanges().size() == 1) {
-                // At this time, list of ranges are not supported.
-                Range requestedRange = request.getRanges().get(0);
-                if (!requestedRange.equals(response.getEntity().getRange())) {
-                    getLogger()
-                            .info(
-                                    "The range of the response entity is not equals to the requested one.");
-                    response.setEntity(new RangeRepresentation(response
-                            .getEntity(), requestedRange));
-                }
-                if (Method.GET.equals(request.getMethod())
-                        && response.getStatus().isSuccess()
-                        && !Status.SUCCESS_PARTIAL_CONTENT.equals(response
-                                .getStatus())) {
-                    response.setStatus(Status.SUCCESS_PARTIAL_CONTENT);
-                    getLogger()
-                            .info(
-                                    "The status of a response to a partial GET must be \"206 Partial content\".");
-                }
-            } else if (request.getRanges().size() > 1) {
-                // Return a server error as this isn't supported yet
-                response
-                        .setStatus(Status.CLIENT_ERROR_REQUESTED_RANGE_NOT_SATISFIABLE);
-                response.setEntity(null);
+        if (getRangeService().isEnabled()) {
+            response.getServerInfo().setAcceptRanges(true);
+            
+            if (response.isEntityAvailable()) {
+                if (request.getRanges().size() == 1) {
+                    // At this time, list of ranges are not supported.
+                    Range requestedRange = request.getRanges().get(0);
+                    if (!requestedRange.equals(response.getEntity().getRange())) {
+                        getLogger()
+                                .info(
+                                        "The range of the response entity is not equals to the requested one.");
+                        response.setEntity(new RangeRepresentation(response
+                                .getEntity(), requestedRange));
+                    }
+                    if (Method.GET.equals(request.getMethod())
+                            && response.getStatus().isSuccess()
+                            && !Status.SUCCESS_PARTIAL_CONTENT.equals(response
+                                    .getStatus())) {
+                        response.setStatus(Status.SUCCESS_PARTIAL_CONTENT);
+                        getLogger()
+                                .info(
+                                        "The status of a response to a partial GET must be \"206 Partial content\".");
+                    }
+                } else if (request.getRanges().size() > 1) {
+                    // Return a server error as this isn't supported yet
+                    response
+                            .setStatus(Status.CLIENT_ERROR_REQUESTED_RANGE_NOT_SATISFIABLE);
+                    response.setEntity(null);
 
+                }
             }
         }
     }

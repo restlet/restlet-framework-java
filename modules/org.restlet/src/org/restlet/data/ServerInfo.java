@@ -33,6 +33,9 @@ package org.restlet.data;
  * @author Jerome Louvel
  */
 public final class ServerInfo {
+    /** Indicates if the server accepts range requests for a resource. */
+    private volatile boolean acceptRanges;
+
     /** The IP address. */
     private volatile String address;
 
@@ -49,6 +52,7 @@ public final class ServerInfo {
         this.address = null;
         this.agent = null;
         this.port = -1;
+        this.acceptRanges = false;
     }
 
     /**
@@ -77,6 +81,25 @@ public final class ServerInfo {
      */
     public int getPort() {
         return this.port;
+    }
+
+    /**
+     * Return true if the server accepts range requests for a resource.
+     * 
+     * @return True if the server accepts range requests for a resource.
+     */
+    public boolean isAcceptRanges() {
+        return acceptRanges;
+    }
+
+    /**
+     * Indicates if the server accepts range requests for a resource.
+     * 
+     * @param acceptRanges
+     *            True if the server accepts range requests for a resource.
+     */
+    public void setAcceptRanges(boolean acceptRanges) {
+        this.acceptRanges = acceptRanges;
     }
 
     /**
