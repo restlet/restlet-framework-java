@@ -1,11 +1,11 @@
 /*
  * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the following
- * open source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). 
- * You can select the license that you prefer but you may not use this file 
- * except in compliance with one of these Licenses.
- *
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
+ * 
  * You can obtain a copy of the LGPL 3.0 license at
  * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
@@ -15,13 +15,13 @@
  * You can obtain a copy of the CDDL 1.0 license at
  * http://www.sun.com/cddl/cddl.html
  * 
- * See the Licenses for the specific language governing permissions and 
- * limitations under the Licenses. 
- *
- * Alternatively, you can obtain a royaltee free commercial license with 
- * less limitations, transferable or non-transferable, directly at
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
  * http://www.noelios.com/products/restlet-engine
- *
+ * 
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
@@ -66,13 +66,19 @@ public abstract class GrizzlyServerHelper extends HttpServerHelper {
      */
     protected abstract void configure(Controller controller) throws Exception;
 
+    @SuppressWarnings("unchecked")
     @Override
     public synchronized void start() throws Exception {
         super.start();
 
         if (this.controller == null) {
-            // Configure a new controller
             this.controller = new Controller();
+
+            // We should make this handler configurable via parameters
+            TCPSelectorHandler selectorHandler = new TCPSelectorHandler();
+            this.controller.getSelectorHandlers().add(selectorHandler);
+
+            // Configure a new controller
             configure(this.controller);
         }
 

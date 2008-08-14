@@ -28,6 +28,7 @@
 package com.noelios.restlet.ext.net;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.util.logging.Level;
 
 import javax.net.ssl.HostnameVerifier;
@@ -97,10 +98,16 @@ import com.noelios.restlet.http.HttpClientCall;
  * It is also possible to specify a hostname verifier for HTTPS connections. See
  * the {@link #getHostnameVerifier()} method for details.
  * 
+ * Note that by default, the {@link HttpURLConnection} class as implemented by
+ * Sun will retry a request if an IO exception is caught, for example due to a
+ * connection reset by the server. This can be annoying, especially because the
+ * HTTP semantics of non idempotent methods like POST can be broken, but also
+ * because the new request won't include an entity. There is one way to disable
+ * this behavior for POST requests only by setting the system property
+ * "sun.net.http.retryPost" to "false".
+ * 
  * @see Client#getConnectTimeout()
- * @see <a
- *      href="http://java.sun.com/j2se/1.5.0/docs/guide/net/index.html">Networking
- *      Features< /a>
+ * @see <a href="http://java.sun.com/j2se/1.5.0/docs/guide/net/index.html">Networking Features</a>
  * @author Jerome Louvel
  */
 public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper {

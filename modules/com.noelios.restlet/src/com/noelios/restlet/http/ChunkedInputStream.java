@@ -153,7 +153,13 @@ public class ChunkedInputStream extends InputStream {
     private void initializeChunk() throws IOException {
         this.chunkSize = readChunkSize();
         this.position = 0;
-        this.endReached = (this.chunkSize == 0);
+
+        if (this.chunkSize == 0) {
+            this.endReached = true;
+
+            // Read the new line after the optional (unsupported) trailer
+            checkCRLF();
+        }
     }
 
     @Override

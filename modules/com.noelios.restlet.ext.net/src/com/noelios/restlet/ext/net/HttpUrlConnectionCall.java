@@ -319,7 +319,7 @@ public class HttpUrlConnectionCall extends HttpClientCall {
                 if ((majorVersionNumber > 1)
                         || ((majorVersionNumber == 1) && (minorVersionNumber >= 5))) {
                     // Adjust the streaming mode
-                    if (entity.getSize() > 0) {
+                    if (entity.getSize() != -1) {
                         // The size of the entity is known in advance
                         getConnection().setFixedLengthStreamingMode(
                                 (int) entity.getSize());

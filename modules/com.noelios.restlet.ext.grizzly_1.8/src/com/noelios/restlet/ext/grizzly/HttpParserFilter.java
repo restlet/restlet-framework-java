@@ -96,6 +96,12 @@ public class HttpParserFilter implements ProtocolFilter {
         return true;
     }
 
+    /**
+     * Post execute method.
+     * 
+     * @param context
+     *            The call's context.
+     */
     public boolean postExecute(Context context) throws IOException {
         return true;
     }
