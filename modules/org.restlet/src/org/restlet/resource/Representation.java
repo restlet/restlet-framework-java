@@ -226,11 +226,17 @@ public abstract class Representation extends Variant {
     /**
      * Exhauts the content of the representation by reading it and silently
      * discarding anything read.
+     * 
+     * @return The number of bytes consumed or -1 if unknown.
      */
-    public void exhaust() throws IOException {
+    public long exhaust() throws IOException {
+        long result = -1L;
+
         if (isAvailable()) {
-            ByteUtils.exhaust(getStream());
+            result = ByteUtils.exhaust(getStream());
         }
+
+        return result;
     }
 
     /**

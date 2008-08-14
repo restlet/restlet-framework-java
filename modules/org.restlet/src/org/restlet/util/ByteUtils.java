@@ -521,21 +521,28 @@ public final class ByteUtils {
     }
 
     /**
-     * Read and discard all the bytes from {@code input}
+     * Exhauts the content of the representation by reading it and silently
+     * discarding anything read.
      * 
      * @param input
      *            The input stream to exhaust.
-     * @throws IOException
+     * @return The number of bytes consumed or -1 if unknown.
      */
-    public static void exhaust(InputStream input) throws IOException {
+    public static long exhaust(InputStream input) throws IOException {
+        long result = -1L;
+
         if (input != null) {
             final byte[] buf = new byte[4096];
             int read = input.read(buf);
+            result = (read == -1) ? -1 : 0;
 
             while (read != -1) {
+                result += read;
                 read = input.read(buf);
             }
         }
+
+        return result;
     }
 
     /**
