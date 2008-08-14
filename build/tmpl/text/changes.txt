@@ -34,7 +34,8 @@ Changes log
           Suggested by Chris Winters and Benoit Maujean.
         - Filtered broken connection based on French messages in 
           addition to English ones.
-        - Vastly improved internal client performances on GET.
+        - Vastly improved internal client performances on all operations
+          including chunked reading and writing.
         - Status#toString() now appends the description if available 
           for more meaningful messages.
         - Added Representation#exhaust() method to read and discard 
