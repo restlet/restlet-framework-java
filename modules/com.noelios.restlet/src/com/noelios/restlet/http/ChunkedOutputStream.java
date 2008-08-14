@@ -37,11 +37,11 @@ import java.io.OutputStream;
  * See section 3.6.1 of HTTP Protocol for more information on chunked encoding.
  * 
  * @author <a href="mailto:kevin.a.conaway@gmail.com">Kevin Conaway</a>
- * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html">HTTP/1.1
- *      Protocol< /a>
+ * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html">HTTP/1.1 Protocol</a>
  */
 public class ChunkedOutputStream extends OutputStream {
 
+    /** Default size of a chunk. */
     private static final int DEFAULT_CHUNK_SIZE = 2048;
 
     /** The byte buffer. */
@@ -111,7 +111,7 @@ public class ChunkedOutputStream extends OutputStream {
     }
 
     /**
-     * Reset the internal buffer.
+     * Resets the internal buffer.
      */
     private void reset() {
         this.bytesWritten = 0;
@@ -122,6 +122,7 @@ public class ChunkedOutputStream extends OutputStream {
         if (chunkFull()) {
             writeChunk();
         }
+
         this.buffer[this.bytesWritten++] = (byte) b;
     }
 

@@ -43,16 +43,22 @@ import java.io.PushbackInputStream;
  */
 public class ChunkedInputStream extends InputStream {
 
+    /** Size of the push back buffer. */
     private static final int PUSHBBACK_BUFFER_SIZE = 2;
 
+    /** Size of the current chunk. */
     private volatile long chunkSize;
 
-    private volatile boolean done;
+    /** Indicates if the end of the source stream has been reached. */
+    private volatile boolean endReached;
 
+    /** Indicates if the chunked has been properly initialized. */
     private volatile boolean initialized;
 
+    /** Indicates the position inside the current chunk. */
     private volatile long position;
 
+    /** The source input stream to decode. */
     private final PushbackInputStream source;
 
     /**
@@ -64,14 +70,21 @@ public class ChunkedInputStream extends InputStream {
     public ChunkedInputStream(InputStream source) {
         this.source = new PushbackInputStream(source, PUSHBBACK_BUFFER_SIZE);
         this.initialized = false;
-        this.done = false;
+        this.endReached = false;
         this.position = 0;
         this.chunkSize = 0;
     }
 
+    /**
+     * Checkes if the source stream will return a CR+LF sequence next, without
+     * actually reading it.
+     * 
+     * @throws IOException
+     */
     private void checkCRLF() throws IOException {
         final int cr = this.source.read();
         final int lf = this.source.read();
+
         if ((cr != '\r') && (lf != '\n')) {
             this.source.unread(lf);
             this.source.unread(cr);
@@ -79,8 +92,11 @@ public class ChunkedInputStream extends InputStream {
     }
 
     /**
-     * @return True if a chunk is available. False if a new one needs to be
-     *         initialized
+     * Indicates if a chunk is available or false if a new one needs to be
+     * initialized.
+     * 
+     * @return True if a chunk is available or false if a new one needs to be
+     *         initialized.
      */
     private boolean chunkAvailable() {
         return this.position < this.chunkSize;
@@ -93,11 +109,11 @@ public class ChunkedInputStream extends InputStream {
     public void close() throws IOException {
         super.close();
         this.initialized = true;
-        this.done = true;
+        this.endReached = true;
     }
 
     /**
-     * Initialize the stream by reading and discarding a CRLF (if present)
+     * Initializes the stream by reading and discarding a CRLF (if present).
      * 
      * @throws IOException
      */
@@ -109,34 +125,34 @@ public class ChunkedInputStream extends InputStream {
     }
 
     /**
-     * Initialize the next chunk in the stream
+     * Initialize the next chunk in the stream.
      * 
      * @throws IOException
      */
     private void initializeChunk() throws IOException {
         this.chunkSize = readChunkSize();
         this.position = 0;
-        if (this.chunkSize == 0) {
-            this.done = true;
-        }
+        this.endReached = (this.chunkSize == 0);
     }
 
     /**
-     * Read a byte from the chunked stream
+     * Read a byte from the decoded chunked stream.
+     * 
+     * @return The next byte available or -1.
      */
     @Override
     public int read() throws IOException {
         int result = -1;
-
         initialize();
 
-        if (!this.done) {
-            if (chunkAvailable()) {
+        if (!this.endReached) {
+            if (!chunkAvailable()) {
+                initializeChunk();
+            }
+
+            if (!this.endReached) {
                 result = this.source.read();
                 this.position++;
-            } else {
-                initializeChunk();
-                return read();
             }
         }
 
@@ -144,11 +160,11 @@ public class ChunkedInputStream extends InputStream {
     }
 
     /**
-     * Read the chunk size from the current line
+     * Reads the chunk size from the current line.
      * 
-     * @return Chunk size
+     * @return The chunk size from the current line.
      * @throws IOException
-     *             If the chunk size could not be read or was invalid
+     *             If the chunk size could not be read or was invalid.
      */
     private long readChunkSize() throws IOException {
         String line = readChunkSizeLine();
@@ -163,22 +179,26 @@ public class ChunkedInputStream extends InputStream {
     }
 
     /**
-     * Read a line containing a chunk size
+     * Reads a line containing a chunk size.
      * 
-     * @return
+     * @return A line containing a chunk size.
      * @throws IOException
      */
     private String readChunkSizeLine() throws IOException {
         final ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         checkCRLF();
+
         for (;;) {
             final int b = this.source.read();
+
             if (b == -1) {
                 throw new IOException(
                         "Invalid chunk size specified. End of stream reached");
             }
+
             if (b == '\r') {
                 final int lf = this.source.read();
+
                 if (lf == '\n') {
                     break;
                 } else {
@@ -186,8 +206,10 @@ public class ChunkedInputStream extends InputStream {
                             "Invalid chunk size specified.  Expected crlf, only saw cr");
                 }
             }
+
             buffer.write(b);
         }
+
         return new String(buffer.toByteArray());
     }
 }
