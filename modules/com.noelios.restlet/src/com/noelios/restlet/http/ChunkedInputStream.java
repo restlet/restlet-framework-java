@@ -156,11 +156,6 @@ public class ChunkedInputStream extends InputStream {
         this.endReached = (this.chunkSize == 0);
     }
 
-    /**
-     * Read a byte from the decoded chunked stream.
-     * 
-     * @return The next byte available or -1.
-     */
     @Override
     public int read() throws IOException {
         int result = -1;
@@ -173,11 +168,6 @@ public class ChunkedInputStream extends InputStream {
         return result;
     }
 
-    /**
-     * Read a byte array from the decoded chunked stream.
-     * 
-     * @return The next byte available or -1.
-     */
     @Override
     public int read(byte[] b, int off, int len) throws IOException {
         int result = -1;
@@ -188,7 +178,11 @@ public class ChunkedInputStream extends InputStream {
             this.position += result;
 
             if (len - result > 0) {
-                result += read(b, off + result, len - result);
+                int nextResult = read(b, off + result, len - result);
+
+                if (nextResult > 0) {
+                    result += nextResult;
+                }
             }
         }
 
