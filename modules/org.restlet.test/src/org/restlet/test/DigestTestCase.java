@@ -66,15 +66,9 @@ public class DigestTestCase extends RestletTestCase {
                 @Override
                 public void handle(Request request, Response response) {
                     Representation rep = request.getEntity();
-                    try {
-                        if (rep.checkDigest(Digest.ALGORITHM_MD5)) {
-                            response.setStatus(Status.SUCCESS_OK);
-                        } else {
-                            response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-                        }
-                    } catch (NoSuchAlgorithmException e) {
-                        response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
-                    } catch (IOException e) {
+                    if (rep.checkDigest(Digest.ALGORITHM_MD5)) {
+                        response.setStatus(Status.SUCCESS_OK);
+                    } else {
                         response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST);
                     }
                 }

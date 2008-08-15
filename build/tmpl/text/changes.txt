@@ -48,6 +48,9 @@ Changes log
           automatically encode those characters instead of throwing
           an IllegalArgumentException. A message will still be logged
           with a "fine" level. Suggested by Brad Peabody.
+        - Added static Context.getCurrentLogger() method which always
+          returns a non-null logger, if possible the current context's
+          logger.          
     - NRE and Extension Enhancements
         - Refactored WADL extension based on John Logsdon's feed-back.
           Added convenience methods and constructors on FaultInfo, 

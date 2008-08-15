@@ -39,7 +39,9 @@ import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
+import java.util.logging.Level;
 
+import org.restlet.Context;
 import org.restlet.data.Digest;
 import org.restlet.data.MediaType;
 import org.restlet.data.Range;
@@ -184,18 +186,28 @@ public abstract class Representation extends Variant {
 
     /**
      * Check that the digest computed from the representation content and the
-     * actual digest of the representation are the same.
+     * digest declared by the representation are the same.
+     * 
+     * @return True if both digests are not null and equals.
+     */
+    public boolean checkDigest() {
+        return (getDigest() != null && checkDigest(getDigest().getAlgorithm()));
+    }
+
+    /**
+     * Check that the digest computed from the representation content and the
+     * digest declared by the representation are the same. It also first checks
+     * that the algorithms are the same.
      * 
      * @param algorithm
-     *            The algorithm used to compute the digest to compare with.
+     *            The algorithm used to compute the digest to compare with. See
+     *            constant values in {@link Digest}.
      * @return True if both digests are not null and equals.
-     * @throws NoSuchAlgorithmException
-     * @throws IOException
      */
-    public boolean checkDigest(String algorithm)
-            throws NoSuchAlgorithmException, IOException {
-        return (getDigest() != null && getDigest().equals(
-                computeDigest(algorithm)));
+    public boolean checkDigest(String algorithm) {
+        return (getDigest() != null && (getDigest().getAlgorithm() != null)
+                && getDigest().getAlgorithm().equals(algorithm) && getDigest()
+                .equals(computeDigest(algorithm)));
     }
 
     /**
@@ -207,22 +219,30 @@ public abstract class Representation extends Variant {
      * {@link #isTransient}
      * 
      * @param algorithm
-     *            The algorithm used to compute the digest.
+     *            The algorithm used to compute the digest. See constant values
+     *            in {@link Digest}.
      * @return The computed digest or null if the digest cannot be computed.
-     * @throws IOException
-     * @throws NoSuchAlgorithmException
      */
-    public Digest computeDigest(String algorithm) throws IOException,
-            NoSuchAlgorithmException {
+    public Digest computeDigest(String algorithm) {
+        Digest result = null;
+
         if (isAvailable()) {
-            MessageDigest md = MessageDigest.getInstance(algorithm);
-            DigestInputStream dis = new DigestInputStream(getStream(), md);
-            ByteUtils.exhaust(dis);
-            return new Digest(algorithm, Engine.getInstance().toBase64(
-                    md.digest()));
-        } else {
-            return null;
+            try {
+                MessageDigest md = MessageDigest.getInstance(algorithm);
+                DigestInputStream dis = new DigestInputStream(getStream(), md);
+                ByteUtils.exhaust(dis);
+                result = new Digest(algorithm, Engine.getInstance().toBase64(
+                        md.digest()));
+            } catch (NoSuchAlgorithmException e) {
+                Context.getCurrentLogger().log(Level.WARNING,
+                        "Unable to check the digest of the representation.", e);
+            } catch (IOException e) {
+                Context.getCurrentLogger().log(Level.WARNING,
+                        "Unable to check the digest of the representation.", e);
+            }
         }
+
+        return result;
     }
 
     /**

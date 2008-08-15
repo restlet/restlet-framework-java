@@ -75,6 +75,17 @@ public class Context {
     }
 
     /**
+     * Returns the current context's logger.
+     * 
+     * @return The current context's logger.
+     */
+    public static Logger getCurrentLogger() {
+        return (Context.getCurrent() != null) ? Context.getCurrent()
+                .getLogger() : Logger.getLogger(Context.class
+                .getCanonicalName());
+    }
+
+    /**
      * Sets the context to associated with the current thread.
      * 
      * @param context
