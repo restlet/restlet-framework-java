@@ -51,6 +51,7 @@ import org.restlet.util.Series;
 
 import com.noelios.restlet.Engine;
 import com.noelios.restlet.authentication.AuthenticationUtils;
+import com.noelios.restlet.util.Base64;
 import com.noelios.restlet.util.RangeUtils;
 
 /**
@@ -377,8 +378,9 @@ public class HttpClientConverter extends HttpConverter {
                 if (request.getEntity().getDigest() != null
                         && Digest.ALGORITHM_MD5.equals(request.getEntity()
                                 .getDigest().getAlgorithm())) {
-                    requestHeaders.add(HttpConstants.HEADER_CONTENT_MD5,
-                            request.getEntity().getDigest().getValue());
+                    requestHeaders.add(HttpConstants.HEADER_CONTENT_MD5, Base64
+                            .encode(request.getEntity().getDigest().getValue()
+                                    .getBytes(), false));
                 }
             }
 

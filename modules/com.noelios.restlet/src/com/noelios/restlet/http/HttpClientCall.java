@@ -53,6 +53,7 @@ import org.restlet.resource.Representation;
 import org.restlet.service.ConnectorService;
 import org.restlet.util.Series;
 
+import com.noelios.restlet.util.Base64;
 import com.noelios.restlet.util.RangeUtils;
 
 /**
@@ -149,8 +150,8 @@ public abstract class HttpClientCall extends HttpCall {
                 entityHeaderFound = true;
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_CONTENT_MD5)) {
-                result.setDigest(new Digest(Digest.ALGORITHM_MD5, header
-                        .getValue()));
+                result.setDigest(new Digest(Digest.ALGORITHM_MD5, new String(
+                        Base64.decode(header.getValue()))));
                 entityHeaderFound = true;
             }
 
