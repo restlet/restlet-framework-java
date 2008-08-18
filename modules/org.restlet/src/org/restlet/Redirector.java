@@ -148,7 +148,8 @@ public class Redirector extends Restlet {
      */
     protected Reference getTargetRef(Request request, Response response) {
         // Create the template
-        final Template rt = new Template(getLogger(), this.targetTemplate);
+        final Template rt = new Template(this.targetTemplate);
+        rt.setLogger(getLogger());
 
         // Return the formatted target URI
         return new Reference(rt.format(request, response));
@@ -241,7 +242,8 @@ public class Redirector extends Restlet {
 
         // In case of redirection, we may have to rewrite the redirect URI
         if (response.getLocationRef() != null) {
-            final Template rt = new Template(getLogger(), this.targetTemplate);
+            final Template rt = new Template(this.targetTemplate);
+            rt.setLogger(getLogger());
             final int matched = rt.parse(response.getLocationRef().toString(),
                     request);
 

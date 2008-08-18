@@ -43,6 +43,8 @@ import net.jxta.pipe.PipeID;
 import net.jxta.pipe.PipeService;
 import net.jxta.protocol.PipeAdvertisement;
 
+import org.restlet.Context;
+
 /**
  * JXTA pipe management utilities.
  * 
@@ -114,8 +116,7 @@ public class PipeUtility {
 
     private static Map<String, String> PIPES;
 
-    private static final Logger logger = Logger.getLogger(PipeUtility.class
-            .getName());
+    private static final Logger logger = Context.getCurrentLogger();
 
     static {
         final Map<String, String> schemes = new HashMap<String, String>();

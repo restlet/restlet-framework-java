@@ -33,8 +33,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
-import java.util.logging.Logger;
+import java.util.logging.Level;
 
+import org.restlet.Context;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
@@ -185,7 +186,8 @@ public class StringRepresentation extends StreamRepresentation {
                     setSize(getText().getBytes().length);
                 }
             } catch (final UnsupportedEncodingException e) {
-                Logger.getLogger(StringRepresentation.class.getCanonicalName());
+                Context.getCurrentLogger().log(Level.WARNING,
+                        "Unable to update size", e);
                 setSize(UNKNOWN_SIZE);
             }
         } else {

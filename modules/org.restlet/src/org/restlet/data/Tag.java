@@ -28,7 +28,8 @@
 package org.restlet.data;
 
 import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.restlet.Context;
 
 /**
  * Validation tag equivalent to the HTTP entity tag. "A strong entity tag may be
@@ -75,7 +76,7 @@ public final class Tag extends Metadata {
         } else if (httpTagCopy.equals("*")) {
             result = new Tag("*", weak);
         } else {
-            Logger.getLogger(Tag.class.getCanonicalName()).log(Level.WARNING,
+            Context.getCurrentLogger().log(Level.WARNING,
                     "Invalid tag format detected: " + httpTagCopy);
         }
 

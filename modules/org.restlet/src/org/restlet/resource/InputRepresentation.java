@@ -31,8 +31,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.util.ByteUtils;
 
@@ -42,9 +42,6 @@ import org.restlet.util.ByteUtils;
  * @author Jerome Louvel
  */
 public class InputRepresentation extends StreamRepresentation {
-    /** Obtain a suitable logger. */
-    private static final Logger logger = Logger
-            .getLogger(InputRepresentation.class.getCanonicalName());
 
     /** The representation's stream. */
     private volatile InputStream stream;
@@ -100,7 +97,7 @@ public class InputRepresentation extends StreamRepresentation {
             try {
                 this.stream.close();
             } catch (final IOException e) {
-                logger.log(Level.WARNING,
+                Context.getCurrentLogger().log(Level.WARNING,
                         "Error while releasing the representation.", e);
             }
             this.stream = null;

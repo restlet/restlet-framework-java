@@ -33,7 +33,8 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.restlet.Context;
 
 /**
  * Reference to a Uniform Resource Identifier (URI). Contrary to the
@@ -131,8 +132,8 @@ public class Reference {
         try {
             result = URLDecoder.decode(toDecode, "UTF-8");
         } catch (final UnsupportedEncodingException uee) {
-            Logger
-                    .getLogger(Reference.class.getCanonicalName())
+            Context
+                    .getCurrentLogger()
                     .log(
                             Level.WARNING,
                             "Unable to decode the string with the UTF-8 character set.",
@@ -164,8 +165,8 @@ public class Reference {
             result = (characterSet == null) ? toDecode : URLDecoder.decode(
                     toDecode, characterSet.getName());
         } catch (final UnsupportedEncodingException uee) {
-            Logger
-                    .getLogger(Reference.class.getCanonicalName())
+            Context
+                    .getCurrentLogger()
                     .log(
                             Level.WARNING,
                             "Unable to decode the string with the UTF-8 character set.",
@@ -190,8 +191,8 @@ public class Reference {
             try {
                 result = URLEncoder.encode(toEncode, "UTF-8");
             } catch (final UnsupportedEncodingException uee) {
-                Logger
-                        .getLogger(Reference.class.getCanonicalName())
+                Context
+                        .getCurrentLogger()
                         .log(
                                 Level.WARNING,
                                 "Unable to encode the string with the UTF-8 character set.",
@@ -225,8 +226,8 @@ public class Reference {
             result = (characterSet == null) ? toEncode : URLEncoder.encode(
                     toEncode, characterSet.getName());
         } catch (final UnsupportedEncodingException uee) {
-            Logger
-                    .getLogger(Reference.class.getCanonicalName())
+            Context
+                    .getCurrentLogger()
                     .log(
                             Level.WARNING,
                             "Unable to encode the string with the UTF-8 character set.",
@@ -700,7 +701,7 @@ public class Reference {
             for (int i = 0; valid && (i < uriRef.length()); i++) {
                 if (!isValid(uriRef.charAt(i))) {
                     valid = false;
-                    Logger.getLogger(Reference.class.getCanonicalName()).fine(
+                    Context.getCurrentLogger().fine(
                             "Invalid character detected in URI reference at index '"
                                     + i + "': \"" + uriRef.charAt(i)
                                     + "\". It will be automatically encoded.");
@@ -1033,7 +1034,7 @@ public class Reference {
                 try {
                     result = Integer.parseInt(authority.substring(index + 1));
                 } catch (final NumberFormatException nfe) {
-                    Logger.getLogger(Reference.class.getCanonicalName()).log(
+                    Context.getCurrentLogger().log(
                             Level.WARNING,
                             "Can't parse hostPort : [hostRef,requestUri]=["
                                     + getBaseRef() + "," + this.internalRef

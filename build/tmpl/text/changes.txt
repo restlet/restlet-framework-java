@@ -52,7 +52,8 @@ Changes log
           with a "fine" level. Suggested by Brad Peabody.
         - Added static Context.getCurrentLogger() method which always
           returns a non-null logger, if possible the current context's
-          logger.          
+          logger.
+        - Deprecated Template constructors with a logger.
     - NRE and Extension Enhancements
         - Refactored WADL extension based on John Logsdon's feed-back.
           Added convenience methods and constructors on FaultInfo, 
@@ -65,6 +66,8 @@ Changes log
         - Updated jSSLutils to version 0.5.
     - Misc
         - Updated Grizzly to version 1.8.4.
+        - Uniformized logger names relying on the static method 
+          Context.getCurrentLogger().
     
 - 1.1 Milestone 5 (2008-08-07)
     - Security warning

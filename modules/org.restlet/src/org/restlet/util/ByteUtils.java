@@ -52,9 +52,9 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.restlet.Application;
+import org.restlet.Context;
 import org.restlet.data.CharacterSet;
 import org.restlet.resource.Representation;
 import org.restlet.resource.WriterRepresentation;
@@ -593,8 +593,7 @@ public final class ByteUtils {
                     representation.write(wbc);
                     wbc.close();
                 } catch (final IOException ioe) {
-                    Logger.getLogger(ByteUtils.class.getCanonicalName()).log(
-                            Level.FINE,
+                    Context.getCurrentLogger().log(Level.FINE,
                             "Error while writing to the piped channel.", ioe);
                 }
             }
@@ -644,8 +643,7 @@ public final class ByteUtils {
                 try {
                     representation.write(pipedWriter);
                 } catch (final IOException ioe) {
-                    Logger.getLogger(ByteUtils.class.getCanonicalName()).log(
-                            Level.FINE,
+                    Context.getCurrentLogger().log(Level.FINE,
                             "Error while writing to the piped reader.", ioe);
                 }
             }
@@ -711,8 +709,7 @@ public final class ByteUtils {
                     os.write(-1);
                     os.close();
                 } catch (final IOException ioe) {
-                    Logger.getLogger(ByteUtils.class.getCanonicalName()).log(
-                            Level.FINE,
+                    Context.getCurrentLogger().log(Level.FINE,
                             "Error while writing to the piped input stream.",
                             ioe);
                 }

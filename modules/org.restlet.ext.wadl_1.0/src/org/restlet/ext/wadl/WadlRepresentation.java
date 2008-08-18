@@ -34,7 +34,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.xml.namespace.QName;
 
@@ -857,10 +856,6 @@ public class WadlRepresentation extends SaxRepresentation {
     /** Web Application Description Language namespace. */
     public static final String APP_NAMESPACE = "http://research.sun.com/wadl/2006/10";
 
-    /** Obtain a suitable logger. */
-    private static Logger logger = Logger.getLogger(WadlRepresentation.class
-            .getCanonicalName());
-
     /** The root element of the WADL document. */
     private ApplicationInfo application;
 
@@ -983,7 +978,7 @@ public class WadlRepresentation extends SaxRepresentation {
             this.application.writeElement(writer);
             writer.endDocument();
         } catch (final SAXException e) {
-            logger.log(Level.SEVERE,
+            Context.getCurrentLogger().log(Level.SEVERE,
                     "Error when writing the WADL Representation.", e);
         }
     }

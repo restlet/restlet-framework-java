@@ -31,8 +31,8 @@ import java.io.IOException;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.util.ByteUtils;
 
@@ -42,9 +42,6 @@ import org.restlet.util.ByteUtils;
  * @author Jerome Louvel
  */
 public class ReadableRepresentation extends ChannelRepresentation {
-    /** Obtain a suitable logger. */
-    private static final Logger logger = Logger
-            .getLogger(ReadableRepresentation.class.getCanonicalName());
 
     /** The representation's input stream. */
     private volatile ReadableByteChannel channel;
@@ -98,7 +95,7 @@ public class ReadableRepresentation extends ChannelRepresentation {
             try {
                 this.channel.close();
             } catch (final IOException e) {
-                logger.log(Level.WARNING,
+                Context.getCurrentLogger().log(Level.WARNING,
                         "Error while releasing the representation.", e);
             }
 

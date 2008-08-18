@@ -30,7 +30,6 @@ package com.noelios.restlet.ext.javamail;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.mail.FetchProfile;
 import javax.mail.Flags;
@@ -148,10 +147,6 @@ import com.sun.mail.pop3.POP3Folder;
  */
 public class JavaMailClientHelper extends ClientHelper {
 
-    /** Obtain a suitable logger. */
-    private static Logger logger = Logger.getLogger(JavaMailClientHelper.class
-            .getCanonicalName());
-
     /** POP protocol. */
     public static final Protocol POP = new Protocol("pop", "POP",
             "Post Office Protocol", 110);
@@ -251,8 +246,10 @@ public class JavaMailClientHelper extends ClientHelper {
                         Representation.class, Session.class).newInstance(
                         xmlMessage, session);
             } catch (final Exception e) {
-                logger.log(Level.SEVERE, "Unable to create a new instance of "
-                        + representationMessageClassName, e);
+                getLogger().log(
+                        Level.SEVERE,
+                        "Unable to create a new instance of "
+                                + representationMessageClassName, e);
                 return new RepresentationMessage(xmlMessage, session);
             }
         }
@@ -325,7 +322,8 @@ public class JavaMailClientHelper extends ClientHelper {
      *         instances from an XML representation and a JavaMail Session.
      */
     public String getRepresentationMessageClass() {
-        return getHelpedParameters().getFirstValue("representationMessageClass");
+        return getHelpedParameters()
+                .getFirstValue("representationMessageClass");
     }
 
     @Override
@@ -555,8 +553,8 @@ public class JavaMailClientHelper extends ClientHelper {
      * @return True the connector should generate JavaMail debug messages.
      */
     public boolean isDebug() {
-        return Boolean.parseBoolean(getHelpedParameters().getFirstValue("debug",
-                "false"));
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
+                "debug", "false"));
     }
 
     /**
@@ -565,8 +563,8 @@ public class JavaMailClientHelper extends ClientHelper {
      * @return True if the SMTP protocol should attempt to start a TLS tunnel.
      */
     public boolean isStartTls() {
-        return Boolean.parseBoolean(getHelpedParameters().getFirstValue("startTls",
-                "false"));
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
+                "startTls", "false"));
     }
 
 }

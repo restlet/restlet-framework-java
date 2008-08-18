@@ -32,8 +32,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.util.logging.Logger;
 
+import org.restlet.Context;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
@@ -119,10 +119,6 @@ public class TemplateRepresentation extends OutputRepresentation {
         }
     }
 
-    /** The logger instance to use. */
-    private static final Logger logger = Logger
-            .getLogger(TemplateRepresentation.class.getName());
-
     /**
      * Returns a FreeMarker template from a representation and a configuration.
      * 
@@ -146,8 +142,8 @@ public class TemplateRepresentation extends OutputRepresentation {
                         .getReader(), config, CharacterSet.UTF_8.getName());
             }
         } catch (final IOException e) {
-            logger
-                    .warning("Unable to get the template from the representation "
+            Context.getCurrentLogger().warning(
+                    "Unable to get the template from the representation "
                             + templateRepresentation.getIdentifier()
                             + ". Error message: " + e.getMessage());
             return null;
@@ -168,8 +164,9 @@ public class TemplateRepresentation extends OutputRepresentation {
         try {
             return config.getTemplate(templateName);
         } catch (final IOException e) {
-            logger.warning("Unable to get the template " + templateName
-                    + ". Error message: " + e.getMessage());
+            Context.getCurrentLogger().warning(
+                    "Unable to get the template " + templateName
+                            + ". Error message: " + e.getMessage());
             return null;
         }
     }

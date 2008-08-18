@@ -31,8 +31,8 @@ import static org.restlet.ext.wadl.WadlRepresentation.APP_NAMESPACE;
 
 import java.io.IOException;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import org.restlet.Context;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.resource.DomRepresentation;
@@ -53,9 +53,6 @@ import org.xml.sax.helpers.AttributesImpl;
  * @author Jerome Louvel
  */
 public class DocumentationInfo {
-    /** Obtain a suitable logger. */
-    private static Logger logger = Logger.getLogger(DocumentationInfo.class
-            .getCanonicalName());
 
     /** The language of that documentation element. */
     private Language language;
@@ -207,7 +204,8 @@ public class DocumentationInfo {
                 // Restore the SAX writer's dataFormat
                 writer.setDataFormat(isDataFormat);
             } catch (final IOException e) {
-                logger
+                Context
+                        .getCurrentLogger()
                         .log(
                                 Level.SEVERE,
                                 "Error when writing the text content of the current \"doc\" tag.",

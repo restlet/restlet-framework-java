@@ -36,6 +36,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -254,7 +255,10 @@ public class Template {
      *            The logger to use.
      * @param pattern
      *            The pattern to use for formatting or parsing.
+     * @deprecated Use the constructor with logger instead. The logger can still
+     *             be set using the {@link #setLogger(Logger)} method.
      */
+    @Deprecated
     public Template(Logger logger, String pattern) {
         this(logger, pattern, MODE_EQUALS, Variable.TYPE_ALL, "", true, false);
     }
@@ -268,7 +272,10 @@ public class Template {
      *            The pattern to use for formatting or parsing.
      * @param matchingMode
      *            The matching mode to use when parsing a formatted reference.
+     * @deprecated Use the constructor with logger instead. The logger can still
+     *             be set using the {@link #setLogger(Logger)} method.
      */
+    @Deprecated
     public Template(Logger logger, String pattern, int matchingMode) {
         this(logger, pattern, matchingMode, Variable.TYPE_ALL, "", true, false);
     }
@@ -290,7 +297,10 @@ public class Template {
      *            The default required flag for variables with no descriptor.
      * @param defaultFixed
      *            The default fixed value for variables with no descriptor.
+     * @deprecated Use the constructor with logger instead. The logger can still
+     *             be set using the {@link #setLogger(Logger)} method.
      */
+    @Deprecated
     public Template(Logger logger, String pattern, int matchingMode,
             int defaultType, String defaultDefaultValue,
             boolean defaultRequired, boolean defaultFixed) {
@@ -318,7 +328,10 @@ public class Template {
      * @param encodeVariables
      *            True if the variables must be encoded when formatting the
      *            template.
+     * @deprecated Use the constructor with logger instead. The logger can still
+     *             be set using the {@link #setLogger(Logger)} method.
      */
+    @Deprecated
     public Template(Logger logger, String pattern, int matchingMode,
             int defaultType, String defaultDefaultValue,
             boolean defaultRequired, boolean defaultFixed,
@@ -344,7 +357,7 @@ public class Template {
      *            The pattern to use for formatting or parsing.
      */
     public Template(String pattern) {
-        this(null, pattern);
+        this(Context.getCurrentLogger(), pattern);
     }
 
     /**
@@ -356,7 +369,7 @@ public class Template {
      *            The matching mode to use when parsing a formatted reference.
      */
     public Template(String pattern, int matchingMode) {
-        this(null, pattern, matchingMode);
+        this(Context.getCurrentLogger(), pattern, matchingMode);
     }
 
     /**
@@ -378,8 +391,8 @@ public class Template {
     public Template(String pattern, int matchingMode, int defaultType,
             String defaultDefaultValue, boolean defaultRequired,
             boolean defaultFixed) {
-        this(null, pattern, matchingMode, defaultType, defaultDefaultValue,
-                defaultRequired, defaultFixed);
+        this(Context.getCurrentLogger(), pattern, matchingMode, defaultType,
+                defaultDefaultValue, defaultRequired, defaultFixed);
     }
 
     /**

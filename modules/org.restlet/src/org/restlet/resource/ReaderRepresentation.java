@@ -31,8 +31,8 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.util.ByteUtils;
 
@@ -42,9 +42,6 @@ import org.restlet.util.ByteUtils;
  * @author Jerome Louvel
  */
 public class ReaderRepresentation extends CharacterRepresentation {
-    /** Obtain a suitable logger. */
-    private static final Logger logger = Logger
-            .getLogger(ReaderRepresentation.class.getCanonicalName());
 
     /** The representation's reader. */
     private volatile Reader reader;
@@ -100,7 +97,7 @@ public class ReaderRepresentation extends CharacterRepresentation {
             try {
                 this.reader.close();
             } catch (final IOException e) {
-                logger.log(Level.WARNING,
+                Context.getCurrentLogger().log(Level.WARNING,
                         "Error while releasing the representation.", e);
             }
 
