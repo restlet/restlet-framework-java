@@ -201,8 +201,11 @@ public class XdbServletConverter extends HttpServerConverter {
     public void service(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         if (getTarget() != null) {
+            // Set the current context
+            Context.setCurrent(getContext());
+
             // Convert the Servlet call to a Restlet call
-            final XdbServletCall servletCall = new XdbServletCall(getLogger(),
+            final XdbServletCall servletCall = new XdbServletCall(
                     this.localAddress, this.localPort, request, response);
             final HttpRequest httpRequest = toRequest(servletCall);
             final HttpResponse httpResponse = new HttpResponse(servletCall,

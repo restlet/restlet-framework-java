@@ -38,7 +38,6 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -97,8 +96,6 @@ public class ServletCall extends HttpServerCall {
     /**
      * Constructor.
      * 
-     * @param logger
-     *            The logger.
      * @param serverAddress
      *            The server IP address.
      * @param serverPort
@@ -108,9 +105,9 @@ public class ServletCall extends HttpServerCall {
      * @param response
      *            The Servlet response.
      */
-    public ServletCall(Logger logger, String serverAddress, int serverPort,
+    public ServletCall(String serverAddress, int serverPort,
             HttpServletRequest request, HttpServletResponse response) {
-        super(logger, serverAddress, serverPort);
+        super(serverAddress, serverPort);
         this.request = request;
         this.response = response;
     }
