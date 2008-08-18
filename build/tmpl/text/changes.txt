@@ -28,6 +28,8 @@ Changes log
           trailing new line. That caused connection resets between the
           JDK.net HTTP client and the Grizzly connector. Reported by
           Ralf Bommersbach. Debugging help from Kevin Conaway.
+        - Fixed bug in Restlet example with HTTPS server configuration.
+          Reported by Christy Ring and fixed by Bruno Harbulot.
     - API Enhancements
         - Added warning message when no client connector supports the 
           request's protocol.

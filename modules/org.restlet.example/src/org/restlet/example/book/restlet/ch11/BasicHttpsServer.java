@@ -31,6 +31,7 @@ import java.io.File;
 
 import org.restlet.Component;
 import org.restlet.Restlet;
+import org.restlet.Server;
 import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
@@ -52,16 +53,16 @@ public class BasicHttpsServer {
         final File keystoreFile = new File("d:\\temp\\certificats",
                 "myServerKeystore");
         // Component declaring only one HTTPS server connector.
-        final Component component = new Component();
-        component.getServers().add(Protocol.HTTPS, 8182);
+        Component component = new Component();
+        Server server = component.getServers().add(Protocol.HTTPS, 8182);
         component.getDefaultHost().attach("/helloWorld", restlet);
 
-        // Update component's context with keystore parameters.
-        component.getContext().getParameters().add("keystorePath",
+        // Update server's context with keystore parameters.
+        server.getContext().getParameters().add("keystorePath",
                 keystoreFile.getAbsolutePath());
-        component.getContext().getParameters().add("keystorePassword",
-                "storepass");
-        component.getContext().getParameters().add("keyPassword", "keypass");
+        server.getContext().getParameters()
+                .add("keystorePassword", "storepass");
+        server.getContext().getParameters().add("keyPassword", "keypass");
 
         try {
             component.start();
