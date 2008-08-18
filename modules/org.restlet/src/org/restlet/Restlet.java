@@ -58,21 +58,22 @@ public class Restlet extends Uniform {
     private volatile boolean started;
 
     /**
-     * Constructor. Note that usage of this constructor is not recommended as
-     * the Restlet won't have a proper context set. In general you will prefer
-     * to use the other constructor and pass it the parent application's context
-     * or eventually the parent component's context if you don't use
-     * applications.
+     * Constructor with null context.
      */
     public Restlet() {
         this(null);
     }
 
     /**
-     * Constructor.
+     * Constructor with the Restlet's context which can be the parent's
+     * application context, but shouldn't be the parent Component's context for
+     * security reasons.
+     * 
+     * @see Context#createChildContext()
      * 
      * @param context
-     *            The context.
+     *            The context of the Restlet.
+     * 
      */
     public Restlet(Context context) {
         this.context = context;

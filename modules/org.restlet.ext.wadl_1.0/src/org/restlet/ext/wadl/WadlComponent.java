@@ -154,7 +154,8 @@ public class WadlComponent extends Component {
      * @return The created WADL application.
      */
     public WadlApplication attach(Representation wadl) {
-        final WadlApplication result = new WadlApplication(getContext(), wadl);
+        final WadlApplication result = new WadlApplication(getContext()
+                .createChildContext(), wadl);
         result.attachToComponent(this);
         return result;
     }

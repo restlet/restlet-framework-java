@@ -152,9 +152,7 @@ public class SpringComponent extends org.restlet.Component {
             } else if (serverInfo instanceof Protocol) {
                 getServers().add((Protocol) serverInfo);
             } else if (serverInfo instanceof Server) {
-                final Server server = (Server) serverInfo;
-                server.setContext(getContext());
-                getServers().add(server);
+                getServers().add((Server) serverInfo);
             } else {
                 getLogger()
                         .warning(

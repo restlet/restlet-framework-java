@@ -226,9 +226,9 @@ public class XdbServerServlet extends ServerServlet {
 
         if ((component != null) && (application != null)) {
             // First, let's create a pseudo server
-            final Server server = new Server(component.getContext(),
-                    new ArrayList<Protocol>(), this.localAddress,
-                    this.localPort, component);
+            final Server server = new Server(component.getContext()
+                    .createChildContext(), new ArrayList<Protocol>(),
+                    this.localAddress, this.localPort, component);
             server.getProtocols().add(Protocol.HTTP);
             result = new HttpServerHelper(server);
 

@@ -61,8 +61,10 @@ import org.restlet.resource.Resource;
  * should be especially careful when storing state in member variables.
  * 
  * @see java.util.regex.Pattern
- * @see <a href="http://en.wikipedia.org/wiki/Virtual_hosting">Wikipedia - Virtual Hosting</a>
- * @see <a href="http://httpd.apache.org/docs/2.2/vhosts/">Apache - Virtual Hosting</a>
+ * @see <a href="http://en.wikipedia.org/wiki/Virtual_hosting">Wikipedia -
+ *      Virtual Hosting< /a>
+ * @see <a href="http://httpd.apache.org/docs/2.2/vhosts/">Apache - Virtual
+ *      Hosting< /a>
  * @author Jerome Louvel
  */
 public class VirtualHost extends Router {
@@ -265,6 +267,9 @@ public class VirtualHost extends Router {
     @Override
     public Route attach(String uriPattern, Restlet target) {
         if (target.getContext() == null) {
+            if (getContext() == null) {
+                setContext(new Context());
+            }
             target.setContext(getContext().createChildContext());
         }
 

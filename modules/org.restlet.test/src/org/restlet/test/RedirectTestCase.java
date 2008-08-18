@@ -69,11 +69,12 @@ public class RedirectTestCase extends TestCase {
 
         // Create the proxy Restlet
         final String target = "http://localhost:9090{rr}";
-        final Redirector proxy = new Redirector(proxyComponent.getContext(),
-                target, Redirector.MODE_DISPATCHER);
+        final Redirector proxy = new Redirector(proxyComponent.getContext()
+                .createChildContext(), target, Redirector.MODE_DISPATCHER);
 
         // Create a new Restlet that will display some path information.
-        final Restlet trace = new Restlet(originComponent.getContext()) {
+        final Restlet trace = new Restlet(originComponent.getContext()
+                .createChildContext()) {
             @Override
             public void handle(Request request, Response response) {
                 // Print the requested URI path

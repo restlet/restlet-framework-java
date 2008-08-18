@@ -102,7 +102,9 @@ import org.w3c.dom.NodeList;
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
  * 
- * @see <a href="http://roy.gbiv.com/pubs/dissertation/software_arch.htm#sec_1_2_1">Source dissertation</a>
+ * @see <a
+ *      href="http://roy.gbiv.com/pubs/dissertation/software_arch.htm#sec_1_2_1"
+ *      >Source dissertation< /a>
  * 
  * @author Jerome Louvel
  */
@@ -400,7 +402,8 @@ public class Component extends Restlet {
                     } else if ("defaultHost".equals(childNode.getNodeName())) {
                         parseHost(getDefaultHost(), childNode);
                     } else if ("host".equals(childNode.getNodeName())) {
-                        final VirtualHost host = new VirtualHost(getContext());
+                        final VirtualHost host = new VirtualHost(getContext()
+                                .createChildContext());
                         parseHost(host, childNode);
                         getHosts().add(host);
                     } else if ("parameter".equals(childNode.getNodeName())) {
@@ -531,7 +534,8 @@ public class Component extends Restlet {
                         // Create a new instance of the application class by
                         // invoking the constructor with the Context parameter.
                         target = (Restlet) targetClass.getConstructor(
-                                Context.class).newInstance(getContext());
+                                Context.class).newInstance(
+                                getContext().createChildContext());
                     } catch (final NoSuchMethodException e) {
                         getLogger()
                                 .log(
@@ -544,6 +548,7 @@ public class Component extends Restlet {
                         // constructor then invoke the setContext method.
                         target = (Restlet) targetClass.getConstructor()
                                 .newInstance();
+                        target.setContext(getContext().createChildContext());
                     }
 
                     if (target != null) {
@@ -622,7 +627,8 @@ public class Component extends Restlet {
                 // invoking the constructor with the Context parameter.
                 final Application target = (Application) targetClass
                         .getConstructor(Context.class, Representation.class)
-                        .newInstance(getContext(), representation);
+                        .newInstance(getContext().createChildContext(),
+                                representation);
                 if (target != null) {
                     if ((uriPattern != null) && !defaultRoute) {
                         route = router.attach(uriPattern, target);

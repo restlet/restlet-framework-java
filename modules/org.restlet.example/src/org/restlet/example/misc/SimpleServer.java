@@ -55,7 +55,8 @@ public class SimpleServer {
             component.getServers().add(Protocol.HTTP, 9876);
 
             // Prepare and attach a test Handler
-            final Restlet handler = new Restlet(component.getContext()) {
+            final Restlet handler = new Restlet(component.getContext()
+                    .createChildContext()) {
                 @Override
                 public void handle(Request request, Response response) {
                     if (request.getMethod().equals(Method.PUT)) {

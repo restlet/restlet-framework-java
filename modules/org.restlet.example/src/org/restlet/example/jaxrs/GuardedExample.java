@@ -94,7 +94,7 @@ public class GuardedExample {
 
         // create JAX-RS runtime environment
         final JaxRsApplication application = new JaxRsApplication(comp
-                .getContext());
+                .getContext().createChildContext());
 
         // create a Guard
         final Guard guard = new Guard(application.getContext(),

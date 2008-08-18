@@ -636,7 +636,7 @@ public class WadlApplication extends Application {
 
         if (host == null) {
             // A new virtual host needs to be created
-            host = new VirtualHost(getContext());
+            host = new VirtualHost(component.getContext().createChildContext());
             host.setHostDomain(hostDomain);
             host.setHostPort(hostPort);
             host.setHostScheme(hostScheme);

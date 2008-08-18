@@ -478,6 +478,7 @@
 		<path refid="mod-ri-path" />
 		<pathelement path="${classes}/${mod-ri-id}" />
 		<fileset dir="${lib}/${lib-logging-id}" includes="*.jar" />
+		<fileset dir="${lib}/${lib-cglib-id}" includes="*.jar" />
 		<fileset dir="${lib}/${lib-spring-id}" includes="*.jar" />
 	</path>
 
