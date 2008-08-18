@@ -105,7 +105,7 @@ public class SpringComponent extends org.restlet.Component {
                 getClients().add(Protocol.valueOf((String) client));
             } else if (client instanceof Protocol) {
                 getClients().add((Protocol) client);
-            } else if (client instanceof Server) {
+            } else if (client instanceof Client) {
                 getClients().add((Client) client);
             } else {
                 getLogger()
