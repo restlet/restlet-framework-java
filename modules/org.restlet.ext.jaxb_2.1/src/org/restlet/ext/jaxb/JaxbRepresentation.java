@@ -36,7 +36,6 @@ import java.io.Writer;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -47,6 +46,7 @@ import javax.xml.transform.sax.SAXSource;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathFactory;
 
+import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
@@ -86,7 +86,8 @@ public class JaxbRepresentation<T> extends XmlRepresentation {
                                 .getName());
                     }
                 } catch (final Exception e) {
-                    logger.log(Level.WARNING, "Problem creating Marshaller", e);
+                    Context.getCurrentLogger().log(Level.WARNING,
+                            "Problem creating Marshaller", e);
                     return null;
                 }
 
@@ -108,7 +109,8 @@ public class JaxbRepresentation<T> extends XmlRepresentation {
         private javax.xml.bind.Marshaller getMarshaller() throws JAXBException {
             final javax.xml.bind.Marshaller m = this.marshaller.get();
             if (m == null) {
-                logger.warning("Unable to locate marshaller.");
+                Context.getCurrentLogger().warning(
+                        "Unable to locate marshaller.");
                 throw new JAXBException("Unable to locate marshaller.");
             }
             return m;
@@ -199,8 +201,8 @@ public class JaxbRepresentation<T> extends XmlRepresentation {
                 try {
                     m = getContext(getPackage()).createUnmarshaller();
                 } catch (final Exception e) {
-                    logger.log(Level.WARNING, "Problem creating Unmarshaller",
-                            e);
+                    Context.getCurrentLogger().log(Level.WARNING,
+                            "Problem creating Unmarshaller", e);
                     return null;
                 }
                 return m;
@@ -220,7 +222,8 @@ public class JaxbRepresentation<T> extends XmlRepresentation {
                 throws JAXBException {
             final javax.xml.bind.Unmarshaller m = this.unmarshaller.get();
             if (m == null) {
-                logger.warning("Unable to locate unmarshaller.");
+                Context.getCurrentLogger().warning(
+                        "Unable to locate unmarshaller.");
                 throw new JAXBException("Unable to locate unmarshaller.");
             }
             return m;
@@ -292,10 +295,6 @@ public class JaxbRepresentation<T> extends XmlRepresentation {
 
     /** Improves performance by caching contexts which are expensive to create. */
     private final static Map<String, JAXBContext> contexts = new TreeMap<String, JAXBContext>();
-
-    /** The logger to use. */
-    private final static Logger logger = Logger
-            .getLogger(JaxbRepresentation.class.getCanonicalName());
 
     /**
      * Returns the JAXB context.
@@ -505,7 +504,7 @@ public class JaxbRepresentation<T> extends XmlRepresentation {
                 try {
                     u.setEventHandler(getValidationEventHandler());
                 } catch (final JAXBException e) {
-                    logger.log(Level.WARNING,
+                    Context.getCurrentLogger().log(Level.WARNING,
                             "Unable to set the event handler", e);
                     throw new IOException("Unable to set the event handler."
                             + e.getMessage());
@@ -516,7 +515,7 @@ public class JaxbRepresentation<T> extends XmlRepresentation {
                 this.object = (T) u.unmarshal(this.xmlRepresentation
                         .getStream());
             } catch (final JAXBException e) {
-                logger.log(Level.WARNING,
+                Context.getCurrentLogger().log(Level.WARNING,
                         "Unable to unmarshal the XML representation", e);
                 throw new IOException(
                         "Unable to unmarshal the XML representation."
@@ -607,7 +606,8 @@ public class JaxbRepresentation<T> extends XmlRepresentation {
         try {
             new Marshaller(this.contextPath).marshal(getObject(), outputStream);
         } catch (final JAXBException e) {
-            logger.log(Level.WARNING, "JAXB marshalling error caught.", e);
+            Context.getCurrentLogger().log(Level.WARNING,
+                    "JAXB marshalling error caught.", e);
 
             // Maybe the tree represents a failure, try that.
             try {
