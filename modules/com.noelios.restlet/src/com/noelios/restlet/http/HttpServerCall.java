@@ -35,7 +35,6 @@ import java.nio.channels.WritableByteChannel;
 import java.security.cert.Certificate;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.restlet.Server;
 import org.restlet.data.Digest;
@@ -83,15 +82,12 @@ public abstract class HttpServerCall extends HttpCall {
     /**
      * Constructor.
      * 
-     * @param logger
-     *            The logger.
      * @param serverAddress
      *            The server IP address.
      * @param serverPort
      *            The server port.
      */
-    public HttpServerCall(Logger logger, String serverAddress, int serverPort) {
-        setLogger(logger);
+    public HttpServerCall(String serverAddress, int serverPort) {
         setServerAddress(serverAddress);
         setServerPort(serverPort);
         this.hostParsed = false;
@@ -104,7 +100,7 @@ public abstract class HttpServerCall extends HttpCall {
      *            The parent server connector.
      */
     public HttpServerCall(Server server) {
-        this(server.getLogger(), server.getAddress(), server.getPort());
+        this(server.getAddress(), server.getPort());
     }
 
     /**

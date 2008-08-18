@@ -29,7 +29,6 @@ package com.noelios.restlet.authentication;
 
 import java.io.UnsupportedEncodingException;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
@@ -68,14 +67,13 @@ public class HttpBasicHelper extends AuthenticationHelper {
     }
 
     @Override
-    public void parseResponse(ChallengeResponse cr, Request request,
-            Logger logger) {
+    public void parseResponse(ChallengeResponse cr, Request request) {
         try {
             final byte[] credentialsEncoded = Base64
                     .decode(cr.getCredentials());
             if (credentialsEncoded == null) {
-                logger.warning("Cannot decode credentials: "
-                        + cr.getCredentials());
+                getLogger().warning(
+                        "Cannot decode credentials: " + cr.getCredentials());
             }
 
             final String credentials = new String(credentialsEncoded,
@@ -84,15 +82,16 @@ public class HttpBasicHelper extends AuthenticationHelper {
 
             if (separator == -1) {
                 // Log the blocking
-                logger.warning("Invalid credentials given by client with IP: "
-                        + ((request != null) ? request.getClientInfo()
-                                .getAddress() : "?"));
+                getLogger().warning(
+                        "Invalid credentials given by client with IP: "
+                                + ((request != null) ? request.getClientInfo()
+                                        .getAddress() : "?"));
             } else {
                 cr.setIdentifier(credentials.substring(0, separator));
                 cr.setSecret(credentials.substring(separator + 1));
             }
         } catch (final UnsupportedEncodingException e) {
-            logger.log(Level.WARNING, "Unsupported encoding error", e);
+            getLogger().log(Level.WARNING, "Unsupported encoding error", e);
         }
     }
 

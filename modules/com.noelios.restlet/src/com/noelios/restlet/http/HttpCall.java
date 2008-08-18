@@ -32,6 +32,7 @@ import java.util.Date;
 import java.util.logging.Logger;
 
 import org.restlet.Application;
+import org.restlet.Context;
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
@@ -96,9 +97,6 @@ public abstract class HttpCall {
 
     /** The hostRef port. */
     private volatile int hostPort;
-
-    /** The logger to use. */
-    private volatile Logger logger;
 
     /** The method. */
     private volatile String method;
@@ -234,12 +232,12 @@ public abstract class HttpCall {
     }
 
     /**
-     * Returns the logger to use.
+     * Returns the logger.
      * 
-     * @return The logger to use.
+     * @return The logger.
      */
     public Logger getLogger() {
-        return this.logger;
+        return Context.getCurrentLogger();
     }
 
     /**
@@ -465,16 +463,6 @@ public abstract class HttpCall {
      */
     public void setHostPort(int hostPort) {
         this.hostPort = hostPort;
-    }
-
-    /**
-     * Sets the logger to use.
-     * 
-     * @param logger
-     *            The logger to use.
-     */
-    public void setLogger(Logger logger) {
-        this.logger = logger;
     }
 
     /**

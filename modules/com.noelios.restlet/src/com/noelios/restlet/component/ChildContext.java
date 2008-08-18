@@ -56,29 +56,24 @@ public class ChildContext extends Context {
     /**
      * Constructor.
      * 
-     * @param child
-     *            The child.
      * @param parentContext
      *            The parent context.
      */
-    public ChildContext(Restlet child, Context parentContext) {
-        this(child, parentContext, Logger.getLogger(getLoggerName(child,
-                "org.restlet.Restlet")));
+    public ChildContext(Context parentContext) {
+        this(parentContext, Logger.getLogger("org.restlet.Restlet"));
     }
 
     /**
      * Constructor.
      * 
-     * @param child
-     *            The child.
      * @param parentContext
      *            The parent context.
      * @param logger
      *            The logger instance of use.
      */
-    public ChildContext(Restlet child, Context parentContext, Logger logger) {
+    public ChildContext(Context parentContext, Logger logger) {
         super(logger);
-        this.child = child;
+        this.child = null;
         this.parentContext = parentContext;
         this.clientDispatcher = new ChildClientDispatcher(this);
         this.serverDispatcher = (getParentContext() != null) ? getParentContext()
@@ -88,7 +83,7 @@ public class ChildContext extends Context {
 
     @Override
     public Context createChildContext() {
-        return new ChildContext(null, this);
+        return new ChildContext(this);
     }
 
     /**

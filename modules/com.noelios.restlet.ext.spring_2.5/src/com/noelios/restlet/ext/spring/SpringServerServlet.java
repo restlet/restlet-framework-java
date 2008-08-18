@@ -89,9 +89,8 @@ public class SpringServerServlet extends ServerServlet {
             // Set the context based on the Servlet's context
             final ChildContext applicationContext = (ChildContext) application
                     .getContext();
-            application.setContext(new ChildContext(application,
-                    new ServletContextAdapter(this, context),
-                    applicationContext.getLogger()));
+            application.setContext(new ChildContext(new ServletContextAdapter(
+                    this, context), applicationContext.getLogger()));
 
             // Copy all the servlet parameters into the context
             String initParam;

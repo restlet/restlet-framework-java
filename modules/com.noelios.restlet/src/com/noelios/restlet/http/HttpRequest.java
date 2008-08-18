@@ -154,7 +154,7 @@ public class HttpRequest extends Request {
 
             // Set the challenge response
             result = AuthenticationUtils.parseAuthorizationHeader(this,
-                    this.context.getLogger(), authorization);
+                    authorization);
             setChallengeResponse(result);
             this.securityAdded = true;
         }
@@ -365,8 +365,7 @@ public class HttpRequest extends Request {
 
             if (cookiesValue != null) {
                 try {
-                    final CookieReader cr = new CookieReader(this.context
-                            .getLogger(), cookiesValue);
+                    final CookieReader cr = new CookieReader(cookiesValue);
                     Cookie current = cr.readCookie();
                     while (current != null) {
                         result.add(current);

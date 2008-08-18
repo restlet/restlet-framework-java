@@ -36,7 +36,6 @@ import java.net.UnknownHostException;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.restlet.data.Digest;
 import org.restlet.data.Encoding;
@@ -220,7 +219,6 @@ public abstract class HttpClientCall extends HttpCall {
      */
     public HttpClientCall(HttpClientHelper helper, String method,
             String requestUri) {
-        setLogger((helper == null) ? null : helper.getLogger());
         this.helper = helper;
         setMethod(method);
         setRequestUri(requestUri);

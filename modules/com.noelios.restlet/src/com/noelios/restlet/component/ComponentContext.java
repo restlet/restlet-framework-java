@@ -61,8 +61,7 @@ public class ComponentContext extends Context {
 
     @Override
     public Context createChildContext() {
-        return new ChildContext(null, getComponentHelper().getHelped()
-                .getContext());
+        return new ChildContext(getComponentHelper().getHelped().getContext());
     }
 
     @Override

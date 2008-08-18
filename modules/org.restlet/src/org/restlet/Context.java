@@ -107,7 +107,10 @@ public class Context {
             result = "org.restlet.component";
         }
 
-        result += "." + owner.hashCode();
+        if (owner != null) {
+            result += "." + owner.hashCode();
+        }
+
         return result;
     }
 

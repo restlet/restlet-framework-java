@@ -27,8 +27,6 @@
 
 package com.noelios.restlet.authentication;
 
-import java.util.logging.Logger;
-
 import javax.security.auth.login.CredentialException;
 
 import org.restlet.Guard;
@@ -253,8 +251,7 @@ public class HttpDigestHelper extends AuthenticationHelper {
     }
 
     @Override
-    public void parseResponse(ChallengeResponse cr, Request request,
-            Logger logger) {
+    public void parseResponse(ChallengeResponse cr, Request request) {
         AuthenticationUtils.parseParameters(cr.getCredentials(), cr
                 .getParameters());
     }

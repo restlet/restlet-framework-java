@@ -29,6 +29,7 @@ package com.noelios.restlet.authentication;
 
 import java.util.logging.Logger;
 
+import org.restlet.Context;
 import org.restlet.Guard;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
@@ -205,6 +206,15 @@ public abstract class AuthenticationHelper {
     }
 
     /**
+     * Returns the context's logger.
+     * 
+     * @return The context's logger.
+     */
+    public Logger getLogger() {
+        return Context.getCurrentLogger();
+    }
+
+    /**
      * Indicates if client side authentication is supported.
      * 
      * @return True if client side authentication is supported.
@@ -236,11 +246,8 @@ public abstract class AuthenticationHelper {
      * 
      * @param request
      *            The request.
-     * @param logger
-     *            The logger to use.
      */
-    public void parseResponse(ChallengeResponse cr, Request request,
-            Logger logger) {
+    public void parseResponse(ChallengeResponse cr, Request request) {
     }
 
     /**

@@ -120,8 +120,6 @@ public class OAuthHelper extends AuthenticationHelper {
     public void formatCredentials(StringBuilder sb,
             ChallengeResponse challenge, Request request,
             Series<Parameter> httpHeaders) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
