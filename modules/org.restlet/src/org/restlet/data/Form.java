@@ -77,9 +77,11 @@ public class Form extends Series<Parameter> {
      * @param representation
      *            The representation to parse (URL encoded Web form supported).
      * @throws IOException
+     * @deprecated Use the constructor without logger instead.
      */
+    @Deprecated
     public Form(Logger logger, Representation representation) {
-        Engine.getInstance().parse(logger, this, representation);
+        Engine.getInstance().parse(this, representation);
     }
 
     /**
@@ -92,7 +94,9 @@ public class Form extends Series<Parameter> {
      * @param characterSet
      *            The supported character encoding.
      * @throws IOException
+     * @deprecated Use the constructor without logger instead.
      */
+    @Deprecated
     public Form(Logger logger, String queryString, CharacterSet characterSet) {
         this(logger, queryString, characterSet, '&');
     }
@@ -109,11 +113,13 @@ public class Form extends Series<Parameter> {
      * @param separator
      *            The separator character to append between parameters.
      * @throws IOException
+     * @deprecated Use the constructor without logger instead.
      */
+    @Deprecated
     public Form(Logger logger, String parametersString,
             CharacterSet characterSet, char separator) {
-        Engine.getInstance().parse(logger, this, parametersString,
-                characterSet, true, separator);
+        Engine.getInstance().parse(this, parametersString, characterSet, true,
+                separator);
     }
 
     /**

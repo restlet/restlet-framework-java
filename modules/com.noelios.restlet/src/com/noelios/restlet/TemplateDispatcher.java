@@ -105,8 +105,7 @@ public class TemplateDispatcher extends Uniform {
 
         if (targetUri.contains("{")) {
             // Template URI detected, create the template
-            final Template template = new Template(getContext().getLogger(),
-                    targetUri);
+            final Template template = new Template(targetUri);
 
             // Set the formatted target URI
             request.setResourceRef(template.format(request, response));

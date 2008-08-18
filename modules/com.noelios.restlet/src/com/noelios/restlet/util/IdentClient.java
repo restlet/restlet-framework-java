@@ -34,7 +34,8 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import org.restlet.Context;
 
 /**
  * Simple IDENT client. Follow the RFC 1413.
@@ -64,12 +65,10 @@ public class IdentClient {
      * @param serverPort
      *            The server port (local).
      */
-    public IdentClient(Logger logger, String clientAddress, int clientPort,
-            int serverPort) {
+    public IdentClient(String clientAddress, int clientPort, int serverPort) {
         Socket socket = null;
 
-        if ((logger != null) && (clientAddress != null) && (clientPort != -1)
-                && (serverPort != -1)) {
+        if ((clientAddress != null) && (clientPort != -1) && (serverPort != -1)) {
             BufferedReader in = null;
             try {
                 // Compose the IDENT request
@@ -112,8 +111,8 @@ public class IdentClient {
                     }
                 }
             } catch (final IOException ioe) {
-                logger.log(Level.FINE, "Unable to complete the IDENT request",
-                        ioe);
+                Context.getCurrentLogger().log(Level.FINE,
+                        "Unable to complete the IDENT request", ioe);
             } finally {
                 try {
                     // Always attempt to close the reader, therefore the socket
@@ -121,7 +120,8 @@ public class IdentClient {
                         in.close();
                     }
                 } catch (final IOException ioe) {
-                    logger.log(Level.FINE, "Unable to close the socket", ioe);
+                    Context.getCurrentLogger().log(Level.FINE,
+                            "Unable to close the socket", ioe);
                 }
             }
         }

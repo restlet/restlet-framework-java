@@ -30,8 +30,8 @@ package com.noelios.restlet.util;
 import java.io.IOException;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import org.restlet.Context;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
@@ -87,8 +87,6 @@ public class FormUtils {
     /**
      * Reads the first parameter with the given name.
      * 
-     * @param logger
-     *            The logger.
      * @param post
      *            The web form representation.
      * @param name
@@ -96,13 +94,13 @@ public class FormUtils {
      * @return The parameter.
      * @throws IOException
      */
-    public static Parameter getFirstParameter(Logger logger,
-            Representation post, String name) throws IOException {
+    public static Parameter getFirstParameter(Representation post, String name)
+            throws IOException {
         if (!post.isAvailable()) {
             throw new IllegalStateException(
                     "The Web form cannot be parsed as no fresh content is available. If this entity has been already read once, caching of the entity is required");
         } else {
-            return new FormReader(logger, post).readFirstParameter(name);
+            return new FormReader(post).readFirstParameter(name);
         }
 
     }
@@ -110,8 +108,6 @@ public class FormUtils {
     /**
      * Reads the first parameter with the given name.
      * 
-     * @param logger
-     *            The logger.
      * @param query
      *            The query string.
      * @param name
@@ -123,10 +119,9 @@ public class FormUtils {
      * @return The parameter.
      * @throws IOException
      */
-    public static Parameter getFirstParameter(Logger logger, String query,
-            String name, CharacterSet characterSet, char separator)
-            throws IOException {
-        return new FormReader(logger, query, characterSet, separator)
+    public static Parameter getFirstParameter(String query, String name,
+            CharacterSet characterSet, char separator) throws IOException {
+        return new FormReader(query, characterSet, separator)
                 .readFirstParameter(name);
     }
 
@@ -134,8 +129,6 @@ public class FormUtils {
      * Reads the parameters with the given name.<br>
      * If multiple values are found, a list is returned created.
      * 
-     * @param logger
-     *            The logger.
      * @param form
      *            The web form representation.
      * @param name
@@ -144,13 +137,13 @@ public class FormUtils {
      * @throws IOException
      *             If the parameters could not be read.
      */
-    public static Object getParameter(Logger logger, Representation form,
-            String name) throws IOException {
+    public static Object getParameter(Representation form, String name)
+            throws IOException {
         if (!form.isAvailable()) {
             throw new IllegalStateException(
                     "The Web form cannot be parsed as no fresh content is available. If this entity has been already read once, caching of the entity is required");
         } else {
-            return new FormReader(logger, form).readParameter(name);
+            return new FormReader(form).readParameter(name);
         }
     }
 
@@ -158,8 +151,6 @@ public class FormUtils {
      * Reads the parameters with the given name.<br>
      * If multiple values are found, a list is returned created.
      * 
-     * @param logger
-     *            The logger.
      * @param query
      *            The query string.
      * @param name
@@ -172,9 +163,9 @@ public class FormUtils {
      * @throws IOException
      *             If the parameters could not be read.
      */
-    public static Object getParameter(Logger logger, String query, String name,
+    public static Object getParameter(String query, String name,
             CharacterSet characterSet, char separator) throws IOException {
-        return new FormReader(logger, query, characterSet, separator)
+        return new FormReader(query, characterSet, separator)
                 .readParameter(name);
     }
 
@@ -183,8 +174,6 @@ public class FormUtils {
      * If a matching parameter is found, its value is put in the map.<br>
      * If multiple values are found, a list is created and set in the map.
      * 
-     * @param logger
-     *            The logger.
      * @param post
      *            The web form representation.
      * @param parameters
@@ -192,13 +181,13 @@ public class FormUtils {
      * @throws IOException
      *             If the parameters could not be read.
      */
-    public static void getParameters(Logger logger, Representation post,
+    public static void getParameters(Representation post,
             Map<String, Object> parameters) throws IOException {
         if (!post.isAvailable()) {
             throw new IllegalStateException(
                     "The Web form cannot be parsed as no fresh content is available. If this entity has been already read once, caching of the entity is required");
         } else {
-            new FormReader(logger, post).readParameters(parameters);
+            new FormReader(post).readParameters(parameters);
         }
     }
 
@@ -207,8 +196,6 @@ public class FormUtils {
      * If a matching parameter is found, its value is put in the map.<br>
      * If multiple values are found, a list is created and set in the map.
      * 
-     * @param logger
-     *            The logger.
      * @param parametersString
      *            The query string.
      * @param parameters
@@ -220,34 +207,33 @@ public class FormUtils {
      * @throws IOException
      *             If the parameters could not be read.
      */
-    public static void getParameters(Logger logger, String parametersString,
+    public static void getParameters(String parametersString,
             Map<String, Object> parameters, CharacterSet characterSet,
             char separator) throws IOException {
-        new FormReader(logger, parametersString, characterSet, separator)
+        new FormReader(parametersString, characterSet, separator)
                 .readParameters(parameters);
     }
 
     /**
      * Parses a post into a given form.
      * 
-     * @param logger
-     *            The logger.
      * @param form
      *            The target form.
      * @param post
      *            The posted form.
      */
-    public static void parse(Logger logger, Form form, Representation post) {
+    public static void parse(Form form, Representation post) {
         if (post.isAvailable()) {
             FormReader fr = null;
             try {
-                fr = new FormReader(logger, post);
+                fr = new FormReader(post);
             } catch (final IOException ioe) {
-                if (logger != null) {
-                    logger.log(Level.WARNING,
-                            "Unable to create a form reader. Parsing aborted.",
-                            ioe);
-                }
+                Context
+                        .getCurrentLogger()
+                        .log(
+                                Level.WARNING,
+                                "Unable to create a form reader. Parsing aborted.",
+                                ioe);
             }
 
             if (fr != null) {
@@ -262,8 +248,6 @@ public class FormUtils {
     /**
      * Parses a parameters string into a given form.
      * 
-     * @param logger
-     *            The logger.
      * @param form
      *            The target form.
      * @param parametersString
@@ -276,15 +260,14 @@ public class FormUtils {
      * @param separator
      *            The separator character to append between parameters.
      */
-    public static void parse(Logger logger, Form form, String parametersString,
+    public static void parse(Form form, String parametersString,
             CharacterSet characterSet, boolean decode, char separator) {
         FormReader fr = null;
 
         if (decode) {
-            fr = new FormReader(logger, parametersString, characterSet,
-                    separator);
+            fr = new FormReader(parametersString, characterSet, separator);
         } else {
-            fr = new FormReader(logger, parametersString, separator);
+            fr = new FormReader(parametersString, separator);
         }
 
         fr.addParameters(form);

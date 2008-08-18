@@ -68,8 +68,7 @@ public class OAuthGuard extends Guard {
 
     @Override
     public int authenticate(Request request) {
-        final OAuthMessage requestMessage = OAuthHelper.getMessage(request,
-                getLogger());
+        final OAuthMessage requestMessage = OAuthHelper.getMessage(request);
         final OAuthAccessor accessor = this.provider
                 .getAccessor(requestMessage);
 

@@ -34,7 +34,6 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.restlet.Application;
 import org.restlet.Client;
@@ -74,10 +73,6 @@ public abstract class Engine {
 
     /** The registered engine. */
     private static volatile Engine instance = null;
-
-    /** Obtain a suitable logger. */
-    private static final Logger logger = Logger.getLogger(Engine.class
-            .getCanonicalName());
 
     /** Major version number. */
     public static final String MAJOR_NUMBER = "@major-number@";
@@ -169,7 +164,8 @@ public abstract class Engine {
                                 providerName.indexOf('#')).trim();
                     }
                 } catch (final IOException e) {
-                    logger
+                    Context
+                            .getCurrentLogger()
                             .log(
                                     Level.SEVERE,
                                     "Unable to register the Restlet API implementation. Please check that the JAR file is in your classpath.");
@@ -178,8 +174,8 @@ public abstract class Engine {
                         try {
                             reader.close();
                         } catch (final IOException e) {
-                            logger
-                                    .warning("IOException encountered while closing an open BufferedReader"
+                            Context.getCurrentLogger().warning(
+                                    "IOException encountered while closing an open BufferedReader"
                                             + e.getMessage());
                         }
                     }
@@ -192,7 +188,8 @@ public abstract class Engine {
                             .newInstance();
                     result = instance;
                 } catch (final Exception e) {
-                    logger
+                    Context
+                            .getCurrentLogger()
                             .log(
                                     Level.SEVERE,
                                     "Unable to register the Restlet API implementation",
@@ -203,7 +200,8 @@ public abstract class Engine {
             }
 
             if (configURL == null) {
-                logger
+                Context
+                        .getCurrentLogger()
                         .log(
                                 Level.SEVERE,
                                 "Unable to find an implementation of the Restlet API. Please check your classpath.");
@@ -291,11 +289,9 @@ public abstract class Engine {
      * @param response
      *            The response to update. Must contain a {@link Representation}
      *            to copy the representation headers in it.
-     * @param logger
-     *            The logger to use.
      */
     public abstract void copyResponseHeaders(Iterable<Parameter> headers,
-            Response response, Logger logger);
+            Response response);
 
     /**
      * Copies the headers of the given {@link Response} into the given
@@ -307,11 +303,9 @@ public abstract class Engine {
      *            it.
      * @param headers
      *            The Series to copy the headers in.
-     * @param logger
-     *            The logger to use.
      */
     public abstract void copyResponseHeaders(Response response,
-            Series<Parameter> headers, Logger logger);
+            Series<Parameter> headers);
 
     /**
      * Creates a directory resource.
@@ -446,21 +440,16 @@ public abstract class Engine {
     /**
      * Parses a representation into a form.
      * 
-     * @param logger
-     *            The logger to use.
      * @param form
      *            The target form.
      * @param representation
      *            The representation to parse.
      */
-    public abstract void parse(Logger logger, Form form,
-            Representation representation);
+    public abstract void parse(Form form, Representation representation);
 
     /**
      * Parses a parameters string to parse into a given form.
      * 
-     * @param logger
-     *            The logger to use.
      * @param form
      *            The target form.
      * @param parametersString
@@ -473,9 +462,8 @@ public abstract class Engine {
      * @param separator
      *            The separator character to append between parameters.
      */
-    public abstract void parse(Logger logger, Form form,
-            String parametersString, CharacterSet characterSet, boolean decode,
-            char separator);
+    public abstract void parse(Form form, String parametersString,
+            CharacterSet characterSet, boolean decode, char separator);
 
     /**
      * Parses the given Content Type.

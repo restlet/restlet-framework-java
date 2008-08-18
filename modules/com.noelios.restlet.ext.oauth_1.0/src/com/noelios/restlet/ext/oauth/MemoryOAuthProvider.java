@@ -32,13 +32,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import net.oauth.OAuthAccessor;
 import net.oauth.OAuthConsumer;
 import net.oauth.OAuthMessage;
 
 import org.apache.commons.codec.digest.DigestUtils;
+import org.restlet.Context;
 
 /**
  * Provider with a in-memory backing store.
@@ -51,24 +51,17 @@ public class MemoryOAuthProvider extends OAuthProvider {
     // TODO: LRU collections.
     private final Map<String, OAuthConsumer> consumers = new HashMap<String, OAuthConsumer>();
 
-    /** The current logger. */
-    private final Logger logger;
-
     private final Set<OAuthAccessor> tokens = new HashSet<OAuthAccessor>();
 
     /**
      * Constructor.
-     * 
-     * @param logger
-     *            The current logger.
      */
-    public MemoryOAuthProvider(Logger logger) {
-        this.logger = logger;
+    public MemoryOAuthProvider() {
     }
 
     @Override
     public void addConsumer(String key, OAuthConsumer consumer) {
-        this.logger.fine("Adding consumer " + consumer);
+        Context.getCurrentLogger().fine("Adding consumer " + consumer);
         this.consumers.put(key, consumer);
     }
 
@@ -89,7 +82,7 @@ public class MemoryOAuthProvider extends OAuthProvider {
         accessor.requestToken = null;
         accessor.accessToken = token;
 
-        this.logger.fine("Adding access token " + accessor);
+        Context.getCurrentLogger().fine("Adding access token " + accessor);
 
         // update token in local cache
         this.tokens.add(accessor);
@@ -113,7 +106,7 @@ public class MemoryOAuthProvider extends OAuthProvider {
         accessor.tokenSecret = secret;
         accessor.accessToken = null;
 
-        this.logger.fine("Adding request token " + accessor);
+        Context.getCurrentLogger().fine("Adding request token " + accessor);
 
         // add to the local cache
         this.tokens.add(accessor);
@@ -170,8 +163,9 @@ public class MemoryOAuthProvider extends OAuthProvider {
         accessor.setProperty("user", userId);
         accessor.setProperty("authorized", Boolean.TRUE);
 
-        this.logger.fine("Authorizing request token " + accessor
-                + " for userId " + userId);
+        Context.getCurrentLogger().fine(
+                "Authorizing request token " + accessor + " for userId "
+                        + userId);
 
         // update token in local cache
         this.tokens.add(accessor);

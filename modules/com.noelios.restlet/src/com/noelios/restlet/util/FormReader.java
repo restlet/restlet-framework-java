@@ -35,8 +35,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import org.restlet.Context;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
@@ -55,9 +55,6 @@ public class FormReader {
     /** Indicates if the parameters should be decoded. */
     private volatile boolean decode;
 
-    /** The logger to use. */
-    private volatile Logger logger;
-
     /** The form stream. */
     private volatile InputStream stream;
 
@@ -69,17 +66,13 @@ public class FormReader {
      * In case the representation does not define a character set, the UTF-8
      * character set is used.
      * 
-     * @param logger
-     *            The logger.
      * @param representation
      *            The web form content.
      * @throws IOException
      *             if the stream of the representation could not be opened.
      */
-    public FormReader(Logger logger, Representation representation)
-            throws IOException {
+    public FormReader(Representation representation) throws IOException {
         this.decode = true;
-        this.logger = logger;
         this.stream = representation.getStream();
         this.separator = '&';
 
@@ -93,14 +86,11 @@ public class FormReader {
     /**
      * Constructor. Will leave the parsed data encoded.
      * 
-     * @param logger
-     *            The logger.
      * @param parametersString
      *            The parameters string.
      */
-    public FormReader(Logger logger, String parametersString, char separator) {
+    public FormReader(String parametersString, char separator) {
         this.decode = false;
-        this.logger = logger;
         this.stream = new ByteArrayInputStream(parametersString.getBytes());
         this.characterSet = null;
         this.separator = separator;
@@ -109,18 +99,15 @@ public class FormReader {
     /**
      * Constructor.
      * 
-     * @param logger
-     *            The logger.
      * @param parametersString
      *            The parameters string.
      * @param characterSet
      *            The supported character encoding. Set to null to leave the
      *            data encoded.
      */
-    public FormReader(Logger logger, String parametersString,
-            CharacterSet characterSet, char separator) {
+    public FormReader(String parametersString, CharacterSet characterSet,
+            char separator) {
         this.decode = true;
-        this.logger = logger;
         this.stream = new ByteArrayInputStream(parametersString.getBytes());
         this.characterSet = characterSet;
         this.separator = separator;
@@ -150,7 +137,8 @@ public class FormReader {
                 }
             }
         } catch (final IOException ioe) {
-            getLogger()
+            Context
+                    .getCurrentLogger()
                     .log(
                             Level.WARNING,
                             "Unable to parse a form parameter. Skipping the remaining parameters.",
@@ -160,21 +148,9 @@ public class FormReader {
         try {
             this.stream.close();
         } catch (final IOException ioe) {
-            getLogger().log(Level.WARNING,
+            Context.getCurrentLogger().log(Level.WARNING,
                     "Unable to close the form input stream", ioe);
         }
-    }
-
-    /**
-     * Returns the logger.
-     * 
-     * @return The logger.
-     */
-    private Logger getLogger() {
-        if (this.logger == null) {
-            this.logger = Logger.getLogger(FormReader.class.getCanonicalName());
-        }
-        return this.logger;
     }
 
     /**

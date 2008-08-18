@@ -31,8 +31,8 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import org.restlet.Context;
 import org.restlet.data.Cookie;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Parameter;
@@ -78,20 +78,14 @@ public class CookieReader extends HeaderReader {
     /** The global cookie specification version. */
     private volatile int globalVersion;
 
-    /** The logger to use. */
-    private volatile Logger logger;
-
     /**
      * Constructor.
      * 
-     * @param logger
-     *            The logger to use.
      * @param header
      *            The header to read.
      */
-    public CookieReader(Logger logger, String header) {
+    public CookieReader(String header) {
         super(header);
-        this.logger = logger;
         this.cachedPair = null;
         this.globalVersion = -1;
     }
@@ -216,7 +210,8 @@ public class CookieReader extends HeaderReader {
                     }
                 } else {
                     // Ignore the expires header
-                    this.logger.log(Level.WARNING,
+                    Context.getCurrentLogger().log(
+                            Level.WARNING,
                             "Ignoring cookie setting expiration date. Unable to parse the date: "
                                     + pair.getValue());
                 }

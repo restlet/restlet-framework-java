@@ -135,7 +135,7 @@ public class Engine extends org.restlet.gwt.util.Engine {
      *            The response to update. Must contain a {@link Representation}
      *            to copy the representation headers in it.
      * @see org.restlet.util.Engine#copyResponseHeaders(java.lang.Iterable,
-     *      org.restlet.data.Response, java.util.logging.Logger)
+     *      org.restlet.data.Response)
      */
     @Override
     public void copyResponseHeaders(Iterable<Parameter> responseHeaders,

@@ -95,8 +95,8 @@ public class AccessTokenResource extends Resource {
      * @throws ResourceException
      */
     private void handle() throws ResourceException {
-        final OAuthMessage requestMessage = OAuthHelper.getMessage(
-                getRequest(), getLogger());
+        final OAuthMessage requestMessage = OAuthHelper
+                .getMessage(getRequest());
         final OAuthAccessor accessor = this.provider
                 .getAccessor(requestMessage);
         final ChallengeRequest challengeRequest = new ChallengeRequest(

@@ -101,8 +101,8 @@ public class RequestTokenResource extends Resource {
          * This is stolen and modified from RequestTokenServlet in the OAuth
          * Java source.
          */
-        final OAuthMessage requestMessage = OAuthHelper.getMessage(
-                getRequest(), getLogger());
+        final OAuthMessage requestMessage = OAuthHelper
+                .getMessage(getRequest());
         final OAuthConsumer consumer = this.provider
                 .getConsumer(requestMessage);
         final ChallengeRequest challengeRequest = new ChallengeRequest(

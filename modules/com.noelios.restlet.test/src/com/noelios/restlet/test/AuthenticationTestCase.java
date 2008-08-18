@@ -55,7 +55,7 @@ public class AuthenticationTestCase extends TestCase {
         final String authorization1 = "Basic c2NvdHQ6dGlnZXI=";
 
         assertEquals(authorization1, AuthenticationUtils.format(
-                AuthenticationUtils.parseAuthorizationHeader(null, null,
+                AuthenticationUtils.parseAuthorizationHeader(null,
                         authorization1), null, null));
         assertEquals(authenticate1, AuthenticationUtils
                 .format(AuthenticationUtils
@@ -70,7 +70,7 @@ public class AuthenticationTestCase extends TestCase {
         final String authenticate1 = "Digest realm=\"realm\", domain=\"/protected/ /alsoProtected/\", qop=\"auth\", algorithm=MD5, nonce=\"MTE3NzEwMzIwMjg0Mjo2NzFjODQyMjAyOWRlNWQ1YjFjNmEzYzJmOWRlZmE2Mw==\"";
 
         final ChallengeResponse cres = AuthenticationUtils
-                .parseAuthorizationHeader(null, null, authorization1);
+                .parseAuthorizationHeader(null, authorization1);
         cres.setCredentials(null);
         assertEquals(authorization1, AuthenticationUtils.format(cres, null,
                 null));

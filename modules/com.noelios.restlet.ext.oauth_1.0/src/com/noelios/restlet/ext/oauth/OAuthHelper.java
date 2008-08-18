@@ -31,11 +31,11 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import net.oauth.OAuth;
 import net.oauth.OAuthMessage;
 
+import org.restlet.Context;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
@@ -63,26 +63,21 @@ public class OAuthHelper extends AuthenticationHelper {
      * request.getParameterMap().
      * 
      * @param request
-     * @param logger
-     *            The context's logger.
      * @return message
      */
-    public static OAuthMessage getMessage(Request request, Logger logger) {
+    public static OAuthMessage getMessage(Request request) {
         final String URL = request.getResourceRef().toString();
         return new OAuthMessage(request.getMethod().getName(), URL, OAuthHelper
-                .getParameters(request, logger));
+                .getParameters(request));
     }
 
     /**
      * Translate request parameters into OAuth.Parameter objects.
      * 
      * @param request
-     * @param logger
-     *            The context's logger.
      * @return parameters
      */
-    public static List<OAuth.Parameter> getParameters(Request request,
-            Logger logger) {
+    public static List<OAuth.Parameter> getParameters(Request request) {
         final Set<OAuth.Parameter> parameters = new HashSet<OAuth.Parameter>();
 
         // Authorization headers.
@@ -109,7 +104,7 @@ public class OAuthHelper extends AuthenticationHelper {
             }
         }
 
-        logger.fine("Got OAuth parameters " + parameters);
+        Context.getCurrentLogger().fine("Got OAuth parameters " + parameters);
 
         return new ArrayList<OAuth.Parameter>(parameters);
     }
@@ -143,9 +138,8 @@ public class OAuthHelper extends AuthenticationHelper {
     }
 
     @Override
-    public void parseResponse(ChallengeResponse cr, Request request,
-            Logger logger) {
-        super.parseResponse(cr, request, logger);
+    public void parseResponse(ChallengeResponse cr, Request request) {
+        super.parseResponse(cr, request);
     }
 
 }

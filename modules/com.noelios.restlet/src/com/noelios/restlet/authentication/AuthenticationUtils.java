@@ -27,7 +27,6 @@
 
 package com.noelios.restlet.authentication;
 
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -249,14 +248,12 @@ public class AuthenticationUtils {
      * 
      * @param request
      *            The request.
-     * @param logger
-     *            The logger to use.
      * @param header
      *            The header value to parse.
      * @return The parsed challenge response.
      */
     public static ChallengeResponse parseAuthorizationHeader(Request request,
-            Logger logger, String header) {
+            String header) {
         ChallengeResponse result = null;
 
         if (header != null) {
@@ -274,7 +271,7 @@ public class AuthenticationUtils {
                         .findHelper(result.getScheme(), true, false);
 
                 if (helper != null) {
-                    helper.parseResponse(result, request, logger);
+                    helper.parseResponse(result, request);
                 } else {
                     throw new IllegalArgumentException("Challenge scheme "
                             + result.getScheme()

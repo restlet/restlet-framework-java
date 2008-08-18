@@ -122,10 +122,6 @@ public class Engine extends org.restlet.util.Engine {
     public static final String DESCRIPTOR_SERVER_PATH = DESCRIPTOR_PATH + "/"
             + DESCRIPTOR_SERVER;
 
-    /** Obtain a suitable logger. */
-    private static Logger logger = Logger.getLogger(Engine.class
-            .getCanonicalName());
-
     /** Complete version. */
     @SuppressWarnings("hiding")
     public static final String VERSION = org.restlet.util.Engine.VERSION;
@@ -262,7 +258,8 @@ public class Engine extends org.restlet.util.Engine {
                 discoverConnectors();
                 discoverAuthentications();
             } catch (IOException e) {
-                logger
+                Context
+                        .getCurrentLogger()
                         .log(
                                 Level.WARNING,
                                 "An error occured while discovering the engine helpers.",
@@ -289,16 +286,14 @@ public class Engine extends org.restlet.util.Engine {
      * @param response
      *            The response to update. Must contain a {@link Representation}
      *            to copy the representation headers in it.
-     * @param logger
-     *            The logger to use.
      * @see org.restlet.util.Engine#copyResponseHeaders(java.lang.Iterable,
-     *      org.restlet.data.Response, java.util.logging.Logger)
+     *      org.restlet.data.Response)
      */
     @Override
     public void copyResponseHeaders(Iterable<Parameter> responseHeaders,
-            Response response, Logger logger) {
+            Response response) {
         HttpClientConverter.copyResponseTransportHeaders(responseHeaders,
-                response, logger);
+                response);
         HttpClientCall.copyResponseEntityHeaders(responseHeaders, response
                 .getEntity());
     }
@@ -313,17 +308,12 @@ public class Engine extends org.restlet.util.Engine {
      *            it.
      * @param headers
      *            The Series to copy the headers in.
-     * @param logger
-     *            The logger to use.
-     * @see org.restlet.util.Engine#copyResponseHeaders(Response, Series,
-     *      Logger)
+     * @see org.restlet.util.Engine#copyResponseHeaders(Response, Series)
      */
     @Override
-    public void copyResponseHeaders(Response response,
-            Series<Parameter> headers, Logger logger) {
-        HttpServerConverter.addResponseHeaders(response, headers, logger);
-        HttpServerConverter.addEntityHeaders(response.getEntity(), headers,
-                logger);
+    public void copyResponseHeaders(Response response, Series<Parameter> headers) {
+        HttpServerConverter.addResponseHeaders(response, headers);
+        HttpServerConverter.addEntityHeaders(response.getEntity(), headers);
     }
 
     @Override
@@ -355,7 +345,8 @@ public class Engine extends org.restlet.util.Engine {
                             result = connector.getClass().getConstructor(
                                     Client.class).newInstance(client);
                         } catch (final Exception e) {
-                            logger
+                            Context
+                                    .getCurrentLogger()
                                     .log(
                                             Level.SEVERE,
                                             "Exception while instantiation the client connector.",
@@ -378,7 +369,7 @@ public class Engine extends org.restlet.util.Engine {
                 sb
                         .append(". Please add the JAR of a matching connector to your classpath.");
 
-                logger.log(Level.WARNING, sb.toString());
+                Context.getCurrentLogger().log(Level.WARNING, sb.toString());
             }
         }
 
@@ -409,7 +400,8 @@ public class Engine extends org.restlet.util.Engine {
                             result = connector.getClass().getConstructor(
                                     Server.class).newInstance(server);
                         } catch (final Exception e) {
-                            logger
+                            Context
+                                    .getCurrentLogger()
                                     .log(
                                             Level.SEVERE,
                                             "Exception while instantiation the server connector.",
@@ -432,7 +424,7 @@ public class Engine extends org.restlet.util.Engine {
                 sb
                         .append(". Please add the JAR of a matching connector to your classpath.");
 
-                logger.log(Level.WARNING, sb.toString());
+                Context.getCurrentLogger().log(Level.WARNING, sb.toString());
             }
         }
 
@@ -985,18 +977,17 @@ public class Engine extends org.restlet.util.Engine {
     }
 
     @Override
-    public void parse(Logger logger, Form form, Representation webForm) {
+    public void parse(Form form, Representation webForm) {
         if (webForm != null) {
-            FormUtils.parse(logger, form, webForm);
+            FormUtils.parse(form, webForm);
         }
     }
 
     @Override
-    public void parse(Logger logger, Form form, String queryString,
-            CharacterSet characterSet, boolean decode, char separator) {
+    public void parse(Form form, String queryString, CharacterSet characterSet,
+            boolean decode, char separator) {
         if ((queryString != null) && !queryString.equals("")) {
-            FormUtils.parse(logger, form, queryString, characterSet, decode,
-                    separator);
+            FormUtils.parse(form, queryString, characterSet, decode, separator);
         }
     }
 
@@ -1014,7 +1005,7 @@ public class Engine extends org.restlet.util.Engine {
 
     @Override
     public Cookie parseCookie(String cookie) throws IllegalArgumentException {
-        final CookieReader cr = new CookieReader(logger, cookie);
+        final CookieReader cr = new CookieReader(cookie);
         try {
             return cr.readCookie();
         } catch (final IOException e) {
@@ -1025,7 +1016,7 @@ public class Engine extends org.restlet.util.Engine {
     @Override
     public CookieSetting parseCookieSetting(String cookieSetting)
             throws IllegalArgumentException {
-        final CookieReader cr = new CookieReader(logger, cookieSetting);
+        final CookieReader cr = new CookieReader(cookieSetting);
         try {
             return cr.readCookieSetting();
         } catch (final IOException e) {
@@ -1190,8 +1181,9 @@ public class Engine extends org.restlet.util.Engine {
                                         constructorClass.cast(null)));
                             }
                         } catch (final Exception e) {
-                            logger
-                                    .log(Level.SEVERE,
+                            Context.getCurrentLogger()
+                                    .log(
+                                            Level.SEVERE,
                                             "Unable to register the helper "
                                                     + provider, e);
                         }
@@ -1200,7 +1192,8 @@ public class Engine extends org.restlet.util.Engine {
                     line = reader.readLine();
                 }
             } catch (final IOException e) {
-                logger.log(Level.SEVERE,
+                Context.getCurrentLogger().log(
+                        Level.SEVERE,
                         "Unable to read the provider descriptor: "
                                 + configUrl.toString());
             } finally {
@@ -1209,8 +1202,8 @@ public class Engine extends org.restlet.util.Engine {
                 }
             }
         } catch (final IOException ioe) {
-            logger.log(Level.SEVERE, "Exception while detecting the helpers.",
-                    ioe);
+            Context.getCurrentLogger().log(Level.SEVERE,
+                    "Exception while detecting the helpers.", ioe);
         }
     }
 

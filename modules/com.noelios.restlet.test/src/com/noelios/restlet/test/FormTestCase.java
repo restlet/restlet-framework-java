@@ -28,7 +28,6 @@
 package com.noelios.restlet.test;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import junit.framework.TestCase;
 
@@ -53,8 +52,8 @@ public class FormTestCase extends TestCase {
         form.add("email2", "joe@bob.net");
 
         final String query = form.encode(CharacterSet.UTF_8);
-        final Form newForm = new FormReader(Logger.getLogger(FormTestCase.class
-                .getCanonicalName()), query, CharacterSet.UTF_8, '&').read();
+        final Form newForm = new FormReader(query, CharacterSet.UTF_8, '&')
+                .read();
         final String newQuery = newForm.encode(CharacterSet.UTF_8);
         assertEquals(query, newQuery);
     }

@@ -31,7 +31,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Logger;
 
 import junit.framework.TestCase;
 
@@ -56,9 +55,7 @@ public class CookiesTestCase extends TestCase {
      * @throws IOException
      */
     private void testCookie(String headerValue) throws IOException {
-        final CookieReader cr = new CookieReader(Logger
-                .getLogger(CookiesTestCase.class.getCanonicalName()),
-                headerValue);
+        final CookieReader cr = new CookieReader(headerValue);
         final List<Cookie> cookies = new ArrayList<Cookie>();
         Cookie cookie = cr.readCookie();
 
@@ -103,9 +100,7 @@ public class CookiesTestCase extends TestCase {
      */
     private void testCookieSetting(String headerValue, boolean compare)
             throws IOException {
-        final CookieReader cr = new CookieReader(Logger
-                .getLogger(CookiesTestCase.class.getCanonicalName()),
-                headerValue);
+        final CookieReader cr = new CookieReader(headerValue);
         final CookieSetting cookie = cr.readCookieSetting();
 
         // Rewrite the header

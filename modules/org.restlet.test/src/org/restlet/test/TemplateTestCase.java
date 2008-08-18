@@ -75,8 +75,8 @@ public class TemplateTestCase extends TestCase {
     }
 
     public void testVariableNames() throws Exception {
-        final Template tpl = new Template(Logger.getAnonymousLogger(),
-                TEMPLATE1);
+        final Template tpl = new Template(TEMPLATE1);
+        tpl.setLogger(Logger.getAnonymousLogger());
         final List<String> names = tpl.getVariableNames();
 
         assertEquals(2, names.size());
