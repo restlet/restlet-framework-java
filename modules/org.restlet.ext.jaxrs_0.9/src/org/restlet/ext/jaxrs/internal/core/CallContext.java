@@ -85,9 +85,10 @@ import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.resource.Representation;
 
 /**
- * Contains all request specific data of the interfaces injectable for &#64;{@link Context}.
- * Implemetation of the JAX-RS interfaces {@link HttpHeaders}, {@link UriInfo},
- * {@link javax.ws.rs.core.Request} and {@link SecurityContext}.<br>
+ * Contains all request specific data of the interfaces injectable for &#64;
+ * {@link Context}. Implemetation of the JAX-RS interfaces {@link HttpHeaders},
+ * {@link UriInfo}, {@link javax.ws.rs.core.Request} and {@link SecurityContext}
+ * .<br>
  * This class is not required to be thread safe, because it is only used for one
  * client request in one thread at the same time.
  * 
@@ -182,8 +183,8 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
     private List<Locale> acceptedLanguages;
 
     /**
-     * the unmodifiable List of accepted {@link MediaType}s. Lazy
-     * initialization by getter.
+     * the unmodifiable List of accepted {@link MediaType}s. Lazy initialization
+     * by getter.
      * 
      * @see #getAcceptableMediaTypes()
      */
@@ -239,18 +240,16 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
     /**
      * 
      * @param request
-     *                The Restlet request to wrap. Must not be null.
+     *            The Restlet request to wrap. Must not be null.
      * @param templateParametersEncoded
-     *                The template parameters. Must not be null.
+     *            The template parameters. Must not be null.
      * @param response
-     *                The Restlet response
+     *            The Restlet response
      * @param roleChecker
-     *                The roleChecker is needed to check, if a user is in a
-     *                role, see {@link #isUserInRole(String)}. If null was
-     *                given here and
-     *                {@link SecurityContext#isUserInRole(String)} is called,
-     *                the HTTP client will get an Internal Server Error as
-     *                response.
+     *            The roleChecker is needed to check, if a user is in a role,
+     *            see {@link #isUserInRole(String)}. If null was given here and
+     *            {@link SecurityContext#isUserInRole(String)} is called, the
+     *            HTTP client will get an Internal Server Error as response.
      */
     public CallContext(Request request, org.restlet.data.Response response,
             RoleChecker roleChecker) {
@@ -368,7 +367,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * Creates an unmodifiable List of {@link PathSegment}s.
      * 
      * @param decode
-     *                indicates, if the values should be decoded or not
+     *            indicates, if the values should be decoded or not
      * @return
      */
     private List<PathSegment> createPathSegments(boolean decode) {
@@ -428,12 +427,11 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * Evaluate request preconditions based on the passed in value.
      * 
      * @param lastModified
-     *                a date that specifies the modification date of the
-     *                resource
+     *            a date that specifies the modification date of the resource
      * @return null if the preconditions are met or a ResponseBuilder set with
      *         the appropriate status if the preconditions are not met.
      * @throws java.lang.IllegalStateException
-     *                 if called outside the scope of a request
+     *             if called outside the scope of a request
      * 
      * @see javax.ws.rs.core.Request#evaluatePreconditions(java.util.Date)
      * @see #evaluatePreconditions(Date, EntityTag)
@@ -446,23 +444,22 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * Evaluate request preconditions based on the passed in value.
      * 
      * @param lastModified
-     *                a date that specifies the modification date of the
-     *                resource
+     *            a date that specifies the modification date of the resource
      * @param entityTag
-     *                an ETag for the current state of the resource
+     *            an ETag for the current state of the resource
      * @return null if the preconditions are met or a ResponseBuilder set with
      *         the appropriate status if the preconditions are not met. A
      *         returned ResponseBuilder will include an ETag header set with the
      *         value of eTag.
      * @throws java.lang.IllegalStateException
-     *                 if called outside the scope of a request
+     *             if called outside the scope of a request
      * 
      * @see javax.ws.rs.core.Request#evaluatePreconditions(java.util.Date,
      *      javax.ws.rs.core.EntityTag)
-     * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.3.5">RFC
-     *      2616, section 10.3.5: Status 304: Not Modiied</a>
-     * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.4.13">RFC
-     *      2616, section 10.4.13: Status 412: Precondition Failed</a>
+     * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.3.5">RFC *
+     *      2616, section 10.3.5: Status 304: Not Modiied< /a>
+     * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.4.13">RFC *
+     *      2616, section 10.4.13: Status 412: Precondition Failed< /a>
      * @see <a href="http://tools.ietf.org/html/rfc2616#section-13.3">RFC 2616,
      *      section 13.3: (Caching) Validation Model</a>
      * @see <a href="http://tools.ietf.org/html/rfc2616#section-14.24">RFC 2616,
@@ -489,7 +486,8 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
             if (modSinceCond != null) {
                 if (modSinceCond.after(lastModified)) {
                     // the Entity was not changed
-                    final boolean readRequest = requestMethod.equals(Method.GET)
+                    final boolean readRequest = requestMethod
+                            .equals(Method.GET)
                             || requestMethod.equals(Method.HEAD);
                     if (readRequest) {
                         rb = Response.notModified();
@@ -550,13 +548,13 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * Evaluate request preconditions based on the passed in value.
      * 
      * @param entityTag
-     *                an ETag for the current state of the resource
+     *            an ETag for the current state of the resource
      * @return null if the preconditions are met or a ResponseBuilder set with
      *         the appropriate status if the preconditions are not met. A
      *         returned ResponseBuilder will include an ETag header set with the
      *         value of eTag.
      * @throws java.lang.IllegalStateException
-     *                 if called outside the scope of a request
+     *             if called outside the scope of a request
      * @see javax.ws.rs.core.Request#evaluatePreconditions(javax.ws.rs.core.EntityTag)
      * @see #evaluatePreconditions(Date, EntityTag)
      */
@@ -776,7 +774,8 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      */
     public MultivaluedMap<String, String> getFormParameters() {
         // LATER method removed in JAX-RS 0.10
-        throw new WillNotBeImplementedException("this method is removed in JAX-RS 0.10");
+        throw new WillNotBeImplementedException(
+                "this method is removed in JAX-RS 0.10");
     }
 
     /**
@@ -851,7 +850,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * 
      * @return the media type or null if there is no request entity.
      * @throws java.lang.IllegalStateException
-     *                 if called outside the scope of a request
+     *             if called outside the scope of a request
      * @see HttpHeaders#getMediaType()
      */
     public MediaType getMediaType() {
@@ -886,8 +885,8 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * Get the path of the current request relative to the base URI as a string.
      * 
      * @param decode
-     *                controls whether sequences of escaped octets are decoded
-     *                (true) or not (false).
+     *            controls whether sequences of escaped octets are decoded
+     *            (true) or not (false).
      * @return the relative URI path.
      * @see UriInfo#getPath(boolean)
      */
@@ -907,7 +906,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * 
      * @return an unmodifiable map of parameter names and values
      * @throws java.lang.IllegalStateException
-     *                 if called outside the scope of a request
+     *             if called outside the scope of a request
      * @see javax.ws.rs.Path
      * @see UriInfo#getPathParameters()
      */
@@ -938,11 +937,11 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * Get the values of any embedded URI template parameters.
      * 
      * @param decode
-     *                controls whether sequences of escaped octets are decoded
-     *                (true) or not (false).
+     *            controls whether sequences of escaped octets are decoded
+     *            (true) or not (false).
      * @return an unmodifiable map of parameter names and values
      * @throws java.lang.IllegalStateException
-     *                 if called outside the scope of a request
+     *             if called outside the scope of a request
      * @see javax.ws.rs.Path
      * @see UriInfo#getPathParameters(boolean)
      */
@@ -962,10 +961,10 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * All sequences of escaped octets are decoded, equivalent to
      * <code>getPathSegments(true)</code>.
      * 
-     * @return an unmodifiable list of {@link PathSegment}. The matrix
-     *         parameter map of each path segment is also unmodifiable.
+     * @return an unmodifiable list of {@link PathSegment}. The matrix parameter
+     *         map of each path segment is also unmodifiable.
      * @throws java.lang.IllegalStateException
-     *                 if called outside the scope of a request
+     *             if called outside the scope of a request
      * @see PathSegment
      * @see UriInfo#getPathSegments()
      */
@@ -979,12 +978,12 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * parsed, particularly when matrix parameters may be present in the path.
      * 
      * @param decode
-     *                controls whether sequences of escaped octets are decoded
-     *                (true) or not (false).
-     * @return an unmodifiable list of {@link PathSegment}. The matrix
-     *         parameter map of each path segment is also unmodifiable.
+     *            controls whether sequences of escaped octets are decoded
+     *            (true) or not (false).
+     * @return an unmodifiable list of {@link PathSegment}. The matrix parameter
+     *         map of each path segment is also unmodifiable.
      * @throws java.lang.IllegalStateException
-     *                 if called outside the scope of a request
+     *             if called outside the scope of a request
      * @see PathSegment
      * @see UriInfo#getPathSegments(boolean)
      */
@@ -1009,7 +1008,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * 
      * @return an unmodifiable map of query parameter names and values
      * @throws java.lang.IllegalStateException
-     *                 if called outside the scope of a request
+     *             if called outside the scope of a request
      * @see UriInfo#getQueryParameters()
      */
     public MultivaluedMap<String, String> getQueryParameters() {
@@ -1024,11 +1023,11 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * Get the URI query parameters of the current request.
      * 
      * @param decode
-     *                controls whether sequences of escaped octets in parameter
-     *                names and values are decoded (true) or not (false).
+     *            controls whether sequences of escaped octets in parameter
+     *            names and values are decoded (true) or not (false).
      * @return an unmodifiable map of query parameter names and values
      * @throws java.lang.IllegalStateException
-     *                 if called outside the scope of a request
+     *             if called outside the scope of a request
      * @see UriInfo#getQueryParameters(boolean)
      */
     public MultivaluedMap<String, String> getQueryParameters(boolean decode) {
@@ -1036,8 +1035,8 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
             return getQueryParameters();
         }
         if (this.queryParametersEncoded == null) {
-            final Form queryForm = Converter.toFormEncoded(
-                    this.referenceOriginal.getQuery(), unexpectedLogger);
+            final Form queryForm = Converter
+                    .toFormEncoded(this.referenceOriginal.getQuery());
             this.queryParametersEncoded = UnmodifiableMultivaluedMap
                     .getFromForm(queryForm, false);
         }
@@ -1105,12 +1104,12 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
     }
 
     /**
-     * Returns a <code>java.security.Principal</code> object containing the
-     * name of the current authenticated user. If the user has not been
+     * Returns a <code>java.security.Principal</code> object containing the name
+     * of the current authenticated user. If the user has not been
      * authenticated, the method returns null.
      * 
-     * @return a <code>java.security.Principal</code> containing the name of
-     *         the user making this request; null if the user has not been
+     * @return a <code>java.security.Principal</code> containing the name of the
+     *         user making this request; null if the user has not been
      *         authenticated
      * @see SecurityContext#getUserPrincipal()
      */
@@ -1146,8 +1145,8 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * Returns a boolean indicating whether this request was made using a secure
      * channel, such as HTTPS.
      * 
-     * @return <code>true</code> if the request was made using a secure
-     *         channel, <code>false</code> otherwise
+     * @return <code>true</code> if the request was made using a secure channel,
+     *         <code>false</code> otherwise
      * @see SecurityContext#isSecure()
      */
     public boolean isSecure() {
@@ -1160,7 +1159,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * the method returns <code>false</code>.
      * 
      * @param role
-     *                a <code>String</code> specifying the name of the role
+     *            a <code>String</code> specifying the name of the role
      * @return a <code>boolean</code> indicating whether the user making the
      *         request belongs to a given role; <code>false</code> if the user
      *         has not been authenticated
@@ -1214,7 +1213,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * Creates a response with status 412 (Precondition Failed).
      * 
      * @param entityMessage
-     *                Plain Text error message. Will be returned as entity.
+     *            Plain Text error message. Will be returned as entity.
      * @return Returns a response with status 412 (Precondition Failed) and the
      *         given message as entity.
      */
@@ -1234,12 +1233,12 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * response.
      * 
      * @param variants
-     *                a list of Variant that describe all of the available
-     *                representation variants.
+     *            a list of Variant that describe all of the available
+     *            representation variants.
      * @return the variant that best matches the request.
      * @see Variant.VariantListBuilder
      * @throws IllegalArgumentException
-     *                 if variants is null or empty.
+     *             if variants is null or empty.
      * @see javax.ws.rs.core.Request#selectVariant(List)
      */
     public Variant selectVariant(List<Variant> variants)
@@ -1289,17 +1288,17 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * where is no planned handling. Logs the exception (warn {@link Level}).
      * 
      * @param exc
-     *                the catched URISyntaxException
+     *            the catched URISyntaxException
      * @param unexpectedLogger
-     *                the unexpectedLogger to log the messade
+     *            the unexpectedLogger to log the messade
      * @param logMessage
-     *                the message to log.
+     *            the message to log.
      * @return Will never return anything, because the generated
      *         WebApplicationException will be thrown. You an formally throw the
      *         returned exception (e.g. in a catch block). So the compiler is
      *         sure, that the method will be left here.
      * @throws WebApplicationException
-     *                 contains the given {@link Exception}
+     *             contains the given {@link Exception}
      */
     private WebApplicationException wrapUriSyntaxExc(URISyntaxException exc,
             Logger logger, String logMessage) throws WebApplicationException {

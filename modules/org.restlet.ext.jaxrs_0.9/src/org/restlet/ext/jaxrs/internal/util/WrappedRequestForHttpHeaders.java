@@ -30,7 +30,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
@@ -60,8 +59,6 @@ public class WrappedRequestForHttpHeaders implements
     /** may be null */
     private MultivaluedMap<String, Object> jaxRsRespHeaders;
 
-    private final Logger logger;
-
     /** null, if content was copied to the {@link #headers}. */
     private Response restletResponse;
 
@@ -69,17 +66,15 @@ public class WrappedRequestForHttpHeaders implements
      * 
      * @param restletResponse
      * @param jaxRsRespHeaders
-     * @param logger
      */
     public WrappedRequestForHttpHeaders(Response restletResponse,
-            MultivaluedMap<String, Object> jaxRsRespHeaders, Logger logger) {
+            MultivaluedMap<String, Object> jaxRsRespHeaders) {
         if (restletResponse == null) {
             throw new IllegalArgumentException(
                     "The Restlet Response must not be null");
         }
         this.restletResponse = restletResponse;
         this.jaxRsRespHeaders = jaxRsRespHeaders;
-        this.logger = logger;
     }
 
     public void add(String headerName, Object headerValue) {
@@ -191,8 +186,7 @@ public class WrappedRequestForHttpHeaders implements
      */
     private Series<Parameter> getHeaders() {
         if ((this.headers == null) && (this.restletResponse != null)) {
-            this.headers = Util.copyResponseHeaders(this.restletResponse,
-                    this.logger);
+            this.headers = Util.copyResponseHeaders(this.restletResponse);
             this.restletResponse = null;
         }
         return this.headers;

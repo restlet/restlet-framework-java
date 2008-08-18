@@ -57,11 +57,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import javax.ws.rs.Path;
 import javax.ws.rs.core.MultivaluedMap;
 
+import org.restlet.Context;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Dimension;
 import org.restlet.data.Form;
@@ -99,8 +99,6 @@ public class Util {
      * The default character set to be used, if no character set is given.
      */
     public static final CharacterSet JAX_RS_DEFAULT_CHARACTER_SET = UTF_8;
-
-    private static final Logger logger = Logger.getAnonymousLogger();
 
     /**
      * This comparator sorts the concrete MediaTypes to the beginning and the
@@ -223,13 +221,11 @@ public class Util {
      *            Headers of an JAX-RS-Response.
      * @param restletResponse
      *            Restlet Response to copy the headers in.
-     * @param logger
-     *            The logger to use
      * @see javax.ws.rs.core.Response#getMetadata()
      */
     public static void copyResponseHeaders(
             final MultivaluedMap<String, Object> jaxRsHeaders,
-            Response restletResponse, Logger logger) {
+            Response restletResponse) {
         final Collection<Parameter> headers = new ArrayList<Parameter>();
         for (final Map.Entry<String, List<Object>> m : jaxRsHeaders.entrySet()) {
             final String headerName = m.getKey();
@@ -248,8 +244,7 @@ public class Util {
         if (restletResponse.getEntity() == null) {
             restletResponse.setEntity(Representation.createEmpty());
         }
-        Engine.getInstance().copyResponseHeaders(headers, restletResponse,
-                logger);
+        Engine.getInstance().copyResponseHeaders(headers, restletResponse);
     }
 
     /**
@@ -260,15 +255,12 @@ public class Util {
      *            The response to update. Should contain a
      *            {@link Representation} to copy the representation headers from
      *            it.
-     * @param logger
-     *            The logger to use.
      * @return The copied headers.
      */
-    public static Series<Parameter> copyResponseHeaders(
-            Response restletResponse, Logger logger) {
+    public static Series<Parameter> copyResponseHeaders(Response restletResponse) {
         final Series<Parameter> headers = new Form();
         final Engine engine = Engine.getInstance();
-        engine.copyResponseHeaders(restletResponse, headers, logger);
+        engine.copyResponseHeaders(restletResponse, headers);
         return headers;
     }
 
@@ -1272,8 +1264,11 @@ public class Util {
      * @return UFT-8
      */
     private static CharacterSet logUnsupportedCharSet(String charsetName) {
-        logger.warning("The character set " + charsetName + " is not "
-                + "available. Will use " + JAX_RS_DEFAULT_CHARACTER_SET);
+        Context.getCurrentLogger()
+                .warning(
+                        "The character set " + charsetName + " is not "
+                                + "available. Will use "
+                                + JAX_RS_DEFAULT_CHARACTER_SET);
         return JAX_RS_DEFAULT_CHARACTER_SET;
     }
 

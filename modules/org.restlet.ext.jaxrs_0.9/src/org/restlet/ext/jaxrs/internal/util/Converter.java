@@ -33,7 +33,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.StringTokenizer;
-import java.util.logging.Logger;
 
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.EntityTag;
@@ -156,12 +155,11 @@ public class Converter {
      * Converts the given query String to a Form, but do not decode the data.
      * 
      * @param queryString
-     * @param logger
      * @return
      */
-    public static Form toFormEncoded(String queryString, Logger logger) {
+    public static Form toFormEncoded(String queryString) {
         final Form form = new Form();
-        Engine.getInstance().parse(logger, form, queryString, null, false, '&');
+        Engine.getInstance().parse(form, queryString, null, false, '&');
         return form;
     }
 

@@ -26,8 +26,6 @@
  */
 package org.restlet.test.jaxrs.wrappers;
 
-import java.util.logging.Logger;
-
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
@@ -56,8 +54,7 @@ public class RootResourceClassTest extends TestCase {
 
     public void testEncodePath() throws Exception {
         final WrapperFactory wrapperFactory = new WrapperFactory(
-                new ThreadLocalizedContext(), null, null, Logger
-                        .getAnonymousLogger());
+                new ThreadLocalizedContext(), null, null);
         try {
             wrapperFactory.getRootResourceClass(IllegalPathService1.class);
             fail("must not pass");

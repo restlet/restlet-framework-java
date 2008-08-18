@@ -34,6 +34,7 @@ import javax.ws.rs.Path;
 
 import junit.framework.TestCase;
 
+import org.restlet.Context;
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
 import org.restlet.ext.jaxrs.internal.util.RemainingPath;
@@ -90,8 +91,7 @@ public class WrapperClassesTests extends TestCase {
     }
 
     private static final WrapperFactory wrapperFactory = new WrapperFactory(
-            new ThreadLocalizedContext(), null, null, Logger
-                    .getAnonymousLogger());
+            new ThreadLocalizedContext(), null, null);
 
     public void testIllegalMethodPath() throws Exception {
         final RootResourceClass rrc = wrapperFactory

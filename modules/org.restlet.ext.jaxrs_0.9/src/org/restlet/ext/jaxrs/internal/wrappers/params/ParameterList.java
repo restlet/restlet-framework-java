@@ -98,7 +98,7 @@ public class ParameterList {
      * Abstract super class for access to &#64;*Param.
      */
     abstract static class AbstractParamGetter implements ParamGetter {
-        
+
         /**
          * The type of the collection. null, if this parameter do not represent
          * a collection.
@@ -202,8 +202,8 @@ public class ParameterList {
          * @return
          * @throws ConvertParameterException
          * @throws WebApplicationException
-         *                 if the conversion method throws an
-         *                 WebApplicationException.
+         *             if the conversion method throws an
+         *             WebApplicationException.
          */
         private Object convertParamValueInner(String paramValue,
                 DefaultValue defaultValue) throws ConvertParameterException,
@@ -411,8 +411,8 @@ public class ParameterList {
 
         /**
          * @param annoSaysLeaveClassEncoded
-         *                to check if the annotation is available, but should
-         *                not be.
+         *            to check if the annotation is available, but should not
+         *            be.
          */
         CookieParamGetter(CookieParam cookieParam, DefaultValue defaultValue,
                 Class<?> convToCl, Type convToGen,
@@ -469,8 +469,8 @@ public class ParameterList {
 
     /**
      * Abstract super class for access to the entity or to &#64;*Param where
-     * encoded is allowed (&#64;{@link PathParam}, &#64;{@link MatrixParam}
-     * and &#64;{@link QueryParam}).
+     * encoded is allowed (&#64;{@link PathParam}, &#64;{@link MatrixParam} and
+     * &#64;{@link QueryParam}).
      */
     abstract static class EncParamGetter extends AbstractParamGetter {
 
@@ -548,7 +548,7 @@ public class ParameterList {
 
         /**
          * @param annoSaysLeaveClassEncoded
-         *                to check if the annotation is available.
+         *            to check if the annotation is available.
          */
         HeaderParamGetter(HeaderParam headerParam, DefaultValue defaultValue,
                 Class<?> convToCl, Type paramGenericType,
@@ -610,14 +610,14 @@ public class ParameterList {
 
     /**
      * Abstract super class for access to the entity or to &#64;*Param where
-     * encoded is allowed (&#64;{@link PathParam}, &#64;{@link MatrixParam}
-     * and &#64;{@link QueryParam}).
+     * encoded is allowed (&#64;{@link PathParam}, &#64;{@link MatrixParam} and
+     * &#64;{@link QueryParam}).
      */
     abstract static class NoEncParamGetter extends AbstractParamGetter {
 
         /**
          * @param annoSaysLeaveEncoded
-         *                to check if the annotation is available.
+         *            to check if the annotation is available.
          */
         NoEncParamGetter(DefaultValue defaultValue, Class<?> convToCl,
                 Type convToGen, ThreadLocalizedContext tlContext,
@@ -745,7 +745,7 @@ public class ParameterList {
             final Reference resourceRef = this.tlContext.get().getRequest()
                     .getResourceRef();
             final String queryString = resourceRef.getQuery();
-            final Form form = Converter.toFormEncoded(queryString, localLogger);
+            final Form form = Converter.toFormEncoded(queryString);
             final String paramName = this.queryParam.value();
             try {
                 return super.getParamValue(form, paramName);
@@ -880,19 +880,18 @@ public class ParameterList {
      * @param jaxRsProviders
      * @param extensionBackwardMapping
      * @param paramsAllowed
-     *                true, if &#64;*Params are allowed as parameter, otherwise
-     *                false.
+     *            true, if &#64;*Params are allowed as parameter, otherwise
+     *            false.
      * @param entityAllowed
-     *                true, if the entity is allowed as parameter, otherwise
-     *                false.
+     *            true, if the entity is allowed as parameter, otherwise false.
      * @param logger
      * @param allMustBeAvailable
-     *                if true, all values must be available (for singeltons
-     *                creation it must be false)
+     *            if true, all values must be available (for singeltons creation
+     *            it must be false)
      * @throws MissingAnnotationException
      * @throws IllegalTypeException
-     *                 if the given class is not valid to be annotated with
-     *                 &#64; {@link Context}.
+     *             if the given class is not valid to be annotated with &#64;
+     *             {@link Context}.
      * @throws IllegalPathParamTypeException
      */
     private ParameterList(Class<?>[] parameterTypes, Type[] genParamTypes,
@@ -1006,8 +1005,8 @@ public class ParameterList {
      * @param allMustBeAvailable
      * @throws MissingAnnotationException
      * @throws IllegalTypeException
-     *                 if one of the parameters contains a &#64;{@link Context}
-     *                 on an type that must not be annotated with &#64;{@link Context}.
+     *             if one of the parameters contains a &#64;{@link Context} on
+     *             an type that must not be annotated with &#64;{@link Context}.
      * @throws IllegalPathParamTypeException
      */
     public ParameterList(Constructor<?> constr,
@@ -1034,8 +1033,8 @@ public class ParameterList {
      * @param logger
      * @throws MissingAnnotationException
      * @throws IllegalTypeException
-     *                 if one of the parameters contains a &#64;{@link Context}
-     *                 on an type that must not be annotated with &#64;{@link Context}.
+     *             if one of the parameters contains a &#64;{@link Context} on
+     *             an type that must not be annotated with &#64;{@link Context}.
      * @throws IllegalPathParamTypeException
      */
     public ParameterList(Method executeMethod, Method annotatedMethod,

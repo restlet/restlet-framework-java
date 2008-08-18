@@ -214,7 +214,7 @@ public class JaxRsRestlet extends Restlet {
                 metadataService);
         this.excHandler = new ExceptionHandler(getLogger());
         this.wrapperFactory = new WrapperFactory(tlContext, this.providers,
-                extensionBackwardMapping, getLogger());
+                extensionBackwardMapping);
         this.loadDefaultProviders();
         if (roleChecker != null)
             this.setRoleChecker(roleChecker);
@@ -785,7 +785,7 @@ public class JaxRsRestlet extends Restlet {
             accMediaType = tlContext.get().getAccMediaTypes();
         restletResponse.setEntity(convertToRepresentation(jaxRsEntity,
                 resourceMethod, respMediaType, httpHeaders, accMediaType));
-        copyResponseHeaders(httpHeaders, restletResponse, getLogger());
+        copyResponseHeaders(httpHeaders, restletResponse);
     }
 
     /**
@@ -872,7 +872,7 @@ public class JaxRsRestlet extends Restlet {
             respMediaType = MediaType.TEXT_PLAIN;
         final Response response = tlContext.get().getResponse();
         MultivaluedMap<String, Object> httpResponseHeaders = new WrappedRequestForHttpHeaders(
-                response, jaxRsRespHeaders, getLogger());
+                response, jaxRsRespHeaders);
         final Representation repr;
         if (entity == null) {
             repr = Representation.createEmpty();

@@ -28,8 +28,8 @@ package org.restlet.ext.jaxrs.internal.wrappers;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
+import org.restlet.Context;
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalBeanSetterTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalConstrParamTypeException;
@@ -52,29 +52,24 @@ public class WrapperFactory {
 
     private final ExtensionBackwardMapping extensionBackwardMapping;
 
-    private final Logger logger;
-
     private final Map<Class<?>, ResourceClass> resourceClasses = new HashMap<Class<?>, ResourceClass>();
 
     private final ThreadLocalizedContext tlContext;
 
     /**
      * @param tlContext
-     *                the {@link ThreadLocalizedContext} of the
-     *                {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
+     *            the {@link ThreadLocalizedContext} of the
+     *            {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
      * @param jaxRsProviders
      * @param extensionBackwardMapping
-     *                the extension backward mapping
-     * @param logger
-     *                the to log warnings and so on
+     *            the extension backward mapping
      */
     public WrapperFactory(ThreadLocalizedContext tlContext,
             JaxRsProviders jaxRsProviders,
-            ExtensionBackwardMapping extensionBackwardMapping, Logger logger) {
+            ExtensionBackwardMapping extensionBackwardMapping) {
         this.tlContext = tlContext;
         this.jaxRsProviders = jaxRsProviders;
         this.extensionBackwardMapping = extensionBackwardMapping;
-        this.logger = logger;
     }
 
     /**
@@ -94,8 +89,8 @@ public class WrapperFactory {
         }
         if (rc == null) {
             rc = new ResourceClass(jaxRsResourceClass, this.tlContext,
-                    this.jaxRsProviders, this.extensionBackwardMapping,
-                    this.logger);
+                    this.jaxRsProviders, this.extensionBackwardMapping, Context
+                            .getCurrentLogger());
             synchronized (this.resourceClasses) {
                 this.resourceClasses.put(jaxRsResourceClass, rc);
             }
@@ -109,12 +104,12 @@ public class WrapperFactory {
      * @param jaxRsRootResourceClass
      * @return the wrapped root resource class.
      * @throws IllegalArgumentException
-     *                 if the class is not a valid root resource class.
+     *             if the class is not a valid root resource class.
      * @throws MissingAnnotationException
-     *                 if the class is not annotated with &#64;Path.
+     *             if the class is not annotated with &#64;Path.
      * @throws IllegalPathOnClassException
      * @throws MissingConstructorException
-     *                 if no valid constructor could be found.
+     *             if no valid constructor could be found.
      * @throws IllegalBeanSetterTypeException
      * @throws IllegalFieldTypeException
      * @throws IllegalConstrParamTypeException
@@ -127,6 +122,7 @@ public class WrapperFactory {
             IllegalFieldTypeException, IllegalBeanSetterTypeException,
             IllegalPathParamTypeException {
         return new RootResourceClass(jaxRsRootResourceClass, this.tlContext,
-                this.jaxRsProviders, this.extensionBackwardMapping, this.logger);
+                this.jaxRsProviders, this.extensionBackwardMapping, Context
+                        .getCurrentLogger());
     }
 }
