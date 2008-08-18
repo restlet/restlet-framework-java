@@ -121,6 +121,11 @@ public class ChunkedEncodingPutTestCase extends BaseConnectorsTestCase {
         final Response r = new Client(Protocol.HTTP).handle(request);
 
         try {
+            if (!r.getStatus().isSuccess()) {
+                System.out.println(r.getStatus());
+            }
+
+            assertNotNull(r.getEntity());
             assertEquals(createChunckedRepresentation(size).getText(), r
                     .getEntity().getText());
         } finally {
