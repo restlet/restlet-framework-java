@@ -174,7 +174,8 @@ public abstract class Handler {
      * @return The generated reference.
      */
     public Reference generateRef(String uriTemplate) {
-        final Template tplt = new Template(getLogger(), uriTemplate);
+        final Template tplt = new Template(uriTemplate);
+        tplt.setLogger(getLogger());
         return new Reference(tplt.format(getRequest(), getResponse()));
     }
 
@@ -204,10 +205,7 @@ public abstract class Handler {
      * @return The context.
      */
     public Context getContext() {
-        if (this.context == null) {
-            this.context = new Context(getClass().getCanonicalName());
-        }
-        return this.context;
+        return (this.context != null) ? this.context : Context.getCurrent();
     }
 
     /**
@@ -216,7 +214,8 @@ public abstract class Handler {
      * @return The logger to use.
      */
     public Logger getLogger() {
-        return getContext().getLogger();
+        return (getContext() != null) ? getContext().getLogger() : Context
+                .getCurrentLogger();
     }
 
     /**

@@ -30,7 +30,6 @@ package com.noelios.restlet.http;
 import java.io.IOException;
 import java.util.Set;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.restlet.Context;
 import org.restlet.data.ChallengeRequest;
@@ -67,14 +66,12 @@ public class HttpClientConverter extends HttpConverter {
      *            The headers to copy.
      * @param response
      *            The response to update.
-     * @param logger
-     *            The logger to use.
      * @see Engine#copyResponseHeaders(Iterable, Response, Logger)
      * @see HttpClientCall#copyResponseEntityHeaders(Iterable,
      *      org.restlet.resource.Representation)
      */
     public static void copyResponseTransportHeaders(
-            Iterable<Parameter> headers, Response response, Logger logger) {
+            Iterable<Parameter> headers, Response response) {
         // Read info from headers
         for (final Parameter header : headers) {
             if (header.getName()
@@ -85,11 +82,11 @@ public class HttpClientConverter extends HttpConverter {
                     || (header.getName()
                             .equalsIgnoreCase(HttpConstants.HEADER_SET_COOKIE2))) {
                 try {
-                    final CookieReader cr = new CookieReader(logger, header
-                            .getValue());
+                    final CookieReader cr = new CookieReader(header.getValue());
                     response.getCookieSettings().add(cr.readCookieSetting());
                 } catch (final Exception e) {
-                    logger.log(Level.WARNING,
+                    Context.getCurrentLogger().log(
+                            Level.WARNING,
                             "Error during cookie setting parsing. Header: "
                                     + header.getValue(), e);
                 }
@@ -471,7 +468,7 @@ public class HttpClientConverter extends HttpConverter {
             // Put the response headers in the call's attributes map
             response.getAttributes().put(HttpConstants.ATTRIBUTE_HEADERS,
                     responseHeaders);
-            copyResponseTransportHeaders(responseHeaders, response, getLogger());
+            copyResponseTransportHeaders(responseHeaders, response);
         } catch (final Exception e) {
             getLogger()
                     .log(

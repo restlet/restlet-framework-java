@@ -53,7 +53,7 @@ Changes log
         - Added static Context.getCurrentLogger() method which always
           returns a non-null logger, if possible the current context's
           logger.
-        - Deprecated Template constructors with a logger.
+        - Deprecated Form and Template constructors with a logger.
     - NRE and Extension Enhancements
         - Refactored WADL extension based on John Logsdon's feed-back.
           Added convenience methods and constructors on FaultInfo, 

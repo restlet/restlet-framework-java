@@ -105,8 +105,26 @@ public class Restlet extends Uniform {
      * @return The context's logger.
      */
     public Logger getLogger() {
-        return (getContext() != null) ? getContext().getLogger() : Logger
-                .getLogger(getClass().getCanonicalName());
+        Logger result = null;
+        Context context = getContext();
+
+        if (context == null) {
+            context = Context.getCurrent();
+        }
+
+        if (context != null) {
+            result = context.getLogger();
+        }
+
+        if (result == null) {
+            result = Logger.getLogger(getClass().getCanonicalName());
+        }
+
+        if (result == null) {
+            result = Logger.getLogger("org.restlet.Restlet");
+        }
+
+        return result;
     }
 
     /**
@@ -149,7 +167,9 @@ public class Restlet extends Uniform {
         Response.setCurrent(response);
 
         // Associate the context to the current thread
-        Context.setCurrent(getContext());
+        if (getContext() != null) {
+            Context.setCurrent(getContext());
+        }
 
         // Check if the Restlet was started
         if (isStopped()) {

@@ -41,35 +41,6 @@ import org.restlet.Uniform;
  */
 public class ChildContext extends Context {
 
-    /**
-     * Returns the standard logger name for the given child Restlet.
-     * 
-     * @param child
-     *            The child to log about.
-     * @return The standard logger name.
-     */
-    public static String getLoggerName(Restlet child) {
-        String result = null;
-
-        if (child != null) {
-            Context context = child.getContext();
-
-            if (context != null) {
-                result = child.getClass().getCanonicalName();
-
-                if (result == null) {
-                    result = "org.restlet.restlet (";
-                }
-
-                result = result + child.hashCode() + ")";
-            }
-        } else {
-            result = "org.restlet.restlet";
-        }
-
-        return result;
-    }
-
     /** The child delegate, typically an application. */
     private volatile Restlet child;
 
@@ -91,7 +62,8 @@ public class ChildContext extends Context {
      *            The parent context.
      */
     public ChildContext(Restlet child, Context parentContext) {
-        this(child, parentContext, Logger.getLogger(getLoggerName(child)));
+        this(child, parentContext, Logger.getLogger(getLoggerName(child,
+                "org.restlet.Restlet")));
     }
 
     /**
@@ -155,7 +127,7 @@ public class ChildContext extends Context {
      */
     public void setChild(Restlet child) {
         this.child = child;
-        setLogger(Logger.getLogger(getLoggerName(child)));
+        setLogger(Logger.getLogger(getLoggerName(child, "org.restlet.Restlet")));
     }
 
 }

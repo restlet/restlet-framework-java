@@ -28,7 +28,6 @@
 package com.noelios.restlet;
 
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.restlet.Context;
 import org.restlet.Filter;
@@ -54,9 +53,6 @@ import com.noelios.restlet.util.IdentClient;
  * @author Jerome Louvel
  */
 public class LogFilter extends Filter {
-    /** Obtain a suitable logger. */
-    private volatile Logger logger;
-
     /** The log service. */
     protected volatile LogService logService;
 
@@ -76,9 +72,8 @@ public class LogFilter extends Filter {
         this.logService = logService;
 
         if (logService != null) {
-            this.logger = Logger.getLogger(logService.getLoggerName());
             this.logTemplate = (logService.getLogFormat() == null) ? null
-                    : new Template(getLogger(), logService.getLogFormat());
+                    : new Template(logService.getLogFormat());
         }
     }
 
@@ -98,10 +93,10 @@ public class LogFilter extends Filter {
 
         // Format the call into a log entry
         if (this.logTemplate != null) {
-            this.logger.log(Level.INFO, format(request, response));
+            getLogger().log(Level.INFO, format(request, response));
         } else {
-            this.logger.log(Level.INFO, formatDefault(request, response,
-                    duration));
+            getLogger().log(Level.INFO,
+                    formatDefault(request, response, duration));
         }
     }
 
@@ -167,9 +162,9 @@ public class LogFilter extends Filter {
 
         // Append the user name (via IDENT protocol)
         if (this.logService.isIdentityCheck()) {
-            final IdentClient ic = new IdentClient(getLogger(), request
-                    .getClientInfo().getAddress(), request.getClientInfo()
-                    .getPort(), response.getServerInfo().getPort());
+            final IdentClient ic = new IdentClient(request.getClientInfo()
+                    .getAddress(), request.getClientInfo().getPort(), response
+                    .getServerInfo().getPort());
             sb.append((ic.getUserIdentifier() == null) ? "-" : ic
                     .getUserIdentifier());
         } else {

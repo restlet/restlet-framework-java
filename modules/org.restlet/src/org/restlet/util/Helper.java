@@ -102,7 +102,7 @@ public abstract class Helper<T extends Restlet> {
      * @return The helped Restlet logger.
      */
     public Logger getLogger() {
-        return getHelped().getLogger();
+        return Context.getCurrentLogger();
     }
 
     /**
@@ -135,7 +135,9 @@ public abstract class Helper<T extends Restlet> {
         Response.setCurrent(response);
 
         // Associate the context to the current thread
-        Context.setCurrent(getContext());
+        if (getContext() != null) {
+            Context.setCurrent(getContext());
+        }
     }
 
     /**

@@ -34,6 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
 
+import org.restlet.Context;
 import org.restlet.util.Helper;
 
 import com.noelios.restlet.util.SslContextFactory;
@@ -184,13 +185,13 @@ public class HttpsUtils extends HttpUtils {
                         result = sslContextFactoryClass.newInstance();
                         result.init(helper.getHelpedParameters());
                     } catch (ClassNotFoundException e) {
-                        helper.getLogger().log(
+                        Context.getCurrentLogger().log(
                                 Level.WARNING,
                                 "Unable to find SslContextFactory class: "
                                         + sslContextFactoryName, e);
                     } catch (ClassCastException e) {
-                        helper
-                                .getLogger()
+                        Context
+                                .getCurrentLogger()
                                 .log(
                                         Level.WARNING,
                                         "Class "
@@ -198,13 +199,13 @@ public class HttpsUtils extends HttpUtils {
                                                 + " does not implement SslContextFactory.",
                                         e);
                     } catch (InstantiationException e) {
-                        helper.getLogger().log(
+                        Context.getCurrentLogger().log(
                                 Level.WARNING,
                                 "Could not instantiate class "
                                         + sslContextFactoryName
                                         + " with default constructor.", e);
                     } catch (IllegalAccessException e) {
-                        helper.getLogger().log(
+                        Context.getCurrentLogger().log(
                                 Level.WARNING,
                                 "Illegal access when instantiating class "
                                         + sslContextFactoryName + ".", e);

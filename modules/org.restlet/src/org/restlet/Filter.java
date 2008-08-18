@@ -153,7 +153,9 @@ public abstract class Filter extends Restlet {
             Response.setCurrent(response);
 
             // Associate the context to the current thread
-            Context.setCurrent(getContext());
+            if (getContext() != null) {
+                Context.setCurrent(getContext());
+            }
         } else {
             response.setStatus(Status.SERVER_ERROR_INTERNAL);
             getLogger()

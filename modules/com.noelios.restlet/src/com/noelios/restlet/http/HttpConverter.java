@@ -194,20 +194,12 @@ public class HttpConverter {
     }
 
     /**
-     * Returns the context's logger.
+     * Returns the logger.
      * 
-     * @return The context's logger.
+     * @return The logger.
      */
     public Logger getLogger() {
-        Logger result = null;
-
-        if ((getContext() != null) && (getContext().getLogger() != null)) {
-            result = getContext().getLogger();
-        } else {
-            result = Logger.getLogger(getClass().getCanonicalName());
-        }
-
-        return result;
+        return getContext().getLogger();
     }
 
 }

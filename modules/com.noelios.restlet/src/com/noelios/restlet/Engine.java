@@ -42,7 +42,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.restlet.Application;
 import org.restlet.Client;
@@ -546,8 +545,6 @@ public class Engine extends org.restlet.util.Engine {
 
                 if (childContext.getChild() == null) {
                     childContext.setChild(restlet);
-                    String loggerName = ChildContext.getLoggerName(restlet);
-                    context.setLogger(Logger.getLogger(loggerName));
                 }
             } else if (!(restlet instanceof Component)
                     && (context instanceof ComponentContext)) {

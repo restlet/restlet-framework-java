@@ -33,7 +33,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.restlet.Context;
 import org.restlet.data.ChallengeRequest;
@@ -67,11 +66,9 @@ public class HttpServerConverter extends HttpConverter {
      *            The {@link Representation} to copy the headers from.
      * @param responseHeaders
      *            The {@link Series} to copy the headers to.
-     * @param logger
-     *            The logger to use.
      */
     public static void addEntityHeaders(Representation entity,
-            Series<Parameter> responseHeaders, Logger logger) {
+            Series<Parameter> responseHeaders) {
         if (entity == null) {
             responseHeaders.add(HttpConstants.HEADER_CONTENT_LENGTH, "0");
         } else {
@@ -159,7 +156,8 @@ public class HttpServerConverter extends HttpConverter {
                             RangeUtils.formatContentRange(entity.getRange(),
                                     entity.getSize()));
                 } catch (Exception e) {
-                    logger
+                    Context
+                            .getCurrentLogger()
                             .log(
                                     Level.WARNING,
                                     "Unable to format the HTTP Content-Range header",
@@ -184,13 +182,10 @@ public class HttpServerConverter extends HttpConverter {
      *            The {@link Response} to copy the headers from.
      * @param responseHeaders
      *            The {@link Series} to copy the headers to.
-     * @param logger
-     *            The logger to use.
      * @throws IllegalArgumentException
      */
     public static void addResponseHeaders(Response response,
-            Series<Parameter> responseHeaders, Logger logger)
-            throws IllegalArgumentException {
+            Series<Parameter> responseHeaders) throws IllegalArgumentException {
         if (response.getStatus().equals(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED)
                 || Method.OPTIONS.equals(response.getRequest().getMethod())) {
             // Format the "Allow" header
@@ -273,7 +268,7 @@ public class HttpServerConverter extends HttpConverter {
         final Series<Parameter> responseHeaders = response.getHttpCall()
                 .getResponseHeaders();
         final Representation entity = response.getEntity();
-        addEntityHeaders(entity, responseHeaders, getLogger());
+        addEntityHeaders(entity, responseHeaders);
     }
 
     /**
@@ -288,7 +283,7 @@ public class HttpServerConverter extends HttpConverter {
         final Series<Parameter> responseHeaders = response.getHttpCall()
                 .getResponseHeaders();
         try {
-            addResponseHeaders(response, responseHeaders, getLogger());
+            addResponseHeaders(response, responseHeaders);
 
             // Add user-defined extension headers
             final Series<Parameter> additionalHeaders = (Series<Parameter>) response

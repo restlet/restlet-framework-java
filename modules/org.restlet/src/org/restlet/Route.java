@@ -162,9 +162,8 @@ public class Route extends Filter {
      *            The next Restlet.
      */
     public Route(Router router, String uriTemplate, Restlet next) {
-        this(router, new Template(router.getLogger(), uriTemplate,
-                Template.MODE_STARTS_WITH, Variable.TYPE_URI_SEGMENT, "", true,
-                false), next);
+        this(router, new Template(uriTemplate, Template.MODE_STARTS_WITH,
+                Variable.TYPE_URI_SEGMENT, "", true, false), next);
     }
 
     /**

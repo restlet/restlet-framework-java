@@ -27,7 +27,6 @@
 
 package com.noelios.restlet.component;
 
-import org.restlet.Component;
 import org.restlet.Context;
 
 /**
@@ -36,23 +35,6 @@ import org.restlet.Context;
  * @author Jerome Louvel
  */
 public class ComponentContext extends Context {
-    /**
-     * Returns a non-null logger name.
-     * 
-     * @param component
-     *            The component.
-     * @return The logger name.
-     */
-    private static String getLoggerName(Component component) {
-        String result = component.getClass().getCanonicalName();
-        if (result == null) {
-            result = "org.restlet.component";
-        }
-
-        result += "#" + component.hashCode();
-
-        return result;
-    }
 
     /** The client dispatcher. */
     private volatile ComponentClientDispatcher clientDispatcher;
@@ -70,7 +52,8 @@ public class ComponentContext extends Context {
      *            The component helper.
      */
     public ComponentContext(ComponentHelper componentHelper) {
-        super(getLoggerName(componentHelper.getHelped()));
+        super(getLoggerName(componentHelper.getHelped(),
+                "org.restlet.Component"));
         this.componentHelper = componentHelper;
         this.clientDispatcher = new ComponentClientDispatcher(this);
         this.serverDispatcher = new ComponentServerDispatcher(this);
