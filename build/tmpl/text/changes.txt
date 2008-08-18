@@ -64,6 +64,9 @@ Changes log
         - JAX-RS provider exception handling improved in the
           MessageBodyReader class. Contributed by Bruno Dumon. 
         - Updated jSSLutils to version 0.5.
+        - Added com.noelios.restlet.util.TraceHandler for debugging 
+          purpose displaying the logger name and message of each log
+          record received by the log manager.
     - Misc
         - Updated Grizzly to version 1.8.4.
         - Uniformized logger names relying on the static method 
