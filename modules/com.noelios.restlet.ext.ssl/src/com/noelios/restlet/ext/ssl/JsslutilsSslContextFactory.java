@@ -28,7 +28,7 @@ package com.noelios.restlet.ext.ssl;
 
 import javax.net.ssl.SSLContext;
 
-import jsslutils.sslcontext.SSLContextFactory;
+import org.jsslutils.sslcontext.SSLContextFactory;
 
 import org.restlet.data.Parameter;
 import org.restlet.util.Series;

@@ -62,6 +62,7 @@ Changes log
           Info). Added MethodInfo#add*() short-cut methods.
         - JAX-RS provider exception handling improved in the
           MessageBodyReader class. Contributed by Bruno Dumon. 
+        - Updated jSSLutils to version 0.5.
     - Misc
         - Updated Grizzly to version 1.8.4.
     

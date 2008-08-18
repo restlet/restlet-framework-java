@@ -36,11 +36,11 @@ import java.security.cert.CertificateException;
 
 import javax.net.ssl.SSLContext;
 
-import jsslutils.keystores.KeyStoreLoader;
-import jsslutils.sslcontext.PKIXSSLContextFactory;
-import jsslutils.sslcontext.SSLContextFactory.SSLContextFactoryException;
-import jsslutils.sslcontext.X509SSLContextFactory.LockedSettingsException;
-import jsslutils.sslcontext.keymanagers.FixedServerAliasKeyManager;
+import org.jsslutils.keystores.KeyStoreLoader;
+import org.jsslutils.sslcontext.PKIXSSLContextFactory;
+import org.jsslutils.sslcontext.SSLContextFactory.SSLContextFactoryException;
+import org.jsslutils.sslcontext.X509SSLContextFactory.LockedSettingsException;
+import org.jsslutils.sslcontext.keymanagers.FixedServerAliasKeyManager;
 
 import org.restlet.data.Parameter;
 import org.restlet.util.Series;
