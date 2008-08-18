@@ -29,6 +29,7 @@ package org.restlet.ext.jaxrs.internal.wrappers.params;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.lang.reflect.InvocationTargetException;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MultivaluedMap;
@@ -83,7 +84,7 @@ public class EntityGetter implements ParamGetter {
      * @throws NoMessageBodyReaderException
      * @see IntoRrcInjector.AbstractInjectObjectGetter#getValue(String)
      */
-    public Object getValue() throws ConvertRepresentationException {
+    public Object getValue() throws ConvertRepresentationException, InvocationTargetException {
         final Request request = this.tlContext.get().getRequest();
         final Representation entity = request.getEntity();
         if (entity == null) {

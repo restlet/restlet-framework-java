@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import javax.ws.rs.WebApplicationException;
@@ -74,7 +75,7 @@ public interface MessageBodyReader {
             Annotation annotations[], MediaType mediaType,
             CharacterSet characterSet,
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
-            throws IOException, WebApplicationException;
+            throws IOException, WebApplicationException, InvocationTargetException;
 
     /**
      * Returns the list of produced {@link MediaType}s of the wrapped

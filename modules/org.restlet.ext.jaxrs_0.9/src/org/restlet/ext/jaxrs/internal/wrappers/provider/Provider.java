@@ -565,10 +565,17 @@ public class Provider implements MessageBodyReader, MessageBodyWriter,
             Annotation[] annotations, MediaType mediaType,
             CharacterSet characterSet,
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
-            throws IOException {
-        return this.reader.readFrom((Class) type, genericType, annotations,
-                Converter.toJaxRsMediaType(mediaType), httpHeaders,
-                entityStream);
+            throws IOException, InvocationTargetException {
+        try {
+            return this.reader.readFrom((Class) type, genericType, annotations,
+                    Converter.toJaxRsMediaType(mediaType), httpHeaders,
+                    entityStream);
+        } catch (Throwable t) {
+            if (t instanceof WebApplicationException)
+                throw (WebApplicationException)t;
+            else
+                throw new InvocationTargetException(t);
+        }
     }
 
     /**
