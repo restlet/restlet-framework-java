@@ -48,7 +48,7 @@ import com.sun.rowset.WebRowSetImpl;
  * 
  * @see <a href=
  *      "http://java.sun.com/j2se/1.5.0/docs/api/javax/sql/rowset/WebRowSet.html"
- *      >WebRowSet Interface< /a>
+ *      >WebRowSet Interface</a>
  * @author Thierry Boileau
  * @author Jerome Louvel
  */

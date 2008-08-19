@@ -764,7 +764,7 @@ public final class ByteUtils {
      * 
      * @see <a * href=
      *      "http://java.sun.com/j2se/1.5.0/docs/api/java/io/InputStreamReader.html"
-     *      >InputStreamReader * class< /a>
+     *      >InputStreamReader * class</a>
      * @see #toString(InputStream, CharacterSet)
      * @param inputStream
      *            The input stream.
@@ -780,7 +780,7 @@ public final class ByteUtils {
      * 
      * @see <a * href=
      *      "http://java.sun.com/j2se/1.5.0/docs/api/java/io/InputStreamReader.html"
-     *      >InputStreamReader * class< /a>
+     *      >InputStreamReader * class</a>
      * @param inputStream
      *            The input stream.
      * @param characterSet
@@ -812,7 +812,7 @@ public final class ByteUtils {
      * 
      * @see <a * href=
      *      "http://java.sun.com/j2se/1.5.0/docs/api/java/io/InputStreamReader.html"
-     *      >InputStreamReader * class< /a>
+     *      >InputStreamReader * class</a>
      * @param reader
      *            The characters reader.
      * @return The converted string.

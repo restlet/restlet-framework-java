@@ -58,7 +58,7 @@ import org.restlet.resource.Variant;
  * 
  * @see <a
  *      href="http://httpd.apache.org/docs/2.0/content-negotiation.html">Apache
- *      mod_negotiation module< /a>
+ *      mod_negotiation module</a>
  * @author Jerome Louvel
  * @author Thierry Boileau
  */

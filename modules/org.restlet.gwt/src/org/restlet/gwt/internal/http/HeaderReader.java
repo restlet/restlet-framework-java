@@ -152,7 +152,7 @@ public class HeaderReader {
      * 
      * @see <a *
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec2.html#sec2"
-     *      >HTTP * parsing rule< /a>
+     *      >HTTP * parsing rule</a>
      * @return The next value or null.
      */
     public String readValue() {

@@ -54,7 +54,7 @@ import freemarker.template.TemplateScalarModel;
  * FreeMarker template representation. Useful for dynamic string-based
  * representations.
  * 
- * @see <a href="http://freemarker.org/">FreeMarker home page< /a>
+ * @see <a href="http://freemarker.org/">FreeMarker home page</a>
  * @author Jerome Louvel
  */
 public class TemplateRepresentation extends OutputRepresentation {

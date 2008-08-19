@@ -71,7 +71,7 @@ import org.restlet.util.Engine;
  * 
  * @see <a
  *      href="http://www.restlet.org/documentation/1.1/tutorial#part06">Tutorial
- *      : Serving static files< /a>
+ *      : Serving static files</a>
  * @author Jerome Louvel
  */
 public class Directory extends Finder {
@@ -433,7 +433,7 @@ public class Directory extends Finder {
      * Heittman from the Solertium Corporation.
      * 
      * @see <a href="http://www.davekoelle.com/alphanum.html">The original *
-     *      Alphanum Algorithm from David Koelle< /a>
+     *      Alphanum Algorithm from David Koelle</a>
      * @see #setComparator(Comparator)
      */
     public void setAlphaNumComparator() {

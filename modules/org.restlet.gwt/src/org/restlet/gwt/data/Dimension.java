@@ -34,7 +34,7 @@ package org.restlet.gwt.data;
  * @author Piyush Purang (ppurang@gmail.com)
  * @see <a
  *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.44"
- *      >HTTP Vary header< /a>
+ *      >HTTP Vary header</a>
  */
 public enum Dimension {
     AUTHORIZATION, CHARACTER_SET, CLIENT_ADDRESS, CLIENT_AGENT, UNSPECIFIED, ENCODING, LANGUAGE, MEDIA_TYPE, TIME,

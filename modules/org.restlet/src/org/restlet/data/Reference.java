@@ -114,7 +114,7 @@ import org.restlet.Context;
  * members.
  * 
  * @author Jerome Louvel
- * @see <a href="http://www.faqs.org/rfcs/rfc3986.html">RFC 3986< /a>
+ * @see <a href="http://www.faqs.org/rfcs/rfc3986.html">RFC 3986</a>
  */
 public class Reference {
 

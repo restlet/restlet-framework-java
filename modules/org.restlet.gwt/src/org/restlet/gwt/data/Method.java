@@ -42,7 +42,7 @@ public final class Method extends Metadata {
      * 
      * @see <a *
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.9"
-     *      >HTTP * RFC - 9.9 CONNECT< /a>
+     *      >HTTP * RFC - 9.9 CONNECT</a>
      */
     public static final Method CONNECT = new Method("CONNECT",
             "Used with a proxy that can dynamically switch to being a tunnel",
@@ -55,7 +55,7 @@ public final class Method extends Metadata {
      * 
      * @see <a *
      *      href="http://www.webdav.org/specs/rfc2518.html#METHOD_COPY">WEBDAV *
-     *      RFC - 8.8 COPY Method< /a>
+     *      RFC - 8.8 COPY Method</a>
      */
     public static final Method COPY = new Method(
             "COPY",
@@ -68,7 +68,7 @@ public final class Method extends Metadata {
      * 
      * @see <a *
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.7"
-     *      >HTTP * RFC - 9.7 DELETE< /a>
+     *      >HTTP * RFC - 9.7 DELETE</a>
      */
     public static final Method DELETE = new Method(
             "DELETE",
@@ -81,7 +81,7 @@ public final class Method extends Metadata {
      * 
      * @see <a *
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.3"
-     *      >HTTP * RFC - 9.3 GET< /a>
+     *      >HTTP * RFC - 9.3 GET</a>
      */
     public static final Method GET = new Method(
             "GET",
@@ -94,7 +94,7 @@ public final class Method extends Metadata {
      * 
      * @see <a *
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.4"
-     *      >HTTP * RFC - 9.4 GET< /a>
+     *      >HTTP * RFC - 9.4 GET</a>
      */
     public static final Method HEAD = new Method(
             "HEAD",
@@ -107,7 +107,7 @@ public final class Method extends Metadata {
      * 
      * @see <a *
      *      href="http://www.webdav.org/specs/rfc2518.html#METHOD_LOCK">WEBDAV *
-     *      RFC - 8.10 LOCK Method< /a>
+     *      RFC - 8.10 LOCK Method</a>
      */
     public static final Method LOCK = new Method("LOCK",
             "Used to take out a lock of any access type (WebDAV)", BASE_WEBDAV
@@ -119,7 +119,7 @@ public final class Method extends Metadata {
      * 
      * @see <a *
      *      href="http://www.webdav.org/specs/rfc2518.html#METHOD_MKCOL">WEBDAV
-     *      * RFC - 8.3 MKCOL Method< /a>
+     *      * RFC - 8.3 MKCOL Method</a>
      */
     public static final Method MKCOL = new Method("MKCOL",
             "Used to create a new collection (WebDAV)", BASE_WEBDAV
@@ -132,7 +132,7 @@ public final class Method extends Metadata {
      * 
      * @see <a *
      *      href="http://www.webdav.org/specs/rfc2518.html#METHOD_MOVE">WEBDAV *
-     *      RFC - 8.3 MKCOL Method< /a>
+     *      RFC - 8.3 MKCOL Method</a>
      */
     public static final Method MOVE = new Method(
             "MOVE",
@@ -145,7 +145,7 @@ public final class Method extends Metadata {
      * 
      * @see <a *
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.2"
-     *      >HTTP * RFC - 9.2 OPTIONS< /a>
+     *      >HTTP * RFC - 9.2 OPTIONS</a>
      */
     public static final Method OPTIONS = new Method(
             "OPTIONS",
@@ -159,7 +159,7 @@ public final class Method extends Metadata {
      * 
      * @see <a *
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.5"
-     *      >HTTP * RFC - 9.5 POST< /a>
+     *      >HTTP * RFC - 9.5 POST</a>
      */
     public static final Method POST = new Method(
             "POST",
@@ -172,7 +172,7 @@ public final class Method extends Metadata {
      * 
      * @see <a *
      *      href="http://www.webdav.org/specs/rfc2518.html#METHOD_PROPFIND">
-     *      WEBDAV * RFC - 8.1 PROPFIND< /a>
+     *      WEBDAV * RFC - 8.1 PROPFIND</a>
      */
     public static final Method PROPFIND = new Method(
             "PROPFIND",
@@ -185,7 +185,7 @@ public final class Method extends Metadata {
      * 
      * @see <a *
      *      href="http://www.webdav.org/specs/rfc2518.html#METHOD_PROPPATCH"
-     *      >WEBDAV * RFC - 8.2 PROPPATCH< /a>
+     *      >WEBDAV * RFC - 8.2 PROPPATCH</a>
      */
     public static final Method PROPPATCH = new Method(
             "PROPPATCH",
@@ -198,7 +198,7 @@ public final class Method extends Metadata {
      * 
      * @see <a *
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6"
-     *      >HTTP * RFC - 9.6 PUT< /a>
+     *      >HTTP * RFC - 9.6 PUT</a>
      */
     public static final Method PUT = new Method(
             "PUT",
@@ -211,7 +211,7 @@ public final class Method extends Metadata {
      * 
      * @see <a *
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.8"
-     *      >HTTP * RFC - 9.8 TRACE< /a>
+     *      >HTTP * RFC - 9.8 TRACE</a>
      */
     public static final Method TRACE = new Method(
             "TRACE",
@@ -224,7 +224,7 @@ public final class Method extends Metadata {
      * 
      * @see <a *
      *      href="http://www.webdav.org/specs/rfc2518.html#METHOD_UNLOCK">WEBDAV
-     *      * RFC - 8.11 UNLOCK Method< /a>
+     *      * RFC - 8.11 UNLOCK Method</a>
      */
     public static final Method UNLOCK = new Method(
             "UNLOCK",

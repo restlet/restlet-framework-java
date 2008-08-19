@@ -457,7 +457,7 @@ public final class ClientInfo {
      * @return The best variant.
      * @see <a * href=
      *      "http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm"
-     *      >Apache * content negotiation algorithm< /a>
+     *      >Apache * content negotiation algorithm</a>
      */
     public Variant getPreferredVariant(List<Variant> variants,
             Language defaultLanguage) {
@@ -479,7 +479,7 @@ public final class ClientInfo {
      * @return The best variant.
      * @see <a * href=
      *      "http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm"
-     *      >Apache * content negotiation algorithm< /a>
+     *      >Apache * content negotiation algorithm</a>
      */
     public Variant getPreferredVariant(Resource resource,
             Language defaultLanguage) {

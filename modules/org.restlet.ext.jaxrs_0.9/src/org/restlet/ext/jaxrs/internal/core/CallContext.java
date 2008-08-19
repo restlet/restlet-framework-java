@@ -457,9 +457,9 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * @see javax.ws.rs.core.Request#evaluatePreconditions(java.util.Date,
      *      javax.ws.rs.core.EntityTag)
      * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.3.5">RFC *
-     *      2616, section 10.3.5: Status 304: Not Modiied< /a>
+     *      2616, section 10.3.5: Status 304: Not Modiied</a>
      * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.4.13">RFC *
-     *      2616, section 10.4.13: Status 412: Precondition Failed< /a>
+     *      2616, section 10.4.13: Status 412: Precondition Failed</a>
      * @see <a href="http://tools.ietf.org/html/rfc2616#section-13.3">RFC 2616,
      *      section 13.3: (Caching) Validation Model</a>
      * @see <a href="http://tools.ietf.org/html/rfc2616#section-14.24">RFC 2616,

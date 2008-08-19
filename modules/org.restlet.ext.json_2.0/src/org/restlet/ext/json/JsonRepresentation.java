@@ -43,7 +43,7 @@ import org.restlet.resource.StringRepresentation;
  * Notation and is a lightweight data-interchange format.
  * 
  * @author Jerome Louvel
- * @see <a href="http://www.json.org">JSON home< /a>
+ * @see <a href="http://www.json.org">JSON home</a>
  */
 public class JsonRepresentation extends StringRepresentation {
     /**

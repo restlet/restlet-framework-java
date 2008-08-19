@@ -42,7 +42,7 @@ import org.restlet.data.Request;
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
  * 
- * @see <a href="http://oauth.net">OAuth< /a>
+ * @see <a href="http://oauth.net">OAuth</a>
  * @author Adam Rosien
  */
 public class OAuthGuard extends Guard {

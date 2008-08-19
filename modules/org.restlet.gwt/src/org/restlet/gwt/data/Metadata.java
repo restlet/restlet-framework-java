@@ -39,7 +39,7 @@ package org.restlet.gwt.data;
  * 
  * @see <a href=
  *      "http://roy.gbiv.com/pubs/dissertation/rest_arch_style.htm#sec_5_2_1_2"
- *      >Source dissertation< /a>
+ *      >Source dissertation</a>
  * @author Jerome Louvel
  */
 public class Metadata {

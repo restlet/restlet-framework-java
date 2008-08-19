@@ -484,7 +484,7 @@ public abstract class Engine {
      * @return The preferred variant.
      * @see <a href=
      *      "http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm"
-     *      >Apache content negotiation algorithm< /a>
+     *      >Apache content negotiation algorithm</a>
      */
     public abstract Variant getPreferredVariant(ClientInfo client,
             List<Variant> variants, Language defaultLanguage);

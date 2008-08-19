@@ -103,7 +103,7 @@ import com.noelios.restlet.http.HttpServerHelper;
  * additional initialization parameters to your Restlet application, and share
  * them with existing Servlets.
  * 
- * @see <a href="http://java.sun.com/j2ee/">J2EE home page< /a>
+ * @see <a href="http://java.sun.com/j2ee/">J2EE home page</a>
  * @author Marcelo F. Ochoa (mochoa@ieee.org)
  */
 public class XdbServerServlet extends ServerServlet {

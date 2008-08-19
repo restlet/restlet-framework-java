@@ -144,7 +144,7 @@ public class Engine extends org.restlet.util.Engine {
      * "1.3.0").
      * 
      * @see <a href="http://java.sun.com/j2se/versioning_naming.html">Official *
-     *      Java versioning< /a>
+     *      Java versioning</a>
      * @return The major version number of the Java Runtime Environment.
      */
     public static int getJavaMajorVersion() {
@@ -166,7 +166,7 @@ public class Engine extends org.restlet.util.Engine {
      * "1.3.0").
      * 
      * @see <a href="http://java.sun.com/j2se/versioning_naming.html">Official *
-     *      Java versioning< /a>
+     *      Java versioning</a>
      * @return The minor version number of the Java Runtime Environment.
      */
     public static int getJavaMinorVersion() {
@@ -186,7 +186,7 @@ public class Engine extends org.restlet.util.Engine {
      * number of the Java Runtime Environment (e.g. "10" for "1.3.0_10").
      * 
      * @see <a href="http://java.sun.com/j2se/versioning_naming.html">Official *
-     *      Java versioning< /a>
+     *      Java versioning</a>
      * @return The release number of the Java Runtime Environment or 0 if it
      *         does not exist.
      */

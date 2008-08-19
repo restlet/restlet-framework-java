@@ -49,7 +49,7 @@ public final class CharacterSet extends Metadata {
     /**
      * The US-ASCII character set.
      * 
-     * @see <a href="http://en.wikipedia.org/wiki/US-ASCII">Wikipedia page< /a>
+     * @see <a href="http://en.wikipedia.org/wiki/US-ASCII">Wikipedia page</a>
      */
     public static final CharacterSet US_ASCII = new CharacterSet("US-ASCII",
             "US ASCII character set");
@@ -57,7 +57,7 @@ public final class CharacterSet extends Metadata {
     /**
      * The UTF-8 character set.
      * 
-     * @see <a href="http://en.wikipedia.org/wiki/UTF-8">Wikipedia page< /a>
+     * @see <a href="http://en.wikipedia.org/wiki/UTF-8">Wikipedia page</a>
      */
     public static final CharacterSet UTF_8 = new CharacterSet("UTF-8",
             "UTF 8 character set");
@@ -65,7 +65,7 @@ public final class CharacterSet extends Metadata {
     /**
      * The UTF-16 character set.
      * 
-     * @see <a href="http://en.wikipedia.org/wiki/UTF-16">Wikipedia page< /a>
+     * @see <a href="http://en.wikipedia.org/wiki/UTF-16">Wikipedia page</a>
      */
     public static final CharacterSet UTF_16 = new CharacterSet("UTF-16",
             "UTF 16 character set");

@@ -139,7 +139,7 @@ import org.mortbay.thread.BoundedThreadPool;
  * </tr>
  * </table>
  * 
- * @see <a href="http://jetty.mortbay.org/">Jetty home page< /a>
+ * @see <a href="http://jetty.mortbay.org/">Jetty home page</a>
  * @author Jerome Louvel
  */
 public abstract class JettyServerHelper extends

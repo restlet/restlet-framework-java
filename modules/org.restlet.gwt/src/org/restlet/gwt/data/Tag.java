@@ -36,10 +36,10 @@ package org.restlet.gwt.data;
  * significant change in semantics."
  * 
  * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11"
- *      >HTTP Entity Tags< /a>
+ *      >HTTP Entity Tags</a>
  * @see <a
  *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html#sec13.3.2"
- *      >HTTP Entity Tag Cache Validators< /a>
+ *      >HTTP Entity Tag Cache Validators</a>
  * @author Jerome Louvel
  */
 public final class Tag extends Metadata {
@@ -57,7 +57,7 @@ public final class Tag extends Metadata {
      * @return A new tag instance.
      * @see <a *
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11"
-     *      >HTTP * Entity Tags< /a>
+     *      >HTTP * Entity Tags</a>
      */
     public static Tag parse(final String httpTag) {
         Tag result = null;
@@ -165,7 +165,7 @@ public final class Tag extends Metadata {
      * @return The formatted HTTP tag string.
      * @see <a *
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11"
-     *      >HTTP * Entity Tags< /a>
+     *      >HTTP * Entity Tags</a>
      */
     public String format() {
         if (getName().equals("*")) {

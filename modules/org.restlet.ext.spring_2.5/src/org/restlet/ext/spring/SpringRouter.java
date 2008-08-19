@@ -57,7 +57,7 @@ import org.restlet.util.Engine;
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
  * 
- * @see <a href="http://www.springframework.org/">Spring home page< /a>
+ * @see <a href="http://www.springframework.org/">Spring home page</a>
  * @author Jerome Louvel
  */
 public class SpringRouter extends Router {

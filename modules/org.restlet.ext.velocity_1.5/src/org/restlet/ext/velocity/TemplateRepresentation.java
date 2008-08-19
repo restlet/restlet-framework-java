@@ -56,7 +56,7 @@ import org.restlet.util.Resolver;
  * Velocity template representation. Useful for dynamic string-based
  * representations.
  * 
- * @see <a href="http://velocity.apache.org/">Velocity home page< /a>
+ * @see <a href="http://velocity.apache.org/">Velocity home page</a>
  * @author Jerome Louvel
  */
 public class TemplateRepresentation extends OutputRepresentation {

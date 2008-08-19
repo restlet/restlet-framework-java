@@ -62,9 +62,9 @@ import org.restlet.resource.Resource;
  * 
  * @see java.util.regex.Pattern
  * @see <a href="http://en.wikipedia.org/wiki/Virtual_hosting">Wikipedia -
- *      Virtual Hosting< /a>
+ *      Virtual Hosting</a>
  * @see <a href="http://httpd.apache.org/docs/2.2/vhosts/">Apache - Virtual
- *      Hosting< /a>
+ *      Hosting</a>
  * @author Jerome Louvel
  */
 public class VirtualHost extends Router {

@@ -165,7 +165,7 @@ import com.noelios.restlet.http.HttpServerHelper;
  * In modes 1 or 2, if you want to manually control the URI wiring, you can disable
  * the auto-wiring by setting the property to "false".
  * 
- * @see <a href="http://java.sun.com/j2ee/">J2EE home page< /a>
+ * @see <a href="http://java.sun.com/j2ee/">J2EE home page</a>
  * @author Jerome Louvel
  */
 public class ServerServlet extends HttpServlet {

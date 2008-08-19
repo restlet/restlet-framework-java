@@ -34,9 +34,9 @@ package org.restlet.gwt.data;
  * @author Thierry Boileau
  * @see <a *
  *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.43" *
- *      >User-Agent< /a>
+ *      >User-Agent</a>
  * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.8">
- *      * Product Tokens< /a>
+ *      * Product Tokens</a>
  */
 public class Product {
 

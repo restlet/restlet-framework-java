@@ -41,16 +41,16 @@ import org.restlet.gwt.util.DateUtils;
  * 
  * @see <a
  *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.24"
- *      >If-Match< /a>
+ *      >If-Match</a>
  * @see <a
  *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.25"
- *      >If-Modified-Since< /a>
+ *      >If-Modified-Since</a>
  * @see <a
  *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.26"
- *      >If-None-Match< /a>
+ *      >If-None-Match</a>
  * @see <a
  *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.28"
- *      >If-Unmodified-Since< /a>
+ *      >If-Unmodified-Since</a>
  * 
  * @author Jerome Louvel
  */
