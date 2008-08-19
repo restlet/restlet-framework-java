@@ -86,35 +86,6 @@ public class Context {
     }
 
     /**
-     * Returns a non-null logger name. It is composed by the canonical class
-     * name of the owner object suffixed by the owner's hash code.
-     * 
-     * @param owner
-     *            The context owner.
-     * @param defaultBase
-     *            The default base logger name used if the owner is null or if
-     *            its canonical class name can't be found.
-     * @return The logger name.
-     */
-    public static String getLoggerName(Object owner, String defaultBase) {
-        String result = null;
-
-        if (owner != null) {
-            result = owner.getClass().getCanonicalName();
-        }
-
-        if (result == null) {
-            result = "org.restlet.component";
-        }
-
-        if (owner != null) {
-            result += "." + owner.hashCode();
-        }
-
-        return result;
-    }
-
-    /**
      * Sets the context to associated with the current thread.
      * 
      * @param context
@@ -290,6 +261,16 @@ public class Context {
      */
     public void setLogger(Logger logger) {
         this.logger = logger;
+    }
+
+    /**
+     * Sets the logger.
+     * 
+     * @param loggerName
+     *            The name of the logger to use.
+     */
+    public void setLogger(String loggerName) {
+        setLogger(Logger.getLogger(loggerName));
     }
 
     /**

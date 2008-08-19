@@ -27,8 +27,6 @@
 
 package com.noelios.restlet.component;
 
-import java.util.logging.Logger;
-
 import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.Uniform;
@@ -40,6 +38,44 @@ import org.restlet.Uniform;
  * @author Jerome Louvel
  */
 public class ChildContext extends Context {
+
+    /**
+     * Returns a non-null logger name. It is composed by the canonical class
+     * name of the owner object suffixed by the owner's hash code.
+     * 
+     * @param baseName
+     *            The base logger name to prepend, without a trailing dot.
+     * @param owner
+     *            The context owner.
+     * @return The logger name.
+     */
+    public static String getLoggerName(String baseName, Object owner) {
+        String result = baseName;
+
+        if ((owner != null) && (owner.getClass().getSimpleName() != null)) {
+            result += "." + getBestClassName(owner.getClass());
+        }
+
+        return result;
+    }
+
+    /**
+     * Return the best class name. If the class is anonymous, then it returns
+     * the super class name.
+     * 
+     * @param clazz
+     *            The class to name.
+     * @return The class name.
+     */
+    public static String getBestClassName(Class<?> clazz) {
+        String result = clazz.getSimpleName();
+
+        if ((result == null) || (result.equals(""))) {
+            result = getBestClassName(clazz.getSuperclass());
+        }
+
+        return result;
+    }
 
     /** The child delegate, typically an application. */
     private volatile Restlet child;
@@ -58,21 +94,10 @@ public class ChildContext extends Context {
      * 
      * @param parentContext
      *            The parent context.
-     */
-    public ChildContext(Context parentContext) {
-        this(parentContext, Logger.getLogger("org.restlet.Restlet"));
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param parentContext
-     *            The parent context.
      * @param logger
      *            The logger instance of use.
      */
-    public ChildContext(Context parentContext, Logger logger) {
-        super(logger);
+    public ChildContext(Context parentContext) {
         this.child = null;
         this.parentContext = parentContext;
         this.clientDispatcher = new ChildClientDispatcher(this);
@@ -122,7 +147,7 @@ public class ChildContext extends Context {
      */
     public void setChild(Restlet child) {
         this.child = child;
-        setLogger(Logger.getLogger(getLoggerName(child, "org.restlet.Restlet")));
+        setLogger(getLoggerName(this.parentContext.getLogger().getName(), child));
     }
 
 }

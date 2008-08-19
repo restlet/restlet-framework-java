@@ -250,13 +250,13 @@ public class ServerServlet extends HttpServlet {
     /**
      * Creates the single Application used by this Servlet.
      * 
-     * @param context
-     *            The Context for the Application
+     * @param parentContext
+     *            The parent component context.
      * 
      * @return The newly created Application or null if unable to create
      */
     @SuppressWarnings("unchecked")
-    protected Application createApplication(Context context) {
+    protected Application createApplication(Context parentContext) {
         Application application = null;
 
         // Try to instantiate a new target application
@@ -274,7 +274,7 @@ public class ServerServlet extends HttpServlet {
                     // invoking the constructor with the Context parameter.
                     application = (Application) targetClass.getConstructor(
                             Context.class).newInstance(
-                            new ServletContextAdapter(this, context));
+                            new ServletContextAdapter(this, parentContext));
                 } catch (final NoSuchMethodException e) {
                     log(
                             "[Noelios Restlet Engine] - The ServerServlet couldn't invoke the constructor of the target class. Please check this class has a constructor with a single parameter of type Context. The empty constructor and the context setter will be used instead.",
@@ -287,7 +287,7 @@ public class ServerServlet extends HttpServlet {
 
                     // Set the context based on the Servlet's context
                     application.setContext(new ServletContextAdapter(this,
-                            context));
+                            parentContext));
                 }
             } catch (final ClassNotFoundException e) {
                 log(
@@ -585,7 +585,7 @@ public class ServerServlet extends HttpServlet {
 
                         if (result == null) {
                             result = createApplication(getComponent()
-                                    .getContext().createChildContext());
+                                    .getContext());
                             getServletContext().setAttribute(
                                     applicationAttributeName, result);
                         }

@@ -71,13 +71,13 @@ public class SpringServerServlet extends ServerServlet {
      * SpringContext inside the ServletContext. The bean name looked up is
      * {@link #APPLICATION_BEAN_PARAM_NAME}.
      * 
-     * @param context
-     *            The Context for the Application.
+     * @param parentContext
+     *            The parent component context.
      * @return The Restlet-Application to use.
      */
     @SuppressWarnings("unchecked")
     @Override
-    public Application createApplication(Context context) {
+    public Application createApplication(Context parentContext) {
         Application application = null;
 
         final String applicationBeanName = getInitParameter(
@@ -87,10 +87,10 @@ public class SpringServerServlet extends ServerServlet {
 
         if (application != null) {
             // Set the context based on the Servlet's context
+            application.setContext(new ChildContext(new ServletContextAdapter(
+                    this, parentContext)));
             final ChildContext applicationContext = (ChildContext) application
                     .getContext();
-            application.setContext(new ChildContext(new ServletContextAdapter(
-                    this, context), applicationContext.getLogger()));
 
             // Copy all the servlet parameters into the context
             String initParam;
@@ -113,7 +113,7 @@ public class SpringServerServlet extends ServerServlet {
             }
 
         } else {
-            application = super.createApplication(context);
+            application = super.createApplication(parentContext);
         }
 
         return application;

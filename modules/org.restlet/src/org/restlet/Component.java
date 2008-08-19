@@ -174,8 +174,7 @@ public class Component extends Restlet {
             this.helper = Engine.getInstance().createHelper(this);
 
             if (this.helper != null) {
-                this.defaultHost = new VirtualHost(getContext()
-                        .createChildContext());
+                this.defaultHost = new VirtualHost(getContext());
                 this.internalRouter = new Router(getContext()
                         .createChildContext()) {
 
@@ -221,8 +220,6 @@ public class Component extends Restlet {
 
                 };
                 this.logService = new LogService(true);
-                this.logService.setLoggerName(getClass().getCanonicalName()
-                        + " (" + hashCode() + ")");
                 this.statusService = new StatusService(true);
                 this.clients.setContext(getContext());
                 this.servers.setContext(getContext());
@@ -402,8 +399,7 @@ public class Component extends Restlet {
                     } else if ("defaultHost".equals(childNode.getNodeName())) {
                         parseHost(getDefaultHost(), childNode);
                     } else if ("host".equals(childNode.getNodeName())) {
-                        final VirtualHost host = new VirtualHost(getContext()
-                                .createChildContext());
+                        final VirtualHost host = new VirtualHost(getContext());
                         parseHost(host, childNode);
                         getHosts().add(host);
                     } else if ("parameter".equals(childNode.getNodeName())) {
@@ -805,10 +801,10 @@ public class Component extends Restlet {
     /**
      * Returns the global log service. On the first call, if no log service was
      * defined via the {@link #setLogService(LogService)} method, then a default
-     * logger service is created. This default service is enabled by default and
-     * has a logger name composed of the canonical name of the current
-     * component's class or subclass, appended with the instance hash code
-     * between parenthesis (eg. "com.mycompany.MyComponent(1439)").
+     * logger service is created. This service will be enabled by default and
+     * has a logger name composed the "org.restlet." prefix followed by the
+     * simple component class name (without packages), followed by the
+     * ".LogService" suffix.
      * 
      * @return The global log service.
      */

@@ -28,6 +28,7 @@
 package com.noelios.restlet;
 
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.restlet.Context;
 import org.restlet.Filter;
@@ -36,6 +37,7 @@ import org.restlet.data.Response;
 import org.restlet.service.LogService;
 import org.restlet.util.Template;
 
+import com.noelios.restlet.component.ChildContext;
 import com.noelios.restlet.util.IdentClient;
 
 /**
@@ -59,6 +61,9 @@ public class LogFilter extends Filter {
     /** The log template to use. */
     protected volatile Template logTemplate;
 
+    /** The log service logger. */
+    private volatile Logger logLogger;
+
     /**
      * Constructor.
      * 
@@ -74,6 +79,15 @@ public class LogFilter extends Filter {
         if (logService != null) {
             this.logTemplate = (logService.getLogFormat() == null) ? null
                     : new Template(logService.getLogFormat());
+
+            if (logService.getLoggerName() != null) {
+                this.logLogger = Logger.getLogger(logService.getLoggerName());
+            } else {
+                this.logLogger = Logger.getLogger(context.getLogger()
+                        .getParent().getName()
+                        + "."
+                        + ChildContext.getBestClassName(logService.getClass()));
+            }
         }
     }
 
@@ -93,10 +107,10 @@ public class LogFilter extends Filter {
 
         // Format the call into a log entry
         if (this.logTemplate != null) {
-            getLogger().log(Level.INFO, format(request, response));
+            this.logLogger.log(Level.INFO, format(request, response));
         } else {
-            getLogger().log(Level.INFO,
-                    formatDefault(request, response, duration));
+            this.logLogger.log(Level.INFO, formatDefault(request, response,
+                    duration));
         }
     }
 

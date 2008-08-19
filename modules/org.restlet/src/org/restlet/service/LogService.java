@@ -62,6 +62,7 @@ package org.restlet.service;
  * variable names in {@link org.restlet.util.Template}. <br>
  * 
  * @see <a href="http://www.restlet.org/documentation/1.1/tutorial#part07">Tutorial: Access logging</a>
+ * @see <a href="http://wiki.restlet.org/docs_1.1/g1/13-restlet/29-restlet/98-restlet/101-restlet.html">Wiki: Logging</a> 
  * @see <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/logging/package-summary.html">java.util.logging</a>
  * @author Jerome Louvel
  */
@@ -99,9 +100,13 @@ public class LogService extends Service {
     }
 
     /**
-     * Returns the name of the JDK's logger to use when logging calls.
+     * Returns the name of the JDK's logger to use when logging access calls.
+     * The default name will follow this pattern:
+     * "org.restlet.MyComponent.LogService", where "MyComponent" will correspond
+     * to the simple class name of your component subclass or to the base
+     * "Component" class.
      * 
-     * @return The name of the JDK's logger to use when logging calls.
+     * @return The name of the JDK's logger to use when logging access calls.
      */
     public String getLoggerName() {
         return this.loggerName;
@@ -140,10 +145,10 @@ public class LogService extends Service {
     }
 
     /**
-     * Sets the name of the JDK's logger to use when logging calls.
+     * Sets the name of the JDK's logger to use when logging access calls.
      * 
      * @param name
-     *            The name of the JDK's logger to use when logging calls.
+     *            The name of the JDK's logger to use when logging access calls.
      */
     public void setLoggerName(String name) {
         this.loggerName = name;

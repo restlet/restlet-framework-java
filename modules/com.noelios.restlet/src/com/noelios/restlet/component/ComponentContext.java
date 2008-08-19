@@ -52,8 +52,8 @@ public class ComponentContext extends Context {
      *            The component helper.
      */
     public ComponentContext(ComponentHelper componentHelper) {
-        super(getLoggerName(componentHelper.getHelped(),
-                "org.restlet.Component"));
+        super(ChildContext.getLoggerName("org.restlet", componentHelper
+                .getHelped()));
         this.componentHelper = componentHelper;
         this.clientDispatcher = new ComponentClientDispatcher(this);
         this.serverDispatcher = new ComponentServerDispatcher(this);

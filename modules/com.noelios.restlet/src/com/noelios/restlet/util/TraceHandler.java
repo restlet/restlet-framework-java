@@ -43,10 +43,16 @@ import java.util.logging.Logger;
 public class TraceHandler extends Handler {
 
     /**
-     * Registers the handler with the root logger.
+     * Registers the handler with the root logger. Removes any default handler
+     * like the default console handler.
      */
     public static void register() {
         Logger rootLogger = Logger.getLogger("");
+
+        for (Handler handler : rootLogger.getHandlers()) {
+            rootLogger.removeHandler(handler);
+        }
+
         rootLogger.addHandler(new TraceHandler());
     }
 
@@ -60,8 +66,8 @@ public class TraceHandler extends Handler {
 
     @Override
     public void publish(LogRecord record) {
-        System.out.println("[" + record.getLoggerName() + "] "
-                + record.getMessage());
+        System.out.println("[" + record.getLevel().getLocalizedName() + "]["
+                + record.getLoggerName() + "] " + record.getMessage());
     }
 
 }

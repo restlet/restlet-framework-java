@@ -169,6 +169,9 @@ public class VirtualHost extends Router {
     /** The listening server port pattern to match. */
     private volatile String serverPort;
 
+    /** The parent component's context. */
+    private volatile Context parentContext;
+
     /**
      * Constructor. Note that usage of this constructor is not recommended as
      * the Router won't have a proper context set. In general you will prefer to
@@ -182,18 +185,18 @@ public class VirtualHost extends Router {
      * Constructor. Accepts all incoming requests by default, use the set
      * methods to restrict the matchable patterns.
      * 
-     * @param context
-     *            The context.
+     * @param parentContext
+     *            The parent component's context.
      */
-    public VirtualHost(Context context) {
-        this(context, ".*", ".*", ".*", ".*", ".*", ".*", ".*", ".*");
+    public VirtualHost(Context parentContext) {
+        this(parentContext, ".*", ".*", ".*", ".*", ".*", ".*", ".*", ".*");
     }
 
     /**
      * Constructor.
      * 
-     * @param context
-     *            The context.
+     * @param parentContext
+     *            The parent component's context.
      * @param hostDomain
      *            The hostRef host domain pattern to match.
      * @param hostPort
@@ -211,10 +214,14 @@ public class VirtualHost extends Router {
      * @param serverPort
      *            The listening server port pattern to match.
      */
-    public VirtualHost(Context context, String hostDomain, String hostPort,
-            String hostScheme, String resourceDomain, String resourcePort,
-            String resourceScheme, String serverAddress, String serverPort) {
-        super(context);
+    public VirtualHost(Context parentContext, String hostDomain,
+            String hostPort, String hostScheme, String resourceDomain,
+            String resourcePort, String resourceScheme, String serverAddress,
+            String serverPort) {
+        super((parentContext == null) ? null : parentContext
+                .createChildContext());
+        this.parentContext = parentContext;
+
         this.hostDomain = hostDomain;
         this.hostPort = hostPort;
         this.hostScheme = hostScheme;
@@ -241,8 +248,8 @@ public class VirtualHost extends Router {
      */
     @Override
     public Route attach(Restlet target) {
-        if (target.getContext() == null) {
-            target.setContext(getContext().createChildContext());
+        if ((target.getContext() == null) && (this.parentContext != null)) {
+            target.setContext(this.parentContext.createChildContext());
         }
 
         return super.attach(target);
@@ -266,11 +273,8 @@ public class VirtualHost extends Router {
      */
     @Override
     public Route attach(String uriPattern, Restlet target) {
-        if (target.getContext() == null) {
-            if (getContext() == null) {
-                setContext(new Context());
-            }
-            target.setContext(getContext().createChildContext());
+        if ((target.getContext() == null) && (this.parentContext != null)) {
+            target.setContext(this.parentContext.createChildContext());
         }
 
         return super.attach(uriPattern, target);
@@ -291,8 +295,9 @@ public class VirtualHost extends Router {
      */
     @Override
     public Route attachDefault(Restlet defaultTarget) {
-        if (defaultTarget.getContext() == null) {
-            defaultTarget.setContext(getContext().createChildContext());
+        if ((defaultTarget.getContext() == null)
+                && (this.parentContext != null)) {
+            defaultTarget.setContext(this.parentContext.createChildContext());
         }
 
         return super.attachDefault(defaultTarget);
