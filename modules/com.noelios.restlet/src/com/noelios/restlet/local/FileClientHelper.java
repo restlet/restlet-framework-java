@@ -77,8 +77,15 @@ import org.restlet.util.ByteUtils;
  * <td>temporaryExtension</td>
  * <td>String</td>
  * <td>tmp</td>
- * <td>the name of the extension to use to store the temporary content while
+ * <td>The name of the extension to use to store the temporary content while
  * uploading content via the PUT method.</td>
+ * </tr>
+ * <tr>
+ * <td>resumeUpload</td>
+ * <td>boolean</td>
+ * <td>false</td>
+ * <td>Indicates if a failed upload can be resumed. This will prevent the
+ * deletion of the temporary file created.</td>
  * </tr>
  * </table>
  * 
@@ -516,6 +523,7 @@ public class FileClientHelper extends LocalClientHelper {
                 isDirectory = true;
                 response.setStatus(new Status(Status.CLIENT_ERROR_FORBIDDEN,
                         "Can't put a new representation of a directory"));
+                return;
             }
         } else {
             // No existing file or directory found
@@ -530,6 +538,7 @@ public class FileClientHelper extends LocalClientHelper {
                     response.setStatus(new Status(Status.SERVER_ERROR_INTERNAL,
                             "Unable to create the new directory"));
                 }
+                return;
             }
         }
 
@@ -542,6 +551,7 @@ public class FileClientHelper extends LocalClientHelper {
                 // ask the client to reiterate properly its request
                 response.setStatus(new Status(Status.REDIRECTION_SEE_OTHER,
                         "The metadata are not consistent with the URI"));
+                return;
             } else {
                 // We look for the possible variants
                 // 1- set up base name as the longest part of the name
@@ -582,6 +592,7 @@ public class FileClientHelper extends LocalClientHelper {
                                 .setStatus(new Status(
                                         Status.CLIENT_ERROR_NOT_ACCEPTABLE,
                                         "Unable to process properly the request. Several variants exist but none of them suits precisely."));
+                        return;
                     } else {
                         // This resource does not exist, yet.
                         // Complete it with the default metadata
@@ -641,10 +652,14 @@ public class FileClientHelper extends LocalClientHelper {
                             .setStatus(new Status(
                                     Status.SERVER_ERROR_INTERNAL,
                                     "Unable to process properly the URI. At least one extension is not known by the server."));
+                    return;
                 } else {
                     File tmp = null;
-
+                    boolean error = false;
                     if (file.exists()) {
+                        // The PUT call is handled in two phases:
+                        // 1- write a temporary file
+                        // 2- rename the target file
                         if (partialPut) {
                             RandomAccessFile raf = null;
                             // Replace the content of the file
@@ -655,6 +670,11 @@ public class FileClientHelper extends LocalClientHelper {
                                         + getTemporaryExtension());
                                 // Support only one range.
                                 Range range = request.getRanges().get(0);
+
+                                if (tmp.exists() && !isResumeUpload()) {
+                                    tmp.delete();
+                                }
+
                                 if (!tmp.exists()) {
                                     // Copy the target file.
                                     final BufferedReader br = new BufferedReader(
@@ -670,7 +690,6 @@ public class FileClientHelper extends LocalClientHelper {
                                     wr.flush();
                                     wr.close();
                                 }
-
                                 raf = new RandomAccessFile(tmp, "rwd");
 
                                 // Go to the desired offset.
@@ -698,6 +717,7 @@ public class FileClientHelper extends LocalClientHelper {
                                 response.setStatus(new Status(
                                         Status.SERVER_ERROR_INTERNAL,
                                         "Unable to create a temporary file"));
+                                error = true;
                             } finally {
                                 try {
                                     if (raf != null) {
@@ -711,6 +731,7 @@ public class FileClientHelper extends LocalClientHelper {
                                                     ioe);
                                     response.setStatus(
                                             Status.SERVER_ERROR_INTERNAL, ioe);
+                                    error = true;
                                 }
                             }
                         } else {
@@ -730,6 +751,7 @@ public class FileClientHelper extends LocalClientHelper {
                                 response.setStatus(new Status(
                                         Status.SERVER_ERROR_INTERNAL,
                                         "Unable to create a temporary file"));
+                                error = true;
                             } finally {
                                 try {
                                     if (fos != null) {
@@ -743,12 +765,19 @@ public class FileClientHelper extends LocalClientHelper {
                                                     ioe);
                                     response.setStatus(
                                             Status.SERVER_ERROR_INTERNAL, ioe);
+                                    error = true;
                                 }
                             }
                         }
 
+                        if (error) {
+                            if (tmp.exists() && !isResumeUpload()) {
+                                tmp.delete();
+                            }
+                            return;
+                        }
                         // Then delete the existing file
-                        if (file.delete()) {
+                        if (tmp.exists() && file.delete()) {
                             // Finally move the temporary file to the
                             // existing file location
                             boolean renameSuccessfull = false;
@@ -801,6 +830,9 @@ public class FileClientHelper extends LocalClientHelper {
                             response.setStatus(new Status(
                                     Status.SERVER_ERROR_INTERNAL,
                                     "Unable to delete the existing file"));
+                            if (tmp.exists() && !isResumeUpload()) {
+                                tmp.delete();
+                            }
                         }
                     } else {
                         // The file does not exist yet.
@@ -920,5 +952,16 @@ public class FileClientHelper extends LocalClientHelper {
                 }
             }
         }
+    }
+
+    /**
+     * Indicates if a failed upload can be resumed. This will prevent the
+     * deletion of the temporary file created. Defaults to "false".
+     * 
+     * @return True if a failed upload can be resumed, false otherwise.
+     */
+    public boolean isResumeUpload() {
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
+                "resumeUpload", "false"));
     }
 }

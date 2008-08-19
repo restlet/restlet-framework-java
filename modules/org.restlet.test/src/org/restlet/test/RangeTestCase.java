@@ -77,7 +77,6 @@ public class RangeTestCase extends TestCase {
             router.attach("/testGet", new TestRangeGetRestlet());
             Directory directory = new Directory(getContext(), LocalReference
                     .createFileReference(testDir));
-            directory.setResumeUpload(true);
             directory.setModifiable(true);
             router.attach("/testPut", directory);
             return router;

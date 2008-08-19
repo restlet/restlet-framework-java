@@ -231,12 +231,6 @@ public class Directory extends Finder {
     /** Indicates if the best content is automatically negotiated. */
     private volatile boolean negotiateContent;
 
-    /**
-     * Indicates if a failed upload can be resumed. This will prevent the
-     * deletion of the temporary file created. Defaults to "false".
-     */
-    private volatile boolean resumeUpload;
-
     /** The absolute root reference (file, clap URI). */
     private volatile Reference rootRef;
 
@@ -270,7 +264,6 @@ public class Directory extends Finder {
         this.listingAllowed = false;
         this.modifiable = false;
         this.negotiateContent = true;
-        this.resumeUpload = false;
     }
 
     /**
@@ -425,16 +418,6 @@ public class Directory extends Finder {
     }
 
     /**
-     * Indicates if a failed upload can be resumed. This will prevent the
-     * deletion of the temporary file created. Defaults to "false".
-     * 
-     * @return True if a failed upload can be resumed.
-     */
-    public boolean isResumeUpload() {
-        return resumeUpload;
-    }
-
-    /**
      * Sets the reference comparator based on classic alphabetical order.
      * 
      * @see #setComparator(Comparator)
@@ -518,19 +501,6 @@ public class Directory extends Finder {
      */
     public void setNegotiateContent(boolean negotiateContent) {
         this.negotiateContent = negotiateContent;
-    }
-
-    /**
-     * Indicates if a failed upload can be resumed. This will prevent the
-     * deletion of the temporary file created. Note that enabling this feature
-     * will prevent several users from updating the same resource at the same
-     * time.
-     * 
-     * @param resumeUpload
-     *            True if a failed upload can be resumed.
-     */
-    public void setResumeUpload(boolean resumeUpload) {
-        this.resumeUpload = resumeUpload;
     }
 
     /**
