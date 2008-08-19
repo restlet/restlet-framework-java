@@ -48,6 +48,7 @@ import org.restlet.Server;
 import org.restlet.VirtualHost;
 import org.restlet.data.LocalReference;
 import org.restlet.data.Protocol;
+import org.restlet.data.Response;
 import org.restlet.util.Engine;
 
 import com.noelios.restlet.component.ComponentContext;
@@ -367,13 +368,27 @@ public class ServerServlet extends HttpServlet {
         Component component = null;
 
         // Look for the Component XML configuration file.
-        final String configPath = getServletContext().getRealPath(
-                "/WEB-INF/restlet.xml");
-        final File configFile = new File(configPath);
-        if ((configPath != null) && configFile.exists()) {
-            component = new Component(LocalReference
-                    .createFileReference(configPath));
-        } else {
+        ServletWarClient client = new ServletWarClient(new Context(),
+                getServletContext());
+        Response response = client.get("war:///WEB-INF/restlet.xml");
+        if (response.getStatus().isSuccess() && response.isEntityAvailable()) {
+            component = new Component(response.getEntity());
+        }
+
+        if (component == null) {
+            final String configPath = getServletContext().getRealPath(
+                    "/WEB-INF/restlet.xml");
+            if (configPath != null) {
+                final File configFile = new File(configPath);
+                if (configFile.exists()) {
+                    component = new Component(LocalReference
+                            .createFileReference(configPath));
+                }
+            }
+        }
+
+        // Look for the component class name specified in the web.xml file.
+        if (component == null) {
             // Try to instantiate a new target component
             // First, find the component class name
             final String componentClassName = getInitParameter(COMPONENT_KEY,
@@ -391,7 +406,6 @@ public class ServerServlet extends HttpServlet {
                     log(
                             "[Noelios Restlet Engine] - The ServerServlet couldn't find the target class. Please check that your classpath includes "
                                     + componentClassName, e);
-
                 } catch (final InstantiationException e) {
                     log(
                             "[Noelios Restlet Engine] - The ServerServlet couldn't instantiate the target class. Please check this class has an empty constructor "
@@ -402,27 +416,26 @@ public class ServerServlet extends HttpServlet {
                                     + componentClassName, e);
                 }
             }
+        }
 
-            if (component == null) {
-                // Create the default Component
-                component = new Component();
+        // Create the default Component
+        if (component == null) {
+            component = new Component();
 
-                // The status service is disabled by default.
-                component.getStatusService().setEnabled(false);
+            // The status service is disabled by default.
+            component.getStatusService().setEnabled(false);
 
-                // Define the list of supported client protocols.
-                final String clientProtocolsString = getInitParameter(
-                        CLIENTS_KEY, null);
-                if (clientProtocolsString != null) {
-                    final String[] clientProtocols = clientProtocolsString
-                            .split(" ");
-                    for (final String clientProtocol : clientProtocols) {
-                        component.getClients().add(
-                                Protocol.valueOf(clientProtocol));
-                    }
+            // Define the list of supported client protocols.
+            final String clientProtocolsString = getInitParameter(CLIENTS_KEY,
+                    null);
+            if (clientProtocolsString != null) {
+                final String[] clientProtocols = clientProtocolsString
+                        .split(" ");
+                for (final String clientProtocol : clientProtocols) {
+                    component.getClients()
+                            .add(Protocol.valueOf(clientProtocol));
                 }
             }
-
         }
 
         // Complete the configuration of the Component
@@ -600,19 +613,6 @@ public class ServerServlet extends HttpServlet {
     }
 
     /**
-     * Returns a class for a given qualified class name.
-     * 
-     * @param className
-     *            The class name to lookup.
-     * @return The class object.
-     * @throws ClassNotFoundException
-     */
-    protected Class<?> loadClass(String className)
-            throws ClassNotFoundException {
-        return Engine.loadClass(className);
-    }
-
-    /**
      * Returns the component. It creates a new one if none exists.
      * 
      * @return The component.
@@ -747,6 +747,19 @@ public class ServerServlet extends HttpServlet {
         }
 
         return true;
+    }
+
+    /**
+     * Returns a class for a given qualified class name.
+     * 
+     * @param className
+     *            The class name to lookup.
+     * @return The class object.
+     * @throws ClassNotFoundException
+     */
+    protected Class<?> loadClass(String className)
+            throws ClassNotFoundException {
+        return Engine.loadClass(className);
     }
 
     /**
