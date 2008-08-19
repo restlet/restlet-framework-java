@@ -27,7 +27,6 @@
 
 package org.restlet;
 
-import java.io.FileInputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,10 +37,12 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.restlet.data.LocalReference;
+import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.resource.FileRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
 import org.restlet.service.LogService;
@@ -234,6 +235,17 @@ public class Component extends Restlet {
      *            The reference to the XML config file.
      */
     public Component(Reference xmlConfigReference) {
+        this(new FileRepresentation(new LocalReference(xmlConfigReference)
+                .getFile(), MediaType.TEXT_XML));
+    }
+
+    /**
+     * Parse a configuration file and update the component's configuration.
+     * 
+     * @param xmlConfigRepresentation
+     *            The representation of the XML config file.
+     */
+    public Component(Representation xmlConfigRepresentation) {
         this();
         final DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(false);
@@ -241,8 +253,8 @@ public class Component extends Restlet {
 
         try {
             final DocumentBuilder db = dbf.newDocumentBuilder();
-            final Document document = db.parse(new FileInputStream(
-                    new LocalReference(xmlConfigReference).getFile()));
+            final Document document = db.parse(xmlConfigRepresentation
+                    .getStream());
 
             // Check root node
             if ("component".equals(document.getFirstChild().getNodeName())) {
