@@ -87,6 +87,8 @@ Changes log
         - Updated Grizzly to version 1.8.4.
         - Uniformized logger names relying on the static method 
           Context.getCurrentLogger().
+        - Added maven-metadata.xml files in the Maven repositories. 
+          Suggested by Guillaume Chatelet.
     
 - 1.1 Milestone 5 (2008-08-07)
     - Security warning
