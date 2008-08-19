@@ -781,7 +781,7 @@ public class FileClientHelper extends LocalClientHelper {
                             // Finally move the temporary file to the
                             // existing file location
                             boolean renameSuccessfull = false;
-                            if ((tmp != null) && tmp.renameTo(file)) {
+                            if (tmp.renameTo(file)) {
                                 if (request.getEntity() == null) {
                                     response
                                             .setStatus(Status.SUCCESS_NO_CONTENT);
@@ -794,7 +794,7 @@ public class FileClientHelper extends LocalClientHelper {
                                 // "renameTo" are inherently platform-dependent:
                                 // the rename operation might not be able to
                                 // move a file from one filesystem to another.
-                                if ((tmp != null) && tmp.exists()) {
+                                if (tmp.exists()) {
                                     try {
                                         final BufferedReader br = new BufferedReader(
                                                 new FileReader(tmp));
