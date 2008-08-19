@@ -1,0 +1,48 @@
+<project>
+   <modelVersion>4.0.0</modelVersion>
+   <groupId>@group-id@</groupId>
+   <artifactId>@artifact-id@</artifactId>
+   <version>@version@</version>
+   <dependencies>
+      <dependency>
+         <groupId>com.noelios.restlet</groupId>
+         <artifactId>com.noelios.restlet</artifactId>
+         <version>@version@</version>
+      </dependency>
+      <dependency>
+         <groupId>org.mortbay.jetty</groupId>
+         <artifactId>jetty</artifactId>
+         <version>@lib-jetty-version@</version>
+      </dependency>
+      <dependency>
+         <groupId>org.mortbay.jetty</groupId>
+         <artifactId>jetty-ajp</artifactId>
+         <version>@lib-jetty-version@</version>
+      </dependency>
+      <dependency>
+         <groupId>org.mortbay.jetty</groupId>
+         <artifactId>jetty-sslengine</artifactId>
+         <version>@lib-jetty-version@</version>
+      </dependency>
+      <dependency>
+         <groupId>org.mortbay.jetty</groupId>
+         <artifactId>jetty-util</artifactId>
+         <version>@lib-jetty-version@</version>
+      </dependency>
+   </dependencies>
+
+   <name>HTTP server connector</name>
+   <description>Integration with Jetty.</description>
+   <licenses>
+      <license>
+         <name>CDDL license</name>
+         <url>http://www.opensource.org/licenses/cddl1.php</url>
+      </license>
+      <license>
+         <name>GPL license</name>
+         <url>
+            http://www.opensource.org/licenses/gpl-license.php
+         </url>
+      </license>
+   </licenses>
+</project>

@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Servlet API
+Bundle-SymbolicName: javax.servlet
+Bundle-Version: 2.5
+Bundle-ClassPath: javax.servlet.jar
+Export-Package: javax.servlet,
+ javax.servlet.http;uses:="javax.servlet",
+ javax.servlet.resources
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
