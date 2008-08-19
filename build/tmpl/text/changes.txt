@@ -4,6 +4,11 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - Breaking change
+        - The logger names used by Restlet have been fully refactored 
+          to allow use more predictable names, to facilitate logging
+          configuration, filtering, etc. See the wiki for details:
+          http://wiki.restlet.org/docs_1.1/g1/13-restlet/29-restlet/98-restlet/101-restlet.html
     - Bugs fixed
         - Fixed NPE with WadlApplications that host Restlet subclasses.
         - Removed all 'volatile' declaration in the Restlet-GWT module
