@@ -733,16 +733,27 @@ public class ServerServlet extends HttpServlet {
      */
     private boolean isDefaultComponent() {
         // The Component is provided via an XML configuration file.
+        ServletWarClient client = new ServletWarClient(new Context(),
+                getServletContext());
+        Response response = client.get("war:///WEB-INF/restlet.xml");
+        if (response.getStatus().isSuccess() && response.isEntityAvailable()) {
+            return false;
+        }
+
         final String configPath = getServletContext().getRealPath(
                 "/WEB-INF/restlet.xml");
-        final File configFile = new File(configPath);
+        if (configPath != null) {
+            final File configFile = new File(configPath);
+            if (configFile.exists()) {
+                return false;
+            }
+        }
 
         // The Component is provided via a context parameter in the "web.xml"
         // file.
         final String componentAttributeName = getInitParameter(COMPONENT_KEY,
                 null);
-        if (((configPath != null) && configFile.exists())
-                || (componentAttributeName != null)) {
+        if (componentAttributeName != null) {
             return false;
         }
 
