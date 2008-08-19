@@ -59,6 +59,12 @@ Changes log
           returns a non-null logger, if possible the current context's
           logger.
         - Deprecated Form and Template constructors with a logger.
+        - Added static Engine.setUserClassLoader() and 
+          getUserClassLoader() methods to allow a user to provide his
+          own class loader to use in priority for all class loading
+          actions done by Restlet code. Also kept the previous
+          getClassLoader() static method to return the 'best' class
+          loader available. Issue with Groovy reported by Avi Flax.
     - NRE and Extension Enhancements
         - Refactored WADL extension based on John Logsdon's feed-back.
           Added convenience methods and constructors on FaultInfo, 

@@ -267,7 +267,7 @@ public class ServerServlet extends HttpServlet {
         // Load the application class using the given class name
         if (applicationClassName != null) {
             try {
-                final Class<?> targetClass = getClass(applicationClassName);
+                final Class<?> targetClass = loadClass(applicationClassName);
 
                 try {
                     // Create a new instance of the application class by
@@ -382,7 +382,7 @@ public class ServerServlet extends HttpServlet {
             // Load the component class using the given class name
             if (componentClassName != null) {
                 try {
-                    final Class<?> targetClass = getClass(componentClassName);
+                    final Class<?> targetClass = loadClass(componentClassName);
 
                     // Create a new instance of the component class by
                     // invoking the constructor with the Context parameter.
@@ -607,8 +607,9 @@ public class ServerServlet extends HttpServlet {
      * @return The class object.
      * @throws ClassNotFoundException
      */
-    protected Class<?> getClass(String className) throws ClassNotFoundException {
-        return Engine.classForName(className);
+    protected Class<?> loadClass(String className)
+            throws ClassNotFoundException {
+        return Engine.loadClass(className);
     }
 
     /**

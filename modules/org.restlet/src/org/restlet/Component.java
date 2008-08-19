@@ -510,8 +510,7 @@ public class Component extends Restlet {
         // Load the application class using the given class name
         if (targetClassName != null) {
             try {
-                final Class<?> targetClass = Engine
-                        .classForName(targetClassName);
+                final Class<?> targetClass = Engine.loadClass(targetClassName);
 
                 // First, check if we have a Resource class that should be
                 // attached directly to the router.
@@ -611,7 +610,7 @@ public class Component extends Restlet {
         try {
             // Only WADL descriptors are supported at this moment.
             targetClassName = "org.restlet.ext.wadl.WadlApplication";
-            final Class<?> targetClass = Engine.classForName(targetClassName);
+            final Class<?> targetClass = Engine.loadClass(targetClassName);
 
             // Get the WADL document
             final Response response = getContext().getClientDispatcher().get(

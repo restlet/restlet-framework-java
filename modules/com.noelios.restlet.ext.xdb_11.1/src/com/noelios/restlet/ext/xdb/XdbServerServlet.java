@@ -160,7 +160,7 @@ public class XdbServerServlet extends ServerServlet {
             Class<?> targetClass;
             try {
                 targetClass = Engine
-                        .classForName("oracle.jdbc.driver.OracleDriver");
+                        .loadClass("oracle.jdbc.driver.OracleDriver");
                 final Driver drv = (Driver) targetClass.newInstance();
                 DriverManager.registerDriver(drv);
                 conn = DriverManager.getConnection("jdbc:oracle:oci:@"
@@ -266,7 +266,8 @@ public class XdbServerServlet extends ServerServlet {
     }
 
     @Override
-    protected Class<?> getClass(String className) throws ClassNotFoundException {
+    protected Class<?> loadClass(String className)
+            throws ClassNotFoundException {
         final int doubleDotPos = className.indexOf(':');
         Class<?> targetClass;
 
@@ -277,7 +278,7 @@ public class XdbServerServlet extends ServerServlet {
             final String cName = className.substring(doubleDotPos + 1);
             try {
                 final Class<?> loaderClass = Engine
-                        .classForName("oracle.aurora.rdbms.DbmsJava");
+                        .loadClass("oracle.aurora.rdbms.DbmsJava");
                 final Method meth = loaderClass.getMethod(
                         "classForNameAndSchema", new Class[] { String.class,
                                 String.class });
@@ -289,25 +290,25 @@ public class XdbServerServlet extends ServerServlet {
                 log(
                         "[Noelios Restlet Engine] - Could not instantiate a class using SCHEMA: "
                                 + sch + " and class: " + cName, nse);
-                targetClass = Engine.classForName(className);
+                targetClass = Engine.loadClass(className);
             } catch (final IllegalAccessException iae) {
                 log(
                         "[Noelios Restlet Engine] - Could not instantiate a class using SCHEMA: "
                                 + sch + " and class: " + cName, iae);
-                targetClass = Engine.classForName(className);
+                targetClass = Engine.loadClass(className);
             } catch (final InvocationTargetException ite) {
                 log(
                         "[Noelios Restlet Engine] - Could not instantiate a class using SCHEMA: "
                                 + sch + " and class: " + cName, ite);
-                targetClass = Engine.classForName(className);
+                targetClass = Engine.loadClass(className);
             } catch (final AccessControlException ace) {
                 log(
                         "[Noelios Restlet Engine] - Could not instantiate a class using oracle.aurora.rdbms.DbmsJava "
                                 + sch + " and class: " + cName, ace);
-                targetClass = Engine.classForName(className);
+                targetClass = Engine.loadClass(className);
             }
         } else {
-            targetClass = Engine.classForName(className);
+            targetClass = Engine.loadClass(className);
         }
         return targetClass;
     }

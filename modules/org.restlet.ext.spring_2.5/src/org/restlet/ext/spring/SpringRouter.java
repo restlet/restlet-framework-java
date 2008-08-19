@@ -34,6 +34,7 @@ import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.Router;
 import org.restlet.resource.Resource;
+import org.restlet.util.Engine;
 
 /**
  * Router that is easily configurable with Spring. Here is a usage example:
@@ -83,7 +84,7 @@ public class SpringRouter extends Router {
                 } else if (value instanceof Class) {
                     router.attach(key, (Class<? extends Resource>) value);
                 } else if (value instanceof String) {
-                    resourceClass = Class.forName((String) value);
+                    resourceClass = Engine.loadClass((String) value);
 
                     if (Resource.class.isAssignableFrom(resourceClass)) {
                         router.attach(key, resourceClass);

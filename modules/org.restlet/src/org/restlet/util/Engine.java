@@ -67,10 +67,6 @@ import org.restlet.resource.Variant;
  */
 public abstract class Engine {
 
-    /** Classloader to use for dynamic class loading. */
-    private static volatile ClassLoader classloader = Engine.class
-            .getClassLoader();
-
     /** The registered engine. */
     private static volatile Engine instance = null;
 
@@ -86,42 +82,32 @@ public abstract class Engine {
     /** Release number. */
     public static final String RELEASE_NUMBER = "@release-type@@release-number@";
 
+    /** User class loader to use for dynamic class loading. */
+    private static volatile ClassLoader userClassLoader;
+
     /** Complete version. */
     public static final String VERSION = MAJOR_NUMBER + '.' + MINOR_NUMBER
             + '.' + RELEASE_NUMBER;
 
     /**
-     * Returns the class object for the given name using the context class
-     * loader first, or the classloader of the current class.
+     * Returns the best class loader, first the engine class loader if available
+     * using {@link #getUserClassLoader()}, otherwise the current thread context
+     * class loader, or finally the classloader of the current class.
      * 
-     * @param classname
-     *            The class name to lookup.
-     * @return The class object.
-     * @throws ClassNotFoundException
+     * @return The best class loader.
      */
-    public static Class<?> classForName(String classname)
-            throws ClassNotFoundException {
-        Class<?> result = null;
-        final ClassLoader loader = Thread.currentThread()
-                .getContextClassLoader();
+    public static ClassLoader getClassLoader() {
+        ClassLoader result = getUserClassLoader();
 
-        if (loader != null) {
-            result = Class.forName(classname, false, loader);
-        } else {
-            result = Class.forName(classname);
+        if (result == null) {
+            result = Thread.currentThread().getContextClassLoader();
+        }
+
+        if (result == null) {
+            result = Class.class.getClassLoader();
         }
 
         return result;
-    }
-
-    /**
-     * Returns a class loader to use when creating instantiating implementation
-     * classes. By default, it reused the classloader of this Engine's class.
-     * 
-     * @return the ClassLoader
-     */
-    public static ClassLoader getClassLoader() {
-        return classloader;
     }
 
     /**
@@ -184,7 +170,7 @@ public abstract class Engine {
 
                 // Instantiate the engine
                 try {
-                    instance = (Engine) Class.forName(engineClassName)
+                    instance = (Engine) Engine.loadClass(engineClassName)
                             .newInstance();
                     result = instance;
                 } catch (final Exception e) {
@@ -213,6 +199,16 @@ public abstract class Engine {
     }
 
     /**
+     * Returns the class loader specified by the user and that should be used in
+     * priority.
+     * 
+     * @return The user class loader
+     */
+    private static ClassLoader getUserClassLoader() {
+        return userClassLoader;
+    }
+
+    /**
      * Computes the hash code of a set of objects. Follows the algorithm
      * specified in List.hasCode().
      * 
@@ -234,14 +230,60 @@ public abstract class Engine {
     }
 
     /**
-     * Sets a new class loader to use when creating instantiating implementation
-     * classes.
+     * Returns the class object for the given name using the given class loader.
      * 
-     * @param newClassloader
-     *            The new class loader to use.
+     * @param classLoader
+     *            The class loader to use.
+     * @param className
+     *            The class name to lookup.
+     * @return The class object or null.
      */
-    public static void setClassLoader(ClassLoader newClassloader) {
-        classloader = newClassloader;
+    private static Class<?> loadClass(ClassLoader classLoader, String className) {
+        Class<?> result = null;
+
+        if (classLoader != null) {
+            try {
+                result = classLoader.loadClass(className);
+            } catch (ClassNotFoundException e) {
+                // Do nothing
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the class object for the given name using the engine class loader
+     * fist, then the current thread context class loader, or the classloader of
+     * the current class.
+     * 
+     * @param className
+     *            The class name to lookup.
+     * @return The class object or null if the class was not found.
+     */
+    public static Class<?> loadClass(String className)
+            throws ClassNotFoundException {
+        Class<?> result = null;
+
+        // First, try using the engine class loader
+        result = loadClass(getUserClassLoader(), className);
+
+        // Then, try using the current thread context class loader
+        if (result == null) {
+            result = loadClass(Thread.currentThread().getContextClassLoader(),
+                    className);
+        }
+
+        // Finally try using the current class's class loader
+        if (result == null) {
+            result = loadClass(Class.class.getClassLoader(), className);
+        }
+
+        if (result == null) {
+            throw new ClassNotFoundException();
+        }
+
+        return result;
     }
 
     /**
@@ -252,6 +294,16 @@ public abstract class Engine {
      */
     public static void setInstance(Engine engine) {
         instance = engine;
+    }
+
+    /**
+     * Sets the user class loader that should used in priority.
+     * 
+     * @param newClassLoader
+     *            The new user class loader to use.
+     */
+    public static void setUserClassLoader(ClassLoader newClassLoader) {
+        userClassLoader = newClassLoader;
     }
 
     /**

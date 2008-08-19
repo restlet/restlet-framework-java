@@ -57,6 +57,7 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
+import org.restlet.util.Engine;
 import org.restlet.util.Series;
 
 import com.noelios.restlet.http.HttpClientCall;
@@ -132,7 +133,8 @@ public class HttpMethodCall extends HttpClientCall {
                 try {
                     this.httpMethod.getParams().setParameter(
                             HttpMethodParams.RETRY_HANDLER,
-                            Class.forName(this.clientHelper.getRetryHandler())
+                            Engine.loadClass(
+                                    this.clientHelper.getRetryHandler())
                                     .newInstance());
                 } catch (final Exception e) {
                     this.clientHelper

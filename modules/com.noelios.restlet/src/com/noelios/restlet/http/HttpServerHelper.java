@@ -32,6 +32,7 @@ import java.util.logging.Level;
 
 import org.restlet.Context;
 import org.restlet.Server;
+import org.restlet.util.Engine;
 
 import com.noelios.restlet.ServerHelper;
 
@@ -98,10 +99,10 @@ public class HttpServerHelper extends ServerHelper {
     public HttpServerConverter getConverter() {
         if (this.converter == null) {
             try {
-                final String converterClass = getHelpedParameters().getFirstValue(
-                        "converter",
-                        "com.noelios.restlet.http.HttpServerConverter");
-                this.converter = (HttpServerConverter) Class.forName(
+                final String converterClass = getHelpedParameters()
+                        .getFirstValue("converter",
+                                "com.noelios.restlet.http.HttpServerConverter");
+                this.converter = (HttpServerConverter) Engine.loadClass(
                         converterClass).getConstructor(Context.class)
                         .newInstance(getContext());
             } catch (final IllegalArgumentException e) {

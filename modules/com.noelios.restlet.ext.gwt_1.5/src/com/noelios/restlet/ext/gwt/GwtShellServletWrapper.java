@@ -38,6 +38,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.restlet.util.Engine;
+
 import com.noelios.restlet.ext.servlet.ServerServlet;
 
 /**
@@ -145,7 +147,7 @@ public class GwtShellServletWrapper extends ServerServlet {
      */
     private void instantiateGWTShellServlet() {
         try {
-            this.gwtShellServlet = Class.forName(
+            this.gwtShellServlet = Engine.loadClass(
                     "com.google.gwt.dev.shell.GWTShellServlet").newInstance();
             this.gwtShellServletServiceMethod = this.gwtShellServlet.getClass()
                     .getMethod("service", ServletRequest.class,

@@ -57,6 +57,7 @@ import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
 import org.restlet.resource.Variant;
+import org.restlet.util.Engine;
 
 /**
  * WADL configured application. Can automatically configure itself given a WADL
@@ -265,7 +266,7 @@ public class WadlApplication extends Application {
             }
 
             // The "id" attribute conveys the target class name
-            final Class targetClass = Class.forName(currentResource
+            final Class targetClass = Engine.loadClass(currentResource
                     .getIdentifier());
 
             // Attach the resource itself
