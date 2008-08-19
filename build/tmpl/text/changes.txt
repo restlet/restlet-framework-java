@@ -36,6 +36,8 @@ Changes log
           Ralf Bommersbach. Debugging help from Kevin Conaway.
         - Fixed bug in Restlet example with HTTPS server configuration.
           Reported by Christy Ring and fixed by Bruno Harbulot.
+        - Fixed context issue in Spring RestletFrameworkServlet.
+          Contributed by Rhett Sutphin.
         - Fixed NPE when an application runs inside a servlet container 
           as compressed WAR file. Reported by Jorge L. Williams.
     - API Enhancements

@@ -33,6 +33,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.restlet.Application;
+import org.restlet.Context;
 import org.restlet.Restlet;
 import org.springframework.beans.BeansException;
 import org.springframework.web.servlet.FrameworkServlet;
@@ -80,6 +82,9 @@ import com.noelios.restlet.ext.servlet.ServletConverter;
  *    &lt;/init-param&gt;
  * &lt;/servlet&gt;
  * </pre>
+ * <p>
+ * If the target restlet is an {@link org.restlet.Application}, it will be used
+ * directly. Otherwise, it will be wrapped in an instance of {@link Application}.
  * 
  * @author Rhett Sutphin
  */
@@ -98,7 +103,7 @@ public class RestletFrameworkServlet extends FrameworkServlet {
     @Override
     protected void doService(HttpServletRequest request,
             HttpServletResponse response) throws ServletException, IOException {
-        this.converter.service(request, response);
+        getConverter().service(request, response);
     }
 
     /**
@@ -121,12 +126,47 @@ public class RestletFrameworkServlet extends FrameworkServlet {
                 : this.targetRestletBeanName;
     }
 
+    /**
+     * Provides access to the {@link ServletConverter} used to handle requests.
+     * Exposed so that subclasses may do additional configuration, if necessary,
+     * by overriding {@link #initFrameworkServlet()}.
+     * 
+     * @return
+     */
+    protected ServletConverter getConverter() {
+        return this.converter;
+    }
+
     @Override
     protected void initFrameworkServlet() throws ServletException,
             BeansException {
         super.initFrameworkServlet();
         this.converter = new ServletConverter(getServletContext());
-        this.converter.setTarget(getTargetRestlet());
+
+        org.restlet.Application application;
+        if (getTargetRestlet() instanceof Application) {
+            application = (Application) getTargetRestlet();
+        } else {
+            application = new Application();
+            application.setRoot(getTargetRestlet());
+        }
+        if (application.getContext() == null) {
+            application.setContext(createContext());
+        }
+        this.converter.setTarget(application);
+    }
+
+    /**
+     * Creates the Restlet {@link Context} to use if the target application does
+     * not already have a context associated, or if the target restlet is not an
+     * {@link Application} at all.
+     * <p>
+     * Uses a simple {@link Context} by default.
+     * 
+     * @return
+     */
+    protected Context createContext() {
+        return new Context();
     }
 
     /**
