@@ -11,6 +11,7 @@ Changes log
           http://wiki.restlet.org/docs_1.1/g1/13-restlet/29-restlet/98-restlet/101-restlet.html
     - Bugs fixed
         - Fixed NPE with WadlApplications that host Restlet subclasses.
+          Reported by François Renard.
         - Removed all 'volatile' declaration in the Restlet-GWT module
           to prevent compilation issues. Reported by Nitin Gupta and
           fixed by Rob Heittman.
@@ -37,7 +38,7 @@ Changes log
           Reported by Christy Ring and fixed by Bruno Harbulot.
     - API Enhancements
         - Added warning message when no client connector supports the 
-          request's protocol.
+          request's protocol. Suggested by François Renard.
         - Added the ability to provide Wadl documentation to any 
           Restlet instances.
         - Added an org.restlet.data.Digest class, a "digest" property 
