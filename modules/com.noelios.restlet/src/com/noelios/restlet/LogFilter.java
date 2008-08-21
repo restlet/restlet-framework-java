@@ -49,9 +49,9 @@ import com.noelios.restlet.util.IdentClient;
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
  * 
- * @see <a
+ * @see <a *
  *      href="http://www.restlet.org/documentation/1.1/tutorial#part07">Tutorial
- *      : Filters and call logging</a>
+ *      * : Filters and call logging< /a>
  * @author Jerome Louvel
  */
 public class LogFilter extends Filter {
@@ -101,16 +101,17 @@ public class LogFilter extends Filter {
      */
     @Override
     protected void afterHandle(Request request, Response response) {
-        final long startTime = (Long) request.getAttributes().get(
-                "org.restlet.startTime");
-        final int duration = (int) (System.currentTimeMillis() - startTime);
-
         // Format the call into a log entry
         if (this.logTemplate != null) {
             this.logLogger.log(Level.INFO, format(request, response));
         } else {
-            this.logLogger.log(Level.INFO, formatDefault(request, response,
-                    duration));
+            if (this.logLogger.isLoggable(Level.INFO)) {
+                final long startTime = (Long) request.getAttributes().get(
+                        "org.restlet.startTime");
+                final int duration = (int) (System.currentTimeMillis() - startTime);
+                this.logLogger.log(Level.INFO, formatDefault(request, response,
+                        duration));
+            }
         }
     }
 
