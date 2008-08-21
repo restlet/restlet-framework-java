@@ -92,7 +92,7 @@ public class LogFilter extends Filter {
     }
 
     /**
-     * Allows filtering after processing by the next Restlet. Log the call.
+     * Allows filtering after processing by the next Restlet. Logs the call.
      * 
      * @param request
      *            The request to handle.
@@ -116,7 +116,7 @@ public class LogFilter extends Filter {
     }
 
     /**
-     * Allows filtering before processing by the next Restlet. Save the start
+     * Allows filtering before processing by the next Restlet. Saves the start
      * time.
      * 
      * @param request
