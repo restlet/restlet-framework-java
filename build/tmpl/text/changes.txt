@@ -4,6 +4,11 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - Bugs fixed
+        - Fixed bug when a webapp is mounted on the root instead of 
+          some context path. Reported by Bruno Dumon.
+
+- 1.1 Release candidate 1 (08/20/2008)
     - Breaking change
         - The logger names used by Restlet have been fully refactored 
           to allow use more predictable names, to facilitate logging
