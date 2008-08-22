@@ -220,12 +220,54 @@ public class DirectoryTestCase extends TestCase {
 
             // Test the directory Restlet with no index name
             testDirectory(application, application.getDirectory(), "");
+            deleteDir(this.testDir);
+            this.testDir.mkdir();
+
+            // Test the access to the sub directories.
+            testDirectoryDeeplyAccessible(application, application
+                    .getDirectory());
 
             // Now, let's stop the component!
             clientComponent.stop();
         } catch (final Exception e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Helper
+     * 
+     * @param application
+     * @param directory
+     * @throws IOException
+     */
+    private void testDirectoryDeeplyAccessible(MyApplication application,
+            Directory directory) throws IOException {
+        final File testDirectory = new File(this.testDir, "dir/subDir");
+        testDirectory.mkdirs();
+        final File testFile = File
+        .createTempFile("test", ".txt", testDirectory);
+
+        directory.setDeeplyAccessible(true);
+        Response response = handle(application, this.webSiteURL,
+                this.webSiteURL.concat("dir/subDir/"), Method.GET, null,
+                "deep access 1");
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+
+        response = handle(application, this.webSiteURL, this.webSiteURL.concat(
+                "dir/subDir/").concat(testFile.getName()), Method.GET, null,
+                "deep access 2");
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+
+        directory.setDeeplyAccessible(false);
+        response = handle(application, this.webSiteURL, this.webSiteURL
+                .concat("dir/subDir/"), Method.GET, null, "deep access 3");
+        assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
+
+        response = handle(application, this.webSiteURL, this.webSiteURL.concat(
+                "dir/subDir/").concat(testFile.getName()), Method.GET, null,
+                "deep access 4");
+        assertEquals(Status.CLIENT_ERROR_NOT_FOUND, response.getStatus());
     }
 
     /**

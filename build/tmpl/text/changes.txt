@@ -7,6 +7,8 @@ Changes log
     - Bugs fixed
         - Fixed bug when a webapp is mounted on the root instead of 
           some context path. Reported by Bruno Dumon.
+        - Fixed bug regarding the deeplyAccessible property for a 
+          directory. Reported by Carlos Alexandre Moscoso.
 
 - 1.1 Release candidate 1 (08/20/2008)
     - Breaking change

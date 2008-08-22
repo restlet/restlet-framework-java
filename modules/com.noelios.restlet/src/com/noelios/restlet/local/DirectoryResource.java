@@ -56,9 +56,9 @@ import org.restlet.resource.Variant;
  * to Apache HTTP server) is available. It is based on path extensions to detect
  * variants (languages, media types or character sets).
  * 
- * @see <a
+ * @see <a *
  *      href="http://httpd.apache.org/docs/2.0/content-negotiation.html">Apache
- *      mod_negotiation module</a>
+ *      * mod_negotiation module< /a>
  * @author Jerome Louvel
  * @author Thierry Boileau
  */
@@ -347,6 +347,16 @@ public class DirectoryResource extends Resource {
         final List<Variant> variants = getVariants();
         if ((variants == null) || (variants.isEmpty())) {
             setAvailable(false);
+        }
+
+        // Check if the resource is located in a sub directory.
+        if (isAvailable() && !this.directory.isDeeplyAccessible()) {
+            // Count the number of "/" character.
+            int index = this.relativePart.indexOf("/");
+            if (index != -1) {
+                index = this.relativePart.indexOf("/", index);
+                setAvailable((index == -1));
+            }
         }
 
         // Log results
