@@ -45,7 +45,7 @@ public class ResourceException extends Exception {
      * Constructor.
      * 
      * @param code
-     *            The specification code.
+     *            The specification code of the encapsulated status.
      */
     public ResourceException(final int code) {
         this(new Status(code));
@@ -55,11 +55,11 @@ public class ResourceException extends Exception {
      * Constructor.
      * 
      * @param code
-     *            The specification code.
+     *            The specification code of the encapsulated status.
      * @param name
-     *            The name.
+     *            The name of the encapsulated status.
      * @param description
-     *            The description.
+     *            The description of the encapsulated status.
      * @param uri
      *            The URI of the specification describing the method.
      */
@@ -72,11 +72,11 @@ public class ResourceException extends Exception {
      * Constructor.
      * 
      * @param code
-     *            The specification code.
+     *            The specification code of the encapsulated status.
      * @param name
-     *            The name.
+     *            The name of the encapsulated status.
      * @param description
-     *            The description.
+     *            The description of the encapsulated status.
      * @param uri
      *            The URI of the specification describing the method.
      * @param cause
@@ -91,7 +91,7 @@ public class ResourceException extends Exception {
      * Constructor.
      * 
      * @param code
-     *            The specification code.
+     *            The specification code of the encapsulated status.
      * @param cause
      *            The wrapped cause error or exception.
      */
@@ -116,7 +116,7 @@ public class ResourceException extends Exception {
      * @param status
      *            The status to copy.
      * @param description
-     *            The description to associate.
+     *            The description of the encapsulated status.
      */
     public ResourceException(final Status status, final String description) {
         this(new Status(status, description));
@@ -128,7 +128,7 @@ public class ResourceException extends Exception {
      * @param status
      *            The status to copy.
      * @param description
-     *            The description to associate.
+     *            The description of the encapsulated status.
      * @param cause
      *            The wrapped cause error or exception.
      */
