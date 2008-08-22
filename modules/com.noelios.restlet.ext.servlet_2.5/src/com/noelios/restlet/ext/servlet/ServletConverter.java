@@ -121,10 +121,24 @@ public class ServletConverter extends HttpServerConverter {
         final String basePath = request.getContextPath()
                 + request.getServletPath();
         final String baseUri = request.getRequestURL().toString();
-        final int baseIndex = baseUri.indexOf(basePath);
-        if (baseIndex != -1) {
-            result = new Reference(baseUri.substring(0, baseIndex
-                    + basePath.length()));
+        // Path starts at first slash after scheme://
+        final int pathStart = baseUri.indexOf("/",
+                request.getScheme().length() + 3);
+        if (basePath.length() == 0) {
+            // basePath is empty in case the webapp is mounted on root context
+            if (pathStart != -1) {
+                result = new Reference(baseUri.substring(0, pathStart));
+            } else {
+                result = new Reference(baseUri);
+            }
+        } else {
+            if (pathStart != -1) {
+                final int baseIndex = baseUri.indexOf(basePath, pathStart);
+                if (baseIndex != -1) {
+                    result = new Reference(baseUri.substring(0, baseIndex
+                            + basePath.length()));
+                }
+            }
         }
 
         return result;
