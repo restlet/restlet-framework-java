@@ -32,15 +32,11 @@ package org.restlet.ext.jaxrs.internal.todo;
  * @author Stephan Koops
  */
 public class Notizen {
+    
+    // TODO HeaderDelegate for Date; problem: different date formats required.
 
     // REQUEST javadoc of attribute setters of CacheControl does not ease it to
     // use the class
-
-    // REQUESTED what to do, if an ExceptionMapper throws an
-    // Exception. I think rethrow (easy to implement the wished rethrow)
-
-    // REQUESTED darf ein ExceptionMapper null zurueckgeben? K�nnte man als
-    // Indikator verwenden, die Exception weiterzugeben
 
     // REQUEST could the implementation see, what is required to add
     // after precondition evaluating into the ResponseBuilder
@@ -49,8 +45,6 @@ public class Notizen {
     // @Path template matching is ready
 
     // TESTEN what happens, if ".." or "." in @Path?
-
-    // REQUESTED rename @DefaultValue to @Default? it's shorter
 
     // TODO test again Jersey Implementation.
 

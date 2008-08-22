@@ -227,6 +227,7 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
      */
     @SuppressWarnings("unchecked")
     public Response convert(Throwable cause) {
+        // TODO update javadoc in this file and upate the code according to it. 
         ExceptionMapper mapper = getExceptionMapper(cause.getClass());
         if (mapper == null) {
             String entity = "No ExceptionMapper was found, but must be found";

@@ -217,6 +217,8 @@ public class JaxRsApplication extends Application {
      *                the ApplicationConfig to read the mappings from.
      */
     private void addExtensionMappings(ApplicationConfig appConfig) {
+        // TODO extension mapping as removed from JAX-RS
+        // switch it off by default in the Application. 
         final MetadataService metadataService = getMetadataService();
         final Map<String, MediaType> mediaTypeMapping = appConfig
                 .getMediaTypeMappings();

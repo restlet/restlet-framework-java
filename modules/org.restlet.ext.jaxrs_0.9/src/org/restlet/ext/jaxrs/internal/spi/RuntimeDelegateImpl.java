@@ -73,6 +73,8 @@ public class RuntimeDelegateImpl extends javax.ws.rs.ext.RuntimeDelegate {
     @SuppressWarnings("unchecked")
     public <T> HeaderDelegate createHeaderDelegate(Class<T> type)
             throws IllegalArgumentException {
+        // TODO is it useful to require a HeaderDelegate for Date? Different
+        // headers need different date formats
         if (type.equals(Cookie.class)) {
             return new CookieHeaderDelegate();
         }

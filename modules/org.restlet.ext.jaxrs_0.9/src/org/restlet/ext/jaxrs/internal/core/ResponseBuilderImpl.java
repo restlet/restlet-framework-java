@@ -219,17 +219,16 @@ public class ResponseBuilderImpl extends ResponseBuilder {
     }
 
     /**
-     * Set the value of a specific header on the ResponseBuilder. If the value
-     * is null, an previous set value for the given name will be removed.
+     * Add a header to the ResponseBuilder.
      * 
      * @param name
      *            the name of the header
      * @param value
-     *            the value of the header, the header will be serialized using
-     *            its toString method
+     *            the value of the header, the header will be serialized
+     *            using its toString method. If null then all current
+     *            headers of the same name will be removed.
      * @return the updated ResponseBuilder
-     * @see javax.ws.rs.core.Response.ResponseBuilder#header(java.lang.String,
-     *      java.lang.Object)
+     * @see javax.ws.rs.core.Response.ResponseBuilder#header(String, Object)
      */
     @Override
     public ResponseBuilder header(String name, Object value) {
@@ -238,16 +237,14 @@ public class ResponseBuilderImpl extends ResponseBuilder {
                     "You must give a name of the header");
         }
         if (name.equals(HttpHeaders.SET_COOKIE)) {
-            if (value instanceof NewCookie) {
+            if (value == null) {
+                this.newCookies.clear();
+            } else if (value instanceof NewCookie) {
                 cookie((NewCookie) value);
             } else if (value instanceof Cookie) {
                 cookie(new NewCookie((Cookie) value));
-            } else if (value instanceof CharSequence) {
-                cookie(NewCookie.valueOf(value.toString()));
-                // REQUESTED what should happens, if null was given?
             } else {
-                throw new IllegalArgumentException(
-                        "A Cookie must be of type NewCookie or String");
+                cookie(NewCookie.valueOf(value.toString()));
             }
         } else {
             if (value == null) {
@@ -345,6 +342,7 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      */
     @Override
     public ResponseBuilder status(int status) {
+        // TODO update javadoc: check status number
         if (this.response == null) {
             this.response = new ResponseImpl(status);
         } else {
@@ -418,6 +416,7 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      */
     @Override
     public ResponseBuilder type(String type) {
+        // TODO unset if null
         return type(MediaType.valueOf(type));
     }
 
@@ -431,7 +430,7 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      */
     @Override
     public ResponseBuilder variant(Variant variant) {
-        if (variant == null) {
+        if (variant == null) { // TODO unset
             throw new IllegalArgumentException("The variant must not be null");
         }
         this.language(variant.getLanguage());
@@ -450,6 +449,7 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      */
     @Override
     public ResponseBuilder variants(List<Variant> variants) {
+        // TODO update javadoc and update code
         // NICE add entity header with further information
         // give links, use extension mapping. Was macht Restlet da schon?
         final Set<String> encodings = new HashSet<String>();

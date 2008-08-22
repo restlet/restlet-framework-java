@@ -79,6 +79,7 @@ public class ResponseImpl extends Response {
      */
     @Override
     public MultivaluedMap<String, Object> getMetadata() {
+        // TODO see current javadoc
         if (this.metadata == null) {
             this.metadata = new MultivaluedMapImpl<String, Object>();
         }

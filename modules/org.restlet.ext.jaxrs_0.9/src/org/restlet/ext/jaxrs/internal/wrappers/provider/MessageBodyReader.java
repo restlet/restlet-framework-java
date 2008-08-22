@@ -69,6 +69,7 @@ public interface MessageBodyReader {
      * @return
      * @throws IOException
      * @throws WebApplicationException
+     * @throws InvocationTargetException 
      * @see {@link javax.ws.rs.ext.MessageBodyReader#readFrom(Class, Type, Annotation[], javax.ws.rs.core.MediaType, MultivaluedMap, InputStream)}
      */
     public Object readFrom(Class<?> type, Type genericType,

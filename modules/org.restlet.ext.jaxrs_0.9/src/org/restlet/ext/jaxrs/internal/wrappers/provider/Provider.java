@@ -571,6 +571,8 @@ public class Provider implements MessageBodyReader, MessageBodyWriter,
                     Converter.toJaxRsMediaType(mediaType), httpHeaders,
                     entityStream);
         } catch (Throwable t) {
+            if (t instanceof IOException)
+                throw (IOException)t;
             if (t instanceof WebApplicationException)
                 throw (WebApplicationException)t;
             else
