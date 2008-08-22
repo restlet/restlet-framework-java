@@ -705,6 +705,7 @@
 		<attribute name="ext2" default="" />
 		<attribute name="ext3" default="" />
 		<attribute name="ext4" default="" />
+		<attribute name="ext5" default="" />
 		<sequential>
 			<!-- sets the final pom version -->
 			<condition property="mod-pom-@{name}-version" value="${lib-@{name}-version}.${lib-@{name}-release}${lib-@{name}-suffix-maven}">
@@ -735,6 +736,7 @@
 			<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@lib-@{ext2}-version@" value="${lib-@{ext2}-version}" />
 			<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@lib-@{ext3}-version@" value="${lib-@{ext3}-version}" />
 			<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@lib-@{ext4}-version@" value="${lib-@{ext4}-version}" />
+            <replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@lib-@{ext5}-version@" value="${lib-@{ext5}-version}" />
 		</sequential>
 	</macrodef>
 
@@ -963,7 +965,7 @@
 		<pomModule name="httpclient" />
 		<pomModule name="javamail" />
 		<pomModule name="jaxb" />
-		<pomModule name="jaxrs" ext1="activation" ext2="jaxb" ext3="json" ext4="javamail" />
+		<pomModule name="jaxrs" ext1="activation" ext2="jaxb" ext3="json" ext4="javamail" ext5="fileupload" />
 		<pomModule name="jdbc" ext1="dbcp" />
 		<pomModule name="jetty" />
 		<pomModule name="jibx" />
