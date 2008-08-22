@@ -77,10 +77,10 @@ import org.restlet.util.Engine;
  * Such application is also able to generate a description of itself under two
  * formats: WADL or HTML (the latter is actually a transformation of the
  * former). You can obtain this representation with an OPTIONS request addressed
- * to the "*" URI (e.g. "http://host:port/path/to/application/*"). By default,
- * the returned representation gleans the list of all attached Resources. This
- * default behaviour can be customized by overriding the getApplicationInfo()
- * method.<br>
+ * exactly to the application URI (e.g.
+ * "http://host:port/path/to/application"). By default, the returned
+ * representation gleans the list of all attached Resources. This default
+ * behaviour can be customized by overriding the getApplicationInfo() method.<br>
  * 
  * Concurrency note: instances of this class or its subclasses can be invoked by
  * several threads at the same time and therefore must be thread-safe. You
@@ -660,11 +660,11 @@ public class WadlApplication extends Application {
     }
 
     /**
-     * Handles the requests normally in all cases then handles handle the
-     * special case of the OPTIONS methods with "*" as the target resource
-     * reference value. In this case, the application is automatically
-     * introspected and described as a WADL representation based on the result
-     * of the {@link #getApplicationInfo(Request, Response)} method.<br>
+     * Handles the requests normally in all cases then handles the special case
+     * of the OPTIONS requests that exactly target the application. In this
+     * case, the application is automatically introspected and described as a
+     * WADL representation based on the result of the
+     * {@link #getApplicationInfo(Request, Response)} method.<br>
      * The automatic introspection happens only if the request hasn't already
      * been successfully handled. That is to say, it lets users to provide their
      * own handling of OPTIONS requests.
