@@ -43,8 +43,8 @@ public class ThrowWebAppExcProviderTest extends JaxRsTestCase {
 
     @Override
     @SuppressWarnings("unchecked")
-    protected Set<Class<?>> getProvClasses() {
-        return (Set) TestUtils.createSet(ThrowWebAppExcProvider.class);
+    protected Set<Object> getSingletons() {
+        return (Set) TestUtils.createSet(new ThrowWebAppExcProvider());
     }
 
     @Override

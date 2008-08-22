@@ -40,7 +40,7 @@ import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
 import org.restlet.ext.jaxrs.internal.util.RemainingPath;
 import org.restlet.ext.jaxrs.internal.wrappers.ResourceMethod;
 import org.restlet.ext.jaxrs.internal.wrappers.RootResourceClass;
-import org.restlet.ext.jaxrs.internal.wrappers.WrapperFactory;
+import org.restlet.ext.jaxrs.internal.wrappers.ResourceClasses;
 
 /**
  * Tests for classes in package {@link org.restlet.ext.jaxrs.internal.wrappers}.
@@ -90,12 +90,13 @@ public class WrapperClassesTests extends TestCase {
         }
     }
 
-    private static final WrapperFactory wrapperFactory = new WrapperFactory(
-            new ThreadLocalizedContext(), null, null);
+    private static final ResourceClasses resourceClasses = new ResourceClasses(
+            new ThreadLocalizedContext(), null, null, Logger
+                    .getAnonymousLogger());
 
     public void testIllegalMethodPath() throws Exception {
-        final RootResourceClass rrc = wrapperFactory
-                .getRootResourceClass(IllegalMethPathRrc.class);
+        final RootResourceClass rrc = resourceClasses
+                .getRootClassWrapper(IllegalMethPathRrc.class);
         @SuppressWarnings("unused")
         Collection<ResourceMethod> rms;
         rms = rrc.getMethodsForPath(new RemainingPath("abc"));
@@ -105,8 +106,8 @@ public class WrapperClassesTests extends TestCase {
 
     public void testIllegalRrcPath() throws Exception {
         try {
-            final RootResourceClass rrc = wrapperFactory
-                    .getRootResourceClass(IllegalRrcPathRrc.class);
+            final RootResourceClass rrc = resourceClasses
+                    .getRootClassWrapper(IllegalRrcPathRrc.class);
             fail("must fail");
         } catch (final IllegalPathOnClassException iae) {
             // good

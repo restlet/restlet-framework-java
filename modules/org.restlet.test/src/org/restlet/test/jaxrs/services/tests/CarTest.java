@@ -55,7 +55,8 @@ public class CarTest extends JaxRsTestCase {
     public void testDelete() throws Exception {
         final Response response = accessServer(Method.DELETE,
                 CarListResource.class, null, null);
-        assertTrue(response.getStatus().isClientError());
+        assertTrue("The status should be a client error, but was "
+                + response.getStatus(), response.getStatus().isClientError());
         assertEquals(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED, response
                 .getStatus());
     }
@@ -88,7 +89,8 @@ public class CarTest extends JaxRsTestCase {
 
     public void testGetHtmlText() throws Exception {
         final Response response = get(MediaType.TEXT_HTML);
-        assertTrue(response.getStatus().isClientError());
+        assertTrue("The status should be a client error, but was "
+                + response.getStatus(), response.getStatus().isClientError());
         assertEquals(Status.CLIENT_ERROR_NOT_ACCEPTABLE, response.getStatus());
     }
 

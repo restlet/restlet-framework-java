@@ -27,11 +27,13 @@
 package org.restlet.test.jaxrs;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.HttpHeaders;
@@ -39,12 +41,22 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Providers;
 
 import junit.framework.TestCase;
 
 import org.restlet.ext.jaxrs.internal.core.MultivaluedMapImpl;
+import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalTypeException;
+import org.restlet.ext.jaxrs.internal.exceptions.InjectException;
 import org.restlet.ext.jaxrs.internal.exceptions.JaxRsRuntimeException;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.ContextResolver;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.ExtensionBackwardMapping;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.JaxRsProviders;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyReader;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyWriter;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.ProviderWrapper;
 import org.restlet.test.jaxrs.services.providers.IllegalArgExcMapper;
 
 /**
@@ -112,8 +124,9 @@ public class ExceptionMappersTest extends TestCase {
         super.setUp();
         final IllegalArgExcMapper illegalArgExcMapper = new IllegalArgExcMapper();
         illegalArgExcMapper.httpHeaders = new TestHttpHeaders();
-        this.exceptionMappers = new JaxRsProviders();
-        this.exceptionMappers.add(illegalArgExcMapper);
+        this.exceptionMappers = new JaxRsProviders(null, null, null, Logger
+                .getAnonymousLogger());
+        this.exceptionMappers.addSingleton(illegalArgExcMapper, false);
     }
 
     public void testIae() throws Exception {
@@ -126,8 +139,8 @@ public class ExceptionMappersTest extends TestCase {
         IOException ioException = new IOException(
                 "This exception is planned for testing !");
         try {
-            convert(ioException);
-            fail("must throw an wrapper exception");
+            Response r = convert(ioException);
+            assertEquals(500, r.getStatus());
         } catch (JaxRsRuntimeException e) {
             assertEquals(ioException, e.getCause());
         }

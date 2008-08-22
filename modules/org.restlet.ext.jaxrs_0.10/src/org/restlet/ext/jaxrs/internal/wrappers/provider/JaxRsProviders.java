@@ -33,6 +33,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -42,16 +43,22 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Providers;
 
 import org.restlet.data.MediaType;
+import org.restlet.ext.jaxrs.InstantiateException;
+import org.restlet.ext.jaxrs.ObjectFactory;
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalConstrParamTypeException;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalParamTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.ImplementationException;
 import org.restlet.ext.jaxrs.internal.exceptions.InjectException;
-import org.restlet.ext.jaxrs.internal.exceptions.JaxRsRuntimeException;
+import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
+import org.restlet.ext.jaxrs.internal.exceptions.MissingConstructorException;
 import org.restlet.ext.jaxrs.internal.util.Converter;
 
 /**
@@ -62,45 +69,11 @@ import org.restlet.ext.jaxrs.internal.util.Converter;
 public class JaxRsProviders implements javax.ws.rs.ext.Providers,
         MessageBodyReaderSet {
 
-    /**
-     * @author Stephan
-     * 
-     */
-    private static final class ErrorMapper implements ExceptionMapper<Error> {
-        public Response toResponse(Error error) {
-            throw error;
-        }
-    }
-
-    /**
-     * @author Stephan
-     * 
-     */
-    private static final class RuntimeExcMapper implements
-            ExceptionMapper<RuntimeException> {
-        public Response toResponse(RuntimeException runtimeException) {
-            throw runtimeException;
-        }
-    }
-
-    /**
-     * @author Stephan
-     * 
-     */
-    private static final class ThrowableMapper implements
-            ExceptionMapper<Throwable> {
-        public Response toResponse(Throwable exception) {
-            throw new JaxRsRuntimeException(exception);
-        }
-    }
-
     private static final Logger localLogger = Logger
             .getLogger("ExceptionsMapper");
 
     /**
      * Returns the generic class of the given {@link ContextResolver} class.
-     * 
-     * @param crClaz
      */
     private static Class<?> getCtxResGenClass(Class<?> crClaz) {
         Type[] crIfTypes = crClaz.getGenericInterfaces();
@@ -115,75 +88,50 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
         return null;
     }
 
-    private final Set<Provider> all;
+    private final Set<ProviderWrapper> all;
 
     /**
      * This {@link Set} contains all available
      * {@link javax.ws.rs.ext.ContextResolver}s.<br>
      * This field is final, because it is shared with other objects.
      */
-    private final Collection<ContextResolver> contextResolvers;
+    private final Collection<ProviderWrapper> contextResolvers;
 
-    private final Map<Class<? extends Throwable>, ExceptionMapper<? extends Throwable>> excMappers;
+    private final Map<Class<? extends Throwable>, ProviderWrapper> excMappers;
 
-    private final List<MessageBodyReader> messageBodyReaders;
+    private final ExtensionBackwardMapping extensionBackwardMapping;
 
-    private final List<MessageBodyWriter> messageBodyWriters;
+    private final Logger logger;
+
+    private final List<ProviderWrapper> messageBodyReaderWrappers;
+
+    private final List<ProviderWrapper> messageBodyWriterWrappers;
+
+    private final ObjectFactory objectFactory;
+
+    private final ThreadLocalizedContext tlContext;
 
     /**
      * Creates a new JaxRsProviders.
-     */
-    public JaxRsProviders() {
-        this.all = new CopyOnWriteArraySet<Provider>();
-        this.messageBodyReaders = new CopyOnWriteArrayList<MessageBodyReader>();
-        this.messageBodyWriters = new CopyOnWriteArrayList<MessageBodyWriter>();
-        this.contextResolvers = new CopyOnWriteArraySet<ContextResolver>();
-        this.excMappers = new ConcurrentHashMap<Class<? extends Throwable>, ExceptionMapper<? extends Throwable>>();
-        this.add(new ThrowableMapper());
-        this.add(new ErrorMapper());
-        this.add(new RuntimeExcMapper());
-    }
-
-    /**
-     * Adds the given {@link ExceptionMapper} to this ExceptionMappers.
      * 
-     * @param excMapper
-     * @return true, if the providers was an ExceptionMapper and added,
-     *         otherwise false.
-     * @throws NullPointerException
-     *                 if null is given
+     * @param objectFactory
+     * @param tlContext
+     * @param extensionBackwardMapping
+     * @param logger
      */
-    public boolean add(ExceptionMapper<? extends Throwable> excMapper) {
-        boolean added = false;
-        Type[] gis = excMapper.getClass().getGenericInterfaces();
-        for (Type gi : gis) {
-            if (gi instanceof ParameterizedType) {
-                ParameterizedType ifpt = (ParameterizedType) gi;
-                if (ifpt.getRawType().equals(ExceptionMapper.class)) {
-                    @SuppressWarnings("unchecked")
-                    Class<? extends Throwable> excClass = (Class) ifpt
-                            .getActualTypeArguments()[0];
-                    excMappers.put(excClass, excMapper);
-                    added = true;
-                }
-            }
-        }
-        return added;
-    }
+    public JaxRsProviders(ObjectFactory objectFactory,
+            ThreadLocalizedContext tlContext,
+            ExtensionBackwardMapping extensionBackwardMapping, Logger logger) {
+        this.all = new CopyOnWriteArraySet<ProviderWrapper>();
+        this.messageBodyReaderWrappers = new CopyOnWriteArrayList<ProviderWrapper>();
+        this.messageBodyWriterWrappers = new CopyOnWriteArrayList<ProviderWrapper>();
+        this.contextResolvers = new CopyOnWriteArraySet<ProviderWrapper>();
+        this.excMappers = new ConcurrentHashMap<Class<? extends Throwable>, ProviderWrapper>();
 
-    /**
-     * Adds the given {@link Provider} to this ExceptionMappers.
-     * 
-     * @param exceptionMapper
-     * @return true, if the providers was an ExceptionMapper and added,
-     *         otherwise false.
-     * @throws NullPointerException
-     *                 if <code>null</code> is given
-     */
-    public boolean add(Provider exceptionMapper) {
-        if (!exceptionMapper.isExceptionMapper())
-            return false;
-        return add(exceptionMapper.getExcMapper());
+        this.objectFactory = objectFactory;
+        this.tlContext = tlContext;
+        this.extensionBackwardMapping = extensionBackwardMapping;
+        this.logger = logger;
     }
 
     /**
@@ -193,24 +141,115 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
      * @param provider
      * @param defaultProvider
      */
-    public void add(Provider provider, boolean defaultProvider) {
+    private void add(ProviderWrapper provider, boolean defaultProvider) {
         if (provider.isWriter()) {
             if (defaultProvider)
-                this.messageBodyWriters.add(provider);
+                this.messageBodyWriterWrappers.add(provider);
             else
-                this.messageBodyWriters.add(0, provider);
+                this.messageBodyWriterWrappers.add(0, provider);
         }
         if (provider.isReader()) {
             if (defaultProvider)
-                this.messageBodyReaders.add(provider);
+                this.messageBodyReaderWrappers.add(provider);
             else
-                this.messageBodyReaders.add(0, provider);
+                this.messageBodyReaderWrappers.add(0, provider);
         }
         if (provider.isContextResolver())
             this.contextResolvers.add(provider);
         if (provider.isExceptionMapper())
-            this.add(provider.getExcMapper());
+            this.addExcMapper(provider);
         this.all.add(provider);
+    }
+
+    /**
+     * @param jaxRsProviderClass
+     * @return
+     */
+    public boolean addClass(Class<?> jaxRsProviderClass) {
+        ProviderWrapper provider;
+        try {
+            provider = new PerRequestProviderWrapper(jaxRsProviderClass,
+                    objectFactory, tlContext, this, extensionBackwardMapping,
+                    this.logger);
+        } catch (IllegalParamTypeException e) {
+            String msg = "Ignore provider " + jaxRsProviderClass.getName()
+                    + ": Could not instantiate class "
+                    + jaxRsProviderClass.getName();
+            logger.log(Level.WARNING, msg, e);
+            return false;
+        } catch (InstantiateException e) {
+            String msg = "Ignore provider " + jaxRsProviderClass.getName()
+                    + ": Could not instantiate class "
+                    + jaxRsProviderClass.getName();
+            logger.log(Level.WARNING, msg, e);
+            return false;
+        } catch (MissingAnnotationException e) {
+            String msg = "Ignore provider " + jaxRsProviderClass.getName()
+                    + ": Could not instantiate class "
+                    + jaxRsProviderClass.getName() + ", because "
+                    + e.getMessage();
+            logger.log(Level.WARNING, msg);
+            return false;
+        } catch (InvocationTargetException ite) {
+            String msg = "Ignore provider " + jaxRsProviderClass.getName()
+                    + ", because an exception occured while instantiating";
+            logger.log(Level.WARNING, msg, ite);
+            return false;
+        } catch (IllegalArgumentException iae) {
+            String msg = "Ignore provider " + jaxRsProviderClass.getName()
+                    + ", because it could not be instantiated";
+            logger.log(Level.WARNING, msg, iae);
+            return false;
+        } catch (MissingConstructorException mce) {
+            String msg = "Ignore provider " + jaxRsProviderClass.getName()
+                    + ", because no valid constructor was found: "
+                    + mce.getMessage();
+            logger.warning(msg);
+            return false;
+        } catch (IllegalConstrParamTypeException e) {
+            String msg = "Ignore provider " + jaxRsProviderClass.getName()
+                    + ", because no valid constructor was found: "
+                    + e.getMessage();
+            logger.warning(msg);
+            return false;
+        }
+        this.add(provider, false);
+        return true;
+    }
+
+    /**
+     * Adds the given {@link ExceptionMapper} to this ExceptionMappers.
+     * 
+     * @param excMapper
+     * @throws NullPointerException
+     *                 if null is given
+     */
+    @SuppressWarnings("unchecked")
+    private void addExcMapper(ProviderWrapper excMapperWrapper) {
+        Class excClass = excMapperWrapper.getExcMapperType();
+        excMappers.put(excClass, excMapperWrapper);
+    }
+
+    /**
+     * @param jaxRsProviderObject
+     * @param defaultProvider
+     * @return true if the object was added, false if not.
+     * @throws WebApplicationException
+     */
+    public boolean addSingleton(Object jaxRsProviderObject,
+            boolean defaultProvider) throws WebApplicationException {
+        ProviderWrapper provider;
+        try {
+            provider = new SingletonProvider(jaxRsProviderObject, this.logger);
+        } catch (IllegalArgumentException iae) {
+            String msg = "Ignore provider "
+                    + jaxRsProviderObject.getClass().getName()
+                    + ", because it could not be instantiated";
+            logger.log(Level.WARNING, msg, iae);
+            return false;
+        }
+        this.add(provider, defaultProvider);
+        return true;
     }
 
     /**
@@ -227,9 +266,13 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
      */
     @SuppressWarnings("unchecked")
     public Response convert(Throwable cause) {
-        // TODO update javadoc in this file and upate the code according to it. 
+        // TODO update javadoc in this file and upate the code according to it.
         ExceptionMapper mapper = getExceptionMapper(cause.getClass());
         if (mapper == null) {
+            if (cause instanceof RuntimeException)
+                throw (RuntimeException) cause;
+            if (cause instanceof Error)
+                throw (Error) cause;
             String entity = "No ExceptionMapper was found, but must be found";
             return Response.serverError().entity(entity).type(
                     javax.ws.rs.core.MediaType.TEXT_PLAIN_TYPE).build();
@@ -261,10 +304,12 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
     public MessageBodyReader getBestReader(Class<?> paramType,
             Type genericType, Annotation[] annotations, MediaType mediaType) {
         // NICE optimization: may be cached for speed.
-        for (MessageBodyReader mbr : this.messageBodyReaders) {
-            if (mbr.supportsRead(mediaType))
+        for (ProviderWrapper mbrw : this.messageBodyReaderWrappers) {
+            if (mbrw.supportsRead(mediaType)) {
+                MessageBodyReader mbr = mbrw.getInitializedReader();
                 if (mbr.isReadable(paramType, genericType, annotations))
                     return mbr;
+            }
         }
         return null;
     }
@@ -278,11 +323,12 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
             Class<T> contextType, Class<?> objectType,
             javax.ws.rs.core.MediaType mediaType) {
         // LATER test JaxRsProviders.getContextResolver
-        for (ContextResolver crWrapper : this.contextResolvers) {
+        for (ProviderWrapper crWrapper : this.contextResolvers) {
             final javax.ws.rs.ext.ContextResolver<?> cr;
-            cr = crWrapper.getContextResolver();
+            cr = crWrapper.getInitializedCtxResolver().getContextResolver();
+            // TODO do I need the ContextResolverWrapper?
             final Class<?> crClaz = cr.getClass();
-            final Class<?> genClass = getCtxResGenClass(crClaz);
+            final Class<?> genClass = JaxRsProviders.getCtxResGenClass(crClaz);
             if (genClass == null || !genClass.equals(contextType)) {
                 continue;
             }
@@ -310,27 +356,26 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
 
     /**
      * @param causeClass
-     * @return the ExceptionMapper for the given Throwable class. Never returns
-     *         null.
+     * @return the ExceptionMapper for the given Throwable class, or null, if
+     *         none was found.
      */
     @SuppressWarnings("unchecked")
     public <T> ExceptionMapper<T> getExceptionMapper(Class<T> causeClass) {
         if (causeClass == null)
             throw new ImplementationException(
                     "The call of an exception mapper with null is not allowed");
-        ExceptionMapper<T> mapper = (ExceptionMapper) this.excMappers
-                .get(causeClass);
-        if (mapper == null) {
+        ProviderWrapper mapperWrapper;
+        do {
+            mapperWrapper = this.excMappers.get(causeClass);
             Class superclass = causeClass.getSuperclass();
             if (superclass == null || superclass.equals(Object.class))
-                throw new ImplementationException("Why is the superclass of "
-                        + causeClass + " " + causeClass + "?");
-            mapper = getExceptionMapper(superclass);
-            // disabled caching, because adding of new ExceptionMappers could
-            // cause trouble.
-            // this.excMappers.put(superclass, mapper);
-        }
-        return mapper;
+                return null;
+            causeClass = superclass;
+        } while (mapperWrapper == null);
+        // disabled caching, because adding of new ExceptionMappers could
+        // cause trouble.
+        // this.excMappers.put(superclass, mapper);
+        return (ExceptionMapper<T>)mapperWrapper.getInitializedExcMapper();
     }
 
     /**
@@ -351,17 +396,18 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
      * @see javax.ws.rs.ext.Providers#getMessageBodyWriter(Class, Type,
      *      Annotation[], javax.ws.rs.core.MediaType)
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( { "unchecked", "cast" })
     public <T> javax.ws.rs.ext.MessageBodyWriter<T> getMessageBodyWriter(
             Class<T> type, Type genericType, Annotation[] annotations,
             javax.ws.rs.core.MediaType mediaType) {
         MediaType restletMediaType = Converter.toRestletMediaType(mediaType);
-        List<MessageBodyWriter> mbws = this.messageBodyWriters;
-        for (MessageBodyWriter mbw : mbws) {
-            if (mbw.supportsWrite(restletMediaType))
+        for (ProviderWrapper mbww : this.messageBodyWriterWrappers) {
+            if (mbww.supportsWrite(restletMediaType)) {
+                MessageBodyWriter mbw = mbww.getInitializedWriter();
                 if (mbw.isWriteable(type, genericType, annotations))
                     return (javax.ws.rs.ext.MessageBodyWriter<T>) mbw
                             .getJaxRsWriter();
+            }
         }
         return null;
     }
@@ -375,9 +421,11 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
      */
     public void initAll(ThreadLocalizedContext tlContext,
             ExtensionBackwardMapping extensionBackwardMapping) {
-        for (final Provider provider : new ArrayList<Provider>(this.all)) {
+        for (final ProviderWrapper provider : new ArrayList<ProviderWrapper>(
+                this.all)) {
             try {
-                provider.init(tlContext, this, extensionBackwardMapping);
+                provider.initAtAppStartUp(tlContext, this,
+                        extensionBackwardMapping);
             } catch (InjectException e) {
                 localLogger.log(Level.WARNING, "The provider "
                         + provider.getClassName() + " could not be used", e);
@@ -398,13 +446,20 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
     /**
      * @param provider
      */
-    private void remove(Provider provider) {
+    private void remove(ProviderWrapper provider) {
         this.all.remove(provider);
         this.contextResolvers.remove(provider);
-        this.messageBodyReaders.remove(provider);
-        this.messageBodyWriters.remove(provider);
-        if (provider.getExcMapper() != null)
-            this.excMappers.remove(provider.getExcMapper());
+        this.messageBodyReaderWrappers.remove(provider);
+        this.messageBodyWriterWrappers.remove(provider);
+        Iterator<Map.Entry<Class<? extends Throwable>, ProviderWrapper>> excMapperEntryIter = this.excMappers
+                .entrySet().iterator();
+        while (excMapperEntryIter.hasNext()) {
+            final Map.Entry<Class<? extends Throwable>, ProviderWrapper> excMapperEntry;
+            excMapperEntry = excMapperEntryIter.next();
+            ProviderWrapper providerWrapper = excMapperEntry.getValue();
+            if (providerWrapper.equals(provider))
+                excMapperEntryIter.remove();
+        }
     }
 
     /**
@@ -424,7 +479,8 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
             Type genericType, Annotation[] annotations) {
         // NICE optimization: may be cached for speed.
         final List<MessageBodyWriter> mbws = new ArrayList<MessageBodyWriter>();
-        for (MessageBodyWriter mbw : this.messageBodyWriters) {
+        for (ProviderWrapper mbww : this.messageBodyWriterWrappers) {
+            MessageBodyWriter mbw = mbww.getInitializedWriter();
             if (mbw.isWriteable(entityClass, genericType, annotations))
                 mbws.add(mbw);
         }

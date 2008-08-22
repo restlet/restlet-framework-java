@@ -32,19 +32,19 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 import org.restlet.test.jaxrs.services.others.Person;
-import org.restlet.test.jaxrs.services.providers.CrazyTypeProvider;
+import org.restlet.test.jaxrs.services.providers.TextCrazyPersonProvider;
 import org.restlet.test.jaxrs.services.tests.OwnProviderTest;
 
 /**
  * @author Stephan Koops
- * @see CrazyTypeProvider
+ * @see TextCrazyPersonProvider
  * @see OwnProviderTest
  */
 @Path("ownProviderTest")
 public class OwnProviderTestService {
 
     @GET
-    @Produces("application/crazyType")
+    @Produces( { "text/crazy-person", "application/crazy-person" })
     public Response get() {
         final Person person = new Person("abc", "def");
         return Response.ok(person).header("h1", "h1v").build();

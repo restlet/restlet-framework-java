@@ -30,7 +30,7 @@ import java.io.Serializable;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.restlet.test.jaxrs.services.providers.CrazyTypeProvider;
+import org.restlet.test.jaxrs.services.providers.TextCrazyPersonProvider;
 import org.restlet.test.jaxrs.services.resources.OwnProviderTestService;
 import org.restlet.test.jaxrs.services.resources.PersonsResource;
 import org.restlet.test.jaxrs.services.resources.ProviderTestService;
@@ -39,7 +39,7 @@ import org.restlet.test.jaxrs.services.tests.PersonsTest;
 /**
  * This class is used as data object in the resource classes
  * {@link OwnProviderTestService} and {@link ProviderTestService}. It can be
- * serialized by the {@link CrazyTypeProvider}.
+ * serialized by the {@link TextCrazyPersonProvider}.
  * 
  * @author Stephan Koops
  * @see PersonList

@@ -66,13 +66,11 @@ public class EmployeesResource {
      * 
      * @param staffNo
      *            the number of the created employee
-     * @param extension
-     *            the file extension to use for content negotiation
      * @return the URI for the location of an created employee.
      */
-    private URI createdLocation(int staffNo, String extension) {
+    private URI createdLocation(int staffNo) {
         final UriBuilder locBuilder = this.uriInfo.getRequestUriBuilder();
-        locBuilder.path("{staffNo}").extension(extension);
+        locBuilder.path("{staffNo}");
         return locBuilder.build(staffNo);
     }
 
@@ -81,8 +79,7 @@ public class EmployeesResource {
     @Consumes( { "application/xml", "text/xml", "application/json" })
     public Response createEmployee(Employee employee) {
         final int staffNo = this.employeeMgr.createEmployee(employee);
-        final String uriExts = this.uriInfo.getConnegExtension();
-        final URI location = createdLocation(staffNo, uriExts);
+        final URI location = createdLocation(staffNo);
         return Response.created(location).build();
     }
 
@@ -95,7 +92,7 @@ public class EmployeesResource {
         employee.setSex(employeeData.getFirst("sex"));
         employee.setDepartment(employeeData.getFirst("department"));
         final int persNo = this.employeeMgr.createEmployee(employee);
-        final URI location = createdLocation(persNo, "html");
+        final URI location = createdLocation(persNo);
         return Response.seeOther(location).build();
     }
 

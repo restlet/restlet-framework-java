@@ -62,20 +62,18 @@ public class PathRegExpTests extends TestCase {
     }
 
     @SuppressWarnings("deprecation")
-    private final PathRegExp regExpOneSegment1 = new PathRegExp(PATH_PATTERN_1,
-            true);
+    private final PathRegExp regExpOneSegment1 = new PathRegExp(PATH_PATTERN_1);
 
     @SuppressWarnings("deprecation")
     private final PathRegExp regExpMultipleSegments1 = new PathRegExp(
-            PATH_PATTERN_1, false);
+            PATH_PATTERN_1);
 
     @SuppressWarnings("deprecation")
-    private final PathRegExp regExpOneSegment2 = new PathRegExp(PATH_PATTERN_2,
-            true);
+    private final PathRegExp regExpOneSegment2 = new PathRegExp(PATH_PATTERN_2);
 
     @SuppressWarnings("deprecation")
     private final PathRegExp regExpMultipleSegments2 = new PathRegExp(
-            PATH_PATTERN_2, false);
+            PATH_PATTERN_2);
 
     /**
      * Test method for

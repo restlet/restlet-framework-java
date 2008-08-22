@@ -28,6 +28,8 @@ package org.restlet.test.jaxrs.services.tests;
 
 import java.util.Set;
 
+import javax.ws.rs.core.Application;
+
 import org.restlet.data.Response;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.test.jaxrs.services.providers.EntityConstructorProvider;
@@ -42,15 +44,29 @@ import org.restlet.test.jaxrs.services.resources.IllegalConstructorResource;
  */
 public class IllegalConstructorTest extends JaxRsTestCase {
 
+    /**
+     * @return
+     */
     @Override
-    @SuppressWarnings("unchecked")
-    protected Set<Class<?>> getProvClasses() {
-        return Util.createSet(ParamConstructorProvider.class,
-                EntityConstructorProvider.class);
+    protected Application getAppConfig() {
+        final Application appConfig = new Application() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public Set<Class<?>> getClasses() {
+                return Util
+                        .createSet(ParamConstructorProvider.class,
+                                EntityConstructorProvider.class,
+                                getRootResourceClass());
+            }
+        };
+        return appConfig;
     }
 
+    /**
+     * @return
+     */
     @Override
-    protected Class<?> getRootResourceClass() {
+    protected Class<IllegalConstructorResource> getRootResourceClass() {
         return IllegalConstructorResource.class;
     }
 

@@ -97,7 +97,7 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
      * 
      * @param resourceObject
      *                the wrapped resource object.
-     * @param wrapperFactory
+     * @param resourceClasses
      *                factory to create wrappers.
      * @param logger
      *                The logger to use
@@ -117,7 +117,7 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
      * @throws IllegalArgumentException
      */
     public ResourceObject createSubResource(ResourceObject resourceObject,
-            WrapperFactory wrapperFactory, Logger logger)
+            ResourceClasses resourceClasses, Logger logger)
             throws InvocationTargetException, WebApplicationException,
             InstantiateException, ConvertRepresentationException,
             IllegalArgumentException, MissingAnnotationException {
@@ -137,7 +137,7 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
             throw new WebApplicationException(rb.build());
         }
         ResourceClass resourceClass;
-        resourceClass = wrapperFactory.getResourceClass(subResObj.getClass());
+        resourceClass = resourceClasses.getResourceClass(subResObj.getClass());
         return new ResourceObject(subResObj, resourceClass);
     }
 }

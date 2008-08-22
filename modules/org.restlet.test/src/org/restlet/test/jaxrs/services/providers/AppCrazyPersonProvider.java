@@ -36,20 +36,21 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.Provider;
 import javax.ws.rs.ext.Providers;
 
 import org.restlet.test.jaxrs.services.others.Person;
 
 /**
  * This provider writes a Persons as XML (by JAXB) and with the
- * {@link CrazyTypeProvider}.<br>
+ * {@link TextCrazyPersonProvider}.<br>
  * (I've got no better idea for Providers)
  * 
  * @author Stephan Koops
  */
-@Produces("text/crazy-person")
-public class ProidersTestProvider implements
-        MessageBodyWriter<Person> {
+@Produces("application/crazy-person")
+@Provider
+public class AppCrazyPersonProvider implements MessageBodyWriter<Person> {
 
     @Context
     Providers providers;
@@ -78,14 +79,14 @@ public class ProidersTestProvider implements
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
         MessageBodyWriter<Person> mbw;
-        mbw = this.providers.getMessageBodyWriter(Person.class,
-                Person.class, annotations, MediaType.APPLICATION_XML_TYPE);
+        mbw = this.providers.getMessageBodyWriter(Person.class, Person.class,
+                annotations, MediaType.APPLICATION_XML_TYPE);
         mbw.writeTo(t, Person.class, Person.class, annotations,
                 MediaType.APPLICATION_XML_TYPE, httpHeaders, entityStream);
 
-        final MediaType mediaType2 = new MediaType("application", "crazyType");
-        mbw = this.providers.getMessageBodyWriter(Person.class,
-                Person.class, annotations, mediaType2);
+        final MediaType mediaType2 = new MediaType("text", "crazy-person");
+        mbw = this.providers.getMessageBodyWriter(Person.class, Person.class,
+                annotations, mediaType2);
         mbw.writeTo(t, Person.class, Person.class, annotations, mediaType2,
                 httpHeaders, entityStream);
     }

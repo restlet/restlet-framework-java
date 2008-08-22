@@ -41,12 +41,12 @@ import javax.ws.rs.core.Response.Status;
 
 /**
  * @author Stephan Koops
- * @see org.restlet.test.jaxrs.services.tests.AncestorTest
- * @see UriInfo#getAncestorResources()
- * @see UriInfo#getAncestorResourceURIs()
+ * @see org.restlet.test.jaxrs.services.tests.MatchedTest
+ * @see UriInfo#getMatchedResources()
+ * @see UriInfo#getMatchedURIs()
  */
-@Path("ancestorTest")
-public class AncestorTestService {
+@Path("matchedTest")
+public class MatchedTestService {
 
     /**
      * @param uriInfo
@@ -86,8 +86,8 @@ public class AncestorTestService {
     @GET
     @Produces("text/plain")
     public String get(@Context UriInfo uriInfo) {
-        final int uriSize = uriInfo.getAncestorResourceURIs().size();
-        final int resourcesSize = uriInfo.getAncestorResources().size();
+        final int uriSize = uriInfo.getMatchedURIs().size();
+        final int resourcesSize = uriInfo.getMatchedResources().size();
         return uriSize + "\n" + resourcesSize;
     }
 
@@ -96,7 +96,7 @@ public class AncestorTestService {
     @Path("resourceClassNames")
     public String getResources(@Context UriInfo uriInfo) {
         final StringBuilder stb = new StringBuilder();
-        final List<Object> resources = uriInfo.getAncestorResources();
+        final List<Object> resources = uriInfo.getMatchedResources();
         stb.append(resources.size());
         for (final Object resource : resources) {
             stb.append('\n');
@@ -106,13 +106,13 @@ public class AncestorTestService {
     }
 
     @Path("sameSub")
-    public AncestorTestService getSameSub() {
+    public MatchedTestService getSameSub() {
         return getSub();
     }
 
     @Path("sub")
-    public AncestorTestService getSub() {
-        final AncestorTestService sub = new AncestorTestService();
+    public MatchedTestService getSub() {
+        final MatchedTestService sub = new MatchedTestService();
         sub.mainUriInfo = this.mainUriInfo;
         return sub;
     }
@@ -132,7 +132,7 @@ public class AncestorTestService {
     @Path("uris")
     public String getUris(@Context UriInfo uriInfo) {
         final StringBuilder stb = new StringBuilder();
-        final List<String> uris = uriInfo.getAncestorResourceURIs();
+        final List<String> uris = uriInfo.getMatchedURIs();
         stb.append(uris.size());
         for (final String uri : uris) {
             stb.append('\n');

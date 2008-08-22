@@ -30,7 +30,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.ws.rs.core.ApplicationConfig;
+import javax.ws.rs.core.Application;
 
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
@@ -49,10 +49,10 @@ import org.restlet.test.jaxrs.services.resources.PersonsResource;
  */
 public class PersonsTest extends JaxRsTestCase {
     @Override
-    protected ApplicationConfig getAppConfig() {
-        return new ApplicationConfig() {
+    protected Application getAppConfig() {
+        return new Application() {
             @Override
-            public Set<Class<?>> getResourceClasses() {
+            public Set<Class<?>> getClasses() {
                 final Set<Class<?>> rrcs = new HashSet<Class<?>>(2);
                 rrcs.add(PersonResource.class);
                 rrcs.add(PersonsResource.class);

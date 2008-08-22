@@ -36,9 +36,9 @@ import javax.ws.rs.core.UriInfo;
 
 /**
  * @author Stephan Koops
- * @see org.restlet.test.jaxrs.services.tests.AncestorTest
- * @see UriInfo#getAncestorResources()
- * @see UriInfo#getAncestorResourceURIs()
+ * @see org.restlet.test.jaxrs.services.tests.MatchedTest
+ * @see UriInfo#getMatchedResources()
+ * @see UriInfo#getMatchedURIs()
  */
 @Path("ancestorTest")
 public class MatchedUriTestResource {
@@ -50,8 +50,8 @@ public class MatchedUriTestResource {
     @GET
     @Produces("text/plain")
     public String get(@Context UriInfo uriInfo) {
-        final int uriSize = uriInfo.getAncestorResourceURIs().size();
-        final int resourcesSize = uriInfo.getAncestorResources().size();
+        final int uriSize = uriInfo.getMatchedURIs().size();
+        final int resourcesSize = uriInfo.getMatchedResources().size();
         return uriSize + "\n" + resourcesSize;
     }
 
@@ -60,7 +60,7 @@ public class MatchedUriTestResource {
     @Path("sub")
     public String getResources(@Context UriInfo uriInfo) {
         final StringBuilder stb = new StringBuilder();
-        final List<Object> resources = uriInfo.getAncestorResources();
+        final List<Object> resources = uriInfo.getMatchedResources();
         stb.append(resources.size());
         for (final Object resource : resources) {
             stb.append('\n');

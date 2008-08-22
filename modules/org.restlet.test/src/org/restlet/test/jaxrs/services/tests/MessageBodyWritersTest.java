@@ -33,23 +33,24 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
-import org.restlet.test.jaxrs.services.providers.CrazyTypeProvider;
-import org.restlet.test.jaxrs.services.providers.ProidersTestProvider;
+import org.restlet.test.jaxrs.services.providers.TextCrazyPersonProvider;
+import org.restlet.test.jaxrs.services.providers.AppCrazyPersonProvider;
 import org.restlet.test.jaxrs.services.resources.MessageBodyWriterTestResource;
 import org.restlet.test.jaxrs.util.TestUtils;
 
 /**
  * @author Stephan Koops
- * @see ProidersTestProvider
  * @see MessageBodyWriterTestResource
+ * @see AppCrazyPersonProvider
+ * @see TextCrazyPersonProvider
  */
 @SuppressWarnings("all")
 public class MessageBodyWritersTest extends JaxRsTestCase {
 
     @Override
-    protected Set<Class<?>> getProvClasses() {
-        return (Set) TestUtils.createSet(ProidersTestProvider.class,
-                CrazyTypeProvider.class);
+    protected Set<Object> getSingletons() {
+        return (Set) TestUtils.createSet(new AppCrazyPersonProvider(),
+                new TextCrazyPersonProvider());
     }
 
     @Override
@@ -57,11 +58,13 @@ public class MessageBodyWritersTest extends JaxRsTestCase {
         return MessageBodyWriterTestResource.class;
     }
 
+    /** @see MessageBodyWriterTestResource#get() */
     public void test1() throws IOException {
         final Response response = get();
         final Representation entity = response.getEntity();
+        sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEqualMediaType(new MediaType("text/crazy-person"), entity);
+        assertEqualMediaType(new MediaType("application/crazy-person"), entity);
         assertEquals(
                 "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><person><firstname>Angela</firstname><lastname>Merkel</lastname></person>Angela Merkel is crazy.\nHeader value for name h1 is h1v",
                 entity.getText());

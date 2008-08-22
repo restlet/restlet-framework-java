@@ -96,7 +96,8 @@ public class PathParamTestService2 {
     }
 
     @GET
-    @Path(value = "multSegm/{string}", limited = false)
+    // @Path(value = "multSegm/{string}", limited = false)
+    // TODO regexp in @Path: rework test with regular expression
     @Produces("text/plain")
     public String getMultSegment(@PathParam("string") String string) {
         return string;

@@ -58,7 +58,7 @@ public class PathRegExp {
     /**
      * The PathRegExp with an empty path.
      */
-    public static PathRegExp EMPTY = new PathRegExp("", true);
+    public static PathRegExp EMPTY = new PathRegExp("");
 
     private static final String VARNAME_FUER_REST = "org.restlet.jaxrs.rest";
 
@@ -146,7 +146,7 @@ public class PathRegExp {
 
     private PathRegExp(Path path) throws IllegalArgumentException,
             IllegalPathException {
-        this(getPathPattern(path), path.limited());
+        this(getPathPattern(path));
     }
 
     /**
@@ -159,7 +159,7 @@ public class PathRegExp {
      * @deprecated public for testing only
      */
     @Deprecated
-    public PathRegExp(String pathPattern, boolean limitedToOneSegment) {
+    public PathRegExp(String pathPattern) {
         this.pathPattern = pathPattern;
         this.isEmptyOrSlash = Util.isEmptyOrSlash(pathPattern);
         final StringBuilder patternStb = new StringBuilder(pathPattern);
@@ -178,8 +178,8 @@ public class PathRegExp {
         if (varNames.size() > 1) {
             final String lastVarName = varNames.get(varNames.size() - 2);
             Variable lastVariable;
-            if (limitedToOneSegment
-                    && pathPattern.endsWith("{" + lastVarName + "}")) {
+            // TESTEN works this with the limited or unlimited path segment?
+            if (pathPattern.endsWith("{" + lastVarName + "}")) {
                 lastVariable = new Variable(Variable.TYPE_URI_SEGMENT);
             } else {
                 lastVariable = new Variable(Variable.TYPE_URI_PATH);

@@ -76,9 +76,19 @@ public class JaxRsUriBuilderTest extends TestCase {
         assertEquals(new URI(expectedUri), actualUri);
     }
 
-    static void assertEqualsURI(String expectedUri, UriBuilder actual)
+    static void assertEqualsURI(String expectedUri, UriBuilder actualBuilder)
             throws Exception {
-        assertEqualsURI(expectedUri, actual.build());
+        assertEqualsURI(expectedUri, actualBuilder, true);
+    }
+
+    static void assertEqualsURI(String expectedUri, UriBuilder actualBuilder,
+            boolean encode) throws Exception {
+        URI actual;
+        if (encode)
+            actual = actualBuilder.buildFromEncoded();
+        else
+            actual = actualBuilder.build();
+        assertEqualsURI(expectedUri, actual);
     }
 
     static void assertEqualsUriSlashAllowed(String expectedUri,
@@ -100,12 +110,15 @@ public class JaxRsUriBuilderTest extends TestCase {
      * @param expectedPort
      * @param expectedQuery
      * @param actualUriBuilder
+     * @param compareResult
+     *                TODO
      * @param expectedPathSegments
      */
     private static void assertEqualUriBuilder(String expectedScheme,
             String expectedUserInfo, String expectedHost, String expectedPort,
             String expectedPath, String expectedQuery,
-            UriBuilder actualUriBuilder) throws Exception {
+            UriBuilder actualUriBuilder, boolean compareResult)
+            throws Exception {
         if (actualUriBuilder instanceof JaxRsUriBuilder) {
             final JaxRsUriBuilder jaxRsUriBuilder = (JaxRsUriBuilder) actualUriBuilder;
             assertEquals(expectedScheme, getScheme(jaxRsUriBuilder));
@@ -113,31 +126,39 @@ public class JaxRsUriBuilderTest extends TestCase {
             assertEquals(expectedHost, getHost(jaxRsUriBuilder));
             assertEquals(expectedPort, getPort(jaxRsUriBuilder));
             final String actPath = getPath(jaxRsUriBuilder);
-            assertEquals(expectedPath, actPath);
+            try {
+                assertEquals(expectedPath, actPath);
+            } catch (junit.framework.ComparisonFailure cf) {
+                if (expectedPath == null)
+                    assertEquals("", actPath);
+            }
             CharSequence actualQuery = getQuery(jaxRsUriBuilder);
             if (actualQuery != null) {
                 actualQuery = actualQuery.toString();
             }
             assertEquals(expectedQuery, actualQuery);
         }
-        final JaxRsUriBuilder expectedUriBuilder = (JaxRsUriBuilder) RuntimeDelegate
-                .getInstance().createUriBuilder();
-        expectedUriBuilder.encode(false);
-        if (expectedScheme != null) {
-            expectedUriBuilder.scheme(expectedScheme);
+        if (compareResult) {
+            final JaxRsUriBuilder expectedUriBuilder = (JaxRsUriBuilder) RuntimeDelegate
+                    .getInstance().createUriBuilder();
+            if (expectedScheme != null) {
+                expectedUriBuilder.scheme(expectedScheme);
+            }
+            if (expectedUserInfo != null) {
+                expectedUriBuilder.userInfo(expectedUserInfo);
+            }
+            if (expectedHost != null) {
+                expectedUriBuilder.host(expectedHost);
+            }
+            expectedUriBuilder.port(expectedPort);
+            expectedUriBuilder.path(expectedPath);
+            if (expectedQuery != null) {
+                expectedUriBuilder.replaceQuery(expectedQuery);
+            }
+            String expectedURI = expectedUriBuilder.build().toString();
+            String atualURI = actualUriBuilder.build().toString();
+            assertEquals(expectedURI, atualURI);
         }
-        if (expectedUserInfo != null) {
-            expectedUriBuilder.userInfo(expectedUserInfo);
-        }
-        if (expectedHost != null) {
-            expectedUriBuilder.host(expectedHost);
-        }
-        expectedUriBuilder.port(expectedPort);
-        expectedUriBuilder.path(expectedPath);
-        if (expectedQuery != null) {
-            expectedUriBuilder.replaceQueryParams(expectedQuery);
-        }
-        assertEquals(expectedUriBuilder.build(), actualUriBuilder.build());
     }
 
     /**
@@ -224,16 +245,12 @@ public class JaxRsUriBuilderTest extends TestCase {
         System.out.println(Reference.encode("%"));
     }
 
-    private UriBuilder uriBuilder1Enc;
-
-    private UriBuilder uriBuilder1NoE;
+    private UriBuilder uriBuilder;
 
     /**
      * UriBuilder with variableNames.
      */
-    private UriBuilder uriBuilderWithVarsEnc;
-
-    private UriBuilder uriBuilderWithVarsNoE;
+    private UriBuilder uriBuilderWithVars;
 
     private URI buildFromTemplVarsWithMap(UriBuilder uriBuilder) {
         final Map<String, Object> vars = new HashMap<String, Object>();
@@ -253,7 +270,7 @@ public class JaxRsUriBuilderTest extends TestCase {
         vars.put("qp2Name", "GHI");
         vars.put("qp2Value", "JKL");
         vars.put("fragment", "MNO");
-        return uriBuilder.build(vars);
+        return uriBuilder.buildFromMap(vars, true);
     }
 
     private URI buildFromTemplVarsWithStrings(UriBuilder uriBuilder) {
@@ -272,10 +289,10 @@ public class JaxRsUriBuilderTest extends TestCase {
         uriBuilder.port("{port}");
         uriBuilder.replacePath("{path1}");
         uriBuilder.path("{path2}");
-        uriBuilder.replaceMatrixParams("{mp2Name}={mp2Value}");
+        uriBuilder.replaceMatrix("{mp2Name}={mp2Value}");
         uriBuilder.path("{path3}");
         uriBuilder.matrixParam("{mp3Name}", "{mp3Value}");
-        uriBuilder.replaceQueryParams("{qp1Name}={qp1Value}");
+        uriBuilder.replaceQuery("{qp1Name}={qp1Value}");
         uriBuilder.queryParam("{qp2Name}", "{qp2Value}");
         uriBuilder.fragment("{fragment}");
     }
@@ -283,102 +300,36 @@ public class JaxRsUriBuilderTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        this.uriBuilder1Enc = RuntimeDelegate.getInstance().createUriBuilder();
-        this.uriBuilder1Enc.host("localhost");
-        this.uriBuilder1Enc.path("path1", "path2");
-        this.uriBuilder1Enc.scheme("http");
-        this.uriBuilder1NoE = this.uriBuilder1Enc.clone();
-        this.uriBuilder1NoE.encode(false);
-        this.uriBuilderWithVarsEnc = RuntimeDelegate.getInstance()
+        this.uriBuilder = RuntimeDelegate.getInstance().createUriBuilder();
+        this.uriBuilder.host("localhost");
+        this.uriBuilder.segment("path1", "path2");
+        this.uriBuilder.scheme("http");
+        this.uriBuilderWithVars = RuntimeDelegate.getInstance()
                 .createUriBuilder();
-        this.uriBuilderWithVarsEnc.host("localhost");
-        this.uriBuilderWithVarsEnc.scheme("http");
-        this.uriBuilderWithVarsEnc.path("abc", "{var1}", "def", "{var2}");
-        this.uriBuilderWithVarsNoE = this.uriBuilderWithVarsEnc.clone();
-        this.uriBuilderWithVarsNoE.encode(false);
+        this.uriBuilderWithVars.host("localhost");
+        this.uriBuilderWithVars.scheme("http");
+        this.uriBuilderWithVars.segment("abc", "{var1}", "def", "{var2}");
     }
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#build()}.
+     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#build(java.lang.String[])} .
      */
-    public void testBuild() throws Exception {
-        assertEquals(URI_1, this.uriBuilder1Enc.build());
-        assertEquals(URI_1, this.uriBuilder1NoE.build());
-
+    public void testBuildFromArray() throws Exception {
         try {
-            this.uriBuilderWithVarsEnc.build();
-            fail("must fail, because vars are required");
-        } catch (final UriBuilderException ube) {
-            // wonderful
-        }
-        try {
-            this.uriBuilderWithVarsNoE.build();
-            fail("must fail, because vars are required");
-        } catch (final UriBuilderException ube) {
-            // wonderful
-        }
-    }
-
-    /**
-     * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#build(java.util.Map)}
-     * .
-     */
-    public void testBuildMap() throws Exception {
-        final Map<String, Object> vars = new HashMap<String, Object>();
-        try {
-            this.uriBuilderWithVarsEnc.build(vars);
-            fail("must fail, because missing UriTemplate variables");
-        } catch (final IllegalArgumentException e) {
-            // wonderful
-        }
-        vars.put("var1", "123");
-        try {
-            this.uriBuilderWithVarsEnc.build(vars);
-            fail("must fail, because missing UriTemplate variable");
-        } catch (final IllegalArgumentException e) {
-            // wonderful
-        }
-        vars.put("var2", "456");
-        assertEqualsURI("http://localhost/abc/123/def/456",
-                this.uriBuilderWithVarsEnc.build(vars));
-        vars.put("var3", "789");
-        assertEqualsURI("http://localhost/abc/123/def/456",
-                this.uriBuilderWithVarsEnc.build(vars));
-
-        vars.put("var2", " ");
-        assertEqualsURI("http://localhost/abc/123/def/%20",
-                this.uriBuilderWithVarsEnc.build(vars));
-
-        try {
-            this.uriBuilderWithVarsNoE.build(vars);
-        } catch (final IllegalArgumentException iae) {
-            // wonderful
-        }
-    }
-
-    /**
-     * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#build(java.lang.String[])}
-     * .
-     */
-    public void testBuildStringArray() throws Exception {
-        try {
-            this.uriBuilderWithVarsEnc.build("123");
+            this.uriBuilderWithVars.build("123");
             fail("must fail, because there are not enough arguments");
         } catch (final IllegalArgumentException e) {
             // wonderful
         }
-        URI uri = this.uriBuilderWithVarsEnc.build("123", "456");
+        URI uri = this.uriBuilderWithVars.build("123", "456");
         assertEqualsURI("http://localhost/abc/123/def/456", uri);
-        final UriBuilder uriBuilder2 = this.uriBuilderWithVarsEnc.clone();
+        final UriBuilder uriBuilder2 = this.uriBuilderWithVars.clone();
         assertEqualsURI("http://localhost/abc/123/def/456", uriBuilder2.build(
                 "123", "456"));
-        assertEquals(this.uriBuilderWithVarsEnc.toString(), uriBuilder2
-                .toString());
+        assertEquals(this.uriBuilderWithVars.toString(), uriBuilder2.toString());
         uriBuilder2.path("{var3}");
-        uri = this.uriBuilderWithVarsEnc.build("123", "456");
+        uri = this.uriBuilderWithVars.build("123", "456");
         assertEqualsURI("http://localhost/abc/123/def/456", uri);
         try {
             uriBuilder2.build("123", "456");
@@ -390,288 +341,228 @@ public class JaxRsUriBuilderTest extends TestCase {
         assertEqualsURI("http://localhost/abc/123/def/456/789", uri2);
     }
 
+    public void testBuildFromEncoded() throws Exception {
+        assertEquals(URI_1, this.uriBuilder.buildFromEncoded("a", "b"));
+        assertEquals(URI_1, this.uriBuilder.buildFromEncoded(" ", "b"));
+
+        URI uri = this.uriBuilderWithVars.buildFromEncoded("a", "b");
+        assertEqualsURI("http://localhost/abc/a/def/b", uri);
+
+        uri = this.uriBuilderWithVars.buildFromEncoded("%20", "b");
+        assertEqualsURI("http://localhost/abc/%20/def/b", uri);
+
+        try {
+            uri = this.uriBuilderWithVars.buildFromEncoded(" ", "b");
+            fail("must fail");
+        } catch (IllegalArgumentException e) {
+            // wonderful
+        }
+    }
+
+    /**
+     * Test method for
+     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#build(java.util.Map)} .
+     */
+    public void testBuildFromMap() throws Exception {
+        final Map<String, Object> vars = new HashMap<String, Object>();
+        try {
+            this.uriBuilderWithVars.buildFromMap(vars, true);
+            fail("must fail, because missing UriTemplate variables");
+        } catch (final IllegalArgumentException e) {
+            // wonderful
+        }
+        vars.put("var1", "123");
+        try {
+            this.uriBuilderWithVars.buildFromMap(vars, true);
+            fail("must fail, because missing UriTemplate variable");
+        } catch (final IllegalArgumentException e) {
+            // wonderful
+        }
+        vars.put("var2", "456");
+        assertEqualsURI("http://localhost/abc/123/def/456",
+                this.uriBuilderWithVars.buildFromMap(vars, true));
+        vars.put("var3", "789");
+        assertEqualsURI("http://localhost/abc/123/def/456",
+                this.uriBuilderWithVars.buildFromMap(vars, true));
+
+        vars.put("var2", " ");
+        assertEqualsURI("http://localhost/abc/123/def/%20",
+                this.uriBuilderWithVars.buildFromMap(vars, true));
+    }
+
+    public void testBuildWithArgs() throws Exception {
+        assertEquals(URI_1, this.uriBuilder.build("a", "b"));
+        assertEquals(URI_1, this.uriBuilder.build(" ", "b"));
+
+        URI uri = this.uriBuilderWithVars.build("a", "b");
+        assertEqualsURI("http://localhost/abc/a/def/b", uri);
+
+        uri = this.uriBuilderWithVars.build("%20", "b");
+        assertEqualsURI("http://localhost/abc/%2520/def/b", uri);
+
+        uri = this.uriBuilderWithVars.build(" ", "b");
+        assertEqualsURI("http://localhost/abc/%20/def/b", uri);
+    }
+
+    /**
+     * Test method for
+     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#build()}.
+     */
+    public void testBuildWithoutArgs() throws Exception {
+        assertEquals(URI_1, this.uriBuilder.build());
+
+        try {
+            this.uriBuilderWithVars.build();
+            fail("must fail, because vars are required");
+        } catch (final IllegalArgumentException ube) {
+            // wonderful
+        }
+    }
+
     /**
      * Test method for
      * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#clone()}.
      */
     public void testClone() {
-        assertEquals(this.uriBuilder1Enc.build(), this.uriBuilder1Enc.clone()
-                .build());
-        final URI clonedEncWithVars = this.uriBuilder1NoE.clone().build();
-        assertEquals(this.uriBuilder1NoE.build(), clonedEncWithVars);
+        assertEquals(this.uriBuilder.build(), this.uriBuilder.clone().build());
     }
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#encode(boolean)}
-     * .
+     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#encode(boolean)} .
      */
     public void testEncode() throws Exception {
         final UriBuilder uriBuilder = RuntimeDelegate.getInstance()
                 .createUriBuilder();
-        uriBuilder.encode(false);
         uriBuilder.host("www.xyz.de");
         uriBuilder.scheme("http");
-        uriBuilder.path("path1", "path2");
-        try {
-            uriBuilder.path("hh ho");
-            fail("must fail, because of invalid character");
-        } catch (final IllegalArgumentException e) {
-            // wonderful
-        }
-        uriBuilder.encode(true);
+        uriBuilder.segment("path1", "path2");
         uriBuilder.path("hh ho");
-        assertEqualsURI("http://www.xyz.de/path1/path2/hh%20ho", uriBuilder);
+        assertEqualsURI("http://www.xyz.de/path1/path2/hh%20ho", uriBuilder,
+                true);
     }
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#fragment(java.lang.String)}
-     * .
-     */
-    public void testExtension() throws Exception {
-        if (this.uriBuilder1Enc instanceof JaxRsUriBuilder) {
-            final String path = getPath((JaxRsUriBuilder) this.uriBuilder1Enc);
-            final String lastSegm = path.substring(path.lastIndexOf('/') + 1);
-            assertFalse(lastSegm.contains("/")); // lastSegm is only last segmen
-            assertFalse(lastSegm.contains(".")); // no "." in it
-        }
-        this.uriBuilder1Enc.extension("abc");
-        assertEqualsURI(URI_1 + ".abc", this.uriBuilder1Enc);
-
-        this.uriBuilder1Enc.extension(null);
-        assertEqualsURI(URI_1.toString(), this.uriBuilder1Enc);
-
-        this.uriBuilder1Enc.extension("");
-        assertEqualsURI(URI_1 + ".", this.uriBuilder1Enc);
-
-        this.uriBuilder1Enc.extension(null);
-        assertEqualsURI(URI_1.toString(), this.uriBuilder1Enc);
-
-        this.uriBuilder1Enc.extension("abc.def");
-        assertEqualsURI(URI_1 + ".abc.def", this.uriBuilder1Enc);
-
-        this.uriBuilder1Enc.extension(null);
-        assertEqualsURI(URI_1.toString(), this.uriBuilder1Enc);
-    }
-
-    /**
-     * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#fragment(java.lang.String)}
-     * .
+     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#fragment(java.lang.String)} .
      */
     public void testFragmentEnc() throws Exception {
-        this.uriBuilder1Enc.fragment(String.valueOf((char) 9));
-        assertEqualsURI(URI_1 + "#%09", this.uriBuilder1Enc);
+        this.uriBuilder.fragment(String.valueOf((char) 9));
+        assertEqualsURI(URI_1 + "#%09", this.uriBuilder, true);
 
-        this.uriBuilder1Enc.fragment("anker");
-        assertEqualsURI(URI_1 + "#anker", this.uriBuilder1Enc);
+        this.uriBuilder.fragment("anker");
+        assertEqualsURI(URI_1 + "#anker", this.uriBuilder, true);
     }
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#fragment(java.lang.String)}
-     * .
-     */
-    public void testFragmentNoE() throws Exception {
-        try {
-            this.uriBuilder1NoE.fragment(String.valueOf((char) 9));
-            fail();
-        } catch (final IllegalArgumentException iae) {
-            // good
-        }
-        assertEquals(URI_1, this.uriBuilder1NoE.build());
-        this.uriBuilder1NoE.fragment("anker");
-        assertEqualsURI(URI_1 + "#anker", this.uriBuilder1NoE);
-    }
-
-    /**
-     * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#host(java.lang.String)}
-     * .
+     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#host(java.lang.String)} .
      */
     public void testHostEnc() throws Exception {
-        this.uriBuilder1Enc.host("test.domain.org");
-        assertEqualsURI("http://test.domain.org/path1/path2",
-                this.uriBuilder1Enc);
+        this.uriBuilder.host("test.domain.org");
+        assertEqualsURI("http://test.domain.org/path1/path2", this.uriBuilder,
+                true);
 
         try {
-            this.uriBuilder1Enc.host("test.domain .org a");
+            this.uriBuilder.host("test.domain .org a");
             fail();
         } catch (final IllegalArgumentException iae) {
             // good
         }
-        assertEqualsURI("http://test.domain.org/path1/path2",
-                this.uriBuilder1Enc);
-    }
-
-    public void testHostNoE() throws Exception {
-        this.uriBuilder1NoE.host("test.domain.org");
-        assertEqualsURI("http://test.domain.org/path1/path2",
-                this.uriBuilder1NoE);
-
-        try {
-            this.uriBuilder1NoE.host("test.domain .org a");
-            fail();
-        } catch (final IllegalArgumentException iae) {
-            // good
-        }
-        assertEqualsURI("http://test.domain.org/path1/path2",
-                this.uriBuilder1NoE);
+        assertEqualsURI("http://test.domain.org/path1/path2", this.uriBuilder,
+                true);
     }
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#replaceMatrixParams(java.lang.String)}
-     * . and
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#matrixParam(java.lang.String, java.lang.String)}
-     * .
+     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#replaceMatrixParams(java.lang.String)} .
+     * and
+     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#matrixParam(java.lang.String, java.lang.String)} .
      */
-    public void testMatrixParamEnc() throws Exception {
-        this.uriBuilder1Enc.matrixParam("mp1", "mv1");
-        assertEqualsURI(URI_1 + ";mp1=mv1", this.uriBuilder1Enc);
-        this.uriBuilder1Enc.matrixParam("mp1", "mv2");
-        assertEqualsURI(URI_1 + ";mp1=mv1;mp1=mv2", this.uriBuilder1Enc);
-        this.uriBuilder1Enc.matrixParam("mp3", "mv3");
+    public void testMatrixParam() throws Exception {
+        this.uriBuilder.matrixParam("mp1", "mv1");
+        assertEqualsURI(URI_1 + ";mp1=mv1", this.uriBuilder, true);
+        this.uriBuilder.matrixParam("mp1", "mv2");
+        assertEqualsURI(URI_1 + ";mp1=mv1;mp1=mv2", this.uriBuilder, true);
+        this.uriBuilder.matrixParam("mp3", "mv3");
         try {
             assertEqualsURI(URI_1 + ";mp1=mv1;mp1=mv2;mp3=mv3",
-                    this.uriBuilder1Enc);
+                    this.uriBuilder, true);
         } catch (final AssertionFailedError afe) { // try another possibility
             assertEqualsURI(URI_1 + ";mp3=mv3;mp1=mv1;mp1=mv2",
-                    this.uriBuilder1Enc);
+                    this.uriBuilder, true);
         }
-        this.uriBuilder1Enc.replaceMatrixParams("mp4=mv4");
-        assertEqualsURI(URI_1 + ";mp4=mv4", this.uriBuilder1Enc);
-        this.uriBuilder1Enc.replaceMatrixParams("");
-        assertEquals(new URI(URI_1 + ";"), this.uriBuilder1Enc.build());
+        this.uriBuilder.replaceMatrix("mp4=mv4");
+        assertEqualsURI(URI_1 + ";mp4=mv4", this.uriBuilder, true);
+        this.uriBuilder.replaceMatrix("");
+        assertEquals(new URI(URI_1 + ";"), this.uriBuilder.build());
 
-        this.uriBuilder1Enc.replaceMatrixParams(null);
-        assertEquals(URI_1, this.uriBuilder1Enc.build());
-        this.uriBuilder1Enc.matrixParam("jkj$sdf", "ij a%20");
-        assertEqualsURI(URI_1 + ";jkj%24sdf=ij%20a%20", this.uriBuilder1Enc);
+        this.uriBuilder.replaceMatrix(null);
+        assertEquals(URI_1, this.uriBuilder.build());
+        this.uriBuilder.matrixParam("jkj$sdf", "ij a%20");
+        assertEqualsURI(URI_1 + ";jkj%24sdf=ij%20a%2520", this.uriBuilder, true);
     }
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#replaceMatrixParams(java.lang.String)}
-     * . and
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#matrixParam(java.lang.String, java.lang.String)}
-     * .
-     */
-    public void testMatrixParamNoE() throws Exception {
-        this.uriBuilder1NoE.matrixParam("mp1", "mv1");
-        assertEqualsURI(URI_1 + ";mp1=mv1", this.uriBuilder1NoE);
-        this.uriBuilder1NoE.matrixParam("mp1", "mv2");
-        assertEqualsURI(URI_1 + ";mp1=mv1;mp1=mv2", this.uriBuilder1NoE);
-        this.uriBuilder1NoE.matrixParam("mp3", "mv3");
-        try {
-            assertEqualsURI(URI_1 + ";mp1=mv1;mp1=mv2;mp3=mv3",
-                    this.uriBuilder1NoE);
-        } catch (final AssertionFailedError afe) { // try another possibility
-            assertEqualsURI(URI_1 + ";mp3=mv3;mp1=mv1;mp1=mv2",
-                    this.uriBuilder1NoE);
-        }
-        this.uriBuilder1NoE.replaceMatrixParams("mp4=mv4");
-        assertEqualsURI(URI_1 + ";mp4=mv4", this.uriBuilder1NoE);
-        this.uriBuilder1NoE.replaceMatrixParams("");
-        assertEquals(new URI(URI_1 + ";"), this.uriBuilder1NoE.build());
-
-        this.uriBuilder1NoE.replaceMatrixParams(null);
-        assertEquals(URI_1, this.uriBuilder1NoE.build());
-        try {
-            this.uriBuilder1NoE.matrixParam("jkj$sdf", "ij a%20");
-            fail();
-        } catch (final IllegalArgumentException iae) {
-            // good
-        }
-        assertEquals(URI_1, this.uriBuilder1NoE.build());
-    }
-
-    /**
-     * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#path(java.lang.Class)}
-     * .
+     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#path(java.lang.Class)} .
      */
     public void testPathClass() throws Exception {
-        this.uriBuilder1Enc.replacePath((String[]) null);
-        this.uriBuilder1Enc.path(SimpleTrain.class);
-        assertEqualsURI("http://localhost" + SimpleTrain.PATH,
-                this.uriBuilder1Enc);
+        this.uriBuilder.replacePath(null);
+        this.uriBuilder.path(SimpleTrain.class);
+        assertEqualsURI("http://localhost" + SimpleTrain.PATH, this.uriBuilder,
+                true);
     }
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#path(java.lang.Class, java.lang.String)}
-     * .
+     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#path(java.lang.Class, java.lang.String)} .
      */
     public void testPathClassString() throws Exception {
-        this.uriBuilder1Enc.replacePath((String[]) null);
-        this.uriBuilder1Enc.path(CarListResource.class, "getOffers");
+        this.uriBuilder.replacePath(null);
+        this.uriBuilder.path(CarListResource.class, "getOffers");
         assertEqualsURI("http://localhost/" + CarListResource.PATH + "/"
-                + CarListResource.OFFERS_PATH, this.uriBuilder1Enc);
+                + CarListResource.OFFERS_PATH, this.uriBuilder, true);
     }
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#path(java.lang.Class, java.lang.String)}
-     * .
+     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#path(java.lang.Class, java.lang.String)} .
      */
     public void testPathClassStringEnc() throws Exception {
-        this.uriBuilder1Enc.replacePath((String[]) null);
-        this.uriBuilder1Enc.path(CarListResource.class, "getOffers");
+        this.uriBuilder.replacePath(null);
+        this.uriBuilder.path(CarListResource.class, "getOffers");
         assertEqualsURI("http://localhost/" + CarListResource.PATH + "/"
-                + CarListResource.OFFERS_PATH, this.uriBuilder1Enc);
+                + CarListResource.OFFERS_PATH, this.uriBuilder, true);
     }
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#path(java.lang.reflect.Method[])}
-     * .
+     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#path(java.lang.reflect.Method[])} .
      */
-    public void testPathMethodArrayEnc() throws Exception {
-        this.uriBuilder1Enc.replacePath((String[]) null);
+    public void testPathMethodArray() throws Exception {
+        this.uriBuilder.replacePath(null);
         final Method findCar = CarListResource.class.getMethod("findCar",
                 Integer.TYPE);
         final Method engine = CarResource.class.getMethod("findEngine");
-        this.uriBuilder1Enc.path(CarListResource.class);
-        this.uriBuilder1Enc.path(findCar, engine);
+        this.uriBuilder.path(CarListResource.class);
+        this.uriBuilder.path(findCar).path(engine);
         assertEqualsURI("http://localhost/" + CarListResource.PATH
-                + "/5/engine", this.uriBuilder1Enc.build("5"));
+                + "/5/engine", this.uriBuilder.build("5"));
     }
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#path(java.lang.String[])}
-     * .
+     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#path(java.lang.String[])} .
      */
     public void testPathStringArrayEnc() throws Exception {
-        this.uriBuilder1Enc.path("jjj", "kkk", "ll");
-        assertEqualsURI(URI_1 + "/jjj/kkk/ll", this.uriBuilder1Enc);
-        this.uriBuilder1Enc.path("mno");
-        assertEqualsURI(URI_1 + "/jjj/kkk/ll/mno", this.uriBuilder1Enc);
+        this.uriBuilder.segment("jjj", "kkk", "ll");
+        assertEqualsURI(URI_1 + "/jjj/kkk/ll", this.uriBuilder, true);
+        this.uriBuilder.path("mno");
+        assertEqualsURI(URI_1 + "/jjj/kkk/ll/mno", this.uriBuilder, true);
 
-        this.uriBuilder1Enc.path(" ");
-        assertEqualsURI(URI_1 + "/jjj/kkk/ll/mno/%20", this.uriBuilder1Enc);
-    }
-
-    /**
-     * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#path(java.lang.String[])}
-     * .
-     */
-    public void testPathStringArrayNoE() throws Exception {
-        this.uriBuilder1NoE.path("jjj", "kkk", "ll");
-        assertEqualsURI(URI_1 + "/jjj/kkk/ll", this.uriBuilder1NoE);
-        this.uriBuilder1NoE.path("mno");
-        assertEqualsURI(URI_1 + "/jjj/kkk/ll/mno", this.uriBuilder1NoE);
-
-        try {
-            this.uriBuilder1NoE.path(" ");
-            fail();
-        } catch (final IllegalArgumentException iae) {
-            // good
-        }
-        assertEqualsURI(URI_1 + "/jjj/kkk/ll/mno", this.uriBuilder1NoE);
+        this.uriBuilder.path(" ");
+        assertEqualsURI(URI_1 + "/jjj/kkk/ll/mno/%20", this.uriBuilder, true);
     }
 
     /**
@@ -679,322 +570,148 @@ public class JaxRsUriBuilderTest extends TestCase {
      * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#port(int)}.
      */
     public void testPort() throws Exception {
-        this.uriBuilder1Enc.port(4711);
-        assertEqualsURI("http://localhost:4711/path1/path2",
-                this.uriBuilder1Enc);
-        this.uriBuilder1Enc.port(-1);
-        assertEqualsURI("http://localhost/path1/path2", this.uriBuilder1Enc);
+        this.uriBuilder.port(4711);
+        assertEqualsURI("http://localhost:4711/path1/path2", this.uriBuilder,
+                true);
+        this.uriBuilder.port(-1);
+        assertEqualsURI("http://localhost/path1/path2", this.uriBuilder, true);
     }
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#queryParam(java.lang.String, java.lang.String)}
-     * .
+     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#queryParam(java.lang.String, java.lang.String)} .
      */
     public void testQueryEnc() throws Exception {
-        this.uriBuilder1Enc.queryParam("qn", "qv");
-        assertEqualsURI(URI_1 + "?qn=qv", this.uriBuilder1Enc);
-        this.uriBuilder1Enc.queryParam("qn", "qv2");
-        assertEqualsURI(URI_1 + "?qn=qv&qn=qv2", this.uriBuilder1Enc);
-        this.uriBuilder1Enc.queryParam("qn3", "qv3");
-        assertEqualsURI(URI_1 + "?qn=qv&qn=qv2&qn3=qv3", this.uriBuilder1Enc);
-        this.uriBuilder1Enc.replaceQueryParams("qnNew=qvNew");
-        assertEqualsURI(URI_1 + "?qnNew=qvNew", this.uriBuilder1Enc);
+        this.uriBuilder.queryParam("qn", "qv");
+        assertEqualsURI(URI_1 + "?qn=qv", this.uriBuilder, true);
+        this.uriBuilder.queryParam("qn", "qv2");
+        assertEqualsURI(URI_1 + "?qn=qv&qn=qv2", this.uriBuilder, true);
+        this.uriBuilder.queryParam("qn3", "qv3");
+        assertEqualsURI(URI_1 + "?qn=qv&qn=qv2&qn3=qv3", this.uriBuilder, true);
+        this.uriBuilder.replaceQuery("qnNew=qvNew");
+        assertEqualsURI(URI_1 + "?qnNew=qvNew", this.uriBuilder, true);
 
-        this.uriBuilder1Enc.replaceQueryParams(null);
-        this.uriBuilder1Enc.queryParam("na$me", "George U.");
-        assertEqualsURI(URI_1 + "?na%24me=George%20U.", this.uriBuilder1Enc);
+        this.uriBuilder.replaceQuery(null);
+        this.uriBuilder.queryParam("na$me", "George U.");
+        assertEqualsURI(URI_1 + "?na%24me=George%20U.", this.uriBuilder, true);
     }
 
-    /**
-     * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#queryParam(java.lang.String, java.lang.String)}
-     * .
-     */
-    public void testQueryNoE() throws Exception {
-        this.uriBuilder1NoE.queryParam("qn", "qv");
-        assertEqualsURI(URI_1 + "?qn=qv", this.uriBuilder1NoE);
-        this.uriBuilder1NoE.queryParam("qn", "qv2");
-        assertEqualsURI(URI_1 + "?qn=qv&qn=qv2", this.uriBuilder1NoE);
-        this.uriBuilder1NoE.queryParam("qn3", "qv3");
-        assertEqualsURI(URI_1 + "?qn=qv&qn=qv2&qn3=qv3", this.uriBuilder1NoE);
-        this.uriBuilder1NoE.replaceQueryParams("qnNew=qvNew");
-        assertEqualsURI(URI_1 + "?qnNew=qvNew", this.uriBuilder1NoE);
+    public void testreplaceMatrix() throws Exception {
+        this.uriBuilder.matrixParam("a", "b");
+        this.uriBuilder.matrixParam("c", "d");
+        assertEqualsURI("http://localhost/path1/path2;a=b;c=d", this.uriBuilder);
 
-        this.uriBuilder1NoE.replaceQueryParams(null);
-        try {
-            this.uriBuilder1NoE.queryParam("na$me", "George U.");
-            fail();
-        } catch (final IllegalArgumentException iae) {
-            // good
-        }
-        assertEquals(URI_1, this.uriBuilder1NoE.build());
-    }
-
-    public void testReplaceMatrixParamsEnc() throws Exception {
-        this.uriBuilder1Enc.matrixParam("a", "b");
-        this.uriBuilder1Enc.matrixParam("c", "d");
-        assertEqualsURI("http://localhost/path1/path2;a=b;c=d",
-                this.uriBuilder1Enc);
-
-        this.uriBuilder1Enc.replaceMatrixParams("ksd hflk");
+        this.uriBuilder.replaceMatrix("ksd hflk");
         assertEqualsURI("http://localhost/path1/path2;ksd%20hflk",
-                this.uriBuilder1Enc);
+                this.uriBuilder);
 
-        this.uriBuilder1Enc.replaceMatrixParams("e=f");
-        assertEqualsURI("http://localhost/path1/path2;e=f", this.uriBuilder1Enc);
-    }
-
-    public void testReplaceMatrixParamsNoE() throws Exception {
-        this.uriBuilder1NoE.matrixParam("a", "b");
-        this.uriBuilder1NoE.matrixParam("c", "d");
-        assertEqualsURI("http://localhost/path1/path2;a=b;c=d",
-                this.uriBuilder1NoE);
-
-        try {
-            this.uriBuilder1NoE.replaceMatrixParams("ksd hflk");
-            fail();
-        } catch (final IllegalArgumentException iae) {
-            // good
-        }
-        assertEqualsURI("http://localhost/path1/path2;a=b;c=d",
-                this.uriBuilder1NoE);
-
-        this.uriBuilder1NoE.replaceMatrixParams("e=f");
-        assertEqualsURI("http://localhost/path1/path2;e=f", this.uriBuilder1NoE);
+        this.uriBuilder.replaceMatrix("e=f");
+        assertEqualsURI("http://localhost/path1/path2;e=f", this.uriBuilder);
     }
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#replacePath(java.lang.String)}
-     * .
+     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#replacePath(java.lang.String)} .
      */
-    public void testReplacePathEnc() throws Exception {
-        this.uriBuilder1Enc.replacePath("newPath");
-        assertEqualsURI("http://localhost/newPath", this.uriBuilder1Enc);
+    public void testReplacePath() throws Exception {
+        this.uriBuilder.replacePath("newPath");
+        assertEqualsURI("http://localhost/newPath", this.uriBuilder);
 
-        this.uriBuilder1Enc.replacePath((String[]) null);
+        this.uriBuilder.replacePath("");
         assertEqualUriBuilder("http", null, "localhost", null, "", null,
-                this.uriBuilder1Enc);
-        assertEqualsUriSlashAllowed("http://localhost", this.uriBuilder1Enc);
+                this.uriBuilder, true);
+        assertEqualsUriSlashAllowed("http://localhost", this.uriBuilder);
 
-        this.uriBuilder1Enc.replacePath("gh", "r t");
-        assertEqualsURI("http://localhost/gh/r%20t", this.uriBuilder1Enc);
+        this.uriBuilder.replacePath("gh").path("r t");
+        assertEqualsURI("http://localhost/gh/r%20t", this.uriBuilder);
 
-        this.uriBuilder1Enc.replacePath("gh", "r;t");
-        assertEqualsURI("http://localhost/gh/r;t", this.uriBuilder1Enc);
+        this.uriBuilder.replacePath("gh").path("r;t");
+        assertEqualsURI("http://localhost/gh/r;t", this.uriBuilder);
 
-        this.uriBuilder1Enc.replacePath("gh", "r;t=6");
-        assertEqualsURI("http://localhost/gh/r;t=6", this.uriBuilder1Enc);
+        this.uriBuilder.replacePath("gh").path("r;t=6");
+        assertEqualsURI("http://localhost/gh/r;t=6", this.uriBuilder);
 
-        this.uriBuilder1Enc.replacePath("gh", "r;t=");
-        assertEqualsURI("http://localhost/gh/r;t=", this.uriBuilder1Enc);
+        this.uriBuilder.replacePath("gh").path("r;t=");
+        assertEqualsURI("http://localhost/gh/r;t=", this.uriBuilder);
 
-        this.uriBuilder1Enc.replacePath("gh", "r;t=6;g");
-        assertEqualsURI("http://localhost/gh/r;t=6;g", this.uriBuilder1Enc);
+        this.uriBuilder.replacePath("gh").path("r;t=6;g");
+        assertEqualsURI("http://localhost/gh/r;t=6;g", this.uriBuilder);
     }
 
-    /**
-     * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#replacePath(java.lang.String)}
-     * .
-     */
-    public void testReplacePathNoE() throws Exception {
-        this.uriBuilder1NoE.replacePath("newPath");
-        assertEqualsURI("http://localhost/newPath", this.uriBuilder1NoE);
+    public void testReplaceQueryParams() throws Exception {
+        this.uriBuilder.queryParam("a", "b");
+        this.uriBuilder.queryParam("c", "d");
+        assertEqualsURI("http://localhost/path1/path2?a=b&c=d", this.uriBuilder);
 
-        this.uriBuilder1NoE.replacePath((String[]) null);
-        assertEqualUriBuilder("http", null, "localhost", null, "", null,
-                this.uriBuilder1NoE);
-
-        assertEqualsUriSlashAllowed("http://localhost", this.uriBuilder1NoE);
-
-        try {
-            this.uriBuilder1NoE.replacePath("gh", "r t");
-            fail();
-        } catch (final IllegalArgumentException iae) {
-            // good
-        }
-        assertEqualsUriSlashAllowed("http://localhost", this.uriBuilder1NoE);
-
-        this.uriBuilder1Enc.replacePath("gh", "r;t");
-        assertEqualsURI("http://localhost/gh/r;t", this.uriBuilder1Enc);
-
-        this.uriBuilder1Enc.replacePath("gh", "r;t=");
-        assertEqualsURI("http://localhost/gh/r;t=", this.uriBuilder1Enc);
-
-        this.uriBuilder1Enc.replacePath("gh", "r;t=6");
-        assertEqualsURI("http://localhost/gh/r;t=6", this.uriBuilder1Enc);
-
-        this.uriBuilder1Enc.replacePath("gh", "r;t=6;g");
-        assertEqualsURI("http://localhost/gh/r;t=6;g", this.uriBuilder1Enc);
-    }
-
-    public void testReplaceQueryParamsEnc() throws Exception {
-        this.uriBuilder1Enc.queryParam("a", "b");
-        this.uriBuilder1Enc.queryParam("c", "d");
-        assertEqualsURI("http://localhost/path1/path2?a=b&c=d",
-                this.uriBuilder1Enc);
-
-        this.uriBuilder1Enc.replaceQueryParams("ksd hflk");
+        this.uriBuilder.replaceQuery("ksd hflk");
         assertEqualsURI("http://localhost/path1/path2?ksd+hflk",
-                this.uriBuilder1Enc);
+                this.uriBuilder);
 
-        this.uriBuilder1Enc.replaceQueryParams("e=f");
-        assertEqualsURI("http://localhost/path1/path2?e=f", this.uriBuilder1Enc);
-    }
-
-    public void testReplaceQueryParamsNoE() throws Exception {
-        this.uriBuilder1NoE.queryParam("a", "b");
-        this.uriBuilder1NoE.queryParam("c", "d");
-        assertEqualsURI("http://localhost/path1/path2?a=b&c=d",
-                this.uriBuilder1NoE);
-
-        try {
-            this.uriBuilder1NoE.replaceQueryParams("ksd hflk");
-            fail();
-        } catch (final IllegalArgumentException iae) {
-            // good
-        }
-        assertEqualsURI("http://localhost/path1/path2?a=b&c=d",
-                this.uriBuilder1NoE);
-
-        this.uriBuilder1NoE.replaceQueryParams("e=f");
-        assertEqualsURI("http://localhost/path1/path2?e=f", this.uriBuilder1NoE);
+        this.uriBuilder.replaceQuery("e=f");
+        assertEqualsURI("http://localhost/path1/path2?e=f", this.uriBuilder);
     }
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#scheme(java.lang.String)}
-     * .
+     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#scheme(java.lang.String)} .
      */
-    public void testSchemeEnc() throws Exception {
-        this.uriBuilder1Enc.scheme("ftp");
-        assertEqualsURI("ftp://localhost/path1/path2", this.uriBuilder1Enc);
-        this.uriBuilder1Enc.scheme("f4.-+tp");
-        assertEqualsURI("f4.-+tp://localhost/path1/path2", this.uriBuilder1Enc);
+    public void testScheme() throws Exception {
+        this.uriBuilder.scheme("ftp");
+        assertEqualsURI("ftp://localhost/path1/path2", this.uriBuilder);
+        this.uriBuilder.scheme("f4.-+tp");
+        assertEqualsURI("f4.-+tp://localhost/path1/path2", this.uriBuilder);
 
         try {
-            this.uriBuilder1Enc.scheme("44");
+            this.uriBuilder.scheme("44");
             fail();
         } catch (final IllegalArgumentException iae) {
             // good
         }
-        assertEqualsURI("f4.-+tp://localhost/path1/path2", this.uriBuilder1Enc);
+        assertEqualsURI("f4.-+tp://localhost/path1/path2", this.uriBuilder);
 
         try {
-            this.uriBuilder1Enc.scheme("f\0");
+            this.uriBuilder.scheme("f\0");
             fail();
         } catch (final IllegalArgumentException iae) {
             // good
         }
-        assertEqualsURI("f4.-+tp://localhost/path1/path2", this.uriBuilder1Enc);
+        assertEqualsURI("f4.-+tp://localhost/path1/path2", this.uriBuilder);
     }
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#scheme(java.lang.String)}
-     * .
+     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#schemeSpecificPart(java.lang.String)} .
      */
-    public void testSchemeNoE() throws Exception {
-        this.uriBuilder1NoE.scheme("ftp");
-        assertEqualsURI("ftp://localhost/path1/path2", this.uriBuilder1NoE);
-        this.uriBuilder1NoE.scheme("f4.-+tp");
-        assertEqualsURI("f4.-+tp://localhost/path1/path2", this.uriBuilder1NoE);
+    public void testSchemeSpecificPart() throws Exception {
+        this.uriBuilder.schemeSpecificPart("//shkf");
+        this.uriBuilder.replacePath("");
+        assertEqualUriBuilder("http", null, "shkf", null, "", null,
+                this.uriBuilder, true);
 
-        try {
-            this.uriBuilder1NoE.scheme("44");
-            fail();
-        } catch (final IllegalArgumentException iae) {
-            // good
-        }
-        assertEqualsURI("f4.-+tp://localhost/path1/path2", this.uriBuilder1NoE);
-        try {
-            this.uriBuilder1NoE.scheme("f\0");
-            fail();
-        } catch (final IllegalArgumentException iae) {
-            // good
-        }
-        assertEqualsURI("f4.-+tp://localhost/path1/path2", this.uriBuilder1NoE);
-    }
+        this.uriBuilder.schemeSpecificPart("//shkf-host/akfshdf");
+        assertEqualUriBuilder("http", null, "shkf-host", null, "/akfshdf",
+                null, this.uriBuilder, true);
 
-    /**
-     * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#schemeSpecificPart(java.lang.String)}
-     * .
-     */
-    public void testSchemeSpecificPartEnc() throws Exception {
-        this.uriBuilder1Enc.schemeSpecificPart("//shkf");
-        assertEqualUriBuilder("http", null, "shkf", null, null, null,
-                this.uriBuilder1Enc);
-
-        this.uriBuilder1Enc.schemeSpecificPart("//shkf/akfshdf");
-        assertEqualUriBuilder("http", null, "shkf", null, "/akfshdf", null,
-                this.uriBuilder1Enc);
-
-        this.uriBuilder1Enc.schemeSpecificPart("//user@shkf/akfshdf/akjhf");
+        this.uriBuilder.schemeSpecificPart("//user@shkf/akfshdf/akjhf");
         assertEqualUriBuilder("http", "user", "shkf", null, "/akfshdf/akjhf",
-                null, this.uriBuilder1Enc);
+                null, this.uriBuilder, true);
 
-        this.uriBuilder1Enc.schemeSpecificPart("//shkf:4711/akjhf?a=b");
+        this.uriBuilder.schemeSpecificPart("//shkf:4711/akjhf?a=b");
         assertEqualUriBuilder("http", null, "shkf", "4711", "/akjhf", "a=b",
-                this.uriBuilder1Enc);
+                this.uriBuilder, true);
 
-        this.uriBuilder1Enc
-                .schemeSpecificPart("//www.domain.org/akjhf;1=2?a=b");
+        this.uriBuilder.schemeSpecificPart("//www.domain.org/akjhf;1=2?a=b");
         assertEqualUriBuilder("http", null, "www.domain.org", null,
-                "/akjhf;1=2", "a=b", this.uriBuilder1Enc);
+                "/akjhf;1=2", "a=b", this.uriBuilder, true);
 
-        this.uriBuilder1Enc
+        this.uriBuilder
                 .schemeSpecificPart("//www.domain.org/akjhf;1=2;3=4?a=b");
         assertEqualUriBuilder("http", null, "www.domain.org", null,
-                "/akjhf;1=2;3=4", "a=b", this.uriBuilder1Enc);
+                "/akjhf;1=2;3=4", "a=b", this.uriBuilder, true);
 
-        this.uriBuilder1Enc.schemeSpecificPart("//www.domain.org/ ");
-        assertEqualUriBuilder("http", null, "www.domain.org", null, "/%20",
-                null, this.uriBuilder1Enc);
-    }
-
-    /**
-     * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#schemeSpecificPart(java.lang.String)}
-     * .
-     */
-    public void testSchemeSpecificPartNoE() throws Exception {
-        this.uriBuilder1NoE.schemeSpecificPart("//shkf");
-        assertEqualUriBuilder("http", null, "shkf", null, null, null,
-                this.uriBuilder1NoE);
-
-        this.uriBuilder1NoE.schemeSpecificPart("//shkf/akfshdf");
-        assertEqualUriBuilder("http", null, "shkf", null, "/akfshdf", null,
-                this.uriBuilder1NoE);
-
-        this.uriBuilder1NoE.schemeSpecificPart("//user@shkf/akfshdf/akjhf");
-        assertEqualUriBuilder("http", "user", "shkf", null, "/akfshdf/akjhf",
-                null, this.uriBuilder1NoE);
-
-        this.uriBuilder1NoE.schemeSpecificPart("//shkf:4711/akjhf?a=b");
-        assertEqualUriBuilder("http", null, "shkf", "4711", "/akjhf", "a=b",
-                this.uriBuilder1NoE);
-
-        this.uriBuilder1NoE
-                .schemeSpecificPart("//www.domain.org/akjhf;1=2?a=b");
-        assertEqualUriBuilder("http", null, "www.domain.org", null,
-                "/akjhf;1=2", "a=b", this.uriBuilder1NoE);
-
-        this.uriBuilder1NoE
-                .schemeSpecificPart("//www.domain.org/akjhf;1=2;3=4?a=b");
-        assertEqualUriBuilder("http", null, "www.domain.org", null,
-                "/akjhf;1=2;3=4", "a=b", this.uriBuilder1NoE);
-
-        try {
-            this.uriBuilder1NoE.schemeSpecificPart("//www.domain.org/ ");
-            fail();
-        } catch (final IllegalArgumentException iae) {
-            // good
-        }
-        assertEqualUriBuilder("http", null, "www.domain.org", null,
-                "/akjhf;1=2;3=4", "a=b", this.uriBuilder1NoE);
+        this.uriBuilder.schemeSpecificPart("//www.domain.org/ ");
+        assertEquals("http://www.domain.org/%20", this.uriBuilder.build()
+                .toString());
     }
 
     /**
@@ -1005,53 +722,44 @@ public class JaxRsUriBuilderTest extends TestCase {
         UriBuilder uriBuilder = UriBuilder.fromPath("path");
         if (uriBuilder instanceof JaxRsUriBuilder) {
             assertEqualUriBuilder(null, null, null, null, "path", null,
-                    uriBuilder);
+                    uriBuilder, true);
         }
         assertEqualsURI("path", uriBuilder);
 
         uriBuilder = UriBuilder.fromPath("path1/path2/abc.html");
         if (uriBuilder instanceof JaxRsUriBuilder) {
             assertEqualUriBuilder(null, null, null, null,
-                    "path1/path2/abc.html", null, uriBuilder);
+                    "path1/path2/abc.html", null, uriBuilder, true);
         }
         assertEqualsURI("path1/path2/abc.html", uriBuilder);
 
-        uriBuilder = UriBuilder.fromPath(
-                "path1/path2;mp1=mv 1;mp2=mv2/abc.html", true);
+        uriBuilder = UriBuilder
+                .fromPath("path1/path2;mp1=mv 1;mp2=mv2/abc.html");
         if (uriBuilder instanceof JaxRsUriBuilder) {
             assertEqualUriBuilder(null, null, null, null,
-                    "path1/path2;mp1=mv%201;mp2=mv2/abc.html", null, uriBuilder);
+                    "path1/path2;mp1=mv%201;mp2=mv2/abc.html", null,
+                    uriBuilder, false);
         }
         assertEquals("path1/path2;mp1=mv%201;mp2=mv2/abc.html", uriBuilder
                 .build().toString());
 
         final String path = "path1/path2;mp1=mv1" + Reference.encode("?")
                 + ";mp2=mv2/abc.html";
-        uriBuilder = UriBuilder.fromPath(path, false);
+        uriBuilder = UriBuilder.fromPath(path);
         if (uriBuilder instanceof JaxRsUriBuilder) {
             assertEqualUriBuilder(null, null, null, null,
-                    "path1/path2;mp1=mv1%3F;mp2=mv2/abc.html", null, uriBuilder);
+                    "path1/path2;mp1=mv1%3F;mp2=mv2/abc.html", null,
+                    uriBuilder, false);
         }
-        assertEqualsURI(path, uriBuilder);
     }
 
-    public void testTemplateParamsEnc() throws Exception {
-        changeWithTemplVars((JaxRsUriBuilder) this.uriBuilderWithVarsEnc);
+    public void testTemplateParams() throws Exception {
+        changeWithTemplVars((JaxRsUriBuilder) this.uriBuilderWithVars);
 
-        URI uri = buildFromTemplVarsWithMap(this.uriBuilderWithVarsEnc);
+        URI uri = buildFromTemplVarsWithMap(this.uriBuilderWithVars);
         assertEqualsURI(TEMPL_VARS_EXPECTED, uri);
 
-        uri = buildFromTemplVarsWithStrings(this.uriBuilderWithVarsEnc);
-        assertEqualsURI(TEMPL_VARS_EXPECTED, uri);
-    }
-
-    public void testTemplateParamsNoE() throws Exception {
-        changeWithTemplVars((JaxRsUriBuilder) this.uriBuilderWithVarsNoE);
-
-        URI uri = buildFromTemplVarsWithMap(this.uriBuilderWithVarsNoE);
-        assertEqualsURI(TEMPL_VARS_EXPECTED, uri);
-
-        uri = buildFromTemplVarsWithStrings(this.uriBuilderWithVarsNoE);
+        uri = buildFromTemplVarsWithStrings(this.uriBuilderWithVars);
         assertEqualsURI(TEMPL_VARS_EXPECTED, uri);
     }
 
@@ -1060,24 +768,21 @@ public class JaxRsUriBuilderTest extends TestCase {
      * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#toString()}.
      */
     public void testToString() {
-        assertEquals("http://localhost/path1/path2", this.uriBuilder1Enc
-                .toString());
+        assertEquals("http://localhost/path1/path2", this.uriBuilder.toString());
     }
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#uri(java.net.URI)}
-     * .
+     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#uri(java.net.URI)} .
      */
     public void testUri() throws Exception {
         URI u = new URI("ftp", "test.org", null, null, "fragment");
-        this.uriBuilder1Enc.uri(u);
-        assertEqualsURI("ftp://test.org#fragment", this.uriBuilder1Enc);
+        this.uriBuilder.uri(u);
+        assertEqualsURI("ftp://test.org#fragment", this.uriBuilder);
 
         u = new URI("ftp", "test.org", "/path", "qu=ery", "fragment");
-        this.uriBuilder1Enc.uri(u);
-        assertEqualsURI("ftp://test.org/path?qu=ery#fragment",
-                this.uriBuilder1Enc);
+        this.uriBuilder.uri(u);
+        assertEqualsURI("ftp://test.org/path?qu=ery#fragment", this.uriBuilder);
 
         final String id = "4711";
         final URI collectionUri = new URI(
@@ -1089,55 +794,22 @@ public class JaxRsUriBuilderTest extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#userInfo(java.lang.String)}
-     * .
+     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#userInfo(java.lang.String)} .
      */
-    public void testUserInfoEnc() throws Exception {
-        this.uriBuilder1Enc.userInfo("username");
+    public void testUserInfo() throws Exception {
+        this.uriBuilder.userInfo("username");
         assertEqualsURI("http://username@localhost/path1/path2",
-                this.uriBuilder1Enc);
+                this.uriBuilder);
 
-        this.uriBuilder1Enc.replacePath((String) null);
-        this.uriBuilder1Enc.host("abc");
-        this.uriBuilder1Enc.userInfo("username:pw");
-        assertEqualsUriSlashAllowed("http://username:pw@abc",
-                this.uriBuilder1Enc);
+        this.uriBuilder.replacePath((String) null);
+        this.uriBuilder.host("abc");
+        this.uriBuilder.userInfo("username:pw");
+        assertEqualsUriSlashAllowed("http://username:pw@abc", this.uriBuilder);
 
-        this.uriBuilder1Enc.userInfo("rkj;s78:&=+$,");
-        assertEqualsUriSlashAllowed("http://rkj;s78:&=+$,@abc",
-                this.uriBuilder1Enc);
+        this.uriBuilder.userInfo("rkj;s78:&=+$,");
+        assertEqualsUriSlashAllowed("http://rkj;s78:&=+$,@abc", this.uriBuilder);
 
-        this.uriBuilder1Enc.userInfo(" ");
-        assertEqualsUriSlashAllowed("http://%20@abc", this.uriBuilder1Enc);
-    }
-
-    /**
-     * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#userInfo(java.lang.String)}
-     * .
-     */
-    public void testUserInfoNoE() throws Exception {
-        this.uriBuilder1NoE.userInfo("username");
-        assertEqualsURI("http://username@localhost/path1/path2",
-                this.uriBuilder1NoE);
-
-        this.uriBuilder1NoE.host("abc");
-        this.uriBuilder1NoE.replacePath((String) null);
-        this.uriBuilder1NoE.userInfo("username:pw");
-        assertEqualsUriSlashAllowed("http://username:pw@abc",
-                this.uriBuilder1NoE);
-
-        this.uriBuilder1NoE.userInfo("rkj;s78:&=+$,");
-        assertEqualsUriSlashAllowed("http://rkj;s78:&=+$,@abc",
-                this.uriBuilder1NoE);
-
-        try {
-            this.uriBuilder1NoE.userInfo(" ");
-            fail();
-        } catch (final IllegalArgumentException iae) {
-            // good
-        }
-        assertEqualsUriSlashAllowed("http://rkj;s78:&=+$,@abc",
-                this.uriBuilder1NoE);
+        this.uriBuilder.userInfo(" ");
+        assertEqualsUriSlashAllowed("http://%20@abc", this.uriBuilder);
     }
 }

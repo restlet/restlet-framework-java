@@ -50,7 +50,7 @@ import org.restlet.resource.InputRepresentation;
 import org.restlet.resource.Representation;
 
 /**
- * This {@link Provider} converts Restlet {@link Form}s to
+ * This {@link ProviderWrapper} converts Restlet {@link Form}s to
  * application/x-www-form-urlencoded and vice versa.<br>
  * For encoding or not the same conventions are valid than for
  * {@link WwwFormMmapProvider}.

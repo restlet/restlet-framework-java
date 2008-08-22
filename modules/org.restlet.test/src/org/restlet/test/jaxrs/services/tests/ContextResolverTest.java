@@ -44,9 +44,9 @@ public class ContextResolverTest extends JaxRsTestCase {
 
     @Override
     @SuppressWarnings("all")
-    public Set<Class<?>> getProvClasses() {
-        return TestUtils.createSet(ContextResolverTestWriter.class,
-                TestContextResolver.class);
+    public Set<Object> getSingletons() {
+        return TestUtils.createSet(new ContextResolverTestWriter(),
+                new TestContextResolver());
     }
 
     @Override

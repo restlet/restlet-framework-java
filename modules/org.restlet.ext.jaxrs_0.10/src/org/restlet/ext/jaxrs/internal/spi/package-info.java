@@ -27,7 +27,7 @@
 
 /**
  * <p>
- * This package contains Service Provider Interface classes. See package
+ * This package contains Service ProviderWrapper Interface classes. See package
  * {@link javax.ws.rs.ext}
  * </p>
  * <p>

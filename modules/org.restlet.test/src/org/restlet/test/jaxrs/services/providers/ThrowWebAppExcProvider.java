@@ -37,12 +37,14 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.Provider;
 
 /**
- * Provider which ever throws a {@link WebApplicationException}.
+ * ProviderWrapper which ever throws a {@link WebApplicationException}.
  * 
  * @author Stephan Koops
  */
+@Provider
 public class ThrowWebAppExcProvider implements MessageBodyReader<Object>,
         MessageBodyWriter<Object> {
 

@@ -200,13 +200,6 @@ public class ThreadLocalizedContext implements Request, HttpHeaders,
     }
 
     /**
-     * @see javax.ws.rs.core.Request#getFormParameters()
-     */
-    public MultivaluedMap<String, String> getFormParameters() {
-        return get().getFormParameters();
-    }
-
-    /**
      * @return
      * @see CallContext#getLanguage()
      * @see HttpHeaders#getLanguage()

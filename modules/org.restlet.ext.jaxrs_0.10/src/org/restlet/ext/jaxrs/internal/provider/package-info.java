@@ -41,4 +41,4 @@
  */
 package org.restlet.ext.jaxrs.internal.provider;
 
-// NICE JSON Provider for JAXB and all providers supporting XML.
+// NICE JSON ProviderWrapper for JAXB and all providers supporting XML.

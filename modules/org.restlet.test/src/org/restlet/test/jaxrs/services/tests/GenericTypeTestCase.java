@@ -45,8 +45,8 @@ public class GenericTypeTestCase extends JaxRsTestCase {
 
     @Override
     @SuppressWarnings("unchecked")
-    protected Set<Class<?>> getProvClasses() {
-        return (Set) Collections.singleton(GenericTypeMBW.class);
+    protected Set<Object> getSingletons() {
+        return (Set) Collections.singleton(new GenericTypeMBW());
     }
 
     @Override

@@ -176,11 +176,6 @@ public class UriInfoTest extends TestCase {
     public void testGetAbsolutePathBuilder() throws Exception {
         JaxRsUriBuilderTest.assertEqualsURI(BASE_REF_STR + RELATIV_1,
                 createUriInfo1().getAbsolutePathBuilder());
-
-        final String expectedUri = BASE_REF_STR + RELATIV_2;
-        final URI actualUri = createUriInfo2().getAbsolutePathBuilder().build();
-        JaxRsUriBuilderTest.assertEquals(new URI(expectedUri), actualUri);
-        JaxRsUriBuilderTest.assertEquals(expectedUri, actualUri.toString());
     }
 
     /**

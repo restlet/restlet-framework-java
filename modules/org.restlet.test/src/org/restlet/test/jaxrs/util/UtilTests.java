@@ -119,4 +119,10 @@ public class UtilTests extends TestCase {
         assertEquals("CS", getCss());
         assertEquals("a/b", getMts());
     }
+
+    public void testDoesImplements() {
+        assertTrue(Util.doesImplements(String.class, CharSequence.class));
+        assertFalse(Util.doesImplements(CharSequence.class, String.class));
+        assertFalse(Util.doesImplements(Object.class, CharSequence.class));
+    }
 }

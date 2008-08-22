@@ -32,19 +32,19 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 import org.restlet.test.jaxrs.services.others.Person;
-import org.restlet.test.jaxrs.services.providers.ProidersTestProvider;
+import org.restlet.test.jaxrs.services.providers.AppCrazyPersonProvider;
 import org.restlet.test.jaxrs.services.tests.MessageBodyWritersTest;
 
 /**
  * @author Stephan Koops
  * @see MessageBodyWritersTest
- * @see ProidersTestProvider
+ * @see AppCrazyPersonProvider
  */
 @Path("mbw")
 public class MessageBodyWriterTestResource {
 
     @GET
-    @Produces("text/crazy-person")
+    @Produces("application/crazy-person")
     public Response get() {
         final Person person = new Person("Angela", "Merkel");
         return Response.ok(person).header("h1", "h1v").build();

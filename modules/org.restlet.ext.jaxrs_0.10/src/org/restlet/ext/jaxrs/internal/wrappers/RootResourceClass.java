@@ -37,23 +37,20 @@ import javax.ws.rs.WebApplicationException;
 import org.restlet.ext.jaxrs.InstantiateException;
 import org.restlet.ext.jaxrs.ObjectFactory;
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
-import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalBeanSetterTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalConstrParamTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalFieldTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathParamTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalTypeException;
-import org.restlet.ext.jaxrs.internal.exceptions.ImplementationException;
-import org.restlet.ext.jaxrs.internal.exceptions.InjectException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingConstructorException;
 import org.restlet.ext.jaxrs.internal.util.PathRegExp;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.ext.jaxrs.internal.wrappers.params.IntoRrcInjector;
 import org.restlet.ext.jaxrs.internal.wrappers.params.ParameterList;
-import org.restlet.ext.jaxrs.internal.wrappers.provider.JaxRsProviders;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.ExtensionBackwardMapping;
+import org.restlet.ext.jaxrs.internal.wrappers.provider.JaxRsProviders;
 
 /**
  * Instances represents a root resource class, see chapter 3 of JAX-RS
@@ -61,7 +58,7 @@ import org.restlet.ext.jaxrs.internal.wrappers.provider.ExtensionBackwardMapping
  * 
  * @author Stephan Koops
  */
-public class RootResourceClass extends ResourceClass {
+public abstract class RootResourceClass extends ResourceClass {
 
     /**
      * Checks, if the class is public and so on.
@@ -85,14 +82,14 @@ public class RootResourceClass extends ResourceClass {
         }
     }
 
-    private final Constructor<?> constructor;
+    protected final Constructor<?> constructor;
 
-    private final ParameterList constructorParameters;
+    protected final ParameterList constructorParameters;
 
     /**
      * Injects the necessary values directly into the root resource class.
      */
-    private final IntoRrcInjector injectHelper;
+    protected final IntoRrcInjector injectHelper;
 
     private final boolean singelton = false;
 
@@ -110,7 +107,7 @@ public class RootResourceClass extends ResourceClass {
      *                the extension backward mapping
      * @param logger
      *                the logger to use.
-     * @see WrapperFactory#getRootResourceClass(Class)
+     * @see ResourceClasses#getRootResourceClass(Class)
      * @throws IllegalArgumentException
      *                 if the class is not a valid root resource class.
      * @throws MissingAnnotationException
@@ -130,8 +127,8 @@ public class RootResourceClass extends ResourceClass {
             IllegalPathOnClassException, MissingConstructorException,
             IllegalConstrParamTypeException, IllegalFieldTypeException,
             IllegalBeanSetterTypeException, IllegalPathParamTypeException {
-        super(jaxRsClass, tlContext, jaxRsProviders, extensionBackwardMapping,
-                logger, logger);
+        super(jaxRsClass, jaxRsProviders, tlContext, extensionBackwardMapping,
+                logger);
         Util.checkClassConcrete(getJaxRsClass(), "root resource class");
         checkClassForPathAnnot(jaxRsClass, "root resource class");
         this.injectHelper = new IntoRrcInjector(jaxRsClass, tlContext,
@@ -150,7 +147,7 @@ public class RootResourceClass extends ResourceClass {
     }
 
     /**
-     * Creates an instance of the root resource class.
+     * Creates an or gets the instance of this root resource class.
      * 
      * @param objectFactory
      *                object responsible for instantiating the root resource
@@ -161,30 +158,8 @@ public class RootResourceClass extends ResourceClass {
      * @throws MissingAnnotationException
      * @throws WebApplicationException
      */
-    public ResourceObject createInstance(ObjectFactory objectFactory)
-            throws InstantiateException, InvocationTargetException {
-        Object instance = null;
-        if (objectFactory != null) {
-            instance = objectFactory.getInstance(this.jaxRsClass);
-        }
-        if (instance == null) {
-            try {
-                final Object[] args = this.constructorParameters.get();
-                instance = WrapperUtil.createInstance(this.constructor, args);
-            } catch (final ConvertRepresentationException e) {
-                // is (or should be :-) ) not possible
-                throw new ImplementationException("Must not be possible", e);
-            }
-        }
-        final ResourceObject rootResourceObject;
-        rootResourceObject = new ResourceObject(instance, this);
-        try {
-            this.injectHelper.injectInto(instance, true);
-        } catch (final InjectException e) {
-            throw new InstantiateException(e);
-        }
-        return rootResourceObject;
-    }
+    public abstract ResourceObject getInstance(ObjectFactory objectFactory)
+            throws InstantiateException, InvocationTargetException;
 
     @Override
     public boolean equals(Object anotherObject) {

@@ -40,7 +40,7 @@ import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 
 /**
- * Class to wrap a {@link javax.ws.rs.ext.MessageBodyWriter}
+ * Class to wrap an initialized {@link javax.ws.rs.ext.MessageBodyWriter}
  * 
  * @author Stephan Koops
  */
@@ -99,5 +99,5 @@ public interface MessageBodyReader {
      * @param mediaType
      * @return true, if the given media type could be read, or false if not.
      */
-    public boolean supportsRead(MediaType mediaType);
+    // public boolean supportsRead(MediaType mediaType);
 }

@@ -26,7 +26,7 @@
  */
 package org.restlet.ext.jaxrs.internal.spi;
 
-import javax.ws.rs.core.ApplicationConfig;
+import javax.ws.rs.core.Application;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.EntityTag;
@@ -51,12 +51,12 @@ public class RuntimeDelegateImpl extends javax.ws.rs.ext.RuntimeDelegate {
      * This method is not supported by this implementation.
      * 
      * @throws UnsupportedOperationException
-     *             ever.
+     *                 ever.
      */
     @Override
     @Deprecated
-    public <T> T createEndpoint(ApplicationConfig applicationConfig,
-            Class<T> endpointType) throws UnsupportedOperationException {
+    public <T> T createEndpoint(Application application, Class<T> endpointType)
+            throws UnsupportedOperationException {
         throw new UnsupportedOperationException(
                 "The method RuntimeDelegate.createEndpoint() is not available by the Restlet JAX-RS extension");
     }

@@ -61,8 +61,7 @@ public class EmployeeResource {
      */
     private static URI createEmployeesUri(final UriInfo uriInfo) {
         final UriBuilder employeesUri = uriInfo.getBaseUriBuilder();
-        employeesUri.path(uriInfo.getAncestorResourceURIs().get(0));
-        employeesUri.extension(uriInfo.getConnegExtension());
+        employeesUri.path(uriInfo.getMatchedURIs().get(0));
         final URI build = employeesUri.build();
         return build;
     }
@@ -94,7 +93,7 @@ public class EmployeeResource {
 
         // set department uri
         final UriBuilder departmentUB = uriInfo.getBaseUriBuilder();
-        departmentUB.path("departments", "{depId}");
+        departmentUB.segment("departments", "{depId}");
         // LATER departmentUB.extension(uriInfo.getPathExtension());
         final String department = employee.getDepartment();
         employee.setDepartmentUri(departmentUB.build(department));

@@ -45,9 +45,9 @@ import javax.ws.rs.core.UriInfo;
 
 /**
  * @author Stephan Koops
- * @see org.restlet.test.jaxrs.services.tests.AncestorTest
- * @see UriInfo#getAncestorResources()
- * @see UriInfo#getAncestorResourceURIs()
+ * @see org.restlet.test.jaxrs.services.tests.MatchedTest
+ * @see UriInfo#getMatchedResources()
+ * @see UriInfo#getMatchedURIs()
  */
 @Path("formTest")
 public class FormTestResource {

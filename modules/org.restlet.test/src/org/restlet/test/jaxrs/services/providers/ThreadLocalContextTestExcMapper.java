@@ -35,6 +35,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
 
 import org.restlet.test.jaxrs.util.TestUtils;
 
@@ -42,6 +43,7 @@ import org.restlet.test.jaxrs.util.TestUtils;
  * @author Stephan Koops
  * 
  */
+@Provider
 public class ThreadLocalContextTestExcMapper implements
         ExceptionMapper<SQLException> {
 

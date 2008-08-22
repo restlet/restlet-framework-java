@@ -31,7 +31,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.ws.rs.core.ApplicationConfig;
+import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 
 import org.restlet.example.jaxrs.employees.EmployeesResource;
@@ -50,7 +50,7 @@ import org.restlet.example.jaxrs.employees.EmployeesResource;
  * @see ExampleServer
  * @see GuardedExample
  */
-public class ExampleAppConfig extends ApplicationConfig {
+public class ExampleAppConfig extends Application {
 
     /**
      * creates a new Application configuration for this example.
@@ -71,7 +71,7 @@ public class ExampleAppConfig extends ApplicationConfig {
      * @see javax.ws.rs.core.ApplicationConfig#getResourceClasses()
      */
     @Override
-    public Set<Class<?>> getResourceClasses() {
+    public Set<Class<?>> getClasses() {
         final Set<Class<?>> rrcs = new HashSet<Class<?>>();
         rrcs.add(EasyRootResource.class);
         rrcs.add(EmployeesResource.class);

@@ -42,6 +42,7 @@ import javax.ws.rs.core.Variant;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
+import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.ext.jaxrs.InstantiateException;
 import org.restlet.ext.jaxrs.internal.core.CallContext;
@@ -57,8 +58,8 @@ import org.restlet.ext.jaxrs.internal.wrappers.ResourceMethod;
 /**
  * <p>
  * This class contains the methods to handle exceptions occuring in the
- * {@link org.restlet.ext.jaxrs.JaxRsRestlet}, e.g. while identifying the method
- * that should handle the request.<br>
+ * {@link org.restlet.ext.jaxrs.JaxRsRestlet}, e.g. while identifying the
+ * method that should handle the request.<br>
  * Therefor it contains some Restlets that handles this exceptions.
  * </p>
  * <p>
@@ -119,15 +120,16 @@ public class ExceptionHandler {
      * 
      * @param exception
      * @param callContext
-     *            Contains the encoded template Parameters, that are read from
-     *            the called URI, the Restlet {@link org.restlet.data.Request}
-     *            and the Restlet {@link org.restlet.data.Response}.
+     *                Contains the encoded template Parameters, that are read
+     *                from the called URI, the Restlet
+     *                {@link org.restlet.data.Request} and the Restlet
+     *                {@link org.restlet.data.Response}.
      * @param methodName
      * @param logMessage
      * @return staticly to throw, if needed by compiler.
      * @throws RequestHandledException
-     *             throws this message to exit the method and indicate, that the
-     *             request was handled.
+     *                 throws this message to exit the method and indicate, that
+     *                 the request was handled.
      * @throws RequestHandledException
      */
     public RequestHandledException instantiateExecption(
@@ -146,15 +148,16 @@ public class ExceptionHandler {
      * 
      * @param exception
      * @param callContext
-     *            Contains the encoded template Parameters, that are read from
-     *            the called URI, the Restlet {@link org.restlet.data.Request}
-     *            and the Restlet {@link org.restlet.data.Response}.
+     *                Contains the encoded template Parameters, that are read
+     *                from the called URI, the Restlet
+     *                {@link org.restlet.data.Request} and the Restlet
+     *                {@link org.restlet.data.Response}.
      * @param methodName
      * @param logMessage
      * @return staticly to throw, if needed by compiler.
      * @throws RequestHandledException
-     *             throws this message to exit the method and indicate, that the
-     *             request was handled.
+     *                 throws this message to exit the method and indicate, that
+     *                 the request was handled.
      * @throws RequestHandledException
      */
     public RequestHandledException methodInvokeException(
@@ -186,15 +189,16 @@ public class ExceptionHandler {
      * 
      * @param exception
      * @param callContext
-     *            Contains the encoded template Parameters, that are read from
-     *            the called URI, the Restlet {@link org.restlet.data.Request}
-     *            and the Restlet {@link org.restlet.data.Response}.
+     *                Contains the encoded template Parameters, that are read
+     *                from the called URI, the Restlet
+     *                {@link org.restlet.data.Request} and the Restlet
+     *                {@link org.restlet.data.Response}.
      * @param methodName
      * @param logMessage
      * @return staticly to throw, if needed by compiler.
      * @throws RequestHandledException
-     *             throws this message to exit the method and indicate, that the
-     *             request was handled.
+     *                 throws this message to exit the method and indicate, that
+     *                 the request was handled.
      * @throws RequestHandledException
      */
     public RequestHandledException missingAnnotation(
@@ -210,19 +214,26 @@ public class ExceptionHandler {
     }
 
     /**
-     * see spec, section 4.3.2, item 7
-     * 
-     * @param accMediaTypes
      * @param entityClass
-     * @param genericType 
-     * @param annotations 
-     * 
-     * @return staticly to throw, if needed by compiler.
+     * @param genericType
+     * @param annotations
+     * @param respMediaType
+     * @param accMediaTypes
+     * @return
      */
-    public WebApplicationException noMessageBodyWriter(Class<?> entityClass,
-            Type genericType, Annotation[] annotations) {
-        this.logger.warning("No message body writer found for class "
-                + entityClass + ", genericType " + genericType);
+    public WebApplicationException noMessageBodyWriter(
+            Class<? extends Object> entityClass, Type genericType,
+            Annotation[] annotations, MediaType respMediaType,
+            SortedMetadata<MediaType> accMediaTypes) {
+        String warning = "No message body writer found for class "
+                + entityClass + ", genericType " + genericType;
+        if (respMediaType != null) {
+            warning += "; response media type should be: " + respMediaType;
+        }
+        if (accMediaTypes != null) {
+            warning += "; accepted media types are: " + accMediaTypes;
+        }
+        this.logger.warning(warning);
         annotations.toString(); // LATER log also annotations
         // NICE get as parameters the accMediaTypes and the entityClass.
         // and return supported MediaTypes as entity
@@ -233,8 +244,8 @@ public class ExceptionHandler {
      * see spec, section 3.7.2, item 3(a).4
      * 
      * @param supporting
-     *            the methods supporting the requested resource and the given
-     *            HTTP method.
+     *                the methods supporting the requested resource and the
+     *                given HTTP method.
      * @throws WebApplicationException
      */
     public void noResourceMethodForAccMediaTypes(
@@ -290,15 +301,16 @@ public class ExceptionHandler {
      * @param jaxRsMethod
      *                the called method when the exception occurs. May be null.
      * @param callContext
-     *            Contains the encoded template Parameters, that are read from
-     *            the called URI, the Restlet {@link org.restlet.data.Request}
-     *            and the Restlet {@link org.restlet.data.Response}.
+     *                Contains the encoded template Parameters, that are read
+     *                from the called URI, the Restlet
+     *                {@link org.restlet.data.Request} and the Restlet
+     *                {@link org.restlet.data.Response}.
      * @param logMessage
      * @param methodName
      * @return staticly to throw, if needed by compiler.
      * @throws RequestHandledException
-     *             throws this message to exit the method and indicate, that the
-     *             request was handled.
+     *                 throws this message to exit the method and indicate, that
+     *                 the request was handled.
      * @throws RequestHandledException
      */
     public RequestHandledException runtimeExecption(RuntimeException exception,
@@ -319,8 +331,8 @@ public class ExceptionHandler {
      * see spec, section 3.7.2, item 3 (a) .3
      * 
      * @param accepting
-     *            resource methods for the requested resource and the given HTTP
-     *            method.
+     *                resource methods for the requested resource and the given
+     *                HTTP method.
      * @throws WebApplicationException
      */
     public void unsupportedMediaType(Collection<ResourceMethod> accepting)

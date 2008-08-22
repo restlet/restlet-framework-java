@@ -48,7 +48,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 /**
- * JAX-RS Provider to convert a {@link Source} to an object and vice versa.
+ * JAX-RS ProviderWrapper to convert a {@link Source} to an object and vice versa.
  * 
  * @author Stephan Koops
  */

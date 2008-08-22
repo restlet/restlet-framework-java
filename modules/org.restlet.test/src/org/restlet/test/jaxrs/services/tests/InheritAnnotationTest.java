@@ -29,7 +29,7 @@ package org.restlet.test.jaxrs.services.tests;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.ws.rs.core.ApplicationConfig;
+import javax.ws.rs.core.Application;
 
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -55,10 +55,10 @@ public class InheritAnnotationTest extends JaxRsTestCase {
     private static final Class<InheritAnnotationTestService2> SERVICE_2 = InheritAnnotationTestService2.class;
 
     @Override
-    protected ApplicationConfig getAppConfig() {
-        return new ApplicationConfig() {
+    protected Application getAppConfig() {
+        return new Application() {
             @Override
-            public Set<Class<?>> getResourceClasses() {
+            public Set<Class<?>> getClasses() {
                 final Set<Class<?>> rrcs = new HashSet<Class<?>>(2);
                 rrcs.add(SERVICE_1);
                 rrcs.add(SERVICE_2);

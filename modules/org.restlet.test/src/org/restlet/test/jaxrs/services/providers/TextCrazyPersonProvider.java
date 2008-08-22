@@ -45,8 +45,8 @@ import org.restlet.test.jaxrs.services.resources.OwnProviderTestService;
  * @see OwnProviderTestService
  */
 @Provider
-@Produces("application/crazyType")
-public class CrazyTypeProvider implements MessageBodyWriter<Person> {
+@Produces("text/crazy-person")
+public class TextCrazyPersonProvider implements MessageBodyWriter<Person> {
 
     /**
      * @see javax.ws.rs.ext.MessageBodyWriter#getSize(java.lang.Object)

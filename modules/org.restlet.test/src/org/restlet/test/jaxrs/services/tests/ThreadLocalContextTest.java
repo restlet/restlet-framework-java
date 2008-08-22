@@ -46,8 +46,8 @@ public class ThreadLocalContextTest extends JaxRsTestCase {
 
     @Override
     @SuppressWarnings("all")
-    public Set<Class<?>> getProvClasses() {
-        return (Set) TestUtils.createSet(ThreadLocalContextTestExcMapper.class);
+    public Set<Object> getSingletons() {
+        return (Set) TestUtils.createSet(new ThreadLocalContextTestExcMapper());
     }
 
     @Override

@@ -45,8 +45,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.logging.Level;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericEntity;
@@ -64,15 +62,9 @@ import org.restlet.data.Status;
 import org.restlet.ext.jaxrs.internal.core.CallContext;
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
-import org.restlet.ext.jaxrs.internal.exceptions.IllegalBeanSetterTypeException;
-import org.restlet.ext.jaxrs.internal.exceptions.IllegalConstrParamTypeException;
-import org.restlet.ext.jaxrs.internal.exceptions.IllegalFieldTypeException;
-import org.restlet.ext.jaxrs.internal.exceptions.IllegalParamTypeException;
-import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
 import org.restlet.ext.jaxrs.internal.exceptions.ImplementationException;
 import org.restlet.ext.jaxrs.internal.exceptions.MethodInvokeException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
-import org.restlet.ext.jaxrs.internal.exceptions.MissingConstructorException;
 import org.restlet.ext.jaxrs.internal.exceptions.RequestHandledException;
 import org.restlet.ext.jaxrs.internal.provider.BufferedReaderProvider;
 import org.restlet.ext.jaxrs.internal.provider.ByteArrayProvider;
@@ -91,6 +83,7 @@ import org.restlet.ext.jaxrs.internal.provider.StringProvider;
 import org.restlet.ext.jaxrs.internal.provider.WebAppExcMapper;
 import org.restlet.ext.jaxrs.internal.provider.WwwFormFormProvider;
 import org.restlet.ext.jaxrs.internal.provider.WwwFormMmapProvider;
+import org.restlet.ext.jaxrs.internal.todo.NotYetImplementedException;
 import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.ext.jaxrs.internal.util.ExceptionHandler;
 import org.restlet.ext.jaxrs.internal.util.JaxRsOutputRepresentation;
@@ -98,20 +91,20 @@ import org.restlet.ext.jaxrs.internal.util.MatchingResult;
 import org.restlet.ext.jaxrs.internal.util.PathRegExp;
 import org.restlet.ext.jaxrs.internal.util.RemainingPath;
 import org.restlet.ext.jaxrs.internal.util.SortedMetadata;
+import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.ext.jaxrs.internal.util.WrappedRequestForHttpHeaders;
 import org.restlet.ext.jaxrs.internal.wrappers.AbstractMethodWrapper;
 import org.restlet.ext.jaxrs.internal.wrappers.ResourceClass;
+import org.restlet.ext.jaxrs.internal.wrappers.ResourceClasses;
 import org.restlet.ext.jaxrs.internal.wrappers.ResourceMethod;
 import org.restlet.ext.jaxrs.internal.wrappers.ResourceMethodOrLocator;
 import org.restlet.ext.jaxrs.internal.wrappers.ResourceObject;
 import org.restlet.ext.jaxrs.internal.wrappers.RootResourceClass;
 import org.restlet.ext.jaxrs.internal.wrappers.SubResourceLocator;
-import org.restlet.ext.jaxrs.internal.wrappers.WrapperFactory;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.ExtensionBackwardMapping;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.JaxRsProviders;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyWriter;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyWriterSubSet;
-import org.restlet.ext.jaxrs.internal.wrappers.provider.Provider;
 import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.service.MetadataService;
@@ -143,19 +136,15 @@ public class JaxRsRestlet extends Restlet {
      */
     private static final Annotation[] EMPTY_ANNOTATION_ARRAY = new Annotation[0];
 
-    /**
-     * This set must only changed by adding a root resource class to this
-     * JaxRsRestlet.
-     */
-    private final Set<RootResourceClass> rootResourceClasses = new CopyOnWriteArraySet<RootResourceClass>();
-
     private volatile RoleChecker roleChecker;
 
-    private final JaxRsProviders providers = new JaxRsProviders();
+    private final JaxRsProviders providers;
 
     private final ExtensionBackwardMapping extensionBackwardMapping;
 
-    private final WrapperFactory wrapperFactory;
+    // TODO vielleicht gar nicht mehr hier benötigt.
+
+    private final ResourceClasses resourceClasses;
 
     /**
      * Contains and handles the exceptions occuring while in resource objects
@@ -181,10 +170,10 @@ public class JaxRsRestlet extends Restlet {
      * {@link #setRoleChecker(RoleChecker)}.
      * 
      * @param context
-     *            the context from the parent, see
-     *            {@link Restlet#Restlet(Context)}.
+     *                the context from the parent, see
+     *                {@link Restlet#Restlet(Context)}.
      * @param metadataService
-     *            the metadata service of the {@link JaxRsApplication}.
+     *                the metadata service of the {@link JaxRsApplication}.
      * @see #JaxRsRestlet(Context, RoleChecker, MetadataService)
      */
     public JaxRsRestlet(Context context, MetadataService metadataService) {
@@ -196,15 +185,15 @@ public class JaxRsRestlet extends Restlet {
      * providers are loaded.
      * 
      * @param context
-     *            the context from the parent, see
-     *            {@link Restlet#Restlet(Context)}.
+     *                the context from the parent, see
+     *                {@link Restlet#Restlet(Context)}.
      * @param roleChecker
-     *            The RoleChecker to use. If you don't need the access control,
-     *            you can use the {@link RoleChecker#FORBID_ALL}, the
-     *            {@link RoleChecker#ALLOW_ALL} or the
-     *            {@link RoleChecker#REJECT_WITH_ERROR}.
+     *                The RoleChecker to use. If you don't need the access
+     *                control, you can use the {@link RoleChecker#FORBID_ALL},
+     *                the {@link RoleChecker#ALLOW_ALL} or the
+     *                {@link RoleChecker#REJECT_WITH_ERROR}.
      * @param metadataService
-     *            the metadata service of the {@link JaxRsApplication}.
+     *                the metadata service of the {@link JaxRsApplication}.
      * @see #JaxRsRestlet(Context, MetadataService)
      */
     public JaxRsRestlet(Context context, RoleChecker roleChecker,
@@ -213,8 +202,10 @@ public class JaxRsRestlet extends Restlet {
         this.extensionBackwardMapping = new ExtensionBackwardMapping(
                 metadataService);
         this.excHandler = new ExceptionHandler(getLogger());
-        this.wrapperFactory = new WrapperFactory(tlContext, this.providers,
-                extensionBackwardMapping);
+        this.providers = new JaxRsProviders(this.objectFactory, this.tlContext,
+                this.extensionBackwardMapping, getLogger());
+        this.resourceClasses = new ResourceClasses(this.tlContext,
+                this.providers, this.extensionBackwardMapping, getLogger());
         this.loadDefaultProviders();
         if (roleChecker != null)
             this.setRoleChecker(roleChecker);
@@ -223,24 +214,24 @@ public class JaxRsRestlet extends Restlet {
     }
 
     private void loadDefaultProviders() {
-        this.addProvider(BufferedReaderProvider.class, true);
-        this.addProvider(ByteArrayProvider.class, true);
-        this.addProvider(DataSourceProvider.class, true);
-        this.addProvider(FileUploadProvider.class, true); // not yet tested
-        this.addProvider(FileProvider.class, true);
-        this.addProvider(InputStreamProvider.class, true);
-        this.addProvider(JaxbElementProvider.class, true);
-        this.addProvider(JaxbProvider.class, true);
-        this.addProvider(JsonProvider.class, true);
-        this.addProvider(MultipartProvider.class, true); // not yet tested
-        this.addProvider(ReaderProvider.class, true);
-        this.addProvider(StreamingOutputProvider.class, true);
-        this.addProvider(StringProvider.class, true);
-        this.addProvider(WwwFormFormProvider.class, true);
-        this.addProvider(WwwFormMmapProvider.class, true);
-        this.addProvider(SourceProvider.class, true);
+        this.addSingleton(new BufferedReaderProvider(), true);
+        this.addSingleton(new ByteArrayProvider(), true);
+        this.addSingleton(new DataSourceProvider(), true);
+        this.addSingleton(new FileUploadProvider(), true); // not yet tested
+        this.addSingleton(new FileProvider(), true);
+        this.addSingleton(new InputStreamProvider(), true);
+        this.addSingleton(new JaxbElementProvider(), true);
+        this.addSingleton(new JaxbProvider(), true);
+        this.addSingleton(new JsonProvider(), true);
+        this.addSingleton(new MultipartProvider(), true); // not yet tested
+        this.addSingleton(new ReaderProvider(), true);
+        this.addSingleton(new StreamingOutputProvider(), true);
+        this.addSingleton(new StringProvider(), true);
+        this.addSingleton(new WwwFormFormProvider(), true);
+        this.addSingleton(new WwwFormMmapProvider(), true);
+        this.addSingleton(new SourceProvider(), true);
 
-        this.addProvider(WebAppExcMapper.class, true);
+        this.addSingleton(new WebAppExcMapper(), true);
     }
 
     /**
@@ -248,174 +239,86 @@ public class JaxRsRestlet extends Restlet {
      * If the given class is not a valid root resource class, a warning is
      * logged and false is returned.
      * 
-     * @param rootResourceClass
-     *            the JAX-RS root resource class to add. If the root resource
-     *            class is already available in this JaxRsRestlet, it is ignored
-     *            for later calls of this method.
+     * @param jaxRsClass
+     *                A JAX-RS root resource class or provider class to add. If
+     *                the root resource class is already available in this
+     *                JaxRsRestlet, it is ignored for later calls of this
+     *                method.
      * @return true if the class is added or was already included, or false if
-     *         the given class is not a valid root resource class (a warning was
-     *         logged).
+     *         the given class is not a valid class (a warning was logged).
      * @throws IllegalArgumentException
-     *             if the root resource class is null.
+     *                 if the root resource class is null.
      */
-    public boolean addRootResourceClass(Class<?> rootResourceClass)
+    public boolean addClass(Class<?> jaxRsClass)
             throws IllegalArgumentException {
-        if (rootResourceClass == null)
+        if (jaxRsClass == null)
             throw new IllegalArgumentException(
-                    "The root resource class must not be null");
-        RootResourceClass newRrc;
-        try {
-            newRrc = wrapperFactory.getRootResourceClass(rootResourceClass);
-        } catch (IllegalParamTypeException e) {
-            String msg = "Ignore provider " + rootResourceClass.getName()
-                    + ": Could not instantiate class "
-                    + rootResourceClass.getName();
-            getLogger().log(Level.WARNING, msg, e);
-            return false;
-        } catch (IllegalPathOnClassException e) {
-            getLogger().warning(
-                    "The root resource class " + rootResourceClass.getName()
-                            + " is annotated with an illegal path: "
-                            + e.getPath() + ". (" + e.getMessage() + ")");
-            return false;
-        } catch (IllegalArgumentException e) {
-            getLogger().log(
-                    Level.WARNING,
-                    "The root resource class " + rootResourceClass.getName()
-                            + " is not a valud root resource class: "
-                            + e.getMessage(), e);
-            return false;
-        } catch (MissingAnnotationException e) {
-            getLogger().log(
-                    Level.WARNING,
-                    "The root resource class " + rootResourceClass.getName()
-                            + " is not a valud root resource class: "
-                            + e.getMessage(), e);
-            return false;
-        } catch (MissingConstructorException e) {
-            getLogger().warning(
-                    "The root resource class " + rootResourceClass.getName()
-                            + " has no valid constructor");
-            return false;
-        } catch (IllegalConstrParamTypeException e) {
-            getLogger().warning(
-                    "The root resource class " + rootResourceClass.getName()
-                            + " has no valid constructor: " + e.getMessage());
-            // LATER better warning
-            return false;
-        } catch (IllegalBeanSetterTypeException e) {
-            getLogger().warning(
-                    "The root resource class " + rootResourceClass.getName()
-                            + " has no valid constructor: " + e.getMessage());
-            // LATER better warning
-            return false;
-        } catch (IllegalFieldTypeException e) {
-            getLogger().warning(
-                    "The root resource class " + rootResourceClass.getName()
-                            + " has no valid constructor: " + e.getMessage());
-            // LATER better warning
-            return false;
+                    "The JAX-RS class to add must not be null");
+        boolean used = false;
+        if (Util.isRootResourceClass(jaxRsClass)) {
+            used = resourceClasses.addRootClass(jaxRsClass);
+        } else if (Util.isProvider(jaxRsClass)) {
+            if (providers.addClass(jaxRsClass))
+                used = true;
         }
-        PathRegExp uriTempl = newRrc.getPathRegExp();
-        for (RootResourceClass rrc : this.rootResourceClasses) {
-            if (rrc.getJaxRsClass().equals(rootResourceClass)) {
-                return true;
-            }
-            if (rrc.getPathRegExp().equals(uriTempl)) {
-                getLogger().warning(
-                        "There is already a root resource class with path "
-                                + uriTempl.getPathPattern());
-                return false;
-            }
+        // TODO log a message or what ever
+        // @see Application#getClasses()
+        // @see Application#getSingletons()
+        if (!used) {
+            final String warning = ("The class " + jaxRsClass + " is neither a povider nor a root resource class");
+            getLogger().warning(warning);
         }
-        rootResourceClasses.add(newRrc);
-        return true;
+        return used;
     }
 
     /**
      * Adds the provider object to this JaxRsRestlet.
      * 
-     * @param jaxRsProviderClass
-     *            the JAX-RS provider class.
+     * @param jaxRsProviderOrRootresourceObject
+     *                the JAX-RS provider or root resource object
      * @return true, if the provider is ok and added, otherwise false.
      * @throws IllegalArgumentException
-     *             if null was given
+     *                 if null was given
      * @see javax.ws.rs.ext.Provider
      */
-    public boolean addProvider(Class<?> jaxRsProviderClass)
+    public boolean addSingleton(Object jaxRsProviderOrRootresourceObject)
             throws IllegalArgumentException {
-        return addProvider(jaxRsProviderClass, false);
+        return addSingleton(jaxRsProviderOrRootresourceObject, false);
     }
 
     /**
      * Adds the provider object to this JaxRsRestlet.
      * 
      * @param jaxRsProviderClass
-     *            the JAX-RS provider class.
+     *                the JAX-RS provider class.
      * @return true, if the provider is ok and added, otherwise false.
      * @throws IllegalArgumentException
-     *             if null was given
+     *                 if null was given
      * @see {@link javax.ws.rs.ext.Provider}
      */
-    private boolean addProvider(Class<?> jaxRsProviderClass,
-            boolean defaultProvider) throws IllegalArgumentException {
-        if (jaxRsProviderClass == null)
+    private boolean addSingleton(Object jaxRsObject, boolean defaultProvider)
+            throws IllegalArgumentException {
+        // TODO check, if the class is already available as class; see spec
+        if (jaxRsObject == null)
             throw new IllegalArgumentException(
-                    "The JAX-RS provider class must not be null");
-        if (!jaxRsProviderClass
-                .isAnnotationPresent(javax.ws.rs.ext.Provider.class)) {
-            String message = "Officially a JAX-RS provider class must be annotated with @javax.ws.rs.ext.Provider";
-            getLogger().config(message);
+                    "The JAX-RS object to add must not be null");
+        if (jaxRsObject instanceof Class)
+            throw new IllegalArgumentException(
+                    "The JAX-RS object to add must not be a java.lang.Class");
+        boolean used = false;
+        if (defaultProvider || Util.isProvider(jaxRsObject.getClass())) {
+            used = providers.addSingleton(jaxRsObject, defaultProvider);
         }
-        Provider provider;
-        try {
-            provider = new Provider(jaxRsProviderClass, this.objectFactory,
-                    this.tlContext, this.providers,
-                    this.extensionBackwardMapping, this.getLogger());
-        } catch (IllegalParamTypeException e) {
-            String msg = "Ignore provider " + jaxRsProviderClass.getName()
-                    + ": Could not instantiate class "
-                    + jaxRsProviderClass.getName();
-            getLogger().log(Level.WARNING, msg, e);
-            return false;
-        } catch (InstantiateException e) {
-            String msg = "Ignore provider " + jaxRsProviderClass.getName()
-                    + ": Could not instantiate class "
-                    + jaxRsProviderClass.getName();
-            getLogger().log(Level.WARNING, msg, e);
-            return false;
-        } catch (MissingAnnotationException e) {
-            String msg = "Ignore provider " + jaxRsProviderClass.getName()
-                    + ": Could not instantiate class "
-                    + jaxRsProviderClass.getName() + ", because "
-                    + e.getMessage();
-            getLogger().log(Level.WARNING, msg);
-            return false;
-        } catch (InvocationTargetException ite) {
-            String msg = "Ignore provider " + jaxRsProviderClass.getName()
-                    + ", because an exception occured while instantiating";
-            getLogger().log(Level.WARNING, msg, ite);
-            return false;
-        } catch (IllegalArgumentException iae) {
-            String msg = "Ignore provider " + jaxRsProviderClass.getName()
-                    + ", because it could not be instantiated";
-            getLogger().log(Level.WARNING, msg, iae);
-            return false;
-        } catch (MissingConstructorException mce) {
-            String msg = "Ignore provider " + jaxRsProviderClass.getName()
-                    + ", because no valid constructor was found: "
-                    + mce.getMessage();
-            getLogger().warning(msg);
-            return false;
-        } catch (IllegalConstrParamTypeException e) {
-            String msg = "Ignore provider " + jaxRsProviderClass.getName()
-                    + ", because no valid constructor was found: "
-                    + e.getMessage();
-            getLogger().warning(msg);
-            return false;
+        if (Util.isRootResourceClass(jaxRsObject.getClass())) {
+            throw new NotYetImplementedException(
+                    "only providers are allowed as singletons for now");
+            // used = ...
         }
-        this.providers.add(provider, defaultProvider);
-        return true;
+        if (!used) {
+            final String warning = ("The class " + jaxRsObject.getClass() + " is neither a povider nor a root resource class");
+            getLogger().warning(warning);
+        }
+        return used;
     }
 
     @Override
@@ -431,9 +334,9 @@ public class JaxRsRestlet extends Restlet {
      * return the result.
      * 
      * @param request
-     *            The {@link Request} to handle.
+     *                The {@link Request} to handle.
      * @param response
-     *            The {@link Response} to update.
+     *                The {@link Response} to update.
      */
     @Override
     public void handle(Request request, Response response) {
@@ -500,7 +403,7 @@ public class JaxRsRestlet extends Restlet {
      * 3.7.2 "Request Matching", Part 1: "Identify the root resource class"
      * 
      * @param u
-     *            the remaining path after the base ref
+     *                the remaining path after the base ref
      * @return The identified root resource object, the remaining path after
      *         identifying and the matched template parameters; see
      *         {@link RroRemPathAndMatchedPath}.
@@ -516,7 +419,7 @@ public class JaxRsRestlet extends Restlet {
         // Map<UriTemplateRegExp, Class> eAndCs = new HashMap();
         Collection<RootResourceClass> eAndCs = new ArrayList<RootResourceClass>();
         // (a) and (b) and (c) Filter E
-        for (RootResourceClass rootResourceClass : this.rootResourceClasses) {
+        for (RootResourceClass rootResourceClass : this.resourceClasses.roots()) {
             // Map.Entry<UriTemplateRegExp, Class> eAndC = eAndCIter.next();
             // UriTemplateRegExp regExp = eAndC.getKey();
             // Class clazz = eAndC.getValue();
@@ -560,7 +463,7 @@ public class JaxRsRestlet extends Restlet {
         RemainingPath u = rroRemPathAndMatchedPath.u;
         ResourceClass resClass = o.getResourceClass();
         CallContext callContext = tlContext.get();
-        callContext.addForAncestor(o.getJaxRsResourceObject(),
+        callContext.addForMatched(o.getJaxRsResourceObject(),
                 rroRemPathAndMatchedPath.matchedUriPath);
         // Part 2
         for (;;) // (j)
@@ -601,7 +504,7 @@ public class JaxRsRestlet extends Restlet {
                 return new ResObjAndRemPath(o, u);
             String matchedUriPart = matchingResult.getMatched();
             Object jaxRsResObj = o.getJaxRsResourceObject();
-            callContext.addForAncestor(jaxRsResObj, matchedUriPart);
+            callContext.addForMatched(jaxRsResObj, matchedUriPart);
 
             // (g) and (i)
             u = matchingResult.getFinalCapturingGroup();
@@ -619,8 +522,8 @@ public class JaxRsRestlet extends Restlet {
      * 
      * @return Resource Object and Method, that handle the request.
      * @throws RequestHandledException
-     *             for example if the method was OPTIONS, but no special
-     *             Resource Method for OPTIONS is available.
+     *                 for example if the method was OPTIONS, but no special
+     *                 Resource Method for OPTIONS is available.
      * @throws ResourceMethodNotFoundException
      */
     private ResObjAndMeth identifyMethod(ResObjAndRemPath resObjAndRemPath,
@@ -681,7 +584,7 @@ public class JaxRsRestlet extends Restlet {
         String matchedUriPart = mr.getMatched();
         if (matchedUriPart.length() > 0) {
             Object jaxRsResObj = resObj.getJaxRsResourceObject();
-            callContext.addForAncestor(jaxRsResObj, matchedUriPart);
+            callContext.addForMatched(jaxRsResObj, matchedUriPart);
         }
         return new ResObjAndMeth(resObj, bestResourceMethod);
     }
@@ -691,14 +594,14 @@ public class JaxRsRestlet extends Restlet {
      * exceptions.
      * 
      * @param resourceMethod
-     *            the (sub) resource method to invoke
+     *                the (sub) resource method to invoke
      * @param resourceObject
-     *            the resource object to invoke the method on.
+     *                the resource object to invoke the method on.
      * @return the object returned by the (sub) resource method.
      * @throws RequestHandledException
-     *             if the request is already handled
+     *                 if the request is already handled
      * @throws WebApplicationException
-     *             if a JAX-RS class throws an WebApplicationException
+     *                 if a JAX-RS class throws an WebApplicationException
      */
     private Object invokeMethod(ResourceMethod resourceMethod,
             ResourceObject resourceObject) throws WebApplicationException,
@@ -727,11 +630,11 @@ public class JaxRsRestlet extends Restlet {
      * necessary converting.
      * 
      * @param result
-     *            the object returned by the resource method
+     *                the object returned by the resource method
      * @param resourceMethod
-     *            the resource method; it is needed for the conversion. Could be
-     *            null, if an exception is handled, e.g. a
-     *            {@link WebApplicationException}.
+     *                the resource method; it is needed for the conversion.
+     *                Could be null, if an exception is handled, e.g. a
+     *                {@link WebApplicationException}.
      */
     private void handleResult(Object result, ResourceMethod resourceMethod) {
         Response restletResponse = tlContext.get().getResponse();
@@ -762,12 +665,12 @@ public class JaxRsRestlet extends Restlet {
      * {@link Response}.
      * 
      * @param jaxRsResponse
-     *            The response returned by the resource method, perhaps as
-     *            attribute of a {@link WebApplicationException}.
+     *                The response returned by the resource method, perhaps as
+     *                attribute of a {@link WebApplicationException}.
      * @param resourceMethod
-     *            The resource method creating the response. Could be null, if
-     *            an exception is handled, e.g. a
-     *            {@link WebApplicationException}.
+     *                The resource method creating the response. Could be null,
+     *                if an exception is handled, e.g. a
+     *                {@link WebApplicationException}.
      */
     private void jaxRsRespToRestletResp(
             javax.ws.rs.core.Response jaxRsResponse,
@@ -793,19 +696,21 @@ public class JaxRsRestlet extends Restlet {
      * Restlet {@link Representation}.
      * 
      * @param entity
-     *            the entity to convert.
+     *                the entity to convert.
      * @param resourceMethod
-     *            The resource method created the entity. Could be null, if an
-     *            exception is handled, e.g. a {@link WebApplicationException}.
+     *                The resource method created the entity. Could be null, if
+     *                an exception is handled, e.g. a
+     *                {@link WebApplicationException}.
      * @param jaxRsResponseMediaType
-     *            The MediaType of the JAX-RS {@link javax.ws.rs.core.Response}.
-     *            May be null.
+     *                The MediaType of the JAX-RS
+     *                {@link javax.ws.rs.core.Response}. May be null.
      * @param jaxRsRespHeaders
-     *            The headers added to the {@link javax.ws.rs.core.Response} by
-     *            the {@link ResponseBuilder}.
+     *                The headers added to the {@link javax.ws.rs.core.Response}
+     *                by the {@link ResponseBuilder}.
      * @param accMediaTypes
-     *            the accepted media type from the current call context, or the
-     *            returned of the JAX-RS {@link javax.ws.rs.core.Response}.
+     *                the accepted media type from the current call context, or
+     *                the returned of the JAX-RS
+     *                {@link javax.ws.rs.core.Response}.
      * @return the corresponding Restlet Representation. Returns
      *         <code>null</code> only if null was given.
      * @throws WebApplicationException
@@ -859,7 +764,7 @@ public class JaxRsRestlet extends Restlet {
                     methodAnnotations);
             if (mbws.isEmpty())
                 throw excHandler.noMessageBodyWriter(entityClass,
-                        genericReturnType, methodAnnotations);
+                        genericReturnType, methodAnnotations, null, null);
         } else {
             mbws = MessageBodyWriterSubSet.empty();
         }
@@ -882,7 +787,8 @@ public class JaxRsRestlet extends Restlet {
             mbw = mbws.getBestWriter(respMediaType, accMediaTypes);
             if (mbw == null)
                 throw excHandler.noMessageBodyWriter(entityClass,
-                        genericReturnType, methodAnnotations);
+                        genericReturnType, methodAnnotations, respMediaType,
+                        accMediaTypes);
             repr = new JaxRsOutputRepresentation(entity, genericReturnType,
                     respMediaType, methodAnnotations, mbw, httpResponseHeaders);
         }
@@ -895,10 +801,10 @@ public class JaxRsRestlet extends Restlet {
      * section 3.8 "Determining the MediaType of Responses"
      * 
      * @param resourceMethod
-     *            The ResourceMethod that created the entity.
+     *                The ResourceMethod that created the entity.
      * @param mbws
-     *            The {@link MessageBodyWriter}s, that support the class of the
-     *            returned entity object.
+     *                The {@link MessageBodyWriter}s, that support the class of
+     *                the returned entity object.
      * @return the determined {@link MediaType}
      * @throws RequestHandledException
      * @throws WebApplicationException
@@ -951,8 +857,8 @@ public class JaxRsRestlet extends Restlet {
      * @param ite
      * @param methodName
      * @throws RequestHandledException
-     *             throws this message to exit the method and indicate, that the
-     *             request was handled.
+     *                 throws this message to exit the method and indicate, that
+     *                 the request was handled.
      * @throws RequestHandledException
      */
     private RequestHandledException handleInvocationTargetExc(
@@ -974,20 +880,20 @@ public class JaxRsRestlet extends Restlet {
      * Instantiates the root resource class and handles thrown exceptions.
      * 
      * @param rrc
-     *            the root resource class to instantiate
+     *                the root resource class to instantiate
      * @return the instance of the root resource
      * @throws WebApplicationException
-     *             if a WebApplicationException was thrown while creating the
-     *             instance.
+     *                 if a WebApplicationException was thrown while creating
+     *                 the instance.
      * @throws RequestHandledException
-     *             If an Exception was thrown and the request is already
-     *             handeled.
+     *                 If an Exception was thrown and the request is already
+     *                 handeled.
      */
     private ResourceObject instantiateRrc(RootResourceClass rrc)
             throws WebApplicationException, RequestHandledException {
         ResourceObject o;
         try {
-            o = rrc.createInstance(this.objectFactory);
+            o = rrc.getInstance(this.objectFactory);
         } catch (WebApplicationException e) {
             throw e;
         } catch (RuntimeException e) {
@@ -1014,7 +920,7 @@ public class JaxRsRestlet extends Restlet {
             SubResourceLocator subResourceLocator, CallContext callContext)
             throws WebApplicationException, RequestHandledException {
         try {
-            o = subResourceLocator.createSubResource(o, wrapperFactory,
+            o = subResourceLocator.createSubResource(o, resourceClasses,
                     getLogger());
         } catch (WebApplicationException e) {
             throw e;
@@ -1110,11 +1016,12 @@ public class JaxRsRestlet extends Restlet {
      * Sets the {@link RoleChecker} to use.
      * 
      * @param roleChecker
-     *            the roleChecker to set. Must not be null. Take a look at
-     *            {@link RoleChecker#ALLOW_ALL}, {@link RoleChecker#FORBID_ALL}
-     *            and {@link RoleChecker#REJECT_WITH_ERROR}.
+     *                the roleChecker to set. Must not be null. Take a look at
+     *                {@link RoleChecker#ALLOW_ALL},
+     *                {@link RoleChecker#FORBID_ALL} and
+     *                {@link RoleChecker#REJECT_WITH_ERROR}.
      * @throws IllegalArgumentException
-     *             If the given roleChecker is null.
+     *                 If the given roleChecker is null.
      * @see RoleChecker
      * @see #getRoleChecker()
      */
@@ -1137,7 +1044,7 @@ public class JaxRsRestlet extends Restlet {
      */
     public Set<Class<?>> getRootResourceClasses() {
         Set<Class<?>> rrcs = new HashSet<Class<?>>();
-        for (RootResourceClass rootResourceClass : this.rootResourceClasses)
+        for (RootResourceClass rootResourceClass : this.resourceClasses.roots())
             rrcs.add(rootResourceClass.getJaxRsClass());
         return Collections.unmodifiableSet(rrcs);
     }
@@ -1149,7 +1056,7 @@ public class JaxRsRestlet extends Restlet {
      */
     public Collection<String> getRootUris() {
         List<String> uris = new ArrayList<String>();
-        for (RootResourceClass rrc : this.rootResourceClasses)
+        for (RootResourceClass rrc : this.resourceClasses.roots())
             uris.add(rrc.getPathRegExp().getPathPattern());
         return Collections.unmodifiableCollection(uris);
     }
@@ -1170,8 +1077,8 @@ public class JaxRsRestlet extends Restlet {
      * instantiation.
      * 
      * @param objectFactory
-     *            the ObjectFactory for root resource class and provider
-     *            instantiation.
+     *                the ObjectFactory for root resource class and provider
+     *                instantiation.
      */
     public void setObjectFactory(ObjectFactory objectFactory) {
         this.objectFactory = objectFactory;

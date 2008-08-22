@@ -37,9 +37,8 @@ import java.util.List;
 import java.util.Set;
 
 import javax.ws.rs.Path;
-import javax.ws.rs.core.ApplicationConfig;
+import javax.ws.rs.core.Application;
 
-import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Guard;
 import org.restlet.data.ChallengeResponse;
@@ -264,7 +263,7 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
         return accessServer(httpMethod, klasse, subPath, mediaTypes, null);
     }
 
-    protected Application createApplication() {
+    protected org.restlet.Application createApplication() {
         return createApplication(getAppConfig(), ChallengeScheme.HTTP_BASIC,
                 null);
     }
@@ -280,7 +279,7 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
      *            the RoleChecer to use.
      * @return
      */
-    public JaxRsApplication createApplication(ApplicationConfig appConfig,
+    public JaxRsApplication createApplication(Application appConfig,
             ChallengeScheme challengeScheme, RoleChecker roleChecker) {
         final JaxRsApplication application = new JaxRsApplication(new Context());
         if (roleChecker != null) {
@@ -413,16 +412,16 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
     /**
      * @return
      */
-    protected ApplicationConfig getAppConfig() {
-        final ApplicationConfig appConfig = new ApplicationConfig() {
+    protected Application getAppConfig() {
+        final Application appConfig = new Application() {
             @Override
-            public Set<Class<?>> getProviderClasses() {
-                return (Set) getProvClasses();
+            public Set<Object> getSingletons() {
+                return (Set) JaxRsTestCase.this.getSingletons();
             }
 
             @Override
             @SuppressWarnings("unchecked")
-            public Set<Class<?>> getResourceClasses() {
+            public Set<Class<?>> getClasses() {
                 return (Set) Collections.singleton(getRootResourceClass());
             }
         };
@@ -438,7 +437,7 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
      * @return
      * @see #getAppConfig()
      */
-    protected Set<Class<?>> getProvClasses() {
+    protected Set<Object> getSingletons() {
         return Collections.emptySet();
     }
 
@@ -516,8 +515,8 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
      * 
      */
     protected void runServerAfterStart() {
-        final ApplicationConfig appConfig = getAppConfig();
-        final Collection<Class<?>> rrcs = appConfig.getResourceClasses();
+        final Application appConfig = getAppConfig();
+        final Collection<Class<?>> rrcs = appConfig.getClasses();
         System.out
                 .println("the root resource classes are available under the following pathes:");
         for (final Class<?> rrc : rrcs) {
@@ -559,10 +558,10 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
      * @param rootResourceClasses
      * @throws Exception
      */
-    private void startServer(ApplicationConfig appConfig, Protocol protocol,
+    private void startServer(Application appConfig, Protocol protocol,
             final ChallengeScheme challengeScheme, RoleChecker roleChecker)
             throws Exception {
-        final Application jaxRsApplication = createApplication(appConfig,
+        final org.restlet.Application jaxRsApplication = createApplication(appConfig,
                 challengeScheme, roleChecker);
         startServer(jaxRsApplication, protocol);
     }
@@ -574,7 +573,7 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
      */
     protected void startServer(ChallengeScheme challengeScheme,
             RoleChecker roleChecker) throws Exception {
-        final ApplicationConfig appConfig = getAppConfig();
+        final Application appConfig = getAppConfig();
         startServer(appConfig, Protocol.HTTP, challengeScheme, roleChecker);
     }
 }

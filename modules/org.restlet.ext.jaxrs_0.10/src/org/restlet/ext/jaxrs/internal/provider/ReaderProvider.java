@@ -49,7 +49,7 @@ import org.restlet.resource.Representation;
 import org.restlet.util.ByteUtils;
 
 /**
- * This Provider is used to read directly from a {@link Reader}.
+ * This ProviderWrapper is used to read directly from a {@link Reader}.
  * 
  * @author Stephan Koops
  * @see BufferedReaderProvider

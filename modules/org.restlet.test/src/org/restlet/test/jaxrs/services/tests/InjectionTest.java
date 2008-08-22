@@ -30,7 +30,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.ws.rs.core.ApplicationConfig;
+import javax.ws.rs.core.Application;
 
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -48,10 +48,10 @@ public class InjectionTest extends JaxRsTestCase {
      * @return
      */
     @Override
-    protected ApplicationConfig getAppConfig() {
-        final ApplicationConfig appConfig = new ApplicationConfig() {
+    protected Application getAppConfig() {
+        final Application appConfig = new Application() {
             @Override
-            public Set<Class<?>> getResourceClasses() {
+            public Set<Class<?>> getClasses() {
                 final Set<Class<?>> rrcs = new HashSet<Class<?>>();
                 rrcs.add(getRootResourceClass());
                 rrcs.add(InjectionTestService2.class);

@@ -148,13 +148,13 @@ public class Util {
      * all "{" and "}" are converted to "%7B" and "%7D"
      * 
      * @param stb
-     *            the Appendable to append on
+     *                the Appendable to append on
      * @param string
-     *            the CharSequence to append
+     *                the CharSequence to append
      * @param convertBraces
-     *            if true, all braces are converted, if false then not.
+     *                if true, all braces are converted, if false then not.
      * @throws IOException
-     *             If the Appendable have a problem
+     *                 If the Appendable have a problem
      */
     public static void append(Appendable stb, CharSequence string,
             boolean convertBraces) throws IOException {
@@ -176,13 +176,12 @@ public class Util {
     }
 
     /**
-     * appends the array elements to the {@link StringBuilder}, separated by
-     * ", ".
+     * appends the array elements to the {@link StringBuilder}, separated by ", ".
      * 
      * @param stb
-     *            The {@link StringBuilder} to append the array elements.
+     *                The {@link StringBuilder} to append the array elements.
      * @param array
-     *            The array to append to the {@link StringBuilder}.
+     *                The array to append to the {@link StringBuilder}.
      */
     public static void append(StringBuilder stb, Object[] array) {
         if ((array == null) || (array.length == 0)) {
@@ -199,11 +198,12 @@ public class Util {
      * Checks, if the class is concrete.
      * 
      * @param jaxRsClass
-     *            JAX-RS root resource class or JAX-RS provider.
+     *                JAX-RS root resource class or JAX-RS provider.
      * @param typeName
-     *            for the exception message "root resource class" or "provider"
+     *                for the exception message "root resource class" or
+     *                "provider"
      * @throws IllegalArgumentException
-     *             if the class is not concrete.
+     *                 if the class is not concrete.
      */
     public static void checkClassConcrete(Class<?> jaxRsClass, String typeName)
             throws IllegalArgumentException {
@@ -218,9 +218,9 @@ public class Util {
      * Copies headers into a response.
      * 
      * @param jaxRsHeaders
-     *            Headers of an JAX-RS-Response.
+     *                Headers of an JAX-RS-Response.
      * @param restletResponse
-     *            Restlet Response to copy the headers in.
+     *                Restlet Response to copy the headers in.
      * @see javax.ws.rs.core.Response#getMetadata()
      */
     public static void copyResponseHeaders(
@@ -252,9 +252,9 @@ public class Util {
      * {@link Series}.
      * 
      * @param restletResponse
-     *            The response to update. Should contain a
-     *            {@link Representation} to copy the representation headers from
-     *            it.
+     *                The response to update. Should contain a
+     *                {@link Representation} to copy the representation headers
+     *                from it.
      * @return The copied headers.
      */
     public static Series<Parameter> copyResponseHeaders(Response restletResponse) {
@@ -334,8 +334,8 @@ public class Util {
      * Creates a map with the given keys and values.
      * 
      * @param keysAndValues
-     *            first element is key1, second element value1, third element
-     *            key2, forth element value2 and so on.
+     *                first element is key1, second element value1, third
+     *                element key2, forth element value2 and so on.
      * @return
      */
     public static Map<String, String> createMap(String... keysAndValues) {
@@ -386,9 +386,9 @@ public class Util {
      * {@link com.noelios.restlet.HttpCall}.
      * 
      * @param date
-     *            Date to format
+     *                Date to format
      * @param cookie
-     *            if true, using RFC 1036 format, otherwise RFC 1123 format.
+     *                if true, using RFC 1036 format, otherwise RFC 1123 format.
      * @return
      */
     public static String formatDate(Date date, boolean cookie) {
@@ -404,7 +404,7 @@ public class Util {
      * HTTP Vary header.
      * 
      * @param dimensions
-     *            the dimensions to format.
+     *                the dimensions to format.
      * @return the Vary header or null, if dimensions is null or empty.
      */
     public static String formatDimensions(Set<Dimension> dimensions) {
@@ -416,9 +416,9 @@ public class Util {
      * a JAX-RS {@link javax.ws.rs.core.Response}).
      * 
      * @param httpHeaders
-     *            the JAX-RS {@link javax.ws.rs.core.Response}
+     *                the JAX-RS {@link javax.ws.rs.core.Response}
      * @param defaultCs
-     *            the character set to return, if no one could be found.
+     *                the character set to return, if no one could be found.
      * @return the Restlet {@link CharacterSet} of the given http headers, or
      *         the given defaultCs as String if the header "Content-Type" is not
      *         available or has no parameter "charset". Returns only null, if
@@ -446,7 +446,7 @@ public class Util {
      * @param <A>
      * @return Returns the first Element of the collection
      * @throws NoSuchElementException
-     *             If the collection is empty.
+     *                 If the collection is empty.
      */
     public static <A> A getFirstElement(Collection<A> coll)
             throws NoSuchElementException {
@@ -471,7 +471,7 @@ public class Util {
      * @param <A>
      * @return Returns the first Element of the collection
      * @throws NoSuchElementException
-     *             If the collection is empty
+     *                 If the collection is empty
      */
     public static <A> A getFirstElement(Iterable<A> coll)
             throws NoSuchElementException {
@@ -485,14 +485,14 @@ public class Util {
     }
 
     /**
-     * Returns the first element of the {@link List}. Throws an exception if the
-     * list is empty.
+     * Returns the first element of the {@link List}. Throws an exception if
+     * the list is empty.
      * 
      * @param list
      * @param <A>
      * @return Returns the first Element of the collection
      * @throws IndexOutOfBoundsException
-     *             If the list is empty
+     *                 If the list is empty
      */
     public static <A> A getFirstElement(List<A> list)
             throws IndexOutOfBoundsException {
@@ -507,8 +507,8 @@ public class Util {
     }
 
     /**
-     * Returns the first element of the given {@link Iterable}. Returns null, if
-     * the {@link Iterable} is empty.
+     * Returns the first element of the given {@link Iterable}. Returns null,
+     * if the {@link Iterable} is empty.
      * 
      * @param coll
      * @param <A>
@@ -547,7 +547,7 @@ public class Util {
      * @param <V>
      * @return the first entry of the given {@link Map}.
      * @throws NoSuchElementException
-     *             If the map is empty.
+     *                 If the map is empty.
      */
     public static <K, V> Map.Entry<K, V> getFirstEntry(Map<K, V> map)
             throws NoSuchElementException {
@@ -563,7 +563,7 @@ public class Util {
      * @param <V>
      * @return the key of the first entry of the given {@link Map}.
      * @throws NoSuchElementException
-     *             If the map is empty.
+     *                 If the map is empty.
      */
     public static <K, V> K getFirstKey(Map<K, V> map)
             throws NoSuchElementException {
@@ -579,11 +579,43 @@ public class Util {
      * @param <V>
      * @return the value of the first entry of the given {@link Map}.
      * @throws NoSuchElementException
-     *             If the map is empty.
+     *                 If the map is empty.
      */
     public static <K, V> V getFirstValue(Map<K, V> map)
             throws NoSuchElementException {
         return map.values().iterator().next();
+    }
+
+    /**
+     * 
+     * @param clazz
+     *                The class which implemented interface should be checked.
+     * @param implInterface
+     *                the interface from which the generic type should be
+     *                returned.
+     * @return
+     */
+    public static Class<?> getGenericClass(Class<?> clazz,
+            Class<?> implInterface) {
+        for (Type genericType : clazz.getGenericInterfaces()) {
+            if (!(genericType instanceof ParameterizedType)) {
+                continue;
+            }
+            final ParameterizedType pt = (ParameterizedType) genericType;
+            if (!pt.getRawType().equals(implInterface))
+                continue;
+            final Type atp = pt.getActualTypeArguments()[0];
+            if (atp instanceof Class) {
+                return (Class<?>) atp;
+            }
+            if (atp instanceof ParameterizedType) {
+                final Type rawType = ((ParameterizedType) atp).getRawType();
+                if (rawType instanceof Class) {
+                    return (Class<?>) rawType;
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -672,10 +704,11 @@ public class Util {
      * @param <A>
      * @return Returns the last element of the {@link Iterable}
      * @throws IndexOutOfBoundsException
-     *             If the {@link Iterable} is a {@link List} and its is empty.
+     *                 If the {@link Iterable} is a {@link List} and its is
+     *                 empty.
      * @throws NoSuchElementException
-     *             If the {@link Iterable} is empty and the {@link Iterable} is
-     *             not a {@link List}.
+     *                 If the {@link Iterable} is empty and the {@link Iterable}
+     *                 is not a {@link List}.
      */
     public static <A> A getLastElement(Iterable<A> iterable)
             throws IndexOutOfBoundsException, NoSuchElementException {
@@ -697,7 +730,7 @@ public class Util {
      * @param <A>
      * @return Returns the last element of the {@link Iterator}.
      * @throws NoSuchElementException
-     *             If the {@link Iterator} is empty.
+     *                 If the {@link Iterator} is empty.
      */
     public static <A> A getLastElement(Iterator<A> iter)
             throws NoSuchElementException {
@@ -716,7 +749,7 @@ public class Util {
      * @param <A>
      * @return Returns the last element of the list
      * @throws IndexOutOfBoundsException
-     *             If the list is empty
+     *                 If the list is empty
      */
     public static <A> A getLastElement(List<A> list)
             throws IndexOutOfBoundsException {
@@ -779,7 +812,7 @@ public class Util {
      * from a JAX-RS {@link javax.ws.rs.core.Response}).
      * 
      * @param httpHeaders
-     *            the JAX-RS {@link javax.ws.rs.core.Response}
+     *                the JAX-RS {@link javax.ws.rs.core.Response}
      * @return the Restlet {@link MediaType} of the given http headers, or null,
      *         if the header "Content-Type" is not available.
      */
@@ -804,15 +837,15 @@ public class Util {
      * (case-sensitive)
      * 
      * @param clazz
-     *            The {@link Class} to search the {@link Method}s.
+     *                The {@link Class} to search the {@link Method}s.
      * @param methodName
-     *            The name of the {@link Method} to search.
+     *                The name of the {@link Method} to search.
      * @return Returns a {@link Collection} all of {@link Method}s with the
      *         given name. Never returns null. If no methods are found an empty
      *         Collection will be returned. The method {@link Iterator#remove()}
      *         of this collection is supported.
      * @throws IllegalArgumentException
-     *             if the clazz or the method name is null.
+     *                 if the clazz or the method name is null.
      */
     public static Collection<Method> getMethodsByName(Class<?> clazz,
             String methodName) throws IllegalArgumentException {
@@ -838,10 +871,10 @@ public class Util {
      * 
      * @param <A>
      * @param list
-     *            a List with at most one element
+     *                a List with at most one element
      * @return The element of the List, or null, if there is no element.
      * @throws IllegalArgumentException
-     *             if the list contains more than one element.
+     *                 if the list contains more than one element.
      */
     public static <A> A getOnlyElement(Collection<A> list)
             throws IllegalArgumentException {
@@ -882,13 +915,13 @@ public class Util {
      * class.
      * 
      * @param jaxRsClass
-     *            the root resource class.
+     *                the root resource class.
      * @return the &#64;{@link Path} annotation of the given root resource
      *         class.
      * @throws MissingAnnotationException
-     *             if the path annotation is missing
+     *                 if the path annotation is missing
      * @throws IllegalArgumentException
-     *             if the jaxRsClass is null.
+     *                 if the jaxRsClass is null.
      */
     public static Path getPathAnnotation(Class<?> jaxRsClass)
             throws MissingAnnotationException, IllegalArgumentException {
@@ -910,12 +943,12 @@ public class Util {
      * available.
      * 
      * @param method
-     *            the java method to get the &#64;Path from
+     *                the java method to get the &#64;Path from
      * @return the &#64;Path annotation.
      * @throws IllegalArgumentException
-     *             if null was given.
+     *                 if null was given.
      * @throws MissingAnnotationException
-     *             if the annotation is not present.
+     *                 if the annotation is not present.
      */
     public static Path getPathAnnotation(Method method)
             throws IllegalArgumentException, MissingAnnotationException {
@@ -936,10 +969,10 @@ public class Util {
      * locator. Returns null if no &#64;{@link Path} annotation is available.
      * 
      * @param method
-     *            the java method to get the &#64;Path from
+     *                the java method to get the &#64;Path from
      * @return the &#64;Path annotation or null, if not present.
      * @throws IllegalArgumentException
-     *             if the method is null.
+     *                 if the method is null.
      */
     public static Path getPathAnnotationOrNull(Method method)
             throws IllegalArgumentException {
@@ -974,7 +1007,7 @@ public class Util {
      * resource method. It is encoded (if necessary) and valid.
      * 
      * @param method
-     *            the java method
+     *                the java method
      * @return the path template
      * @throws IllegalPathOnMethodException
      * @throws IllegalArgumentException
@@ -997,28 +1030,28 @@ public class Util {
      * valid.
      * 
      * @param path
-     *            The {@link Path} annotation. Must not be null.
+     *                The {@link Path} annotation. Must not be null.
      * @return the encoded path template
      * @throws IllegalPathException
      * @see Path#encode()
      */
     public static String getPathTemplate(Path path) throws IllegalPathException {
         String pathTemplate = path.value();
-        if (path.encode()) {
-            try {
-                pathTemplate = EncodeOrCheck.pathWithoutMatrix(pathTemplate)
-                        .toString();
-            } catch (final IllegalArgumentException e) {
-                throw new IllegalPathException(path, e);
-            }
-        } else {
-            try {
-                EncodeOrCheck.checkForInvalidUriChars(pathTemplate, -1,
-                        "path template");
-            } catch (final IllegalArgumentException iae) {
-                throw new IllegalPathException(path, iae);
-            }
+        // if (path.encode()) {
+        try {
+            pathTemplate = EncodeOrCheck.pathWithoutMatrix(pathTemplate)
+                    .toString();
+        } catch (final IllegalArgumentException e) {
+            throw new IllegalPathException(path, e);
         }
+        // } else {
+        // try {
+        // EncodeOrCheck.checkForInvalidUriChars(pathTemplate, -1,
+        // "path template");
+        // } catch (final IllegalArgumentException iae) {
+        // throw new IllegalPathException(path, iae);
+        // }
+        // }
         return pathTemplate;
     }
 
@@ -1027,7 +1060,7 @@ public class Util {
      * Returns UTF-8 otherwise.
      * 
      * @param characterSet
-     *            the wished {@link CharacterSet}
+     *                the wished {@link CharacterSet}
      * @return a supported {@link CharacterSet}, never null.
      * @see #getCharsetName(MultivaluedMap, CharacterSet)
      */
@@ -1089,15 +1122,15 @@ public class Util {
      * whatever)
      * 
      * @param resource
-     *            the concrete Object to inject the other object in. If the
-     *            field is static, thsi object may be null.
+     *                the concrete Object to inject the other object in. If the
+     *                field is static, thsi object may be null.
      * @param field
-     *            the field to inject the third parameter in.
+     *                the field to inject the third parameter in.
      * @param toInject
-     *            the object to inject in the first parameter object.
+     *                the object to inject in the first parameter object.
      * @throws InjectException
-     *             if the injection was not possible. See
-     *             {@link InjectException#getCause()} for the reason.
+     *                 if the injection was not possible. See
+     *                 {@link InjectException#getCause()} for the reason.
      */
     public static void inject(final Object resource, final Field field,
             final Object toInject) throws InjectException {
@@ -1152,16 +1185,16 @@ public class Util {
      * If no javaMethod is given, nothing happens.
      * 
      * @param object
-     *            the object to call the method on.
+     *                the object to call the method on.
      * @param javaMethod
-     *            the method to call
+     *                the method to call
      * @param args
-     *            the arguments of the method
+     *                the arguments of the method
      * @throws MethodInvokeException
      * @throws InvocationTargetException
      * @throws IllegalArgumentException
-     *             if at least one argument does not match the required method
-     *             parameters.
+     *                 if at least one argument does not match the required
+     *                 method parameters.
      * @see #inject(Object, Field, Object)
      * @see #findPostConstructMethod(Class)
      * @see #findPreDestroyMethod(Class)
@@ -1254,6 +1287,29 @@ public class Util {
      */
     public static boolean isNotEmpty(List<?> list) {
         return ((list != null) && !list.isEmpty());
+    }
+
+    /**
+     * Checks, if the given class is a JAX-RS provider.
+     * 
+     * @param jaxRsClass
+     *                the class to check
+     * @return true, if the class is a JAX-RS provider, otherwise false.
+     */
+    public static boolean isProvider(Class<?> jaxRsClass) {
+        return jaxRsClass.isAnnotationPresent(javax.ws.rs.ext.Provider.class);
+    }
+
+    /**
+     * Checks, if the given class is a JAX-RS root resource class.
+     * 
+     * @param jaxRsClass
+     *                the class to check
+     * @return true, if the class is a JAX-RS root resource class, otherwise
+     *         false.
+     */
+    public static boolean isRootResourceClass(Class<?> jaxRsClass) {
+        return jaxRsClass.isAnnotationPresent(javax.ws.rs.Path.class);
     }
 
     /**
@@ -1366,5 +1422,23 @@ public class Util {
             stb.append(object);
         }
         return stb.toString();
+    }
+
+    /**
+     * Checks, if the given clazz implements the given interfaze.
+     * 
+     * @param clazz
+     * @param interfaze
+     * @return
+     */
+    public static boolean doesImplements(Class<?> clazz, Class<?> interfaze) {
+        for (Class<?> interf : clazz.getInterfaces()) {
+            if (interf.equals(interfaze)) {
+                return true;
+            }
+            if(doesImplements(clazz, interf))
+                return true;
+        }
+        return false;
     }
 }

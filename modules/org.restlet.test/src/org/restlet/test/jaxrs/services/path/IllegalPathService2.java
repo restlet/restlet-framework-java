@@ -36,7 +36,7 @@ import javax.ws.rs.Produces;
  * 
  * @author Stephan Koops
  */
-@Path(value = "afsdf:use", encode = true)
+@Path("afsdf:use")
 public class IllegalPathService2 {
     /**
      * This method is only available, that the class has something that it can

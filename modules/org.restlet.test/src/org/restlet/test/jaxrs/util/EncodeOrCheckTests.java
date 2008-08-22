@@ -62,9 +62,9 @@ public class EncodeOrCheckTests extends TestCase {
     static {
         try {
             FRAGMENT = EncodeOrCheck.class.getMethod("fragment",
-                    CharSequence.class, Boolean.TYPE);
+                    CharSequence.class);
             FULL_MATRIX = EncodeOrCheck.class.getMethod("fullMatrix",
-                    CharSequence.class, Boolean.TYPE);
+                    CharSequence.class);
             FULL_QUERY = EncodeOrCheck.class.getMethod("fullQuery",
                     CharSequence.class, Boolean.TYPE);
             HOST = EncodeOrCheck.class.getMethod("host", String.class);
@@ -86,14 +86,16 @@ public class EncodeOrCheckTests extends TestCase {
 
     /**
      * @param method
-     *            static method. The in value is the first parameter. If the
-     *            method has two or three parameters, the second is the encode
-     *            value. If it has three arguments, a generic error message is
-     *            used for it.
+     *                static method. The in value is the first parameter. If the
+     *                method has two or three parameters, the second is the
+     *                encode value. If it has three arguments, a generic error
+     *                message is used for it.
      * @param in
      * @param encode
-     *            must not be null, if the method has more than one argument.
+     *                must not be null, if the method has more than one
+     *                argument.
      * @param out
+     *                if null, an IllegalArgumentException must be thrown
      * @throws IllegalAccessException
      * @throws IllegalArgumentException
      * @throws RuntimeException
@@ -116,11 +118,13 @@ public class EncodeOrCheckTests extends TestCase {
                 throw new AssertionFailedError(
                         ("The method " + method + " has to much parameters"));
             }
-            if (out == null) {
-                fail("must throw an IllegalArgumentException for \"" + in
-                        + "\" and encode = " + encode);
+            if (paramCount > 1) {
+                if (out == null) {
+                    fail("must throw an IllegalArgumentException for \"" + in
+                            + "\" and encode = " + encode);
+                }
+                assertEquals(out, result != null ? result.toString() : null);
             }
-            assertEquals(out, result != null ? result.toString() : null);
         } catch (final InvocationTargetException e) {
             if (!(e.getCause() instanceof IllegalArgumentException)) {
                 throw (RuntimeException) e.getCause();
@@ -130,7 +134,7 @@ public class EncodeOrCheckTests extends TestCase {
         }
     }
 
-    /** encoding necessary */
+    /** encoding necessary; not encoding must throw an exception */
     void checkEncoding(Method method, String in, String encodedOut) {
         check(method, in, true, encodedOut);
         check(method, in, false, null);
@@ -187,7 +191,6 @@ public class EncodeOrCheckTests extends TestCase {
     public void testFragment() {
         checkNoEncode(FRAGMENT, EncodeOrCheck.UNRESERVED);
         checkInvalid(FRAGMENT, "{}");
-        checkNoEncode(FRAGMENT, "%20%27HH");
         checkNoEncode(FRAGMENT, "dfd{  %K}7");
         checkInvalid(FRAGMENT, "dfd{ { %K}}}7");
         checkInvalid(FRAGMENT, "dfd{}7");
@@ -219,7 +222,10 @@ public class EncodeOrCheckTests extends TestCase {
     public void testNameOrValue() {
         checkNoEncode(NAME_OR_VALUE, "");
         checkNoEncode(NAME_OR_VALUE, "sdf");
-        checkNoEncode(NAME_OR_VALUE, "sdf%20hfdf");
+        assertEquals("sdf%20hfdf", EncodeOrCheck.nameOrValue("sdf%20hfdf",
+                false, "guj"));
+        assertEquals("sdf%2520hfdf", EncodeOrCheck.nameOrValue("sdf%20hfdf",
+                true, "guj"));
         checkEncoding(NAME_OR_VALUE, "abc def", "abc%20def");
         final StringBuilder reservedEnc = new StringBuilder();
         for (int i = 0; i < EncodeOrCheck.RESERVED.length(); i++) {
@@ -233,8 +239,7 @@ public class EncodeOrCheckTests extends TestCase {
         checkNoEncode(PATH_SEGMENT_WITH_MATRIX, "");
         checkNoEncode(PATH_SEGMENT_WITH_MATRIX, "sdf");
         checkEncoding(PATH_SEGMENT_WITH_MATRIX, "abc def", "abc%20def");
-        checkNoEncode(PATH_SEGMENT_WITH_MATRIX, "abc/def");
-        checkNoEncode(PATH_SEGMENT_WITH_MATRIX, "abc;1298=213/def");
+        checkNoEncode(PATH_SEGMENT_WITH_MATRIX, "abc;1298=213");
     }
 
     public void testSchemeCheck() {
@@ -254,9 +259,9 @@ public class EncodeOrCheckTests extends TestCase {
 
     /**
      * @param delim
-     *            ';' or '&'
+     *                ';' or '&'
      * @param nonDelim
-     *            '&' or ';'
+     *                '&' or ';'
      */
     private void xtestFullQueryOrMatrix(Method method, char delim, char nonDelim) {
         final String nonDelimStr = (nonDelim == ';' ? "%3B" : "%26");
@@ -265,7 +270,7 @@ public class EncodeOrCheckTests extends TestCase {
         checkNoEncode(method, str);
         checkEncoding(method, str + nonDelim, str + nonDelimStr);
         checkNoEncode(method, "");
-        checkNoEncode(method, "%20");
+        // LATER run test again: checkEncoding(method, "%20", "%2520");
         checkEncoding(method, delim + "=" + nonDelim + "?", delim + "="
                 + nonDelimStr + "%3F");
         checkNoEncode(method, "{s&?df}");

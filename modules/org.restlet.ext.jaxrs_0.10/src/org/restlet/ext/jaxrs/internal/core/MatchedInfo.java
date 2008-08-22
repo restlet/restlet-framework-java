@@ -33,7 +33,7 @@ import java.util.List;
 
 import org.restlet.ext.jaxrs.internal.util.EncodeOrCheck;
 
-class AncestorInfo {
+class MatchedInfo {
 
     /**
      * 
@@ -60,7 +60,7 @@ class AncestorInfo {
      * @param urisEncoded
      * @param resources
      */
-    public AncestorInfo(List<String> urisEncoded, List<Object> resources) {
+    public MatchedInfo(List<String> urisEncoded, List<Object> resources) {
         this.urisEncoded = Arrays.asList(urisEncoded
                 .toArray(EMPTY_STRING_ARRAY));
         this.resources = Arrays.asList(resources.toArray());

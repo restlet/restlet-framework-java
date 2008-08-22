@@ -45,7 +45,7 @@ import org.restlet.data.Response;
 import org.restlet.ext.jaxrs.internal.util.Util;
 
 /**
- * Provider for {@link String}s. Could also write other {@link CharSequence}s.
+ * ProviderWrapper for {@link String}s. Could also write other {@link CharSequence}s.
  * 
  * @author Stephan Koops
  */

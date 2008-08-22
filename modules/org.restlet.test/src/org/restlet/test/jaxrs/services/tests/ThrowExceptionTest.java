@@ -42,8 +42,8 @@ public class ThrowExceptionTest extends JaxRsTestCase {
 
     @SuppressWarnings("unchecked")
     @Override
-    protected Set<Class<?>> getProvClasses() {
-        return (Set) Util.createSet(SqlExceptionMapper.class);
+    protected Set<Object> getSingletons() {
+        return (Set) Util.createSet(new SqlExceptionMapper());
     }
 
     @Override

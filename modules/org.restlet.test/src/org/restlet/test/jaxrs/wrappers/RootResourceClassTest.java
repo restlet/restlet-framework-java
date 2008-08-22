@@ -26,12 +26,14 @@
  */
 package org.restlet.test.jaxrs.wrappers;
 
+import java.util.logging.Logger;
+
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
 import org.restlet.ext.jaxrs.internal.wrappers.RootResourceClass;
-import org.restlet.ext.jaxrs.internal.wrappers.WrapperFactory;
+import org.restlet.ext.jaxrs.internal.wrappers.ResourceClasses;
 import org.restlet.test.jaxrs.services.path.IllegalPathService1;
 import org.restlet.test.jaxrs.services.path.IllegalPathService2;
 
@@ -53,16 +55,17 @@ public class RootResourceClassTest extends TestCase {
     }
 
     public void testEncodePath() throws Exception {
-        final WrapperFactory wrapperFactory = new WrapperFactory(
-                new ThreadLocalizedContext(), null, null);
+        final ResourceClasses resourceClasses = new ResourceClasses(
+                new ThreadLocalizedContext(), null, null, Logger
+                        .getAnonymousLogger());
         try {
-            wrapperFactory.getRootResourceClass(IllegalPathService1.class);
+            resourceClasses.getRootClassWrapper(IllegalPathService1.class);
             fail("must not pass");
         } catch (final AssertionFailedError e) {
             // wonderful
         }
-        final RootResourceClass rrc = wrapperFactory
-                .getRootResourceClass(IllegalPathService2.class);
+        final RootResourceClass rrc = resourceClasses
+                .getRootClassWrapper(IllegalPathService2.class);
         assertEquals("/afsdf%3Ause", rrc.getPathRegExp().getPathPattern());
     }
 }

@@ -29,7 +29,7 @@ package org.restlet.ext.jaxrs.internal.wrappers.provider;
 import javax.ws.rs.core.MediaType;
 
 /**
- * Wrapper vor a JAX-RS {@link javax.ws.rs.ext.ContextResolver}.
+ * Wrapper for an initialized JAX-RS {@link javax.ws.rs.ext.ContextResolver}.
  * 
  * @author Stephan Koops
  */

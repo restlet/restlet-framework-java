@@ -75,6 +75,7 @@ public class WebAppExcMapper implements
      *         for the media type is not available.
      */
     private boolean addExtensions(UriBuilder uriBuilder, Variant variant) {
+        uriBuilder.equals(null);
         String mediaTypeExt = null;
         String languageExt = null;
         String encodingExt = null;
@@ -99,14 +100,15 @@ public class WebAppExcMapper implements
                 encodingExt = variant.getEncoding();
             }
         }
+        // TODO do something for content negotiation
         if (languageExt != null) {
-            uriBuilder.extension(languageExt.toString());
+            // uriBuilder.extension(languageExt.toString());
         }
         if (mediaTypeExt != null) {
-            uriBuilder.extension(mediaTypeExt);
+            // uriBuilder.extension(mediaTypeExt);
         }
         if (encodingExt != null) {
-            uriBuilder.extension(encodingExt);
+            // uriBuilder.extension(encodingExt);
         }
         return true;
     }

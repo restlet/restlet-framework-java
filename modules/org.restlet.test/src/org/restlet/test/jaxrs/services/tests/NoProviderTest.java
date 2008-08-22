@@ -28,12 +28,12 @@ package org.restlet.test.jaxrs.services.tests;
 
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.test.jaxrs.services.resources.AncestorTestService;
+import org.restlet.test.jaxrs.services.resources.MatchedTestService;
 import org.restlet.test.jaxrs.services.resources.NoProviderResource;
 
 /**
  * @author Stephan Koops
- * @see AncestorTestService
+ * @see MatchedTestService
  */
 public class NoProviderTest extends JaxRsTestCase {
 

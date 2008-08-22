@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.ws.rs.core.ApplicationConfig;
+import javax.ws.rs.core.Application;
 
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Cookie;
@@ -62,34 +62,6 @@ public class HttpHeaderTest extends JaxRsTestCase {
 
     public static void main(String[] args) throws Exception {
         new HttpHeaderTest().runServerUntilKeyPressed();
-    }
-
-    /**
-     * @return
-     */
-    protected ApplicationConfig getAppConfig() {
-        final ApplicationConfig appConfig = new ApplicationConfig() {
-            @Override
-            public Map<String, javax.ws.rs.core.MediaType> getMediaTypeMappings() {
-                final Map<String, javax.ws.rs.core.MediaType> mediaTypeMapping = new HashMap<String, javax.ws.rs.core.MediaType>();
-                mediaTypeMapping.put("txt", TEXT_PLAIN_TYPE);
-                mediaTypeMapping.put("html", TEXT_HTML_TYPE);
-                mediaTypeMapping.put("xml", APPLICATION_XML_TYPE);
-                return mediaTypeMapping;
-            }
-
-            @Override
-            public Set<Class<?>> getProviderClasses() {
-                return (Set) getProvClasses();
-            }
-
-            @Override
-            @SuppressWarnings("unchecked")
-            public Set<Class<?>> getResourceClasses() {
-                return (Set) Collections.singleton(getRootResourceClass());
-            }
-        };
-        return appConfig;
     }
 
     @Override

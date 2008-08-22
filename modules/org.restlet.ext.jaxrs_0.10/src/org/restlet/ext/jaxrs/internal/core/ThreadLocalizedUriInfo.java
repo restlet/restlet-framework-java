@@ -44,7 +44,7 @@ import javax.ws.rs.core.UriInfo;
  */
 public class ThreadLocalizedUriInfo implements UriInfo {
 
-    private final ThreadLocal<AncestorInfo> ancestorInfos = new ThreadLocal<AncestorInfo>();
+    private final ThreadLocal<MatchedInfo> matchedInfos = new ThreadLocal<MatchedInfo>();
 
     private final ThreadLocalizedContext tlContext;
 
@@ -58,25 +58,25 @@ public class ThreadLocalizedUriInfo implements UriInfo {
     }
 
     /**
-     * @return the AncestorInfo with the current data from the
+     * @return the MatchedInfo with the current data from the
      *         {@link CallContext}.
      * @throws IllegalStateException
      *             if no CallContext could be loaded.
      */
-    private AncestorInfo createAncestorInfo() throws IllegalStateException {
+    private MatchedInfo createAncestorInfo() throws IllegalStateException {
         final CallContext callContext = getCallContext();
-        return new AncestorInfo(callContext.getAncestorResourceURIs(),
-                callContext.getAncestorResources());
+        return new MatchedInfo(callContext.getMatchedURIs(),
+                callContext.getMatchedResources());
     }
 
-    private AncestorInfo get() throws IllegalStateException {
-        AncestorInfo ancestorInfo = this.ancestorInfos.get();
-        if (ancestorInfo != null) {
-            return ancestorInfo;
+    private MatchedInfo get() throws IllegalStateException {
+        MatchedInfo matchedInfo = this.matchedInfos.get();
+        if (matchedInfo != null) {
+            return matchedInfo;
         }
-        ancestorInfo = createAncestorInfo();
-        this.ancestorInfos.set(ancestorInfo);
-        return ancestorInfo;
+        matchedInfo = createAncestorInfo();
+        this.matchedInfos.set(matchedInfo);
+        return matchedInfo;
     }
 
     /**
@@ -99,18 +99,18 @@ public class ThreadLocalizedUriInfo implements UriInfo {
 
     /**
      * @return
-     * @see JaxRsUriInfo#getAncestorResources()
-     * @see UriInfo#getAncestorResources()
+     * @see JaxRsUriInfo#getMatchedResources()
+     * @see UriInfo#getMatchedResources()
      */
-    public List<Object> getAncestorResources() {
+    public List<Object> getMatchedResources() {
         return get().getResources();
     }
 
     /**
      * @return
-     * @see UriInfo#getAncestorResourceURIs()
+     * @see UriInfo#getMatchedURIs()
      */
-    public List<String> getAncestorResourceURIs() {
+    public List<String> getMatchedURIs() {
         return get().getUris(true);
     }
 
@@ -120,7 +120,7 @@ public class ThreadLocalizedUriInfo implements UriInfo {
      * @see JaxRsUriInfo#getAncestorResourceURIs(boolean)
      * @see UriInfo#getAncestorResourceURIs(boolean)
      */
-    public List<String> getAncestorResourceURIs(boolean decode) {
+    public List<String> getMatchedURIs(boolean decode) {
         return get().getUris(decode);
     }
 
@@ -250,10 +250,10 @@ public class ThreadLocalizedUriInfo implements UriInfo {
     }
 
     /**
-     * Removes the AncestorInfo for the current thread.
+     * Removes the MatchedInfo for the current thread.
      */
     public void reset() {
-        this.ancestorInfos.remove();
+        this.matchedInfos.remove();
     }
 
     /**
@@ -267,7 +267,7 @@ public class ThreadLocalizedUriInfo implements UriInfo {
      */
     public void saveStateForCurrentThread(boolean saveState) {
         if (saveState) {
-            this.ancestorInfos.set(createAncestorInfo());
+            this.matchedInfos.set(createAncestorInfo());
         } else {
             reset();
         }

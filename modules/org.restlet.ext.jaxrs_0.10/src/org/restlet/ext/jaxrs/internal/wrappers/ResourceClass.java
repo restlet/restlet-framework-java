@@ -116,7 +116,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      *                The logger to log warnings, if the class is not valid.
      * @throws MissingAnnotationException
      * @throws IllegalArgumentException
-     * @see WrapperFactory#getResourceClass(Class)
+     * @see ResourceClasses#getResourceClass(Class)
      */
     ResourceClass(Class<?> jaxRsClass, ThreadLocalizedContext tlContext,
             JaxRsProviders jaxRsProviders,
@@ -134,28 +134,25 @@ public class ResourceClass extends AbstractJaxRsWrapper {
      * {@link RootResourceClass}.
      * 
      * @param jaxRsClass
+     * @param jaxRsProviders
+     *                all entity providers
      * @param tlContext
      *                the {@link ThreadLocalizedContext} of the
      *                {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
-     * @param jaxRsProviders
-     *                all entity providers
      * @param extensionBackwardMapping
      *                the extension backward mapping
      * @param logger
-     * @param sameLogger
-     *                the subclass RootResourceClass must call this constructor.
-     *                This Object is ignored.
      * @throws IllegalArgumentException
      * @throws IllegalPathOnClassException
      * @throws MissingAnnotationException
      *                 if &#64;{@link Path} is missing on the jaxRsClass
-     * @see WrapperFactory#getResourceClass(Class)
+     * @see ResourceClasses#getResourceClass(Class)
      */
-    protected ResourceClass(Class<?> jaxRsClass,
-            ThreadLocalizedContext tlContext, JaxRsProviders jaxRsProviders,
-            ExtensionBackwardMapping extensionBackwardMapping, Logger logger,
-            Logger sameLogger) throws IllegalArgumentException,
-            IllegalPathOnClassException, MissingAnnotationException {
+    protected ResourceClass(Class<?> jaxRsClass, JaxRsProviders jaxRsProviders,
+            ThreadLocalizedContext tlContext,
+            ExtensionBackwardMapping extensionBackwardMapping, Logger logger)
+            throws IllegalArgumentException, IllegalPathOnClassException,
+            MissingAnnotationException {
         super(PathRegExp.createForClass(jaxRsClass));
         this.leaveEncoded = jaxRsClass.isAnnotationPresent(Encoded.class);
         this.jaxRsClass = jaxRsClass;
@@ -424,8 +421,8 @@ public class ResourceClass extends AbstractJaxRsWrapper {
                             logger.log(Level.WARNING, message, e);
                             continue;
                         } catch (final IllegalParamTypeException e) {
-                            String message = "Ignore method " + execMethod + ": "
-                                    + e.getMessage();
+                            String message = "Ignore method " + execMethod
+                                    + ": " + e.getMessage();
                             logger.log(Level.WARNING, message, e);
                             continue;
                         }

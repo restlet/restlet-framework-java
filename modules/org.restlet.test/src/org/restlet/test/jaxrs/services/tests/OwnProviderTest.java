@@ -31,21 +31,21 @@ import java.util.Set;
 import org.restlet.data.MediaType;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.test.jaxrs.services.providers.CrazyTypeProvider;
+import org.restlet.test.jaxrs.services.providers.TextCrazyPersonProvider;
 import org.restlet.test.jaxrs.services.resources.OwnProviderTestService;
 import org.restlet.test.jaxrs.util.TestUtils;
 
 /**
  * @author Stephan Koops
- * @see CrazyTypeProvider
+ * @see TextCrazyPersonProvider
  * @see OwnProviderTestService
  */
 public class OwnProviderTest extends JaxRsTestCase {
 
     @Override
     @SuppressWarnings("all")
-    public Set<Class<?>> getProvClasses() {
-        return (Set) TestUtils.createSet(CrazyTypeProvider.class);
+    public Set<Object> getSingletons() {
+        return (Set) TestUtils.createSet(new TextCrazyPersonProvider());
     }
 
     @Override
@@ -60,7 +60,7 @@ public class OwnProviderTest extends JaxRsTestCase {
         final Response response = get();
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEqualMediaType(new MediaType("application/crazyType"), response);
+        assertEqualMediaType(new MediaType("text/crazy-person"), response);
         final String actualEntity = response.getEntity().getText();
         final String expectedEntity = "abc def is crazy.\nHeader value for name h1 is h1v";
         assertEquals(expectedEntity, actualEntity);

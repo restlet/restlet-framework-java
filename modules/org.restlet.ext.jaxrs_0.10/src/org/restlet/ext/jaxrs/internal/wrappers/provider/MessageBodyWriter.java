@@ -38,7 +38,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import org.restlet.data.MediaType;
 
 /**
- * Interface to access a wrapped a {@link javax.ws.rs.ext.MessageBodyWriter}
+ * Interface to access a wrapped an initialized {@link javax.ws.rs.ext.MessageBodyWriter}
  * 
  * @author Stephan Koops
  */
