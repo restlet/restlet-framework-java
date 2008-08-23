@@ -698,7 +698,8 @@ public class ParameterList {
         @Override
         public Object getParamValue() {
             final CallContext callContext = this.tlContext.get();
-            // LATER @PathParam(...) List<String> (see PathParamTest.testGet3())
+            // TODO regexp in @Path: @PathParam(...) List<String> 
+            // (see PathParamTest.testGet3())
             if (this.convertTo.equals(PathSegment.class)) {
                 if (this.collType == null) { // no collection parameter
                     final String pathSegmentEnc = callContext

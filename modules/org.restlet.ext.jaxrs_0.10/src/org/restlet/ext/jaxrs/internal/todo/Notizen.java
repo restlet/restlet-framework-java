@@ -33,20 +33,18 @@ package org.restlet.ext.jaxrs.internal.todo;
  */
 public class Notizen {
     
-    // TODO HeaderDelegate for Date; problem: different date formats required.
-
     // REQUEST javadoc of attribute setters of CacheControl does not ease it to
     // use the class
 
     // REQUEST could the implementation see, what is required to add
     // after precondition evaluating into the ResponseBuilder
 
-    // LATER @Path(limited=false) effects only trailing values; implement when
-    // @Path template matching is ready
-
     // TESTEN what happens, if ".." or "." in @Path?
 
     // TODO test again Jersey Implementation.
+    
+    // TODO test, if the URIs are normaized, see spec, sect. 3.7.1 "Request
+    // Preprocessing"
 
     // TESTEN *ExceptionWriter, see JSR311-dev-mail 1225
     // https://jsr311.dev.java.net/servlets/ReadMsg?list=dev&msgNo=1225
