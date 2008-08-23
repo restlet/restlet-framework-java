@@ -94,7 +94,6 @@ public class EmployeeResource {
         // set department uri
         final UriBuilder departmentUB = uriInfo.getBaseUriBuilder();
         departmentUB.segment("departments", "{depId}");
-        // LATER departmentUB.extension(uriInfo.getPathExtension());
         final String department = employee.getDepartment();
         employee.setDepartmentUri(departmentUB.build(department));
 

@@ -103,7 +103,6 @@ public class EmployeesResource {
         // set detail URIs
         final UriBuilder uriBuilder = this.uriInfo.getRequestUriBuilder();
         uriBuilder.path("{staffNo}");
-        // LATER uriBuilder.extension(uriInfo.getPathExtension());
         for (final SmallEmployee employee : employees) {
             employee.setDetails(uriBuilder.build(employee.getStaffNo()));
         }
