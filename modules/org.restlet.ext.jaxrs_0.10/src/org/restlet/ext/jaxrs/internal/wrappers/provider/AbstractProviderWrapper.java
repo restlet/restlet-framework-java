@@ -118,7 +118,7 @@ abstract class AbstractProviderWrapper implements ProviderWrapper {
     @Override
     public abstract int hashCode();
 
-    // LATER before a call of a message body reader or writer the current state
+    // TODO before a call of a message body reader or writer the current state
     // of the matched resources and URIs must be stored for the current thread.
 
     /**

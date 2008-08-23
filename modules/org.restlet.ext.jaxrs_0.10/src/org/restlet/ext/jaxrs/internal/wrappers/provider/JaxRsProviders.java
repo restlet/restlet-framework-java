@@ -107,7 +107,7 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
 
     private final List<ProviderWrapper> messageBodyWriterWrappers;
 
-    private final ObjectFactory objectFactory;
+    private volatile ObjectFactory objectFactory;
 
     private final ThreadLocalizedContext tlContext;
 
@@ -263,10 +263,10 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
      * @return the created Response
      * @throws NullPointerException
      *                 if <code>null</code> is given
+     * @see ExceptionMapper#toResponse(Object)
      */
     @SuppressWarnings("unchecked")
     public Response convert(Throwable cause) {
-        // TODO update javadoc in this file and upate the code according to it.
         ExceptionMapper mapper = getExceptionMapper(cause.getClass());
         if (mapper == null) {
             if (cause instanceof RuntimeException)
@@ -415,12 +415,10 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
     /**
      * Init all providers. If an error for one provider occurs, this provider is
      * ignored and the next provider initialized.
-     * 
      * @param tlContext
      * @param extensionBackwardMapping
      */
-    public void initAll(ThreadLocalizedContext tlContext,
-            ExtensionBackwardMapping extensionBackwardMapping) {
+    public void initAll() {
         for (final ProviderWrapper provider : new ArrayList<ProviderWrapper>(
                 this.all)) {
             try {
@@ -485,5 +483,13 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
                 mbws.add(mbw);
         }
         return new MessageBodyWriterSubSet(mbws);
+    }
+
+    /**
+     * Sets the ObjectFactory
+     * @param objectFactory
+     */
+    public void setObjectFactory(ObjectFactory objectFactory) {
+        this.objectFactory = objectFactory;
     }
 }

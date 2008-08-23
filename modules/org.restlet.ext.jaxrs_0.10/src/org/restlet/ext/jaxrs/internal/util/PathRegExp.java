@@ -123,11 +123,11 @@ public class PathRegExp {
      */
     private static String getPathPattern(Path path)
             throws IllegalArgumentException, IllegalPathException {
-        // LATER the @Path could include reg exps
+        // TODO regexp in @Path
         if (path == null) {
             throw new IllegalArgumentException("The path must not be null");
         }
-        // LATER @Path("{p}/abc/{p}") is allowed and p may be != p
+        // TODO regexp in @Path: @Path("{p}/abc/{p}") is allowed, p may be != p
         final String pathPattern = Util.getPathTemplate(path);
         if (pathPattern.startsWith("/")) {
             return pathPattern;

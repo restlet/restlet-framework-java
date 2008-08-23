@@ -149,7 +149,6 @@ public class SingletonProvider extends AbstractProviderWrapper implements
     public boolean isReadable(Class<?> type, Type genericType,
             Annotation[] annotations) {
         try {
-            // TODO rework, if I know, how per request providers should be init
             return this.getJaxRsReader().isReadable(type, genericType, annotations);
         } catch (NullPointerException e) {
             if (genericType == null || annotations == null) {
@@ -178,7 +177,6 @@ public class SingletonProvider extends AbstractProviderWrapper implements
     public boolean isWriteable(Class<?> type, Type genericType,
             Annotation[] annotations) {
         try {
-            // TODO rework, if I know, how per request providers should be init
             return this.getJaxRsWriter().isWriteable(type, genericType, annotations);
         } catch (NullPointerException e) {
             if (genericType == null || annotations == null) {

@@ -26,6 +26,8 @@
  */
 package org.restlet.ext.jaxrs.internal.spi;
 
+import java.util.Date;
+
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.Cookie;
@@ -63,18 +65,18 @@ public class RuntimeDelegateImpl extends javax.ws.rs.ext.RuntimeDelegate {
 
     /**
      * Obtain an instance of a HeaderDelegate for the supplied class. An
-     * implementation is required to support the following classes: Cookie,
-     * CacheControl, EntityTag, NewCookie, MediaType.<br>
-     * Will be called by this classes one times for each class.
+     * implementation is required to support the following values for type:
+     * Cookie, CacheControl, EntityTag, NewCookie, MediaType, Date.
      * 
+     * @param type
+     *                the class of the header
+     * @return an instance of HeaderDelegate for the supplied type
      * @see javax.ws.rs.ext.RuntimeDelegate#createHeaderDelegate(Class)
      */
     @Override
     @SuppressWarnings("unchecked")
     public <T> HeaderDelegate createHeaderDelegate(Class<T> type)
             throws IllegalArgumentException {
-        // TODO is it useful to require a HeaderDelegate for Date? Different
-        // headers need different date formats
         if (type.equals(Cookie.class)) {
             return new CookieHeaderDelegate();
         }
@@ -89,6 +91,9 @@ public class RuntimeDelegateImpl extends javax.ws.rs.ext.RuntimeDelegate {
         }
         if (type.equals(MediaType.class)) {
             return new MediaTypeHeaderDelegate();
+        }
+        if (type.equals(Date.class)) {
+            return new DateHeaderDelegate();
         }
         throw new IllegalArgumentException(
                 "This method supports only the Types Cookie, CacheControl, EntityTag, NewCookie and MediaType");

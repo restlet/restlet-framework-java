@@ -303,7 +303,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
             throw new IllegalArgumentException(
                     "The new URI part must not be null");
         }
-        
+
         final StringBuilder newUri;
         if (this.matchedURIs.isEmpty())
             newUri = new StringBuilder();
@@ -583,8 +583,6 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * @see javax.ws.rs.core.HttpHeaders#getAcceptableLanguages()
      */
     public List<Locale> getAcceptableLanguages() {
-        // TODO sorted according to their q-value, with highest preference
-        // first.
         if (this.acceptedLanguages == null) {
             final SortedMetadata<Language> accLangages = SortedMetadata
                     .getForLanguages(this.request.getClientInfo()
@@ -604,8 +602,6 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * @see HttpHeaders#getAcceptableMediaTypes()
      */
     public List<MediaType> getAcceptableMediaTypes() {
-        // TODO sorted according to their q-value, with highest preference
-        // first.
         if (this.acceptedMediaTypes == null) {
             final List<MediaType> accMediaTypes = new ArrayList<MediaType>();
             for (final org.restlet.data.MediaType mediaType : this.accMediaTypes) {

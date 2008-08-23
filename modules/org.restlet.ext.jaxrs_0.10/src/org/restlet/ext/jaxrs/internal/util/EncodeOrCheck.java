@@ -289,7 +289,7 @@ public class EncodeOrCheck {
      */
     public static CharSequence fullMatrix(CharSequence matrix)
             throws IllegalArgumentException {
-        return fullQueryOrMatrix(matrix, ';', "%20", true); // TODO 
+        return fullQueryOrMatrix(matrix, ';', "%20", true); 
     }
 
     /**

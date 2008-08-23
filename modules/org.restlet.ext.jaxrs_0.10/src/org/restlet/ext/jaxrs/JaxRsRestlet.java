@@ -140,10 +140,6 @@ public class JaxRsRestlet extends Restlet {
 
     private final JaxRsProviders providers;
 
-    private final ExtensionBackwardMapping extensionBackwardMapping;
-
-    // TODO vielleicht gar nicht mehr hier benötigt.
-
     private final ResourceClasses resourceClasses;
 
     /**
@@ -199,13 +195,13 @@ public class JaxRsRestlet extends Restlet {
     public JaxRsRestlet(Context context, RoleChecker roleChecker,
             MetadataService metadataService) {
         super(context);
-        this.extensionBackwardMapping = new ExtensionBackwardMapping(
+        final ExtensionBackwardMapping extensionBackwardMapping = new ExtensionBackwardMapping(
                 metadataService);
         this.excHandler = new ExceptionHandler(getLogger());
         this.providers = new JaxRsProviders(this.objectFactory, this.tlContext,
-                this.extensionBackwardMapping, getLogger());
+                extensionBackwardMapping, getLogger());
         this.resourceClasses = new ResourceClasses(this.tlContext,
-                this.providers, this.extensionBackwardMapping, getLogger());
+                this.providers, extensionBackwardMapping, getLogger());
         this.loadDefaultProviders();
         if (roleChecker != null)
             this.setRoleChecker(roleChecker);
@@ -257,7 +253,8 @@ public class JaxRsRestlet extends Restlet {
         boolean used = false;
         if (Util.isRootResourceClass(jaxRsClass)) {
             used = resourceClasses.addRootClass(jaxRsClass);
-        } else if (Util.isProvider(jaxRsClass)) {
+        }
+        if (Util.isProvider(jaxRsClass)) {
             if (providers.addClass(jaxRsClass))
                 used = true;
         }
@@ -298,7 +295,6 @@ public class JaxRsRestlet extends Restlet {
      */
     private boolean addSingleton(Object jaxRsObject, boolean defaultProvider)
             throws IllegalArgumentException {
-        // TODO check, if the class is already available as class; see spec
         if (jaxRsObject == null)
             throw new IllegalArgumentException(
                     "The JAX-RS object to add must not be null");
@@ -323,7 +319,7 @@ public class JaxRsRestlet extends Restlet {
 
     @Override
     public void start() throws Exception {
-        providers.initAll(tlContext, extensionBackwardMapping);
+        providers.initAll();
         super.start();
     }
 
@@ -1082,5 +1078,6 @@ public class JaxRsRestlet extends Restlet {
      */
     public void setObjectFactory(ObjectFactory objectFactory) {
         this.objectFactory = objectFactory;
+        this.providers.setObjectFactory(objectFactory);
     }
 }

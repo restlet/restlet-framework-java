@@ -53,8 +53,7 @@ import org.restlet.service.TunnelService;
  * To set up a JAX-RS runtime environment you should instantiate a
  * {@link JaxRsApplication#JaxRsApplication(Context)}.
  * <ul>
- * <li>Add your {@link Application}(s) by calling
- * {@link #add(Application)}.</li>
+ * <li>Add your {@link Application}(s) by calling {@link #add(Application)}.</li>
  * <li>If you need authentication, set a {@link Guard} and perhaps an
  * {@link RoleChecker}, see {@link #setGuard(Guard)} or
  * {@link #setAuthentication(Guard, RoleChecker)}.</li>
@@ -180,14 +179,19 @@ public class JaxRsApplication extends org.restlet.Application {
         final Set<Class<?>> classes = appConfig.getClasses();
         final Set<Object> singletons = appConfig.getSingletons();
         boolean everythingFine = true;
+        if (singletons != null) {
+            for (final Object singleton : singletons) {
+                // LATER test: check, if a singelton also available in the
+                // classes is ignored
+                if (singleton != null
+                        && !classes.contains(singleton.getClass())) {
+                    everythingFine &= jaxRsRestlet.addSingleton(singleton);
+                }
+            }
+        }
         if (classes != null) {
             for (final Class<?> clazz : classes) {
                 everythingFine &= jaxRsRestlet.addClass(clazz);
-            }
-        }
-        if (singletons != null) {
-            for (final Object singleton : singletons) {
-                everythingFine &= jaxRsRestlet.addSingleton(singleton);
             }
         }
         this.appConfigAttached = true;

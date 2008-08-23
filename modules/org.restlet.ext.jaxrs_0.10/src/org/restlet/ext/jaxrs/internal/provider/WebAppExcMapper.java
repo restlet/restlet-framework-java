@@ -100,7 +100,7 @@ public class WebAppExcMapper implements
                 encodingExt = variant.getEncoding();
             }
         }
-        // TODO do something for content negotiation
+        // LATER do something for content negotiation
         if (languageExt != null) {
             // uriBuilder.extension(languageExt.toString());
         }

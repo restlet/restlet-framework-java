@@ -52,7 +52,7 @@ public class ResponseImpl extends Response {
      * Creates a new Response Instance.
      * 
      * @param status
-     *            the status code for the new response.
+     *                the status code for the new response.
      */
     public ResponseImpl(int status) {
         this.status = status;
@@ -75,11 +75,14 @@ public class ResponseImpl extends Response {
     }
 
     /**
+     * Get metadata associated with the response as a map. The returned map may
+     * be subsequently modified by the JAX-RS runtime.
+     * 
+     * @return response metadata as a map
      * @see javax.ws.rs.core.Response#getMetadata()
      */
     @Override
     public MultivaluedMap<String, Object> getMetadata() {
-        // TODO see current javadoc
         if (this.metadata == null) {
             this.metadata = new MultivaluedMapImpl<String, Object>();
         }
