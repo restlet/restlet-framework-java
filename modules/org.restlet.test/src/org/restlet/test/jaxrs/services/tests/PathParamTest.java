@@ -59,7 +59,7 @@ public class PathParamTest extends JaxRsTestCase {
 
     /** @see PathParamTestService#checkUnmodifiable(java.util.List) */
     public void htestCheckUnmodifiable() {
-        // LATER @PathParam(..) PathSegment testen
+        // TODO regexp in @Path: @PathParam(..) PathSegment testen
         final Response response = get(createReference("4711/checkUnmodifiable/1667"));
         assertTrue(
                 "The List annotated with @PathParam must not be modifiable. Status is "

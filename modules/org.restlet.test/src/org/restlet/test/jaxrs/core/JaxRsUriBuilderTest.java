@@ -111,7 +111,8 @@ public class JaxRsUriBuilderTest extends TestCase {
      * @param expectedQuery
      * @param actualUriBuilder
      * @param compareResult
-     *                TODO
+     *                if true, also the builded URIs are compared (this causes
+     *                trouble sometimes, e.g. with "/").
      * @param expectedPathSegments
      */
     private static void assertEqualUriBuilder(String expectedScheme,

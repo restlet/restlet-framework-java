@@ -70,10 +70,24 @@ public class HttpHeaderTest extends JaxRsTestCase {
     }
 
     public void testAccMediaType() throws IOException {
-        final Response response = get("accMediaTypes", MediaType.TEXT_PLAIN);
+        Response response = get("accMediaTypes", MediaType.TEXT_PLAIN);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("[" + MediaType.TEXT_PLAIN.toString() + "]", response
                 .getEntity().getText());
+
+        ClientInfo clientInfo = new ClientInfo();
+        clientInfo.getAcceptedMediaTypes().add(
+                new Preference<MediaType>(MediaType.TEXT_PLAIN, 0.5f));
+        clientInfo.getAcceptedMediaTypes().add(
+                new Preference<MediaType>(MediaType.TEXT_HTML, 0.8f));
+        clientInfo.getAcceptedMediaTypes().add(
+                new Preference<MediaType>(MediaType.TEXT_XML, 0.2f));
+        response = get("accMediaTypes", clientInfo);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("[" + MediaType.TEXT_HTML.toString() + ", "
+                + MediaType.TEXT_PLAIN.toString() + ", "
+                + MediaType.TEXT_XML.toString() + "]", response.getEntity()
+                .getText());
     }
 
     public void testCookies() throws IOException {

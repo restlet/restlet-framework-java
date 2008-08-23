@@ -41,7 +41,6 @@ import org.restlet.test.jaxrs.services.resources.GenericTypeResource;
  * @see GenericTypeMBW
  */
 public class GenericTypeTestCase extends JaxRsTestCase {
-    // LATER add to AllServicesTests
 
     @Override
     @SuppressWarnings("unchecked")

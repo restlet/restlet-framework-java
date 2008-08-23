@@ -46,8 +46,6 @@ import javax.ws.rs.ext.MessageBodyWriter;
 public class MatchedUriTestProvider implements MessageBodyReader<String>,
         MessageBodyWriter<String> {
     
-    // LATER MatchedUriTestProvider, if updated to > 0.9
-    
     @Context
     UriInfo uriInfo;
 
