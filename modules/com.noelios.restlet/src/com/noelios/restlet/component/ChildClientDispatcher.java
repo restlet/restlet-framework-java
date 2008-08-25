@@ -55,6 +55,17 @@ public class ChildClientDispatcher extends TemplateDispatcher {
         super(childContext);
     }
 
+    /**
+     * Transmits the call to the parent component except if the call is internal
+     * as denoted by the {@link Protocol#RIAP} protocol and targets this child
+     * application.
+     * 
+     * 
+     * @param request
+     *            The request to handle.
+     * @param response
+     *            The response to update.
+     */
     @Override
     public void doHandle(Request request, Response response) {
         super.doHandle(request, response);
