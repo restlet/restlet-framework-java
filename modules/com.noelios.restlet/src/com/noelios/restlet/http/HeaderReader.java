@@ -150,9 +150,9 @@ public class HeaderReader {
      * Read the next value of a multi-value header. It skips separator commas
      * and spaces.
      * 
-     * @see <a *
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec2.html#sec2"
-     *      >HTTP * parsing rule</a>
+     * <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec2.html#sec2">HTTP
+     * parsing rule< /a>
+     * 
      * @return The next value or null.
      */
     public String readValue() {

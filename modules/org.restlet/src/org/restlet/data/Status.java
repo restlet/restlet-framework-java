@@ -43,9 +43,9 @@ public final class Status extends Metadata {
      * The request could not be understood by the server due to malformed
      * syntax.
      * 
-     * @see <a *
+     * @see @literal <a
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.1"
-     *      >HTTP * RFC - 10.4.1 400 Bad Request</a>
+     *      >HTTP RFC - 10.4.1 400 Bad Request</a>
      */
     public static final Status CLIENT_ERROR_BAD_REQUEST = new Status(400);
 
@@ -76,7 +76,7 @@ public final class Status extends Metadata {
      * action failed.
      * 
      * @see <a href="http://www.webdav.org/specs/rfc2518.html#STATUS_424">WEBDAV
-     *      * RFC - 10.5 424 Failed Dependency</a>
+     *      * * RFC - 10.5 424 Failed Dependency< /a>
      */
     public static final Status CLIENT_ERROR_FAILED_DEPENDENCY = new Status(424);
 
@@ -115,7 +115,7 @@ public final class Status extends Metadata {
      * involved in another process).
      * 
      * @see <a href="http://www.webdav.org/specs/rfc2518.html#STATUS_423">WEBDAV
-     *      * RFC - 10.4 423 Locked</a>
+     *      * * RFC - 10.4 423 Locked< /a>
      */
     public static final Status CLIENT_ERROR_LOCKED = new Status(423);
 
@@ -241,7 +241,7 @@ public final class Status extends Metadata {
      * contained instructions.
      * 
      * @see <a href="http://www.webdav.org/specs/rfc2518.html#STATUS_422">WEBDAV
-     *      * RFC - 10.3 422 Unprocessable Entity</a>
+     *      * * RFC - 10.3 422 Unprocessable Entity< /a>
      */
     public static final Status CLIENT_ERROR_UNPROCESSABLE_ENTITY = new Status(
             422);
@@ -294,7 +294,7 @@ public final class Status extends Metadata {
      * significant time to complete.
      * 
      * @see <a href="http://www.webdav.org/specs/rfc2518.html#STATUS_102">WEBDAV
-     *      * RFC - 10.1 102 Processing</a>
+     *      * * RFC - 10.1 102 Processing< /a>
      */
     public static final Status INFO_PROCESSING = new Status(102);
 
@@ -408,7 +408,7 @@ public final class Status extends Metadata {
      * successfully complete the request.
      * 
      * @see <a href="http://www.webdav.org/specs/rfc2518.html#STATUS_507">WEBDAV
-     *      * RFC - 10.6 507 Insufficient Storage</a>
+     *      * * RFC - 10.6 507 Insufficient Storage< /a>
      */
     public static final Status SERVER_ERROR_INSUFFICIENT_STORAGE = new Status(
             507);
@@ -480,7 +480,7 @@ public final class Status extends Metadata {
      * contains a set of status codes generated during the method invocation.
      * 
      * @see <a href="http://www.webdav.org/specs/rfc2518.html#STATUS_207">WEBDAV
-     *      * RFC - 10.2 207 Multi-Status</a>
+     *      * * RFC - 10.2 207 Multi-Status< /a>
      */
     public static final Status SUCCESS_MULTI_STATUS = new Status(207);
 
