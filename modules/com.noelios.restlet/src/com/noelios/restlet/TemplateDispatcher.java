@@ -46,14 +46,14 @@ import org.restlet.util.Template;
  * @author Jerome Louvel
  */
 public class TemplateDispatcher extends Uniform {
-    /** The parent context. */
+    /** The context. */
     private volatile Context context;
 
     /**
      * Constructor.
      * 
      * @param context
-     *            The parent context.
+     *            The context.
      */
     public TemplateDispatcher(Context context) {
         this.context = context;
@@ -75,9 +75,9 @@ public class TemplateDispatcher extends Uniform {
     }
 
     /**
-     * Returns the parent context.
+     * Returns the context.
      * 
-     * @return The parent context.
+     * @return The context.
      */
     public Context getContext() {
         return this.context;
