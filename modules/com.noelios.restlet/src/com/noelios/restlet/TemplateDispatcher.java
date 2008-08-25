@@ -60,8 +60,10 @@ public class TemplateDispatcher extends Uniform {
     }
 
     /**
-     * Actually handles the call after resolving any URI template on the
-     * request's target resource reference.
+     * Actually handles the call. Since this method only sets the request's
+     * original reference ({@link Request#getOriginalRef()} with the the
+     * targetted one, it must be overriden by subclasses.
+     * 
      * 
      * @param request
      *            The request to handle.
@@ -90,6 +92,15 @@ public class TemplateDispatcher extends Uniform {
         return getContext().getLogger();
     }
 
+    /**
+     * Handles the call after resolving any URI template on the request's target
+     * resource reference.
+     * 
+     * @param request
+     *            The request to handle.
+     * @param response
+     *            The response to update.
+     */
     @Override
     public void handle(Request request, Response response) {
         // Associate the response to the current thread
