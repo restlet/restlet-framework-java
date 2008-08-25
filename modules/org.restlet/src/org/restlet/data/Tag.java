@@ -56,9 +56,7 @@ public final class Tag extends Metadata {
      *            tag; otherwise it should be surrounded with quotes (e.g.,
      *            "sometag").
      * @return A new tag instance.
-     * @see <a *
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11"
-     *      >HTTP * Entity Tags</a>
+     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11">HTTP Entity Tags</a>
      */
     public static Tag parse(final String httpTag) {
         Tag result = null;
@@ -165,9 +163,7 @@ public final class Tag extends Metadata {
      * Returns tag formatted as an HTTP tag string.
      * 
      * @return The formatted HTTP tag string.
-     * @see <a *
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11"
-     *      >HTTP * Entity Tags</a>
+     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11">HTTP Entity Tags</a>
      */
     public String format() {
         if (getName().equals("*")) {

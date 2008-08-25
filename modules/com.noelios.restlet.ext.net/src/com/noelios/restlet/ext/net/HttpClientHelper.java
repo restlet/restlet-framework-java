@@ -107,7 +107,9 @@ import com.noelios.restlet.http.HttpClientCall;
  * "sun.net.http.retryPost" to "false".
  * 
  * @see Client#getConnectTimeout()
- * @see <a href="http://java.sun.com/j2se/1.5.0/docs/guide/net/index.html">Networking Features</a>
+ * @see <a
+ *      href="http://java.sun.com/j2se/1.5.0/docs/guide/net/index.html">Networking
+ *      Features</a>
  * @author Jerome Louvel
  */
 public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper {

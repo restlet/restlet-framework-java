@@ -40,8 +40,7 @@ public final class CharacterSet extends Metadata {
     /**
      * The ISO/IEC 8859-1 or Latin 1 character set.
      * 
-     * @see <a href="http://en.wikipedia.org/wiki/ISO_8859-1">Wikipedia page<
-     *      /a>
+     * @see <a href="http://en.wikipedia.org/wiki/ISO_8859-1">Wikipedia page</a>
      */
     public static final CharacterSet ISO_8859_1 = new CharacterSet(
             "ISO-8859-1", "ISO/IEC 8859-1 or Latin 1 character set");

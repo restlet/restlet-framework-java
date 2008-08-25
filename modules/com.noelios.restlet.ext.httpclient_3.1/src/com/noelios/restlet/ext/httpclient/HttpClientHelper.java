@@ -197,8 +197,8 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
      * @return The read timeout value.
      */
     public int getReadTimeout() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue("readTimeout",
-                "0"));
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "readTimeout", "0"));
     }
 
     /**

@@ -762,7 +762,7 @@ public final class ByteUtils {
      * As this method uses the InputstreamReader class, the default character
      * set is used for decoding the input stream.
      * 
-     * @see <a * href=
+     * @see <a href=
      *      "http://java.sun.com/j2se/1.5.0/docs/api/java/io/InputStreamReader.html"
      *      >InputStreamReader * class</a>
      * @see #toString(InputStream, CharacterSet)
@@ -778,9 +778,9 @@ public final class ByteUtils {
      * Converts an input stream to a string using the specified character set
      * for decoding the input stream.
      * 
-     * @see <a * href=
+     * @see <a href=
      *      "http://java.sun.com/j2se/1.5.0/docs/api/java/io/InputStreamReader.html"
-     *      >InputStreamReader * class</a>
+     *      >InputStreamReader class</a>
      * @param inputStream
      *            The input stream.
      * @param characterSet
@@ -810,9 +810,9 @@ public final class ByteUtils {
     /**
      * Converts a reader to a string.
      * 
-     * @see <a * href=
+     * @see <a href=
      *      "http://java.sun.com/j2se/1.5.0/docs/api/java/io/InputStreamReader.html"
-     *      >InputStreamReader * class</a>
+     *      >InputStreamReader class</a>
      * @param reader
      *            The characters reader.
      * @return The converted string.

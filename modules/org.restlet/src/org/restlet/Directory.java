@@ -432,7 +432,7 @@ public class Directory extends Finder {
      * based on an optimized public domain implementation provided by Rob
      * Heittman from the Solertium Corporation.
      * 
-     * @see <a href="http://www.davekoelle.com/alphanum.html">The original *
+     * @see <a href="http://www.davekoelle.com/alphanum.html">The original
      *      Alphanum Algorithm from David Koelle</a>
      * @see #setComparator(Comparator)
      */

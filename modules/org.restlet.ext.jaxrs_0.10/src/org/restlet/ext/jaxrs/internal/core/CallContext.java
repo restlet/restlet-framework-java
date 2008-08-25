@@ -444,20 +444,13 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * 
      * @see javax.ws.rs.core.Request#evaluatePreconditions(java.util.Date,
      *      javax.ws.rs.core.EntityTag)
-     * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.3.5">RFC *
-     *      2616, section 10.3.5: Status 304: Not Modiied</a>
-     * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.4.13">RFC *
-     *      2616, section 10.4.13: Status 412: Precondition Failed</a>
-     * @see <a href="http://tools.ietf.org/html/rfc2616#section-13.3">RFC 2616,
-     *      section 13.3: (Caching) Validation Model</a>
-     * @see <a href="http://tools.ietf.org/html/rfc2616#section-14.24">RFC 2616,
-     *      section 14.24: Header "If-Match"</a>
-     * @see <a href="http://tools.ietf.org/html/rfc2616#section-14.25">RFC 2616,
-     *      section 14.25: Header "If-Modified-Since"</a>
-     * @see <a href="http://tools.ietf.org/html/rfc2616#section-14.26">RFC 2616,
-     *      section 14.26: Header "If-None-Match"</a>
-     * @see <a href="http://tools.ietf.org/html/rfc2616#section-14.28">RFC 2616,
-     *      section 14.28: Header "If-Unmodified-Since"</a>
+     * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.3.5">RFC 2616, section 10.3.5: Status 304: Not Modified</a>
+     * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.4.13">RFC 2616, section 10.4.13: Status 412: Precondition Failed</a>
+     * @see <a href="http://tools.ietf.org/html/rfc2616#section-13.3">RFC 2616, section 13.3: (Caching) Validation Model</a>
+     * @see <a href="http://tools.ietf.org/html/rfc2616#section-14.24">RFC 2616, section 14.24: Header "If-Match"</a>
+     * @see <a href="http://tools.ietf.org/html/rfc2616#section-14.25">RFC 2616, section 14.25: Header "If-Modified-Since"</a>
+     * @see <a href="http://tools.ietf.org/html/rfc2616#section-14.26">RFC 2616, section 14.26: Header "If-None-Match"</a>
+     * @see <a href="http://tools.ietf.org/html/rfc2616#section-14.28">RFC 2616, section 14.28: Header "If-Unmodified-Since"</a>
      */
     public ResponseBuilder evaluatePreconditions(Date lastModified,
             EntityTag entityTag) {
