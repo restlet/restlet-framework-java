@@ -204,7 +204,7 @@ public final class Status extends Metadata {
      * request entity (syntactically correct) but was unable to process the
      * contained instructions.
      * 
-     * @see <a href="http://www.webdav.org/specs/rfc2518.html#STATUS_422">WEBDAV RFC - 10.3 422 Unprocessable Entity< /a>
+     * @see <a href="http://www.webdav.org/specs/rfc2518.html#STATUS_422">WEBDAV RFC - 10.3 422 Unprocessable Entity</a>
      */
     public static final Status CLIENT_ERROR_UNPROCESSABLE_ENTITY = new Status(
             422);
@@ -252,7 +252,7 @@ public final class Status extends Metadata {
      * server has a reasonable expectation that the request will take
      * significant time to complete.
      * 
-     * @see <a href="http://www.webdav.org/specs/rfc2518.html#STATUS_102">WEBDAV RFC - 10.1 102 Processing< /a>
+     * @see <a href="http://www.webdav.org/specs/rfc2518.html#STATUS_102">WEBDAV RFC - 10.1 102 Processing</a>
      */
     public static final Status INFO_PROCESSING = new Status(102);
 

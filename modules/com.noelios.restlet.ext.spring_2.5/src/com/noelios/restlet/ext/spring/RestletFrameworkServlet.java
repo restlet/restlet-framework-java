@@ -131,7 +131,7 @@ public class RestletFrameworkServlet extends FrameworkServlet {
      * Exposed so that subclasses may do additional configuration, if necessary,
      * by overriding {@link #initFrameworkServlet()}.
      * 
-     * @return
+     * @return The converter of Servlet calls into Restlet equivalents.
      */
     protected ServletConverter getConverter() {
         return this.converter;
@@ -163,7 +163,7 @@ public class RestletFrameworkServlet extends FrameworkServlet {
      * <p>
      * Uses a simple {@link Context} by default.
      * 
-     * @return
+     * @return A new instance of {@link Context}
      */
     protected Context createContext() {
         return new Context();

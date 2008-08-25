@@ -66,9 +66,8 @@ public class HttpClientConverter extends HttpConverter {
      *            The headers to copy.
      * @param response
      *            The response to update.
-     * @see Engine#copyResponseHeaders(Iterable, Response, Logger)
-     * @see HttpClientCall#copyResponseEntityHeaders(Iterable,
-     *      org.restlet.resource.Representation)
+     * @see Engine#copyResponseHeaders(Iterable, Response)
+     * @see HttpClientCall#copyResponseEntityHeaders(Iterable, org.restlet.resource.Representation)
      */
     public static void copyResponseTransportHeaders(
             Iterable<Parameter> headers, Response response) {

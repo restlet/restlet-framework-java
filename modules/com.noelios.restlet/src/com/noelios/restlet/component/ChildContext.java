@@ -94,8 +94,6 @@ public class ChildContext extends Context {
      * 
      * @param parentContext
      *            The parent context.
-     * @param logger
-     *            The logger instance of use.
      */
     public ChildContext(Context parentContext) {
         this.child = null;

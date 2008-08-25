@@ -1036,7 +1036,7 @@ public class JaxRsRestlet extends Restlet {
      * Returns an unmodifiable set with the attached root resource classes.
      * 
      * @return an unmodifiable set with the attached root resource classes.
-     * @see #addRootResourceClass(Class)
+     * @see RootResourceClass
      */
     public Set<Class<?>> getRootResourceClasses() {
         Set<Class<?>> rrcs = new HashSet<Class<?>>();
