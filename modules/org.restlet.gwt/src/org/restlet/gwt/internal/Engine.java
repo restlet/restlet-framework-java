@@ -208,7 +208,7 @@ public class Engine extends org.restlet.gwt.util.Engine {
                 .hasNext();) {
             final Product product = iterator.next();
             if ((product.getName() == null)
-                    && (product.getName().length() == 0)) {
+                    || (product.getName().length() == 0)) {
                 throw new IllegalArgumentException(
                         "Product name cannot be null.");
             }
