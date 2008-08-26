@@ -67,13 +67,14 @@ import org.w3c.dom.NodeList;
  * that provides a transformation of data via its interface." Roy T. Fielding<br>
  * <br>
  * The configuration of a Component can be done programmatically or by using a
- * XML document. There is a dedicated constructor that accepts an URI reference
- * to such XML document, allowing easy configuration of the list of supported
- * client and server connectors as well as services. In addition, you can add
- * and configure virtual hosts (including the default one). Finally, you can
- * attach applications either using their fully qualified class name or by
- * pointing to a descriptor document (at this time only WADL description are
- * supported, see the WADL Restlet extension for details).<br>
+ * XML document. There are dedicated constructors that accept either an URI
+ * reference to such XML document or a representation of such XML document,
+ * allowing easy configuration of the list of supported client and server
+ * connectors as well as services. In addition, you can add and configure
+ * virtual hosts (including the default one). Finally, you can attach
+ * applications either using their fully qualified class name or by pointing to
+ * a descriptor document (at this time only WADL description are supported, see
+ * the WADL Restlet extension for details).<br>
  * <br>
  * The XML Schema of the configuration files is available both <a
  * href="http://www.restlet.org/schemas/1.1/Component">online</a> and inside the
@@ -103,7 +104,7 @@ import org.w3c.dom.NodeList;
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
  * 
- * @see <a
+ * @see <a 
  *      href="http://roy.gbiv.com/pubs/dissertation/software_arch.htm#sec_1_2_1"
  *      >Source dissertation</a>
  * 
