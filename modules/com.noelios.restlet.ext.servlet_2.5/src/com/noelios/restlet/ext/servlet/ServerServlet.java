@@ -492,12 +492,10 @@ public class ServerServlet extends HttpServlet {
 
             if (isDefaultComponent()) {
                 if (this.application != null) {
-                    if (this.application != null) {
-                        log("[Noelios Restlet Engine] - Attaching application: "
-                                + this.application + " to URI: " + uriPattern);
-                        component.getDefaultHost().attach(uriPattern,
-                                this.application);
-                    }
+                    log("[Noelios Restlet Engine] - Attaching application: "
+                            + this.application + " to URI: " + uriPattern);
+                    component.getDefaultHost().attach(uriPattern,
+                            this.application);
                 }
             } else {
                 // According to the mode, configure correctly the component.
