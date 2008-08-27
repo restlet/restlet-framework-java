@@ -38,8 +38,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.ext.jaxrs.internal.core.CallContext;
 import org.restlet.ext.jaxrs.internal.wrappers.ResourceMethod;
-import org.restlet.ext.jaxrs.internal.wrappers.ResourceMethodOrLocator;
-import org.restlet.ext.jaxrs.internal.wrappers.RootResourceClass;
+import org.restlet.ext.jaxrs.internal.wrappers.RrcOrRml;
 import org.restlet.ext.jaxrs.internal.wrappers.SubResourceLocator;
 
 /**
@@ -67,9 +66,9 @@ public class AlgorithmUtil {
      * 
      * @param matchResult
      * @param callContext
-     *            Contains the encoded template Parameters, that are read from
-     *            the called URI, the Restlet {@link Request} and the Restlet
-     *            {@link Response}.
+     *                Contains the encoded template Parameters, that are read
+     *                from the called URI, the Restlet {@link Request} and the
+     *                Restlet {@link Response}.
      */
     public static void addPathVarsToMap(MatchingResult matchResult,
             CallContext callContext) {
@@ -176,13 +175,13 @@ public class AlgorithmUtil {
      * Never returns null.
      * 
      * @param resourceMethods
-     *            the resourceMethods that provide the required mediaType
+     *                the resourceMethods that provide the required mediaType
      * @param givenMediaType
-     *            The MediaType of the given entity.
+     *                The MediaType of the given entity.
      * @param accMediaTypes
-     *            The accepted MediaTypes
+     *                The accepted MediaTypes
      * @param httpMethod
-     *            The HTTP method of the request.
+     *                The HTTP method of the request.
      * @return Returns the method who best matches the given and accepted media
      *         type in the request, or null
      */
@@ -276,35 +275,51 @@ public class AlgorithmUtil {
 
     /**
      * Implementation of algorithm in JSR-311-Spec, Revision 151, Version
-     * 2008-03-11, Section 3.6, Part 2f+2g
+     * 2008-08-27, Section 3.7.2, Part 1.e and nearly the same part 2f+2g.<br>
+     * Sort E using
+     * <ol>
+     * <li>the number of literal characters in each member as the primary key
+     * (descending order),</li>
+     * <li>the number of capturing groups as a secondary key (descending
+     * order),</li>
+     * <li>the number of capturing groups with non-default regular expressions
+     * (i.e. not ‘([ˆ/]+?)’) as the tertiary key (descending order), and </li>
+     * <li>the source of each member as quaternary key sorting those derived
+     * from T<sub>method</sub> ahead of those derived from T<sub>locator</sub>.</li>
+     * </ol>
      * 
-     * @param eWithMethod
-     *            Collection of Sub-ResourceMethods and SubResourceLocators
-     * @return the resource method or sub resource locator, or null, if the Map
-     *         is null or empty.
+     * @param <R>
+     * 
+     * @param rrcOrRmls
+     *                Collection of Sub-ResourceMethods and SubResourceLocators
+     *                or root resource class wrappers.
+     * @return the resource method or sub resource locator or root resource
+     *         class, or null, if the Map is null or empty.
      */
-    public static ResourceMethodOrLocator getFirstMethOrLocByNumberOfLiteralCharactersAndByNumberOfCapturingGroups(
-            Collection<ResourceMethodOrLocator> eWithMethod) {
-        if ((eWithMethod == null) || eWithMethod.isEmpty()) {
+    public static <R extends RrcOrRml> R getFirstByNoOfLiteralCharsNoOfCapturingGroups(
+            Collection<R> rrcOrRmls) {
+        if ((rrcOrRmls == null) || rrcOrRmls.isEmpty()) {
             return null;
         }
-        final Iterator<ResourceMethodOrLocator> srmlIter = eWithMethod
-                .iterator();
-        ResourceMethodOrLocator bestSrml = srmlIter.next();
-        if (eWithMethod.size() == 1) {
+        final Iterator<R> srmlIter = rrcOrRmls.iterator();
+        R bestSrml = srmlIter.next();
+        if (rrcOrRmls.size() == 1) {
             return bestSrml;
         }
         int bestSrmlChars = Integer.MIN_VALUE;
         int bestSrmlNoCaptGroups = Integer.MIN_VALUE;
-        for (final ResourceMethodOrLocator srml : eWithMethod) {
-            final int srmlNoLitChars = srml.getPathRegExp()
-                    .getNumberOfLiteralChars();
-            final int srmlNoCaptGroups = srml.getPathRegExp()
-                    .getNumberOfCapturingGroups();
+        int bestSrmlNoNonDefCaptGroups = Integer.MIN_VALUE;
+        for (final R srml : rrcOrRmls) {
+            final PathRegExp srmlRegExp = srml.getPathRegExp();
+            final int srmlNoLitChars = srmlRegExp.getNoOfLiteralChars();
+            final int srmlNoCaptGroups = srmlRegExp.getNoOfCapturingGroups();
+            final int srmlNoNonDefCaptGroups = srmlRegExp
+                    .getNoNonDefCaprGroups();
             if (srmlNoLitChars > bestSrmlChars) {
                 bestSrml = srml;
                 bestSrmlChars = srmlNoLitChars;
                 bestSrmlNoCaptGroups = srmlNoCaptGroups;
+                bestSrmlNoNonDefCaptGroups = srmlNoNonDefCaptGroups;
                 continue;
             }
             if (srmlNoLitChars == bestSrmlChars) {
@@ -312,18 +327,28 @@ public class AlgorithmUtil {
                     bestSrml = srml;
                     bestSrmlChars = srmlNoLitChars;
                     bestSrmlNoCaptGroups = srmlNoCaptGroups;
+                    bestSrmlNoNonDefCaptGroups = srmlNoNonDefCaptGroups;
                     continue;
                 }
                 if (srmlNoCaptGroups == bestSrmlNoCaptGroups) {
-                    if ((srml instanceof ResourceMethod)
-                            && (bestSrml instanceof SubResourceLocator)) {
-                        // prefare methods ahead locators
+                    if (srmlNoNonDefCaptGroups > bestSrmlNoNonDefCaptGroups) {
                         bestSrml = srml;
                         bestSrmlChars = srmlNoLitChars;
                         bestSrmlNoCaptGroups = srmlNoCaptGroups;
+                        bestSrmlNoNonDefCaptGroups = srmlNoNonDefCaptGroups;
                         continue;
                     }
-                    // use one the methods
+                    if (srmlNoCaptGroups == bestSrmlNoCaptGroups) {
+                        if ((srml instanceof ResourceMethod)
+                                && (bestSrml instanceof SubResourceLocator)) {
+                            // prefare methods ahead locators
+                            bestSrml = srml;
+                            bestSrmlChars = srmlNoLitChars;
+                            bestSrmlNoCaptGroups = srmlNoCaptGroups;
+                            bestSrmlNoNonDefCaptGroups = srmlNoNonDefCaptGroups;
+                            continue;
+                        }
+                    }
                 }
             }
         }
@@ -331,61 +356,17 @@ public class AlgorithmUtil {
     }
 
     /**
-     * See JSR-311-Spec, Section 2.6 Matching Requests to Resource Methods, item
-     * 1.e
-     * 
-     * @param rrcs
-     *            Collection of root resource classes
-     * @return null, if the Map is null or empty
-     */
-    public static RootResourceClass getFirstRrcByNumberOfLiteralCharactersAndByNumberOfCapturingGroups(
-            Collection<RootResourceClass> rrcs) {
-        if ((rrcs == null) || rrcs.isEmpty()) {
-            return null;
-        }
-        final Iterator<RootResourceClass> rrcIter = rrcs.iterator();
-        RootResourceClass bestRrc = rrcIter.next();
-        if (rrcs.size() == 1) {
-            return bestRrc;
-        }
-        int bestRrcChars = Integer.MIN_VALUE;
-        int bestRrcNoCaptGroups = Integer.MIN_VALUE;
-        for (final RootResourceClass rrc : rrcs) {
-            final int rrcNoLitChars = rrc.getPathRegExp()
-                    .getNumberOfLiteralChars();
-            final int rrcNoCaptGroups = rrc.getPathRegExp()
-                    .getNumberOfCapturingGroups();
-            if (rrcNoLitChars > bestRrcChars) {
-                bestRrc = rrc;
-                bestRrcChars = rrcNoLitChars;
-                bestRrcNoCaptGroups = rrcNoCaptGroups;
-                continue;
-            }
-            if (rrcNoLitChars == bestRrcChars) {
-                if (rrcNoCaptGroups > bestRrcNoCaptGroups) {
-                    bestRrc = rrc;
-                    bestRrcChars = rrcNoLitChars;
-                    bestRrcNoCaptGroups = rrcNoCaptGroups;
-                    continue;
-                }
-                // use one of the classes
-            }
-        }
-        return bestRrc;
-    }
-
-    /**
      * Removes the {@link ResourceMethod}s from the collection, that do not
      * support the given HTTP method.
      * 
      * @param resourceMethods
-     *            the collection of {@link ResourceMethod}s.
+     *                the collection of {@link ResourceMethod}s.
      * @param httpMethod
-     *            the HTTP {@link Method}
+     *                the HTTP {@link Method}
      * @param alsoGet
-     *            if true, also methods suporting GET are included, also if
-     *            another HTTP method is required. It is intended to be used for
-     *            HEAD requests.
+     *                if true, also methods suporting GET are included, also if
+     *                another HTTP method is required. It is intended to be used
+     *                for HEAD requests.
      */
     public static void removeNotSupportedHttpMethod(
             Collection<ResourceMethod> resourceMethods,

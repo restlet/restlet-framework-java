@@ -34,7 +34,7 @@ import org.restlet.ext.jaxrs.internal.util.PathRegExp;
  * 
  * @author Stephan Koops
  */
-public interface ResourceMethodOrLocator {
+public interface ResourceMethodOrLocator extends RrcOrRml {
 
     /**
      * @return returns the name of the java method or sub resource locator

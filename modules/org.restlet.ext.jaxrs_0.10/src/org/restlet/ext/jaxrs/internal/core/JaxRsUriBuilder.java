@@ -196,8 +196,8 @@ public class JaxRsUriBuilder extends UriBuilder {
     public URI build(Object... values) throws IllegalArgumentException,
             UriBuilderException {
         final Template template = new Template(toStringWithCheck(false));
-        return buildUri(template.format(new ArrayVariableResolver(values,
-                true)));
+        return buildUri(template
+                .format(new ArrayVariableResolver(values, true)));
     }
 
     /**
@@ -207,8 +207,8 @@ public class JaxRsUriBuilder extends UriBuilder {
     public URI buildFromEncoded(Object... values)
             throws IllegalArgumentException, UriBuilderException {
         final Template template = new Template(toStringWithCheck(false));
-        return buildUri(template.format(new ArrayVariableResolver(values,
-                false)));
+        return buildUri(template
+                .format(new ArrayVariableResolver(values, false)));
     }
 
     /**
@@ -432,7 +432,7 @@ public class JaxRsUriBuilder extends UriBuilder {
         }
         String newPathSegment;
         try {
-            newPathSegment = Util.getPathTemplate(resource);
+            newPathSegment = Util.getPathTemplateWithoutRegExps(resource);
         } catch (final IllegalPathOnClassException e) {
             throw e.getCause();
         } catch (final MissingAnnotationException e) {
@@ -479,7 +479,7 @@ public class JaxRsUriBuilder extends UriBuilder {
             }
             String path;
             try {
-                path = Util.getPathTemplate(method);
+                path = Util.getPathTemplateWithoutRegExps(method);
             } catch (final IllegalPathOnMethodException e) {
                 throw e.getCause();
             } catch (final MissingAnnotationException e) {
@@ -526,7 +526,7 @@ public class JaxRsUriBuilder extends UriBuilder {
         }
         String validSegment;
         try {
-            validSegment = Util.getPathTemplate(method);
+            validSegment = Util.getPathTemplateWithoutRegExps(method);
         } catch (final MissingAnnotationException e) {
             throw new IllegalArgumentException(e);
         } catch (final IllegalPathException e) {
@@ -554,7 +554,8 @@ public class JaxRsUriBuilder extends UriBuilder {
         if (pathToAppend == null)
             throw new IllegalArgumentException(
                     "the path to append must not be null");
-        CharSequence validPathSegment = EncodeOrCheck.pathSegmentsWithMatrix(pathToAppend, true);
+        CharSequence validPathSegment = EncodeOrCheck.pathSegmentsWithMatrix(
+                pathToAppend, true);
         addValidPathSegment(validPathSegment);
         return this;
     }

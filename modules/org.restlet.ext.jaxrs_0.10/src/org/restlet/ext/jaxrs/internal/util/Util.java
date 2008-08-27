@@ -128,6 +128,12 @@ public class Util {
         }
     };
 
+    private static final byte NAME_READ = 2;
+
+    private static final byte NAME_READ_READY = 3;
+
+    private static final byte NAME_READ_START = 1;
+
     /**
      * The name of the header {@link MultivaluedMap}&lt;String, String&gt; in
      * the attribute map.
@@ -364,6 +370,24 @@ public class Util {
             }
         }
         return set;
+    }
+
+    /**
+     * Checks, if the given clazz implements the given interfaze.
+     * 
+     * @param clazz
+     * @param interfaze
+     * @return
+     */
+    public static boolean doesImplements(Class<?> clazz, Class<?> interfaze) {
+        for (Class<?> interf : clazz.getInterfaces()) {
+            if (interf.equals(interfaze)) {
+                return true;
+            }
+            if (doesImplements(clazz, interf))
+                return true;
+        }
+        return false;
     }
 
     /**
@@ -992,11 +1016,12 @@ public class Util {
      * @throws MissingAnnotationException
      * @throws IllegalArgumentException
      */
-    public static String getPathTemplate(Class<?> resource)
+    public static String getPathTemplateWithoutRegExps(Class<?> resource)
             throws IllegalPathOnClassException, MissingAnnotationException,
             IllegalArgumentException {
         try {
-            return getPathTemplate(Util.getPathAnnotation(resource));
+            return getPathTemplateWithoutRegExps(Util
+                    .getPathAnnotation(resource));
         } catch (final IllegalPathException e) {
             throw new IllegalPathOnClassException(e);
         }
@@ -1013,12 +1038,12 @@ public class Util {
      * @throws IllegalArgumentException
      * @throws MissingAnnotationException
      */
-    public static String getPathTemplate(Method method)
+    public static String getPathTemplateWithoutRegExps(Method method)
             throws IllegalArgumentException, IllegalPathOnMethodException,
             MissingAnnotationException {
         final Path path = getPathAnnotation(method);
         try {
-            return getPathTemplate(path);
+            return getPathTemplateWithoutRegExps(path);
         } catch (final IllegalPathException e) {
             throw new IllegalPathOnMethodException(e);
         }
@@ -1035,24 +1060,47 @@ public class Util {
      * @throws IllegalPathException
      * @see Path#encode()
      */
-    public static String getPathTemplate(Path path) throws IllegalPathException {
-        String pathTemplate = path.value();
-        // if (path.encode()) {
-        try {
-            pathTemplate = EncodeOrCheck.pathWithoutMatrix(pathTemplate)
-                    .toString();
-        } catch (final IllegalArgumentException e) {
-            throw new IllegalPathException(path, e);
+    public static String getPathTemplateWithoutRegExps(final Path path)
+            throws IllegalPathException {
+        return getPathTemplateWithoutRegExps(path.value(), path);
+    }
+
+    /**
+     * @param pathTemplate
+     * @param pathForExcMess
+     * @return
+     * @throws IllegalPathException
+     */
+    public static String getPathTemplateWithoutRegExps(
+            final String pathTemplate, final Path pathForExcMess)
+            throws IllegalPathException {
+        final StringBuilder stb = new StringBuilder();
+        final int l = pathTemplate.length();
+        for (int i = 0; i < l; i++) {
+            final char c = pathTemplate.charAt(i);
+            if (c == '{') {
+                i = processTemplVarname(pathTemplate, i, stb, pathForExcMess);
+            } else if (c == '%') {
+                try {
+                    EncodeOrCheck.processPercent(i, true, pathTemplate, stb);
+                } catch (final IllegalArgumentException e) {
+                    throw new IllegalPathException(pathForExcMess, e);
+                }
+            } else if (c == '}') {
+                throw new IllegalPathException(pathForExcMess,
+                        "'}' is only allowed as "
+                                + "end of a variable name in \"" + pathTemplate
+                                + "\"");
+            } else if (c == ';') {
+                throw new IllegalPathException(pathForExcMess,
+                        "A semicolon is not allowed in a path");
+            } else if (c == '/') {
+                stb.append(c);
+            } else {
+                EncodeOrCheck.encode(c, stb);
+            }
         }
-        // } else {
-        // try {
-        // EncodeOrCheck.checkForInvalidUriChars(pathTemplate, -1,
-        // "path template");
-        // } catch (final IllegalArgumentException iae) {
-        // throw new IllegalPathException(path, iae);
-        // }
-        // }
-        return pathTemplate;
+        return stb.toString();
     }
 
     /**
@@ -1329,6 +1377,73 @@ public class Util {
     }
 
     /**
+     * @param pathTemplate
+     * @param braceIndex
+     * @param stb
+     * @param pathForExcMess
+     * @throws IllegalPathException
+     */
+    private static int processTemplVarname(final String pathTemplate,
+            final int braceIndex, final StringBuilder stb,
+            final Path pathForExcMess) throws IllegalPathException {
+        final int l = pathTemplate.length();
+        stb.append('{');
+        int state = NAME_READ_START;
+        for (int i = braceIndex + 1; i < l; i++) {
+            final char c = pathTemplate.charAt(i);
+            if (c == '{') {
+                throw new IllegalPathException(pathForExcMess,
+                        "A variable must not " + "contain an extra '{' in \""
+                                + pathTemplate + "\"");
+            } else if (c == ' ' || c == '\t') {
+                if (state == NAME_READ)
+                    state = NAME_READ_READY;
+                continue;
+            } else if (c == ':') {
+                if (state == NAME_READ_START) {
+                    throw new IllegalPathException(pathForExcMess,
+                            "The variable name at position must not be null at "
+                                    + braceIndex + " of \"" + pathTemplate
+                                    + "\"");
+                }
+                if (state == NAME_READ || state == NAME_READ_READY) {
+                    for (int j = i; j < l; j++) {
+                        if (pathTemplate.charAt(j) == '}') {
+                            stb.append('}');
+                            return j;
+                        }
+                    }
+                    throw new IllegalPathException(pathForExcMess,
+                            "No '}' found after '{' at position " + braceIndex
+                                    + " of \"" + pathTemplate + "\"");
+                }
+            } else if (c == '}') {
+                if (state == NAME_READ_START) {
+                    throw new IllegalPathException(pathForExcMess,
+                            "The template variable name '{}' is not allowed in "
+                                    + "\"" + pathTemplate + "\"");
+                }
+                stb.append('}');
+                return i;
+            }
+
+            if (state == NAME_READ_START) {
+                state = NAME_READ;
+                stb.append(c);
+            } else if (state == NAME_READ) {
+                stb.append(c);
+            } else {
+                throw new IllegalPathException(pathForExcMess,
+                        "Invalid character found at position " + i + " of \""
+                                + pathTemplate + "\"");
+            }
+        }
+        throw new IllegalPathException(pathForExcMess,
+                "No '}' found after '{' " + "at position " + braceIndex
+                        + " of \"" + pathTemplate + "\"");
+    }
+
+    /**
      * Returns a new {@link List}, which contains all
      * {@link org.restlet.data.MediaType}s of the given List, sorted by it's
      * concreteness, the concrete {@link org.restlet.data.MediaType} at the
@@ -1422,23 +1537,5 @@ public class Util {
             stb.append(object);
         }
         return stb.toString();
-    }
-
-    /**
-     * Checks, if the given clazz implements the given interfaze.
-     * 
-     * @param clazz
-     * @param interfaze
-     * @return
-     */
-    public static boolean doesImplements(Class<?> clazz, Class<?> interfaze) {
-        for (Class<?> interf : clazz.getInterfaces()) {
-            if (interf.equals(interfaze)) {
-                return true;
-            }
-            if(doesImplements(clazz, interf))
-                return true;
-        }
-        return false;
     }
 }

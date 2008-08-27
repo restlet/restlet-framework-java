@@ -26,6 +26,7 @@
  */
 package org.restlet.test.jaxrs.util;
 
+import javax.ws.rs.Path;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MultivaluedMap;
 
@@ -34,6 +35,9 @@ import junit.framework.TestCase;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.ext.jaxrs.internal.core.MultivaluedMapImpl;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathException;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
+import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.ext.jaxrs.internal.util.PathRegExp;
 import org.restlet.ext.jaxrs.internal.util.Util;
@@ -46,6 +50,26 @@ import org.restlet.ext.jaxrs.internal.util.Util;
 public class UtilTests extends TestCase {
 
     private MultivaluedMap<String, Object> httpHeaders;
+
+    /**
+     * @throws IllegalPathException
+     */
+    private void checkPathTemplateWithoutRegExp(String expectedOut, String in)
+            throws IllegalPathException {
+        assertEquals(expectedOut, Util.getPathTemplateWithoutRegExps(in, null));
+    }
+
+    /**
+     * 
+     */
+    private void checkPathTemplateWithoutRegExpIllegal(String in) {
+        try {
+            Util.getPathTemplateWithoutRegExps(in, null);
+            fail("\""+in+"\" must not be allowed");
+        } catch (IllegalPathException e) {
+            // wonderful
+        }
+    }
 
     /**
      * @return the {@link CharacterSet} as String
@@ -91,6 +115,12 @@ public class UtilTests extends TestCase {
         this.httpHeaders = new MultivaluedMapImpl<String, Object>();
     }
 
+    public void testDoesImplements() {
+        assertTrue(Util.doesImplements(String.class, CharSequence.class));
+        assertFalse(Util.doesImplements(CharSequence.class, String.class));
+        assertFalse(Util.doesImplements(Object.class, CharSequence.class));
+    }
+
     public void testGetOfContentType0() {
         assertEquals(null, getCss());
         assertEquals(null, getMts());
@@ -120,9 +150,19 @@ public class UtilTests extends TestCase {
         assertEquals("a/b", getMts());
     }
 
-    public void testDoesImplements() {
-        assertTrue(Util.doesImplements(String.class, CharSequence.class));
-        assertFalse(Util.doesImplements(CharSequence.class, String.class));
-        assertFalse(Util.doesImplements(Object.class, CharSequence.class));
+    public void testGetPathTemplateWithoutRegExp() throws IllegalPathException {
+        checkPathTemplateWithoutRegExp("abc", "abc");
+        checkPathTemplateWithoutRegExp("abc{de}fg", "abc{de}fg");
+        checkPathTemplateWithoutRegExp("abc{de}fg", "abc{de:sd}fg");
+        checkPathTemplateWithoutRegExp("abc{de}fg", "abc{ de}fg");
+        checkPathTemplateWithoutRegExp("abc{de}fg", "abc{ de }fg");
+        checkPathTemplateWithoutRegExp("abc{de}fg", "abc{de }fg");
+        checkPathTemplateWithoutRegExp("abc{de}fg", "abc{de :}fg");
+        checkPathTemplateWithoutRegExp("abc{de}fg", "abc{de : }fg");
+        checkPathTemplateWithoutRegExp("abc{de}fg", "abc{de : yx}fg");
+        checkPathTemplateWithoutRegExp("abc{de}fg", "abc{de : yx }fg");
+        checkPathTemplateWithoutRegExpIllegal("abc{}hjk");
+        checkPathTemplateWithoutRegExpIllegal("abc{:}hjk");
+        checkPathTemplateWithoutRegExpIllegal("abc{:sdf}hjk");
     }
 }

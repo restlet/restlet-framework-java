@@ -28,8 +28,7 @@ package org.restlet.ext.jaxrs;
 
 import static org.restlet.ext.jaxrs.internal.util.AlgorithmUtil.addPathVarsToMap;
 import static org.restlet.ext.jaxrs.internal.util.AlgorithmUtil.getBestMethod;
-import static org.restlet.ext.jaxrs.internal.util.AlgorithmUtil.getFirstMethOrLocByNumberOfLiteralCharactersAndByNumberOfCapturingGroups;
-import static org.restlet.ext.jaxrs.internal.util.AlgorithmUtil.getFirstRrcByNumberOfLiteralCharactersAndByNumberOfCapturingGroups;
+import static org.restlet.ext.jaxrs.internal.util.AlgorithmUtil.getFirstByNoOfLiteralCharsNoOfCapturingGroups;
 import static org.restlet.ext.jaxrs.internal.util.AlgorithmUtil.removeNotSupportedHttpMethod;
 import static org.restlet.ext.jaxrs.internal.util.Util.copyResponseHeaders;
 import static org.restlet.ext.jaxrs.internal.util.Util.getMediaType;
@@ -394,6 +393,8 @@ public class JaxRsRestlet extends Restlet {
         return method;
     }
 
+    // FIXME neues: sortierkreterium explizite RegExp vor ohne (=String)
+
     /**
      * Identifies the root resource class, see JAX-RS-Spec (2008-04-16), section
      * 3.7.2 "Request Matching", Part 1: "Identify the root resource class"
@@ -432,7 +433,7 @@ public class JaxRsRestlet extends Restlet {
         if (eAndCs.isEmpty())
             excHandler.rootResourceNotFound();
         // (e) and (f)
-        RootResourceClass tClass = getFirstRrcByNumberOfLiteralCharactersAndByNumberOfCapturingGroups(eAndCs);
+        RootResourceClass tClass = getFirstByNoOfLiteralCharsNoOfCapturingGroups(eAndCs);
         // (f)
         PathRegExp rMatch = tClass.getPathRegExp();
         MatchingResult matchResult = rMatch.match(u);
@@ -488,7 +489,7 @@ public class JaxRsRestlet extends Restlet {
             if (eWithMethod.isEmpty())
                 excHandler.resourceNotFound();// NICE (o.getClass(), u);
             // (f) and (g) sort E, use first member of E
-            ResourceMethodOrLocator firstMeth = getFirstMethOrLocByNumberOfLiteralCharactersAndByNumberOfCapturingGroups(eWithMethod);
+            ResourceMethodOrLocator firstMeth = getFirstByNoOfLiteralCharsNoOfCapturingGroups(eWithMethod);
 
             PathRegExp rMatch = firstMeth.getPathRegExp();
             MatchingResult matchingResult = rMatch.match(u);
@@ -807,6 +808,7 @@ public class JaxRsRestlet extends Restlet {
      */
     private MediaType determineMediaType(ResourceMethod resourceMethod,
             MessageBodyWriterSubSet mbws) throws WebApplicationException {
+        // TODO wenn MediaType in Response enthalten, nimm den
         CallContext callContext = tlContext.get();
         // 1. Gather the set of producible media types P:
         // (a) + (b)
@@ -1036,7 +1038,6 @@ public class JaxRsRestlet extends Restlet {
      * Returns an unmodifiable set with the attached root resource classes.
      * 
      * @return an unmodifiable set with the attached root resource classes.
-     * @see RootResourceClass
      */
     public Set<Class<?>> getRootResourceClasses() {
         Set<Class<?>> rrcs = new HashSet<Class<?>>();
@@ -1053,7 +1054,7 @@ public class JaxRsRestlet extends Restlet {
     public Collection<String> getRootUris() {
         List<String> uris = new ArrayList<String>();
         for (RootResourceClass rrc : this.resourceClasses.roots())
-            uris.add(rrc.getPathRegExp().getPathPattern());
+            uris.add(rrc.getPathRegExp().getPathTemplateEnc());
         return Collections.unmodifiableCollection(uris);
     }
 

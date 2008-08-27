@@ -28,7 +28,7 @@ package org.restlet.ext.jaxrs.internal.util;
 
 /**
  * This class contains the remaining path for a request. It does not contain any
- * matrix parameter.
+ * matrix parameterand has no '/' t the start.
  * 
  * @author Stephan Koops
  */
@@ -36,13 +36,17 @@ public class RemainingPath implements Comparable<RemainingPath> {
 
     /**
      * removes the matrix parameters from the given uri path.<br>
-     * public for testing only.
+     * Also adds a '/' at the end, if there is no slash at the end.
      * 
      * @param remainingPart
      * @return the given uri path without the matrix parameters.
      */
-    public static String removeMatrixParams(String remainingPart) {
-        final StringBuilder stb = new StringBuilder(remainingPart);
+    private static String removeMatrixParams(String remainingPart) {
+        final StringBuilder stb;
+        if (remainingPart.startsWith("/"))
+            stb = new StringBuilder(remainingPart.substring(1));
+        else
+            stb = new StringBuilder(remainingPart);
         int mpEndPos = Integer.MAX_VALUE;
         for (int i = stb.length() - 1; i >= 0; i--) {
             final char character = stb.charAt(i);
@@ -55,6 +59,8 @@ public class RemainingPath implements Comparable<RemainingPath> {
                 mpEndPos = i;
             }
         }
+        if (stb.length() == 0 || stb.charAt(stb.length() - 1) != '/')
+            stb.append('/');
         return stb.toString();
     }
 

@@ -47,11 +47,11 @@ import org.restlet.test.jaxrs.services.tests.ContextsTest;
  * @author Stephan Koops
  * @see ContextsTest
  */
-@Path("anchestorTest")
+@Path("contextTest")
 public class ContextsTestService {
 
     @Context
-    Providers messageBodyWorkers;
+    Providers providers;
 
     void setProviders(Providers providers) {
         this.contextResolver = providers.getContextResolver(Integer.class,
@@ -68,7 +68,7 @@ public class ContextsTestService {
     @Path("fields")
     public String fieldsAvailable() {
         final StringBuilder stb = new StringBuilder();
-        if (this.messageBodyWorkers != null) {
+        if (this.providers != null) {
             stb.append("providers\n");
         }
         if (this.contextResolver != null) {

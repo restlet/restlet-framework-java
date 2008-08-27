@@ -27,9 +27,12 @@
 package org.restlet.ext.jaxrs.internal.util;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.ws.rs.Path;
 
@@ -37,30 +40,47 @@ import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnMethodException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
-import org.restlet.util.Resolver;
-import org.restlet.util.Template;
-import org.restlet.util.Variable;
 
 /**
  * Wraps a regular expression of a &#64;{@link Path}. Instances are immutable.
+ * The regular expression has no '/' t the start.
  * 
  * @author Stephan Koops
  */
 public class PathRegExp {
 
-    private static Resolver<String> EmptyStringVariableResolver = new Resolver<String>() {
-        @Override
-        public String resolve(String variableName) {
-            return "";
-        }
-    };
+    /**
+     * Default regular expression to use, if no reg exp is given (matches every
+     * character expect '/').
+     * 
+     * @see #defaultRegExp
+     */
+    private static final String DEFAULT_REG_EXP = "[^/]+?";
 
     /**
      * The PathRegExp with an empty path.
      */
-    public static PathRegExp EMPTY = new PathRegExp("");
+    public static final PathRegExp EMPTY;
 
-    private static final String VARNAME_FUER_REST = "org.restlet.jaxrs.rest";
+    private static final byte NAME_READ = 2;
+
+    private static final byte NAME_READ_READY = 3;
+
+    private static final byte NAME_READ_START = 1;
+
+    private static final byte REGEXP_READ = 12;
+
+    private static final byte REGEXP_READ_READY = 13;
+
+    private static final byte REGEXP_READ_START = 11;
+
+    static {
+        try {
+            EMPTY = new PathRegExp("", null);
+        } catch (IllegalPathException e) {
+            throw new RuntimeException("This could not occur", e);
+        }
+    }
 
     /**
      * Creates a {@link PathRegExp} for a root resource class.
@@ -79,10 +99,11 @@ public class PathRegExp {
     public static PathRegExp createForClass(Class<?> rrc)
             throws MissingAnnotationException, IllegalPathOnClassException,
             IllegalArgumentException {
+        final Path path = Util.getPathAnnotation(rrc);
         try {
-            return new PathRegExp(Util.getPathAnnotation(rrc));
-        } catch (final IllegalPathException e) {
-            throw new IllegalPathOnClassException(e);
+            return new PathRegExp(path.value(), path);
+        } catch (IllegalPathException ipe) {
+            throw new IllegalPathOnClassException(ipe);
         }
     }
 
@@ -105,49 +126,34 @@ public class PathRegExp {
             return EMPTY;
         }
         try {
-            return new PathRegExp(pathAnno);
-        } catch (final IllegalPathException e) {
-            throw new IllegalPathOnMethodException(e);
+            return new PathRegExp(pathAnno.value(), pathAnno);
+        } catch (IllegalPathException ipe) {
+            throw new IllegalPathOnMethodException(ipe);
         }
-    }
-
-    /**
-     * get the pattern of the path. Ensures also, that it starts with a "/"
-     * 
-     * @param path
-     * @return
-     * @throws IllegalPathException
-     *                 if the found {@link Path} is invalid.
-     * @throws IllegalArgumentException
-     *                 if the path is null.
-     */
-    private static String getPathPattern(Path path)
-            throws IllegalArgumentException, IllegalPathException {
-        // TODO regexp in @Path
-        if (path == null) {
-            throw new IllegalArgumentException("The path must not be null");
-        }
-        // TODO regexp in @Path: @Path("{p}/abc/{p}") is allowed, p may be != p
-        final String pathPattern = Util.getPathTemplate(path);
-        if (pathPattern.startsWith("/")) {
-            return pathPattern;
-        }
-        return "/" + pathPattern;
     }
 
     private final boolean isEmptyOrSlash;
 
     /** Contains the number of literal chars in this Regular Expression */
-    private Integer noLitChars;
+    private final Integer noLitChars;
 
-    private final String pathPattern;
+    /**
+     * contains the number of capturing groups with regular expressions that are
+     * not the default.
+     * 
+     * @see #DEFAULT_REG_EXP
+     */
+    private int noNonDefaultRegExp = 0;
 
-    private final Template template;
+    private final int noOfCapturingGroups;
 
-    private PathRegExp(Path path) throws IllegalArgumentException,
-            IllegalPathException {
-        this(getPathPattern(path));
-    }
+    private final String pathTemplateDec;
+
+    private final String pathTemplateEnc;
+
+    private final Pattern pattern;
+
+    private final List<String> varNames = new ArrayList<String>();
 
     /**
      * Is intended for internal use and testing. Otherwise use the static
@@ -155,45 +161,87 @@ public class PathRegExp {
      * {@link #createForMethod(Method)}, or the constant {@link #EMPTY}.
      * 
      * @param pathPattern
-     * @param limitedToOneSegment
-     * @deprecated public for testing only
+     * @param pathForExcMess
      */
-    @Deprecated
-    public PathRegExp(String pathPattern) {
-        this.pathPattern = pathPattern;
-        this.isEmptyOrSlash = Util.isEmptyOrSlash(pathPattern);
-        final StringBuilder patternStb = new StringBuilder(pathPattern);
-        if (!pathPattern.endsWith("/")) {
-            patternStb.append('/');
-        }
-        patternStb.append('{');
-        patternStb.append(VARNAME_FUER_REST);
-        patternStb.append('}');
-        this.template = new Template(patternStb.toString(),
-                org.restlet.util.Template.MODE_EQUALS);
-        this.template.getDefaultVariable().setType(Variable.TYPE_URI_PATH);
+    private PathRegExp(String pathTemplate, Path pathForExcMess)
+            throws IllegalPathException {
 
-        final Map<String, Variable> variables = this.template.getVariables();
-        final List<String> varNames = this.template.getVariableNames();
-        if (varNames.size() > 1) {
-            final String lastVarName = varNames.get(varNames.size() - 2);
-            Variable lastVariable;
-            // TESTEN works this with the limited or unlimited path segment?
-            if (pathPattern.endsWith("{" + lastVarName + "}")) {
-                lastVariable = new Variable(Variable.TYPE_URI_SEGMENT);
+        // 1. URI encode the template, ignoring URI template variable specs.
+        // 2. Escape any regular expression characters in the URI template,
+        // again ignoring URI template variable specifications.
+        // 3. Replace each URI template variable with a capturing group
+        // containing the specified regular expression or ‘([^/]+?)’ if no
+        // regular expression is specified.
+
+        // LATER regexp in @Path: @Path("{p}/abc/{p}") is allowed, p may be != p
+        if (pathTemplate == null) {
+            throw new IllegalArgumentException(
+                    "The path template must not be null");
+        }
+        final int l = pathTemplate.length();
+        final StringBuilder pathPattern = new StringBuilder();
+        int forStart = 0;
+        if (l > 0 && pathTemplate.charAt(0) == '/')
+            forStart = 1;
+        int noLitChars = 0;
+        int numberOfCapturingGroups = 0;
+        for (int i = forStart; i < l; i++) {
+            final char c = pathTemplate.charAt(i);
+            if (c == '{') {
+                i = processTemplVarname(pathTemplate, i, pathPattern,
+                        pathForExcMess);
+                numberOfCapturingGroups++;
+            } else if (c == '%') {
+                try {
+                    EncodeOrCheck.processPercent(i, true, pathTemplate,
+                            pathPattern);
+                } catch (final IllegalArgumentException e) {
+                    throw new IllegalPathException(pathForExcMess, e);
+                }
+            } else if (c == '}') {
+                throw new IllegalPathException(pathForExcMess,
+                        "'}' is only allowed as "
+                                + "end of a variable name in \"" + pathTemplate
+                                + "\"");
+            } else if (c == ';') {
+                throw new IllegalPathException(pathForExcMess,
+                        "marix parameters are not allowed in a @Path");
+            } else if (!false && (c == '/')) {
+                pathPattern.append(c);
+                noLitChars++;
             } else {
-                lastVariable = new Variable(Variable.TYPE_URI_PATH);
+                noLitChars += EncodeOrCheck.encode(c, pathPattern);
             }
-            variables.put(lastVarName, lastVariable);
         }
-        Variable restVar = variables.get(VARNAME_FUER_REST);
-        if (restVar == null) {
-            restVar = new Variable(Variable.TYPE_ALL);
-            variables.put(VARNAME_FUER_REST, restVar);
+        this.noLitChars = noLitChars;
+        this.noOfCapturingGroups = numberOfCapturingGroups;
+        // 4. If the resulting string ends with ‘/’ then remove the final char.
+        // 5. Append ‘(/.*)?’ to the result.
+        if (pathPattern.length() > 0
+                && pathPattern.charAt(pathPattern.length() - 1) != '/') {
+            pathPattern.append('/');
         }
-        restVar.setRequired(false);
+        pathPattern.append("(.*)");
+
+        this.pattern = Pattern.compile(pathPattern.toString());
+        this.isEmptyOrSlash = Util.isEmptyOrSlash(pathTemplate);
+        if (l > 0) {
+            if (pathTemplate.charAt(0) != '/') {
+                pathTemplate = '/' + pathTemplate;
+            }
+            if (l > 1 && pathTemplate.endsWith("/")) {
+                pathTemplate = pathTemplate.substring(0,
+                        pathTemplate.length() - 2);
+            }
+        }
+        this.pathTemplateEnc = pathTemplate; // LATER encode unencoded here
+        this.pathTemplateDec = pathTemplate; // LATER decode here
     }
 
+    /**
+     * Compares this regular expression of a &#64;{@link Path} with the given
+     * Object by comparing given patterns.
+     */
     @Override
     public boolean equals(Object anotherObject) {
         if (this == anotherObject) {
@@ -203,14 +251,21 @@ public class PathRegExp {
             return false;
         }
         final PathRegExp otherRegExp = (PathRegExp) anotherObject;
-        return getWithEmptyVars().equals(otherRegExp.getWithEmptyVars());
+        return this.pattern.pattern().equals(otherRegExp.pattern.pattern());
+    }
+
+    /**
+     * @return
+     */
+    public int getNoNonDefCaprGroups() {
+        return this.noNonDefaultRegExp;
     }
 
     /**
      * @return Returns the number of capturing groups.
      */
-    public int getNumberOfCapturingGroups() {
-        return this.template.getVariableNames().size();
+    public int getNoOfCapturingGroups() {
+        return this.noOfCapturingGroups;
     }
 
     /**
@@ -218,30 +273,29 @@ public class PathRegExp {
      * 
      * @return Returns the number of literal chars in the path patern
      */
-    public int getNumberOfLiteralChars() {
-        if (this.noLitChars == null) {
-            this.noLitChars = getWithEmptyVars().length();
-        }
+    public int getNoOfLiteralChars() {
         return this.noLitChars;
     }
 
     /**
-     * @return Returns the path pattern.
+     * @return the decoded path template with a '/' at the beginning, and no one
+     *         at the end.
      */
-    public String getPathPattern() {
-        return this.pathPattern;
+    public String getPathTemplateDec() {
+        return this.pathTemplateDec;
     }
 
     /**
-     * @return
+     * @return the encoded path template with a '/' at the beginning, and no one
+     *         at the end.
      */
-    private String getWithEmptyVars() {
-        return this.template.format(EmptyStringVariableResolver);
+    public String getPathTemplateEnc() {
+        return this.pathTemplateEnc;
     }
 
     @Override
     public int hashCode() {
-        return this.template.hashCode();
+        return this.pattern.pattern().hashCode();
     }
 
     /**
@@ -263,32 +317,35 @@ public class PathRegExp {
     @SuppressWarnings("unchecked")
     public MatchingResult match(RemainingPath remainingPath) {
         String givenPath = remainingPath.getWithoutParams();
-        final Map<String, String> templateVars = new HashMap<String, String>();
-        final boolean pathSuppl = !givenPath.endsWith("/");
-        if (pathSuppl) {
-            givenPath += '/';
-        }
-        boolean matches = template.parse(givenPath, (Map) templateVars) >= 0;
-        if (!matches) {
+        Matcher matcher = pattern.matcher(givenPath);
+        if (!matcher.matches()) {
             return null;
         }
-        String finalCapturingGroup = templateVars.remove(VARNAME_FUER_REST);
-        if (finalCapturingGroup.length() > 0) {
-            if (pathSuppl && finalCapturingGroup.endsWith("/")) {
-                finalCapturingGroup = finalCapturingGroup.substring(0,
-                        finalCapturingGroup.length() - 1);
-            }
-            if (!finalCapturingGroup.startsWith("/")) {
-                finalCapturingGroup = "/" + finalCapturingGroup;
-            }
+
+        final Map<String, String> templateVars = new HashMap<String, String>();
+
+        for (int i = 1; i < matcher.groupCount(); i++) {
+            templateVars.put(this.varNames.get(i - 1), matcher.group(i));
         }
-        String matched;
+
+        String finalCapturingGroup = matcher.group(matcher.groupCount());
+        // if (finalCapturingGroup.length() > 0) {
+        // if (pathSuppl && finalCapturingGroup.endsWith("/")) {
+        // finalCapturingGroup = finalCapturingGroup.substring(0,
+        // finalCapturingGroup.length() - 1);
+        // }
+        // if (!finalCapturingGroup.startsWith("/")) {
+        // finalCapturingGroup = "/" + finalCapturingGroup;
+        // }
+        // }
+
         int matchedChars = givenPath.length() - finalCapturingGroup.length();
         if ((matchedChars > 0) && (givenPath.charAt(matchedChars - 1) == '/')) {
-            matchedChars--;
+            matchedChars--; // ignore '/' at end
         }
-        matched = givenPath.substring(0, matchedChars); // ignore '/' at end
-        return new MatchingResult(matched, templateVars, finalCapturingGroup);
+        final String matchedPart = givenPath.substring(0, matchedChars);
+        return new MatchingResult(matchedPart, templateVars,
+                finalCapturingGroup);
     }
 
     /**
@@ -306,8 +363,86 @@ public class PathRegExp {
         return matchingResult.getFinalCapturingGroup().isEmptyOrSlash();
     }
 
+    /**
+     * @param pathTemplate
+     * @param braceIndex
+     * @param pathPattern
+     * @param pathForExcMess
+     * @throws IllegalPathException
+     */
+    private int processTemplVarname(final String pathTemplate,
+            final int braceIndex, final StringBuilder pathPattern,
+            final Path pathForExcMess) throws IllegalPathException {
+        pathPattern.append('(');
+        final int l = pathTemplate.length();
+        final StringBuilder varName = new StringBuilder();
+        final StringBuilder regExp = new StringBuilder();
+        int state = NAME_READ_START;
+        for (int i = braceIndex + 1; i < l; i++) {
+            final char c = pathTemplate.charAt(i);
+            if (c == '{') {
+                throw new IllegalPathException(pathForExcMess,
+                        "A variable must not " + "contain an extra '{' in \""
+                                + pathTemplate + "\"");
+            } else if (c == ' ' || c == '\t') {
+                if (state == NAME_READ)
+                    state = NAME_READ_READY;
+                else if (state == REGEXP_READ)
+                    state = REGEXP_READ_READY;
+                continue;
+            } else if (c == ':') {
+                if (state == NAME_READ_START) {
+                    throw new IllegalPathException(pathForExcMess,
+                            "The variable name at position must not be null at "
+                                    + braceIndex + " of \"" + pathTemplate
+                                    + "\"");
+                }
+                if (state == NAME_READ || state == NAME_READ_READY) {
+                    state = REGEXP_READ_START;
+                }
+                continue;
+            } else if (c == '}') {
+                if (state == NAME_READ_START) {
+                    throw new IllegalPathException(pathForExcMess,
+                            "The template variable name '{}' is not allowed in "
+                                    + "\"" + pathTemplate + "\"");
+                } else if ((state == REGEXP_READ)
+                        || (state == REGEXP_READ_READY)) {
+                    pathPattern.append(regExp);
+                    if (!regExp.equals(DEFAULT_REG_EXP)) {
+                        this.noNonDefaultRegExp++;
+                    }
+                } else {
+                    pathPattern.append(DEFAULT_REG_EXP);
+                }
+                pathPattern.append(')');
+                this.varNames.add(varName.toString());
+                return i;
+            }
+
+            if (state == NAME_READ_START) {
+                state = NAME_READ;
+                varName.append(c);
+            } else if (state == NAME_READ) {
+                varName.append(c);
+            } else if (state == REGEXP_READ_START) {
+                state = REGEXP_READ;
+                regExp.append(c);
+            } else if (state == REGEXP_READ) {
+                regExp.append(c);
+            } else {
+                throw new IllegalPathException(pathForExcMess,
+                        "Invalid character found at position " + i + " of \""
+                                + pathTemplate + "\"");
+            }
+        }
+        throw new IllegalPathException(pathForExcMess,
+                "No '}' found after '{' " + "at position " + braceIndex
+                        + " of \"" + pathTemplate + "\"");
+    }
+
     @Override
     public String toString() {
-        return this.pathPattern;
+        return this.pattern.pattern();
     }
 }

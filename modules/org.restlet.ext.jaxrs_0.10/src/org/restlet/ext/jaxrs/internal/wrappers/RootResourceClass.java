@@ -58,7 +58,8 @@ import org.restlet.ext.jaxrs.internal.wrappers.provider.JaxRsProviders;
  * 
  * @author Stephan Koops
  */
-public abstract class RootResourceClass extends ResourceClass {
+public abstract class RootResourceClass extends ResourceClass implements
+        RrcOrRml {
 
     /**
      * Checks, if the class is public and so on.
@@ -146,6 +147,18 @@ public abstract class RootResourceClass extends ResourceClass {
         }
     }
 
+    @Override
+    public boolean equals(Object anotherObject) {
+        if (this == anotherObject) {
+            return true;
+        }
+        if (!(anotherObject instanceof RootResourceClass)) {
+            return false;
+        }
+        final RootResourceClass otherRootResourceClass = (RootResourceClass) anotherObject;
+        return this.jaxRsClass.equals(otherRootResourceClass.jaxRsClass);
+    }
+
     /**
      * Creates an or gets the instance of this root resource class.
      * 
@@ -160,18 +173,6 @@ public abstract class RootResourceClass extends ResourceClass {
      */
     public abstract ResourceObject getInstance(ObjectFactory objectFactory)
             throws InstantiateException, InvocationTargetException;
-
-    @Override
-    public boolean equals(Object anotherObject) {
-        if (this == anotherObject) {
-            return true;
-        }
-        if (!(anotherObject instanceof RootResourceClass)) {
-            return false;
-        }
-        final RootResourceClass otherRootResourceClass = (RootResourceClass) anotherObject;
-        return this.jaxRsClass.equals(otherRootResourceClass.jaxRsClass);
-    }
 
     /**
      * @return Returns the regular expression for the URI template

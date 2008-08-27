@@ -316,7 +316,7 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
     public Reference createReference(Class<?> jaxRsClass, String subPath) {
         String path;
         try {
-            path = Util.getPathTemplate(jaxRsClass);
+            path = Util.getPathTemplateWithoutRegExps(jaxRsClass);
         } catch (final RuntimeException e) {
             throw e;
         } catch (final Exception e) {
@@ -433,17 +433,17 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
                 username, pw));
     }
 
+    protected Class<?> getRootResourceClass() {
+        throw new UnsupportedOperationException(
+                "You must implement the methods getRootResourceClass() or getAppConfig(). If you only implemented getAppConfig(), you can't use this method");
+    }
+
     /**
      * @return
      * @see #getAppConfig()
      */
     protected Set<Object> getSingletons() {
         return Collections.emptySet();
-    }
-
-    protected Class<?> getRootResourceClass() {
-        throw new UnsupportedOperationException(
-                "You must implement the methods getRootResourceClass() or getAppConfig(). If you only implemented getAppConfig(), you can't use this method");
     }
 
     public Response getWithCookies(String subPath, Collection<Cookie> cookies) {

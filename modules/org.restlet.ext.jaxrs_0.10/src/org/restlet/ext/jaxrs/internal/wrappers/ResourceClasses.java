@@ -57,21 +57,21 @@ import org.restlet.ext.jaxrs.internal.wrappers.provider.JaxRsProviders;
  */
 public class ResourceClasses {
 
+    private final ExtensionBackwardMapping extensionBackwardMapping;
+
+    private final JaxRsProviders jaxRsProviders;
+
+    private final Logger logger;
+
+    private final Map<Class<?>, ResourceClass> resourceClasses = new HashMap<Class<?>, ResourceClass>();
+
     /**
      * This set must only changed by adding a root resource class to this
      * JaxRsRestlet.
      */
     private final Set<RootResourceClass> rootResourceClasses = new CopyOnWriteArraySet<RootResourceClass>();
 
-    private final JaxRsProviders jaxRsProviders;
-
-    private final ExtensionBackwardMapping extensionBackwardMapping;
-
-    private final Map<Class<?>, ResourceClass> resourceClasses = new HashMap<Class<?>, ResourceClass>();
-
     private final ThreadLocalizedContext tlContext;
-
-    private final Logger logger;
 
     /**
      * @param tlContext
@@ -89,17 +89,6 @@ public class ResourceClasses {
         this.jaxRsProviders = jaxRsProviders;
         this.extensionBackwardMapping = extensionBackwardMapping;
         this.logger = logger;
-    }
-
-    /**
-     * 
-     * @param jaxRsRootObject
-     * @return
-     */
-    public boolean addRootSingleton(Object jaxRsRootObject) {
-        jaxRsRootObject.toString();
-        // TODO ResourceClasses.addRootSingleton(Object)
-        throw new NotYetImplementedException();
     }
 
     /**
@@ -168,12 +157,23 @@ public class ResourceClasses {
             if (rrc.getPathRegExp().equals(uriTempl)) {
                 this.logger
                         .warning("There is already a root resource class with path "
-                                + uriTempl.getPathPattern());
+                                + uriTempl.getPathTemplateEnc());
                 return false;
             }
         }
         rootResourceClasses.add(newRrc);
         return true;
+    }
+
+    /**
+     * 
+     * @param jaxRsRootObject
+     * @return
+     */
+    public boolean addRootSingleton(Object jaxRsRootObject) {
+        jaxRsRootObject.toString();
+        // TODO ResourceClasses.addRootSingleton(Object)
+        throw new NotYetImplementedException();
     }
 
     /**

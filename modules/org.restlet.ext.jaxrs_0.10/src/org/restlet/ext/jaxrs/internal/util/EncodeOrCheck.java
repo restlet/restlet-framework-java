@@ -173,10 +173,11 @@ public class EncodeOrCheck {
      *                the character to encode.
      * @param stb
      *                the {@link StringBuilder} to append.
+     * @return the number of added chars
      * @see <a href="http://tools.ietf.org/html/rfc3986#section-2.2"> RFC 3986,
      *      section 2.2</a>
      */
-    private static void encode(char toEncode, StringBuilder stb) {
+    static int encode(char toEncode, StringBuilder stb) {
         // this are all unreserved characters, see RFC 3986 (section 2.2)
         // http://tools.ietf.org/html/rfc3986#section-2.2
         if (((toEncode >= 'A') && (toEncode <= 'Z'))
@@ -185,8 +186,10 @@ public class EncodeOrCheck {
                 || (toEncode == '-') || (toEncode == '.') || (toEncode == '_')
                 || (toEncode == '~')) {
             stb.append(toEncode);
+            return 1;
         } else {
             toHex(toEncode, stb);
+            return 3;
         }
     }
 
@@ -289,7 +292,7 @@ public class EncodeOrCheck {
      */
     public static CharSequence fullMatrix(CharSequence matrix)
             throws IllegalArgumentException {
-        return fullQueryOrMatrix(matrix, ';', "%20", true); 
+        return fullQueryOrMatrix(matrix, ';', "%20", true);
     }
 
     /**
@@ -444,8 +447,8 @@ public class EncodeOrCheck {
      *                 id encode is false and the path contains an invalid
      *                 character.
      */
-    private static CharSequence pathSegmentWithMatrix(CharSequence pathSegments,
-            boolean encode, boolean encodeSlash)
+    private static CharSequence pathSegmentWithMatrix(
+            CharSequence pathSegments, boolean encode, boolean encodeSlash)
             throws IllegalArgumentException {
         final int l = pathSegments.length();
         final StringBuilder stb = new StringBuilder(l + 6);
@@ -502,8 +505,8 @@ public class EncodeOrCheck {
      * @param uriPart
      * @param stb
      */
-    private static void processPercent(int i, boolean encode,
-            CharSequence uriPart, StringBuilder stb) {
+    static void processPercent(int i, boolean encode, CharSequence uriPart,
+            StringBuilder stb) {
         if (encode) {
             toHex('%', stb);
             return;

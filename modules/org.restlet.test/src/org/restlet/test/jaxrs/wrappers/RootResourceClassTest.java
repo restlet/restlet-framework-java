@@ -32,6 +32,7 @@ import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
+import org.restlet.ext.jaxrs.internal.util.PathRegExp;
 import org.restlet.ext.jaxrs.internal.wrappers.RootResourceClass;
 import org.restlet.ext.jaxrs.internal.wrappers.ResourceClasses;
 import org.restlet.test.jaxrs.services.path.IllegalPathService1;
@@ -66,6 +67,8 @@ public class RootResourceClassTest extends TestCase {
         }
         final RootResourceClass rrc = resourceClasses
                 .getRootClassWrapper(IllegalPathService2.class);
-        assertEquals("/afsdf%3Ause", rrc.getPathRegExp().getPathPattern());
+        PathRegExp rrcRegExp = rrc.getPathRegExp();
+        assertEquals("/afsdf:use", rrcRegExp.getPathTemplateDec());
+        // TODO assertEquals("/afsdf%3Ause", rrcRegExp.getPathTemplateEnc());
     }
 }
