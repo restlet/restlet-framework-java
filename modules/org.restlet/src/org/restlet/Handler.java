@@ -41,12 +41,12 @@ import org.restlet.data.Status;
 import org.restlet.util.Template;
 
 /**
- * Final handler of a calls typically created by Finders. Handler instances
- * allow the processing of a call in a thread-safe context. This is different
- * from the Uniform subclasses like Restlet, Filter and Router which can be
- * invoked by multiple threads at the same time. However, as they offer a rather
- * low-level API and its subclass {@link org.restlet.resource.Resource} is often
- * preferred for concrete handlers.<br>
+ * Final handler of calls typically created by Finders. Handler instances allow
+ * the processing of a call in a thread-safe context. This is different from the
+ * Uniform subclasses like Restlet, Filter and Router which can be invoked by
+ * multiple threads at the same time. However, as they offer a rather low-level
+ * API and its subclass {@link org.restlet.resource.Resource} is often preferred
+ * for concrete handlers.<br>
  * <br>
  * This class exposes a different set of handle*() and allow*() Java methods for
  * each type of Uniform method supported by your handler. It has a predefined
