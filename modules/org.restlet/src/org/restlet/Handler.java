@@ -219,10 +219,22 @@ public abstract class Handler {
     }
 
     /**
+     * Returns the optional matrix of the request's target resource reference as
+     * a form (series of parameters).
+     * 
+     * @return The parsed query.
+     * @see Reference#getMatrixAsForm()
+     */
+    public Form getMatrix() {
+        return getRequest().getResourceRef().getMatrixAsForm();
+    }
+
+    /**
      * Returns the parsed query of the request's target resource reference as a
      * form (series of parameters).
      * 
      * @return The parsed query.
+     * @see Reference#getQueryAsForm()
      */
     public Form getQuery() {
         return getRequest().getResourceRef().getQueryAsForm();
