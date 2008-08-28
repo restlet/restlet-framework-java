@@ -68,10 +68,10 @@ import com.noelios.restlet.http.HttpServerHelper;
  * There are three separate ways to configure the deployment using this Servlet. They
  * are described below by order of priority:
  * <table>
- * <th>
- * <td>Mode</td>
- * <td>Description</td>
- * <th>
+* <tr>
+ * <th>Mode</th>
+ * <th>Description</th>
+ * </tr>
  * <tr>
  * <td>Mode 1</td>
  * <td>If a "/WEB-INF/restlet.xml" file exists and contains a valid XML configuration 
