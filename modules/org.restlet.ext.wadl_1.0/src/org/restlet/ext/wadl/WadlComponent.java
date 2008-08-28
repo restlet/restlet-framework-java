@@ -40,7 +40,7 @@ import org.restlet.resource.Representation;
  * Then it creates a Restlet Application with a router as root. For each
  * resource found in the WADL document, it tries to attach a Restlet Resource
  * class to the router using the WADL path. It looks up the qualified name of
- * the Resource class using the WALD "id" attribute of the "resource" elements.
+ * the Resource class using the WADL "id" attribute of the "resource" elements.
  * This is the only Restlet specific constraint on the WADL document.<br>
  * <br>
  * Finally, it attaches the Restlet Application to the virtual host using the

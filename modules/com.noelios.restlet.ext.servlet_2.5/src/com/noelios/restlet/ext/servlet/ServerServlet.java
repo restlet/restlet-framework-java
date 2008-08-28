@@ -97,7 +97,7 @@ import com.noelios.restlet.http.HttpServerHelper;
  * In deployment mode 3, you can also add an optionnal "org.restlet.clients" context 
  * parameter that contains a space separated list of client protocols supported by 
  * the underlying component. For each one, a new client connector is added to the 
- * Component instance.
+ * Component instance.<br>
  * 
  * Here is a template configuration for the ServerServlet:
  * 

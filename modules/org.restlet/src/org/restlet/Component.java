@@ -87,6 +87,7 @@ import org.w3c.dom.NodeList;
  * &lt;component xmlns=&quot;http://www.restlet.org/schemas/1.1/Component&quot;
  *               xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
  *               xsi:schemaLocation=&quot;http://www.restlet.org/schemas/1.1/Component&quot;&gt;
+ *    &lt;client protocol=&quot;CLAP&quot; /&gt;
  *    &lt;client protocol=&quot;FILE&quot; /&gt;
  *    &lt;client protocols=&quot;HTTP HTTPS&quot; /&gt;
  *    &lt;server protocols=&quot;HTTP HTTPS&quot; /&gt;
@@ -95,7 +96,7 @@ import org.w3c.dom.NodeList;
  *       &lt;attach uriPattern=&quot;/abcd/{xyz}&quot; 
  *                  targetClass=&quot;org.restlet.test.MyApplication&quot; /&gt;
  *       &lt;attach uriPattern=&quot;/efgh/{xyz}&quot;
- *                  targetDescriptor=&quot;clap://class/org.restlet.test.MyApplication.wadl&quot; /&gt;
+ *                  targetDescriptor=&quot;clap://class/org/restlet/test/MyApplication.wadl&quot; /&gt;
  *    &lt;/defaultHost&gt;
  * &lt;/component&gt;
  * </pre>
