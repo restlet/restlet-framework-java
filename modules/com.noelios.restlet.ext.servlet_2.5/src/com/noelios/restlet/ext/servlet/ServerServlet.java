@@ -75,7 +75,7 @@ import com.noelios.restlet.http.HttpServerHelper;
  * <tr>
  * <td>Mode 1</td>
  * <td>If a "/WEB-INF/restlet.xml" file exists and contains a valid XML configuration 
- * as described here {@link Component}. It is used to instantiate and attach the described
+ * as described in the documentation of the {@link Component} class. It is used to instantiate and attach the described
  * component, contained applications and connectors.</td>
  * </tr>
  * <tr>
@@ -124,6 +124,13 @@ import com.noelios.restlet.http.HttpServerHelper;
  *                 &lt;param-name&gt;org.restlet.clients&lt;/param-name&gt;
  *                 &lt;param-value&gt;HTTP HTTPS FILE&lt;/param-value&gt;
  *         &lt;/context-param&gt;
+ *
+ *         &lt;!-- Add the Servlet context path to the routes (Optional - true by default) --&gt;
+ *         &lt;context-param&gt;
+ *                 &lt;param-name&gt;org.restlet.autoWire&lt;/param-name&gt;
+ *                 &lt;param-value&gt;true&lt;/param-value&gt;
+ *         &lt;/context-param&gt;
+ *         
  * 
  *         &lt;!-- Restlet adapter (Mandatory) --&gt;
  *         &lt;servlet&gt;
