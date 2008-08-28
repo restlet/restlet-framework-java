@@ -68,7 +68,7 @@ import com.noelios.restlet.http.HttpServerHelper;
  * There are three separate ways to configure the deployment using this Servlet. They
  * are described below by order of priority:
  * <table>
-* <tr>
+ * <tr>
  * <th>Mode</th>
  * <th>Description</th>
  * </tr>
