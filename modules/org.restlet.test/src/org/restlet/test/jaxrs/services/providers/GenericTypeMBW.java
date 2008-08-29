@@ -55,7 +55,8 @@ public class GenericTypeMBW implements MessageBodyWriter<List<String>> {
     /**
      * @see javax.ws.rs.ext.MessageBodyWriter#getSize(java.lang.Object)
      */
-    public long getSize(List<String> t) {
+    public long getSize(List<String> t, Class<?> type, Type genericType,
+            Annotation[] annotations, MediaType mediaType) {
         return -1;
     }
 
@@ -63,7 +64,7 @@ public class GenericTypeMBW implements MessageBodyWriter<List<String>> {
      * @see MessageBodyWriter#isWriteable(Class, Type, Annotation[])
      */
     public boolean isWriteable(Class<?> type, Type genericType,
-            Annotation[] annotations) {
+            Annotation[] annotations, MediaType mediaType) {
         return (List.class.isAssignableFrom(type) && Util.getGenericClass(
                 genericType).equals(String.class));
     }

@@ -48,35 +48,33 @@ public class IntegerEntityProvider implements MessageBodyReader<Integer>,
         MessageBodyWriter<Integer> {
 
     /**
-     * @see javax.ws.rs.ext.MessageBodyWriter#getSize(java.lang.Object)
+     * @see MessageBodyWriter#getSize(Object, Class, Type, Annotation[],
+     *      MediaType)
      */
-    public long getSize(Integer t) {
+    public long getSize(Integer t, Class<?> type, Type genericType,
+            Annotation[] annotations, MediaType mediaType) {
         return t.toString().length();
     }
 
     /**
-     * @see javax.ws.rs.ext.MessageBodyReader#isReadable(java.lang.Class,
-     *      java.lang.reflect.Type, java.lang.annotation.Annotation[])
+     * @see MessageBodyReader#isReadable(Class, Type, Annotation[], MediaType)
      */
     public boolean isReadable(Class<?> type, Type genericType,
-            Annotation[] annotations) {
+            Annotation[] annotations, MediaType mediaType) {
         return type.equals(Integer.class);
     }
 
     /**
-     * @see javax.ws.rs.ext.MessageBodyWriter#isWriteable(java.lang.Class,
-     *      java.lang.reflect.Type, java.lang.annotation.Annotation[])
+     * @see MessageBodyWriter#isWriteable(Class, Type, Annotation[], MediaType)
      */
     public boolean isWriteable(Class<?> type, Type genericType,
-            Annotation[] annotations) {
+            Annotation[] annotations, MediaType mediaType) {
         return type.equals(Integer.class);
     }
 
     /**
-     * @see javax.ws.rs.ext.MessageBodyReader#readFrom(java.lang.Class,
-     *      java.lang.reflect.Type, java.lang.annotation.Annotation[],
-     *      javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap,
-     *      java.io.InputStream)
+     * @see MessageBodyReader#readFrom(Class, Type, Annotation[], MediaType,
+     *      MultivaluedMap, InputStream)
      */
     public Integer readFrom(Class<Integer> type, Type genericType,
             Annotation[] annotations, MediaType mediaType,
@@ -90,10 +88,8 @@ public class IntegerEntityProvider implements MessageBodyReader<Integer>,
     }
 
     /**
-     * @see javax.ws.rs.ext.MessageBodyWriter#writeTo(java.lang.Object,
-     *      java.lang.Class, java.lang.reflect.Type,
-     *      java.lang.annotation.Annotation[], javax.ws.rs.core.MediaType,
-     *      javax.ws.rs.core.MultivaluedMap, java.io.OutputStream)
+     * @see MessageBodyWriter#writeTo(Object, Class, Type, Annotation[],
+     *      MediaType, MultivaluedMap, OutputStream)
      */
     public void writeTo(Integer integer, Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType,

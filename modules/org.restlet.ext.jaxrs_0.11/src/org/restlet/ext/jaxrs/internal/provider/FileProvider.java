@@ -24,64 +24,74 @@
  * 
  * Restlet is a registered trademark of Noelios Technologies.
  */
-package org.restlet.test.jaxrs.services.providers;
+package org.restlet.ext.jaxrs.internal.provider;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
-import org.restlet.test.jaxrs.services.others.Person;
-import org.restlet.test.jaxrs.services.resources.OwnProviderTestService;
+import org.restlet.ext.jaxrs.internal.util.Util;
 
 /**
+ * This Provider reads or writes {@link File}s.
+ * 
  * @author Stephan Koops
- * @see OwnProviderTestService
  */
 @Provider
-@Produces("text/crazy-person")
-public class TextCrazyPersonProvider implements MessageBodyWriter<Person> {
+public class FileProvider extends AbstractProvider<File> {
 
     /**
      * @see javax.ws.rs.ext.MessageBodyWriter#getSize(java.lang.Object)
      */
-    public long getSize(Person t, Class<?> type, Type genericType,
+    @Override
+    public long getSize(File t, Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType) {
         return -1;
     }
 
     /**
-     * @see MessageBodyWriter#isWriteable(Class, Type, Annotation[])
+     * @see MessageBodyReader#readFrom(Class, Type, MediaType, Annotation[],
+     *      MultivaluedMap, InputStream)
      */
-    public boolean isWriteable(Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType) {
-        return Person.class.isAssignableFrom(type);
+    @Override
+    public File readFrom(Class<File> type, Type genericType,
+            Annotation[] annotations, MediaType mediaType,
+            MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
+            throws IOException {
+        final File file = File.createTempFile("FileProvider", ".tmp");
+        Util.copyStream(entityStream, new FileOutputStream(file));
+        return file;
+    }
+
+    /**
+     * @see AbstractProvider#supportedClass()
+     */
+    @Override
+    protected Class<?> supportedClass() {
+        return File.class;
     }
 
     /**
      * @see MessageBodyWriter#writeTo(Object, Class, Type, Annotation[],
      *      MediaType, MultivaluedMap, OutputStream)
      */
-    public void writeTo(Person person, Class<?> type, Type genericType,
+    @Override
+    public void writeTo(File file, Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, Object> responseHeaders,
+            MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
-        entityStream.write(person.getFirstname().getBytes());
-        entityStream.write(' ');
-        entityStream.write(person.getLastname().getBytes());
-        entityStream.write(" is crazy.".getBytes());
-        final Object h1v = responseHeaders.getFirst("h1");
-        if (h1v != null) {
-            entityStream.write("\nHeader value for name h1 is ".getBytes());
-            entityStream.write(h1v.toString().getBytes());
-        } else {
-            entityStream.write("\nNo header value for name h1".getBytes());
-        }
+        final InputStream inputStream = new FileInputStream(file);
+        Util.copyStream(inputStream, entityStream);
     }
 }

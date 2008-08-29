@@ -48,9 +48,11 @@ public class CharacterEntityProvider implements MessageBodyReader<Character>,
         MessageBodyWriter<Character> {
 
     /**
-     * @see javax.ws.rs.ext.MessageBodyWriter#getSize(java.lang.Object)
+     * @see MessageBodyWriter#getSize(Object, Class, Type, Annotation[],
+     *      MediaType)
      */
-    public long getSize(Character c) {
+    public long getSize(Character c, Class<?> type, Type genericType,
+            Annotation[] annotations, MediaType mediaType) {
         if (c == null) {
             return 0;
         }
@@ -58,28 +60,24 @@ public class CharacterEntityProvider implements MessageBodyReader<Character>,
     }
 
     /**
-     * @see javax.ws.rs.ext.MessageBodyReader#isReadable(java.lang.Class,
-     *      java.lang.reflect.Type, java.lang.annotation.Annotation[])
+     * @see MessageBodyReader#isReadable(Class, Type, Annotation[], MediaType)
      */
     public boolean isReadable(Class<?> type, Type genericType,
-            Annotation[] annotations) {
+            Annotation[] annotations, MediaType mediaType) {
         return type.equals(Character.class);
     }
 
     /**
-     * @see javax.ws.rs.ext.MessageBodyWriter#isWriteable(java.lang.Class,
-     *      java.lang.reflect.Type, java.lang.annotation.Annotation[])
+     * @see MessageBodyWriter#isWriteable(Class, Type, Annotation[], MediaType)
      */
     public boolean isWriteable(Class<?> type, Type genericType,
-            Annotation[] annotations) {
+            Annotation[] annotations, MediaType mediaType) {
         return type.equals(Character.class);
     }
 
     /**
-     * @see javax.ws.rs.ext.MessageBodyReader#readFrom(java.lang.Class,
-     *      java.lang.reflect.Type, java.lang.annotation.Annotation[],
-     *      javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap,
-     *      java.io.InputStream)
+     * @see MessageBodyReader#readFrom(Class, Type, Annotation[], MediaType,
+     *      MultivaluedMap, InputStream)
      */
     public Character readFrom(Class<Character> type, Type genericType,
             Annotation[] annotations, MediaType mediaType,
@@ -93,10 +91,8 @@ public class CharacterEntityProvider implements MessageBodyReader<Character>,
     }
 
     /**
-     * @see javax.ws.rs.ext.MessageBodyWriter#writeTo(java.lang.Object,
-     *      java.lang.Class, java.lang.reflect.Type,
-     *      java.lang.annotation.Annotation[], javax.ws.rs.core.MediaType,
-     *      javax.ws.rs.core.MultivaluedMap, java.io.OutputStream)
+     * @see MessageBodyWriter#writeTo(Object, Class, Type, Annotation[],
+     *      MediaType, MultivaluedMap, OutputStream)
      */
     public void writeTo(Character c, Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType,

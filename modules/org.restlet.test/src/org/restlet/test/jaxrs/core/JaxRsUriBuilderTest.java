@@ -271,7 +271,7 @@ public class JaxRsUriBuilderTest extends TestCase {
         vars.put("qp2Name", "GHI");
         vars.put("qp2Value", "JKL");
         vars.put("fragment", "MNO");
-        return uriBuilder.buildFromMap(vars, true);
+        return uriBuilder.buildFromMap(vars);
     }
 
     private URI buildFromTemplVarsWithStrings(UriBuilder uriBuilder) {
@@ -367,28 +367,28 @@ public class JaxRsUriBuilderTest extends TestCase {
     public void testBuildFromMap() throws Exception {
         final Map<String, Object> vars = new HashMap<String, Object>();
         try {
-            this.uriBuilderWithVars.buildFromMap(vars, true);
+            this.uriBuilderWithVars.buildFromMap(vars);
             fail("must fail, because missing UriTemplate variables");
         } catch (final IllegalArgumentException e) {
             // wonderful
         }
         vars.put("var1", "123");
         try {
-            this.uriBuilderWithVars.buildFromMap(vars, true);
+            this.uriBuilderWithVars.buildFromMap(vars);
             fail("must fail, because missing UriTemplate variable");
         } catch (final IllegalArgumentException e) {
             // wonderful
         }
         vars.put("var2", "456");
         assertEqualsURI("http://localhost/abc/123/def/456",
-                this.uriBuilderWithVars.buildFromMap(vars, true));
+                this.uriBuilderWithVars.buildFromMap(vars));
         vars.put("var3", "789");
         assertEqualsURI("http://localhost/abc/123/def/456",
-                this.uriBuilderWithVars.buildFromMap(vars, true));
+                this.uriBuilderWithVars.buildFromMap(vars));
 
         vars.put("var2", " ");
         assertEqualsURI("http://localhost/abc/123/def/%20",
-                this.uriBuilderWithVars.buildFromMap(vars, true));
+                this.uriBuilderWithVars.buildFromMap(vars));
     }
 
     public void testBuildWithArgs() throws Exception {

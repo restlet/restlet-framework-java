@@ -53,25 +53,27 @@ public class ContextResolverTestWriter implements MessageBodyWriter<Person> {
     @Context
     void setProviders(Providers providers) {
         this.contextResolver = providers.getContextResolver(
-                BaseUriContext.class, Object.class, MediaType.TEXT_HTML_TYPE);
-        if(this.contextResolver == null)
+                BaseUriContext.class, MediaType.TEXT_HTML_TYPE);
+        if (this.contextResolver == null)
             throw new RuntimeException("No Context Resolver found");
     }
 
     private ContextResolver<BaseUriContext> contextResolver;
 
     /**
-     * @see javax.ws.rs.ext.MessageBodyWriter#getSize(java.lang.Object)
+     * @see javax.ws.rs.ext.MessageBodyWriter#getSize(Object, Class, Type,
+     *      Annotation[], MediaType)
      */
-    public long getSize(Person t) {
+    public long getSize(Person t, Class<?> type, Type genericType,
+            Annotation[] annotations, MediaType mediaType) {
         return -1;
     }
 
     /**
-     * @see MessageBodyWriter#isWriteable(Class, Type, Annotation[])
+     * @see MessageBodyWriter#isWriteable(Class, Type, Annotation[], MediaType)
      */
     public boolean isWriteable(Class<?> type, Type genericType,
-            Annotation[] annotations) {
+            Annotation[] annotations, MediaType mediaType) {
         return this.contextResolver.getContext(type) != null;
     }
 

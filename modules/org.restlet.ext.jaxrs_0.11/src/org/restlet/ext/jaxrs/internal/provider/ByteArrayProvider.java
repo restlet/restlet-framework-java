@@ -24,64 +24,68 @@
  * 
  * Restlet is a registered trademark of Noelios Technologies.
  */
-package org.restlet.test.jaxrs.services.providers;
+package org.restlet.ext.jaxrs.internal.provider;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
-import org.restlet.test.jaxrs.services.others.Person;
-import org.restlet.test.jaxrs.services.resources.OwnProviderTestService;
+import org.restlet.ext.jaxrs.internal.util.Util;
 
 /**
+ * {@link Provider} to read and write byte[].
+ * 
  * @author Stephan Koops
- * @see OwnProviderTestService
  */
 @Provider
-@Produces("text/crazy-person")
-public class TextCrazyPersonProvider implements MessageBodyWriter<Person> {
+public class ByteArrayProvider extends AbstractProvider<byte[]> {
 
     /**
-     * @see javax.ws.rs.ext.MessageBodyWriter#getSize(java.lang.Object)
+     * @see javax.ws.rs.ext.MessageBodyWriter#getSize(java.lang.Object,
+     *      java.lang.Class, java.lang.reflect.Type,
+     *      java.lang.annotation.Annotation[], javax.ws.rs.core.MediaType)
      */
-    public long getSize(Person t, Class<?> type, Type genericType,
+    @Override
+    public long getSize(byte[] t, Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType) {
-        return -1;
+        return t.length;
+    }
+
+    @Override
+    public byte[] readFrom(Class<byte[]> type, Type genericType,
+            Annotation[] annotations, MediaType mediaType,
+            MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
+            throws IOException {
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        Util.copyStream(entityStream, baos);
+        return baos.toByteArray();
     }
 
     /**
-     * @see MessageBodyWriter#isWriteable(Class, Type, Annotation[])
+     * @see MessageBodyWriter#isWriteable(Class)
      */
-    public boolean isWriteable(Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType) {
-        return Person.class.isAssignableFrom(type);
+    @Override
+    protected Class<?> supportedClass() {
+        return byte[].class;
     }
 
     /**
      * @see MessageBodyWriter#writeTo(Object, Class, Type, Annotation[],
      *      MediaType, MultivaluedMap, OutputStream)
      */
-    public void writeTo(Person person, Class<?> type, Type genericType,
+    @Override
+    public void writeTo(byte[] data, Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, Object> responseHeaders,
+            MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
-        entityStream.write(person.getFirstname().getBytes());
-        entityStream.write(' ');
-        entityStream.write(person.getLastname().getBytes());
-        entityStream.write(" is crazy.".getBytes());
-        final Object h1v = responseHeaders.getFirst("h1");
-        if (h1v != null) {
-            entityStream.write("\nHeader value for name h1 is ".getBytes());
-            entityStream.write(h1v.toString().getBytes());
-        } else {
-            entityStream.write("\nNo header value for name h1".getBytes());
-        }
+        entityStream.write(data);
     }
 }

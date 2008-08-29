@@ -55,7 +55,7 @@ public class ContextsTestService {
 
     void setProviders(Providers providers) {
         this.contextResolver = providers.getContextResolver(Integer.class,
-                Object.class, MediaType.WILDCARD_TYPE);
+                MediaType.WILDCARD_TYPE);
     }
 
     ContextResolver<Integer> contextResolver;

@@ -24,7 +24,7 @@
  * 
  * Restlet is a registered trademark of Noelios Technologies.
  */
-package org.restlet.test.jaxrs.services.providers;
+package org.restlet.ext.jaxrs.internal.provider;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,78 +32,100 @@ import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
+import javax.activation.DataSource;
+import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.internet.MimeMultipart;
+import javax.mail.util.ByteArrayDataSource;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
-import org.restlet.ext.jaxrs.internal.util.Util;
-
 /**
+ * Entity Provider, that reads "multipart/form-data" to a {@link Multipart} and
+ * writes vice versa. <br>
+ * This provider is not tested yet.
+ * 
  * @author Stephan Koops
+ * @see FileUploadProvider
  */
 @Provider
-public class BooleanEntityProvider implements MessageBodyReader<Boolean>,
-        MessageBodyWriter<Boolean> {
+@Consumes("multipart/form-data")
+@Produces("multipart/form-data")
+@SuppressWarnings("all")
+public class MultipartProvider implements MessageBodyReader<Multipart>,
+        MessageBodyWriter<Multipart> {
+    // NICE test MultipartProvider
 
     /**
-     * @see MessageBodyWriter#getSize(Object, Class, Type, Annotation[],
-     *      MediaType)
+     * @see javax.ws.rs.ext.MessageBodyWriter#getSize(java.lang.Object)
      */
-    public long getSize(Boolean b, Class<?> type, Type genericType,
+    public long getSize(Multipart multipart, Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType) {
-        if (b == null) {
-            return 0;
-        }
-        if (b) {
-            return 4;
-        } else {
-            return 5;
-        }
+        return -1;
     }
 
     /**
-     * @see MessageBodyReader#isReadable(Class, Type, Annotation[], MediaType)
+     * @see MessageBodyReader#isReadable(Class, Type, Annotation[])
      */
     public boolean isReadable(Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType) {
-        return type.equals(Boolean.class);
+        return type.isAssignableFrom(MimeMultipart.class);
     }
 
     /**
-     * @see MessageBodyWriter#isWriteable(Class, Type, Annotation[], MediaType)
+     * @see MessageBodyWriter#isWriteable(Class, Type, Annotation[])
      */
     public boolean isWriteable(Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType) {
-        return type.equals(Boolean.class);
+        return Multipart.class.isAssignableFrom(type);
     }
 
     /**
      * @see MessageBodyReader#readFrom(Class, Type, Annotation[], MediaType,
      *      MultivaluedMap, InputStream)
      */
-    public Boolean readFrom(Class<Boolean> type, Type genericType,
+    public Multipart readFrom(Class<Multipart> type, Type genericType,
             Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
-            throws IOException {
-        final String str = Util.copyToStringBuilder(entityStream).toString();
-        if (str.length() == 0) {
-            return null;
+            MultivaluedMap<String, String> httpResponseHeaders,
+            InputStream entityStream) throws IOException {
+        final String contentType = "multipart/form-data";
+        final DataSource ds = new ByteArrayDataSource(entityStream, contentType);
+        try {
+            return new MimeMultipart(ds);
+        } catch (final MessagingException e) {
+            if (e.getCause() instanceof IOException) {
+                throw (IOException) e.getCause();
+            }
+            final IOException ioExc = new IOException(
+                    "Could not deserialize the data to a Multipart");
+            ioExc.initCause(e);
+            throw ioExc;
         }
-        return new Boolean(str);
     }
 
     /**
      * @see MessageBodyWriter#writeTo(Object, Class, Type, Annotation[],
      *      MediaType, MultivaluedMap, OutputStream)
      */
-    public void writeTo(Boolean b, Class<?> type, Type genericType,
+    public void writeTo(Multipart multipart, Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
-        if (b != null) {
-            entityStream.write(b.toString().getBytes());
+        try {
+            multipart.writeTo(entityStream);
+        } catch (final MessagingException e) {
+            if (e.getCause() instanceof IOException) {
+                throw (IOException) e.getCause();
+            }
+            final IOException ioExc = new IOException(
+                    "Could not serialize the Multipart");
+            ioExc.initCause(e);
+            throw ioExc;
         }
     }
 }

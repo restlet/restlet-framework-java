@@ -24,48 +24,35 @@
  * 
  * Restlet is a registered trademark of Noelios Technologies.
  */
-package org.restlet.test.jaxrs.services.providers;
+package org.restlet.ext.jaxrs.internal.provider;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
 
 /**
- * ProviderWrapper which ever throws a {@link WebApplicationException}.
+ * This ProviderWrapper is used to read directly from an {@link StreamingOutput}.
  * 
  * @author Stephan Koops
+ * @see StreamingOutput
  */
 @Provider
-public class ThrowWebAppExcProvider implements MessageBodyReader<Object>,
-        MessageBodyWriter<Object> {
-
-    public static final int STATUS_READ = 1234;
-
-    public static final int STATUS_WRITE = 5678;
+public class StreamingOutputProvider implements
+        MessageBodyWriter<StreamingOutput> {
 
     /**
-     * @see MessageBodyWriter#getSize(java.lang.Object)
+     * @see javax.ws.rs.ext.MessageBodyWriter#getSize(java.lang.Object)
      */
-    public long getSize(Object t, Class<?> type, Type genericType,
+    public long getSize(StreamingOutput t, Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType) {
         return -1;
-    }
-
-    /**
-     * @see MessageBodyReader#isReadable(Class, Type, Annotation[])
-     */
-    public boolean isReadable(Class<?> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType) {
-        return true;
     }
 
     /**
@@ -73,29 +60,17 @@ public class ThrowWebAppExcProvider implements MessageBodyReader<Object>,
      */
     public boolean isWriteable(Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType) {
-        return true;
+        return StreamingOutput.class.isAssignableFrom(type);
     }
 
     /**
-     * @see MessageBodyReader#readFrom(Class, Type, Annotation[], MediaType,
-     *      MultivaluedMap, InputStream)
+     * @see MessageBodyWriter#writeTo(Object, Type, Annotation[], MediaType,
+     *      MultivaluedMap, OutputStream)
      */
-    public Object readFrom(Class<Object> type, Type genericType,
-            Annotation[] annotations, MediaType mediaType,
-            MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
-            throws IOException, WebApplicationException {
-        throw new WebApplicationException(STATUS_READ);
-    }
-
-    /**
-     * @see MessageBodyWriter#writeTo(Object, Class, Type, Annotation[],
-     *      MediaType, MultivaluedMap, OutputStream)
-     */
-    public void writeTo(Object t, Class<?> type, Type genericType,
+    public void writeTo(StreamingOutput so, Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
-            OutputStream entityStream) throws IOException,
-            WebApplicationException {
-        throw new WebApplicationException(STATUS_WRITE);
+            OutputStream entityStream) throws IOException {
+        so.write(entityStream);
     }
 }

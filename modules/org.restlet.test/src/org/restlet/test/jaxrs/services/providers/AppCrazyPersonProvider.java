@@ -58,7 +58,8 @@ public class AppCrazyPersonProvider implements MessageBodyWriter<Person> {
     /**
      * @see javax.ws.rs.ext.MessageBodyWriter#getSize(java.lang.Object)
      */
-    public long getSize(Person t) {
+    public long getSize(Person t, Class<?> type, Type genericType,
+            Annotation[] annotations, MediaType mediaType) {
         return -1;
     }
 
@@ -66,7 +67,7 @@ public class AppCrazyPersonProvider implements MessageBodyWriter<Person> {
      * @see MessageBodyWriter#isWriteable(Class, Type, Annotation[])
      */
     public boolean isWriteable(Class<?> type, Type genericType,
-            Annotation[] annotations) {
+            Annotation[] annotations, MediaType mediaType) {
         return Person.class.isAssignableFrom(type);
     }
 

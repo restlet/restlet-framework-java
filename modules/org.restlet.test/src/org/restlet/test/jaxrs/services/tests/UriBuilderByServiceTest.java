@@ -32,8 +32,6 @@ import static org.restlet.data.MediaType.TEXT_PLAIN;
 
 import java.io.IOException;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 import javax.ws.rs.core.Application;
@@ -89,24 +87,6 @@ public class UriBuilderByServiceTest extends JaxRsTestCase {
     @Override
     protected Application getAppConfig() {
         final Application appConfig = new Application() {
-            @Override
-            public Map<String, String> getLanguageMappings() {
-                final Map<String, String> map = new HashMap<String, String>();
-                map.put("en", "en");
-                map.put("de", "de");
-                return map;
-            }
-
-            @Override
-            public Map<String, javax.ws.rs.core.MediaType> getMediaTypeMappings() {
-                final Map<String, javax.ws.rs.core.MediaType> map = new HashMap<String, javax.ws.rs.core.MediaType>();
-                map.put("txt", javax.ws.rs.core.MediaType.TEXT_PLAIN_TYPE);
-                map.put("html", javax.ws.rs.core.MediaType.TEXT_HTML_TYPE);
-                map.put("htm", javax.ws.rs.core.MediaType.TEXT_HTML_TYPE);
-                map.put("jpx", new javax.ws.rs.core.MediaType("image", "jpx"));
-                return map;
-            }
-
             @Override
             @SuppressWarnings("unchecked")
             public Set<Class<?>> getClasses() {

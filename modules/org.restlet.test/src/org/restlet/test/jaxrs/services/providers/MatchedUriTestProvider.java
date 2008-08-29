@@ -45,20 +45,38 @@ import javax.ws.rs.ext.MessageBodyWriter;
  */
 public class MatchedUriTestProvider implements MessageBodyReader<String>,
         MessageBodyWriter<String> {
-    
+
     @Context
     UriInfo uriInfo;
 
     /**
-     * @see javax.ws.rs.ext.MessageBodyReader#isReadable(java.lang.Class, java.lang.reflect.Type, java.lang.annotation.Annotation[])
+     * @see MessageBodyWriter#getSize(Object, Class, Type, Annotation[],
+     *      MediaType)
+     */
+    public long getSize(String t, Class<?> type, Type genericType,
+            Annotation[] annotations, MediaType mediaType) {
+        return 0;
+    }
+
+    /**
+     * @see MessageBodyReader#isReadable(Class, Type, Annotation[], MediaType)
      */
     public boolean isReadable(Class<?> type, Type genericType,
-            Annotation[] annotations) {
+            Annotation[] annotations, MediaType mediaType) {
         return false;
     }
 
     /**
-     * @see javax.ws.rs.ext.MessageBodyReader#readFrom(java.lang.Class, java.lang.reflect.Type, java.lang.annotation.Annotation[], javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap, java.io.InputStream)
+     * @see MessageBodyWriter#isWriteable(Class, Type, Annotation[], MediaType)
+     */
+    public boolean isWriteable(Class<?> type, Type genericType,
+            Annotation[] annotations, MediaType mediaType) {
+        return false;
+    }
+
+    /**
+     * @see MessageBodyReader#readFrom(Class, Type, Annotation[], MediaType,
+     *      MultivaluedMap, InputStream)
      */
     public String readFrom(Class<String> type, Type genericType,
             Annotation[] annotations, MediaType mediaType,
@@ -68,22 +86,8 @@ public class MatchedUriTestProvider implements MessageBodyReader<String>,
     }
 
     /**
-     * @see javax.ws.rs.ext.MessageBodyWriter#getSize(java.lang.Object)
-     */
-    public long getSize(String t) {
-        return 0;
-    }
-
-    /**
-     * @see javax.ws.rs.ext.MessageBodyWriter#isWriteable(java.lang.Class, java.lang.reflect.Type, java.lang.annotation.Annotation[])
-     */
-    public boolean isWriteable(Class<?> type, Type genericType,
-            Annotation[] annotations) {
-        return false;
-    }
-
-    /**
-     * @see javax.ws.rs.ext.MessageBodyWriter#writeTo(java.lang.Object, java.lang.Class, java.lang.reflect.Type, java.lang.annotation.Annotation[], javax.ws.rs.core.MediaType, javax.ws.rs.core.MultivaluedMap, java.io.OutputStream)
+     * @see MessageBodyWriter#writeTo(Object, Class, Type, Annotation[],
+     *      MediaType, MultivaluedMap, OutputStream)
      */
     public void writeTo(String t, Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType,
