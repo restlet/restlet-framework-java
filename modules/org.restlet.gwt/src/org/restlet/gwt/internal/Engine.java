@@ -71,14 +71,6 @@ public class Engine extends org.restlet.gwt.util.Engine {
     public static final String VERSION_HEADER = "Noelios-Restlet-Engine/"
             + VERSION;
 
-    /**
-     * Returns the registered Noelios Restlet engine.
-     * 
-     * @return The registered Noelios Restlet engine.
-     */
-    public static Engine getInstance() {
-        return (Engine) org.restlet.gwt.util.Engine.getInstance();
-    }
 
     /**
      * Registers a new Noelios Restlet Engine.
