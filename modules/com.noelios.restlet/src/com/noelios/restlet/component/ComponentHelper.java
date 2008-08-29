@@ -245,6 +245,10 @@ public class ComponentHelper extends ChainHelper<Component> {
         }
     }
 
+    /**
+     * Set the new server router that will compute the new routes when the first
+     * request will be received (automatic start).
+     */
     @Override
     public void update() throws Exception {
         // Note the old router to be able to stop it at the end
