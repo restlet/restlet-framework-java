@@ -26,13 +26,10 @@
  */
 package org.restlet.example.jaxrs;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import javax.ws.rs.core.Application;
-import javax.ws.rs.core.MediaType;
 
 import org.restlet.example.jaxrs.employees.EmployeesResource;
 
@@ -56,15 +53,6 @@ public class ExampleAppConfig extends Application {
      * creates a new Application configuration for this example.
      */
     public ExampleAppConfig() {
-    }
-
-    @Override
-    public Map<String, MediaType> getMediaTypeMappings() {
-        final Map<String, MediaType> map = new HashMap<String, MediaType>();
-        map.put("html", MediaType.TEXT_HTML_TYPE);
-        map.put("xml", MediaType.APPLICATION_XML_TYPE);
-        map.put("json", MediaType.APPLICATION_JSON_TYPE);
-        return map;
     }
 
     /**
