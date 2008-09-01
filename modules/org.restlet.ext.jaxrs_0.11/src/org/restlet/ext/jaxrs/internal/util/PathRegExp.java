@@ -170,7 +170,7 @@ public class PathRegExp {
         // 2. Escape any regular expression characters in the URI template,
         // again ignoring URI template variable specifications.
         // 3. Replace each URI template variable with a capturing group
-        // containing the specified regular expression or ‘([^/]+?)’ if no
+        // containing the specified regular expression or "([^/]+?)" if no
         // regular expression is specified.
 
         // LATER regexp in @Path: @Path("{p}/abc/{p}") is allowed, p may be != p
@@ -215,8 +215,8 @@ public class PathRegExp {
         }
         this.noLitChars = noLitChars;
         this.noOfCapturingGroups = numberOfCapturingGroups;
-        // 4. If the resulting string ends with ‘/’ then remove the final char.
-        // 5. Append ‘(/.*)?’ to the result.
+        // 4. If the resulting string ends with "/" then remove the final char.
+        // 5. Append "(/.*)?" to the result.
         if (pathPattern.length() > 0
                 && pathPattern.charAt(pathPattern.length() - 1) != '/') {
             pathPattern.append('/');

@@ -283,7 +283,7 @@ public class AlgorithmUtil {
      * <li>the number of capturing groups as a secondary key (descending
      * order),</li>
      * <li>the number of capturing groups with non-default regular expressions
-     * (i.e. not ‘([ˆ/]+?)’) as the tertiary key (descending order), and </li>
+     * (i.e. not "([Ë†/]+?)") as the tertiary key (descending order), and </li>
      * <li>the source of each member as quaternary key sorting those derived
      * from T<sub>method</sub> ahead of those derived from T<sub>locator</sub>.</li>
      * </ol>
