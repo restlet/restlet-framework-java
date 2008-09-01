@@ -66,14 +66,14 @@ public class TemplateFilterTestCase extends TestCase {
          */
         public MyFreemakerApplication(File testDirectory) {
             setTestDirectory(testDirectory);
-            // Create a Directory that manages a local directory
-            this.directory = new Directory(getContext(), LocalReference
-                    .createFileReference(getTestDirectory()));
-            this.directory.setNegotiateContent(true);
         }
 
         @Override
         public Restlet createRoot() {
+            // Create a Directory that manages a local directory
+            this.directory = new Directory(getContext(), LocalReference
+                    .createFileReference(getTestDirectory()));
+            this.directory.setNegotiateContent(true);
             return new org.restlet.ext.freemarker.TemplateFilter(getContext(),
                     this.directory);
         }
@@ -110,14 +110,14 @@ public class TemplateFilterTestCase extends TestCase {
          */
         public MyVelocityApplication(File testDirectory) {
             setTestDirectory(testDirectory);
-            // Create a Directory that manages a local directory
-            this.directory = new Directory(getContext(), LocalReference
-                    .createFileReference(getTestDirectory()));
-            this.directory.setNegotiateContent(true);
         }
 
         @Override
         public Restlet createRoot() {
+            // Create a Directory that manages a local directory
+            this.directory = new Directory(getContext(), LocalReference
+                    .createFileReference(getTestDirectory()));
+            this.directory.setNegotiateContent(true);
             return new org.restlet.ext.velocity.TemplateFilter(getContext(),
                     this.directory);
         }

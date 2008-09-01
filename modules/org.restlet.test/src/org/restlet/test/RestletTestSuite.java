@@ -77,13 +77,13 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(RouteListTestCase.class);
         addTestSuite(SpringTestCase.class);
         addTestSuite(StatusTestCase.class);
-        // addTestSuite(TemplateFilterTestCase.class);
+        addTestSuite(TemplateFilterTestCase.class);
         addTestSuite(TemplateTestCase.class);
         addTestSuite(TransformerTestCase.class);
         addTestSuite(VelocityTestCase.class);
         addTestSuite(WadlTestCase.class);
 
-        addTest(AllJaxRsTests.suite());
+        //addTest(AllJaxRsTests.suite());
         addTest(AllSpringTests.suite());
     }
 
