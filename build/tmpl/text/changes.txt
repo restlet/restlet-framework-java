@@ -11,7 +11,9 @@ Changes log
           directory. Reported by Carlos Alexandre Moscoso.
         - Fixed GWT javascript recursion with the Engine#getInstance 
           method. Reported by Doug Alcouffe.
-
+        - Fixed potential NPE with Spring integration when the 
+          component is not declared in the servlet configuration file. 
+          Reported by Alexander Koppelhuber.
 - 1.1 Release candidate 1 (08/20/2008)
     - Breaking change
         - The logger names used by Restlet have been fully refactored 

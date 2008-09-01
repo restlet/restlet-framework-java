@@ -32,6 +32,7 @@ import java.util.Enumeration;
 import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Context;
+import org.springframework.beans.BeansException;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
@@ -131,8 +132,17 @@ public class SpringServerServlet extends ServerServlet {
         Component component = null;
         final String componentBeanName = getInitParameter(
                 Component_BEAN_PARAM_NAME, null);
-        component = (Component) getWebApplicationContext().getBean(
-                componentBeanName);
+
+        // Not mentionned in the Spring javadocs, but getBean surely fails if
+        // the argument is null.
+        if (componentBeanName != null) {
+            try {
+                component = (Component) getWebApplicationContext().getBean(
+                        componentBeanName);
+            } catch (BeansException be) {
+                // The bean has not been found, let the parent create it.
+            }
+        }
 
         if (component == null) {
             component = super.createComponent();
