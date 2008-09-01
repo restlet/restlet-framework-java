@@ -164,14 +164,17 @@ public class WadlResource extends Resource {
      */
     protected Representation describe(Variant variant) {
         Representation result = null;
-        ResourceInfo resourceInfo = new ResourceInfo();
-        describe(resourceInfo);
 
-        if (MediaType.APPLICATION_WADL_XML.equals(variant.getMediaType())) {
-            result = new WadlRepresentation(resourceInfo);
-        } else if (MediaType.TEXT_HTML.equals(variant.getMediaType())) {
-            result = new WadlRepresentation(resourceInfo)
-                    .getHtmlRepresentation();
+        if (variant != null) {
+            ResourceInfo resourceInfo = new ResourceInfo();
+            describe(resourceInfo);
+
+            if (MediaType.APPLICATION_WADL_XML.equals(variant.getMediaType())) {
+                result = new WadlRepresentation(resourceInfo);
+            } else if (MediaType.TEXT_HTML.equals(variant.getMediaType())) {
+                result = new WadlRepresentation(resourceInfo)
+                        .getHtmlRepresentation();
+            }
         }
 
         return result;
