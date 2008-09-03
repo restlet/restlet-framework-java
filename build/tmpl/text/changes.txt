@@ -14,6 +14,8 @@ Changes log
         - Fixed potential NPE with Spring integration when the 
           component is not declared in the servlet configuration file. 
           Reported by Alexander Koppelhuber.
+    - Misc
+        - Updated Db4O to version 7.4.58.
 - 1.1 Release candidate 1 (08/20/2008)
     - Breaking change
         - The logger names used by Restlet have been fully refactored 
