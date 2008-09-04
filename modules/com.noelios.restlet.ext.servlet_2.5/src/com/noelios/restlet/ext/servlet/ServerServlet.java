@@ -60,23 +60,24 @@ import com.noelios.restlet.http.HttpServerHelper;
  * href="/documentation/1.1/faq#02">Developper FAQ #2</a> for details on how to
  * integrate a Restlet application into a servlet container.<br>
  * <br>
- * Initially designed to deploy a single Restlet Application, this Servlet can 
+ * Initially designed to deploy a single Restlet Application, this Servlet can
  * now deploy a complete Restlet Component. This allows you to reuse an existing
- * standalone Restlet Component, potentially containing several applications, and
- * declaring client connectors, for example for the CLAP, FILE or HTTP protocols.<br>
+ * standalone Restlet Component, potentially containing several applications,
+ * and declaring client connectors, for example for the CLAP, FILE or HTTP
+ * protocols.<br>
  * <br>
- * There are three separate ways to configure the deployment using this Servlet. They
- * are described below by order of priority:
- * <table>
+ * There are three separate ways to configure the deployment using this Servlet.
+ * They are described below by order of priority:
  * <tr>
  * <th>Mode</th>
  * <th>Description</th>
  * </tr>
  * <tr>
  * <td>Mode 1</td>
- * <td>If a "/WEB-INF/restlet.xml" file exists and contains a valid XML configuration 
- * as described in the documentation of the {@link Component} class. It is used to instantiate and attach the described
- * component, contained applications and connectors.</td>
+ * <td>If a "/WEB-INF/restlet.xml" file exists and contains a valid XML
+ * configuration as described in the documentation of the {@link Component}
+ * class. It is used to instantiate and attach the described component,
+ * contained applications and connectors.</td>
  * </tr>
  * <tr>
  * <td>Mode 2</td>
@@ -89,15 +90,14 @@ import com.noelios.restlet.http.HttpServerHelper;
  * <td>Mode 3</td>
  * <td>If the "/WEB-INF/web.xml" file contains a context parameter named
  * "org.restlet.application", its value must be the path of a class that
- * inherits from {@link Application}. It is used to instantiate the 
- * application and to attach it to a default Restlet Component.</td>
+ * inherits from {@link Application}. It is used to instantiate the application
+ * and to attach it to a default Restlet Component.</td>
  * </tr>
- * </table>
- * <br>
- * In deployment mode 3, you can also add an optionnal "org.restlet.clients" context 
- * parameter that contains a space separated list of client protocols supported by 
- * the underlying component. For each one, a new client connector is added to the 
- * Component instance.<br>
+ * </table> <br>
+ * In deployment mode 3, you can also add an optionnal "org.restlet.clients"
+ * context parameter that contains a space separated list of client protocols
+ * supported by the underlying component. For each one, a new client connector
+ * is added to the Component instance.<br>
  * 
  * Here is a template configuration for the ServerServlet:
  * 
@@ -124,7 +124,6 @@ import com.noelios.restlet.http.HttpServerHelper;
  *                 &lt;param-name&gt;org.restlet.clients&lt;/param-name&gt;
  *                 &lt;param-value&gt;HTTP HTTPS FILE&lt;/param-value&gt;
  *         &lt;/context-param&gt;
- *
  *         &lt;!-- Add the Servlet context path to the routes (Optional - true by default) --&gt;
  *         &lt;context-param&gt;
  *                 &lt;param-name&gt;org.restlet.autoWire&lt;/param-name&gt;
@@ -146,31 +145,33 @@ import com.noelios.restlet.http.HttpServerHelper;
  * &lt;/web-app&gt;
  * </pre>
  * 
- * Note that the enumeration of "initParameters" of your Servlet will be copied to 
- * the "context.parameters" property of your Restlet Application. This way, you can 
- * pass additional initialization parameters to your application, and maybe share 
- * them with other Servlets.<br>
+ * Note that the enumeration of "initParameters" of your Servlet will be copied
+ * to the "context.parameters" property of your Restlet Application. This way,
+ * you can pass additional initialization parameters to your application, and
+ * maybe share them with other Servlets.<br>
  * <br>
- * An additionnal boolean parameter called "org.restlet.autoWire" allows you 
- * to control the way your customized Component fits in the context of the wrapping
- * Servlet. The root cause is that both your Servlet Container and your Restlet 
- * Component handle part of the URI routing, respectively to the right Servlet and 
- * to the right virtual host and Restlets (most of the time Application instances).<br>
+ * An additionnal boolean parameter called "org.restlet.autoWire" allows you to
+ * control the way your customized Component fits in the context of the wrapping
+ * Servlet. The root cause is that both your Servlet Container and your Restlet
+ * Component handle part of the URI routing, respectively to the right Servlet
+ * and to the right virtual host and Restlets (most of the time Application
+ * instances).<br>
  * <br>
- * When a request reaches the Servlet container, it is first routed acccording to its
- * web.xml configuration (i.e. declared virtual hosts and webapp context path which is
- * generally the name of the webapp war file). Once the incoming request reaches
- * the ServerServlet and the wrapped Restlet Component, its URI is, for the second 
- * time, entirely subject to a separate routing chain. It begins with the virtual hosts,
- * then continue to the URI pattern used when attaching Restlets to the host. The 
- * important conclusion is that both routing configurations must be consistent in order
- * to work fine.<br>
+ * When a request reaches the Servlet container, it is first routed acccording
+ * to its web.xml configuration (i.e. declared virtual hosts and webapp context
+ * path which is generally the name of the webapp war file). Once the incoming
+ * request reaches the ServerServlet and the wrapped Restlet Component, its URI
+ * is, for the second time, entirely subject to a separate routing chain. It
+ * begins with the virtual hosts, then continue to the URI pattern used when
+ * attaching Restlets to the host. The important conclusion is that both routing
+ * configurations must be consistent in order to work fine.<br>
  * <br>
- * In deployment mode 3, the context path of the servlet is automatically added. That's 
- * what we call the auto-wire feature. This is the default case, and is equivalent to 
- * setting the value "true" for the "org.restlet.autoWire" parameter as described above.
- * In modes 1 or 2, if you want to manually control the URI wiring, you can disable
- * the auto-wiring by setting the property to "false".
+ * In deployment mode 3, the context path of the servlet is automatically added.
+ * That's what we call the auto-wire feature. This is the default case, and is
+ * equivalent to setting the value "true" for the "org.restlet.autoWire"
+ * parameter as described above. In modes 1 or 2, if you want to manually
+ * control the URI wiring, you can disable the auto-wiring by setting the
+ * property to "false".
  * 
  * @see <a href="http://java.sun.com/j2ee/">J2EE home page</a>
  * @author Jerome Louvel
@@ -509,64 +510,91 @@ public class ServerServlet extends HttpServlet {
                 final String autoWire = getInitParameter(AUTO_WIRE_KEY,
                         AUTO_WIRE_KEY_DEFAULT);
                 if (AUTO_WIRE_KEY_DEFAULT.equalsIgnoreCase(autoWire)) {
-                    // Translate as much as possible all defined routes
-                    // according to the context path and/or the servlet path.
+                    // Translate all defined routes as much as possible
+                    // with the context path only or the full servlet path.
+
+                    // 1- get the offset
+                    boolean addContextPath = false;
+                    boolean addFullServletPath = false;
+
                     for (final Route route : component.getDefaultHost()
                             .getRoutes()) {
-                        if ((route.getTemplate().getPattern() == null)
-                                || !route.getTemplate().getPattern()
-                                        .startsWith(uriPattern)) {
+                        if (route.getTemplate().getPattern() == null) {
+                            addFullServletPath = true;
+                            continue;
+                        }
+
+                        if (!route.getTemplate().getPattern().startsWith(
+                                uriPattern)) {
                             if (!route.getTemplate().getPattern().startsWith(
                                     request.getServletPath())) {
-                                log("[Noelios Restlet Engine] - Attaching restlet: "
-                                        + route.getNext()
-                                        + " to URI: "
-                                        + uriPattern
-                                        + route.getTemplate().getPattern());
-                                route.getTemplate().setPattern(
-                                        uriPattern
-                                                + route.getTemplate()
-                                                        .getPattern());
+                                addFullServletPath = true;
                             } else {
-                                log("[Noelios Restlet Engine] - Attaching restlet: "
-                                        + route.getNext()
-                                        + " to URI: "
-                                        + request.getContextPath()
-                                        + route.getTemplate().getPattern());
-                                route.getTemplate().setPattern(
-                                        request.getContextPath()
-                                                + route.getTemplate()
-                                                        .getPattern());
+                                addContextPath = true;
+                                break;
                             }
                         }
                     }
-                    for (final VirtualHost virtualHost : component.getHosts()) {
-                        for (final Route route : virtualHost.getRoutes()) {
-                            if ((route.getTemplate().getPattern() == null)
-                                    || !route.getTemplate().getPattern()
-                                            .startsWith(uriPattern)) {
-                                if (!route.getTemplate().getPattern()
-                                        .startsWith(request.getServletPath())) {
-                                    log("[Noelios Restlet Engine] - Attaching restlet: "
-                                            + route.getNext()
-                                            + " to URI: "
-                                            + uriPattern
-                                            + route.getTemplate().getPattern());
-                                    route.getTemplate().setPattern(
-                                            uriPattern
-                                                    + route.getTemplate()
-                                                            .getPattern());
-                                } else {
-                                    log("[Noelios Restlet Engine] - Attaching restlet: "
-                                            + route.getNext()
-                                            + " to URI: "
-                                            + request.getContextPath()
-                                            + route.getTemplate().getPattern());
-                                    route.getTemplate().setPattern(
-                                            request.getContextPath()
-                                                    + route.getTemplate()
-                                                            .getPattern());
+                    if (!addContextPath) {
+                        for (final VirtualHost virtualHost : component
+                                .getHosts()) {
+                            for (final Route route : virtualHost.getRoutes()) {
+                                if (route.getTemplate().getPattern() == null) {
+                                    addFullServletPath = true;
+                                    continue;
                                 }
+
+                                if (!route.getTemplate().getPattern()
+                                        .startsWith(uriPattern)) {
+                                    if (!route.getTemplate().getPattern()
+                                            .startsWith(
+                                                    request.getServletPath())) {
+                                        addFullServletPath = true;
+                                    } else {
+                                        addContextPath = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (addContextPath) {
+                                break;
+                            }
+                        }
+                    }
+
+                    // 2- Translate all routes.
+                    if (addContextPath || addFullServletPath) {
+                        String offsetPath = null;
+
+                        if (addContextPath) {
+                            offsetPath = request.getContextPath();
+                        } else {
+                            offsetPath = uriPattern;
+                        }
+
+                        for (final Route route : component.getDefaultHost()
+                                .getRoutes()) {
+                            log("[Noelios Restlet Engine] - Attaching restlet: "
+                                    + route.getNext()
+                                    + " to URI: "
+                                    + offsetPath
+                                    + route.getTemplate().getPattern());
+                            route.getTemplate().setPattern(
+                                    offsetPath
+                                            + route.getTemplate().getPattern());
+                        }
+                        for (final VirtualHost virtualHost : component
+                                .getHosts()) {
+                            for (final Route route : virtualHost.getRoutes()) {
+                                log("[Noelios Restlet Engine] - Attaching restlet: "
+                                        + route.getNext()
+                                        + " to URI: "
+                                        + offsetPath
+                                        + route.getTemplate().getPattern());
+                                route.getTemplate().setPattern(
+                                        offsetPath
+                                                + route.getTemplate()
+                                                        .getPattern());
                             }
                         }
                     }
