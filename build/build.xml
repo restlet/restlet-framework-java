@@ -1520,7 +1520,8 @@
 			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
 			<link href="http://google-web-toolkit-doc-1-5.googlecode.com/svn/javadoc/1.5/" />
 		</javadoc>
-
+</target>
+		<target name="coucou">
 		<!-- Generate UML graphics for the Restlet API -->
 		<javadoc packagenames="org.restlet.*"
 		         excludepackagenames="${exclude-packages}"
@@ -1547,8 +1548,8 @@
 			</group>
 
 			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
-			<doclet name="org.umlgraph.doclet.UmlGraphDoc"
-			        path="tools/umlgraph/UmlGraph-5.1.jar">
+			<doclet name="gr.spinellis.umlgraph.doclet.UmlGraphDoc"
+			        path="tools/umlgraph/umlgraph.jar">
 				<param name="-attributes" />
 				<param name="-operations" />
 				<param name="-qualify" />
