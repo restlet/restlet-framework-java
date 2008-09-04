@@ -79,8 +79,6 @@ public class Directory extends Finder {
     /**
      * Allows to sort the list of references set by the resource.
      * 
-     * @return A Comparator instance imposing a sort order of references or null
-     *         if no special order is wanted.
      */
     private class AlphabeticalComparator implements Comparator<Reference>,
             Serializable {

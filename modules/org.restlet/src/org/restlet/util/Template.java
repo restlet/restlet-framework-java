@@ -542,8 +542,6 @@ public class Template {
     /**
      * Compiles the URI pattern into a Regex pattern.
      * 
-     * @param uriPattern
-     *            The URI pattern.
      * @return The Regex pattern.
      */
     private Pattern getRegexPattern() {

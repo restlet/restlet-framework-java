@@ -469,13 +469,13 @@ public class Component extends Restlet {
     }
 
     /**
-     * Parses a port node and returns the port value.
+     * Parses a node and returns its boolean value.
      * 
-     * @param portNode
+     * @param Node
      *            the node to parse.
-     * @param defaultPort
+     * @param defaultValue
      *            the default value;
-     * @return the port number.
+     * @return The boolean value of the node.
      */
     private boolean getBoolean(Node node, boolean defaultValue) {
         boolean value = defaultValue;
@@ -730,7 +730,7 @@ public class Component extends Restlet {
      * 
      * @param router
      *            the router to update.
-     * @param hostNode
+     * @param routerNode
      *            the DOM node.
      */
     private void parseRouter(Router router, Node routerNode) {
