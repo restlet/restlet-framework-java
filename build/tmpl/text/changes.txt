@@ -479,7 +479,7 @@ Changes log
         - All Component subclasses now use a main method that throws 
           exceptions and takes a string array as parameter.
         - More precise log message for a Resource with no variant.
-        - Otpimized Eclipse dependencies by leveraging reexport option.
+        - Optimized Eclipse dependencies by leveraging reexport option.
         - Updated Spring to version 2.5.2.
         - Improved handling of connectors created without a protocol.
           Contributed by Avi Flax.
