@@ -1556,7 +1556,7 @@
 				<param name="-visibility" />
 			</doclet>
 		</javadoc>
-		<apply executable="dot" dest="${uml-reports-api}" parallel="false" failifexecutionfails="false" failonerror="false">  
+		<apply executable="dot" dest="${uml-reports-api}" parallel="false" failifexecutionfails="false" failonerror="false" verbose="false">  
 			<arg value="-Tpng"/>  
 			<arg value="-o"/>  
 			<targetfile/>  
@@ -1564,7 +1564,7 @@
 			<fileset dir="${uml-reports-api}" includes="*.dot"/>  
 			<mapper type="glob" from="*.dot" to="*.png"/>  
 		</apply> 
-		<delete verbose="true" quiet="false">
+		<delete verbose="true" quiet="true">
 			<fileset dir="${uml-reports-api}" includes="**/*.dot, **/*.map" />
 		</delete>
 	</target>
