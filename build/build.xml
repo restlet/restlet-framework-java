@@ -1522,6 +1522,7 @@
 		</javadoc>
 
 		<!-- Generate UML graphics for the Restlet API -->
+		<!--
 		<javadoc packagenames="org.restlet.*"
 		         excludepackagenames="${exclude-packages}"
 		         destdir="${uml-reports-api}"
@@ -1556,7 +1557,7 @@
 				<param name="-visibility" />
 			</doclet>
 		</javadoc>
-		<apply executable="dot" dest="${uml-reports-api}" parallel="false" failifexecutionfails="false" failonerror="false" verbose="false">  
+		<apply executable="dot" dest="${uml-reports-api}" parallel="false" failifexecutionfails="false" failonerror="false" verbose="false" >  
 			<arg value="-Tpng"/>  
 			<arg value="-o"/>  
 			<targetfile/>  
@@ -1564,9 +1565,10 @@
 			<fileset dir="${uml-reports-api}" includes="*.dot"/>  
 			<mapper type="glob" from="*.dot" to="*.png"/>  
 		</apply> 
-		<delete verbose="true" quiet="true">
+		<delete verbose="false" quiet="true">
 			<fileset dir="${uml-reports-api}" includes="**/*.dot, **/*.map" />
 		</delete>
+		-->
 	</target>
 
 	<!-- VERIFY target -->
