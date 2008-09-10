@@ -130,7 +130,7 @@ public class ApplicationHelper extends ChainHelper<Application> {
             addFilter(createDecoderFilter(getHelped()));
         }
 
-        // Addition of decoder filter
+        // Addition of range filter
         if (getHelped().getRangeService().isEnabled()) {
             addFilter(createRangeFilter(getContext()));
         }
