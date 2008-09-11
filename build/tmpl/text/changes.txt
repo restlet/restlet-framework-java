@@ -150,48 +150,48 @@ Changes log
           purpose of "Request.resourceRef". Suggested by Alex Milowski
           and Rob Heittman.
         - Client now has a new constructor taking a string with the 
-           protocol name instead of a Protocol instance.
-         - Replaced "Response.challengeRequest" by "challengeRequests" 
-           list property to conform to HTTP semantics. Contributed by
-           Bruno Harbulot.
-         - Clarified concurrency constraints on Uniform/Restlet 
-           subclasses and on Resource class. 
-           Suggested by Bruno Harbulot.
-         - Added public Resource#getAllowedMethods() method.
-         - Allow the routing of URIs with or without taking into 
-           account the query part. Suggested by Jim Alateras and 
-           contributed by Bruno Dumon.
-         - Completed the Component's XML config with the default query 
-           match setting defined on routers. Suggested by Bruno Dumon.
-         - Replaced the Context#getThread(Runnable) method with a more
-           flexible org.restlet.service.TaskService class and a new
-           "taskService" property on Application. Many design 
-           contributions from Tim Peierls. Suggestions by Kevin Conaway.
-         - Clarified Javadocs for static getCurrent() methods. Suggested
-           by Patrick Logan.
-         - Replaced Map<String, Object> parameters by Map<String, ?>
-           in Template and Resolver classed. Suggested by Leigh Klotz.
-         - Added shortcut Route#getMatchingMode() and setMatchingMode()
-           methods that redirect calls to the "template" property.
-         - Documented the default matching mode on Router.
-         - Deprecated Context#setLogger() as there is no compelling use
-           for it and synchronized setParameters() and setAttributes()
-           methods. Updated Javadocs of Context related to concurrent
-           access and modifications of those collections. Suggested by
-           Tim Peierls.
-         - Added HTTP OAuth authentication scheme constant.
-         - Completed the Component's XML config with the support of 
-           parameters under the component, client and server elements. 
-           Reported by Bruno Harbulot.
-         - Added a org.restlet.service.Service class, super class of all
-           existing service classes, with "enabled" and "started" 
-           properties. Enabled services are automatically started by
-           their parent application or component.
-         - Added an org.restlet.data.Range class to represent content
-           ranges.
-         - Added "enabledCipherSuites" and "disabledCipherSuites" 
-           parameters to HTTPS connectors supporting those settings.
-           Contributed by Bruno Harbulot.
+          protocol name instead of a Protocol instance.
+        - Replaced "Response.challengeRequest" by "challengeRequests" 
+          list property to conform to HTTP semantics. Contributed by
+          Bruno Harbulot.
+        - Clarified concurrency constraints on Uniform/Restlet 
+          subclasses and on Resource class. 
+          Suggested by Bruno Harbulot.
+        - Added public Resource#getAllowedMethods() method.
+        - Allow the routing of URIs with or without taking into 
+          account the query part. Suggested by Jim Alateras and 
+          contributed by Bruno Dumon.
+        - Completed the Component's XML config with the default query 
+          match setting defined on routers. Suggested by Bruno Dumon.
+        - Replaced the Context#getThread(Runnable) method with a more
+          flexible org.restlet.service.TaskService class and a new
+          "taskService" property on Application. Many design 
+          contributions from Tim Peierls. Suggestions by Kevin Conaway.
+        - Clarified Javadocs for static getCurrent() methods. Suggested
+          by Patrick Logan.
+        - Replaced Map<String, Object> parameters by Map<String, ?>
+          in Template and Resolver classed. Suggested by Leigh Klotz.
+        - Added shortcut Route#getMatchingMode() and setMatchingMode()
+          methods that redirect calls to the "template" property.
+        - Documented the default matching mode on Router.
+        - Deprecated Context#setLogger() as there is no compelling use
+          for it and synchronized setParameters() and setAttributes()
+          methods. Updated Javadocs of Context related to concurrent
+          access and modifications of those collections. Suggested by
+          Tim Peierls.
+        - Added HTTP OAuth authentication scheme constant.
+        - Completed the Component's XML config with the support of 
+          parameters under the component, client and server elements. 
+          Reported by Bruno Harbulot.
+        - Added a org.restlet.service.Service class, super class of all
+          existing service classes, with "enabled" and "started" 
+          properties. Enabled services are automatically started by
+          their parent application or component.
+        - Added an org.restlet.data.Range class to represent content
+          ranges.
+        - Added "enabledCipherSuites" and "disabledCipherSuites" 
+          parameters to HTTPS connectors supporting those settings.
+          Contributed by Bruno Harbulot.
         - Added Representation.range property to indicates the partial
           content available. Corresponds to Content-Range HTTP header.
           Also added a getAvailableSize() to return the range size in
