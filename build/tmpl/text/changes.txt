@@ -493,7 +493,7 @@ Changes log
           processing. Suggested by Alex Milowski.
         - Updated Reference's Javadocs to mention that getters do not 
           automatically do URI decoding. Suggested by Paul J. Lucas.
-        - Refactored NRE helpers hiearchy to take advantage of generics
+        - Refactored NRE helpers hierarchy to take advantage of generics
           and remove duplications.
         - Added SSL unit test contributed by Bruno Harbulot.
         - Completed the list of known media-types with Tomcat's 
