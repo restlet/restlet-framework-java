@@ -280,7 +280,7 @@ public abstract class Engine {
         }
 
         if (result == null) {
-            throw new ClassNotFoundException();
+            throw new ClassNotFoundException(className);
         }
 
         return result;
@@ -482,9 +482,9 @@ public abstract class Engine {
      * @param defaultLanguage
      *            The default language.
      * @return The preferred variant.
-     * @see <a href=
+     * @see <a href= *
      *      "http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm"
-     *      >Apache content negotiation algorithm</a>
+     *      * >Apache content negotiation algorithm< /a>
      */
     public abstract Variant getPreferredVariant(ClientInfo client,
             List<Variant> variants, Language defaultLanguage);
