@@ -332,7 +332,7 @@ public class SecurityUtils {
                             // Log the authentication result
                             if (logger != null) {
                                 logger
-                                        .info("Basic HTTP authentication succeeded: identifier="
+                                        .fine("Basic HTTP authentication parsing succeeded: identifier="
                                                 + result.getIdentifier() + ".");
                             }
                         }
