@@ -72,17 +72,17 @@ public class SingletonProvider extends AbstractProviderWrapper implements
      * is thrown.
      * 
      * @param jaxRsProvider
-     *                the JAX-RS provider class.
+     *            the JAX-RS provider class.
      * @param objectFactory
-     *                The object factory is responsible for the provider
-     *                instantiation, if given.
+     *            The object factory is responsible for the provider
+     *            instantiation, if given.
      * @param allResolvers
-     *                all available {@link ContextResolver}s. >>>>>>> .r3440
+     *            all available {@link ContextResolver}s. >>>>>>> .r3440
      * @param logger
-     *                the logger to use.
+     *            the logger to use.
      * @throws IllegalArgumentException
-     *                 if the class is not a valid provider, may not be
-     *                 instantiated or what ever.
+     *             if the class is not a valid provider, may not be instantiated
+     *             or what ever.
      * @throws WebApplicationException
      * @see javax.ws.rs.ext.MessageBodyReader
      * @see javax.ws.rs.ext.MessageBodyWriter
@@ -97,7 +97,7 @@ public class SingletonProvider extends AbstractProviderWrapper implements
     @SuppressWarnings("unchecked")
     public SingletonProvider(Object jaxRsProvider, Logger logger)
             throws IllegalArgumentException, WebApplicationException {
-        super(jaxRsProvider.getClass());
+        super((jaxRsProvider == null) ? null : jaxRsProvider.getClass());
         if (jaxRsProvider == null) {
             throw new IllegalArgumentException(
                     "The JAX-RS provider class must not be null");
@@ -272,9 +272,9 @@ public class SingletonProvider extends AbstractProviderWrapper implements
      * 
      * @param type
      * @param genericType
-     *                The generic {@link Type} to convert to.
+     *            The generic {@link Type} to convert to.
      * @param annotations
-     *                the annotations of the artefact to convert to
+     *            the annotations of the artefact to convert to
      * @param mediaType
      * @param httpHeaders
      * @param entityStream
@@ -310,20 +310,20 @@ public class SingletonProvider extends AbstractProviderWrapper implements
      * headers will be flushed prior to writing the response body.
      * 
      * @param genericType
-     *                The generic {@link Type} to convert to.
+     *            The generic {@link Type} to convert to.
      * @param annotations
-     *                the annotations of the artefact to convert to
+     *            the annotations of the artefact to convert to
      * @param mediaType
-     *                the media type of the HTTP entity.
+     *            the media type of the HTTP entity.
      * @param httpHeaders
-     *                a mutable map of the HTTP response headers.
+     *            a mutable map of the HTTP response headers.
      * @param entityStream
-     *                the {@link OutputStream} for the HTTP entity.
+     *            the {@link OutputStream} for the HTTP entity.
      * @param object
-     *                the object to write.
+     *            the object to write.
      * 
      * @throws java.io.IOException
-     *                 if an IO error arises
+     *             if an IO error arises
      * @see javax.ws.rs.ext.MessageBodyWriter#writeTo(Object, Type,
      *      Annotation[], javax.ws.rs.core.MediaType, MultivaluedMap,
      *      OutputStream)
@@ -342,17 +342,17 @@ public class SingletonProvider extends AbstractProviderWrapper implements
      * method annotated with &#64;{@link PostConstruct}.
      * 
      * @param tlContext
-     *                The thread local wrapped {@link CallContext}
+     *            The thread local wrapped {@link CallContext}
      * @param allProviders
-     *                all providers.
+     *            all providers.
      * @param extensionBackwardMapping
-     *                the extension backward mapping
+     *            the extension backward mapping
      * @throws InjectException
      * @throws InvocationTargetException
-     *                 if a bean setter throws an exception
+     *             if a bean setter throws an exception
      * @throws IllegalTypeException
-     *                 if the given class is not valid to be annotated with
-     *                 &#64; {@link Context}.
+     *             if the given class is not valid to be annotated with &#64;
+     *             {@link Context}.
      * @see EntityProvider#initAtAppStartUp(ThreadLocalizedContext, Providers,
      *      ExtensionBackwardMapping)
      */
@@ -383,8 +383,8 @@ public class SingletonProvider extends AbstractProviderWrapper implements
     /**
      * Checks, if this provider represents an {@link ExceptionMapper}.
      * 
-     * @return true, if this provider is an {@link ExceptionMapper}, or false
-     *         if not.
+     * @return true, if this provider is an {@link ExceptionMapper}, or false if
+     *         not.
      */
     @Override
     public final boolean isExceptionMapper() {

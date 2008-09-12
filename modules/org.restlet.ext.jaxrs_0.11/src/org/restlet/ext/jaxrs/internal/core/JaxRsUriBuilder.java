@@ -192,7 +192,6 @@ public class JaxRsUriBuilder extends UriBuilder {
      * @see javax.ws.rs.core.UriBuilder#build(java.lang.Object[])
      */
     @Override
-    @SuppressWarnings("unchecked")
     public URI build(Object... values) throws IllegalArgumentException,
             UriBuilderException {
         final Template template = new Template(toStringWithCheck(false));

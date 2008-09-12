@@ -396,7 +396,7 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
      * @see javax.ws.rs.ext.Providers#getMessageBodyWriter(Class, Type,
      *      Annotation[], javax.ws.rs.core.MediaType)
      */
-    @SuppressWarnings( { "unchecked", "cast" })
+    @SuppressWarnings( { "unchecked" })
     public <T> javax.ws.rs.ext.MessageBodyWriter<T> getMessageBodyWriter(
             Class<T> type, Type genericType, Annotation[] annotations,
             javax.ws.rs.core.MediaType mediaType) {

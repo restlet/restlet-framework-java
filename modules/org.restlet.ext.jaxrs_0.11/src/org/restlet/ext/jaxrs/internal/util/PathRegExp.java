@@ -314,7 +314,6 @@ public class PathRegExp {
      * @return Returns an MatchingResult, if the remainingPath matches to this
      *         template, or null, if not.
      */
-    @SuppressWarnings("unchecked")
     public MatchingResult match(RemainingPath remainingPath) {
         String givenPath = remainingPath.getWithoutParams();
         Matcher matcher = pattern.matcher(givenPath);

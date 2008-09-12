@@ -68,7 +68,6 @@ abstract class AbstractProviderWrapper implements ProviderWrapper {
      * @see javax.ws.rs.ext.MessageBodyWriter
      * @see javax.ws.rs.ext.ContextResolver
      */
-    @SuppressWarnings("unchecked")
     AbstractProviderWrapper(Class<?> jaxRsProviderClass)
             throws IllegalArgumentException, WebApplicationException {
         final Consumes pm = jaxRsProviderClass.getAnnotation(Consumes.class);
@@ -170,7 +169,6 @@ abstract class AbstractProviderWrapper implements ProviderWrapper {
      * @see org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyWriter#supportsWrite(java.lang.Class,
      *      java.lang.reflect.Type)
      */
-    @SuppressWarnings("unused")
     public boolean supportsWrite(Class<?> entityClass, Type genericType) {
         // TODO AbstractProviderWrapper.supportsWrite(Class)
         return true;
@@ -188,7 +186,6 @@ abstract class AbstractProviderWrapper implements ProviderWrapper {
      *         if not.
      * @see MessageBodyReader#supportsRead(Class, Type)
      */
-    @SuppressWarnings("unused")
     public boolean supportsRead(Class<?> entityClass, Type genericType) {
         // TODO AbstractProviderWrapper.supportsRead(Class)
         return true;
