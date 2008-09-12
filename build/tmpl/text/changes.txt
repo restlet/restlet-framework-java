@@ -576,13 +576,13 @@ Changes log
         - Added new constructors to CookieSetting. Contributed by
           Stephan Koops.
         - Filter.beforeHandle() and doHandle() methods can now
-          indicates if the processing should continue normal, go to the
-          afterHandle() method directly or stop immediately. IMPORTANT
-          NOTE: as it isn't possible to add a return parameter to an
-          existing method, the change can break existing filters. In
-          this case, you just need to return the "CONTINUE" constant
-          from your method and use "int" as return parameter. Issue
-          reported by Paul J. Lucas.
+          indicates if the processing should continue normally, go to 
+          the afterHandle() method directly or stop immediately. 
+          IMPORTANT NOTE: as it isn't possible to add a return 
+          parameter to an existing method, the change can break 
+          existing filters. In this case, you just need to return the 
+          "CONTINUE" constant from your method and use "int" as return 
+          parameter. Issue reported by Paul J. Lucas.
         - Added Handler.getQuery() method to easily return the
           request's target resource reference query as a parsed form
           (series of parameters). Suggested by Kevin Conaway.
