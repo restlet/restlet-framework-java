@@ -43,7 +43,8 @@ import com.noelios.restlet.util.SslContextFactory;
 
 /**
  * Jetty HTTPS server connector. Here is the list of additional parameters that
- * are supported: <table>
+ * are supported:
+ * <table>
  * <tr>
  * <th>Parameter name</th>
  * <th>Value type</th>
@@ -54,8 +55,8 @@ import com.noelios.restlet.util.SslContextFactory;
  * <td>sslContextFactory</td>
  * <td>String</td>
  * <td>null</td>
- * <td>Let you specify a {@link SslContextFactory} class name as a parameter,
- * or an instance as an attribute for a more complete and flexible SSL context
+ * <td>Let you specify a {@link SslContextFactory} class name as a parameter, or
+ * an instance as an attribute for a more complete and flexible SSL context
  * setting. If set, it takes precedance over the other SSL parameters below.</td>
  * </tr>
  * <tr>
@@ -92,7 +93,8 @@ import com.noelios.restlet.util.SslContextFactory;
  * <td>disabledCipherSuites</td>
  * <td>String</td>
  * <td>null</td>
- * <td>Whitespace-separated list of disabled cipher suites and/or can be specified multiple times.</td>
+ * <td>Whitespace-separated list of disabled cipher suites and/or can be
+ * specified multiple times.</td>
  * </tr>
  * <tr>
  * <td>needClientAuthentication</td>
@@ -135,9 +137,9 @@ import com.noelios.restlet.util.SslContextFactory;
  * </tr>
  * </table>
  * 
- * @see <a
- *      href="http://docs.codehaus.org/display/JETTY/How+to+configure+SSL">How
- *      to configure SSL for Jetty</a>
+ * @see <a *
+ *      href="http://docs.codehaus.org/display/JETTY/How+to+configure+SSL">How *
+ *      to configure SSL for Jetty< /a>
  * @author Jerome Louvel
  */
 public class HttpsServerHelper extends JettyServerHelper {
@@ -145,7 +147,7 @@ public class HttpsServerHelper extends JettyServerHelper {
      * Constructor.
      * 
      * @param server
-     *                The server to help.
+     *            The server to help.
      */
     public HttpsServerHelper(Server server) {
         super(server);
@@ -365,10 +367,11 @@ public class HttpsServerHelper extends JettyServerHelper {
      * 
      * @return True if we would use the NIO-based connector instead of the BIO
      *         one.
+     * @Deprecated Will be removed in the future.
      */
+    @Deprecated
     public boolean isUseNio() {
-        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
-                "useNio", "true"));
+        return getType() == 1;
     }
 
     /**
