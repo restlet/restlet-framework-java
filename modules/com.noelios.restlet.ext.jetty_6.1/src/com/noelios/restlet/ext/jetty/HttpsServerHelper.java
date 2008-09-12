@@ -37,7 +37,8 @@ import org.restlet.data.Protocol;
 
 /**
  * Jetty HTTPS server connector. Here is the list of additional parameters that
- * are supported: <table>
+ * are supported:
+ * <table>
  * <tr>
  * <th>Parameter name</th>
  * <th>Value type</th>
@@ -115,183 +116,184 @@ import org.restlet.data.Protocol;
  * </tr>
  * </table>
  * 
- * @see <a
- *      href="http://docs.codehaus.org/display/JETTY/How+to+configure+SSL">How
- *      to configure SSL for Jetty</a>
+ * @see <a *
+ *      href="http://docs.codehaus.org/display/JETTY/How+to+configure+SSL">How *
+ *      to configure SSL for Jetty< /a>
  * @author Jerome Louvel (contact@noelios.com)
  */
 public class HttpsServerHelper extends JettyServerHelper {
-	/**
-	 * Constructor.
-	 * 
-	 * @param server
-	 *            The server to help.
-	 */
-	public HttpsServerHelper(Server server) {
-		super(server);
-		getProtocols().add(Protocol.HTTPS);
-	}
+    /**
+     * Constructor.
+     * 
+     * @param server
+     *            The server to help.
+     */
+    public HttpsServerHelper(Server server) {
+        super(server);
+        getProtocols().add(Protocol.HTTPS);
+    }
 
-	/**
-	 * Creates a new internal Jetty connector.
-	 * 
-	 * @return A new internal Jetty connector.
-	 */
-	@Override
-	protected AbstractConnector createConnector() {
-		AbstractConnector result = null;
+    /**
+     * Creates a new internal Jetty connector.
+     * 
+     * @return A new internal Jetty connector.
+     */
+    @Override
+    protected AbstractConnector createConnector() {
+        AbstractConnector result = null;
 
-		// Create and configure the Jetty HTTP connector
-		switch (getType()) {
-		case 1:
-			// Selecting NIO connector
-			SslSelectChannelConnector nioResult = new SslSelectChannelConnector();
-			nioResult.setKeyPassword(getKeyPassword());
-			nioResult.setKeystore(getKeystorePath());
-			nioResult.setKeystoreType(getKeystoreType());
-			nioResult.setNeedClientAuth(isNeedClientAuthentication());
-			nioResult.setPassword(getKeystorePassword());
-			nioResult.setProtocol(getSslProtocol());
-			nioResult.setProvider(getSecurityProvider());
-			nioResult.setSecureRandomAlgorithm(getSecureRandomAlgorithm());
-			nioResult.setSslKeyManagerFactoryAlgorithm(getCertAlgorithm());
-			nioResult.setSslTrustManagerFactoryAlgorithm(getCertAlgorithm());
-			nioResult.setTrustPassword(getKeystorePassword());
-			result = nioResult;
-			break;
-		case 2:
-			// Blocking BIO connector
-			SslSocketConnector bioResult = new SslSocketConnector();
-			bioResult.setKeyPassword(getKeyPassword());
-			bioResult.setKeystore(getKeystorePath());
-			bioResult.setKeystoreType(getKeystoreType());
-			bioResult.setNeedClientAuth(isNeedClientAuthentication());
-			bioResult.setPassword(getKeystorePassword());
-			bioResult.setProtocol(getSslProtocol());
-			bioResult.setProvider(getSecurityProvider());
-			bioResult.setSecureRandomAlgorithm(getSecureRandomAlgorithm());
-			bioResult.setSslKeyManagerFactoryAlgorithm(getCertAlgorithm());
-			bioResult.setSslTrustManagerFactoryAlgorithm(getCertAlgorithm());
-			bioResult.setTrustPassword(getKeystorePassword());
-			bioResult.setWantClientAuth(isWantClientAuthentication());
-			result = bioResult;
-			break;
-		}
+        // Create and configure the Jetty HTTP connector
+        switch (getType()) {
+        case 1:
+            // Selecting NIO connector
+            SslSelectChannelConnector nioResult = new SslSelectChannelConnector();
+            nioResult.setKeyPassword(getKeyPassword());
+            nioResult.setKeystore(getKeystorePath());
+            nioResult.setKeystoreType(getKeystoreType());
+            nioResult.setNeedClientAuth(isNeedClientAuthentication());
+            nioResult.setPassword(getKeystorePassword());
+            nioResult.setProtocol(getSslProtocol());
+            nioResult.setProvider(getSecurityProvider());
+            nioResult.setSecureRandomAlgorithm(getSecureRandomAlgorithm());
+            nioResult.setSslKeyManagerFactoryAlgorithm(getCertAlgorithm());
+            nioResult.setSslTrustManagerFactoryAlgorithm(getCertAlgorithm());
+            nioResult.setTrustPassword(getKeystorePassword());
+            result = nioResult;
+            break;
+        case 2:
+            // Blocking BIO connector
+            SslSocketConnector bioResult = new SslSocketConnector();
+            bioResult.setKeyPassword(getKeyPassword());
+            bioResult.setKeystore(getKeystorePath());
+            bioResult.setKeystoreType(getKeystoreType());
+            bioResult.setNeedClientAuth(isNeedClientAuthentication());
+            bioResult.setPassword(getKeystorePassword());
+            bioResult.setProtocol(getSslProtocol());
+            bioResult.setProvider(getSecurityProvider());
+            bioResult.setSecureRandomAlgorithm(getSecureRandomAlgorithm());
+            bioResult.setSslKeyManagerFactoryAlgorithm(getCertAlgorithm());
+            bioResult.setSslTrustManagerFactoryAlgorithm(getCertAlgorithm());
+            bioResult.setTrustPassword(getKeystorePassword());
+            bioResult.setWantClientAuth(isWantClientAuthentication());
+            result = bioResult;
+            break;
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	/**
-	 * Returns the SSL keystore path.
-	 * 
-	 * @return The SSL keystore path.
-	 */
-	public String getKeystorePath() {
-		return getParameters().getFirstValue("keystorePath",
-				System.getProperty("user.home") + File.separator + ".keystore");
-	}
+    /**
+     * Returns the SSL keystore path.
+     * 
+     * @return The SSL keystore path.
+     */
+    public String getKeystorePath() {
+        return getParameters().getFirstValue("keystorePath",
+                System.getProperty("user.home") + File.separator + ".keystore");
+    }
 
-	/**
-	 * Returns the SSL keystore password.
-	 * 
-	 * @return The SSL keystore password.
-	 */
-	public String getKeystorePassword() {
-		return getParameters().getFirstValue("keystorePassword", "");
-	}
+    /**
+     * Returns the SSL keystore password.
+     * 
+     * @return The SSL keystore password.
+     */
+    public String getKeystorePassword() {
+        return getParameters().getFirstValue("keystorePassword", "");
+    }
 
-	/**
-	 * Returns the SSL keystore type.
-	 * 
-	 * @return The SSL keystore type.
-	 */
-	public String getKeystoreType() {
-		return getParameters().getFirstValue("keystoreType", "JKS");
-	}
+    /**
+     * Returns the SSL keystore type.
+     * 
+     * @return The SSL keystore type.
+     */
+    public String getKeystoreType() {
+        return getParameters().getFirstValue("keystoreType", "JKS");
+    }
 
-	/**
-	 * Returns the SSL key password.
-	 * 
-	 * @return The SSL key password.
-	 */
-	public String getKeyPassword() {
-		return getParameters().getFirstValue("keyPassword", "");
-	}
+    /**
+     * Returns the SSL key password.
+     * 
+     * @return The SSL key password.
+     */
+    public String getKeyPassword() {
+        return getParameters().getFirstValue("keyPassword", "");
+    }
 
-	/**
-	 * Returns the SSL certificate algorithm.
-	 * 
-	 * @return The SSL certificate algorithm.
-	 */
-	public String getCertAlgorithm() {
-		return getParameters().getFirstValue("certAlgorithm", "SunX509");
-	}
+    /**
+     * Returns the SSL certificate algorithm.
+     * 
+     * @return The SSL certificate algorithm.
+     */
+    public String getCertAlgorithm() {
+        return getParameters().getFirstValue("certAlgorithm", "SunX509");
+    }
 
-	/**
-	 * Returns the SSL keystore type.
-	 * 
-	 * @return The SSL keystore type.
-	 */
-	public String getSslProtocol() {
-		return getParameters().getFirstValue("sslProtocol", "TLS");
-	}
+    /**
+     * Returns the SSL keystore type.
+     * 
+     * @return The SSL keystore type.
+     */
+    public String getSslProtocol() {
+        return getParameters().getFirstValue("sslProtocol", "TLS");
+    }
 
-	/**
-	 * Returns the name of the RNG algorithm.
-	 * 
-	 * @return The name of the RNG algorithm.
-	 */
-	public String getSecureRandomAlgorithm() {
-		return getParameters().getFirstValue("secureRandomAlgorithm", null);
-	}
+    /**
+     * Returns the name of the RNG algorithm.
+     * 
+     * @return The name of the RNG algorithm.
+     */
+    public String getSecureRandomAlgorithm() {
+        return getParameters().getFirstValue("secureRandomAlgorithm", null);
+    }
 
-	/**
-	 * Returns the Java security provider name.
-	 * 
-	 * @return The Java security provider name.
-	 */
-	public String getSecurityProvider() {
-		return getParameters().getFirstValue("securityProvider", null);
-	}
+    /**
+     * Returns the Java security provider name.
+     * 
+     * @return The Java security provider name.
+     */
+    public String getSecurityProvider() {
+        return getParameters().getFirstValue("securityProvider", null);
+    }
 
-	/**
-	 * Indicates if we require client certificate authentication.
-	 * 
-	 * @return True if we require client certificate authentication.
-	 */
-	public boolean isNeedClientAuthentication() {
-		return Boolean.parseBoolean(getParameters().getFirstValue(
-				"needClientAuthentication", "false"));
-	}
+    /**
+     * Indicates if we require client certificate authentication.
+     * 
+     * @return True if we require client certificate authentication.
+     */
+    public boolean isNeedClientAuthentication() {
+        return Boolean.parseBoolean(getParameters().getFirstValue(
+                "needClientAuthentication", "false"));
+    }
 
-	/**
-	 * Indicates if we would like client certificate authentication.
-	 * 
-	 * @return True if we would like client certificate authentication.
-	 */
-	public boolean isWantClientAuthentication() {
-		return Boolean.parseBoolean(getParameters().getFirstValue(
-				"wantClientAuthentication", "false"));
-	}
+    /**
+     * Indicates if we would like client certificate authentication.
+     * 
+     * @return True if we would like client certificate authentication.
+     */
+    public boolean isWantClientAuthentication() {
+        return Boolean.parseBoolean(getParameters().getFirstValue(
+                "wantClientAuthentication", "false"));
+    }
 
-	/**
-	 * Indicates if we would use the NIO-based connector instead of the BIO one.
-	 * 
-	 * @return True if we would use the NIO-based connector instead of the BIO
-	 *         one.
-	 */
-	public boolean isUseNio() {
-		return Boolean.parseBoolean(getParameters().getFirstValue("useNio",
-				"true"));
-	}
+    /**
+     * Indicates if we would use the NIO-based connector instead of the BIO one.
+     * 
+     * @return True if we would use the NIO-based connector instead of the BIO
+     *         one.
+     * @Deprecated Will be removed in the future.
+     */
+    @Deprecated
+    public boolean isUseNio() {
+        return getType() == 1;
+    }
 
-	/**
-	 * Returns the type of Jetty connector to use.
-	 * 
-	 * @return The type of Jetty connector to use.
-	 */
-	public int getType() {
-		return Integer.parseInt(getParameters().getFirstValue("type", "2"));
-	}
+    /**
+     * Returns the type of Jetty connector to use.
+     * 
+     * @return The type of Jetty connector to use.
+     */
+    public int getType() {
+        return Integer.parseInt(getParameters().getFirstValue("type", "2"));
+    }
 
 }
