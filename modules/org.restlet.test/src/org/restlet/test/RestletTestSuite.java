@@ -30,6 +30,7 @@ package org.restlet.test;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.restlet.test.jaxrs.AllJaxRsTests;
 import org.restlet.test.spring.AllSpringTests;
 
 /**
@@ -82,7 +83,7 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(VelocityTestCase.class);
         addTestSuite(WadlTestCase.class);
 
-        //addTest(AllJaxRsTests.suite());
+        addTest(AllJaxRsTests.suite());
         addTest(AllSpringTests.suite());
     }
 

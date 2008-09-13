@@ -76,7 +76,8 @@ public class RequestTest extends JaxRsTestCase {
 
     /**
      * Conditions.getStatus() has a bug. I've send a patch; it's not yet
-     * patchNotApplied to the trunk, while writing this.
+     * patchNotApplied to the trunk, while writing this.<br>
+     * TODO CONDTIONS_GETSTATUS_PATCH_NOT_APPLIED
      */
     private static boolean CONDTIONS_GETSTATUS_PATCH_NOT_APPLIED = true;
 
