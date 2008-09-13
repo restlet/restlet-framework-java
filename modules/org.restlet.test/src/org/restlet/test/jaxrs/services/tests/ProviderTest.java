@@ -224,6 +224,7 @@ public class ProviderTest extends JaxRsTestCase {
         assertEquals("big test", entity.getText());
     }
 
+    /** @see ProviderTestService#jaxbElementGet() */
     public void testJaxbElementGet() throws Exception {
         getAndCheckJaxb("jaxbElement");
     }
@@ -297,6 +298,7 @@ public class ProviderTest extends JaxRsTestCase {
         postAndCheckXml("jaxb");
     }
 
+    /** @see ProviderTestService#mMapGet() */
     public void testMultivaluedMapGet() throws Exception {
         final Response response = get("MultivaluedMap");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
@@ -304,6 +306,7 @@ public class ProviderTest extends JaxRsTestCase {
         assertEquals("lastname=Merkel&firstname=Angela", entity.getText());
     }
 
+    /** @see ProviderTestService#mMapPost(javax.ws.rs.core.MultivaluedMap) */
     public void testMultivaluedMapPost() throws Exception {
         final Response response = post("MultivaluedMap", createForm()
                 .getWebRepresentation());

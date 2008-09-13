@@ -462,26 +462,29 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
     }
 
     /**
-     * Returns a Collection of {@link MessageBodyWriter}s, that support the
-     * given entityClass.
+     * Returns a Collection of {@link MessageBodyWriter}s, which generic type
+     * supports the given entityClass.
      * 
      * @param entityClass
      * @param genericType
      *                may be null
+     * @param annotations
+     * @param mediaType
      * @return
      * @see javax.ws.rs.ext.MessageBodyWriter#isWriteable(Class, Type,
      *      Annotation[])
      */
     public MessageBodyWriterSubSet writerSubSet(Class<?> entityClass,
             Type genericType) {
-        // NICE optimization: may be cached for speed.
         final List<MessageBodyWriter> mbws = new ArrayList<MessageBodyWriter>();
         for (ProviderWrapper mbww : this.messageBodyWriterWrappers) {
             MessageBodyWriter mbw = mbww.getInitializedWriter();
-            if (mbw.supportsWrite(entityClass, genericType))
+            if (mbw.supportsWrite(entityClass, genericType)) {
                 mbws.add(mbw);
+            }
         }
-        return new MessageBodyWriterSubSet(mbws);
+        // NICE optimization: may be cached for speed.
+        return new MessageBodyWriterSubSet(mbws, entityClass, genericType);
     }
 
     /**

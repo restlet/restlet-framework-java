@@ -29,8 +29,8 @@ package org.restlet.ext.jaxrs.internal.wrappers.provider;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Type;
 import java.util.List;
 
 import javax.ws.rs.WebApplicationException;
@@ -40,9 +40,10 @@ import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 
 /**
- * Class to wrap an initialized {@link javax.ws.rs.ext.MessageBodyWriter}
+ * Class to wrap an initialized {@link javax.ws.rs.ext.MessageBodyReader}
  * 
  * @author Stephan Koops
+ * @see javax.ws.rs.ext.MessageBodyReader
  */
 public interface MessageBodyReader {
 

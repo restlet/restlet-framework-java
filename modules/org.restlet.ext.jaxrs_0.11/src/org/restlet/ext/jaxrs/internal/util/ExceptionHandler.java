@@ -237,7 +237,7 @@ public class ExceptionHandler {
         annotations.toString(); // LATER log also annotations
         // NICE get as parameters the accMediaTypes and the entityClass.
         // and return supported MediaTypes as entity
-        throw new WebApplicationException(Status.NOT_ACCEPTABLE);
+        throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
     }
 
     /**

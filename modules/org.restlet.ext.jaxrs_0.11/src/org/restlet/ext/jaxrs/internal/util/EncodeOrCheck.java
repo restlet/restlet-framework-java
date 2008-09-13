@@ -84,7 +84,7 @@ public class EncodeOrCheck {
      * Checks / encodes all chars of the given char sequence.
      * 
      * @param string
-     * @param encode
+     * @param encode true, if the value should be encoded, or false if not.
      * @return
      * @throws IllegalArgumentException
      *                 if encode is false and at least one character of the
@@ -673,7 +673,7 @@ public class EncodeOrCheck {
      * 
      * @param c
      * @param stb
-     * @param encode
+     * @param encode true, if the value should be encoded, or false if not.
      * @throws IllegalArgumentException
      */
     private static void toHexOrReject(char c, StringBuilder stb, boolean encode)

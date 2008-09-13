@@ -35,11 +35,13 @@ import java.io.OutputStream;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.nio.charset.Charset;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -74,10 +76,12 @@ import org.restlet.ext.jaxrs.internal.core.UnmodifiableMultivaluedMap;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnMethodException;
+import org.restlet.ext.jaxrs.internal.exceptions.ImplementationException;
 import org.restlet.ext.jaxrs.internal.exceptions.InjectException;
 import org.restlet.ext.jaxrs.internal.exceptions.JaxRsRuntimeException;
 import org.restlet.ext.jaxrs.internal.exceptions.MethodInvokeException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
+import org.restlet.ext.jaxrs.internal.provider.JaxbElementProvider;
 import org.restlet.resource.Representation;
 import org.restlet.util.DateUtils;
 import org.restlet.util.Engine;
@@ -621,14 +625,26 @@ public class Util {
      */
     public static Class<?> getGenericClass(Class<?> clazz,
             Class<?> implInterface) {
-        for (Type genericType : clazz.getGenericInterfaces()) {
-            if (!(genericType instanceof ParameterizedType)) {
+        return getGenericClass(clazz, implInterface, null);
+    }
+
+    private static Class<?> getGenericClass(Class<?> clazz,
+            Class<?> implInterface, Type[] gsatp) {
+        if(clazz.equals(JaxbElementProvider.class)) {
+            clazz.toString();
+        }
+        else if(clazz.equals(MultivaluedMap.class)) {
+            clazz.toString();
+        }
+        for (Type ifGenericType : clazz.getGenericInterfaces()) {
+            if (!(ifGenericType instanceof ParameterizedType)) {
                 continue;
             }
-            final ParameterizedType pt = (ParameterizedType) genericType;
+            final ParameterizedType pt = (ParameterizedType) ifGenericType;
             if (!pt.getRawType().equals(implInterface))
                 continue;
-            final Type atp = pt.getActualTypeArguments()[0];
+            final Type[] atps = pt.getActualTypeArguments();
+            final Type atp = atps[0];
             if (atp instanceof Class) {
                 return (Class<?>) atp;
             }
@@ -638,8 +654,93 @@ public class Util {
                     return (Class<?>) rawType;
                 }
             }
+            if (atp instanceof TypeVariable<?>) {
+                TypeVariable<?> tv = (TypeVariable<?>) atp;
+                String name = tv.getName();
+                // clazz = AbstractProvider
+                // implInterface = MessageBodyReader
+                // name = "T"
+                // pt = MessageBodyReader<T>
+                for (int i = 0; i < atps.length; i++) {
+                    TypeVariable<?> tv2 = (TypeVariable<?>)atps[i];
+                    if (tv2.getName().equals(name)) {
+                        Type gsatpn = gsatp[i];
+                        if(gsatpn instanceof Class) {
+                            return (Class<?>)gsatpn;
+                        }
+                        if(gsatpn instanceof ParameterizedType) {
+                            final Type rawType = ((ParameterizedType)gsatpn).getRawType();
+                            if(rawType instanceof Class)
+                                return (Class<?>)rawType;
+                            throw new ImplementationException("Sorry, don't know how to return the class here");
+                        }
+                        if(gsatpn instanceof GenericArrayType) {
+                            Type genCompType = ((GenericArrayType)gsatpn).getGenericComponentType();
+                            return getArrayClass(genCompType, gsatpn);
+                        }
+                        //if(gsatpn instanceof TypeVariable) {
+                        //    TypeVariable<Class<?>> tvn = (TypeVariable)gsatpn;
+                        //    Class<?> cl = tvn.getGenericDeclaration();
+                        //    Type[] boulds = tvn.getBounds();
+                        //    cl.toString();
+                        //}
+                        //  throw new ImplementationException("Sorry, could not handle a "+gsatpn.getClass());
+                    }
+                }
+            }
         }
+        Class<?> superClass = clazz.getSuperclass();
+        Type genericSuperClass = clazz.getGenericSuperclass();
+        if(genericSuperClass instanceof Class) {
+            return null;
+        }
+        if(gsatp == null) {
+            // LATER this is a hack
+            gsatp = ((ParameterizedType) genericSuperClass)
+                .getActualTypeArguments();
+        }
+        if (superClass != null)
+            return getGenericClass(superClass, implInterface, gsatp);
         return null;
+    }
+
+    /**
+     * @param genCompType
+     * @param forMessage
+     * @throws NegativeArraySizeException
+     * @throws ImplementationException
+     */
+    private static Class<?> getArrayClass(Type genCompType, Type forMessage)
+            throws NegativeArraySizeException, ImplementationException {
+        if(genCompType.equals(Byte.TYPE)) {
+            return (new byte[0]).getClass();
+        }
+        if(genCompType.equals(Short.TYPE)) {
+            return (new short[0]).getClass();
+        }
+        if(genCompType.equals(Integer.TYPE)) {
+            return (new int[0]).getClass();
+        }
+        if(genCompType.equals(Long.TYPE)) {
+            return (new long[0]).getClass();
+        }
+        if(genCompType.equals(Float.TYPE)) {
+            return (new float[0]).getClass();
+        }
+        if(genCompType.equals(Double.TYPE)) {
+            return (new double[0]).getClass();
+        }
+        if(genCompType.equals(Character.TYPE)) {
+            return (new char[0]).getClass();
+        }
+        if(genCompType.equals(Boolean.TYPE)) {
+            return (new boolean[0]).getClass();
+        }
+        if(genCompType instanceof Class) {
+            return Array.newInstance((Class<?>)genCompType, 0).getClass();
+        }
+        throw new ImplementationException("Sorry, could not handle a "+forMessage.getClass());
+        // LATER could not handle all classes
     }
 
     /**

@@ -26,11 +26,14 @@
  */
 package org.restlet.ext.jaxrs.internal.wrappers.provider;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import org.restlet.data.MediaType;
+import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.ext.jaxrs.internal.util.SortedMetadata;
 
 /**
@@ -41,7 +44,7 @@ import org.restlet.ext.jaxrs.internal.util.SortedMetadata;
 public class MessageBodyWriterSubSet {
 
     private static final MessageBodyWriterSubSet EMPTY = new MessageBodyWriterSubSet(
-            new ArrayList<MessageBodyWriter>());
+            new ArrayList<MessageBodyWriter>(), null, null);
 
     /**
      * @return
@@ -50,10 +53,27 @@ public class MessageBodyWriterSubSet {
         return EMPTY;
     }
 
+    /**
+     * The class supported by the contained message body writers, given by the
+     * type parameter of the {@link javax.ws.rs.ext.MessageBodyWriter}. Could
+     * be {@code null}.
+     */
+    private final Class<?> type;
+
+    /**
+     * The type supported by the contained message body writers, given by the
+     * type parameter of the {@link javax.ws.rs.ext.MessageBodyWriter}. Could
+     * be {@code null}.
+     */
+    private final Type genericType;
+
     private final List<MessageBodyWriter> mbws;
 
-    MessageBodyWriterSubSet(List<MessageBodyWriter> mbws) {
+    MessageBodyWriterSubSet(List<MessageBodyWriter> mbws, final Class<?> type,
+            final Type genericType) {
         this.mbws = mbws;
+        this.genericType = genericType;
+        this.type = type;
     }
 
     /**
@@ -61,7 +81,8 @@ public class MessageBodyWriterSubSet {
      * 
      * @return a list of all producible media types. If this set is not empty,
      *         this result is not empty. '*<!---->/*' is returned for a message
-     *         body writer with no &#64;{@link javax.ws.rs.Produces} annotation.
+     *         body writer with no &#64;{@link javax.ws.rs.Produces}
+     *         annotation.
      */
     public Collection<MediaType> getAllProducibleMediaTypes() {
         final List<MediaType> p = new ArrayList<MediaType>();
@@ -76,22 +97,27 @@ public class MessageBodyWriterSubSet {
      * types of the response method and of the accepted {@link MediaType}s.
      * 
      * @param determinedResponseMediaType
-     *            The {@link MediaType}s of the response, declared by the
-     *            resource methods or given by the
-     *            {@link javax.ws.rs.core.Response}.
+     *                The {@link MediaType}s of the response, declared by the
+     *                resource methods or given by the
+     *                {@link javax.ws.rs.core.Response}.
+     * @param annotations
+     *                TODO
      * @param accMediaTypes
-     *            the accepted media types.
+     *                the accepted media types.
      * @return A {@link MessageBodyWriter} that best matches the given accepted.
      *         Returns null, if no adequate {@link MessageBodyWriter} could be
      *         found in this set.
      */
     public MessageBodyWriter getBestWriter(
-            MediaType determinedResponseMediaType,
+            MediaType determinedResponseMediaType, Annotation[] annotations,
             SortedMetadata<MediaType> accMediaTypes) {
         final List<MessageBodyWriter> mbws = new ArrayList<MessageBodyWriter>();
         for (final MessageBodyWriter mbw : this.mbws) {
             if (mbw.supportsWrite(determinedResponseMediaType)) {
-                mbws.add(mbw);
+                if (mbw.isWriteable(type, genericType, annotations, Converter
+                        .toJaxRsMediaType(determinedResponseMediaType))) {
+                    mbws.add(mbw);
+                }
             }
         }
         for (final Iterable<MediaType> amts : accMediaTypes.listOfColls()) {

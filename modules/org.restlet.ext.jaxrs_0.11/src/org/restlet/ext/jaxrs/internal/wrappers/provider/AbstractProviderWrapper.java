@@ -37,6 +37,7 @@ import javax.ws.rs.ext.ExceptionMapper;
 
 import org.restlet.data.MediaType;
 import org.restlet.ext.jaxrs.internal.util.Converter;
+import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.ext.jaxrs.internal.wrappers.WrapperUtil;
 
 /**
@@ -52,6 +53,10 @@ abstract class AbstractProviderWrapper implements ProviderWrapper {
     private final List<org.restlet.data.MediaType> consumedMimes;
 
     private final List<org.restlet.data.MediaType> producedMimes;
+
+    private final Class<?> genericMbrType;
+
+    private final Class<?> genericMbwType;
 
     /**
      * Creates a new wrapper for a Provider and initializes the provider. If the
@@ -83,6 +88,12 @@ abstract class AbstractProviderWrapper implements ProviderWrapper {
         } else {
             this.producedMimes = Collections.singletonList(MediaType.ALL);
         }
+
+        this.genericMbrType = Util.getGenericClass(jaxRsProviderClass,
+                javax.ws.rs.ext.MessageBodyReader.class);
+        this.genericMbwType = Util.getGenericClass(jaxRsProviderClass,
+                javax.ws.rs.ext.MessageBodyWriter.class);
+        // LATER use Type instead of Class here
     }
 
     @Override
@@ -170,8 +181,17 @@ abstract class AbstractProviderWrapper implements ProviderWrapper {
      *      java.lang.reflect.Type)
      */
     public boolean supportsWrite(Class<?> entityClass, Type genericType) {
-        // TODO AbstractProviderWrapper.supportsWrite(Class)
-        return true;
+        if (entityClass == null) {
+            return false;
+        }
+        if (genericType == null) {
+            // LATER use Type instead of Class
+        }
+        if(this.genericMbwType == null) {
+            return false;
+        }
+        final boolean supportsWrite = this.genericMbwType.isAssignableFrom(entityClass);
+        return supportsWrite;
     }
 
     /**
@@ -187,8 +207,16 @@ abstract class AbstractProviderWrapper implements ProviderWrapper {
      * @see MessageBodyReader#supportsRead(Class, Type)
      */
     public boolean supportsRead(Class<?> entityClass, Type genericType) {
-        // TODO AbstractProviderWrapper.supportsRead(Class)
-        return true;
+        if (entityClass == null) {
+            return false;
+        }
+        if (genericType == null) {
+            // LATER use Type instead of Class
+        }
+        if(this.genericMbrType == null) {
+            return false;
+        }
+        return this.genericMbrType.isAssignableFrom(entityClass);
     }
 
     /**

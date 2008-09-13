@@ -45,6 +45,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MultivaluedMap;
@@ -393,8 +394,6 @@ public class JaxRsRestlet extends Restlet {
         return method;
     }
 
-    // FIXME neues: sortierkreterium explizite RegExp vor ohne (=String)
-
     /**
      * Identifies the root resource class, see JAX-RS-Spec (2008-04-16), section
      * 3.7.2 "Request Matching", Part 1: "Identify the root resource class"
@@ -738,7 +737,7 @@ public class JaxRsRestlet extends Restlet {
             methodAnnotations = EMPTY_ANNOTATION_ARRAY;
 
         if (entity instanceof GenericEntity) {
-            GenericEntity<?> genericEntity = (GenericEntity) entity;
+            GenericEntity<?> genericEntity = (GenericEntity<?>) entity;
             genericReturnType = genericEntity.getType();
             entityClass = genericEntity.getRawType();
             entity = genericEntity.getEntity();
@@ -749,44 +748,39 @@ public class JaxRsRestlet extends Restlet {
             else
                 genericReturnType = null;
             if (genericReturnType instanceof Class
-                    && ((Class) genericReturnType)
+                    && ((Class<?>) genericReturnType)
                             .isAssignableFrom(javax.ws.rs.core.Response.class)) {
                 genericReturnType = entityClass;
             }
         }
 
-        MessageBodyWriterSubSet mbws;
+        final MultivaluedMap<String, Object> httpResponseHeaders = new WrappedRequestForHttpHeaders(
+                tlContext.get().getResponse(), jaxRsRespHeaders);
+        final Representation repr;
+
         if (entity != null) {
+            final MediaType respMediaType = determineMediaType(
+                    jaxRsResponseMediaType, resourceMethod, entityClass,
+                    genericReturnType);
+
+            final MessageBodyWriterSubSet mbws;
             mbws = providers.writerSubSet(entityClass, genericReturnType);
             if (mbws.isEmpty())
                 throw excHandler.noMessageBodyWriter(entityClass,
                         genericReturnType, methodAnnotations, null, null);
-        } else {
-            mbws = MessageBodyWriterSubSet.empty();
-        }
-        final MediaType respMediaType;
-        if (jaxRsResponseMediaType != null)
-            respMediaType = jaxRsResponseMediaType;
-        else if (resourceMethod != null)
-            respMediaType = determineMediaType(resourceMethod, mbws);
-        else
-            respMediaType = MediaType.TEXT_PLAIN;
-        final Response response = tlContext.get().getResponse();
-        MultivaluedMap<String, Object> httpResponseHeaders = new WrappedRequestForHttpHeaders(
-                response, jaxRsRespHeaders);
-        final Representation repr;
-        if (entity == null) {
-            repr = Representation.createEmpty();
-            repr.setMediaType(respMediaType);
-        } else {
-            final MessageBodyWriter mbw;
-            mbw = mbws.getBestWriter(respMediaType, accMediaTypes);
+
+            final MessageBodyWriter mbw = mbws.getBestWriter(respMediaType,
+                    methodAnnotations, accMediaTypes);
             if (mbw == null)
                 throw excHandler.noMessageBodyWriter(entityClass,
                         genericReturnType, methodAnnotations, respMediaType,
                         accMediaTypes);
             repr = new JaxRsOutputRepresentation(entity, genericReturnType,
                     respMediaType, methodAnnotations, mbw, httpResponseHeaders);
+        } else { // entity == null
+            repr = Representation.createEmpty();
+            repr.setMediaType(determineMediaType(jaxRsResponseMediaType,
+                    resourceMethod, entityClass, genericReturnType));
         }
         repr.setCharacterSet(getSupportedCharSet(httpResponseHeaders));
         return repr;
@@ -796,26 +790,42 @@ public class JaxRsRestlet extends Restlet {
      * Determines the MediaType for a response, see JAX-RS-Spec (2008-08-27),
      * section 3.8 "Determining the MediaType of Responses"
      * 
+     * @param jaxRsResponseMediaType
      * @param resourceMethod
      *                The ResourceMethod that created the entity.
+     * @param entityClass
+     *                needed, if neither the resource method nor the resource
+     *                class is annotated with &#64;{@link Produces}.
+     * @param genericReturnType
+     *                needed, if neither the resource method nor the resource
+     *                class is annotated with &#64;{@link Produces}.
+     * @param methodAnnotation
+     *                needed, if neither the resource method nor the resource
+     *                class is annotated with &#64;{@link Produces}.
      * @param mbws
      *                The {@link MessageBodyWriter}s, that support the class of
-     *                the returned entity object.
-     * @return the determined {@link MediaType}
-     * @throws RequestHandledException
+     *                the returned entity object as generic type of the
+     *                {@link MessageBodyWriter}.
+     * @return the determined {@link MediaType}. If no method is given,
+     *         "text/plain" is returned.
      * @throws WebApplicationException
      */
-    private MediaType determineMediaType(ResourceMethod resourceMethod,
-            MessageBodyWriterSubSet mbws) throws WebApplicationException {
+    private MediaType determineMediaType(MediaType jaxRsResponseMediaType,
+            ResourceMethod resourceMethod, Class<?> entityClass,
+            Type genericReturnType) throws WebApplicationException {
         // 1. if the Response contains a MediaType, use it.
-        // TODO wenn MediaType in Response enthalten, nimm den
+        if (jaxRsResponseMediaType != null)
+            return jaxRsResponseMediaType;
+        if (resourceMethod == null)
+            return MediaType.TEXT_PLAIN;
         CallContext callContext = tlContext.get();
         // 2. Gather the set of producible media types P:
         // (a) + (b)
         Collection<MediaType> p = resourceMethod.getProducedMimes();
         // 2. (c)
         if (p.isEmpty()) {
-            p = mbws.getAllProducibleMediaTypes();
+            p = providers.writerSubSet(entityClass, genericReturnType)
+                    .getAllProducibleMediaTypes();
             // 3.
             if (p.isEmpty())
                 // '*/*', in conjunction with 8.:

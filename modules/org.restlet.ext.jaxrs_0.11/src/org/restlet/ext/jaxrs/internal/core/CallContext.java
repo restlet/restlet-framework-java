@@ -26,8 +26,15 @@
  */
 package org.restlet.ext.jaxrs.internal.core;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.io.Writer;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -64,11 +71,9 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.CharacterSet;
-import org.restlet.data.Conditions;
 import org.restlet.data.Dimension;
 import org.restlet.data.Form;
 import org.restlet.data.Language;
-import org.restlet.data.Method;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Status;
@@ -339,18 +344,6 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
         }
     }
 
-    private boolean checkIfOneMatch(List<Tag> requestETags, Tag entityTag) {
-        if (entityTag.isWeak()) {
-            return false;
-        }
-        for (final Tag requestETag : requestETags) {
-            if (entityTag.equals(requestETag)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     /**
      * Creates an unmodifiable List of {@link PathSegment}s.
      * 
@@ -425,8 +418,82 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * @see javax.ws.rs.core.Request#evaluatePreconditions(java.util.Date)
      */
     public ResponseBuilder evaluatePreconditions(Date lastModified) {
-        // TODO throw IllegalArgumentException if null
-        return evaluatePreconditions(lastModified, null);
+        if (lastModified == null) {
+            throw new IllegalArgumentException(
+                    "The last modification date must not be null");
+        }
+        return evaluatePreconditionsInternal(lastModified, null);
+    }
+
+    /**
+     * Evaluates the preconditions of the current request against the given last
+     * modified date and / or the given entity tag. This method does not check,
+     * if the arguments are not null.
+     * 
+     * @param lastModified
+     * @param entityTag
+     * @return
+     * @see Request#evaluateConditions(Tag, Date)
+     */
+    private ResponseBuilder evaluatePreconditionsInternal(
+            final Date lastModified, final EntityTag entityTag) {
+        // Status status = this.request.getConditions().getStatus(
+        // this.request.getMethod(), true,
+        // Converter.toRestletTag(entityTag), lastModified);
+        Status status = this.request.getConditions().getStatus(
+                this.request.getMethod(), new Representation() {
+                    // this anonymous class is a temporary solution
+                    // see commented code above
+                    @Override
+                    public Tag getTag() {
+                        return Converter.toRestletTag(entityTag);
+                    }
+
+                    @Override
+                    public Date getModificationDate() {
+                        return lastModified;
+                    }
+
+                    @Override
+                    public ReadableByteChannel getChannel() throws IOException {
+                        throw new UnsupportedOperationException();
+                    }
+
+                    @Override
+                    public Reader getReader() throws IOException {
+                        throw new UnsupportedOperationException();
+                    }
+
+                    @Override
+                    public InputStream getStream() throws IOException {
+                        throw new UnsupportedOperationException();
+                    }
+
+                    @Override
+                    public void write(OutputStream outputStream) {
+                        throw new UnsupportedOperationException();
+                    }
+
+                    @Override
+                    public void write(WritableByteChannel writableChannel) {
+                        throw new UnsupportedOperationException();
+                    }
+
+                    @Override
+                    public void write(Writer writer) throws IOException {
+                        throw new UnsupportedOperationException();
+                    }
+                });
+        if (status == null)
+            return null;
+        if (status.equals(Status.REDIRECTION_NOT_MODIFIED)) {
+            final ResponseBuilder rb = Response.notModified();
+            rb.lastModified(lastModified);
+            rb.tag(entityTag);
+            return rb;
+        } else {
+            return Response.status(STATUS_PREC_FAILED);
+        }
     }
 
     /**
@@ -465,76 +532,15 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      */
     public ResponseBuilder evaluatePreconditions(Date lastModified,
             EntityTag entityTag) {
-        // TODO throw IllegalArgumentException if null
-        // NICE Vorbed. werden mit Conditions.getStatus() unterstuetzt.
-        if ((lastModified == null) && (entityTag == null)) {
-            return null;
+        if (lastModified == null) {
+            throw new IllegalArgumentException(
+                    "The last modification date must not be null");
         }
-        ResponseBuilder rb = null;
-        final Method requestMethod = this.request.getMethod();
-        final Conditions conditions = this.request.getConditions();
-        if (lastModified != null) {
-            // Header "If-Modified-Since"
-            final Date modSinceCond = conditions.getModifiedSince();
-            if (modSinceCond != null) {
-                if (modSinceCond.after(lastModified)) {
-                    // the Entity was not changed
-                    final boolean readRequest = requestMethod
-                            .equals(Method.GET)
-                            || requestMethod.equals(Method.HEAD);
-                    if (readRequest) {
-                        rb = Response.notModified();
-                        rb.lastModified(lastModified);
-                        rb.tag(entityTag);
-                    } else {
-                        return precFailed("The entity was not modified since "
-                                + Util.formatDate(modSinceCond, false));
-                    }
-                } else {
-                    // entity was changed -> check for other precoditions
-                }
-            }
-            // Header "If-Unmodified-Since"
-            final Date unmodSinceCond = conditions.getUnmodifiedSince();
-            if (unmodSinceCond != null) {
-                if (unmodSinceCond.after(lastModified)) {
-                    // entity was not changed -> Web Service must recalculate it
-                    return null;
-                } else {
-                    // the Entity was changed
-                    return precFailed("The entity was modified since "
-                            + Util.formatDate(unmodSinceCond, false));
-                }
-            }
+        if (entityTag == null) {
+            throw new IllegalArgumentException(
+                    "The entity tag must not be null");
         }
-        if (entityTag != null) {
-            final Tag actualEntityTag = Converter.toRestletTag(entityTag);
-            // Header "If-Match"
-            final List<Tag> requestMatchETags = conditions.getMatch();
-            if (!requestMatchETags.isEmpty()) {
-                final boolean match = checkIfOneMatch(requestMatchETags,
-                        actualEntityTag);
-                if (!match) {
-                    return precFailed("The entity does not match Entity Tag "
-                            + entityTag);
-                }
-            } else {
-                // default answer to the request
-            }
-            // Header "If-None-Match"
-            final List<Tag> requestNoneMatchETags = conditions.getNoneMatch();
-            if (!requestNoneMatchETags.isEmpty()) {
-                final boolean match = checkIfOneMatch(requestNoneMatchETags,
-                        actualEntityTag);
-                if (match) {
-                    return precFailed("The entity matches Entity Tag "
-                            + entityTag);
-                }
-            } else {
-                // default answer to the request
-            }
-        }
-        return rb;
+        return evaluatePreconditionsInternal(lastModified, entityTag);
     }
 
     /**
@@ -554,8 +560,11 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * @see javax.ws.rs.core.Request#evaluatePreconditions(javax.ws.rs.core.EntityTag)
      */
     public ResponseBuilder evaluatePreconditions(EntityTag entityTag) {
-        // TODO throw IllegalArgumentException if null
-        return evaluatePreconditions(null, entityTag);
+        if (entityTag == null) {
+            throw new IllegalArgumentException(
+                    "The entity tag must not be null");
+        }
+        return evaluatePreconditionsInternal(null, entityTag);
     }
 
     /**
@@ -1194,23 +1203,6 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
         pathParam.annotationType();
         // TODO CallContext.pathSegementEncIter(PathParam)
         throw new NotYetImplementedException();
-    }
-
-    /**
-     * Creates a response with status 412 (Precondition Failed).
-     * 
-     * @param entityMessage
-     *                Plain Text error message. Will be returned as entity.
-     * @return Returns a response with status 412 (Precondition Failed) and the
-     *         given message as entity.
-     */
-    private ResponseBuilder precFailed(String entityMessage) {
-        final ResponseBuilder rb = Response.status(STATUS_PREC_FAILED);
-        rb.entity(entityMessage);
-        rb.language(Language.ENGLISH.getName());
-        rb.type(Converter.toJaxRsMediaType(
-                org.restlet.data.MediaType.TEXT_PLAIN, null));
-        return rb;
     }
 
     /**

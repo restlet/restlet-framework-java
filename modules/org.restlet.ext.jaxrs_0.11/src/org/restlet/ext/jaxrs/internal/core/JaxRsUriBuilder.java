@@ -216,7 +216,7 @@ public class JaxRsUriBuilder extends UriBuilder {
     @Override
     public URI buildFromEncodedMap(Map<String, ? extends Object> values)
             throws IllegalArgumentException, UriBuilderException {
-        return this.buildFromMap(values, true);
+        return this.buildFromMap(values, false);
     }
 
     /**
@@ -225,7 +225,7 @@ public class JaxRsUriBuilder extends UriBuilder {
     @Override
     public URI buildFromMap(Map<String, ? extends Object> values)
             throws IllegalArgumentException, UriBuilderException {
-        return this.buildFromMap(values, false);
+        return this.buildFromMap(values, true);
     }
 
     /**
@@ -236,6 +236,8 @@ public class JaxRsUriBuilder extends UriBuilder {
      * 
      * @param values
      *                a map of URI template parameter names and values
+     * @param encode
+     *                true, if the value should be encoded, or false if not.
      * @return the URI built from the UriBuilder
      * @throws IllegalArgumentException
      *                 if automatic encoding is disabled and a supplied value
@@ -247,7 +249,7 @@ public class JaxRsUriBuilder extends UriBuilder {
      * @see javax.ws.rs.core.UriBuilder#build(java.util.Map)
      */
     private URI buildFromMap(final Map<String, ? extends Object> values,
-            final boolean encoded) throws IllegalArgumentException,
+            final boolean encode) throws IllegalArgumentException,
             UriBuilderException {
         final Template template = new Template(toStringWithCheck(false));
         return buildUri(template.format(new Resolver<String>() {
@@ -259,7 +261,7 @@ public class JaxRsUriBuilder extends UriBuilder {
                             "The value Map must contain a value for all given Templet variables. The value for variable "
                                     + variableName + " is missing");
                 }
-                return EncodeOrCheck.all(varValue.toString(), encoded);
+                return EncodeOrCheck.all(varValue.toString(), encode);
             }
         }));
     }
