@@ -78,7 +78,17 @@ public class Restlet extends Uniform {
     public Restlet(Context context) {
         this.context = context;
         this.started = false;
-        Engine.getInstance().fireContextChanged(this, context);
+
+        if (Engine.getInstance() == null) {
+            Context
+                    .getCurrentLogger()
+                    .severe(
+                            "Unable to fully initialize the Restlet. No Restlet engine available.");
+            throw new RuntimeException(
+                    "Unable to fully initialize the Restlet. No Restlet engine available.");
+        } else {
+            Engine.getInstance().fireContextChanged(this, context);
+        }
     }
 
     /**

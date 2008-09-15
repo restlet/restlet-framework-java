@@ -221,10 +221,14 @@ public class AuthenticationUtils {
                 result = new ChallengeRequest(new ChallengeScheme("HTTP_"
                         + scheme, scheme), null);
 
+                // Parse the parameters to extract the realm
                 final String rest = header.substring(space + 1);
                 parseParameters(rest, result.getParameters());
-
                 result.setRealm(result.getParameters().getFirstValue("realm"));
+            } else {
+                final String scheme = header.substring(0);
+                result = new ChallengeRequest(new ChallengeScheme("HTTP_"
+                        + scheme, scheme), null);
             }
         }
 
