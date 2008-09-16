@@ -24,7 +24,8 @@ Changes log
     - API Enhancements
         - 
     - NRE and Extension Enhancements
-        - 
+        - Lowered the log message for connectors without protocols 
+          from SEVERE to FINE. Reported by Paolo Borelli. 
     - Misc
         - Updated db4o to version 7.4.58.
         - Updated FreeMarker to version 2.3.14.
