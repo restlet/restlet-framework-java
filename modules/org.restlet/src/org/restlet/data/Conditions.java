@@ -233,7 +233,11 @@ public final class Conditions {
                                 .getModificationDate()));
 
                 if (!isModifiedSince) {
-                    result = Status.REDIRECTION_NOT_MODIFIED;
+                    if (Method.GET.equals(method) || Method.HEAD.equals(method)) {
+                        result = Status.REDIRECTION_NOT_MODIFIED;
+                    } else {
+                        result = Status.CLIENT_ERROR_PRECONDITION_FAILED;
+                    }
                 }
             }
         }

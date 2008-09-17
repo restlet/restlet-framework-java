@@ -33,6 +33,9 @@ Changes log
           the parent resource has no 'id' attribute. Also supports
           root resources with no leading slash. Patches contributed 
           by Vincent Ricard.
+        - Fixed error in Conditions.getStatus() sometimes returning
+          304 for methods other than HEAD and GET. Contributed by
+          Stephan Koops.
     - Misc
         - Updated db4o to version 7.4.58.
         - Updated FreeMarker to version 2.3.14.
