@@ -170,6 +170,7 @@ public class ChunkedInputStream extends InputStream {
         if (canRead()) {
             result = this.source.read();
             this.position++;
+            this.endReached = (result == -1);
         }
 
         return result;

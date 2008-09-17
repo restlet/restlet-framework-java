@@ -36,6 +36,9 @@ Changes log
         - Fixed error in Conditions.getStatus() sometimes returning
           304 for methods other than HEAD and GET. Contributed by
           Stephan Koops.
+        - Fixed uncessary assumption that an input stream would 
+          return -1 several times at the end. Reported by Marcelo
+          Ochoa. 
     - Misc
         - Updated db4o to version 7.4.58.
         - Updated FreeMarker to version 2.3.14.
