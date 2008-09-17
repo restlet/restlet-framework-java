@@ -27,11 +27,12 @@ Changes log
         - Unknown challenge schemes used to hide the actual status of
           response for client HTTP connectors. Now only a warning is
           logged. Reported by Tamás Cservenák.
-    - API Enhancements
-        - 
-    - NRE and Extension Enhancements
         - Lowered the log message for connectors without protocols 
-          from SEVERE to FINE. Reported by Paolo Borelli. 
+          from SEVERE to FINE. Reported by Paolo Borelli.
+        - WadlApplication now correctly handles nested resources when
+          the parent resource has no 'id' attribute. Also supports
+          root resources with no leading slash. Patches contributed 
+          by Vincent Ricard.
     - Misc
         - Updated db4o to version 7.4.58.
         - Updated FreeMarker to version 2.3.14.

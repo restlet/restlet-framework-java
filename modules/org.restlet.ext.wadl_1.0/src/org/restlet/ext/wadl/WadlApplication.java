@@ -77,10 +77,10 @@ import org.restlet.util.Engine;
  * Such application is also able to generate a description of itself under two
  * formats: WADL or HTML (the latter is actually a transformation of the
  * former). You can obtain this representation with an OPTIONS request addressed
- * exactly to the application URI (e.g.
- * "http://host:port/path/to/application"). By default, the returned
- * representation gleans the list of all attached Resources. This default
- * behaviour can be customized by overriding the getApplicationInfo() method.<br>
+ * exactly to the application URI (e.g. "http://host:port/path/to/application").
+ * By default, the returned representation gleans the list of all attached
+ * Resources. This default behaviour can be customized by overriding the
+ * getApplicationInfo() method.<br>
  * 
  * Concurrency note: instances of this class or its subclasses can be invoked by
  * several threads at the same time and therefore must be thread-safe. You
@@ -248,40 +248,40 @@ public class WadlApplication extends Application {
 
         String uriPattern = currentResource.getPath();
 
-        if (currentResource.getIdentifier() != null) {
-            // if there's a parentResource, add it's uriPattern to this one
-            if (parentResource != null) {
-                String parentUriPattern = parentResource.getPath();
+        // If there is a parentResource, add its uriPattern to this one
+        if (parentResource != null) {
+            String parentUriPattern = parentResource.getPath();
 
-                if ((parentUriPattern.endsWith("/") == false)
-                        && (uriPattern.startsWith("/") == false)) {
-                    parentUriPattern += "/";
-                }
-
-                uriPattern = parentUriPattern + uriPattern;
-
-                // set thisResource's 'path' attribute to the new uriPattern so
-                // child resources will be able to use it
-                currentResource.setPath(uriPattern);
+            if ((parentUriPattern.endsWith("/") == false)
+                    && (uriPattern.startsWith("/") == false)) {
+                parentUriPattern += "/";
             }
 
+            uriPattern = parentUriPattern + uriPattern;
+            currentResource.setPath(uriPattern);
+        } else if (!uriPattern.startsWith("/")) {
+            uriPattern = "/" + uriPattern;
+            currentResource.setPath(uriPattern);
+        }
+
+        if (currentResource.getIdentifier() != null) {
             // The "id" attribute conveys the target class name
             final Class targetClass = Engine.loadClass(currentResource
                     .getIdentifier());
 
             // Attach the resource itself
             router.attach(uriPattern, targetClass);
-
-            // Attach any children of the resource
-            for (final ResourceInfo childResource : currentResource
-                    .getChildResources()) {
-                attachResource(childResource, currentResource, router);
-            }
         } else {
             getLogger()
-                    .warning(
+                    .fine(
                             "Unable to find the 'id' attribute of the resource element with this path attribute \""
                                     + uriPattern + "\"");
+        }
+
+        // Attach children of the resource
+        for (final ResourceInfo childResource : currentResource
+                .getChildResources()) {
+            attachResource(childResource, currentResource, router);
         }
     }
 
