@@ -30,6 +30,7 @@ package com.noelios.restlet.authentication;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.restlet.Context;
 import org.restlet.Guard;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
@@ -166,9 +167,10 @@ public class AuthenticationUtils {
             if (helper != null) {
                 result = helper.format(request);
             } else {
-                throw new IllegalArgumentException("Challenge scheme "
-                        + request.getScheme()
-                        + " not supported by the Restlet engine.");
+                result = "?";
+                Context.getCurrentLogger().warning(
+                        "Challenge scheme " + request.getScheme()
+                                + " not supported by the Restlet engine.");
             }
         }
 
@@ -195,9 +197,10 @@ public class AuthenticationUtils {
         if (helper != null) {
             result = helper.format(challenge, request, httpHeaders);
         } else {
-            throw new IllegalArgumentException("Challenge scheme "
-                    + challenge.getScheme()
-                    + " not supported by the Restlet engine.");
+            result = "?";
+            Context.getCurrentLogger().warning(
+                    "Challenge scheme " + challenge.getScheme()
+                            + " not supported by the Restlet engine.");
         }
 
         return result;
@@ -239,9 +242,9 @@ public class AuthenticationUtils {
         if (helper != null) {
             helper.parseRequest(result, header);
         } else {
-            throw new IllegalArgumentException("Challenge scheme "
-                    + result.getScheme()
-                    + " not supported by the Restlet engine.");
+            Context.getCurrentLogger().warning(
+                    "Challenge scheme " + result.getScheme()
+                            + " not supported by the Restlet engine.");
         }
 
         return result;
@@ -277,9 +280,9 @@ public class AuthenticationUtils {
                 if (helper != null) {
                     helper.parseResponse(result, request);
                 } else {
-                    throw new IllegalArgumentException("Challenge scheme "
-                            + result.getScheme()
-                            + " not supported by the Restlet engine.");
+                    Context.getCurrentLogger().warning(
+                            "Challenge scheme " + result.getScheme()
+                                    + " not supported by the Restlet engine.");
                 }
             }
         }

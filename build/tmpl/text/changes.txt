@@ -24,6 +24,9 @@ Changes log
         - Now the caller's classloader is used to try to load classes
           to fix a regression introduced in 1.1 RC1. Reported by 
           Bruno Dumon.
+        - Unknown challenge schemes used to hide the actual status of
+          response for client HTTP connectors. Now only a warning is
+          logged. Reported by Tamás Cservenák.
     - API Enhancements
         - 
     - NRE and Extension Enhancements
