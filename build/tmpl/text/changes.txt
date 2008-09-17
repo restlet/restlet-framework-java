@@ -21,6 +21,9 @@ Changes log
           missing. Reported by John Logdson.
         - Fixed parsing of the HTTP WWW-Authenticate header when no
           realm is provided. Reported by Roman Geus.
+        - Now the caller's classloader is used to try to load classes
+          to fix a regression introduced in 1.1 RC1. Reported by 
+          Bruno Dumon.
     - API Enhancements
         - 
     - NRE and Extension Enhancements

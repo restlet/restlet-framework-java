@@ -274,9 +274,19 @@ public abstract class Engine {
                     className);
         }
 
-        // Finally try using the current class's class loader
+        // Then, try using the current class's class loader
         if (result == null) {
             result = loadClass(Class.class.getClassLoader(), className);
+        }
+
+        // Then, try using the caller's class loader
+        if (result == null) {
+            result = Class.forName(className);
+        }
+
+        // Finally try using the system class loader
+        if (result == null) {
+            result = loadClass(ClassLoader.getSystemClassLoader(), className);
         }
 
         if (result == null) {
@@ -482,9 +492,7 @@ public abstract class Engine {
      * @param defaultLanguage
      *            The default language.
      * @return The preferred variant.
-     * @see <a href= *
-     *      "http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm"
-     *      * >Apache content negotiation algorithm< /a>
+     * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
      */
     public abstract Variant getPreferredVariant(ClientInfo client,
             List<Variant> variants, Language defaultLanguage);
