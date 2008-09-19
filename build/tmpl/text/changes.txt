@@ -44,9 +44,9 @@ Changes log
           Alexei Sokolov.
     - Misc
         - Removed deprecated code in GWT module not need for a first 
-          release :-)
+          release.
         - Added initial support for HTTP challenges in GWT module.
-          Suggested by Gabor Dolla.
+          Suggested by Gabor Dolla. Help from Rasmus Agerholm.
         - Updated db4o to version 7.4.58.
         - Updated FreeMarker to version 2.3.14.
         - Updated JAX-RS API to version 0.11.
