@@ -29,6 +29,8 @@ package org.restlet.ext.spring;
 
 import java.util.Map;
 
+import org.restlet.Component;
+import org.restlet.Context;
 import org.restlet.VirtualHost;
 
 /**
@@ -37,6 +39,7 @@ import org.restlet.VirtualHost;
  * 
  * <pre>
  *     &lt;bean id=&quot;virtualHost&quot; class=&quot;org.restlet.ext.spring.SpringHost&quot;&gt;
+ *         &lt;constructor-arg ref=&quot;component&quot; /&gt;
  *         &lt;property name=&quot;hostDomain&quot;
  *                 value=&quot;mydomain.com|www.mydomain.com&quot; /&gt;
  *         &lt;property name=&quot;attachments&quot;&gt;
@@ -53,10 +56,30 @@ import org.restlet.VirtualHost;
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
  * 
- * @see <a href="http://www.springframework.org/">Spring home page</a>
+ * @see <a href="http://www.springframework.org/">Spring home page< /a>
  * @author Jerome Louvel
  */
 public class SpringHost extends VirtualHost {
+
+    /**
+     * Constructor.
+     * 
+     * @param component
+     *            The parent component.
+     */
+    public SpringHost(Component component) {
+        super(component.getContext());
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param context
+     *            The context to use.
+     */
+    public SpringHost(Context context) {
+        super(context);
+    }
 
     /**
      * Sets the map of routes to attach. The map keys are the URI templates and

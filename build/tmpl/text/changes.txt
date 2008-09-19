@@ -39,6 +39,9 @@ Changes log
         - Fixed uncessary assumption that an input stream would 
           return -1 several times at the end. Reported by Marcelo
           Ochoa. 
+        - SpringHost were created without context, causing some NPE
+          when trying to access client dispatchers. Reported by 
+          Alexei Sokolov.
     - Misc
         - Updated db4o to version 7.4.58.
         - Updated FreeMarker to version 2.3.14.
