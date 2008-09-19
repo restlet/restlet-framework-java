@@ -88,7 +88,7 @@ public class GwtHttpClientHelper extends HttpClientHelper {
                         request.getChallengeResponse().getIdentifier());
                 result.getRequestBuilder().setPassword(
                         String.valueOf(request.getChallengeResponse()
-                                .getScheme()));
+                                .getSecret()));
             }
 
         } catch (final Exception ioe) {
