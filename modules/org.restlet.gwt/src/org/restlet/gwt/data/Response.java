@@ -27,6 +27,7 @@
 
 package org.restlet.gwt.data;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
@@ -85,6 +86,9 @@ public class Response extends Message {
     /** The set of methods allowed on the requested resource. */
     private Set<Method> allowedMethods;
 
+    /** The authentication requests sent by an origin server to a client. */
+    private List<ChallengeRequest> challengeRequests;
+
     /** The cookie settings provided by the server. */
     private Series<CookieSetting> cookieSettings;
 
@@ -142,6 +146,26 @@ public class Response extends Message {
     }
 
     /**
+     * Returns the list of authentication requests sent by an origin server to a
+     * client. If none is found, an empty list is returned.
+     * 
+     * @return The list of authentication requests.
+     */
+    public List<ChallengeRequest> getChallengeRequests() {
+        // Lazy initialization with double-check.
+        List<ChallengeRequest> cr = this.challengeRequests;
+        if (cr == null) {
+            synchronized (this) {
+                cr = this.challengeRequests;
+                if (cr == null) {
+                    this.challengeRequests = cr = new ArrayList<ChallengeRequest>();
+                }
+            }
+        }
+        return cr;
+    }
+
+    /**
      * Returns the modifiable series of cookie settings provided by the server.
      * Creates a new instance if no one has been set.
      * 
@@ -184,18 +208,6 @@ public class Response extends Message {
      */
     public Reference getLocationRef() {
         return this.locationRef;
-    }
-
-    /**
-     * Returns the reference that the client should follow for redirections or
-     * resource creations.
-     * 
-     * @return The redirection reference.
-     * @deprecated Use getLocationRef() instead.
-     */
-    @Deprecated
-    public Reference getRedirectRef() {
-        return getLocationRef();
     }
 
     /**
@@ -337,6 +349,32 @@ public class Response extends Message {
     }
 
     /**
+     * Sets the authentication request sent by an origin server to a client.
+     * 
+     * @param request
+     *            The authentication request sent by an origin server to a
+     *            client.
+     */
+    public void setChallengeRequest(ChallengeRequest request) {
+        final List<ChallengeRequest> requests = new ArrayList<ChallengeRequest>();
+        requests.add(request);
+        setChallengeRequests(requests);
+    }
+
+    /**
+     * Sets the list of authentication requests sent by an origin server to a
+     * client. The list instance set must be thread-safe (use
+     * {@link CopyOnWriteArrayList} for example.
+     * 
+     * @param requests
+     *            The list of authentication requests sent by an origin server
+     *            to a client.
+     */
+    public void setChallengeRequests(List<ChallengeRequest> requests) {
+        this.challengeRequests = requests;
+    }
+
+    /**
      * Sets the cookie settings provided by the server.
      * 
      * @param cookieSettings
@@ -389,32 +427,6 @@ public class Response extends Message {
         }
 
         setLocationRef(new Reference(baseRef, locationUri).getTargetRef());
-    }
-
-    /**
-     * Sets the reference that the client should follow for redirections or
-     * resource creations.
-     * 
-     * @param locationRef
-     *            The reference to set.
-     * @deprecated Use the setLocationRef() method instead.
-     */
-    @Deprecated
-    public void setRedirectRef(Reference locationRef) {
-        setLocationRef(locationRef);
-    }
-
-    /**
-     * Sets the reference that the client should follow for redirections or
-     * resource creations.
-     * 
-     * @param locationUri
-     *            The URI to set.
-     * @deprecated Use the setLocationRef() method instead.
-     */
-    @Deprecated
-    public void setRedirectRef(String locationUri) {
-        setLocationRef(locationUri);
     }
 
     /**

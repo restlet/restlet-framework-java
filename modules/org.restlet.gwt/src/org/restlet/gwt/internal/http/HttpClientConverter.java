@@ -31,6 +31,7 @@ import java.util.Set;
 
 import org.restlet.gwt.Callback;
 import org.restlet.gwt.Context;
+import org.restlet.gwt.data.ChallengeRequest;
 import org.restlet.gwt.data.ClientInfo;
 import org.restlet.gwt.data.Conditions;
 import org.restlet.gwt.data.Dimension;
@@ -42,6 +43,7 @@ import org.restlet.gwt.data.Request;
 import org.restlet.gwt.data.Response;
 import org.restlet.gwt.data.Status;
 import org.restlet.gwt.internal.Engine;
+import org.restlet.gwt.internal.util.AuthenticationUtils;
 import org.restlet.gwt.util.DateUtils;
 import org.restlet.gwt.util.Series;
 
@@ -81,6 +83,11 @@ public class HttpClientConverter extends HttpConverter {
                             .println("Error during cookie setting parsing. Header: "
                                     + header.getValue());
                 }
+            } else if (header.getName().equalsIgnoreCase(
+                    HttpConstants.HEADER_WWW_AUTHENTICATE)) {
+                final ChallengeRequest request = AuthenticationUtils
+                        .parseAuthenticateHeader(header.getValue());
+                response.setChallengeRequest(request);
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_SERVER)) {
                 response.getServerInfo().setAgent(header.getValue());

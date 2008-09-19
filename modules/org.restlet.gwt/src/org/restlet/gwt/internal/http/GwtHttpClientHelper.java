@@ -74,12 +74,23 @@ public class GwtHttpClientHelper extends HttpClientHelper {
      */
     @Override
     public HttpClientCall create(Request request) {
-        HttpClientCall result = null;
+        GwtHttpClientCall result = null;
 
         try {
             result = new GwtHttpClientCall(this,
                     request.getMethod().toString(), request.getResourceRef()
                             .toString(), request.isEntityAvailable());
+
+            // If a challenge response is provided,
+            // update the GWT request builder
+            if (request.getChallengeResponse() != null) {
+                result.getRequestBuilder().setUser(
+                        request.getChallengeResponse().getIdentifier());
+                result.getRequestBuilder().setPassword(
+                        String.valueOf(request.getChallengeResponse()
+                                .getScheme()));
+            }
+
         } catch (final Exception ioe) {
             System.err.println("Unable to create the HTTP client call");
         }
