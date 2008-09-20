@@ -75,13 +75,6 @@ public class RequestTest extends JaxRsTestCase {
     private static final Status PREC_FAILED = Status.CLIENT_ERROR_PRECONDITION_FAILED;
 
     /**
-     * Conditions.getStatus() has a bug. I've send a patch; it's not yet
-     * patchNotApplied to the trunk, while writing this.<br>
-     * TODO CONDTIONS_GETSTATUS_PATCH_NOT_APPLIED
-     */
-    private static boolean CONDTIONS_GETSTATUS_PATCH_NOT_APPLIED = true;
-
-    /**
      * @param modifiedSince
      * @param entityTag
      * @return
@@ -139,8 +132,6 @@ public class RequestTest extends JaxRsTestCase {
     }
 
     public void testDateAndEntityTag2Put() throws Exception {
-        if (CONDTIONS_GETSTATUS_PATCH_NOT_APPLIED)
-            return;
         final Conditions conditions = createConditions(AFTER,
                 getDatastoreETag());
         final Response response = put("date", null, conditions);
@@ -282,8 +273,6 @@ public class RequestTest extends JaxRsTestCase {
      * @throws Exception
      */
     public void testPutModifiedSince() throws Exception {
-        if (CONDTIONS_GETSTATUS_PATCH_NOT_APPLIED)
-            return;
         Conditions conditions = new Conditions();
         conditions.setModifiedSince(BEFORE);
         Response response = put("date", null, conditions);
