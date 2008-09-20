@@ -47,7 +47,7 @@ public class MessageBodyWriterSubSet {
             new ArrayList<MessageBodyWriter>(), null, null);
 
     /**
-     * @return
+     * @return an empty {@link MessageBodyWriterSubSet}
      */
     public static MessageBodyWriterSubSet empty() {
         return EMPTY;
@@ -101,7 +101,6 @@ public class MessageBodyWriterSubSet {
      *                resource methods or given by the
      *                {@link javax.ws.rs.core.Response}.
      * @param annotations
-     *                TODO
      * @param accMediaTypes
      *                the accepted media types.
      * @return A {@link MessageBodyWriter} that best matches the given accepted.

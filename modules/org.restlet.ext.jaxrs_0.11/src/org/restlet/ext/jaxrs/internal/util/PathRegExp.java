@@ -86,14 +86,14 @@ public class PathRegExp {
      * Creates a {@link PathRegExp} for a root resource class.
      * 
      * @param rrc
-     *                the JAX-RS root resource class
+     *            the JAX-RS root resource class
      * @return the PathRegExp from the given root resource class
      * @throws MissingAnnotationException
-     *                 if the {@link Path} annotation is missing.
+     *             if the {@link Path} annotation is missing.
      * @throws IllegalPathOnClassException
-     *                 if the {@link Path} annotation is not valid.
+     *             if the {@link Path} annotation is not valid.
      * @throws IllegalArgumentException
-     *                 if the rrc is null.
+     *             if the rrc is null.
      * @see {@link #EMPTY}
      */
     public static PathRegExp createForClass(Class<?> rrc)
@@ -115,9 +115,9 @@ public class PathRegExp {
      * @param annotatedMethod
      * @return the {@link PathRegExp}. Never returns null.
      * @throws IllegalPathOnMethodException
-     *                 tif the annotation on the method is invalid.
+     *             tif the annotation on the method is invalid.
      * @throws IllegalArgumentException
-     *                 if the method is null.
+     *             if the method is null.
      */
     public static PathRegExp createForMethod(Method annotatedMethod)
             throws IllegalPathOnMethodException, IllegalArgumentException {
@@ -255,7 +255,8 @@ public class PathRegExp {
     }
 
     /**
-     * @return
+     * @return the number of capturing groups with regular expressions that are
+     *         not the default.
      */
     public int getNoNonDefCaprGroups() {
         return this.noNonDefaultRegExp;
@@ -301,7 +302,7 @@ public class PathRegExp {
     /**
      * Checks if the URI template is empty or only a slash.
      * 
-     * @return
+     * @return if this path regular expression is empty or "/"
      */
     public boolean isEmptyOrSlash() {
         return this.isEmptyOrSlash;
@@ -352,7 +353,8 @@ public class PathRegExp {
      * matching group.
      * 
      * @param remainingPath
-     * @return
+     * @return true, if this regular expression matches exectly the given path,
+     *         without a final capturing group.
      */
     public boolean matchesWithEmpty(RemainingPath remainingPath) {
         final MatchingResult matchingResult = match(remainingPath);

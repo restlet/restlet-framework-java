@@ -165,7 +165,7 @@ public abstract class RootResourceClass extends ResourceClass implements
      * @param objectFactory
      *                object responsible for instantiating the root resource
      *                class. Optional, thus can be null.
-     * @return
+     * @return a wrapped root resource instance
      * @throws InvocationTargetException
      * @throws InstantiateException
      * @throws MissingAnnotationException

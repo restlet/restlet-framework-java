@@ -346,7 +346,7 @@ public class Util {
      * @param keysAndValues
      *                first element is key1, second element value1, third
      *                element key2, forth element value2 and so on.
-     * @return
+     * @return the created Map
      */
     public static Map<String, String> createMap(String... keysAndValues) {
         final Map<String, String> map = new HashMap<String, String>();
@@ -377,11 +377,11 @@ public class Util {
     }
 
     /**
-     * Checks, if the given clazz implements the given interfaze.
+     * Checks, if the given class implements the given interface.
      * 
      * @param clazz
      * @param interfaze
-     * @return
+     * @return true, if the class implements the given interface.
      */
     public static boolean doesImplements(Class<?> clazz, Class<?> interfaze) {
         for (Class<?> interf : clazz.getInterfaces()) {
@@ -400,7 +400,7 @@ public class Util {
      * 
      * @param object1
      * @param object2
-     * @return
+     * @return true, if the objects are equal.
      */
     public static boolean equals(Object object1, Object object2) {
         if (object1 == null) {
@@ -417,7 +417,7 @@ public class Util {
      *                Date to format
      * @param cookie
      *                if true, using RFC 1036 format, otherwise RFC 1123 format.
-     * @return
+     * @return formates the Date
      */
     public static String formatDate(Date date, boolean cookie) {
         if (cookie) {
@@ -621,7 +621,7 @@ public class Util {
      * @param implInterface
      *                the interface from which the generic type should be
      *                returned.
-     * @return
+     * @return the type parameter of the given class.
      */
     public static Class<?> getGenericClass(Class<?> clazz,
             Class<?> implInterface) {
@@ -805,7 +805,7 @@ public class Util {
      * Returns the request headers as {@link MultivaluedMap}.
      * 
      * @param request
-     * @return
+     * @return the request headers as {@link MultivaluedMap}.
      */
     public static MultivaluedMap<String, String> getJaxRsHttpHeaders(
             Request request) {
@@ -1169,7 +1169,7 @@ public class Util {
     /**
      * @param pathTemplate
      * @param pathForExcMess
-     * @return
+     * @return &nbsp;
      * @throws IllegalPathException
      */
     public static String getPathTemplateWithoutRegExps(
@@ -1551,7 +1551,7 @@ public class Util {
      * beginning.
      * 
      * @param mediaTypes
-     * @return
+     * @return the sorted media types
      * @see Util#specificness(org.restlet.data.MediaType)
      */
     public static List<org.restlet.data.MediaType> sortByConcreteness(
@@ -1604,10 +1604,10 @@ public class Util {
      * 
      * @param coll
      * @param arrayType
-     * @return
+     * @return the object array
      * @throws NegativeArraySizeException
      */
-    public static Object toArray(Collection<?> coll, Class<?> arrayType) {
+    public static Object[] toArray(Collection<?> coll, Class<?> arrayType) {
         final int collSize = coll.size();
         final Object[] array = (Object[]) Array
                 .newInstance(arrayType, collSize);

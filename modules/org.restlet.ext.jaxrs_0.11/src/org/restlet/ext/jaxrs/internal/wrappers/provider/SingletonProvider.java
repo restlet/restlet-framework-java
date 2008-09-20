@@ -142,7 +142,8 @@ public class SingletonProvider extends AbstractProviderWrapper implements
      * @param type
      * @param genericType
      * @param annotations
-     * @return
+     * @return true, if the wrapped message body reader supports reading for the
+     *         given class with the given parameters.
      * @see javax.ws.rs.ext.MessageBodyReader#isReadable(Class, Type,
      *      Annotation[])
      */
@@ -172,7 +173,8 @@ public class SingletonProvider extends AbstractProviderWrapper implements
      * @param type
      * @param genericType
      * @param annotations
-     * @return
+     * @return true, if the wrapped message writer reader supports writing for
+     *         the given class with the given parameters.
      * @see javax.ws.rs.ext.MessageBodyWriter#isWriteable(Class)
      */
     public boolean isWriteable(Class<?> type, Type genericType,
@@ -278,7 +280,7 @@ public class SingletonProvider extends AbstractProviderWrapper implements
      * @param mediaType
      * @param httpHeaders
      * @param entityStream
-     * @return
+     * @return the read object
      * @throws IOException
      * @see javax.ws.rs.ext.MessageBodyReader#readFrom(Class, Type,
      *      javax.ws.rs.core.MediaType, Annotation[], MultivaluedMap,

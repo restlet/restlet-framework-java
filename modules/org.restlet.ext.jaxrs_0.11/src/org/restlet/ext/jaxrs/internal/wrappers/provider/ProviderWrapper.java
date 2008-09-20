@@ -61,29 +61,29 @@ public interface ProviderWrapper {
     List<MediaType> getConsumedMimes();
 
     /**
-     * @return
+     * @return an initialized {@link javax.ws.rs.ext.ContextResolver}
      */
     abstract ContextResolver getInitializedCtxResolver();
 
     /**
      * Beispiele:
      * <ul>
-     * <li> ExceptionMapper&lt;IllegalArgumentException&gt; -&gt;
-     * IllegalArgumentException </li>
-     * <li> MessageBodyReader&lt;Integer&gt; -&gt; Integer</li>
+     * <li>ExceptionMapper&lt;IllegalArgumentException&gt; -&gt;
+     * IllegalArgumentException</li>
+     * <li>MessageBodyReader&lt;Integer&gt; -&gt; Integer</li>
      * </ul>
      * 
-     * @return
+     * @return the type the wrapped exception mapper could map.
      */
     public Class<?> getExcMapperType();
 
     /**
-     * @return
+     * @return the initialized exception mapper
      */
     abstract ExceptionMapper<? extends Throwable> getInitializedExcMapper();
 
     /**
-     * @return
+     * @return an initialized reader
      */
     abstract MessageBodyReader getInitializedReader();
 
@@ -91,7 +91,7 @@ public interface ProviderWrapper {
     // of the matched resources and URIs must be stored for the current thread.
 
     /**
-     * @return
+     * @return an initialized writer
      */
     abstract MessageBodyWriter getInitializedWriter();
 
@@ -100,8 +100,8 @@ public interface ProviderWrapper {
      * {@link javax.ws.rs.ext.MessageBodyWriter}.
      * 
      * @return List of produced {@link MediaType}s. If the entity provider is
-     *         not annotated with &#64; {@link javax.ws.rs.Produces}, '*<!---->/*'
-     *         is returned.
+     *         not annotated with &#64; {@link javax.ws.rs.Produces},
+     *         '*<!---->/*' is returned.
      */
     List<MediaType> getProducedMimes();
 
@@ -136,8 +136,8 @@ public interface ProviderWrapper {
     /**
      * Checks, if this provider represents an {@link ExceptionMapper}.
      * 
-     * @return true, if this provider is an {@link ExceptionMapper}, or false
-     *         if not.
+     * @return true, if this provider is an {@link ExceptionMapper}, or false if
+     *         not.
      */
     abstract boolean isExceptionMapper();
 
@@ -163,7 +163,8 @@ public interface ProviderWrapper {
      * Checks, if this MessageBodyReader supports the given MediaType.
      * 
      * @param mediaType
-     * @return
+     * @return true, if the wrapped {@link javax.ws.rs.ext.MessageBodyReader}
+     *         supports the read for the given media type.
      */
     public boolean supportsRead(MediaType mediaType);
 
@@ -172,7 +173,7 @@ public interface ProviderWrapper {
      * requested {@link MediaType}s.
      * 
      * @param mediaTypes
-     *                the {@link MediaType}s
+     *            the {@link MediaType}s
      * @return true, if at least one of the requested {@link MediaType}s is
      *         supported, otherwise false.
      */
@@ -183,7 +184,7 @@ public interface ProviderWrapper {
      * requested {@link MediaType}s.
      * 
      * @param requested
-     *                the requested {@link MediaType}s
+     *            the requested {@link MediaType}s
      * @return true, if at least one of the requested {@link MediaType}s is
      *         supported, otherwise false.
      */
@@ -194,7 +195,7 @@ public interface ProviderWrapper {
      * requested {@link MediaType}s.
      * 
      * @param requested
-     *                the requested {@link MediaType}s
+     *            the requested {@link MediaType}s
      * @return true, if at least one of the requested {@link MediaType}s is
      *         supported, otherwise false.
      */

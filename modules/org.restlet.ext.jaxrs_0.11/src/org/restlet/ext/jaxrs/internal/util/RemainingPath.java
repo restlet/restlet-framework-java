@@ -108,7 +108,7 @@ public class RemainingPath implements Comparable<RemainingPath> {
     /**
      * Checks, if the remaining path is empty or slash.
      * 
-     * @return
+     * @return true, of this remaining path is empty or '/', otherwise false.
      */
     public boolean isEmptyOrSlash() {
         return Util.isEmptyOrSlash(this.remainingPart);

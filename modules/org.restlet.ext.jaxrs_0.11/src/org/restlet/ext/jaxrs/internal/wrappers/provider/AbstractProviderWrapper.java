@@ -223,7 +223,6 @@ abstract class AbstractProviderWrapper implements ProviderWrapper {
      * Checks, if this MessageBodyReader supports the given MediaType.
      * 
      * @param mediaType
-     * @return
      */
     public boolean supportsRead(MediaType mediaType) {
         for (final MediaType cm : getConsumedMimes()) {
@@ -282,12 +281,12 @@ abstract class AbstractProviderWrapper implements ProviderWrapper {
     }
 
     /**
-     * @return
+     * @return the initialized {@link MessageBodyReader}
      */
     public abstract MessageBodyReader getInitializedReader();
 
     /**
-     * @return
+     * @return the initialized {@link MessageBodyWriter}
      */
     public abstract MessageBodyWriter getInitializedWriter();
 }

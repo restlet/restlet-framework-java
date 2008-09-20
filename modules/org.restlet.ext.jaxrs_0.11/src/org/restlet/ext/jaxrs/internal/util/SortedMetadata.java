@@ -94,7 +94,7 @@ public class SortedMetadata<T extends Metadata> implements Iterable<T> {
 
     /**
      * @param respMediaType
-     * @return
+     * @return the media type as singelton of SortedMetadata
      */
     public static SortedMetadata<MediaType> get(MediaType respMediaType) {
         return new SortedMetadata<MediaType>(Collections
@@ -115,7 +115,7 @@ public class SortedMetadata<T extends Metadata> implements Iterable<T> {
      * Creates a new {@link SortedMetadata} for {@link MediaType}s.
      * 
      * @param preferences
-     * @return
+     * @return the given languages as SortedMetadata
      */
     public static SortedMetadata<Language> getForLanguages(
             Collection<Preference<Language>> preferences) {
@@ -127,7 +127,7 @@ public class SortedMetadata<T extends Metadata> implements Iterable<T> {
      * Collection is empty, {@link MediaType#ALL} is returned.
      * 
      * @param preferences
-     * @return
+     * @return the given media type as SortedMetadata
      */
     public static SortedMetadata<MediaType> getForMediaTypes(
             Collection<Preference<MediaType>> preferences) {
@@ -144,7 +144,7 @@ public class SortedMetadata<T extends Metadata> implements Iterable<T> {
      * Creates a SortedMetadata collection with exactly the {@link MediaType} 
      * '*<!---->/*''
      * 
-     * @return
+     * @return '*<!---->/*'' as SortedMediaType
      * @see MediaType#ALL
      */
     public static SortedMetadata<MediaType> getMediaTypeAll() {
@@ -155,7 +155,7 @@ public class SortedMetadata<T extends Metadata> implements Iterable<T> {
     /**
      * 
      * @param mediaType
-     * @return
+     * @return the media type as singelton as SortedMetadata
      * @see Collections#singleton(Object)
      */
     public static SortedMetadata<MediaType> singleton(MediaType mediaType) {
@@ -199,7 +199,7 @@ public class SortedMetadata<T extends Metadata> implements Iterable<T> {
     /**
      * Checks, if this SortedMetadata is empty
      * 
-     * @return
+     * @return true, if this sorted metadata is empty, or false if not.
      * @see Collection#isEmpty()
      */
     public boolean isEmpty() {

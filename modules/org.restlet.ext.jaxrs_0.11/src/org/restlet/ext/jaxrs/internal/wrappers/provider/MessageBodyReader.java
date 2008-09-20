@@ -67,8 +67,9 @@ public interface MessageBodyReader {
      * @param type
      * @param genericType
      * @param annotations
-     * @param mediaType TODO
-     * @return
+     * @param mediaType
+     * @return true, if the mapped message body reader could read to the given
+     *         class
      * @see {@link javax.ws.rs.ext.MessageBodyReader#isReadable(Class, Type, Annotation[])}
      */
     public boolean isReadable(Class<?> type, Type genericType,
@@ -83,26 +84,27 @@ public interface MessageBodyReader {
      * @param characterSet
      * @param httpHeaders
      * @param entityStream
-     * @return
+     * @return the read object
      * @throws IOException
      * @throws WebApplicationException
-     * @throws InvocationTargetException 
+     * @throws InvocationTargetException
      * @see {@link javax.ws.rs.ext.MessageBodyReader#readFrom(Class, Type, Annotation[], javax.ws.rs.core.MediaType, MultivaluedMap, InputStream)}
      */
     public Object readFrom(Class<?> type, Type genericType,
             Annotation annotations[], MediaType mediaType,
             CharacterSet characterSet,
             MultivaluedMap<String, String> httpHeaders, InputStream entityStream)
-            throws IOException, WebApplicationException, InvocationTargetException;
+            throws IOException, WebApplicationException,
+            InvocationTargetException;
 
     /**
      * Checks, if this message body reader supports the given type (by the type
      * parameter of the {@link javax.ws.rs.ext.MessageBodyWriter})
      * 
      * @param entityClass
-     *                the type
+     *            the type
      * @param genericType
-     *                the generic type
+     *            the generic type
      * @return true, if this MessageBodyReader supports the given type, false,
      *         if not.
      */

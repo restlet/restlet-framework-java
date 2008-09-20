@@ -83,7 +83,7 @@ public class SingletonRootResourceClass extends RootResourceClass {
      * @param objectFactory
      *                object responsible for instantiating the root resource
      *                class. Optional, thus can be null.
-     * @return
+     * @return the wrapped root resource class instance
      * @throws InvocationTargetException
      * @throws InstantiateException
      * @throws MissingAnnotationException

@@ -180,12 +180,12 @@ public class WrapperUtil {
      * 
      * @param constructor
      * @param args
-     * @return
+     * @return the created instance
      * @throws InvocationTargetException
      * @throws InstantiateException
      */
     public static Object createInstance(Constructor<?> constructor,
-            Object[] args) throws InvocationTargetException,
+            Object... args) throws InvocationTargetException,
             InstantiateException {
         try {
             return constructor.newInstance(args);
@@ -288,7 +288,7 @@ public class WrapperUtil {
      * 
      * @param method
      * @param annotationClass
-     * @return
+     * @return true, if the method is a bean setter, or false if not
      * @throws SecurityException
      */
     public static boolean isBeanSetter(Method method,

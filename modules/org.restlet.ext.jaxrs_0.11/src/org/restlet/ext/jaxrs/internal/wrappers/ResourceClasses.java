@@ -93,7 +93,7 @@ public class ResourceClasses {
 
     /**
      * @param jaxRsClass
-     * @return
+     * @return true, if the root resource class could be added, or false if not.
      */
     public boolean addRootClass(Class<?> jaxRsClass) {
         Class<?> rootResourceClass = jaxRsClass;
@@ -168,7 +168,7 @@ public class ResourceClasses {
     /**
      * 
      * @param jaxRsRootObject
-     * @return
+     * @return true, if the root resource class could be added, or false if not.
      */
     public boolean addRootSingleton(Object jaxRsRootObject) {
         jaxRsRootObject.toString();
@@ -233,7 +233,7 @@ public class ResourceClasses {
      * Creates a JAX-RS root resource object wrapper.
      * 
      * @param jaxRsRootResourceObject
-     * @return
+     * @return the wrapped root resource class
      * @throws IllegalArgumentException
      * @throws MissingAnnotationException
      * @throws IllegalPathOnClassException
@@ -260,7 +260,7 @@ public class ResourceClasses {
     }
 
     /**
-     * @return
+     * @return the wrapped root resource classes
      */
     public Iterable<RootResourceClass> roots() {
         return this.rootResourceClasses;

@@ -163,7 +163,7 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
 
     /**
      * @param jaxRsProviderClass
-     * @return
+     * @return true if the provider was added, or false if not
      */
     public boolean addClass(Class<?> jaxRsProviderClass) {
         ProviderWrapper provider;
@@ -470,7 +470,7 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
      *                may be null
      * @param annotations
      * @param mediaType
-     * @return
+     * @return a sub set of message body writers
      * @see javax.ws.rs.ext.MessageBodyWriter#isWriteable(Class, Type,
      *      Annotation[])
      */

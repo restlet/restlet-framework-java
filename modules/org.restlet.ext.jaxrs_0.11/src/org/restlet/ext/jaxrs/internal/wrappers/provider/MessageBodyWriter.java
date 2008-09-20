@@ -52,8 +52,9 @@ public interface MessageBodyWriter {
      * @param genericType
      * @param annotations
      * @param mediaType
-     *                The JAX-RS MediaType
-     * @return
+     *            The JAX-RS MediaType
+     * @return true, if the wrapped writer could write an object of the given
+     *         class with the given annotations and media type.
      * @see javax.ws.rs.ext.MessageBodyWriter#isWriteable(Class, Type,
      *      Annotation[])
      */
@@ -66,12 +67,12 @@ public interface MessageBodyWriter {
      * used in a HTTP <code>Content-Length</code> header.
      * 
      * @param t
-     *                the instance to write
+     *            the instance to write
      * @param type
      * @param genericType
      * @param annotations
      * @param mediaType
-     *                The Restlet MediaType
+     *            The Restlet MediaType
      * @return length in bytes or -1 if the length cannot be determined in
      *         advance
      * @see javax.ws.rs.ext.MessageBodyWriter#getSize(Object, Class, Type,
@@ -86,7 +87,7 @@ public interface MessageBodyWriter {
      * @param genericType
      * @param annotations
      * @param mediaType
-     *                The Restlet MediaType
+     *            The Restlet MediaType
      * @param httpHeaders
      * @param entityStream
      * @throws IOException
@@ -113,8 +114,8 @@ public interface MessageBodyWriter {
      * {@link javax.ws.rs.ext.MessageBodyWriter}.
      * 
      * @return List of produced Restlet {@link MediaType}s. If the entity
-     *         provider is not annotated with &#64; {@link javax.ws.rs.Produces}, '*<!---->/*'
-     *         is returned.
+     *         provider is not annotated with &#64; {@link javax.ws.rs.Produces}
+     *         , '*<!---->/*' is returned.
      */
     public List<MediaType> getProducedMimes();
 
@@ -123,7 +124,7 @@ public interface MessageBodyWriter {
      * given {@link MediaType}s.
      * 
      * @param mediaTypes
-     *                the Restlet {@link MediaType}s
+     *            the Restlet {@link MediaType}s
      * @return true, if at least one of the requested {@link MediaType}s is
      *         supported, otherwise false.
      */
@@ -134,7 +135,7 @@ public interface MessageBodyWriter {
      * {@link MediaType}.
      * 
      * @param mediaType
-     *                the Restlet {@link MediaType}
+     *            the Restlet {@link MediaType}
      * @return true, if the requested {@link MediaType} is supported, otherwise
      *         false.
      */
@@ -145,9 +146,9 @@ public interface MessageBodyWriter {
      * parameter of the {@link javax.ws.rs.ext.MessageBodyWriter})
      * 
      * @param entityClass
-     *                the type
+     *            the type
      * @param genericType
-     *                the generic type
+     *            the generic type
      * @return true, if this MessageBodyWriter supports the given type, false,
      *         if not.
      */

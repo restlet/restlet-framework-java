@@ -132,7 +132,7 @@ public abstract class ReprEntityGetter implements ParamGetter {
      * @param representationType
      * @param convToGen
      * @param logger
-     * @return
+     * @return the ParamGetter
      */
     public static ParamGetter create(Class<?> representationType,
             Type convToGen, Logger logger) {
