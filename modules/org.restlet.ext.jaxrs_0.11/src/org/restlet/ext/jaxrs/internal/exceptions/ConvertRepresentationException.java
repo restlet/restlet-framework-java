@@ -41,7 +41,8 @@ public class ConvertRepresentationException extends JaxRsException {
      * @param paramType
      * @param unparseableValue
      * @param cause
-     * @return
+     * @return (static the created ConvertRepresentationException for the
+     *         compiler)
      * @throws ConvertRepresentationException
      */
     public static ConvertRepresentationException object(Class<?> paramType,

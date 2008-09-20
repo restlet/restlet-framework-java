@@ -44,7 +44,7 @@ public class PathParamTest extends JaxRsTestCase {
 
     /**
      * @param subPath
-     *                without beginning '/'
+     *            without beginning '/'
      * @return
      */
     private Reference createReference(String subPath) {
@@ -83,5 +83,33 @@ public class PathParamTest extends JaxRsTestCase {
         final Response response = get(createReference("12/st/34"));
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("34", response.getEntity().getText());
+    }
+
+    public void testGetRegExpPathEinBuchstabe() throws IOException {
+        Response response = get("regExp/a");
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("ein Buchstabe: a", response.getEntity().getText());
+    }
+
+    public void testGetRegExpPathLangerString() throws IOException {
+        Response response = get("regExp/aa");
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("anderes: aa", response.getEntity().getText());
+    }
+
+    public void testGetRegExpPathZahl() throws IOException {
+        Response response = get("regExp/1");
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("Zahl: 1", response.getEntity().getText());
+
+        response = get("regExp/112");
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("Zahl: 112", response.getEntity().getText());
+    }
+
+    public void testGetRegExpPathZahlMinus() throws IOException {
+        Response response = get("regExp/-1");
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        assertEquals("Zahl: -1", response.getEntity().getText());
     }
 }

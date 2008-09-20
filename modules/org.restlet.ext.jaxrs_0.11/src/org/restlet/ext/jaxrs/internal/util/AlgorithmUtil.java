@@ -27,7 +27,7 @@
 package org.restlet.ext.jaxrs.internal.util;
 
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -80,9 +80,9 @@ public class AlgorithmUtil {
         }
     }
 
-    private static Map<ResourceMethod, List<MediaType>> findMethodsSupportAllTypes(
+    private static OrderedMap<ResourceMethod, List<MediaType>> findMethodsSupportAllTypes(
             Collection<ResourceMethod> resourceMethods, ConsOrProdMime inOut) {
-        final Map<ResourceMethod, List<MediaType>> returnMethods = new HashMap<ResourceMethod, List<MediaType>>();
+        final OrderedMap<ResourceMethod, List<MediaType>> returnMethods = new OrderedMap<ResourceMethod, List<MediaType>>();
         for (final ResourceMethod resourceMethod : resourceMethods) {
             final List<MediaType> mimes = getConsOrProdMimes(resourceMethod,
                     inOut);
@@ -95,10 +95,10 @@ public class AlgorithmUtil {
         return returnMethods;
     }
 
-    private static Map<ResourceMethod, List<MediaType>> findMethodsSupportType(
+    private static OrderedMap<ResourceMethod, List<MediaType>> findMethodsSupportType(
             Collection<ResourceMethod> resourceMethods, ConsOrProdMime inOut,
             SortedMetadata<MediaType> mediaTypes) {
-        final Map<ResourceMethod, List<MediaType>> returnMethods = new HashMap<ResourceMethod, List<MediaType>>();
+        final OrderedMap<ResourceMethod, List<MediaType>> returnMethods = new OrderedMap<ResourceMethod, List<MediaType>>();
         for (final ResourceMethod resourceMethod : resourceMethods) {
             final List<MediaType> mimes = getConsOrProdMimes(resourceMethod,
                     inOut);
@@ -122,10 +122,10 @@ public class AlgorithmUtil {
      * @param mediaType
      * @return Never returns null.
      */
-    private static Map<ResourceMethod, List<MediaType>> findMethodsSupportTypeAndSubType(
+    private static OrderedMap<ResourceMethod, List<MediaType>> findMethodsSupportTypeAndSubType(
             Collection<ResourceMethod> resourceMethods, ConsOrProdMime inOut,
             SortedMetadata<MediaType> mediaTypes) {
-        final Map<ResourceMethod, List<MediaType>> returnMethods = new HashMap<ResourceMethod, List<MediaType>>();
+        final OrderedMap<ResourceMethod, List<MediaType>> returnMethods = new OrderedMap<ResourceMethod, List<MediaType>>();
         for (final ResourceMethod resourceMethod : resourceMethods) {
             final List<MediaType> mimes = getConsOrProdMimes(resourceMethod,
                     inOut);
@@ -142,17 +142,17 @@ public class AlgorithmUtil {
 
     /**
      * @param resourceMethods
-     * @param consumeOrPr_mime
+     * @param inOut
      * @param mediaType
      * @return
      */
-    private static Map<ResourceMethod, List<MediaType>> findMethodSupportsMime(
+    private static OrderedMap<ResourceMethod, List<MediaType>> findMethodSupportsMime(
             Collection<ResourceMethod> resourceMethods, ConsOrProdMime inOut,
             SortedMetadata<MediaType> mediaTypes) {
         if ((mediaTypes == null) || mediaTypes.isEmpty()) {
             return findMethodsSupportAllTypes(resourceMethods, inOut);
         }
-        Map<ResourceMethod, List<MediaType>> mms;
+        OrderedMap<ResourceMethod, List<MediaType>> mms;
         mms = findMethodsSupportTypeAndSubType(resourceMethods, inOut,
                 mediaTypes);
         if (mms.isEmpty()) {
@@ -165,6 +165,18 @@ public class AlgorithmUtil {
     }
 
     /**
+     * Sorts the ResourceMethods by it's number of non default regular
+     * expressions
+     */
+    private static Comparator<ResourceMethod> COMP = new Comparator<ResourceMethod>() {
+        public int compare(ResourceMethod rm1, ResourceMethod rm2) {
+            int nndre1 = rm1.getPathRegExp().getNoNonDefCaprGroups();
+            int nndre2 = rm2.getPathRegExp().getNoNonDefCaprGroups();
+            return nndre2 - nndre1;
+        }
+    };
+
+    /**
      * Sort by using the media type of input data as the primary key and the
      * media type of output data as the secondary key.<br>
      * Sorting of media types follows the general rule: x/y < x/* < *<!---->/*,
@@ -174,21 +186,25 @@ public class AlgorithmUtil {
      * See JSR-311 Spec, section 2.6, Part 3b+c. <br>
      * Never returns null.
      * 
-     * @param resourceMethods
+     * @param unsortedResourceMethods
      *                the resourceMethods that provide the required mediaType
      * @param givenMediaType
      *                The MediaType of the given entity.
      * @param accMediaTypes
      *                The accepted MediaTypes
-     * @param httpMethod
+     * @param requHttpMethod
      *                The HTTP method of the request.
      * @return Returns the method who best matches the given and accepted media
      *         type in the request, or null
      */
     public static ResourceMethod getBestMethod(
-            Collection<ResourceMethod> resourceMethods,
+            Collection<ResourceMethod> unsortedResourceMethods,
             MediaType givenMediaType, SortedMetadata<MediaType> accMediaTypes,
-            Method httpMethod) {
+            Method requHttpMethod) {
+        final Collection<ResourceMethod> resourceMethods;
+        resourceMethods = new SortedOrderedBag<ResourceMethod>(COMP, 
+                unsortedResourceMethods);
+        // 3 b+c
         SortedMetadata<MediaType> givenMediaTypes;
         if (givenMediaType != null) {
             givenMediaTypes = SortedMetadata.singleton(givenMediaType);
@@ -196,49 +212,48 @@ public class AlgorithmUtil {
             givenMediaTypes = null;
         }
         // mms = methods that support the given MediaType
-        Map<ResourceMethod, List<MediaType>> mms1;
+        OrderedMap<ResourceMethod, List<MediaType>> mms1;
         mms1 = findMethodSupportsMime(resourceMethods,
                 ConsOrProdMime.CONSUME_MIME, givenMediaTypes);
-        if (mms1.isEmpty()) {
-            return Util.getFirstElement(resourceMethods);
-        }
         if (mms1.size() == 1) {
             return Util.getFirstKey(mms1);
+        }
+        if (mms1.isEmpty()) {
+            return Util.getFirstElement(resourceMethods);
         }
         // check for method with best Produces (secondary key)
         // mms = Methods support given MediaType and requested MediaType
         Map<ResourceMethod, List<MediaType>> mms2;
         mms2 = findMethodSupportsMime(mms1.keySet(),
                 ConsOrProdMime.PRODUCE_MIME, accMediaTypes);
-        if (mms2.isEmpty()) {
-            return Util.getFirstKey(mms1);
-        }
         if (mms2.size() == 1) {
             return Util.getFirstKey(mms2);
         }
+        if (mms2.isEmpty()) {
+            return Util.getFirstKey(mms1);
+        }
         for (final MediaType accMediaType : accMediaTypes) {
-            ResourceMethod bestMethod = null;
+            ResourceMethod bestResMethod = null;
             for (final Map.Entry<ResourceMethod, List<MediaType>> mm : mms2
                     .entrySet()) {
                 for (final MediaType methodMediaType : mm.getValue()) {
                     if (accMediaType.includes(methodMediaType)) {
-                        final ResourceMethod currentMethod = mm.getKey();
-                        if (bestMethod == null) {
-                            bestMethod = currentMethod;
+                        final ResourceMethod currentResMethod = mm.getKey();
+                        if (bestResMethod == null) {
+                            bestResMethod = currentResMethod;
                         } else {
-                            if (httpMethod.equals(Method.HEAD)) {
+                            if (requHttpMethod.equals(Method.HEAD)) {
                                 // special handling for HEAD
-                                final Method bestMethodHttp = bestMethod
-                                        .getHttpMethod();
+                                final Method bestMethodHttp;
+                                bestMethodHttp = bestResMethod.getHttpMethod();
                                 if (bestMethodHttp.equals(Method.GET)
-                                        && currentMethod.getHttpMethod()
+                                        && currentResMethod.getHttpMethod()
                                                 .equals(Method.HEAD)) {
                                     // ignore HEAD method
-                                } else if (bestMethod.getHttpMethod().equals(
-                                        Method.HEAD)
-                                        && currentMethod.getHttpMethod()
+                                } else if (bestMethodHttp.equals(Method.HEAD)
+                                        && currentResMethod.getHttpMethod()
                                                 .equals(Method.GET)) {
-                                    bestMethod = currentMethod;
+                                    bestResMethod = currentResMethod;
                                 } else {
                                     // use one of the methods, e.g. the first
                                 }
@@ -249,8 +264,8 @@ public class AlgorithmUtil {
                     }
                 }
             }
-            if (bestMethod != null) {
-                return bestMethod;
+            if (bestResMethod != null) {
+                return bestResMethod;
             }
         }
         return Util.getFirstKey(mms2);
@@ -283,7 +298,7 @@ public class AlgorithmUtil {
      * <li>the number of capturing groups as a secondary key (descending
      * order),</li>
      * <li>the number of capturing groups with non-default regular expressions
-     * (i.e. not "([^/]+?)") as the tertiary key (descending order), and </li>
+     * (i.e. not "([^/]+?)") as the tertiary key (descending order), and</li>
      * <li>the source of each member as quaternary key sorting those derived
      * from T<sub>method</sub> ahead of those derived from T<sub>locator</sub>.</li>
      * </ol>

@@ -35,8 +35,10 @@ import org.restlet.test.jaxrs.core.JaxRsUriBuilderTest;
 import org.restlet.test.jaxrs.core.UriInfoTest;
 import org.restlet.test.jaxrs.util.ConverterTests;
 import org.restlet.test.jaxrs.util.EncodeOrCheckTests;
+import org.restlet.test.jaxrs.util.OrderedMapTest;
 import org.restlet.test.jaxrs.util.PathRegExpTests;
 import org.restlet.test.jaxrs.util.RemainingPathTests;
+import org.restlet.test.jaxrs.util.SortedOrderedBagTest;
 import org.restlet.test.jaxrs.util.UtilTests;
 import org.restlet.test.jaxrs.wrappers.RootResourceClassTest;
 import org.restlet.test.jaxrs.wrappers.WrapperClassesTests;
@@ -61,8 +63,10 @@ public class AllClassTests extends TestCase {
         // package .util.
         mySuite.addTestSuite(ConverterTests.class);
         mySuite.addTestSuite(EncodeOrCheckTests.class);
+        mySuite.addTestSuite(OrderedMapTest.class);
         mySuite.addTestSuite(PathRegExpTests.class);
         mySuite.addTestSuite(RemainingPathTests.class);
+        mySuite.addTestSuite(SortedOrderedBagTest.class);
         mySuite.addTestSuite(UtilTests.class);
         // removed temporarily: mySuite.addTestSuite(UtilTests.class);
         // package .wrappers.

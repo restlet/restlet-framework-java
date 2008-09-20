@@ -42,7 +42,8 @@ public class ConvertParameterException extends JaxRsException {
      * @param paramType
      * @param unparseableValue
      * @param cause
-     * @return
+     * @return (static the created ConvertParameterException for the
+     *         compiler)
      * @throws ConvertParameterException
      */
     public static ConvertParameterException object(Class<?> paramType,
@@ -59,7 +60,8 @@ public class ConvertParameterException extends JaxRsException {
      * @param paramType
      * @param unparseableValue
      * @param cause
-     * @return
+     * @return (static the created ConvertParameterException for the
+     *         compiler)
      * @throws ConvertParameterException
      */
     public static ConvertParameterException primitive(Class<?> paramType,

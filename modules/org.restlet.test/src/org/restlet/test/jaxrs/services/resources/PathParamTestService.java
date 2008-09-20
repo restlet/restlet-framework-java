@@ -73,6 +73,27 @@ public class PathParamTestService {
             @PathParam("var2") String var2) {
         return var1 + "\n" + var2;
     }
+    
+    @GET
+    @Path("regExp/{buchstabe:[a-zA-Z]}")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String getRegExpEinBuchstabe(@PathParam("buchstabe") String buchstabe) {
+        return "ein Buchstabe: "+buchstabe;
+    }
+    
+    @GET
+    @Path("regExp/{string}")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String getRegExpSonstwas(@PathParam("string") String string) {
+        return "anderes: "+string;
+    }
+
+    @GET
+    @Path("regExp/{zahl:[-]?[0-9]+}")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String getRegExpZahl(@PathParam("zahl") int zahl) {
+        return "Zahl: "+zahl;
+    }
 
     @Path("st/{var1}")
     @GET
