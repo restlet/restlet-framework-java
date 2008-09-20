@@ -131,8 +131,6 @@ public class PathParamTest2 extends JaxRsTestCase {
 
     /** @see PathParamTestService2#getMultSegment(String) */
     public void testGetWithSlashInUriParam() throws IOException {
-        if(true) // TODO regexp in @Path
-            return;
         final Response response = get("multSegm/abc/def");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("abc/def", response.getEntity().getText());
