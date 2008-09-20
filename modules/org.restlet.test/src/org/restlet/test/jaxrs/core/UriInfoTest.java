@@ -81,26 +81,26 @@ public class UriInfoTest extends TestCase {
     };
 
     private static final UriInfo createUriInfo1() {
-        return newUriInfo(REFERENCE_1);
+        return newUriInfo(REFERENCE_1, BASE_REF);
     };
 
     private static final UriInfo createUriInfo2() {
-        return newUriInfo(REFERENCE_2);
+        return newUriInfo(REFERENCE_2, BASE_REF);
     };
 
     private static final ThreadLocalizedUriInfo createUriInfo5() {
         return newUriInfo(new Reference(BASE_REF, BASE_REF_STR
-                + "hfk;abc=%20def;ghi=jkl"));
+                + "hfk;abc=%20def;ghi=jkl"), BASE_REF);
     };
 
     private static final ThreadLocalizedUriInfo createUriInfo7() {
         return newUriInfo(new Reference(BASE_REF, BASE_REF_STR
-                + "abc?def=123&ghi=456"));
+                + "abc?def=123&ghi=456"), BASE_REF);
     };
 
     private static final ThreadLocalizedUriInfo createUriInfo8() {
         return newUriInfo(new Reference(BASE_REF, BASE_REF_STR
-                + "abc?def=1+23&gh%20i=45%206"));
+                + "abc?def=1+23&gh%20i=45%206"), BASE_REF);
     }
 
     /**
@@ -109,12 +109,14 @@ public class UriInfoTest extends TestCase {
      * <b>You could only use one of these UriInfos at the same time !!!</b>
      * 
      * @param resourceRef
+     * @param rootRef
      * @return
      */
-    static ThreadLocalizedUriInfo newUriInfo(Reference resourceRef) {
+    static ThreadLocalizedUriInfo newUriInfo(Reference resourceRef, Reference rootRef) {
         final Request request = new Request();
         request.setResourceRef(resourceRef);
         request.setOriginalRef(resourceRef);
+        request.setRootRef(rootRef);
         final Response response = new Response(request);
         Response.setCurrent(response);
         final CallContext callContext = new CallContext(request, response,
@@ -250,7 +252,7 @@ public class UriInfoTest extends TestCase {
                 0, "%20a%20", 0, "%21b%40%2C", 0);
 
         final UriInfo uriInfo = newUriInfo(new Reference(BASE_REF, BASE_REF_STR
-                + "abc/def;ghi=jkl;mno=pqr/stu;vwx=yz"));
+                + "abc/def;ghi=jkl;mno=pqr/stu;vwx=yz"), BASE_REF);
         final List<PathSegment> pathSegments = uriInfo.getPathSegments();
         checkPathSegments(pathSegments, "abc", 0, "def", 2, "stu", 1);
 

@@ -39,7 +39,6 @@ public class AllServiceTests extends TestCase {
     public static Test suite() {
         final TestSuite mySuite = new TestSuite();
         mySuite.setName("All service tests");
-        mySuite.addTestSuite(MatchedTest.class);
         mySuite.addTestSuite(AppPlusXmlTest.class);
         mySuite.addTestSuite(CarTest.class);
         mySuite.addTestSuite(ContextResolverTest.class);
@@ -55,8 +54,10 @@ public class AllServiceTests extends TestCase {
         mySuite.addTestSuite(IllegalThingsTest.class);
         mySuite.addTestSuite(InheritAnnotationTest.class);
         mySuite.addTestSuite(InjectionTest.class);
+        mySuite.addTestSuite(Issue593Test.class);
         mySuite.addTestSuite(JsonTest.class);
         mySuite.addTestSuite(ListParamTest.class);
+        mySuite.addTestSuite(MatchedTest.class);
         mySuite.addTestSuite(MatrixParamTest.class);
         mySuite.addTestSuite(MatrixParamTest2.class);
         mySuite.addTestSuite(MessageBodyWritersTest.class);

@@ -56,6 +56,7 @@ import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
+import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -338,6 +339,8 @@ public class JaxRsRestlet extends Restlet {
     public void handle(Request request, Response response) {
         super.handle(request, response);
         ResourceObject resourceObject = null;
+        final Reference baseRef = request.getResourceRef().getBaseRef();
+        request.setRootRef(new Reference(baseRef.toString()));
         try {
             CallContext callContext;
             callContext = new CallContext(request, response, this.roleChecker);

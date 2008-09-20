@@ -280,6 +280,12 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
             throw new IllegalArgumentException(
                     "The request.originalRef must not be null");
         }
+        final Reference appRootRef = request.getRootRef();
+        if (appRootRef == null) {
+            throw new IllegalArgumentException(
+                    "The root reference of the request must not be null");
+        }
+        referenceOriginal.setBaseRef(appRootRef);
         this.referenceCut = referenceCut;
         this.referenceOriginal = referenceOriginal;
         this.readOnly = false;
