@@ -44,7 +44,7 @@ public class Notizen {
 
     // TESTEN what happens, if ".." or "." in @Path?
 
-    // TODO test again Jersey Implementation.
+    // NICE test again Jersey Implementation.
 
     // TODO test, if the URIs are normaized, see spec, sect. 3.7.1 "Request
     // Preprocessing"

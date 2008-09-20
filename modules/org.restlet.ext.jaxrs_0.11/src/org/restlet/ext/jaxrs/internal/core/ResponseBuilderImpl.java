@@ -357,7 +357,9 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      */
     @Override
     public ResponseBuilder status(int status) {
-        // TODO update javadoc: check status number
+        if (status < 100 || status >= 600)
+            throw new IllegalArgumentException(
+                    "The status must be between 100 (incl) and 600 (excl)");
         if (this.response == null) {
             this.response = new ResponseImpl(status);
         } else {
@@ -465,13 +467,17 @@ public class ResponseBuilderImpl extends ResponseBuilder {
      * Add a Vary header that lists the available variants.
      * 
      * @param variants
-     *                a list of available representation variants
+     *                a list of available representation variants, a null value
+     *                will remove an existing value for vary.
      * @return the updated ResponseBuilder
      * @see javax.ws.rs.core.Response.ResponseBuilder#variants(java.util.List)
      */
     @Override
     public ResponseBuilder variants(List<Variant> variants) {
-        // TODO update javadoc and update code
+        if(variants == null) {
+            getMetadata().remove(HttpHeaders.VARY);
+            return this;
+        }
         // NICE add entity header with further information
         // give links, use extension mapping. Was macht Restlet da schon?
         final Set<String> encodings = new HashSet<String>();

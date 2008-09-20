@@ -45,6 +45,7 @@ import java.util.logging.Logger;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Providers;
 
@@ -316,16 +317,36 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
     }
 
     /**
+     * Get a context resolver for a particular type of context and media type.
+     * The set of resolvers is first filtered by comparing the supplied value of
+     * {@code mediaType} with the value of each resolver's
+     * {@link javax.ws.rs.Produces}, ensuring the generic type of the context
+     * resolver is assignable to the supplied value of {@code contextType}, and
+     * eliminating those that do not match. If only one resolver matches the
+     * criteria then it is returned. If more than one resolver matches then the
+     * list of matching resolvers is ordered with those with the best matching
+     * values of {@link javax.ws.rs.Produces} (x/y > x&#47;* > *&#47;*) sorted
+     * first. A proxy is returned that delegates calls to
+     * {@link ContextResolver#getContext(java.lang.Class)} to each matching
+     * context resolver in order and returns the first non-null value it obtains
+     * or null if all matching context resolvers return null.
+     * 
+     * @param contextType
+     *            the class of context desired
+     * @param mediaType
+     *            the media type of data for which a context is required.
+     * @return a matching context resolver instance or null if no matching
+     *         context providers are found.
      * @see Providers#getContextResolver(Class, javax.ws.rs.core.MediaType)
      */
     @SuppressWarnings("unchecked")
     public <T> javax.ws.rs.ext.ContextResolver<T> getContextResolver(
             Class<T> contextType, javax.ws.rs.core.MediaType mediaType) {
+        // TODO refactor JaxRsProviders.getContextResolver()
         // LATER test JaxRsProviders.getContextResolver
         for (ProviderWrapper crWrapper : this.contextResolvers) {
             final javax.ws.rs.ext.ContextResolver<?> cr;
             cr = crWrapper.getInitializedCtxResolver().getContextResolver();
-            // TODO do I need the ContextResolverWrapper?
             final Class<?> crClaz = cr.getClass();
             final Class<?> genClass = JaxRsProviders.getCtxResGenClass(crClaz);
             if (genClass == null || !genClass.equals(contextType)) {

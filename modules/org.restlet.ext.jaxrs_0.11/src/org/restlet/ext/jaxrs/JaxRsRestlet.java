@@ -259,7 +259,6 @@ public class JaxRsRestlet extends Restlet {
             if (providers.addClass(jaxRsClass))
                 used = true;
         }
-        // TODO log a message or what ever
         // @see Application#getClasses()
         // @see Application#getSingletons()
         if (!used) {
