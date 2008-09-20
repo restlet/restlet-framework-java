@@ -802,7 +802,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * Returns the last matrix parameter with the given name; leaves it encoded.
      * 
      * @param matrixParamAnnot
-     * @return
+     * @return the last matrix parameter with the given name; leaves it encoded.
      * @see #matrixParamEncIter(MatrixParam)
      */
     public String getLastMatrixParamEnc(MatrixParam matrixParamAnnot) {
@@ -825,7 +825,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
 
     /**
      * @param annotation
-     * @return
+     * @return the last encoded path param with the given name
      * @see #pathParamEncIter(PathParam)
      */
     public String getLastPathParamEnc(PathParam annotation) {
@@ -839,7 +839,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
 
     /**
      * @param pathParam
-     * @return
+     * @return .
      */
     public String getLastPathSegmentEnc(PathParam pathParam) {
         pathParam.annotationType();
@@ -1176,7 +1176,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
 
     /**
      * @param matrixParamAnnot
-     * @return
+     * @return .
      * @see #getLastMatrixParamEnc(MatrixParam)
      */
     public Iterator<String> matrixParamEncIter(MatrixParam matrixParamAnnot) {
@@ -1186,7 +1186,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
 
     /**
      * @param pathParamAnnot
-     * @return
+     * @return .
      * @see #getLastPathParamEnc(PathParam)
      */
     public Iterator<String> pathParamEncIter(PathParam pathParamAnnot) {
@@ -1203,7 +1203,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
 
     /**
      * @param pathParam
-     * @return
+     * @return .
      */
     public Iterator<String> pathSegementEncIter(PathParam pathParam) {
         pathParam.annotationType();

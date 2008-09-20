@@ -47,7 +47,7 @@ public final class EmptyIterator<T> implements Iterator<T> {
      * returns an Iterator with no elements.
      * 
      * @param <A>
-     * @return
+     * @return an empty iterator
      */
     @SuppressWarnings("unchecked")
     public static <A> EmptyIterator<A> get() {

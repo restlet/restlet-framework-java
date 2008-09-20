@@ -71,7 +71,7 @@ public class UnmodifiableMultivaluedMap<K, V> implements MultivaluedMap<K, V> {
      * given {@link MultivaluedMap}.
      * 
      * @param mmap
-     * @return
+     * @return the created unmodifiable map
      */
     public static UnmodifiableMultivaluedMap<String, String> get(
             MultivaluedMap<String, String> mmap) {
@@ -84,7 +84,7 @@ public class UnmodifiableMultivaluedMap<K, V> implements MultivaluedMap<K, V> {
      * 
      * @param mmap
      * @param caseSensitive
-     * @return
+     * @return the created unmodifiable map
      */
     public static UnmodifiableMultivaluedMap<String, String> get(
             MultivaluedMap<String, String> mmap, boolean caseSensitive) {
@@ -105,7 +105,7 @@ public class UnmodifiableMultivaluedMap<K, V> implements MultivaluedMap<K, V> {
      * 
      * @param form
      * @param caseSensitive
-     * @return
+     * @return the created unmodifiable map
      */
     public static UnmodifiableMultivaluedMap<String, String> getFromForm(
             Form form, boolean caseSensitive) {

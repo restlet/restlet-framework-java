@@ -85,7 +85,7 @@ public class EncodeOrCheck {
      * 
      * @param string
      * @param encode true, if the value should be encoded, or false if not.
-     * @return
+     * @return the enoced string (if it should be encoded)
      * @throws IllegalArgumentException
      *                 if encode is false and at least one character of the
      *                 CharSequence is invalid.
@@ -241,7 +241,7 @@ public class EncodeOrCheck {
      * @param fragment
      *                the fragment, may contain URI template parameters. Must
      *                not be null.
-     * @return
+     * @return the encoced character sequence (if it should be encoded)
      * @throws IllegalArgumentException
      *                 if encode is false and the fragment contains at least one
      *                 invalid character.
@@ -286,7 +286,7 @@ public class EncodeOrCheck {
      * @param matrix
      *                matrix parameters to convert or check, may contain URI
      *                template parameters. Must not be null.
-     * @return
+     * @return the encoced character sequence (if it should be encoded)
      * @throws IllegalArgumentException
      *                 if encode is false and at least one character is invalid.
      */
@@ -302,7 +302,7 @@ public class EncodeOrCheck {
      *                query to convert or check, may contain URI template
      *                parameters. Must not be null.
      * @param encode
-     * @return
+     * @return the encoced character sequence (if it should be encoded)
      */
     public static CharSequence fullQuery(CharSequence query, boolean encode) {
         return fullQueryOrMatrix(query, '&', "+", encode);
@@ -387,7 +387,7 @@ public class EncodeOrCheck {
      *                all chars are valid.
      * @param nameForMessage
      *                The name for the message
-     * @return
+     * @return the encoced character sequence (if it should be encoded)
      * @throws IllegalArgumentException
      *                 if the given String is null, or at least one char is
      *                 invalid.
@@ -417,7 +417,7 @@ public class EncodeOrCheck {
      * 
      * @param path
      * @param encode
-     * @return
+     * @return the encoced character sequence (if it should be encoded)
      */
     public static CharSequence pathSegmentsWithMatrix(CharSequence path,
             boolean encode) {
@@ -428,7 +428,7 @@ public class EncodeOrCheck {
      * @param pathSegments
      *                the path to check; must not be null.
      * @param encode
-     * @return
+     * @return the encoced character sequence (if it should be encoded)
      * @throws IllegalArgumentException
      *                 id encode is false and the path contains an invalid
      *                 character.
@@ -692,7 +692,7 @@ public class EncodeOrCheck {
      * @param userInfo
      *                the URI user-info, may contain URI template parameters
      * @param encode
-     * @return
+     * @return the encoced character sequence (if it should be encoded)
      * @throws IllegalArgumentException
      *                 if automatic encoding is disabled and the userInfo
      *                 contains illegal characters, or if the userInfo is null.

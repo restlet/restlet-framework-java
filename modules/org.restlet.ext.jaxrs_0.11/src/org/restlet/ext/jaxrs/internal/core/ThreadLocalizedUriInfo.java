@@ -80,7 +80,6 @@ public class ThreadLocalizedUriInfo implements UriInfo {
     }
 
     /**
-     * @return
      * @see JaxRsUriInfo#getAbsolutePath()
      * @see UriInfo#getAbsolutePath()
      */
@@ -89,7 +88,6 @@ public class ThreadLocalizedUriInfo implements UriInfo {
     }
 
     /**
-     * @return
      * @see JaxRsUriInfo#getAbsolutePathBuilder()
      * @see UriInfo#getAbsolutePathBuilder()
      */
@@ -98,7 +96,6 @@ public class ThreadLocalizedUriInfo implements UriInfo {
     }
 
     /**
-     * @return
      * @see JaxRsUriInfo#getMatchedResources()
      * @see UriInfo#getMatchedResources()
      */
@@ -107,7 +104,6 @@ public class ThreadLocalizedUriInfo implements UriInfo {
     }
 
     /**
-     * @return
      * @see UriInfo#getMatchedURIs()
      */
     public List<String> getMatchedURIs() {
@@ -115,8 +111,6 @@ public class ThreadLocalizedUriInfo implements UriInfo {
     }
 
     /**
-     * @param decode
-     * @return
      * @see JaxRsUriInfo#getAncestorResourceURIs(boolean)
      * @see UriInfo#getAncestorResourceURIs(boolean)
      */
@@ -125,7 +119,6 @@ public class ThreadLocalizedUriInfo implements UriInfo {
     }
 
     /**
-     * @return
      * @see JaxRsUriInfo#getBaseUri()
      * @see UriInfo#getBaseUri()
      */
@@ -134,7 +127,6 @@ public class ThreadLocalizedUriInfo implements UriInfo {
     }
 
     /**
-     * @return
      * @see JaxRsUriInfo#getBaseUriBuilder()
      * @see UriInfo#getBaseUriBuilder()
      */
@@ -147,16 +139,6 @@ public class ThreadLocalizedUriInfo implements UriInfo {
     }
 
     /**
-     * @return
-     * @see JaxRsUriInfo#getConnegExtension()
-     * @see UriInfo#getConnegExtension()
-     */
-    public String getConnegExtension() {
-        return getCallContext().getConnegExtension();
-    }
-
-    /**
-     * @return
      * @see JaxRsUriInfo#getPath()
      * @see UriInfo#getPath()
      */
@@ -165,8 +147,6 @@ public class ThreadLocalizedUriInfo implements UriInfo {
     }
 
     /**
-     * @param decode
-     * @return
      * @see JaxRsUriInfo#getPath(boolean)
      * @see UriInfo#getPath(boolean)
      */
@@ -175,7 +155,6 @@ public class ThreadLocalizedUriInfo implements UriInfo {
     }
 
     /**
-     * @return
      * @see JaxRsUriInfo#getPathParameters()
      * @see UriInfo#getPathParameters()
      */
@@ -184,8 +163,6 @@ public class ThreadLocalizedUriInfo implements UriInfo {
     }
 
     /**
-     * @param decode
-     * @return
      * @see JaxRsUriInfo#getPathParameters(boolean)
      * @see UriInfo#getPathParameters(boolean)
      */
@@ -194,7 +171,6 @@ public class ThreadLocalizedUriInfo implements UriInfo {
     }
 
     /**
-     * @return
      * @see JaxRsUriInfo#getPathSegments()
      * @see UriInfo#getPathSegments()
      */
@@ -203,8 +179,6 @@ public class ThreadLocalizedUriInfo implements UriInfo {
     }
 
     /**
-     * @param decode
-     * @return
      * @see JaxRsUriInfo#getPathSegments(boolean)
      * @see UriInfo#getPathSegments(boolean)
      */
@@ -213,7 +187,6 @@ public class ThreadLocalizedUriInfo implements UriInfo {
     }
 
     /**
-     * @return
      * @see JaxRsUriInfo#getQueryParameters()
      * @see UriInfo#getQueryParameters()
      */
@@ -222,8 +195,6 @@ public class ThreadLocalizedUriInfo implements UriInfo {
     }
 
     /**
-     * @param decode
-     * @return
      * @see JaxRsUriInfo#getQueryParameters(boolean)
      * @see UriInfo#getQueryParameters(boolean)
      */
@@ -232,7 +203,6 @@ public class ThreadLocalizedUriInfo implements UriInfo {
     }
 
     /**
-     * @return
      * @see JaxRsUriInfo#getRequestUri()
      * @see UriInfo#getRequestUri()
      */
@@ -241,7 +211,6 @@ public class ThreadLocalizedUriInfo implements UriInfo {
     }
 
     /**
-     * @return
      * @see JaxRsUriInfo#getRequestUriBuilder()
      * @see UriInfo#getRequestUriBuilder()
      */

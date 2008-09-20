@@ -155,7 +155,7 @@ public class Converter {
      * Converts the given query String to a Form, but do not decode the data.
      * 
      * @param queryString
-     * @return
+     * @return the encoded form
      */
     public static Form toFormEncoded(String queryString) {
         final Form form = new Form();
@@ -237,7 +237,7 @@ public class Converter {
      * Converts the Restlet CookieSettings to a JAX-RS NewCookie.
      * 
      * @param cookieSetting
-     * @return
+     * @return the JAX-RS NewCookie
      * @throws IllegalArgumentException
      */
     public static NewCookie toJaxRsNewCookie(CookieSetting cookieSetting)
@@ -275,7 +275,7 @@ public class Converter {
     /**
      * 
      * @param locale
-     * @return
+     * @return the Restlet Language
      */
     public static Language toLanguage(Locale locale) {
         return new Language(locale.toString());
@@ -284,7 +284,7 @@ public class Converter {
     /**
      * 
      * @param locale
-     * @return
+     * @return the Restlet Language
      */
     public static Language toLanguage(String locale) {
         return new Language(locale);
@@ -292,7 +292,7 @@ public class Converter {
 
     /**
      * @param locale
-     * @return
+     * @return the language string
      * @see #toLanguage(Locale)
      */
     public static String toLanguageString(Locale locale) {
@@ -303,7 +303,7 @@ public class Converter {
      * Converts a {@link Locale} to a Restlet {@link Language}.
      * 
      * @param language
-     * @return
+     * @return the Locale
      * @see #toLocale(String)
      * @see Locale
      */
@@ -315,7 +315,7 @@ public class Converter {
      * Converts a locale String to a Restlet {@link Language}.
      * 
      * @param language
-     * @return
+     * @return the Locale
      * @see #toLocale(Language)
      * @see Locale
      */
@@ -346,7 +346,7 @@ public class Converter {
 
     /**
      * @param parameters
-     * @return
+     * @return the Map
      */
     public static Map<String, String> toMap(Series<Parameter> parameters) {
         if (parameters == null) {
@@ -379,7 +379,7 @@ public class Converter {
      * Converts the Restlet JAX-RS NewCookie to a CookieSettings.
      * 
      * @param newCookie
-     * @return
+     * @return the converted CookieSetting
      * @throws IllegalArgumentException
      */
     public static CookieSetting toRestletCookieSetting(NewCookie newCookie)
@@ -444,7 +444,7 @@ public class Converter {
      * Converts the given JAX-RS Variants to Restlet Variants.
      * 
      * @param jaxRsVariants
-     * @return
+     * @return the List of Restlet Variants
      */
     public static List<org.restlet.resource.Variant> toRestletVariants(
             Collection<javax.ws.rs.core.Variant> jaxRsVariants) {

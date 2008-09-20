@@ -26,7 +26,6 @@
  */
 package org.restlet.ext.jaxrs.internal.core;
 
-import java.net.URI;
 import java.security.Principal;
 import java.util.Date;
 import java.util.List;
@@ -41,7 +40,6 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Variant;
 import javax.ws.rs.core.Response.ResponseBuilder;
@@ -52,7 +50,6 @@ import javax.ws.rs.ext.Providers;
  * This class is used for thread local injection into providers and resources.
  * 
  * @author Stephan Koops
- * @see UriInfo
  * @see Request
  * @see HttpHeaders
  * @see SecurityContext
@@ -71,7 +68,8 @@ public class ThreadLocalizedContext implements Request, HttpHeaders,
 
     /**
      * @param lastModified
-     * @return
+     * @return null if the preconditions are met or a ResponseBuilder set with
+     *         the appropriate status if the preconditions are not met.
      * @see CallContext#evaluatePreconditions(java.util.Date)
      * @see Request#evaluatePreconditions(Date)
      */
@@ -82,7 +80,7 @@ public class ThreadLocalizedContext implements Request, HttpHeaders,
     /**
      * @param lastModified
      * @param entityTag
-     * @return
+     * @return {@inheritDoc}
      * @see CallContext#evaluatePreconditions(java.util.Date,
      *      javax.ws.rs.core.EntityTag)
      * @see Request#evaluatePreconditions(Date, EntityTag)
@@ -94,7 +92,10 @@ public class ThreadLocalizedContext implements Request, HttpHeaders,
 
     /**
      * @param entityTag
-     * @return
+     * @return null if the preconditions are met or a ResponseBuilder set with
+     *         the appropriate status if the preconditions are not met. A
+     *         returned ResponseBuilder will include an ETag header set with the
+     *         value of eTag.
      * @see CallContext#evaluatePreconditions(javax.ws.rs.core.EntityTag)
      * @see Request#evaluatePreconditions(EntityTag)
      */
@@ -121,24 +122,6 @@ public class ThreadLocalizedContext implements Request, HttpHeaders,
     }
 
     /**
-     * @return
-     * @see JaxRsUriInfo#getAbsolutePath()
-     * @see UriInfo#getAbsolutePath()
-     */
-    public URI getAbsolutePath() {
-        return get().getAbsolutePath();
-    }
-
-    /**
-     * @return
-     * @see JaxRsUriInfo#getAbsolutePathBuilder()
-     * @see UriInfo#getAbsolutePathBuilder()
-     */
-    public UriBuilder getAbsolutePathBuilder() {
-        return get().getAbsolutePathBuilder();
-    }
-
-    /**
      * @see HttpHeaders#getAcceptableLanguages()
      */
     public List<Locale> getAcceptableLanguages() {
@@ -146,7 +129,6 @@ public class ThreadLocalizedContext implements Request, HttpHeaders,
     }
 
     /**
-     * @return
      * @see CallContext#getAcceptableMediaTypes()
      * @see HttpHeaders#getAcceptableMediaTypes()
      */
@@ -155,7 +137,6 @@ public class ThreadLocalizedContext implements Request, HttpHeaders,
     }
 
     /**
-     * @return
      * @see CallContext#getAuthenticationScheme()
      * @see SecurityContext#getAuthenticationScheme()
      */
@@ -164,34 +145,6 @@ public class ThreadLocalizedContext implements Request, HttpHeaders,
     }
 
     /**
-     * @return
-     * @see JaxRsUriInfo#getBaseUri()
-     * @see UriInfo#getBaseUri()
-     */
-    public URI getBaseUri() {
-        return get().getBaseUri();
-    }
-
-    /**
-     * @return
-     * @see JaxRsUriInfo#getBaseUriBuilder()
-     * @see UriInfo#getBaseUriBuilder()
-     */
-    public UriBuilder getBaseUriBuilder() {
-        return get().getBaseUriBuilder();
-    }
-
-    /**
-     * @return
-     * @see JaxRsUriInfo#getConnegExtension()
-     * @see UriInfo#getConnegExtension()
-     */
-    public String getConnegExtension() {
-        return get().getConnegExtension();
-    }
-
-    /**
-     * @return
      * @see CallContext#getCookies()
      * @see HttpHeaders#getCookies()
      */
@@ -200,7 +153,6 @@ public class ThreadLocalizedContext implements Request, HttpHeaders,
     }
 
     /**
-     * @return
      * @see CallContext#getLanguage()
      * @see HttpHeaders#getLanguage()
      */
@@ -209,7 +161,6 @@ public class ThreadLocalizedContext implements Request, HttpHeaders,
     }
 
     /**
-     * @return
      * @see CallContext#getMediaType()
      * @see HttpHeaders#getMediaType()
      */
@@ -225,82 +176,6 @@ public class ThreadLocalizedContext implements Request, HttpHeaders,
     }
 
     /**
-     * @return
-     * @see JaxRsUriInfo#getPath()
-     * @see UriInfo#getPath()
-     */
-    public String getPath() {
-        return get().getPath();
-    }
-
-    /**
-     * @param decode
-     * @return
-     * @see JaxRsUriInfo#getPath(boolean)
-     * @see UriInfo#getPath(boolean)
-     */
-    public String getPath(boolean decode) {
-        return get().getPath(decode);
-    }
-
-    /**
-     * @return
-     * @see JaxRsUriInfo#getPathParameters()
-     * @see UriInfo#getPathParameters()
-     */
-    public MultivaluedMap<String, String> getPathParameters() {
-        return get().getPathParameters();
-    }
-
-    /**
-     * @param decode
-     * @return
-     * @see JaxRsUriInfo#getPathParameters(boolean)
-     * @see UriInfo#getPathParameters(boolean)
-     */
-    public MultivaluedMap<String, String> getPathParameters(boolean decode) {
-        return get().getPathParameters(decode);
-    }
-
-    /**
-     * @return
-     * @see JaxRsUriInfo#getPathSegments()
-     * @see UriInfo#getPathSegments()
-     */
-    public List<PathSegment> getPathSegments() {
-        return get().getPathSegments();
-    }
-
-    /**
-     * @param decode
-     * @return
-     * @see JaxRsUriInfo#getPathSegments(boolean)
-     * @see UriInfo#getPathSegments(boolean)
-     */
-    public List<PathSegment> getPathSegments(boolean decode) {
-        return get().getPathSegments(decode);
-    }
-
-    /**
-     * @return
-     * @see JaxRsUriInfo#getQueryParameters()
-     * @see UriInfo#getQueryParameters()
-     */
-    public MultivaluedMap<String, String> getQueryParameters() {
-        return get().getQueryParameters();
-    }
-
-    /**
-     * @param decode
-     * @return
-     * @see JaxRsUriInfo#getQueryParameters(boolean)
-     * @see UriInfo#getQueryParameters(boolean)
-     */
-    public MultivaluedMap<String, String> getQueryParameters(boolean decode) {
-        return get().getQueryParameters(decode);
-    }
-
-    /**
      * Returns the attributes of the current Restlet
      * {@link org.restlet.data.Request}.
      * 
@@ -311,8 +186,6 @@ public class ThreadLocalizedContext implements Request, HttpHeaders,
     }
 
     /**
-     * @param name
-     * @return
      * @see CallContext#getRequestHeader(java.lang.String)
      * @see HttpHeaders#getRequestHeader(String)
      */
@@ -321,7 +194,6 @@ public class ThreadLocalizedContext implements Request, HttpHeaders,
     }
 
     /**
-     * @return
      * @see CallContext#getRequestHeaders()
      * @see HttpHeaders#getRequestHeaders()
      */
@@ -330,25 +202,6 @@ public class ThreadLocalizedContext implements Request, HttpHeaders,
     }
 
     /**
-     * @return
-     * @see JaxRsUriInfo#getRequestUri()
-     * @see UriInfo#getRequestUri()
-     */
-    public URI getRequestUri() {
-        return get().getRequestUri();
-    }
-
-    /**
-     * @return
-     * @see JaxRsUriInfo#getRequestUriBuilder()
-     * @see UriInfo#getRequestUriBuilder()
-     */
-    public UriBuilder getRequestUriBuilder() {
-        return get().getRequestUriBuilder();
-    }
-
-    /**
-     * @return
      * @see CallContext#getUserPrincipal()
      * @see SecurityContext#getUserPrincipal()
      */
@@ -357,7 +210,6 @@ public class ThreadLocalizedContext implements Request, HttpHeaders,
     }
 
     /**
-     * @return
      * @see CallContext#isSecure()
      * @see SecurityContext#isSecure()
      */
@@ -367,7 +219,6 @@ public class ThreadLocalizedContext implements Request, HttpHeaders,
 
     /**
      * @param role
-     * @return
      * @see CallContext#isUserInRole(java.lang.String)
      * @see SecurityContext#isUserInRole(String)
      */
@@ -376,17 +227,7 @@ public class ThreadLocalizedContext implements Request, HttpHeaders,
     }
 
     /**
-     * Removes the CallContext for the current thread.
-     * 
-     * @see #set(Object)
-     */
-    public void reset() {
-        getRequestAttributes().remove(CALLCONTEXT_KEY);
-    }
-
-    /**
      * @param variants
-     * @return
      * @throws IllegalArgumentException
      * @see CallContext#selectVariant(java.util.List)
      * @see Request#selectVariant(List)
@@ -413,6 +254,14 @@ public class ThreadLocalizedContext implements Request, HttpHeaders,
                     "You must give a CallContext here. null is not allowed");
         }
         getRequestAttributes().put(CALLCONTEXT_KEY, callContext);
+    }
+
+    /**
+     * @return .
+     * @see UriInfo#getPathSegments()
+     */
+    public List<PathSegment> getPathSegments() {
+        return get().getPathSegments();
     }
 
 }
