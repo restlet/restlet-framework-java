@@ -27,6 +27,7 @@
       </property>
    </bean>
    <bean id="virtualHost" class="org.restlet.ext.spring.SpringHost">
+      <constructor-arg ref="component" />
       <property name="hostDomain" value="mydomain.com|www.mydomain.com" />
       <property name="attachments">
          <map>
