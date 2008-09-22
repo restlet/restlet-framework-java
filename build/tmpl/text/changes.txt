@@ -49,6 +49,9 @@ Changes log
           could occur on Linux during file transfers due to a bug 
           fixed in JDK 7 only (#5103988). Reported by Emblem Parade,
           Roman Geus.
+        - Fixed bug causing blockings when exchanging an entity for a
+          DELETE method with internal connectors. Reported by 
+          Tamas Cservenak.
     - Misc
         - Removed deprecated code in GWT module not need for a first 
           release.

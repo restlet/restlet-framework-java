@@ -67,7 +67,8 @@ public class HttpClientConverter extends HttpConverter {
      * @param response
      *            The response to update.
      * @see Engine#copyResponseHeaders(Iterable, Response)
-     * @see HttpClientCall#copyResponseEntityHeaders(Iterable, org.restlet.resource.Representation)
+     * @see HttpClientCall#copyResponseEntityHeaders(Iterable,
+     *      org.restlet.resource.Representation)
      */
     public static void copyResponseTransportHeaders(
             Iterable<Parameter> headers, Response response) {
@@ -304,7 +305,7 @@ public class HttpClientConverter extends HttpConverter {
             }
 
             // Add entity headers
-            if (request.getEntity() != null) {
+            if (request.isEntityAvailable()) {
                 if (request.getEntity().getMediaType() != null) {
                     String contentType = request.getEntity().getMediaType()
                             .toString();
