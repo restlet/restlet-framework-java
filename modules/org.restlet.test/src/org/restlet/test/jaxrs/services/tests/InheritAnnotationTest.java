@@ -55,7 +55,7 @@ public class InheritAnnotationTest extends JaxRsTestCase {
     private static final Class<InheritAnnotationTestService2> SERVICE_2 = InheritAnnotationTestService2.class;
 
     @Override
-    protected Application getAppConfig() {
+    protected Application getApplication() {
         return new Application() {
             @Override
             public Set<Class<?>> getClasses() {

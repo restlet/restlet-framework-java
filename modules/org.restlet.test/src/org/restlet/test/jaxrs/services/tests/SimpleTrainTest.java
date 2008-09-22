@@ -56,7 +56,7 @@ public class SimpleTrainTest extends JaxRsTestCase {
             MediaType.TEXT_PLAIN, 0.5f);
 
     @Override
-    protected Application getAppConfig() {
+    protected Application getApplication() {
         return new Application() {
             @Override
             @SuppressWarnings("unchecked")

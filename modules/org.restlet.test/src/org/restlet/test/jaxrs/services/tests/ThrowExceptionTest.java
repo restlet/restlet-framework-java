@@ -44,7 +44,7 @@ import org.restlet.test.jaxrs.services.resources.ThrowExceptionResource;
 public class ThrowExceptionTest extends JaxRsTestCase {
 
     @Override
-    protected Application getAppConfig() {
+    protected Application getApplication() {
         final Application appConfig = new Application() {
             @Override
             @SuppressWarnings("unchecked")

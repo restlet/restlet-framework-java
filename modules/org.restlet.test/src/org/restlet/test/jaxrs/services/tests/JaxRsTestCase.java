@@ -33,6 +33,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -62,12 +63,13 @@ import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.resource.Representation;
 import org.restlet.test.jaxrs.server.RestletServerTestCase;
+import org.restlet.test.jaxrs.util.OrderedReadonlySet;
 import org.restlet.test.jaxrs.util.TestUtils;
 
 /**
  * This class allows easy testing of JAX-RS implementations by starting a server
- * for a given class and access the server for a given sub pass relativ to the
- * pass of the root resource class.
+ * for a given class and access the server for a given sub pass relative to the
+ * path of the root resource class.
  * 
  * @author Stephan Koops
  */
@@ -75,13 +77,14 @@ import org.restlet.test.jaxrs.util.TestUtils;
 public abstract class JaxRsTestCase extends RestletServerTestCase {
 
     /**
-     * Checks, if the allowed methods of an OPTIONS request are the given one.
+     * Checks, if the allowed methods of an OPTIONS {@link Response} are the
+     * same as the expected.
      * 
      * @param optionsResponse
      * @param methods
      *            The methods that must be allowed. If GET is included, a check
-     *            for HEAD is automaticly done. But it is no problem to add the
-     *            HEAD method.
+     *            for HEAD is automatically done. But it is no problem to add
+     *            the HEAD method in the parameters.
      */
     public static void assertAllowedMethod(Response optionsResponse,
             Method... methods) {
@@ -104,6 +107,8 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
     }
 
     /**
+     * Checks, if the entity of the Response is null or empty.
+     * 
      * @param response
      * @throws IOException
      */
@@ -114,11 +119,8 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
     }
 
     /**
-     * check, if the mainType and the subType is equal. The parameters are
-     * ignored.
-     * 
-     * @param expected
-     * @param actual
+     * Check, if the mainType and the subType of the actual MediaType is as
+     * expected. The parameters are ignored.
      */
     public static void assertEqualMediaType(MediaType expected, MediaType actual) {
         expected = Converter.getMediaTypeWithoutParams(expected);
@@ -126,21 +128,31 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
         assertEquals(expected, actual);
     }
 
+    /**
+     * Check, if the mainType and the subType of the MediaType of the given
+     * entity is as expected. The parameters of the MediaTypes are ignored.
+     */
     public static void assertEqualMediaType(MediaType expected,
             Representation actualEntity) {
         assertEqualMediaType(expected, actualEntity.getMediaType());
     }
 
+    /**
+     * Check, if the mainType and the subType of the MediaType of the entity of
+     * the given Response is as expected. The parameters of the MediaTypes are
+     * ignored.
+     */
     public static void assertEqualMediaType(MediaType expected,
             Response actualResponse) {
         assertEqualMediaType(expected, actualResponse.getEntity());
     }
 
     /**
+     * Creates a singleton Collection with the given MediaType as Preference.
+     * 
      * @param accMediaType
      * @param mediaTypeQuality
-     *            default is 1.
-     * @return
+     *            the default value is 1.
      */
     public static Collection<Preference<MediaType>> createPrefColl(
             MediaType accMediaType, float mediaTypeQuality) {
@@ -203,37 +215,43 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
     }
 
     /**
-     * request to the default resource for this test case with the given http
-     * method.
-     * 
-     * @param httpMethod
-     * @return
+     * Sends a request to the first resource for this test case with the given
+     * HTTP method.
      */
     public Response accessServer(Method httpMethod) {
         return accessServer(httpMethod, getRootResourceClassFromAppConf(), null);
     }
 
     /**
+     * Sends a request to the given root resource with the given HTTP method and
+     * the given accepted media types
+     * 
      * @param httpMethod
      * @param klasse
-     * @param mediaTypePrefs
-     *            Collection with Preference&lt;MediaType&gt; and/or MediaType.
-     * @return
+     * @param acceptedMediaTypes
+     *            Collection with {@link Preference}&lt;{@link MediaType}&gt;
+     *            and/or {@link MediaType}s, also mixed.
      * @throws IllegalArgumentException
      *             If an element in the mediaTypes is neither a
      *             Preference&lt;MediaType&gt; or a MediaType object.
      */
     @SuppressWarnings("unchecked")
     public Response accessServer(Method httpMethod, Class<?> klasse,
-            Collection mediaTypes) throws IllegalArgumentException {
-        return accessServer(httpMethod, klasse, null, mediaTypes, null);
+            Collection acceptedMediaTypes) throws IllegalArgumentException {
+        return accessServer(httpMethod, klasse, null, acceptedMediaTypes, null);
     }
 
     /**
+     * Sends a request to the given sub path of the given root resource with the
+     * given HTTP method and the given accepted media types and the given
+     * {@link ChallengeResponse}.
+     * 
      * @param httpMethod
      * @param klasse
      * @param subPath
      * @param accMediaTypes
+     *            Collection with {@link Preference}&lt;{@link MediaType}&gt;
+     *            and/or {@link MediaType}s, also mixed.
      * @param challengeResponse
      * @return
      */
@@ -247,11 +265,9 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
     }
 
     /**
-     * @param httpMethod
-     * @param klasse
-     * @param subPath
-     * @param contextResolver
-     * @return
+     * Sends a request to the given sub path of the given root resource with the
+     * given HTTP method, the given {@link Conditions} and the given
+     * {@link ClientInfo}.
      */
     public Response accessServer(Method httpMethod, Class<?> klasse,
             String subPath, Conditions conditions, ClientInfo clientInfo) {
@@ -266,6 +282,17 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
         return accessServer(request);
     }
 
+    /**
+     * Sends a request to the given sub path of the given root resource with the
+     * given HTTP method and the given acceptable media type.
+     * 
+     * @param httpMethod
+     * @param klasse
+     * @param subPath
+     * @param accMediaType
+     *            the acceptable MediaType.
+     * @param challengeResponse
+     */
     public Response accessServer(Method httpMethod, Class<?> klasse,
             String subPath, MediaType accMediaType) {
         Collection<MediaType> mediaTypes = null;
@@ -276,17 +303,13 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
     }
 
     protected org.restlet.Application createApplication() {
-        return createApplication(getAppConfig(), ChallengeScheme.HTTP_BASIC,
+        return createApplication(getApplication(), ChallengeScheme.HTTP_BASIC,
                 null);
     }
 
     /**
-     * @return
-     */
-    protected abstract Application getAppConfig();
-
-    /**
-     * Creates a {@link JaxRsApplication}
+     * Creates a {@link JaxRsApplication}. Not needed for the test case
+     * developer by default.
      * 
      * @param appConfig
      *            the applicationConfi to use
@@ -296,7 +319,7 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
      *            the RoleChecer to use.
      * @return
      */
-    public JaxRsApplication createApplication(Application appConfig,
+    protected JaxRsApplication createApplication(Application appConfig,
             ChallengeScheme challengeScheme, RoleChecker roleChecker) {
         final JaxRsApplication application = new JaxRsApplication(new Context());
         if (roleChecker != null) {
@@ -320,16 +343,6 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
     }
 
     /**
-     * Creates a Reference relative to the main resource class.
-     * 
-     * @param subPath
-     * @return
-     */
-    public Reference createReference(String subPath) {
-        return createReference(getRootResourceClassFromAppConf(), subPath);
-    }
-
-    /**
      * Creates an reference that access the localhost with the JaxRsTester
      * protocol and the JaxRsTester Port. It uses the path of the given
      * jaxRsClass
@@ -350,6 +363,16 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
             throw new RuntimeException(e);
         }
         return createReference(path, subPath);
+    }
+
+    /**
+     * Creates a Reference relative to the main resource class.
+     * 
+     * @param subPath
+     * @return
+     */
+    public Reference createReference(String subPath) {
+        return createReference(getRootResourceClassFromAppConf(), subPath);
     }
 
     /**
@@ -438,11 +461,54 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
                 subPath, accMediaType);
     }
 
-    public Response getAuth(String subPath, String username, String pw) {
+    /**
+     * In the implementation of this method the test case developer returns the
+     * JAX-RS {@link Application} containing the root resource classes and the
+     * providers.
+     * 
+     * @see Application
+     */
+    protected abstract Application getApplication();
+
+    /**
+     * Sends a GET request to the given subpath of the first root resource
+     * class, authenticated with HTTP_BASIC with the given username and password
+     */
+    public Response getAuth(String subPath, String username, String password) {
         return get(subPath, new ChallengeResponse(ChallengeScheme.HTTP_BASIC,
-                username, pw));
+                username, password));
     }
 
+    /**
+     * @return the first (by the {@link Iterator} of the {@link Set}) root
+     *         resource class from the JAX-RS {@link Application} of the test
+     *         case. First the classes of the Application are checked, then the
+     *         singletons. To ensure that a defined class is the first in the
+     *         Set, you could use the class {@link OrderedReadonlySet}.
+     * @see #getApplication()
+     * @throws IllegalStateException
+     *             if now root resource class was found.
+     */
+    private Class<?> getRootResourceClassFromAppConf()
+            throws IllegalStateException {
+        Set<Class<?>> classes = getApplication().getClasses();
+        for (Class<?> clazz : classes) {
+            if (clazz.isAnnotationPresent(Path.class))
+                return clazz;
+        }
+        Set<Object> singletons = getApplication().getSingletons();
+        for (Object singleton : singletons) {
+            final Class<? extends Object> clazz = singleton.getClass();
+            if (clazz.isAnnotationPresent(Path.class))
+                return clazz;
+        }
+        throw new IllegalStateException("Sorry, no root resource class found");
+    }
+
+    /**
+     * Sends a request to the given sub path of the first root resource class
+     * with the given {@link Cookie}s.
+     */
     public Response getWithCookies(String subPath, Collection<Cookie> cookies) {
         return accessServer(Method.GET, createReference(
                 getRootResourceClassFromAppConf(), subPath), null, null, null,
@@ -450,35 +516,27 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
     }
 
     /**
-     * @return
+     * Sends a request to the given sub path of the first root resource class
+     * with the given headers.
      */
-    private Class<?> getRootResourceClassFromAppConf() {
-        Set<Class<?>> classes = getAppConfig().getClasses();
-        for (Class<?> clazz : classes) {
-            if (clazz.isAnnotationPresent(Path.class))
-                return clazz;
-        }
-        Set<Object> singletons = getAppConfig().getSingletons();
-        for(Object singleton : singletons) {
-            final Class<? extends Object> clazz = singleton.getClass();
-            if(clazz.isAnnotationPresent(Path.class))
-                return clazz;
-        }
-        throw new IllegalStateException("Sorry, no root resource class found");
-    }
-
     public Response getWithHeaders(String subPath, Collection<Parameter> headers) {
         return accessServer(Method.GET, createReference(
                 getRootResourceClassFromAppConf(), subPath), null, null, null,
                 null, null, headers);
     }
 
+    /**
+     * Sends a HEAD request to the first root resource class, with the given
+     * accepted {@link MediaType}.
+     */
     public Response head(String subPath, MediaType accMediaType) {
         return accessServer(Method.HEAD, getRootResourceClassFromAppConf(),
                 subPath, accMediaType);
     }
 
     /**
+     * Sends an OPTION request to the main resource first root resource class.
+     * 
      * @see #accessServer(Method, Class, String, Collection, ChallengeResponse)
      */
     public Response options() {
@@ -486,6 +544,12 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
                 null, null);
     }
 
+    /**
+     * Sends an OPTION request to the given sub path of the first root resource
+     * class.
+     * 
+     * @see #accessServer(Method, Class, String, Collection, ChallengeResponse)
+     */
     public Response options(String subPath) {
         return accessServer(Method.OPTIONS, getRootResourceClassFromAppConf(),
                 subPath, null);
@@ -511,7 +575,6 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
                 null, null, null);
     }
 
-    @SuppressWarnings("unchecked")
     public Response post(String subPath, Representation entity,
             Collection accMediaTypes, ChallengeResponse challengeResponse) {
         return accessServer(Method.POST, createReference(
@@ -531,10 +594,10 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
     }
 
     /**
-     * 
+     * This method is called, if the server is started.
      */
     protected void runServerAfterStart() {
-        final Application appConfig = getAppConfig();
+        final Application appConfig = getApplication();
         final Collection<Class<?>> rrcs = appConfig.getClasses();
         System.out
                 .println("the root resource classes are available under the following pathes:");
@@ -553,11 +616,8 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
     }
 
     /**
-     * starts the Server for the given JaxRsTestCase, waits for an input from
+     * Starts the Server for the given JaxRsTestCase, waits for an input from
      * {@link System#in} and then stops the server.
-     * 
-     * @param jaxRsTestCase
-     * @throws Exception
      */
     public void runServerUntilKeyPressed() throws Exception {
         setUseTcp(true);
@@ -570,29 +630,27 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
     }
 
     /**
+     * @param application the JAX-RS {@link Application}.
      * @param protocol
      * @param challengeScheme
      * @param roleChecker
      *            the {@link RoleChecker} to use.
-     * @param rootResourceClasses
      * @throws Exception
      */
-    private void startServer(Application appConfig, Protocol protocol,
+    private void startServer(Application application, Protocol protocol,
             final ChallengeScheme challengeScheme, RoleChecker roleChecker)
             throws Exception {
         final org.restlet.Application jaxRsApplication = createApplication(
-                appConfig, challengeScheme, roleChecker);
+                application, challengeScheme, roleChecker);
         startServer(jaxRsApplication, protocol);
     }
 
     /**
-     * @param roleChecker
-     *            the {@link RoleChecker} to use.
-     * @throws Exception
+     * @see #startServer(Application, Protocol, ChallengeScheme, RoleChecker)
      */
     protected void startServer(ChallengeScheme challengeScheme,
             RoleChecker roleChecker) throws Exception {
-        final Application appConfig = getAppConfig();
+        final Application appConfig = getApplication();
         startServer(appConfig, Protocol.HTTP, challengeScheme, roleChecker);
     }
 }

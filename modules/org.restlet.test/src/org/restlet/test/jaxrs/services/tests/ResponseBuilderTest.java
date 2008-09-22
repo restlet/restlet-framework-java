@@ -45,7 +45,7 @@ import org.restlet.test.jaxrs.services.resources.ResponseBuilderService;
 public class ResponseBuilderTest extends JaxRsTestCase {
 
     @Override
-    protected Application getAppConfig() {
+    protected Application getApplication() {
         final Application appConfig = new Application() {
             @Override
             @SuppressWarnings("unchecked")

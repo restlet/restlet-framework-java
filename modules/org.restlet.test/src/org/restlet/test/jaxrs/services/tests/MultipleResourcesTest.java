@@ -41,7 +41,7 @@ import org.restlet.test.jaxrs.util.TestUtils;
  */
 public class MultipleResourcesTest extends JaxRsTestCase {
     @Override
-    protected Application getAppConfig() {
+    protected Application getApplication() {
         return new Application() {
             @Override
             @SuppressWarnings("unchecked")

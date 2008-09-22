@@ -50,7 +50,7 @@ import org.restlet.test.jaxrs.services.resources.CookieParamTestService;
 public class CookieParamTest extends JaxRsTestCase {
 
     @Override
-    protected Application getAppConfig() {
+    protected Application getApplication() {
         return new Application() {
             @Override
             @SuppressWarnings("unchecked")

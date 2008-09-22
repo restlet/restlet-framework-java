@@ -48,7 +48,7 @@ public class IllegalConstructorTest extends JaxRsTestCase {
      * @return
      */
     @Override
-    protected Application getAppConfig() {
+    protected Application getApplication() {
         return new Application() {
             @Override
             @SuppressWarnings("unchecked")

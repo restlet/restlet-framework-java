@@ -47,7 +47,7 @@ import org.restlet.test.jaxrs.services.resources.RepresentationTestService;
 public class RepresentationTest extends JaxRsTestCase {
 
     @Override
-    protected Application getAppConfig() {
+    protected Application getApplication() {
         final Application appConfig = new Application() {
             @Override
             @SuppressWarnings("unchecked")

@@ -44,7 +44,7 @@ import org.restlet.test.jaxrs.services.resources.Issue593Resource;
 public class Issue593Test extends JaxRsTestCase {
 
     @Override
-    protected Application getAppConfig() {
+    protected Application getApplication() {
         return new Application() {
             @Override
             @SuppressWarnings("unchecked")

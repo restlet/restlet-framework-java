@@ -45,7 +45,7 @@ import org.restlet.test.jaxrs.services.resources.PathParamTestService2;
 public class PathParamTest2 extends JaxRsTestCase {
 
     @Override
-    protected Application getAppConfig() {
+    protected Application getApplication() {
         return new Application() {
             @Override
             @SuppressWarnings("unchecked")

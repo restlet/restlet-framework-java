@@ -47,7 +47,7 @@ public class OwnProviderTest extends JaxRsTestCase {
 
     @Override
     @SuppressWarnings("unchecked")
-    protected Application getAppConfig() {
+    protected Application getApplication() {
         final Application appConfig = new Application() {
             @Override
             public Set<Object> getSingletons() {

@@ -49,7 +49,7 @@ import org.restlet.test.jaxrs.util.OrderedReadonlySet;
  */
 public class PersonsTest extends JaxRsTestCase {
     @Override
-    protected Application getAppConfig() {
+    protected Application getApplication() {
         return new Application() {
             @Override
             public Set<Class<?>> getClasses() {

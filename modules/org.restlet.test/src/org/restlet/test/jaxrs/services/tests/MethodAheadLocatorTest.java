@@ -47,7 +47,7 @@ public class MethodAheadLocatorTest extends JaxRsTestCase {
     /**
      * @return
      */
-    protected Application getAppConfig() {
+    protected Application getApplication() {
         return new Application() {
             @Override
             @SuppressWarnings("unchecked")

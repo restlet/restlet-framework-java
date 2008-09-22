@@ -45,7 +45,7 @@ import org.restlet.test.jaxrs.util.OrderedReadonlySet;
 public class InjectionTest extends JaxRsTestCase {
 
     @Override
-    protected Application getAppConfig() {
+    protected Application getApplication() {
         final Application appConfig = new Application() {
             @Override
             public Set<Class<?>> getClasses() {

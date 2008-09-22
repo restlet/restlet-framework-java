@@ -44,7 +44,7 @@ import org.restlet.test.jaxrs.services.resources.MatrixParamTestService2;
 public class MatrixParamTest2 extends JaxRsTestCase {
 
     @Override
-    protected Application getAppConfig() {
+    protected Application getApplication() {
         return new Application() {
             @Override
             @SuppressWarnings("unchecked")
