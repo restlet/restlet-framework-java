@@ -26,7 +26,10 @@
  */
 package org.restlet.test.jaxrs.services.tests;
 
+import java.util.Collections;
 import java.util.Set;
+
+import javax.ws.rs.core.Application;
 
 import org.restlet.data.Response;
 import org.restlet.resource.StringRepresentation;
@@ -42,14 +45,21 @@ import org.restlet.test.jaxrs.util.TestUtils;
 public class ThrowWebAppExcProviderTest extends JaxRsTestCase {
 
     @Override
-    @SuppressWarnings("unchecked")
-    protected Set<Object> getSingletons() {
-        return (Set) TestUtils.createSet(new ThrowWebAppExcProvider());
-    }
-
-    @Override
-    protected Class<?> getRootResourceClass() {
-        return SimpleResource.class;
+    protected Application getAppConfig() {
+        final Application appConfig = new Application() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public Set<Object> getSingletons() {
+                return (Set) TestUtils.createSet(new ThrowWebAppExcProvider());
+            }
+    
+            @Override
+            @SuppressWarnings("unchecked")
+            public Set<Class<?>> getClasses() {
+                return (Set) Collections.singleton(SimpleResource.class);
+            }
+        };
+        return appConfig;
     }
 
     public void testPost() {

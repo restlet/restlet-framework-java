@@ -26,13 +26,8 @@
  */
 package org.restlet.test.jaxrs.services.tests;
 
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON_TYPE;
-import static javax.ws.rs.core.MediaType.APPLICATION_XML_TYPE;
-
 import java.io.IOException;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 import javax.ws.rs.core.Application;
@@ -80,32 +75,13 @@ public class JsonTest extends JaxRsTestCase {
 
     @Override
     protected Application getAppConfig() {
-        final Application appConfig = new Application() {
-            @SuppressWarnings("all")
-            public Map<String, javax.ws.rs.core.MediaType> getExtensionMappings() {
-                return getMediaTypeMappings();
-            }
-
-            @SuppressWarnings("all")
-            public Map<String, javax.ws.rs.core.MediaType> getMediaTypeMappings() {
-                final Map<String, javax.ws.rs.core.MediaType> mediaMap = new HashMap<String, javax.ws.rs.core.MediaType>();
-                mediaMap.put("xml", APPLICATION_XML_TYPE);
-                mediaMap.put("json", APPLICATION_JSON_TYPE);
-                return mediaMap;
-            }
-
+        return new Application() {
             @Override
             @SuppressWarnings("unchecked")
             public Set<Class<?>> getClasses() {
-                return (Set) Collections.singleton(getRootResourceClass());
+                return (Set) Collections.singleton(JsonTestService.class);
             }
         };
-        return appConfig;
-    }
-
-    @Override
-    protected Class<?> getRootResourceClass() {
-        return JsonTestService.class;
     }
 
     public void testGetJsonObject() throws Exception {

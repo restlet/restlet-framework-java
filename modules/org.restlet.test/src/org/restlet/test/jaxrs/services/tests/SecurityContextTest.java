@@ -27,7 +27,10 @@
 package org.restlet.test.jaxrs.services.tests;
 
 import java.security.Principal;
+import java.util.Collections;
+import java.util.Set;
 
+import javax.ws.rs.core.Application;
 import javax.ws.rs.core.SecurityContext;
 
 import org.restlet.data.ChallengeResponse;
@@ -63,8 +66,14 @@ public class SecurityContextTest extends JaxRsTestCase {
     }
 
     @Override
-    protected Class<?> getRootResourceClass() {
-        return SEC_CONT_SERV;
+    protected Application getAppConfig() {
+        return new Application() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public Set<Class<?>> getClasses() {
+                return (Set) Collections.singleton(SEC_CONT_SERV);
+            }
+        };
     }
 
     @Override
@@ -233,8 +242,7 @@ public class SecurityContextTest extends JaxRsTestCase {
 
     public void testSecure() throws Exception {
         startServer();
-        final Reference reference = createReference(getRootResourceClass(),
-                "secure");
+        final Reference reference = super.createReference("secure");
         final Response response = get(reference);
         assertEquals(Status.REDIRECTION_PERMANENT, response.getStatus());
         reference.setScheme("https");
@@ -263,4 +271,5 @@ public class SecurityContextTest extends JaxRsTestCase {
         final String entity = response.getEntity().getText();
         assertEquals("no principal found", entity);
     }
+
 }

@@ -26,10 +26,12 @@
  */
 package org.restlet.test.jaxrs.services.tests;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Request;
 
 import org.restlet.data.ClientInfo;
@@ -100,13 +102,14 @@ public class RequestTest extends JaxRsTestCase {
     }
 
     @Override
-    protected Class<?> getRootResourceClass() {
-        return RequestService.class;
-    }
-
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
+    protected Application getAppConfig() {
+        return new Application() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public Set<Class<?>> getClasses() {
+                return (Set) Collections.singleton(RequestService.class);
+            }
+        };
     }
 
     public void testDateAndEntityTag1Get() throws Exception {

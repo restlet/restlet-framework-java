@@ -26,7 +26,11 @@
  */
 package org.restlet.test.jaxrs.services.tests;
 
+import java.util.Collections;
+import java.util.Set;
+
 import javax.ws.rs.MatrixParam;
+import javax.ws.rs.core.Application;
 
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -40,8 +44,14 @@ import org.restlet.test.jaxrs.services.resources.MatrixParamTestService2;
 public class MatrixParamTest2 extends JaxRsTestCase {
 
     @Override
-    protected Class<?> getRootResourceClass() {
-        return MatrixParamTestService2.class;
+    protected Application getAppConfig() {
+        return new Application() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public Set<Class<?>> getClasses() {
+                return (Set) Collections.singleton(MatrixParamTestService2.class);
+            }
+        };
     }
 
     public void testEncodedWithDefault() throws Exception {

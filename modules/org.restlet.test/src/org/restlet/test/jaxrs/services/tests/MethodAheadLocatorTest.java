@@ -27,6 +27,10 @@
 package org.restlet.test.jaxrs.services.tests;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Set;
+
+import javax.ws.rs.core.Application;
 
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -39,11 +43,20 @@ import org.restlet.test.jaxrs.services.resources.MethodAheadLocatorTestService;
 public class MethodAheadLocatorTest extends JaxRsTestCase {
 
     @Override
-    protected Class<?> getRootResourceClass() {
-        return MethodAheadLocatorTestService.class;
-    }
 
-    public void test1() throws IOException {
+    /**
+     * @return
+     */
+    protected Application getAppConfig() {
+        return new Application() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public Set<Class<?>> getClasses() {
+                return (Set) Collections.singleton(MethodAheadLocatorTestService.class);
+            }
+        };
+    }
+   public void test1() throws IOException {
         final Response response = get("p1");
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());

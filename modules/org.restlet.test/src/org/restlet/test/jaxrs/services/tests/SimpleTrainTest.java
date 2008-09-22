@@ -26,6 +26,11 @@
  */
 package org.restlet.test.jaxrs.services.tests;
 
+import java.util.Collections;
+import java.util.Set;
+
+import javax.ws.rs.core.Application;
+
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Preference;
@@ -51,8 +56,14 @@ public class SimpleTrainTest extends JaxRsTestCase {
             MediaType.TEXT_PLAIN, 0.5f);
 
     @Override
-    protected Class<?> getRootResourceClass() {
-        return SimpleTrain.class;
+    protected Application getAppConfig() {
+        return new Application() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public Set<Class<?>> getClasses() {
+                return (Set) Collections.singleton(SimpleTrain.class);
+            }
+        };
     }
 
     public void testGetHtmlText() throws Exception {
@@ -192,5 +203,10 @@ public class SimpleTrainTest extends JaxRsTestCase {
     public void testUseAllTests() {
         assertFalse("You should use all tests", ONLY_M2);
         assertFalse("You should use all tests", ONLY_TEXT_ALL);
+    }
+
+    protected Class<?> getRootResourceClass() {
+        throw new UnsupportedOperationException(
+                "You must implement the methods getRootResourceClass() or getAppConfig(). If you only implemented getAppConfig(), you can't use this method");
     }
 }

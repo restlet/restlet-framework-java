@@ -26,16 +26,10 @@
  */
 package org.restlet.test.jaxrs.services.tests;
 
-import static javax.ws.rs.core.MediaType.APPLICATION_XML_TYPE;
-import static javax.ws.rs.core.MediaType.TEXT_HTML_TYPE;
-import static javax.ws.rs.core.MediaType.TEXT_PLAIN_TYPE;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.ws.rs.core.Application;
@@ -57,7 +51,6 @@ import org.restlet.test.jaxrs.services.resources.HttpHeaderTestService;
  * @author Stephan Koops
  * @see HttpHeaderTestService
  */
-@SuppressWarnings("all")
 public class HttpHeaderTest extends JaxRsTestCase {
 
     public static void main(String[] args) throws Exception {
@@ -65,8 +58,14 @@ public class HttpHeaderTest extends JaxRsTestCase {
     }
 
     @Override
-    protected Class<?> getRootResourceClass() {
-        return HttpHeaderTestService.class;
+    protected Application getAppConfig() {
+        return new Application() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public Set<Class<?>> getClasses() {
+                return (Set) Collections.singleton(HttpHeaderTestService.class);
+            }
+        };
     }
 
     public void testAccMediaType() throws IOException {

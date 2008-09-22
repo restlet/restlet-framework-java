@@ -27,7 +27,6 @@
 package org.restlet.test.jaxrs.services.tests;
 
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Set;
 
 import javax.ws.rs.core.Application;
@@ -36,6 +35,7 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.test.jaxrs.services.resources.InjectionTestService;
 import org.restlet.test.jaxrs.services.resources.InjectionTestService2;
+import org.restlet.test.jaxrs.util.OrderedReadonlySet;
 
 /**
  * @author Stephan Koops
@@ -44,26 +44,16 @@ import org.restlet.test.jaxrs.services.resources.InjectionTestService2;
  */
 public class InjectionTest extends JaxRsTestCase {
 
-    /**
-     * @return
-     */
     @Override
     protected Application getAppConfig() {
         final Application appConfig = new Application() {
             @Override
             public Set<Class<?>> getClasses() {
-                final Set<Class<?>> rrcs = new HashSet<Class<?>>();
-                rrcs.add(getRootResourceClass());
-                rrcs.add(InjectionTestService2.class);
-                return rrcs;
+                return new OrderedReadonlySet<Class<?>>(InjectionTestService.class, // FIXME must be the first
+                 InjectionTestService2.class);
             }
         };
         return appConfig;
-    }
-
-    @Override
-    protected Class<?> getRootResourceClass() {
-        return InjectionTestService.class;
     }
 
     public void testGet() {

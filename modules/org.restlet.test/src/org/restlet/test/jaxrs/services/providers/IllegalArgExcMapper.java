@@ -50,7 +50,7 @@ import org.restlet.test.jaxrs.services.tests.ExcMapperTest;
 public class IllegalArgExcMapper implements
         ExceptionMapper<IllegalArgumentException> {
 
-    public static final int STATUS = 6887987;
+    public static final int STATUS = 599;
 
     /** public for direct set from test class */
     @Context

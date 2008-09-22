@@ -49,25 +49,17 @@ public class IllegalConstructorTest extends JaxRsTestCase {
      */
     @Override
     protected Application getAppConfig() {
-        final Application appConfig = new Application() {
+        return new Application() {
             @Override
             @SuppressWarnings("unchecked")
             public Set<Class<?>> getClasses() {
-                return Util
-                        .createSet(ParamConstructorProvider.class,
-                                EntityConstructorProvider.class,
-                                getRootResourceClass());
+                return Util.createSet(
+                        IllegalConstructorResource.class, // FIXME must be the
+                                                          // first
+                        ParamConstructorProvider.class,
+                        EntityConstructorProvider.class);
             }
         };
-        return appConfig;
-    }
-
-    /**
-     * @return
-     */
-    @Override
-    protected Class<IllegalConstructorResource> getRootResourceClass() {
-        return IllegalConstructorResource.class;
     }
 
     public void testNullSubResource() throws Exception {

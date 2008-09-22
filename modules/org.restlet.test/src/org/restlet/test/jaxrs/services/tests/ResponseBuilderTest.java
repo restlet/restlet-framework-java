@@ -26,7 +26,10 @@
  */
 package org.restlet.test.jaxrs.services.tests;
 
+import java.util.Collections;
 import java.util.Set;
+
+import javax.ws.rs.core.Application;
 
 import org.restlet.data.Dimension;
 import org.restlet.data.Method;
@@ -42,8 +45,15 @@ import org.restlet.test.jaxrs.services.resources.ResponseBuilderService;
 public class ResponseBuilderTest extends JaxRsTestCase {
 
     @Override
-    protected Class<?> getRootResourceClass() {
-        return ResponseBuilderService.class;
+    protected Application getAppConfig() {
+        final Application appConfig = new Application() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public Set<Class<?>> getClasses() {
+                return (Set) Collections.singleton(ResponseBuilderService.class);
+            }
+        };
+        return appConfig;
     }
 
     public void test1() {
@@ -67,8 +77,7 @@ public class ResponseBuilderTest extends JaxRsTestCase {
     }
 
     public void testDelete() {
-        final Response r = accessServer(Method.DELETE, getRootResourceClass(),
-                null);
+        final Response r = accessServer(Method.DELETE);
 
         assertEquals(Status.SUCCESS_OK, r.getStatus());
     }

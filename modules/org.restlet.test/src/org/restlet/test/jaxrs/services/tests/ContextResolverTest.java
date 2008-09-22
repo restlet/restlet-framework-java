@@ -26,7 +26,10 @@
  */
 package org.restlet.test.jaxrs.services.tests;
 
+import java.util.Collections;
 import java.util.Set;
+
+import javax.ws.rs.core.Application;
 
 import org.restlet.data.MediaType;
 import org.restlet.data.Response;
@@ -43,15 +46,20 @@ import org.restlet.test.jaxrs.util.TestUtils;
 public class ContextResolverTest extends JaxRsTestCase {
 
     @Override
-    @SuppressWarnings("all")
-    public Set<Object> getSingletons() {
-        return TestUtils.createSet(new ContextResolverTestWriter(),
-                new TestContextResolver());
-    }
-
-    @Override
-    protected Class<?> getRootResourceClass() {
-        return ContextResolverTestResource.class;
+    protected Application getAppConfig() {
+        return new Application() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public Set<Class<?>> getClasses() {
+                return (Set) Collections.singleton(ContextResolverTestResource.class);
+            }
+    
+            @Override
+            public Set<Object> getSingletons() {
+                return TestUtils.createSet(new ContextResolverTestWriter(),
+                        new TestContextResolver());
+            }
+        };
     }
 
     /**

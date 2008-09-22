@@ -67,11 +67,6 @@ public class InheritAnnotationTest extends JaxRsTestCase {
         };
     }
 
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-    }
-
     public void test1() throws Exception {
         final Reference reference = createReference(SERVICE_1, "getText");
         final Response response = accessServer(Method.GET, reference);

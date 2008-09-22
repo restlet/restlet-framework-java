@@ -30,7 +30,10 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.Collections;
+import java.util.Set;
 
+import javax.ws.rs.core.Application;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
@@ -104,8 +107,14 @@ public class ProviderTest extends JaxRsTestCase {
     }
 
     @Override
-    protected Class<?> getRootResourceClass() {
-        return ProviderTestService.class;
+    protected Application getAppConfig() {
+        return new Application() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public Set<Class<?>> getClasses() {
+                return (Set) Collections.singleton(ProviderTestService.class);
+            }
+        };
     }
 
     /**

@@ -340,6 +340,9 @@ public class JaxRsRestlet extends Restlet {
         ResourceObject resourceObject = null;
         final Reference baseRef = request.getResourceRef().getBaseRef();
         request.setRootRef(new Reference(baseRef.toString()));
+        // NICE Normally, the "rootRef" property is set by the VirtualHost, each
+        // time a request is handled by one of its routes.
+        // Email from Jerome, 2008-09-22
         try {
             CallContext callContext;
             callContext = new CallContext(request, response, this.roleChecker);

@@ -57,6 +57,7 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.ext.jaxrs.JaxRsApplication;
 import org.restlet.ext.jaxrs.RoleChecker;
+import org.restlet.ext.jaxrs.internal.todo.NotYetImplementedException;
 import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.resource.Representation;
@@ -202,6 +203,17 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
     }
 
     /**
+     * request to the default resource for this test case with the given http
+     * method.
+     * 
+     * @param httpMethod
+     * @return
+     */
+    public Response accessServer(Method httpMethod) {
+        return accessServer(httpMethod, getRootResourceClassFromAppConf(), null);
+    }
+
+    /**
      * @param httpMethod
      * @param klasse
      * @param mediaTypePrefs
@@ -269,6 +281,11 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
     }
 
     /**
+     * @return
+     */
+    protected abstract Application getAppConfig();
+
+    /**
      * Creates a {@link JaxRsApplication}
      * 
      * @param appConfig
@@ -297,9 +314,19 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
      * @return
      */
     protected Request createGetRequest(String subPath) {
-        final Reference reference = createReference(getRootResourceClass(),
-                subPath);
+        final Reference reference = createReference(
+                getRootResourceClassFromAppConf(), subPath);
         return new Request(Method.GET, reference);
+    }
+
+    /**
+     * Creates a Reference relative to the main resource class.
+     * 
+     * @param subPath
+     * @return
+     */
+    public Reference createReference(String subPath) {
+        return createReference(getRootResourceClassFromAppConf(), subPath);
     }
 
     /**
@@ -353,7 +380,8 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
     }
 
     public Response get() {
-        return accessServer(Method.GET, getRootResourceClass(), null, null);
+        return accessServer(Method.GET, getRootResourceClassFromAppConf(),
+                null, null);
     }
 
     public Response get(Cookie cookie) {
@@ -361,8 +389,8 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
     }
 
     public Response get(MediaType accMediaType) {
-        return accessServer(Method.GET, getRootResourceClass(), null,
-                accMediaType);
+        return accessServer(Method.GET, getRootResourceClassFromAppConf(),
+                null, accMediaType);
     }
 
     public Response get(Reference reference) {
@@ -380,52 +408,34 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
     }
 
     public Response get(String subPath) {
-        return accessServer(Method.GET, getRootResourceClass(), subPath, null);
+        return accessServer(Method.GET, getRootResourceClassFromAppConf(),
+                subPath, null);
     }
 
     public Response get(String subPath, ChallengeResponse cr) {
-        return accessServer(Method.GET, getRootResourceClass(), subPath, null,
-                cr);
+        return accessServer(Method.GET, getRootResourceClassFromAppConf(),
+                subPath, null, cr);
     }
 
     public Response get(String subPath, ClientInfo clientInfo) {
-        return accessServer(Method.GET, getRootResourceClass(), subPath, null,
-                clientInfo);
+        return accessServer(Method.GET, getRootResourceClassFromAppConf(),
+                subPath, null, clientInfo);
     }
 
     public Response get(String subPath, Conditions conditions) {
-        return accessServer(Method.GET, getRootResourceClass(), subPath,
-                conditions, null);
+        return accessServer(Method.GET, getRootResourceClassFromAppConf(),
+                subPath, conditions, null);
     }
 
     public Response get(String subPath, Cookie cookie) {
-        return accessServer(Method.GET, createReference(getRootResourceClass(),
-                subPath), null, null, null, null, TestUtils.createList(cookie),
-                null);
+        return accessServer(Method.GET, createReference(
+                getRootResourceClassFromAppConf(), subPath), null, null, null,
+                null, TestUtils.createList(cookie), null);
     }
 
     public Response get(String subPath, MediaType accMediaType) {
-        return accessServer(Method.GET, getRootResourceClass(), subPath,
-                accMediaType);
-    }
-
-    /**
-     * @return
-     */
-    protected Application getAppConfig() {
-        final Application appConfig = new Application() {
-            @Override
-            public Set<Object> getSingletons() {
-                return (Set) JaxRsTestCase.this.getSingletons();
-            }
-
-            @Override
-            @SuppressWarnings("unchecked")
-            public Set<Class<?>> getClasses() {
-                return (Set) Collections.singleton(getRootResourceClass());
-            }
-        };
-        return appConfig;
+        return accessServer(Method.GET, getRootResourceClassFromAppConf(),
+                subPath, accMediaType);
     }
 
     public Response getAuth(String subPath, String username, String pw) {
@@ -433,44 +443,52 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
                 username, pw));
     }
 
-    protected Class<?> getRootResourceClass() {
-        throw new UnsupportedOperationException(
-                "You must implement the methods getRootResourceClass() or getAppConfig(). If you only implemented getAppConfig(), you can't use this method");
+    public Response getWithCookies(String subPath, Collection<Cookie> cookies) {
+        return accessServer(Method.GET, createReference(
+                getRootResourceClassFromAppConf(), subPath), null, null, null,
+                null, cookies, null);
     }
 
     /**
      * @return
-     * @see #getAppConfig()
      */
-    protected Set<Object> getSingletons() {
-        return Collections.emptySet();
-    }
-
-    public Response getWithCookies(String subPath, Collection<Cookie> cookies) {
-        return accessServer(Method.GET, createReference(getRootResourceClass(),
-                subPath), null, null, null, null, cookies, null);
+    private Class<?> getRootResourceClassFromAppConf() {
+        Set<Class<?>> classes = getAppConfig().getClasses();
+        for (Class<?> clazz : classes) {
+            if (clazz.isAnnotationPresent(Path.class))
+                return clazz;
+        }
+        Set<Object> singletons = getAppConfig().getSingletons();
+        for(Object singleton : singletons) {
+            final Class<? extends Object> clazz = singleton.getClass();
+            if(clazz.isAnnotationPresent(Path.class))
+                return clazz;
+        }
+        throw new IllegalStateException("Sorry, no root resource class found");
     }
 
     public Response getWithHeaders(String subPath, Collection<Parameter> headers) {
-        return accessServer(Method.GET, createReference(getRootResourceClass(),
-                subPath), null, null, null, null, null, headers);
+        return accessServer(Method.GET, createReference(
+                getRootResourceClassFromAppConf(), subPath), null, null, null,
+                null, null, headers);
     }
 
     public Response head(String subPath, MediaType accMediaType) {
-        return accessServer(Method.HEAD, getRootResourceClass(), subPath,
-                accMediaType);
+        return accessServer(Method.HEAD, getRootResourceClassFromAppConf(),
+                subPath, accMediaType);
     }
 
     /**
      * @see #accessServer(Method, Class, String, Collection, ChallengeResponse)
      */
     public Response options() {
-        return accessServer(Method.OPTIONS, getRootResourceClass(), null, null);
+        return accessServer(Method.OPTIONS, getRootResourceClassFromAppConf(),
+                null, null);
     }
 
     public Response options(String subPath) {
-        return accessServer(Method.OPTIONS, getRootResourceClass(), subPath,
-                null);
+        return accessServer(Method.OPTIONS, getRootResourceClassFromAppConf(),
+                subPath, null);
     }
 
     public Response post(Representation entity) {
@@ -478,8 +496,8 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
     }
 
     public Response post(String subPath, MediaType mediaType) {
-        return accessServer(Method.POST, getRootResourceClass(), subPath,
-                mediaType);
+        return accessServer(Method.POST, getRootResourceClassFromAppConf(),
+                subPath, mediaType);
     }
 
     public Response post(String subPath, Representation entity) {
@@ -489,16 +507,16 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
     public Response post(String subPath, Representation entity,
             ChallengeResponse cr) {
         return accessServer(Method.POST, createReference(
-                getRootResourceClass(), subPath), null, entity, cr, null, null,
-                null);
+                getRootResourceClassFromAppConf(), subPath), null, entity, cr,
+                null, null, null);
     }
 
     @SuppressWarnings("unchecked")
     public Response post(String subPath, Representation entity,
             Collection accMediaTypes, ChallengeResponse challengeResponse) {
         return accessServer(Method.POST, createReference(
-                getRootResourceClass(), subPath), accMediaTypes, entity,
-                challengeResponse, null, null, null);
+                getRootResourceClassFromAppConf(), subPath), accMediaTypes,
+                entity, challengeResponse, null, null, null);
     }
 
     public Response put(String subPath, Representation entity) {
@@ -507,8 +525,9 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
 
     public Response put(String subPath, Representation entity,
             Conditions conditions) {
-        return accessServer(Method.PUT, createReference(getRootResourceClass(),
-                subPath), null, entity, null, conditions, null, null);
+        return accessServer(Method.PUT, createReference(
+                getRootResourceClassFromAppConf(), subPath), null, entity,
+                null, conditions, null, null);
     }
 
     /**
@@ -561,8 +580,8 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
     private void startServer(Application appConfig, Protocol protocol,
             final ChallengeScheme challengeScheme, RoleChecker roleChecker)
             throws Exception {
-        final org.restlet.Application jaxRsApplication = createApplication(appConfig,
-                challengeScheme, roleChecker);
+        final org.restlet.Application jaxRsApplication = createApplication(
+                appConfig, challengeScheme, roleChecker);
         startServer(jaxRsApplication, protocol);
     }
 

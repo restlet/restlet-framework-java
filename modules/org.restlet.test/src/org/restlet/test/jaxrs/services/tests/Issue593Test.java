@@ -26,6 +26,11 @@
  */
 package org.restlet.test.jaxrs.services.tests;
 
+import java.util.Collections;
+import java.util.Set;
+
+import javax.ws.rs.core.Application;
+
 import org.restlet.data.MediaType;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -39,10 +44,15 @@ import org.restlet.test.jaxrs.services.resources.Issue593Resource;
 public class Issue593Test extends JaxRsTestCase {
 
     @Override
-    protected Class<?> getRootResourceClass() {
-        return Issue593Resource.class;
+    protected Application getAppConfig() {
+        return new Application() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public Set<Class<?>> getClasses() {
+                return (Set) Collections.singleton(Issue593Resource.class);
+            }
+        };
     }
-
     /** 
      * @see Issue593Resource#getPath(javax.ws.rs.core.UriInfo)
      */
@@ -54,4 +64,5 @@ public class Issue593Test extends JaxRsTestCase {
         assertEqualMediaType(MediaType.TEXT_PLAIN, entity.getMediaType());
         assertEquals("/test/example", entity.getText());
     }
+
 }

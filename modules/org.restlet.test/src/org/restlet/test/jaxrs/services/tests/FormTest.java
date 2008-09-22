@@ -27,6 +27,10 @@
 package org.restlet.test.jaxrs.services.tests;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Set;
+
+import javax.ws.rs.core.Application;
 
 import org.restlet.data.Form;
 import org.restlet.data.Response;
@@ -106,8 +110,19 @@ public class FormTest extends JaxRsTestCase {
     }
 
     @Override
-    protected Class<?> getRootResourceClass() {
-        return FormTestResource.class;
+    protected Application getAppConfig() {
+        return new Application() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public Set<Class<?>> getClasses() {
+                return (Set) Collections.singleton(FormTestResource.class);
+            }
+    
+            @Override
+            public Set<Object> getSingletons() {
+                return Collections.emptySet();
+            }
+        };
     }
 
     /** @see FormTestResource#checkUnmodifiable(java.util.List) */

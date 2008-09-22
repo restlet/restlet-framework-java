@@ -26,6 +26,11 @@
  */
 package org.restlet.test.jaxrs.services.tests;
 
+import java.util.Collections;
+import java.util.Set;
+
+import javax.ws.rs.core.Application;
+
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.test.jaxrs.services.resources.ContextsTestService;
@@ -37,8 +42,14 @@ import org.restlet.test.jaxrs.services.resources.ContextsTestService;
 public class ContextsTest extends JaxRsTestCase {
 
     @Override
-    protected Class<?> getRootResourceClass() {
-        return ContextsTestService.class;
+    protected Application getAppConfig() {
+        return new Application() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public Set<Class<?>> getClasses() {
+                return (Set) Collections.singleton(ContextsTestService.class);
+            }
+        };
     }
 
     public void testFields() throws Exception {

@@ -27,6 +27,10 @@
 package org.restlet.test.jaxrs.services.tests;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Set;
+
+import javax.ws.rs.core.Application;
 
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -88,8 +92,15 @@ public class QueryParamTest extends JaxRsTestCase {
     }
 
     @Override
-    protected Class<?> getRootResourceClass() {
-        return QueryParamTestService.class;
+    protected Application getAppConfig() {
+        final Application appConfig = new Application() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public Set<Class<?>> getClasses() {
+                return (Set) Collections.singleton(QueryParamTestService.class);
+            }
+        };
+        return appConfig;
     }
 
     public void testA() throws IOException {

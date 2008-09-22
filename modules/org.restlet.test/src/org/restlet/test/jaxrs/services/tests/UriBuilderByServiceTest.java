@@ -75,30 +75,21 @@ public class UriBuilderByServiceTest extends JaxRsTestCase {
         final Representation entity = response.getEntity();
         assertEqualMediaType(expectedMT, entity.getMediaType());
         if (checkEntityText) {
-            final Reference r = createReference(getRootResourceClass(),
-                    expectedSubPath);
+            final Reference r = createReference(expectedSubPath);
             assertEquals(r.toString(), entity.getText());
         }
     }
 
-    /**
-     * @return
-     */
     @Override
     protected Application getAppConfig() {
         final Application appConfig = new Application() {
             @Override
             @SuppressWarnings("unchecked")
             public Set<Class<?>> getClasses() {
-                return (Set) Collections.singleton(getRootResourceClass());
+                return (Set) Collections.singleton(UriBuilderTestResource.class);
             }
         };
         return appConfig;
-    }
-
-    @Override
-    protected Class<?> getRootResourceClass() {
-        return UriBuilderTestResource.class;
     }
 
     public void testAbsoluteGet() throws Exception {

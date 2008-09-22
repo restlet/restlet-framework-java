@@ -48,9 +48,9 @@ import javax.ws.rs.ext.Provider;
 public class ThrowWebAppExcProvider implements MessageBodyReader<Object>,
         MessageBodyWriter<Object> {
 
-    public static final int STATUS_READ = 1234;
+    public static final int STATUS_READ = 598;
 
-    public static final int STATUS_WRITE = 5678;
+    public static final int STATUS_WRITE = 597;
 
     /**
      * @see MessageBodyWriter#getSize(java.lang.Object)

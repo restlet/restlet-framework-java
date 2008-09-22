@@ -27,6 +27,10 @@
 package org.restlet.test.jaxrs.services.tests;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Set;
+
+import javax.ws.rs.core.Application;
 
 import org.restlet.data.MediaType;
 import org.restlet.data.Response;
@@ -43,8 +47,15 @@ import org.restlet.test.jaxrs.services.resources.RepresentationTestService;
 public class RepresentationTest extends JaxRsTestCase {
 
     @Override
-    protected Class<?> getRootResourceClass() {
-        return RepresentationTestService.class;
+    protected Application getAppConfig() {
+        final Application appConfig = new Application() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public Set<Class<?>> getClasses() {
+                return (Set) Collections.singleton(RepresentationTestService.class);
+            }
+        };
+        return appConfig;
     }
 
     /** @throws IOException 

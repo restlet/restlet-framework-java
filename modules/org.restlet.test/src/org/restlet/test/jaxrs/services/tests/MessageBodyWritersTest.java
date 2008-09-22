@@ -27,11 +27,15 @@
 package org.restlet.test.jaxrs.services.tests;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Set;
+
+import javax.ws.rs.core.Application;
 
 import org.restlet.data.MediaType;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.ext.jaxrs.internal.todo.NotYetImplementedException;
 import org.restlet.resource.Representation;
 import org.restlet.test.jaxrs.services.providers.TextCrazyPersonProvider;
 import org.restlet.test.jaxrs.services.providers.AppCrazyPersonProvider;
@@ -48,14 +52,21 @@ import org.restlet.test.jaxrs.util.TestUtils;
 public class MessageBodyWritersTest extends JaxRsTestCase {
 
     @Override
-    protected Set<Object> getSingletons() {
-        return (Set) TestUtils.createSet(new AppCrazyPersonProvider(),
-                new TextCrazyPersonProvider());
-    }
+    protected Application getAppConfig() {
+        return new Application() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public Set<Class<?>> getClasses() {
+                return (Set) Collections
+                        .singleton(MessageBodyWriterTestResource.class);
+            }
 
-    @Override
-    protected Class<?> getRootResourceClass() {
-        return MessageBodyWriterTestResource.class;
+            @Override
+            public Set<Object> getSingletons() {
+                return (Set) TestUtils.createSet(new AppCrazyPersonProvider(),
+                        new TextCrazyPersonProvider());
+            }
+        };
     }
 
     /** @see MessageBodyWriterTestResource#get() */

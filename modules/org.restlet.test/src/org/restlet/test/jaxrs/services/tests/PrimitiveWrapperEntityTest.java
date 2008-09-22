@@ -26,7 +26,10 @@
  */
 package org.restlet.test.jaxrs.services.tests;
 
+import java.util.Collections;
 import java.util.Set;
+
+import javax.ws.rs.core.Application;
 
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -44,15 +47,21 @@ import org.restlet.test.jaxrs.util.TestUtils;
 public class PrimitiveWrapperEntityTest extends JaxRsTestCase {
 
     @Override
-    @SuppressWarnings("all")
-    public Set<Object> getSingletons() {
-        return (Set) TestUtils.createSet(new IntegerEntityProvider(),
-                new CharacterEntityProvider(), new BooleanEntityProvider());
-    }
-
-    @Override
-    protected Class<?> getRootResourceClass() {
-        return PrimitiveWrapperEntityResource.class;
+    @SuppressWarnings("unchecked")
+    protected Application getAppConfig() {
+        final Application appConfig = new Application() {
+            @Override
+            public Set<Object> getSingletons() {
+                return (Set) TestUtils.createSet(new IntegerEntityProvider(),
+                        new CharacterEntityProvider(), new BooleanEntityProvider());
+            }
+    
+            @Override
+            public Set<Class<?>> getClasses() {
+                return (Set) Collections.singleton(PrimitiveWrapperEntityResource.class);
+            }
+        };
+        return appConfig;
     }
 
     public void test1() throws Exception {
@@ -104,4 +113,5 @@ public class PrimitiveWrapperEntityTest extends JaxRsTestCase {
         assertEquals(Status.SUCCESS_NO_CONTENT, response.getStatus());
         assertEmptyEntity(response);
     }
+
 }

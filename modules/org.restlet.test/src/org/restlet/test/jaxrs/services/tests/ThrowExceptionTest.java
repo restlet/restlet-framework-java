@@ -26,7 +26,10 @@
  */
 package org.restlet.test.jaxrs.services.tests;
 
+import java.util.Collections;
 import java.util.Set;
+
+import javax.ws.rs.core.Application;
 
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -40,15 +43,22 @@ import org.restlet.test.jaxrs.services.resources.ThrowExceptionResource;
  */
 public class ThrowExceptionTest extends JaxRsTestCase {
 
-    @SuppressWarnings("unchecked")
     @Override
-    protected Set<Object> getSingletons() {
-        return (Set) Util.createSet(new SqlExceptionMapper());
-    }
-
-    @Override
-    protected Class<?> getRootResourceClass() {
-        return ThrowExceptionResource.class;
+    protected Application getAppConfig() {
+        final Application appConfig = new Application() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public Set<Class<?>> getClasses() {
+                return (Set) Collections.singleton(ThrowExceptionResource.class);
+            }
+    
+            @Override
+            @SuppressWarnings("unchecked")
+            public Set<Object> getSingletons() {
+                return (Set) Util.createSet(new SqlExceptionMapper());
+            }
+        };
+        return appConfig;
     }
 
     /**

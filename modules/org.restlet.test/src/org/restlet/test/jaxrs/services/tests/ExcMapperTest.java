@@ -29,6 +29,8 @@ package org.restlet.test.jaxrs.services.tests;
 import java.util.Collections;
 import java.util.Set;
 
+import javax.ws.rs.core.Application;
+
 import org.restlet.data.MediaType;
 import org.restlet.data.Response;
 import org.restlet.test.jaxrs.services.providers.IllegalArgExcMapper;
@@ -53,14 +55,20 @@ public class ExcMapperTest extends JaxRsTestCase {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    protected Set<Object> getSingletons() {
-        return (Set) Collections.singleton(new IllegalArgExcMapper());
-    }
-
-    @Override
-    protected Class<?> getRootResourceClass() {
-        return ExcMapperTestResource.class;
+    protected Application getAppConfig() {
+        return new Application() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public Set<Class<?>> getClasses() {
+                return (Set) Collections.singleton(ExcMapperTestResource.class);
+            }
+    
+            @Override
+            @SuppressWarnings("unchecked")
+            public Set<Object> getSingletons() {
+                return (Set) Collections.singleton(new IllegalArgExcMapper());
+            }
+        };
     }
 
     public void testHtml() {

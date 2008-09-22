@@ -28,7 +28,11 @@ package org.restlet.test.jaxrs.services.tests;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+
+import javax.ws.rs.core.Application;
 
 import junit.framework.AssertionFailedError;
 
@@ -54,10 +58,16 @@ public class ListParamTest extends JaxRsTestCase {
     }
 
     @Override
-    protected Class<?> getRootResourceClass() {
-        return ListParamService.class;
+    protected Application getAppConfig() {
+        final Application appConfig = new Application() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public Set<Class<?>> getClasses() {
+                return (Set) Collections.singleton(ListParamService.class);
+            }
+        };
+        return appConfig;
     }
-
     public void testCookieParams() throws IOException {
         final List<Cookie> cookies = new ArrayList<Cookie>();
         cookies.add(new Cookie("c", "c1"));

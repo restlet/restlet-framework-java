@@ -30,6 +30,8 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Set;
 
+import javax.ws.rs.core.Application;
+
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.test.jaxrs.services.providers.GenericTypeMBW;
@@ -42,13 +44,6 @@ import org.restlet.test.jaxrs.services.resources.GenericTypeResource;
  */
 public class GenericTypeTestCase extends JaxRsTestCase {
 
-    @Override
-    @SuppressWarnings("unchecked")
-    protected Set<Object> getSingletons() {
-        return (Set) Collections.singleton(new GenericTypeMBW());
-    }
-
-    @Override
     protected Class<?> getRootResourceClass() {
         return GenericTypeResource.class;
     }
@@ -58,5 +53,22 @@ public class GenericTypeTestCase extends JaxRsTestCase {
         sysOutEntityIfError(response);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("abc\ndef\n", response.getEntity().getText());
+    }
+
+    @Override
+    protected Application getAppConfig() {
+        return new Application() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public Set<Object> getSingletons() {
+                return (Set) Collections.singleton(new GenericTypeMBW());
+            }
+    
+            @Override
+            @SuppressWarnings("unchecked")
+            public Set<Class<?>> getClasses() {
+                return (Set) Collections.singleton(GenericTypeResource.class);
+            }
+        };
     }
 }

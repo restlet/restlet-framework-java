@@ -26,26 +26,34 @@
  */
 package org.restlet.test.jaxrs.services.tests;
 
+import java.util.Collections;
+import java.util.Set;
+
+import javax.ws.rs.core.Application;
+
 import org.restlet.data.MediaType;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.test.jaxrs.services.resources.DeterminingMediaTypeTestService;
 
 /**
- * This test class checks if the Request.evaluatePreconditions methods works
- * fine.
+ * This test class checks if the
+ * {@link javax.ws.rs.core.Request#evaluatePreconditions(java.util.Date, javax.ws.rs.core.EntityTag)}
+ * methods works fine.
  * 
  * @author Stephan Koops
  */
 public class DeterminingMediaTypeTest extends JaxRsTestCase {
     @Override
-    protected Class<?> getRootResourceClass() {
-        return DeterminingMediaTypeTestService.class;
-    }
-
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
+    protected Application getAppConfig() {
+        return new Application() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public Set<Class<?>> getClasses() {
+                return (Set) Collections
+                        .singleton(DeterminingMediaTypeTestService.class);
+            }
+        };
     }
 
     public void testHtmlPlainGif1() {

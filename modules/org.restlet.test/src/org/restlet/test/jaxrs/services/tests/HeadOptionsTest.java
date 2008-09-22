@@ -26,7 +26,11 @@
  */
 package org.restlet.test.jaxrs.services.tests;
 
+import java.util.Collections;
+import java.util.Set;
+
 import javax.ws.rs.HEAD;
+import javax.ws.rs.core.Application;
 
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -47,12 +51,15 @@ import org.restlet.test.jaxrs.services.resources.HeadOptionsTestService;
 public class HeadOptionsTest extends JaxRsTestCase {
 
     @Override
-    protected Class<?> getRootResourceClass() {
-        return HeadOptionsTestService.class;
+    protected Application getAppConfig() {
+        return new Application() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public Set<Class<?>> getClasses() {
+                return (Set) Collections.singleton(HeadOptionsTestService.class);
+            }
+        };
     }
-
-    // NICE test if it works fine, for @GET first and for @HEAD first,
-    // if the GET-Method is not prefered to the HEAD method.
 
     public void testHead1() throws Exception {
         final Response responseGett = get("headTest1", MediaType.TEXT_HTML);

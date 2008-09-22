@@ -27,8 +27,11 @@
 package org.restlet.test.jaxrs.services.tests;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Set;
 
 import javax.ws.rs.CookieParam;
+import javax.ws.rs.core.Application;
 
 import junit.framework.AssertionFailedError;
 
@@ -47,8 +50,14 @@ import org.restlet.test.jaxrs.services.resources.CookieParamTestService;
 public class CookieParamTest extends JaxRsTestCase {
 
     @Override
-    protected Class<?> getRootResourceClass() {
-        return CookieParamTestService.class;
+    protected Application getAppConfig() {
+        return new Application() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public Set<Class<?>> getClasses() {
+                return (Set) Collections.singleton(CookieParamTestService.class);
+            }
+        };
     }
 
     public void test1() throws IOException {

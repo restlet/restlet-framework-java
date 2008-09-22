@@ -26,6 +26,11 @@
  */
 package org.restlet.test.jaxrs.services.tests;
 
+import java.util.Collections;
+import java.util.Set;
+
+import javax.ws.rs.core.Application;
+
 import junit.framework.AssertionFailedError;
 
 import org.restlet.data.MediaType;
@@ -42,9 +47,6 @@ public class AppPlusXmlTest extends JaxRsTestCase {
     private static final MediaType APP_PERSON_XML = new MediaType(
             "application/Person+xml");
 
-    /**
-     * @param mt
-     */
     private void getAndCheck(MediaType mt) {
         final Response response = get(mt);
         sysOutEntityIfError(response);
@@ -54,8 +56,14 @@ public class AppPlusXmlTest extends JaxRsTestCase {
     }
 
     @Override
-    protected Class<?> getRootResourceClass() {
-        return AppPlusXmlResource.class;
+    protected Application getAppConfig() {
+        return new Application() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public Set<Class<?>> getClasses() {
+                return (Set) Collections.singleton(AppPlusXmlResource.class);
+            }
+        };
     }
 
     public void testGet() throws Exception {

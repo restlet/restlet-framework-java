@@ -26,7 +26,6 @@
  */
 package org.restlet.test.jaxrs.services.tests;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -41,6 +40,7 @@ import org.restlet.test.jaxrs.services.others.Person;
 import org.restlet.test.jaxrs.services.others.PersonList;
 import org.restlet.test.jaxrs.services.resources.PersonResource;
 import org.restlet.test.jaxrs.services.resources.PersonsResource;
+import org.restlet.test.jaxrs.util.OrderedReadonlySet;
 
 /**
  * @author Stephan Koops
@@ -53,17 +53,10 @@ public class PersonsTest extends JaxRsTestCase {
         return new Application() {
             @Override
             public Set<Class<?>> getClasses() {
-                final Set<Class<?>> rrcs = new HashSet<Class<?>>(2);
-                rrcs.add(PersonResource.class);
-                rrcs.add(PersonsResource.class);
-                return rrcs;
+                return new OrderedReadonlySet<Class<?>>(PersonsResource.class,
+                        PersonResource.class);
             }
         };
-    }
-
-    @Override
-    protected Class<?> getRootResourceClass() {
-        return PersonsResource.class;
     }
 
     /**

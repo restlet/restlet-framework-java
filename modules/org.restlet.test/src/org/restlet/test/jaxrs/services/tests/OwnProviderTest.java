@@ -26,7 +26,10 @@
  */
 package org.restlet.test.jaxrs.services.tests;
 
+import java.util.Collections;
 import java.util.Set;
+
+import javax.ws.rs.core.Application;
 
 import org.restlet.data.MediaType;
 import org.restlet.data.Response;
@@ -43,14 +46,20 @@ import org.restlet.test.jaxrs.util.TestUtils;
 public class OwnProviderTest extends JaxRsTestCase {
 
     @Override
-    @SuppressWarnings("all")
-    public Set<Object> getSingletons() {
-        return (Set) TestUtils.createSet(new TextCrazyPersonProvider());
-    }
-
-    @Override
-    protected Class<?> getRootResourceClass() {
-        return OwnProviderTestService.class;
+    @SuppressWarnings("unchecked")
+    protected Application getAppConfig() {
+        final Application appConfig = new Application() {
+            @Override
+            public Set<Object> getSingletons() {
+                return (Set) TestUtils.createSet(new TextCrazyPersonProvider());
+            }
+    
+            @Override
+            public Set<Class<?>> getClasses() {
+                return (Set) Collections.singleton(OwnProviderTestService.class);
+            }
+        };
+        return appConfig;
     }
 
     /**

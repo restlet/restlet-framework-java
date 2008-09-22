@@ -26,6 +26,11 @@
  */
 package org.restlet.test.jaxrs.services.tests;
 
+import java.util.Collections;
+import java.util.Set;
+
+import javax.ws.rs.core.Application;
+
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.test.jaxrs.services.resources.MatchedTestService;
@@ -38,10 +43,15 @@ import org.restlet.test.jaxrs.services.resources.NoProviderResource;
 public class NoProviderTest extends JaxRsTestCase {
 
     @Override
-    protected Class<?> getRootResourceClass() {
-        return NoProviderResource.class;
+    protected Application getAppConfig() {
+        return new Application() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public Set<Class<?>> getClasses() {
+                return (Set) Collections.singleton(NoProviderResource.class);
+            }
+        };
     }
-
     public void testNoMediaType() throws Exception {
         final Response response = get("no-mbw");
         assertEquals(Status.SERVER_ERROR_INTERNAL, response.getStatus());
@@ -51,4 +61,5 @@ public class NoProviderTest extends JaxRsTestCase {
         final Response response = get("text-plain");
         assertEquals(Status.SERVER_ERROR_INTERNAL, response.getStatus());
     }
+
 }

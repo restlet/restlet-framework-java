@@ -359,7 +359,7 @@ public class ResponseBuilderImpl extends ResponseBuilder {
     public ResponseBuilder status(int status) {
         if (status < 100 || status >= 600)
             throw new IllegalArgumentException(
-                    "The status must be between 100 (incl) and 600 (excl)");
+                    "The status must be between 100 (inclusive) and 600 (exclusive), but is "+status);
         if (this.response == null) {
             this.response = new ResponseImpl(status);
         } else {

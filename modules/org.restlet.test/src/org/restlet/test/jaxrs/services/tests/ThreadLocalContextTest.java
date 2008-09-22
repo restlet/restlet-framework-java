@@ -27,8 +27,11 @@
 package org.restlet.test.jaxrs.services.tests;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
+import javax.ws.rs.core.Application;
 
 import org.restlet.data.MediaType;
 import org.restlet.data.Response;
@@ -45,14 +48,22 @@ import org.restlet.test.jaxrs.util.TestUtils;
 public class ThreadLocalContextTest extends JaxRsTestCase {
 
     @Override
-    @SuppressWarnings("all")
-    public Set<Object> getSingletons() {
-        return (Set) TestUtils.createSet(new ThreadLocalContextTestExcMapper());
-    }
+    protected Application getAppConfig() {
+        return new Application() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public Set<Class<?>> getClasses() {
+                return (Set) Collections
+                        .singleton(ThreadLocalContextTestResource.class);
+            }
 
-    @Override
-    protected Class<?> getRootResourceClass() {
-        return ThreadLocalContextTestResource.class;
+            @Override
+            @SuppressWarnings("unchecked")
+            public Set<Object> getSingletons() {
+                return (Set) TestUtils
+                        .createSet(new ThreadLocalContextTestExcMapper());
+            }
+        };
     }
 
     /**

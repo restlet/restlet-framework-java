@@ -27,8 +27,11 @@
 package org.restlet.test.jaxrs.services.tests;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Set;
 
 import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Application;
 
 import org.restlet.data.Reference;
 import org.restlet.data.Response;
@@ -47,19 +50,25 @@ public class PathParamTest extends JaxRsTestCase {
      *            without beginning '/'
      * @return
      */
-    private Reference createReference(String subPath) {
+    private Reference createReference2(String subPath) {
         final String baseRef = createBaseRef() + "/pathParamTest/" + subPath;
         return new Reference(createBaseRef(), baseRef);
     }
 
     @Override
-    protected Class<?> getRootResourceClass() {
-        return PathParamTestService.class;
+    protected Application getAppConfig() {
+        return new Application() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public Set<Class<?>> getClasses() {
+                return (Set) Collections.singleton(PathParamTestService.class);
+            }
+        };
     }
 
     /** @see PathParamTestService#checkUnmodifiable(java.util.List) */
     public void htestCheckUnmodifiable() {
-        final Response response = get(createReference("4711/checkUnmodifiable/1667"));
+        final Response response = get(createReference2("4711/checkUnmodifiable/1667"));
         assertTrue(
                 "The List annotated with @PathParam must not be modifiable. Status is "
                         + response.getStatus(), response.getStatus()
@@ -67,19 +76,19 @@ public class PathParamTest extends JaxRsTestCase {
     }
 
     public void testGet1() throws IOException {
-        final Response response = get(createReference("4711"));
+        final Response response = get(createReference2("4711"));
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("4711", response.getEntity().getText());
     }
 
     public void testGet2() throws IOException {
-        final Response response = get(createReference("4711/abc/677/def"));
+        final Response response = get(createReference2("4711/abc/677/def"));
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("4711\n677", response.getEntity().getText());
     }
 
     public void testGet4() throws IOException {
-        final Response response = get(createReference("12/st/34"));
+        final Response response = get(createReference2("12/st/34"));
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("34", response.getEntity().getText());
     }
