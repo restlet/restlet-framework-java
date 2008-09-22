@@ -83,7 +83,8 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(VelocityTestCase.class);
         addTestSuite(WadlTestCase.class);
 
-        addTest(AllJaxRsTests.suite());
+        // Unplugged for the moment.
+        //addTest(AllJaxRsTests.suite());
         addTest(AllSpringTests.suite());
     }
 
