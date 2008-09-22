@@ -42,6 +42,9 @@ Changes log
         - SpringHost were created without context, causing some NPE
           when trying to access client dispatchers. Reported by 
           Alexei Sokolov.
+        - Fixed potential ClassCastException with 
+          ReadableRepresentation when used with a non selectable
+          channel. Reported by Rob Heittman. 
     - Misc
         - Removed deprecated code in GWT module not need for a first 
           release.

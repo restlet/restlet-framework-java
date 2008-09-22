@@ -89,7 +89,13 @@ public final class ByteUtils {
          */
         public NbChannelInputStream(ReadableByteChannel channel) {
             this.channel = channel;
-            this.selectableChannel = (SelectableChannel) channel;
+
+            if (channel instanceof SelectableChannel) {
+                this.selectableChannel = (SelectableChannel) channel;
+            } else {
+                this.selectableChannel = null;
+            }
+
             this.bb = ByteBuffer.allocate(8192);
             this.bb.flip();
             this.endReached = false;
@@ -119,8 +125,8 @@ public final class ByteUtils {
             int result = -1;
 
             if (!this.endReached) {
-                if (!this.bb.hasRemaining()) {
-                    // Let's refill
+                if (!this.bb.hasRemaining() && (this.selectableChannel != null)) {
+                    // Let's try to refill
                     refill();
                 }
 
@@ -762,7 +768,9 @@ public final class ByteUtils {
      * As this method uses the InputstreamReader class, the default character
      * set is used for decoding the input stream.
      * 
-     * @see <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/io/InputStreamReader.html">InputStreamReader class</a>
+     * @see <a href=
+     *      "http://java.sun.com/j2se/1.5.0/docs/api/java/io/InputStreamReader.html"
+     *      >InputStreamReader class< /a>
      * @see #toString(InputStream, CharacterSet)
      * @param inputStream
      *            The input stream.
@@ -776,7 +784,9 @@ public final class ByteUtils {
      * Converts an input stream to a string using the specified character set
      * for decoding the input stream.
      * 
-     * @see <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/io/InputStreamReader.html">InputStreamReader class</a>
+     * @see <a href=
+     *      "http://java.sun.com/j2se/1.5.0/docs/api/java/io/InputStreamReader.html"
+     *      >InputStreamReader class< /a>
      * @param inputStream
      *            The input stream.
      * @param characterSet
@@ -806,7 +816,9 @@ public final class ByteUtils {
     /**
      * Converts a reader to a string.
      * 
-     * @see <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/io/InputStreamReader.html">InputStreamReader class</a>
+     * @see <a href=
+     *      "http://java.sun.com/j2se/1.5.0/docs/api/java/io/InputStreamReader.html"
+     *      >InputStreamReader class< /a>
      * @param reader
      *            The characters reader.
      * @return The converted string.
