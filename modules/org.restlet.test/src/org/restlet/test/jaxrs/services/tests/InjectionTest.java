@@ -49,8 +49,8 @@ public class InjectionTest extends JaxRsTestCase {
         final Application appConfig = new Application() {
             @Override
             public Set<Class<?>> getClasses() {
-                return new OrderedReadonlySet<Class<?>>(InjectionTestService.class, // FIXME must be the first
-                 InjectionTestService2.class);
+                return new OrderedReadonlySet<Class<?>>(
+                        InjectionTestService.class, InjectionTestService2.class);
             }
         };
         return appConfig;
