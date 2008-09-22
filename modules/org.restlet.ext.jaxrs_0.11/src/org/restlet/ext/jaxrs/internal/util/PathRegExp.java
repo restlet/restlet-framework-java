@@ -115,7 +115,7 @@ public class PathRegExp {
      * @param annotatedMethod
      * @return the {@link PathRegExp}. Never returns null.
      * @throws IllegalPathOnMethodException
-     *             tif the annotation on the method is invalid.
+     *             if the annotation on the method is invalid.
      * @throws IllegalArgumentException
      *             if the method is null.
      */
@@ -138,7 +138,7 @@ public class PathRegExp {
     private final Integer noLitChars;
 
     /**
-     * contains the number of capturing groups with regular expressions that are
+     * Contains the number of capturing groups with regular expressions that are
      * not the default.
      * 
      * @see #DEFAULT_REG_EXP
@@ -205,7 +205,7 @@ public class PathRegExp {
                                 + "\"");
             } else if (c == ';') {
                 throw new IllegalPathException(pathForExcMess,
-                        "marix parameters are not allowed in a @Path");
+                        "matrix parameters are not allowed in a @Path");
             } else if (!false && (c == '/')) {
                 pathPattern.append(c);
                 noLitChars++;
