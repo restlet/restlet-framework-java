@@ -45,6 +45,10 @@ Changes log
         - Fixed potential ClassCastException with 
           ReadableRepresentation when used with a non selectable
           channel. Reported by Rob Heittman. 
+        - Fixed IO exception "Resource temporarily unavailable" that
+          could occur on Linux during file transfers due to a bug 
+          fixed in JDK 7 only (#5103988). Reported by Emblem Parade,
+          Roman Geus.
     - Misc
         - Removed deprecated code in GWT module not need for a first 
           release.

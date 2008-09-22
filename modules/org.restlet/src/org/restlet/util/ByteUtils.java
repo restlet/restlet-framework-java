@@ -40,6 +40,7 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
 import java.nio.channels.Pipe;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SelectableChannel;
@@ -176,7 +177,7 @@ public final class ByteUtils {
                     if (selector != null) {
                         selectionKey = this.selectableChannel.register(
                                 selector, SelectionKey.OP_READ);
-                        selector.select(10000);
+                        selector.select(NIO_TIMEOUT);
                     }
 
                     bytesRead = readChannel();
@@ -184,17 +185,7 @@ public final class ByteUtils {
                     this.endReached = true;
                 }
             } finally {
-                // Workaround for bug #6403933
-                if (selectionKey != null) {
-                    // The key you registered on the temporary selector
-                    selectionKey.cancel();
-
-                    if (selector != null) {
-                        // Flush the cancelled key
-                        selector.selectNow();
-                        SelectorFactory.returnSelector(selector);
-                    }
-                }
+                release(selector, selectionKey);
             }
         }
     }
@@ -252,7 +243,8 @@ public final class ByteUtils {
                             throw new IOException(
                                     "Unexpected negative number of bytes written.");
                         } else if (bytesWritten == 0) {
-                            if (SelectorFactory.getSelector().select(10000) == 0) {
+                            if (SelectorFactory.getSelector().select(
+                                    NIO_TIMEOUT) == 0) {
                                 throw new IOException(
                                         "Unable to select the channel to write to it. Selection timed out.");
                             }
@@ -526,6 +518,8 @@ public final class ByteUtils {
         }
     }
 
+    private static final int NIO_TIMEOUT = 10000;
+
     /**
      * Exhauts the content of the representation by reading it and silently
      * discarding anything read.
@@ -764,6 +758,30 @@ public final class ByteUtils {
     }
 
     /**
+     * Release the selection key, working around for bug #6403933.
+     * 
+     * @param selector
+     *            The associated selector.
+     * @param selectionKey
+     *            The used selection key.
+     * @throws IOException
+     */
+    private static void release(Selector selector, SelectionKey selectionKey)
+            throws IOException {
+        if (selectionKey != null) {
+            // The key you registered on the temporary selector
+            selectionKey.cancel();
+
+            if (selector != null) {
+                // Flush the cancelled key
+                selector.selectNow();
+                SelectorFactory.returnSelector(selector);
+            }
+        }
+
+    }
+
+    /**
      * Converts an input stream to a string.<br>
      * As this method uses the InputstreamReader class, the default character
      * set is used for decoding the input stream.
@@ -843,6 +861,64 @@ public final class ByteUtils {
         }
 
         return result;
+    }
+
+    /**
+     * Waits for the given channel to be ready for a specific operation.
+     * 
+     * @param selectableChannel
+     *            The channel to monitor.
+     * @param operations
+     *            The operations to be ready to do.
+     * @throws IOException
+     */
+    private static void waitForState(SelectableChannel selectableChannel,
+            int operations) throws IOException {
+        if (selectableChannel != null) {
+            Selector selector = null;
+            SelectionKey selectionKey = null;
+            int selected = 0;
+
+            try {
+                selector = SelectorFactory.getSelector();
+
+                while (selected == 0) {
+                    selectionKey = selectableChannel.register(selector,
+                            operations);
+                    selected = selector.select(NIO_TIMEOUT);
+                }
+            } finally {
+                release(selector, selectionKey);
+            }
+        }
+    }
+
+    /**
+     * Writes the representation to a byte channel. Optimizes using the file
+     * channel transferTo method.
+     * 
+     * @param fileChannel
+     *            The readable file channel.
+     * @param writableChannel
+     *            A writable byte channel.
+     */
+    public static void write(FileChannel fileChannel,
+            WritableByteChannel writableChannel) throws IOException {
+        long position = 0;
+        long count = fileChannel.size();
+        long written = 0;
+        SelectableChannel selectableChannel = null;
+
+        if (writableChannel instanceof SelectableChannel) {
+            selectableChannel = (SelectableChannel) writableChannel;
+        }
+
+        while (count > 0) {
+            waitForState(selectableChannel, SelectionKey.OP_WRITE);
+            written = fileChannel.transferTo(position, count, writableChannel);
+            position += written;
+            count -= written;
+        }
     }
 
     /**
