@@ -364,7 +364,7 @@ public class Response extends Message {
     /**
      * Sets the list of authentication requests sent by an origin server to a
      * client. The list instance set must be thread-safe (use
-     * {@link CopyOnWriteArrayList} for example.
+     * {@link java.util.concurrent.CopyOnWriteArrayList} for example.
      * 
      * @param requests
      *            The list of authentication requests sent by an origin server
