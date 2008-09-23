@@ -61,6 +61,11 @@ public abstract class GrizzlyServerHelper extends HttpServerHelper {
         this.controller = null;
     }
 
+    /**
+     * Returns the Grizzly TCP selector handler.
+     * 
+     * @return The Grizzly TCP selector handler.
+     */
     public synchronized TCPSelectorHandler getSelectorHandler() {
         if (this.selectorHandler == null) {
             this.selectorHandler = new TCPSelectorHandler();
