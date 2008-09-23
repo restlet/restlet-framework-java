@@ -517,42 +517,60 @@ public class ServerServlet extends HttpServlet {
                     boolean addContextPath = false;
                     boolean addFullServletPath = false;
 
-                    for (final Route route : component.getDefaultHost()
-                            .getRoutes()) {
-                        if (route.getTemplate().getPattern() == null) {
-                            addFullServletPath = true;
-                            continue;
-                        }
-
-                        if (!route.getTemplate().getPattern().startsWith(
-                                uriPattern)) {
-                            if (!route.getTemplate().getPattern().startsWith(
-                                    request.getServletPath())) {
+                    if (component.getDefaultHost().getRoutes().isEmpty()) {
+                        // Case where the default host has a default route (with
+                        // an empty pattern).
+                        addFullServletPath = component.getDefaultHost()
+                                .getDefaultRoute() != null;
+                    } else {
+                        for (final Route route : component.getDefaultHost()
+                                .getRoutes()) {
+                            if (route.getTemplate().getPattern() == null) {
                                 addFullServletPath = true;
-                            } else {
-                                addContextPath = true;
-                                break;
+                                continue;
+                            }
+
+                            if (!route.getTemplate().getPattern().startsWith(
+                                    uriPattern)) {
+                                if (!route.getTemplate().getPattern()
+                                        .startsWith(request.getServletPath())) {
+                                    addFullServletPath = true;
+                                } else {
+                                    addContextPath = true;
+                                    break;
+                                }
                             }
                         }
                     }
                     if (!addContextPath) {
                         for (final VirtualHost virtualHost : component
                                 .getHosts()) {
-                            for (final Route route : virtualHost.getRoutes()) {
-                                if (route.getTemplate().getPattern() == null) {
-                                    addFullServletPath = true;
-                                    continue;
-                                }
-
-                                if (!route.getTemplate().getPattern()
-                                        .startsWith(uriPattern)) {
-                                    if (!route.getTemplate().getPattern()
-                                            .startsWith(
-                                                    request.getServletPath())) {
+                            if (virtualHost.getRoutes().isEmpty()) {
+                                // Case where the default host has a default
+                                // route (with an empty pattern).
+                                addFullServletPath = virtualHost
+                                        .getDefaultRoute() != null;
+                            } else {
+                                for (final Route route : virtualHost
+                                        .getRoutes()) {
+                                    if (route.getTemplate().getPattern() == null) {
                                         addFullServletPath = true;
-                                    } else {
-                                        addContextPath = true;
-                                        break;
+                                        continue;
+                                    }
+
+                                    if (!route.getTemplate().getPattern()
+                                            .startsWith(uriPattern)) {
+                                        if (!route
+                                                .getTemplate()
+                                                .getPattern()
+                                                .startsWith(
+                                                        request
+                                                                .getServletPath())) {
+                                            addFullServletPath = true;
+                                        } else {
+                                            addContextPath = true;
+                                            break;
+                                        }
                                     }
                                 }
                             }
@@ -572,6 +590,22 @@ public class ServerServlet extends HttpServlet {
                             offsetPath = uriPattern;
                         }
 
+                        // Shift the default route (if any) of the default host
+                        Route defaultRoute = component.getDefaultHost()
+                                .getDefaultRoute();
+                        if (defaultRoute != null) {
+                            defaultRoute.getTemplate().setPattern(
+                                    offsetPath
+                                            + defaultRoute.getTemplate()
+                                                    .getPattern());
+                            log("[Noelios Restlet Engine] - Attaching restlet: "
+                                    + defaultRoute.getNext()
+                                    + " to URI: "
+                                    + offsetPath
+                                    + defaultRoute.getTemplate().getPattern());
+                        }
+
+                        // Shift the routes of the default host
                         for (final Route route : component.getDefaultHost()
                                 .getRoutes()) {
                             log("[Noelios Restlet Engine] - Attaching restlet: "
@@ -585,6 +619,22 @@ public class ServerServlet extends HttpServlet {
                         }
                         for (final VirtualHost virtualHost : component
                                 .getHosts()) {
+                            // Shift the default route (if any) of the virtual
+                            // host
+                            defaultRoute = virtualHost.getDefaultRoute();
+                            if (defaultRoute != null) {
+                                defaultRoute.getTemplate().setPattern(
+                                        offsetPath
+                                                + defaultRoute.getTemplate()
+                                                        .getPattern());
+                                log("[Noelios Restlet Engine] - Attaching restlet: "
+                                        + defaultRoute.getNext()
+                                        + " to URI: "
+                                        + offsetPath
+                                        + defaultRoute.getTemplate()
+                                                .getPattern());
+                            }
+                            // Shift the routes of the virtual host
                             for (final Route route : virtualHost.getRoutes()) {
                                 log("[Noelios Restlet Engine] - Attaching restlet: "
                                         + route.getNext()
