@@ -65,6 +65,10 @@ Changes log
         - Fixed potential "Address already in use" exception with the 
           grizzly connector when the server is required to connect on 
           ephemeral port.
+        - Fixed Grizzly exceptions "Unable to write to the non-blocking 
+          channel. Unable to select the channel to write to it. 
+          Selection timed out.". Reported by Bruce Lee, Emblem Parade
+          and Roman Geus.
     - Misc
         - Removed deprecated code in GWT module not need for a first 
           release.

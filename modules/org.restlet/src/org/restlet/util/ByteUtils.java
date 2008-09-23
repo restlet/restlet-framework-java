@@ -28,6 +28,7 @@
 package org.restlet.util;
 
 import java.io.BufferedReader;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -199,6 +200,9 @@ public final class ByteUtils {
         /** The channel to write to. */
         private final WritableByteChannel channel;
 
+        /** The selectable channel to write to. */
+        private final SelectableChannel selectableChannel;
+
         private SelectionKey selectionKey;
 
         private Selector selector;
@@ -210,19 +214,19 @@ public final class ByteUtils {
          *            The wrapped channel.
          */
         public NbChannelOutputStream(WritableByteChannel channel) {
+            if (channel instanceof SelectableChannel) {
+                this.selectableChannel = (SelectableChannel) channel;
+            } else {
+                this.selectableChannel = null;
+            }
+
             this.channel = channel;
+            this.selector = null;
         }
 
         @Override
         public void close() throws IOException {
-            if (this.selectionKey != null) {
-                this.selectionKey.cancel();
-            }
-
-            if (this.selector != null) {
-                this.selector.close();
-            }
-
+            release(this.selector, this.selectionKey);
             super.close();
         }
 
@@ -235,19 +239,38 @@ public final class ByteUtils {
             if ((this.channel != null) && (this.bb != null)) {
                 try {
                     int bytesWritten;
+                    int attempts = 0;
 
                     while (this.bb.hasRemaining()) {
                         bytesWritten = this.channel.write(this.bb);
+                        attempts++;
 
                         if (bytesWritten < 0) {
-                            throw new IOException(
-                                    "Unexpected negative number of bytes written.");
+                            throw new EOFException(
+                                    "Unexpected negative number of bytes written. End of file detected.");
                         } else if (bytesWritten == 0) {
-                            if (SelectorFactory.getSelector().select(
-                                    NIO_TIMEOUT) == 0) {
-                                throw new IOException(
-                                        "Unable to select the channel to write to it. Selection timed out.");
+                            if (this.selectableChannel != null) {
+                                if (this.selector == null) {
+                                    this.selector = SelectorFactory
+                                            .getSelector();
+                                }
+
+                                // Register a selector to write more
+                                this.selectionKey = this.selectableChannel
+                                        .register(this.selector,
+                                                SelectionKey.OP_WRITE);
+
+                                if (this.selector.select(NIO_TIMEOUT) == 0) {
+                                    if (attempts > 2) {
+                                        throw new IOException(
+                                                "Unable to select the channel to write to it. Selection timed out.");
+                                    }
+                                } else {
+                                    attempts--;
+                                }
                             }
+                        } else {
+                            attempts = 0;
                         }
                     }
                 } catch (final IOException ioe) {
@@ -518,7 +541,7 @@ public final class ByteUtils {
         }
     }
 
-    private static final int NIO_TIMEOUT = 10000;
+    private static final int NIO_TIMEOUT = 60000;
 
     /**
      * Exhauts the content of the representation by reading it and silently
