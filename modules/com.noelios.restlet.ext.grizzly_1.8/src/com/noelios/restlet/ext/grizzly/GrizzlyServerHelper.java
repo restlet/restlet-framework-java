@@ -88,7 +88,6 @@ public abstract class GrizzlyServerHelper extends HttpServerHelper {
      */
     protected abstract void configure(Controller controller) throws Exception;
 
-    @SuppressWarnings("unchecked")
     @Override
     public synchronized void start() throws Exception {
         super.start();
