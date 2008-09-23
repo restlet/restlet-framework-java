@@ -67,11 +67,14 @@ public class SslGetTestCase extends SslBaseConnectorsTestCase {
     @Override
     protected void call(String uri) throws Exception {
         final Request request = new Request(Method.GET, uri);
-        final Response r = new Client(Protocol.HTTPS).handle(request);
+        final Client client = new Client(Protocol.HTTPS);
+        final Response r = client.handle(request);
 
         assertEquals(r.getStatus().getDescription(), Status.SUCCESS_OK, r
                 .getStatus());
         assertEquals("Hello world", r.getEntity().getText());
+
+        client.stop();
     }
 
     @Override
