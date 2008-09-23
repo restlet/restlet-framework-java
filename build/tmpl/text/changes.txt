@@ -52,6 +52,8 @@ Changes log
         - Fixed bug causing blockings when exchanging an entity for a
           DELETE method with internal connectors. Reported by 
           Tamas Cservenak.
+        - Fixed autowiring of the default routes. Reported by Paolo 
+          Borelli.
     - Misc
         - Removed deprecated code in GWT module not need for a first 
           release.
