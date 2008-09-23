@@ -386,7 +386,6 @@ public class HttpServerConverter extends HttpConverter {
 
             // Send the response to the client
             response.getHttpCall().sendResponse(response);
-            response.getHttpCall().complete();
         } catch (final Exception e) {
             if (response.getHttpCall().isConnectionBroken(e)) {
                 getLogger()
@@ -409,8 +408,9 @@ public class HttpServerConverter extends HttpConverter {
                     getLogger().log(Level.WARNING,
                             "Unable to send error response", ioe);
                 }
-                response.getHttpCall().complete();
             }
+        } finally {
+            response.getHttpCall().complete();
         }
     }
 

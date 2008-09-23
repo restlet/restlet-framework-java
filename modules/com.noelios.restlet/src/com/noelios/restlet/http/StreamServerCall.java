@@ -101,7 +101,7 @@ public class StreamServerCall extends HttpServerCall {
 
             if (!this.socket.isClosed()) {
                 this.socket.getOutputStream().flush();
-                this.socket.shutdownOutput();
+                this.socket.close();
             }
         } catch (final IOException ex) {
             getLogger().log(Level.WARNING, "Unable to shutdown server socket",
