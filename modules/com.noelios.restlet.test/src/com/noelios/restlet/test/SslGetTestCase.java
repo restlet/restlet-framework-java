@@ -74,6 +74,7 @@ public class SslGetTestCase extends SslBaseConnectorsTestCase {
                 .getStatus());
         assertEquals("Hello world", r.getEntity().getText());
 
+        Thread.sleep(200);
         client.stop();
     }
 
