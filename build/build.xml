@@ -1520,9 +1520,11 @@
 			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
 			<link href="http://google-web-toolkit-doc-1-5.googlecode.com/svn/javadoc/1.5/" />
 		</javadoc>
-
+	</target>
+		
+	<!-- umlgraph target -->
+	<target name="umlgraph">
 		<!-- Generate UML graphics for the Restlet API -->
-		<!--
 		<javadoc packagenames="org.restlet.*"
 		         excludepackagenames="${exclude-packages}"
 		         destdir="${uml-reports-api}"
@@ -1555,6 +1557,8 @@
 				<param name="-qualify" />
 				<param name="-types" />
 				<param name="-visibility" />
+				<param name="-inferdep"/>
+				<param name="-inferrel"/>
 			</doclet>
 		</javadoc>
 		<apply executable="dot" dest="${uml-reports-api}" parallel="false" failifexecutionfails="false" failonerror="false" verbose="false" >  
@@ -1568,7 +1572,6 @@
 		<delete verbose="false" quiet="true">
 			<fileset dir="${uml-reports-api}" includes="**/*.dot, **/*.map" />
 		</delete>
-		-->
 	</target>
 
 	<!-- VERIFY target -->
