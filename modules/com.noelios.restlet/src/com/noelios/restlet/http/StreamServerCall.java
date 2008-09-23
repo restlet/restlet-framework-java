@@ -95,12 +95,19 @@ public class StreamServerCall extends HttpServerCall {
     @Override
     public void complete() {
         try {
-            // Exhaust the input stream before closing in case
-            // the client is still writing to it
-            ByteUtils.exhaust(getRequestEntityStream(getContentLength()));
-
             if (!this.socket.isClosed()) {
+                // Exhaust the input stream before closing in case
+                // the client is still writing to it
+                ByteUtils.exhaust(getRequestEntityStream(getContentLength()));
+                this.socket.shutdownInput();
+
+                // Flush the output stream
                 this.socket.getOutputStream().flush();
+                this.socket.shutdownOutput();
+
+                // As we don't support persistent connections,
+                // we must call this method to make sure sockets
+                // are properly released.
                 this.socket.close();
             }
         } catch (final IOException ex) {
