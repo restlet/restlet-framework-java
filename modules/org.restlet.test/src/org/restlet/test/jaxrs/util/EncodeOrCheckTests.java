@@ -86,16 +86,15 @@ public class EncodeOrCheckTests extends TestCase {
 
     /**
      * @param method
-     *                static method. The in value is the first parameter. If the
-     *                method has two or three parameters, the second is the
-     *                encode value. If it has three arguments, a generic error
-     *                message is used for it.
+     *            static method. The in value is the first parameter. If the
+     *            method has two or three parameters, the second is the encode
+     *            value. If it has three arguments, a generic error message is
+     *            used for it.
      * @param in
      * @param encode
-     *                must not be null, if the method has more than one
-     *                argument.
+     *            must not be null, if the method has more than one argument.
      * @param out
-     *                if null, an IllegalArgumentException must be thrown
+     *            if null, an IllegalArgumentException must be thrown
      * @throws IllegalAccessException
      * @throws IllegalArgumentException
      * @throws RuntimeException
@@ -259,9 +258,9 @@ public class EncodeOrCheckTests extends TestCase {
 
     /**
      * @param delim
-     *                ';' or '&'
+     *            ';' or '&'
      * @param nonDelim
-     *                '&' or ';'
+     *            '&' or ';'
      */
     private void xtestFullQueryOrMatrix(Method method, char delim, char nonDelim) {
         final String nonDelimStr = (nonDelim == ';' ? "%3B" : "%26");
@@ -270,7 +269,7 @@ public class EncodeOrCheckTests extends TestCase {
         checkNoEncode(method, str);
         checkEncoding(method, str + nonDelim, str + nonDelimStr);
         checkNoEncode(method, "");
-        // LATER run test again: checkEncoding(method, "%20", "%2520");
+        // LATER is the following right? checkEncoding(method, "%20", "%2520");
         checkEncoding(method, delim + "=" + nonDelim + "?", delim + "="
                 + nonDelimStr + "%3F");
         checkNoEncode(method, "{s&?df}");

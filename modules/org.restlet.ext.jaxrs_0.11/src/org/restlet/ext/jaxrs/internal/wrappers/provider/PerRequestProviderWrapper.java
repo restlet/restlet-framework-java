@@ -185,7 +185,7 @@ class PerRequestProviderWrapper extends AbstractProviderWrapper {
             IllegalPathParamTypeException {
         super(jaxRsProviderClass);
         this.jaxRsProviderClass = jaxRsProviderClass;
-        // LATER raus
+        // LATER I think this could be removed, but check before
         createInstance(jaxRsProviderClass, objectFactory, tlContext,
                 allProviders, extensionBackwardMapping, logger);
     }

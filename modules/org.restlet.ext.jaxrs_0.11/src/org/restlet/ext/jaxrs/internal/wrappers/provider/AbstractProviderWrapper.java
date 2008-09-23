@@ -64,10 +64,10 @@ abstract class AbstractProviderWrapper implements ProviderWrapper {
      * thrown.
      * 
      * @param jaxRsProviderClass
-     *                the JAX-RS provider class.
+     *            the JAX-RS provider class.
      * @throws IllegalArgumentException
-     *                 if the class is not a valid provider, may not be
-     *                 instantiated or what ever.
+     *             if the class is not a valid provider, may not be instantiated
+     *             or what ever.
      * @throws WebApplicationException
      * @see javax.ws.rs.ext.MessageBodyReader
      * @see javax.ws.rs.ext.MessageBodyWriter
@@ -129,7 +129,7 @@ abstract class AbstractProviderWrapper implements ProviderWrapper {
     @Override
     public abstract int hashCode();
 
-    // TODO before a call of a message body reader or writer the current state
+    // TEST before a call of a message body reader or writer the current state
     // of the matched resources and URIs must be stored for the current thread.
 
     /**
@@ -144,8 +144,8 @@ abstract class AbstractProviderWrapper implements ProviderWrapper {
     /**
      * Checks, if this provider represents an {@link ExceptionMapper}.
      * 
-     * @return true, if this provider is an {@link ExceptionMapper}, or false
-     *         if not.
+     * @return true, if this provider is an {@link ExceptionMapper}, or false if
+     *         not.
      */
     public abstract boolean isExceptionMapper();
 
@@ -172,9 +172,9 @@ abstract class AbstractProviderWrapper implements ProviderWrapper {
      * parameter of the {@link javax.ws.rs.ext.MessageBodyWriter})
      * 
      * @param entityClass
-     *                the type
+     *            the type
      * @param genericType
-     *                the generic type
+     *            the generic type
      * @return true, if this MessageBodyWriter supports the given type, false,
      *         if not.
      * @see org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyWriter#supportsWrite(java.lang.Class,
@@ -187,10 +187,11 @@ abstract class AbstractProviderWrapper implements ProviderWrapper {
         if (genericType == null) {
             // LATER use Type instead of Class
         }
-        if(this.genericMbwType == null) {
+        if (this.genericMbwType == null) {
             return false;
         }
-        final boolean supportsWrite = this.genericMbwType.isAssignableFrom(entityClass);
+        final boolean supportsWrite = this.genericMbwType
+                .isAssignableFrom(entityClass);
         return supportsWrite;
     }
 
@@ -199,9 +200,9 @@ abstract class AbstractProviderWrapper implements ProviderWrapper {
      * parameter of the {@link javax.ws.rs.ext.MessageBodyWriter})
      * 
      * @param entityClass
-     *                the type
+     *            the type
      * @param genericType
-     *                the generic type
+     *            the generic type
      * @return true, if this MessageBodyReader supports the given type, false,
      *         if not.
      * @see MessageBodyReader#supportsRead(Class, Type)
@@ -213,7 +214,7 @@ abstract class AbstractProviderWrapper implements ProviderWrapper {
         if (genericType == null) {
             // LATER use Type instead of Class
         }
-        if(this.genericMbrType == null) {
+        if (this.genericMbrType == null) {
             return false;
         }
         return this.genericMbrType.isAssignableFrom(entityClass);
@@ -238,7 +239,7 @@ abstract class AbstractProviderWrapper implements ProviderWrapper {
      * requested {@link MediaType}s.
      * 
      * @param mediaTypes
-     *                the {@link MediaType}s
+     *            the {@link MediaType}s
      * @return true, if at least one of the requested {@link MediaType}s is
      *         supported, otherwise false.
      */
@@ -262,7 +263,7 @@ abstract class AbstractProviderWrapper implements ProviderWrapper {
      * requested {@link MediaType}s.
      * 
      * @param requested
-     *                the requested {@link MediaType}s
+     *            the requested {@link MediaType}s
      * @return true, if at least one of the requested {@link MediaType}s is
      *         supported, otherwise false.
      */

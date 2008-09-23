@@ -146,7 +146,7 @@ public class ParameterList {
                             "Sorry, only Class is supported, but is "
                                     + argTypes[0]);
                 }
-                // TESTEN @*Param with array/collection and generic parameter
+                // TEST @*Param with array/collection and generic parameter
                 this.collType = collType(parametrizedType);
                 this.isArray = false;
             } else {

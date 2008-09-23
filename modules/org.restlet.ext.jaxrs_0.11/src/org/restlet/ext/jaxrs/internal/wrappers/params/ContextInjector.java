@@ -256,18 +256,18 @@ public class ContextInjector {
 
     /**
      * @param declaringClass
-     *                the class / interface to injecto into; must not be
-     *                {@link UriInfo}
+     *            the class / interface to injecto into; must not be
+     *            {@link UriInfo}
      * @param tlContext
      * @param providers
      * @param extensionBackwardMapping
      * @param aim
      * @return
      * @throws IllegalTypeException
-     *                 if the given class is not valid to be annotated with
-     *                 &#64; {@link Context}.
+     *             if the given class is not valid to be annotated with &#64;
+     *             {@link Context}.
      * @throws ImplementationException
-     *                 the declaringClass must not be {@link UriInfo}
+     *             the declaringClass must not be {@link UriInfo}
      */
     static Object getInjectObject(Class<?> declaringClass,
             ThreadLocalizedContext tlContext, Providers providers,
@@ -277,7 +277,7 @@ public class ContextInjector {
             return providers;
         }
         if (declaringClass.equals(ContextResolver.class)) {
-            // NICE mit ausgeben, wo der Fehler aufgetreten ist.
+            // NICE also throw, where the error occurs.
             throw new IllegalTypeException(
                     "The ContextResolver is not allowed for @Context annotated fields yet. Use javax.ws.rs.ext.Providers#getContextResolver(...)");
         }
@@ -298,8 +298,8 @@ public class ContextInjector {
             throw new ImplementationException(
                     "You must not call the method ContextInjector.getInjectObject(.......) with class UriInfo");
         }
-        // NICE also allow for ClientInfo und Conditions. Proxies needed for
-        // fields and bean setters.
+        // NICE also allow injection of ClientInfo and Conditions. Proxies are
+        // required, because the injected objects must be thread local.
         throw new IllegalTypeException(declaringClass
                 + " must not be annotated with @Context");
     }
@@ -313,8 +313,8 @@ public class ContextInjector {
      * @param extensionBackwardMapping
      * @return
      * @throws IllegalTypeException
-     *                 if the given class is not valid to be annotated with
-     *                 &#64; {@link Context}.
+     *             if the given class is not valid to be annotated with &#64;
+     *             {@link Context}.
      */
     static Injector getInjector(Class<?> declaringClass, InjectionAim aim,
             ThreadLocalizedContext tlContext, Providers allProviders,
@@ -341,16 +341,16 @@ public class ContextInjector {
      * @param jaxRsClass
      * @param tlContext
      * @param providers
-     *                all entity providers.
+     *            all entity providers.
      * @param extensionBackwardMapping
-     *                the extension backward mapping
+     *            the extension backward mapping
      * @throws IllegalBeanSetterTypeException
-     *                 if one of the bean setters annotated with &#64;
-     *                 {@link Context} has a type that must not be annotated
-     *                 with &#64;{@link Context}.
+     *             if one of the bean setters annotated with &#64;
+     *             {@link Context} has a type that must not be annotated with
+     *             &#64;{@link Context}.
      * @throws IllegalFieldTypeException
-     *                 if one of the fields annotated with &#64;{@link Context}
-     *                 has a type that must not be annotated with &#64;{@link Context}.
+     *             if one of the fields annotated with &#64;{@link Context} has
+     *             a type that must not be annotated with &#64;{@link Context}.
      * @throws ImplementationException
      */
     public ContextInjector(Class<?> jaxRsClass,
@@ -370,20 +370,20 @@ public class ContextInjector {
      * initiates the fields to cache the fields that needs injection.
      * 
      * @param tlContext
-     *                the {@link ThreadLocalizedContext} of the
-     *                {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
+     *            the {@link ThreadLocalizedContext} of the
+     *            {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
      * @param allProviders
-     *                all entity providers.
+     *            all entity providers.
      * @param extensionBackwardMapping
-     *                the extension backward mapping
+     *            the extension backward mapping
      * 
      * @throws IllegalFieldTypeException
-     *                 if one of the fields annotated with &#64;{@link Context}
-     *                 has a type that must not be annotated with &#64;{@link Context}.
+     *             if one of the fields annotated with &#64;{@link Context} has
+     *             a type that must not be annotated with &#64;{@link Context}.
      * @throws IllegalBeanSetterTypeException
-     *                 if one of the bean setters annotated with &#64;
-     *                 {@link Context} has a type that must not be annotated
-     *                 with &#64;{@link Context}.
+     *             if one of the bean setters annotated with &#64;
+     *             {@link Context} has a type that must not be annotated with
+     *             &#64;{@link Context}.
      */
     private void init(Class<?> jaxRsClass, ThreadLocalizedContext tlContext,
             Providers allProviders,
@@ -434,14 +434,14 @@ public class ContextInjector {
      * 
      * @param jaxRsResObj
      * @param allMustBeAvailable
-     *                if true, all information in &#64;{@link Context}
-     *                annotated objects must be available, especially the
-     *                ancestor resource info (false for singelton lifecycle)
+     *            if true, all information in &#64;{@link Context} annotated
+     *            objects must be available, especially the ancestor resource
+     *            info (false for singelton lifecycle)
      * @throws InjectException
-     *                 if the injection was not possible. See
-     *                 {@link InjectException#getCause()} for the reason.
+     *             if the injection was not possible. See
+     *             {@link InjectException#getCause()} for the reason.
      * @throws InvocationTargetException
-     *                 if a setter throws an exception
+     *             if a setter throws an exception
      */
     public void injectInto(Object jaxRsResObj, boolean allMustBeAvailable)
             throws InjectException, InvocationTargetException {

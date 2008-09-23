@@ -31,20 +31,14 @@ package org.restlet.ext.jaxrs.internal.todo;
  * 
  * @author Stephan Koops
  */
-public class Notizen {
-
-    // REQUEST javadoc of attribute setters of CacheControl does not ease it to
-    // use the class
+public class Notices {
 
     // TESTEN do not decode @FormParam, @MatrixParam, @QueryParam
     // TESTEN do not encode keys of Form entity
 
-    // REQUEST could the implementation see, what is required to add
-    // after precondition evaluating into the ResponseBuilder
-
     // TESTEN what happens, if ".." or "." in @Path?
 
-    // NICE test again Jersey Implementation.
+    // run tests again Jersey.
 
     // TODO test, if the URIs are normaized, see spec, sect. 3.7.1 "Request
     // Preprocessing"

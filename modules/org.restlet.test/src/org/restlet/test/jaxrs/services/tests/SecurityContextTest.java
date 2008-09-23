@@ -54,7 +54,7 @@ import org.restlet.test.jaxrs.services.resources.SecurityContextService;
 public class SecurityContextTest extends JaxRsTestCase {
     private static final Class<SecurityContextService> SEC_CONT_SERV = SecurityContextService.class;
 
-    // TESTEN create extra TestCase: DigestAuth does not work.
+    // TEST create extra TestCase: DigestAuth does not work.
     public void _testAuthenticationSchemeDigest() throws Exception {
         startServer(ChallengeScheme.HTTP_DIGEST, RoleChecker.ALLOW_ALL);
         final ChallengeResponse cr = new ChallengeResponse(

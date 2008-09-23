@@ -49,12 +49,10 @@ public class NoMessageBodyReaderException extends WebApplicationException {
     /**
      * @param paramType
      * @param mediaType
-     * 
      */
     public NoMessageBodyReaderException(MediaType mediaType, Class<?> paramType) {
         super(Status.UNSUPPORTED_MEDIA_TYPE);
-        // NICE
-        // super("No MessageBodyReader found for "+mediaType+" and "+paramType);
+        // NICE super("No MessageBodyR found for "+mediaType+" and "+paramType);
         this.mediaType = mediaType;
         this.paramType = paramType;
     }
