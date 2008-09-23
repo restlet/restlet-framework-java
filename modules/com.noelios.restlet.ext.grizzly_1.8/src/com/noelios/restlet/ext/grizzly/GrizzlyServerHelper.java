@@ -66,12 +66,18 @@ public abstract class GrizzlyServerHelper extends HttpServerHelper {
      * 
      * @return The Grizzly TCP selector handler.
      */
-    public synchronized TCPSelectorHandler getSelectorHandler() {
-        if (this.selectorHandler == null) {
-            this.selectorHandler = new TCPSelectorHandler();
+    public TCPSelectorHandler getSelectorHandler() {
+        // Lazy initialization with double-check.
+        TCPSelectorHandler s = this.selectorHandler;
+        if (s == null) {
+            synchronized (this) {
+                s = this.selectorHandler;
+                if (s == null) {
+                    this.selectorHandler = s = new TCPSelectorHandler();
+                }
+            }
         }
-
-        return this.selectorHandler;
+        return s;
     }
 
     /**
@@ -100,6 +106,7 @@ public abstract class GrizzlyServerHelper extends HttpServerHelper {
         getLogger().info("Starting the Grizzly " + getProtocols() + " server");
         final CountDownLatch latch = new CountDownLatch(1);
         final Controller controller = this.controller;
+        final TCPSelectorHandler selectorHandler = getSelectorHandler();
         new Thread() {
             @Override
             public void run() {
@@ -112,7 +119,7 @@ public abstract class GrizzlyServerHelper extends HttpServerHelper {
 
                         public void onReady() {
                             if (getHelped().getPort() == 0) {
-                                setEphemeralPort(getSelectorHandler()
+                                setEphemeralPort(selectorHandler
                                         .getPortLowLevel());
                             }
 
