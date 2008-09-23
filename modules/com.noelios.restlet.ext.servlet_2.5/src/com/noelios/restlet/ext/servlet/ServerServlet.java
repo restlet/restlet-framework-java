@@ -27,7 +27,6 @@
 
 package com.noelios.restlet.ext.servlet;
 
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Enumeration;
@@ -46,7 +45,6 @@ import org.restlet.Context;
 import org.restlet.Route;
 import org.restlet.Server;
 import org.restlet.VirtualHost;
-import org.restlet.data.LocalReference;
 import org.restlet.data.Protocol;
 import org.restlet.data.Response;
 import org.restlet.util.Engine;
@@ -173,7 +171,7 @@ import com.noelios.restlet.http.HttpServerHelper;
  * control the URI wiring, you can disable the auto-wiring by setting the
  * property to "false".
  * 
- * @see <a href="http://java.sun.com/j2ee/">J2EE home page</a>
+ * @see <a href="http://java.sun.com/j2ee/">J2EE home page< /a>
  * @author Jerome Louvel
  */
 public class ServerServlet extends HttpServlet {
@@ -381,18 +379,6 @@ public class ServerServlet extends HttpServlet {
         Response response = client.get("war:///WEB-INF/restlet.xml");
         if (response.getStatus().isSuccess() && response.isEntityAvailable()) {
             component = new Component(response.getEntity());
-        }
-
-        if (component == null) {
-            final String configPath = getServletContext().getRealPath(
-                    "/WEB-INF/restlet.xml");
-            if (configPath != null) {
-                final File configFile = new File(configPath);
-                if (configFile.exists()) {
-                    component = new Component(LocalReference
-                            .createFileReference(configPath));
-                }
-            }
         }
 
         // Look for the component class name specified in the web.xml file.
@@ -848,15 +834,6 @@ public class ServerServlet extends HttpServlet {
         Response response = client.get("war:///WEB-INF/restlet.xml");
         if (response.getStatus().isSuccess() && response.isEntityAvailable()) {
             return false;
-        }
-
-        final String configPath = getServletContext().getRealPath(
-                "/WEB-INF/restlet.xml");
-        if (configPath != null) {
-            final File configFile = new File(configPath);
-            if (configFile.exists()) {
-                return false;
-            }
         }
 
         // The Component is provided via a context parameter in the "web.xml"

@@ -54,6 +54,9 @@ Changes log
           Tamas Cservenak.
         - Fixed autowiring of the default routes. Reported by Paolo 
           Borelli.
+        - Fixed potential security exception at 
+          ServerServlet#isDefaultComponent method. Reported by Marcelo 
+          Ochoa.
     - Misc
         - Removed deprecated code in GWT module not need for a first 
           release.
