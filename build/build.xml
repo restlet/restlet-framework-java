@@ -1550,15 +1550,13 @@
 			</group>
 
 			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
-			<doclet name="gr.spinellis.umlgraph.doclet.UmlGraphDoc"
+			<doclet name="org.umlgraph.doclet.UmlGraphDoc"
 			        path="tools/umlgraph/umlgraph.jar">
 				<param name="-attributes" />
 				<param name="-operations" />
 				<param name="-qualify" />
 				<param name="-types" />
 				<param name="-visibility" />
-				<param name="-inferdep"/>
-				<param name="-inferrel"/>
 			</doclet>
 		</javadoc>
 		<apply executable="dot" dest="${uml-reports-api}" parallel="false" failifexecutionfails="false" failonerror="false" verbose="false" >  
