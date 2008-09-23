@@ -47,6 +47,9 @@ public abstract class GrizzlyServerHelper extends HttpServerHelper {
     /** The Grizzly controller. */
     private volatile Controller controller;
 
+    /** The Grizzly TCP selector handler. */
+    private volatile TCPSelectorHandler selectorHandler;
+
     /**
      * Constructor.
      * 
@@ -56,6 +59,14 @@ public abstract class GrizzlyServerHelper extends HttpServerHelper {
     public GrizzlyServerHelper(Server server) {
         super(server);
         this.controller = null;
+    }
+
+    public synchronized TCPSelectorHandler getSelectorHandler() {
+        if (this.selectorHandler == null) {
+            this.selectorHandler = new TCPSelectorHandler();
+        }
+
+        return this.selectorHandler;
     }
 
     /**
@@ -75,8 +86,7 @@ public abstract class GrizzlyServerHelper extends HttpServerHelper {
             this.controller = new Controller();
 
             // We should make this handler configurable via parameters
-            TCPSelectorHandler selectorHandler = new TCPSelectorHandler();
-            this.controller.getSelectorHandlers().add(selectorHandler);
+            this.controller.setSelectorHandler(getSelectorHandler());
 
             // Configure a new controller
             configure(this.controller);
@@ -97,9 +107,8 @@ public abstract class GrizzlyServerHelper extends HttpServerHelper {
 
                         public void onReady() {
                             if (getHelped().getPort() == 0) {
-                                final TCPSelectorHandler tsh = (TCPSelectorHandler) controller
-                                        .getSelectorHandler(Controller.Protocol.TCP);
-                                setEphemeralPort(tsh.getPortLowLevel());
+                                setEphemeralPort(getSelectorHandler()
+                                        .getPortLowLevel());
                             }
 
                             latch.countDown();
