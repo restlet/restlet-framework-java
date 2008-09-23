@@ -61,7 +61,10 @@ Changes log
           server connector that did not close the socket after sending 
           the response. Reported by Christoph Korn.
         - Fixed race issue in SSL unit test with Jetty. Server was 
-          stopped too early. 
+          stopped too early.
+        - Fixed potential "Address already in use" exception with the 
+          grizzly connector when the server is required to connect on 
+          ephemeral port.
     - Misc
         - Removed deprecated code in GWT module not need for a first 
           release.
