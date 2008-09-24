@@ -1,0 +1,19 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Grizzly NIO Framework
+Bundle-SymbolicName: com.sun.grizzly
+Bundle-Version: 1.8.4
+Bundle-ClassPath: com.sun.grizzly.jar
+Bundle-Vendor: Sun Microsystems Inc.
+Export-Package: com.sun.grizzly;uses:="com.sun.grizzly.async,com.sun.grizzly.util,javax.net.ssl",
+ com.sun.grizzly.async;uses:="com.sun.grizzly",
+ com.sun.grizzly.connectioncache.client;uses:="com.sun.grizzly.connectioncache.spi.transport,com.sun.grizzly",
+ com.sun.grizzly.connectioncache.impl.concurrent;uses:="com.sun.grizzly.connectioncache.spi.concurrent",
+ com.sun.grizzly.connectioncache.impl.transport;uses:="com.sun.grizzly.connectioncache.spi.transport,com.sun.grizzly.connectioncache.spi.concurrent",
+ com.sun.grizzly.connectioncache.server;uses:="com.sun.grizzly,com.sun.grizzly.util",
+ com.sun.grizzly.connectioncache.spi.concurrent,
+ com.sun.grizzly.connectioncache.spi.transport,
+ com.sun.grizzly.filter;uses:="com.sun.grizzly,javax.net.ssl",
+ com.sun.grizzly.suspendable;uses:="com.sun.grizzly,com.sun.grizzly.util",
+ com.sun.grizzly.util;uses:="new com.sun.grizzly.util,com.sun.grizzly,javax.net.ssl"
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
