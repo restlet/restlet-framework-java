@@ -32,7 +32,9 @@
  * </p>
  * <p>
  * The JAX-RS extension as well as the JAX-RS specification are currently under
- * development. You should only use this extension for experimental purpose.
+ * development. You should only use this extension for experimental purpose.<br>
+ * For <a href="../../package.html">further information</a> click
+ * <a href="../../package.html">here</a>.
  * </p>
  * 
  * @see MessageBodyWriter
