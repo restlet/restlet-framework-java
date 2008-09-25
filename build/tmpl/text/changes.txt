@@ -5,12 +5,15 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Bugs fixed
-        - 
+        - Updated the type of the digest value from String to array of 
+          bytes. Reported and contributed by Kevin Conaway.
     - API enhancements
         - Added a "tcpNoDelay" option for internal and Apache HTTP 
           clients. Contributed by Kevin Conaway.
+        - Added a DigestRepresentation that allows to both use an 
+          entity and compute its digest value. Suggested by Kevin 
+          Conaway.
     - Misc
-        - 
          
 - 1.1 Release Candidate 2 (2008-09-24)
     - Bugs fixed
