@@ -168,9 +168,9 @@ public class HttpServerConverter extends HttpConverter {
             if (entity.getDigest() != null
                     && Digest.ALGORITHM_MD5.equals(entity.getDigest()
                             .getAlgorithm())) {
-                responseHeaders
-                        .add(HttpConstants.HEADER_CONTENT_MD5, new String(
-                                Base64.decode(entity.getDigest().getValue())));
+                responseHeaders.add(HttpConstants.HEADER_CONTENT_MD5,
+                        new String(Base64.encode(entity.getDigest().getValue(),
+                                false)));
             }
         }
     }

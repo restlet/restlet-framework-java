@@ -376,8 +376,8 @@ public class HttpClientConverter extends HttpConverter {
                         && Digest.ALGORITHM_MD5.equals(request.getEntity()
                                 .getDigest().getAlgorithm())) {
                     requestHeaders.add(HttpConstants.HEADER_CONTENT_MD5, Base64
-                            .encode(request.getEntity().getDigest().getValue()
-                                    .getBytes(), false));
+                            .encode(request.getEntity().getDigest().getValue(),
+                                    false));
                 }
             }
 

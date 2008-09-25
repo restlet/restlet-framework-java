@@ -201,10 +201,9 @@ public abstract class HttpServerCall extends HttpCall {
                 RangeUtils.parseContentRange(header.getValue(), result);
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_CONTENT_MD5)) {
-                result.setDigest(new Digest(Digest.ALGORITHM_MD5, new String(
-                        Base64.decode(header.getValue()))));
+                result.setDigest(new Digest(Digest.ALGORITHM_MD5, Base64
+                        .decode(header.getValue())));
             }
-
         }
 
         return result;
