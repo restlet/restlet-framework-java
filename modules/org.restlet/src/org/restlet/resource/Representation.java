@@ -185,7 +185,13 @@ public abstract class Representation extends Variant {
 
     /**
      * Check that the digest computed from the representation content and the
-     * digest declared by the representation are the same.
+     * digest declared by the representation are the same.<br>
+     * Since this method relies on the {@link #computeDigest(String)} method,
+     * and since this method reads entirely the representation's stream, user
+     * must take care of the content of the representation in case the latter is
+     * transient.
+     * 
+     * {@link #isTransient}
      * 
      * @return True if both digests are not null and equals.
      */
@@ -196,7 +202,13 @@ public abstract class Representation extends Variant {
     /**
      * Check that the digest computed from the representation content and the
      * digest declared by the representation are the same. It also first checks
-     * that the algorithms are the same.
+     * that the algorithms are the same.<br>
+     * Since this method relies on the {@link #computeDigest(String)} method,
+     * and since this method reads entirely the representation's stream, user
+     * must take care of the content of the representation in case the latter is
+     * transient.
+     * 
+     * {@link #isTransient}
      * 
      * @param algorithm
      *            The algorithm used to compute the digest to compare with. See
@@ -204,15 +216,19 @@ public abstract class Representation extends Variant {
      * @return True if both digests are not null and equals.
      */
     public boolean checkDigest(String algorithm) {
-        return (getDigest() != null && (getDigest().getAlgorithm() != null)
-                && getDigest().getAlgorithm().equals(algorithm) && getDigest()
-                .equals(computeDigest(algorithm)));
+        Digest digest = getDigest();
+        if (digest != null) {
+            if (algorithm.equals(digest.getAlgorithm())) {
+                return digest.equals(computeDigest(algorithm));
+            }
+        }
+        return false;
     }
 
     /**
-     * Compute the representation digest according to the given algorithm. Since
-     * this method reads entirely the representation's stream, user must take
-     * care of the content of the representation in case the latter is
+     * Compute the representation digest according to the given algorithm.<br>
+     * Since this method reads entirely the representation's stream, user must
+     * take care of the content of the representation in case the latter is
      * transient.
      * 
      * {@link #isTransient}
@@ -230,7 +246,7 @@ public abstract class Representation extends Variant {
                 MessageDigest md = MessageDigest.getInstance(algorithm);
                 DigestInputStream dis = new DigestInputStream(getStream(), md);
                 ByteUtils.exhaust(dis);
-                result = new Digest(algorithm, new String(md.digest()));
+                result = new Digest(algorithm, md.digest());
             } catch (NoSuchAlgorithmException e) {
                 Context.getCurrentLogger().log(Level.WARNING,
                         "Unable to check the digest of the representation.", e);

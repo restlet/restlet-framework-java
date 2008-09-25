@@ -38,9 +38,11 @@ import java.util.Date;
 import java.util.List;
 
 import org.restlet.data.CharacterSet;
+import org.restlet.data.Digest;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
+import org.restlet.data.Range;
 import org.restlet.data.Reference;
 import org.restlet.data.Tag;
 import org.restlet.resource.Representation;
@@ -67,6 +69,31 @@ public class WrapperRepresentation extends Representation {
     }
 
     @Override
+    public boolean checkDigest() {
+return getWrappedRepresentation().checkDigest();
+    }
+
+    @Override
+    public boolean checkDigest(String algorithm) {
+        return getWrappedRepresentation().checkDigest(algorithm);
+    }
+
+    @Override
+    public Digest computeDigest(String algorithm) {
+        return getWrappedRepresentation().computeDigest(algorithm);
+    }
+
+    @Override
+    public long exhaust() throws IOException {
+        return getWrappedRepresentation().exhaust();
+    }
+
+    @Override
+    public long getAvailableSize() {
+        return getWrappedRepresentation().getAvailableSize();
+    }
+
+    @Override
     public ReadableByteChannel getChannel() throws IOException {
         return getWrappedRepresentation().getChannel();
     }
@@ -74,6 +101,11 @@ public class WrapperRepresentation extends Representation {
     @Override
     public CharacterSet getCharacterSet() {
         return getWrappedRepresentation().getCharacterSet();
+    }
+
+    @Override
+    public Digest getDigest() {
+        return getWrappedRepresentation().getDigest();
     }
 
     @Override
@@ -109,6 +141,11 @@ public class WrapperRepresentation extends Representation {
     @Override
     public Date getModificationDate() {
         return getWrappedRepresentation().getModificationDate();
+    }
+
+    @Override
+    public Range getRange() {
+        return getWrappedRepresentation().getRange();
     }
 
     @Override
@@ -176,6 +213,11 @@ public class WrapperRepresentation extends Representation {
     }
 
     @Override
+    public void setDigest(Digest digest) {
+        getWrappedRepresentation().setDigest(digest);
+    }
+
+    @Override
     public void setDownloadable(boolean downloadable) {
         getWrappedRepresentation().setDownloadable(downloadable);
     }
@@ -218,6 +260,11 @@ public class WrapperRepresentation extends Representation {
     @Override
     public void setModificationDate(Date modificationDate) {
         getWrappedRepresentation().setModificationDate(modificationDate);
+    }
+
+    @Override
+    public void setRange(Range range) {
+        getWrappedRepresentation().setRange(range);
     }
 
     @Override
