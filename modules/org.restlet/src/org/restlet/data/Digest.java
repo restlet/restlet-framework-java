@@ -27,6 +27,8 @@
 
 package org.restlet.data;
 
+import java.util.Arrays;
+
 /**
  * Describes a representation digest to ensure its integrity when sent over the
  * network.
@@ -40,9 +42,9 @@ public class Digest {
         boolean result = (obj instanceof Digest);
 
         if (result) {
-            Digest objDigest = (Digest) obj;
-            result = (objDigest.getAlgorithm().equals(this.getAlgorithm()) && (objDigest
-                    .getValue().equals(this.getValue())));
+            Digest d = (Digest) obj;
+            result = getAlgorithm().equals(d.getAlgorithm());
+            result = result && Arrays.equals(getValue(), d.getValue());
         }
         return result;
     }
@@ -66,10 +68,10 @@ public class Digest {
     public static final String ALGORITHM_SHA_512 = "SHA-512";
 
     /** The digest algorithm. */
-    private volatile String algorithm;
+    private final String algorithm;
 
     /** The digest value. */
-    private volatile String value;
+    private final byte[] value;
 
     /**
      * Constructor using the MD5 algorithm by default.
@@ -77,7 +79,7 @@ public class Digest {
      * @param value
      *            The digest value.
      */
-    public Digest(String value) {
+    public Digest(byte[] value) {
         this(ALGORITHM_MD5, value);
     }
 
@@ -89,9 +91,13 @@ public class Digest {
      * @param value
      *            The digest value.
      */
-    public Digest(String algorithm, String value) {
+    public Digest(String algorithm, byte[] value) {
         this.algorithm = algorithm;
-        this.value = value;
+        // in JSE6, use Arrays.copyOf.
+        this.value = new byte[value.length];
+        for (int i = 0; i < value.length; i++) {
+            this.value[i] = value[i];
+        }
     }
 
     /**
@@ -108,27 +114,14 @@ public class Digest {
      * 
      * @return The digest value.
      */
-    public String getValue() {
-        return value;
+    public byte[] getValue() {
+        // in JSE6, use Arrays.copyOf.
+        byte[] result = new byte[this.value.length];
+        for (int i = 0; i < this.value.length; i++) {
+            result[i] = this.value[i];
+        }
+
+        return result;
     }
 
-    /**
-     * Sets the digest algorithm.
-     * 
-     * @param algorithm
-     *            The digest algorithm.
-     */
-    public void setAlgorithm(String algorithm) {
-        this.algorithm = algorithm;
-    }
-
-    /**
-     * Sets the digest value.
-     * 
-     * @param value
-     *            The digest value.
-     */
-    public void setValue(String value) {
-        this.value = value;
-    }
 }
