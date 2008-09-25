@@ -103,6 +103,12 @@ import com.noelios.restlet.http.HttpClientCall;
  * org.apache.commons.httpclient.HttpMethodRetryHandler interface and have a
  * default constructor</td>
  * </tr>
+ * <tr>
+ * <td>tcpNoDelay</td>
+ * <td>boolean</td>
+ * <td>false</td>
+ * <td>Indicate if Nagle's TCP_NODELAY algorithm should be used.</td>
+ * </tr>
  * </table>
  * 
  * @see <a href=
@@ -234,6 +240,17 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
         return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
                 "followRedirects", "false"));
     }
+    
+    /**
+     * Indicates if the protocol will use Nagle's algorithm
+     * 
+     * @return True to enable TCP_NODELAY, false to disable.
+     * @see java.net.Socket#setTcpNoDelay(boolean)
+     */
+    public boolean getTcpNoDelay() {
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
+                "tcpNoDelay", "false"));
+    }
 
     @Override
     public void start() throws Exception {
@@ -245,6 +262,7 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
                 getMaxConnectionsPerHost());
         connectionManager.getParams().setMaxTotalConnections(
                 getMaxTotalConnections());
+        connectionManager.getParams().setTcpNoDelay(getTcpNoDelay());
 
         // Create the internal client connector
         this.httpClient = new HttpClient(connectionManager);

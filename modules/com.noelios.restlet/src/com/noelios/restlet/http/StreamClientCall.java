@@ -135,6 +135,11 @@ public class StreamClientCall extends HttpClientCall {
     }
 
     @Override
+    public StreamClientHelper getHelper() {
+        return (StreamClientHelper) super.getHelper();
+    }
+
+    @Override
     protected Representation getRepresentation(InputStream stream) {
         final Representation result = super.getRepresentation(stream);
         return new SocketWrapperRepresentation(result, this.socket, getHelper()
@@ -290,6 +295,7 @@ public class StreamClientCall extends HttpClientCall {
 
             // Create the client socket
             this.socket = createSocket(hostDomain, hostPort);
+            this.socket.setTcpNoDelay(getHelper().getTcpNoDelay());
             this.requestStream = new BufferedOutputStream(this.socket
                     .getOutputStream());
             this.responseStream = new BufferedInputStream(this.socket
