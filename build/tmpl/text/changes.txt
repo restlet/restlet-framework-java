@@ -14,7 +14,9 @@ Changes log
           entity and compute its digest value. Suggested by Kevin 
           Conaway.
     - Misc
-         
+        - Updated JAX-RS API to version 1.0. The implementation of the
+          runtime environment is not yet finished.
+        
 - 1.1 Release Candidate 2 (2008-09-24)
     - Bugs fixed
         - Fixed bug when a webapp is mounted on the root instead of 
