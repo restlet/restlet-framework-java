@@ -66,6 +66,10 @@ public class DigestTestCase extends RestletTestCase {
                 @Override
                 public void handle(Request request, Response response) {
                     Representation rep = request.getEntity();
+                    StringRepresentation f = new StringRepresentation(
+                            "9876543210");
+                    f.setDigest(f.computeDigest(Digest.ALGORITHM_MD5));
+                    response.setEntity(f);
                     if (rep.checkDigest(Digest.ALGORITHM_MD5)) {
                         response.setStatus(Status.SUCCESS_OK);
                     } else {
@@ -106,6 +110,8 @@ public class DigestTestCase extends RestletTestCase {
         rep.setDigest(rep.computeDigest(Digest.ALGORITHM_MD5));
         request.setEntity(rep);
         Response response = client.handle(request);
+
+        assertTrue(response.getEntity().checkDigest(Digest.ALGORITHM_MD5));
         assertEquals(Status.SUCCESS_OK, response.getStatus());
     }
 }
