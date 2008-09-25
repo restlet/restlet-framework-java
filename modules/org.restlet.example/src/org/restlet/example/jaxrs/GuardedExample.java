@@ -56,7 +56,7 @@ import org.restlet.ext.jaxrs.RoleChecker;
  * 
  * @author Stephan Koops
  * @see ExampleServer
- * @see ExampleAppConfig
+ * @see ExampleApplication
  */
 public class GuardedExample {
 
@@ -110,7 +110,7 @@ public class GuardedExample {
         application.setAuthentication(guard, roleChecker);
 
         // attach ApplicationConfig
-        application.add(new ExampleAppConfig());
+        application.add(new ExampleApplication());
 
         // Attach the application to the component and start it
         comp.getDefaultHost().attach(application);

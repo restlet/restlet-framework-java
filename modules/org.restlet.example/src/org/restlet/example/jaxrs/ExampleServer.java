@@ -43,7 +43,7 @@ import org.restlet.ext.jaxrs.JaxRsApplication;
  * </p>
  * 
  * @author Stephan Koops
- * @see ExampleAppConfig
+ * @see ExampleApplication
  * @see GuardedExample
  */
 public class ExampleServer {
@@ -58,7 +58,7 @@ public class ExampleServer {
                 .getContext().createChildContext());
 
         // attach ApplicationConfig
-        application.add(new ExampleAppConfig());
+        application.add(new ExampleApplication());
 
         // Attach the application to the component and start it
         comp.getDefaultHost().attach(application);

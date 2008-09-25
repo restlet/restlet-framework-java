@@ -47,12 +47,12 @@ import org.restlet.example.jaxrs.employees.EmployeesResource;
  * @see ExampleServer
  * @see GuardedExample
  */
-public class ExampleAppConfig extends Application {
+public class ExampleApplication extends Application {
 
     /**
      * creates a new Application configuration for this example.
      */
-    public ExampleAppConfig() {
+    public ExampleApplication() {
     }
 
     /**

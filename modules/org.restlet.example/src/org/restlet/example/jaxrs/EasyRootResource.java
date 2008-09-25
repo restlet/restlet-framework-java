@@ -37,7 +37,7 @@ import javax.ws.rs.Produces;
  * "text/plain").
  * 
  * @author Stephan Koops
- * @see ExampleAppConfig
+ * @see ExampleApplication
  */
 @Path("easy")
 public class EasyRootResource {
