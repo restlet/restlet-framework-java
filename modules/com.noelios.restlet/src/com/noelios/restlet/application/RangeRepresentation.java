@@ -65,12 +65,11 @@ public class RangeRepresentation extends WrapperRepresentation {
      */
     public RangeRepresentation(Representation wrappedRepresentation, Range range) {
         super(wrappedRepresentation);
-        setRange(range);
-
         if (wrappedRepresentation.getRange() != null) {
             throw new IllegalArgumentException(
                     "The wrapped representation must not have a range set.");
         }
+        setRange(range);
     }
 
     @Override
