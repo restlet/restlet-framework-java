@@ -255,18 +255,25 @@ public final class ByteUtils {
                                             .getSelector();
                                 }
 
-                                // Register a selector to write more
-                                this.selectionKey = this.selectableChannel
-                                        .register(this.selector,
-                                                SelectionKey.OP_WRITE);
-
-                                if (this.selector.select(NIO_TIMEOUT) == 0) {
+                                if (this.selector == null) {
                                     if (attempts > 2) {
                                         throw new IOException(
-                                                "Unable to select the channel to write to it. Selection timed out.");
+                                                "Unable to obtain a selector. Selector factory returned null.");
                                     }
                                 } else {
-                                    attempts--;
+                                    // Register a selector to write more
+                                    this.selectionKey = this.selectableChannel
+                                            .register(this.selector,
+                                                    SelectionKey.OP_WRITE);
+
+                                    if (this.selector.select(NIO_TIMEOUT) == 0) {
+                                        if (attempts > 2) {
+                                            throw new IOException(
+                                                    "Unable to select the channel to write to it. Selection timed out.");
+                                        }
+                                    } else {
+                                        attempts--;
+                                    }
                                 }
                             }
                         } else {
@@ -468,6 +475,7 @@ public final class ByteUtils {
         public final static Selector getSelector() {
             synchronized (selectors) {
                 Selector selector = null;
+
                 try {
                     if (selectors.size() != 0) {
                         selector = selectors.pop();
@@ -479,6 +487,7 @@ public final class ByteUtils {
                 try {
                     while ((selector == null) && (attempts < 2)) {
                         selectors.wait(timeout);
+
                         try {
                             if (selectors.size() != 0) {
                                 selector = selectors.pop();
@@ -486,6 +495,7 @@ public final class ByteUtils {
                         } catch (final EmptyStackException ex) {
                             break;
                         }
+
                         attempts++;
                     }
                 } catch (final InterruptedException ex) {
