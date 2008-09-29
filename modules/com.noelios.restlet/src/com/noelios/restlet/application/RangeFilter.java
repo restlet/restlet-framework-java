@@ -65,7 +65,7 @@ public class RangeFilter extends Filter {
                     if (!requestedRange.equals(response.getEntity().getRange())) {
                         getLogger()
                                 .info(
-                                        "The range of the response entity is not equals to the requested one.");
+                                        "The range of the response entity is not equal to the requested one.");
                         response.setEntity(new RangeRepresentation(response
                                 .getEntity(), requestedRange));
                     }
