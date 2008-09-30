@@ -43,9 +43,11 @@ import javax.ws.rs.ext.Provider;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Response;
 import org.restlet.ext.jaxrs.internal.util.Util;
+import org.restlet.resource.Representation;
 
 /**
- * ProviderWrapper for {@link String}s. Could also write other {@link CharSequence}s.
+ * ProviderWrapper for {@link String}s. Could also write other
+ * {@link CharSequence}s.
  * 
  * @author Stephan Koops
  */
@@ -53,6 +55,45 @@ import org.restlet.ext.jaxrs.internal.util.Util;
 @Produces("*/*")
 @Consumes("*/*")
 public class StringProvider extends AbstractProvider<CharSequence> {
+
+    /**
+     * Returns the given entity as byte array converted by the given character
+     * set.
+     * 
+     * @param entity
+     * @param charsetName
+     * @return the given entity as byte array converted by the given character
+     *         set.
+     */
+    private byte[] getByteArray(CharSequence entity, String charsetName) {
+        final String string = entity.toString();
+        try {
+            if (charsetName != null)
+                return string.getBytes(charsetName);
+        } catch (final UnsupportedEncodingException e) {
+            // try with default character set, see below
+        }
+        try {
+            return string.getBytes(Util.JAX_RS_DEFAULT_CHARACTER_SET_AS_STRING);
+        } catch (final UnsupportedEncodingException e1) {
+            return string.getBytes();
+        }
+        // NICE cache for some seconds
+    }
+
+    /**
+     * @return the character set of the current entity, or null, if no entity or
+     *         no character set is available.
+     */
+    private String getCurrentEntityCharset() {
+        final Representation entity = Response.getCurrent().getEntity();
+        if (entity == null)
+            return null;
+        final CharacterSet characterSet = entity.getCharacterSet();
+        if (characterSet == null)
+            return null;
+        return characterSet.toString();
+    }
 
     /**
      * Returns an {@link InputStream}, that returns the right encoded data
@@ -65,18 +106,7 @@ public class StringProvider extends AbstractProvider<CharSequence> {
      */
     private ByteArrayInputStream getInputStream(CharSequence charSequ,
             String charsetName) {
-        byte[] bytes;
-        final String string = charSequ.toString();
-        try {
-            bytes = string.getBytes(charsetName);
-        } catch (final UnsupportedEncodingException e) {
-            try {
-                bytes = string.getBytes(Util.JAX_RS_DEFAULT_CHARACTER_SET
-                        .toString());
-            } catch (final UnsupportedEncodingException e1) {
-                bytes = string.getBytes();
-            }
-        }
+        byte[] bytes = getByteArray(charSequ, charsetName);
         return new ByteArrayInputStream(bytes);
     }
 
@@ -84,9 +114,9 @@ public class StringProvider extends AbstractProvider<CharSequence> {
      * @see javax.ws.rs.ext.MessageBodyWriter#getSize(java.lang.Object)
      */
     @Override
-    public long getSize(CharSequence t, Class<?> type, Type genericType,
+    public long getSize(CharSequence entity, Class<?> type, Type genericType,
             Annotation[] annotations, MediaType mediaType) {
-        return t.length();
+        return getByteArray(entity, getCurrentEntityCharset()).length;
     }
 
     @Override
@@ -118,10 +148,8 @@ public class StringProvider extends AbstractProvider<CharSequence> {
             Type genericType, Annotation[] annotations, MediaType mediaType,
             MultivaluedMap<String, Object> httpHeaders,
             OutputStream entityStream) throws IOException {
-        final CharacterSet cs = Response.getCurrent().getEntity()
-                .getCharacterSet();
-        final InputStream inputStream = getInputStream(charSequence, cs
-                .toString());
+        final String charset = getCurrentEntityCharset();
+        final InputStream inputStream = getInputStream(charSequence, charset);
         Util.copyStream(inputStream, entityStream);
     }
 }

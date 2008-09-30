@@ -70,6 +70,11 @@ import org.xml.sax.InputSource;
 @SuppressWarnings("all")
 @Path("/providerTest")
 public class ProviderTestService {
+    /**
+     * 
+     */
+    public static final String STRING2 = "Romän";
+
     public static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
     private static final int CS_LAST_CHAR = 126;
@@ -322,6 +327,13 @@ public class ProviderTestService {
     @Produces("text/plain")
     public String stringGet() {
         return ALPHABET;
+    }
+
+    @GET
+    @Path("String2")
+    @Produces("text/plain")
+    public String string2Get() {
+        return STRING2;
     }
 
     @POST

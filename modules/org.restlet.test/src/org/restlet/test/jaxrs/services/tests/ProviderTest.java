@@ -341,6 +341,12 @@ public class ProviderTest extends JaxRsTestCase {
 
     public void testStringGet() throws Exception {
         getAndExpectAlphabet("String");
+        
+        final Response response = get("String2");
+        sysOutEntityIfError(response);
+        assertEquals(Status.SUCCESS_OK, response.getStatus());
+        final Representation entity = response.getEntity();
+        assertEquals(ProviderTestService.STRING2, entity.getText());
     }
 
     public void testStringPost() throws Exception {
