@@ -73,7 +73,7 @@ public class ProviderTestService {
     /**
      * 
      */
-    public static final String STRING2 = "Romän";
+    public static final String STRING2 = "Rom"+'\u00E4'+"n"; // avoid UTF-8 bugs
 
     public static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
