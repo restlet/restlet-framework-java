@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: OAuth library
 Bundle-SymbolicName: net.oauth
 Bundle-Version: 1.0
-Bundle-ClassPath: net.oauth.ja
+Bundle-ClassPath: net.oauth.jar
 Bundle-Vendor: 
 Export-Package: net.oauth,
  net.oauth.client,
