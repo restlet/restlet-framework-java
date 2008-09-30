@@ -4,6 +4,14 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - Important change
+        - The servlet extension now tries to instantiate the single 
+          application with the empty constructor first, then the one 
+          with the parameter of type Context. The aim is to encourage 
+          most people to use the empty constructor as it is the 
+          recommended way since release 1.1M5. The other constructor 
+          is still working but logs once a warning message.
+
     - Bugs fixed
         - Updated the type of the digest value from String to array of 
           bytes. Reported and contributed by Kevin Conaway.
@@ -17,8 +25,8 @@ Changes log
           Conaway.
     - Misc
         - Updated JAX-RS API to version 1.0. The implementation of the
-          runtime environment is not yet finished.
-        
+          runtime environment is not yet finished. 
+       
 - 1.1 Release Candidate 2 (2008-09-24)
     - Bugs fixed
         - Fixed bug when a webapp is mounted on the root instead of 

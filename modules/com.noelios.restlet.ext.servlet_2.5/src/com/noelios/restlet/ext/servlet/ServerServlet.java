@@ -277,24 +277,22 @@ public class ServerServlet extends HttpServlet {
                 final Class<?> targetClass = loadClass(applicationClassName);
 
                 try {
-                    // Create a new instance of the application class by
-                    // invoking the constructor with the Context parameter.
-                    application = (Application) targetClass.getConstructor(
-                            Context.class).newInstance(
-                            new ServletContextAdapter(this, parentContext));
-                } catch (final NoSuchMethodException e) {
-                    log(
-                            "[Noelios Restlet Engine] - The ServerServlet couldn't invoke the constructor of the target class. Please check this class has a constructor with a single parameter of type Context. The empty constructor and the context setter will be used instead.",
-                            e);
-                    // The constructor with the Context parameter does not
-                    // exist. Instantiate an application with the default
-                    // constructor then invoke the setContext method.
+                    // Instantiate an application with the default constructor
+                    // then invoke the setContext method.
                     application = (Application) targetClass.getConstructor()
                             .newInstance();
 
                     // Set the context based on the Servlet's context
                     application.setContext(new ServletContextAdapter(this,
                             parentContext));
+                } catch (final NoSuchMethodException e) {
+                    log("[Noelios Restlet Engine] - The ServerServlet couldn't invoke the constructor of the target class. Please check this class has a constructor without parameter. The constructor with a parameter of type Context will be used instead.");
+                    // The constructor with the Context parameter does not
+                    // exist. Create a new instance of the application class by
+                    // invoking the constructor with the Context parameter.
+                    application = (Application) targetClass.getConstructor(
+                            Context.class).newInstance(
+                            new ServletContextAdapter(this, parentContext));
                 }
             } catch (final ClassNotFoundException e) {
                 log(
