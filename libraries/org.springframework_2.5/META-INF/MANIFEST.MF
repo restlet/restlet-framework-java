@@ -599,4 +599,14 @@ Export-Package:
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Import-Package: javax.servlet,
  javax.servlet.http,
- javax.servlet.resources
+ javax.servlet.resources,
+ net.sf.cglib.asm,
+ net.sf.cglib.asm.attrs,
+ net.sf.cglib.beans,
+ net.sf.cglib.core,
+ net.sf.cglib.proxy,
+ net.sf.cglib.reflect,
+ net.sf.cglib.transform,
+ net.sf.cglib.transform.hook,
+ net.sf.cglib.transform.impl,
+ net.sf.cglib.util

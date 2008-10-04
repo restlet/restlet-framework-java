@@ -11,12 +11,13 @@ Changes log
           most people to use the empty constructor as it is the 
           recommended way since release 1.1M5. The other constructor 
           is still working but logs once a warning message.
-
     - Bugs fixed
         - Updated the type of the digest value from String to array of 
           bytes. Reported and contributed by Kevin Conaway.
         - Fixed potential NPE in NIO caused by ByteUtils. Reporte by
           Bruce Lee.
+        - Added missing CGLib imports in Spring library manifest. 
+          Reported by Adam Harris.
     - API enhancements
         - Added a "tcpNoDelay" option for internal and Apache HTTP 
           clients. Contributed by Kevin Conaway.
