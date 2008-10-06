@@ -120,6 +120,11 @@ public final class ServerList extends WrapperList<Server> {
      */
     @Override
     public boolean add(Server server) {
+        // Set the server's context, if the server does not have already one.
+        if (server.getContext() == null) {
+            server.setContext(getContext().createChildContext());
+        }
+
         server.setTarget(getTarget());
         return super.add(server);
     }

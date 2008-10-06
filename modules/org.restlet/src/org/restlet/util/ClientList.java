@@ -54,6 +54,16 @@ public final class ClientList extends WrapperList<Client> {
         this.context = context;
     }
 
+    @Override
+    public boolean add(Client client) {
+        // Set the client's context, if the client does not have already one.
+        if (client.getContext() == null) {
+            client.setContext(getContext().createChildContext());
+        }
+
+        return super.add(client);
+    }
+
     /**
      * Adds a new client connector in the map supporting the given protocol.
      * 
