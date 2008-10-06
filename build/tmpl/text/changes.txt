@@ -24,6 +24,9 @@ Changes log
         - Added a DigestRepresentation that allows to both use an 
           entity and compute its digest value. Suggested by Kevin 
           Conaway.
+        - Added the handling of server or client connector's context 
+          when adding a connector respectively to servers and clients 
+          list of a component.
     - Misc
         - Updated JAX-RS API to version 1.0. The implementation of the
           runtime environment is not yet finished.
