@@ -18,6 +18,7 @@ Changes log
           Bruce Lee.
         - Added missing CGLib imports in Spring library manifest. 
           Reported by Adam Harris.
+        - Added missing parsing of the "published" tag in ATOM feeds.
     - API enhancements
         - Added a "tcpNoDelay" option for internal and Apache HTTP 
           clients. Contributed by Kevin Conaway.
