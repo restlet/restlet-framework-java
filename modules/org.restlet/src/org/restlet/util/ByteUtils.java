@@ -867,9 +867,7 @@ public final class ByteUtils {
     /**
      * Converts a reader to a string.
      * 
-     * @see <a href=
-     *      "http://java.sun.com/j2se/1.5.0/docs/api/java/io/InputStreamReader.html"
-     *      >InputStreamReader class< /a>
+     * @see <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/io/InputStreamReader.html">InputStreamReader class</a>
      * @param reader
      *            The characters reader.
      * @return The converted string.
@@ -880,12 +878,16 @@ public final class ByteUtils {
         if (reader != null) {
             try {
                 final StringBuilder sb = new StringBuilder();
-                final BufferedReader br = new BufferedReader(reader);
-                int nextChar = br.read();
-                while (nextChar != -1) {
-                    sb.append((char) nextChar);
-                    nextChar = br.read();
+                final BufferedReader br = (reader instanceof BufferedReader) ? (BufferedReader) reader
+                        : new BufferedReader(reader);
+                char[] buffer = new char[8192];
+                int charsRead = br.read(buffer);
+
+                while (charsRead != -1) {
+                    sb.append(buffer, 0, charsRead);
+                    charsRead = br.read(buffer);
                 }
+
                 br.close();
                 result = sb.toString();
             } catch (final Exception e) {
