@@ -83,8 +83,12 @@ import org.restlet.util.Series;
  * a Resource instance is not reused by several calls and is only invoked by one
  * thread. Therefore, it doesn't have to be thread-safe.<br>
  * 
- * @see <a href="http://roy.gbiv.com/pubs/dissertation/rest_arch_style.htm#sec_5_2_1_1">Source dissertation</a>
- * @see <a href="http://www.restlet.org/documentation/1.1/tutorial#part12">Tutorial : Reaching target Resources</a>
+ * @see <a
+ *      href="http://roy.gbiv.com/pubs/dissertation/rest_arch_style.htm#sec_5_2_1_1">Source
+ *      dissertation</a>
+ * @see <a
+ *      href="http://www.restlet.org/documentation/1.1/tutorial#part12">Tutorial
+ *      : Reaching target Resources</a>
  * @see org.restlet.resource.Representation
  * @see org.restlet.Finder
  * @author Jerome Louvel
@@ -721,7 +725,9 @@ public class Resource extends Handler {
 
     /**
      * Returns the preferred representation according to the client preferences
-     * specified in the request.
+     * specified in the request. By default it calls the
+     * {@link #represent(Variant)} method with the preferred variant returned by
+     * {@link #getPreferredVariant()}.
      * 
      * @return The preferred representation.
      * @see #getPreferredVariant()
