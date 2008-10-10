@@ -49,7 +49,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
  * <pre>
  * &lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd&quot; &gt;
  *    &lt;!-- Singleton instance of this class --&gt;
- *    &lt;bean name=&quot;router&quot; class=&quot;org.restlet.ext.spring.BeanNameRouter&quot;/&gt;
+ *    &lt;bean name=&quot;router&quot; class=&quot;org.restlet.ext.spring.SpringBeanRouter&quot;/&gt;
  * 
  *    &lt;!-- Prototype beans for the resources --&gt;
  *    &lt;bean name=&quot;/studies&quot; id=&quot;studiesResource&quot; autowire=&quot;byName&quot; scope=&quot;prototype&quot; class=&quot;edu.northwestern.myapp.StudiesResource&quot; &gt;
