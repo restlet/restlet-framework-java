@@ -96,31 +96,51 @@ public class ParameterInfo extends DocumentedInfo {
     /**
      * Constructor with a single documentation element.
      * 
+     * @param name
+     *            The required name of the parameter.
+     * @param style
+     *            The required style of the parameter.
      * @param documentation
      *            A single documentation element.
      */
-    public ParameterInfo(DocumentationInfo documentation) {
+    public ParameterInfo(String name, ParameterStyle style,
+            DocumentationInfo documentation) {
         super(documentation);
+        this.name = name;
+        this.style = style;
     }
 
     /**
      * Constructor with a list of documentation elements.
      * 
+     * @param name
+     *            The required name of the parameter.
+     * @param style
+     *            The required style of the parameter.
      * @param documentations
      *            The list of documentation elements.
      */
-    public ParameterInfo(List<DocumentationInfo> documentations) {
+    public ParameterInfo(String name, ParameterStyle style,
+            List<DocumentationInfo> documentations) {
         super(documentations);
+        this.name = name;
+        this.style = style;
     }
 
     /**
      * Constructor with a single documentation element.
      * 
+     * @param name
+     *            The required name of the parameter.
+     * @param style
+     *            The required style of the parameter.
      * @param documentation
      *            A single documentation element.
      */
-    public ParameterInfo(String documentation) {
+    public ParameterInfo(String name, ParameterStyle style, String documentation) {
         super(documentation);
+        this.name = name;
+        this.style = style;
     }
 
     /**
@@ -143,26 +163,6 @@ public class ParameterInfo extends DocumentedInfo {
         this.name = name;
         this.required = required;
         this.style = style;
-        this.type = type;
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param name
-     *            The name of the parameter.
-     * @param required
-     *            True if thes parameter is required.
-     * @param type
-     *            The type of the parameter.
-     * @param documentation
-     *            A single documentation element.
-     */
-    public ParameterInfo(String name, boolean required, String type,
-            String documentation) {
-        super(documentation);
-        this.name = name;
-        this.required = required;
         this.type = type;
     }
 
