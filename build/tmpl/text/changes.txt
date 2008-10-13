@@ -31,6 +31,8 @@ Changes log
         - Refactored constructors of the ParameterInfo class in the 
           WADL extension in order to reflect the fact that "name" and 
           "style" attributes are required.
+        - Added the ability the give a title to WadlApplication or 
+          WadlResource instances. Suggested by Jérôme Bernard.
     - Misc
         - Updated JAX-RS API to version 1.0. The implementation of the
           runtime environment is not yet finished.
