@@ -103,6 +103,13 @@ public class WadlApplication extends Application {
     private volatile Router router;
 
     /**
+     * The title of this documented application. Is seen as the title of its
+     * first "doc" tag in a WADL document or as the title of the HTML
+     * representation.
+     */
+    private volatile String title;
+
+    /**
      * Creates an application that can automatically introspect and expose
      * itself as with a WADL description upon reception of an OPTIONS request on
      * the "*" target URI.
@@ -159,15 +166,24 @@ public class WadlApplication extends Application {
             this.router = root;
             setRoot(root);
 
-            if ((wadlRep.getApplication() != null)
-                    && (wadlRep.getApplication().getResources() != null)) {
-                for (final ResourceInfo resource : wadlRep.getApplication()
-                        .getResources().getResources()) {
-                    attachResource(resource, null, this.router);
+            if (wadlRep.getApplication() != null) {
+                if (wadlRep.getApplication().getResources() != null) {
+                    for (final ResourceInfo resource : wadlRep.getApplication()
+                            .getResources().getResources()) {
+                        attachResource(resource, null, this.router);
+                    }
+
+                    // Analyzes the WADL resources base
+                    setBaseRef(wadlRep.getApplication().getResources()
+                            .getBaseRef());
                 }
 
-                // Analyzes the WADL resources base
-                setBaseRef(wadlRep.getApplication().getResources().getBaseRef());
+                // Set the title of the application as the title of the first
+                // documentation tag.
+                if (!wadlRep.getApplication().getDocumentations().isEmpty()) {
+                    this.title = wadlRep.getApplication().getDocumentations()
+                            .get(0).getTitle();
+                }
             }
         } catch (final Exception e) {
             getLogger().log(Level.WARNING,
@@ -350,6 +366,7 @@ public class WadlApplication extends Application {
      */
     public ApplicationInfo getApplicationInfo(Request request, Response response) {
         final ApplicationInfo applicationInfo = new ApplicationInfo();
+
         applicationInfo.getResources().setBaseRef(
                 request.getResourceRef().getBaseRef());
         applicationInfo.getResources().setResources(
@@ -613,6 +630,15 @@ public class WadlApplication extends Application {
     }
 
     /**
+     * Returns the title of this documented application.
+     * 
+     * @return The title of this documented application.
+     */
+    public String getTitle() {
+        return title;
+    }
+
+    /**
      * Returns the virtual host matching the WADL application's base reference.
      * Creates a new one and attaches it to the component if necessary.
      * 
@@ -734,6 +760,16 @@ public class WadlApplication extends Application {
     }
 
     /**
+     * Sets the title of this documented application.
+     * 
+     * @param title
+     *            The title of this documented application.
+     */
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    /**
      * Represents the resource as a WADL description.
      * 
      * @param request
@@ -763,12 +799,24 @@ public class WadlApplication extends Application {
         Representation result = null;
 
         if (variant != null) {
+            ApplicationInfo applicationInfo = getApplicationInfo(request,
+                    response);
+            if (getTitle() != null && !"".equals(getTitle())) {
+                DocumentationInfo doc = null;
+                if (applicationInfo.getDocumentations().isEmpty()) {
+                    doc = new DocumentationInfo();
+                    applicationInfo.getDocumentations().add(doc);
+                } else {
+                    doc = applicationInfo.getDocumentations().get(0);
+                }
+                doc.setTitle(getTitle());
+            }
+
             if (MediaType.APPLICATION_WADL_XML.equals(variant.getMediaType())) {
-                result = new WadlRepresentation(getApplicationInfo(request,
-                        response));
+                result = new WadlRepresentation(applicationInfo);
             } else if (MediaType.TEXT_HTML.equals(variant.getMediaType())) {
-                result = new WadlRepresentation(getApplicationInfo(request,
-                        response)).getHtmlRepresentation();
+                result = new WadlRepresentation(applicationInfo)
+                        .getHtmlRepresentation();
             }
         }
 

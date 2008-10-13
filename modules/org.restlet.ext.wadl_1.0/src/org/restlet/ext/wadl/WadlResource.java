@@ -66,6 +66,13 @@ public class WadlResource extends Resource {
     private volatile boolean autoDescribed;
 
     /**
+     * The title of this documented resource. Is seen as the title of the first
+     * "doc" tag of the "application" tag in a WADL document or as the title of
+     * the HTML representation.
+     */
+    private volatile String title;
+
+    /**
      * Constructor.
      */
     public WadlResource() {
@@ -168,6 +175,18 @@ public class WadlResource extends Resource {
         if (variant != null) {
             ResourceInfo resourceInfo = new ResourceInfo();
             describe(resourceInfo);
+
+            if (getTitle() != null && !"".equals(getTitle())) {
+                DocumentationInfo doc = null;
+                if (resourceInfo.getDocumentations().isEmpty()) {
+                    doc = new DocumentationInfo();
+                    resourceInfo.getDocumentations().add(doc);
+                } else {
+                    doc = resourceInfo.getDocumentations().get(0);
+                }
+
+                doc.setTitle(getTitle());
+            }
 
             if (MediaType.APPLICATION_WADL_XML.equals(variant.getMediaType())) {
                 result = new WadlRepresentation(resourceInfo);
@@ -320,6 +339,15 @@ public class WadlResource extends Resource {
     }
 
     /**
+     * Returns the title of this documented resource.
+     * 
+     * @return The title of this documented resource.
+     */
+    public String getTitle() {
+        return title;
+    }
+
+    /**
      * Returns the available WADL variants.
      * 
      * @return The available WADL variants.
@@ -371,6 +399,16 @@ public class WadlResource extends Resource {
      */
     public void setAutoDescribed(boolean autoDescribed) {
         this.autoDescribed = autoDescribed;
+    }
+
+    /**
+     * Sets the title of this documented resource.
+     * 
+     * @param title
+     *            The title of this documented resource.
+     */
+    public void setTitle(String title) {
+        this.title = title;
     }
 
 }

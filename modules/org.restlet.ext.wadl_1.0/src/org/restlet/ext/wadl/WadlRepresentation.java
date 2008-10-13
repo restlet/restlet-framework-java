@@ -895,7 +895,9 @@ public class WadlRepresentation extends SaxRepresentation {
     }
 
     /**
-     * Constructor.
+     * Constructor. The title of the resource, that is to say the title of its
+     * first documentation tag is transfered to the title of the first
+     * documentation tag of the main application tag.
      * 
      * @param resource
      *            The root element of the WADL document.
@@ -904,6 +906,20 @@ public class WadlRepresentation extends SaxRepresentation {
         super(MediaType.APPLICATION_WADL_XML);
 
         this.application = new ApplicationInfo();
+        if (!resource.getDocumentations().isEmpty()) {
+            String titleResource = resource.getDocumentations().get(0)
+                    .getTitle();
+            if (titleResource != null && !"".equals(titleResource)) {
+                DocumentationInfo doc = null;
+                if (application.getDocumentations().isEmpty()) {
+                    doc = new DocumentationInfo();
+                    application.getDocumentations().add(doc);
+                } else {
+                    doc = application.getDocumentations().get(0);
+                }
+                doc.setTitle(titleResource);
+            }
+        }
 
         final ResourcesInfo resources = new ResourcesInfo();
         this.application.setResources(resources);
