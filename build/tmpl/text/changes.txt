@@ -29,7 +29,7 @@ Changes log
           when adding a connector respectively to servers and clients 
           list of a component.
         - Refactored constructors of the ParameterInfo class in the 
-          WADL extensionin order to reflect the fact "name" and 
+          WADL extension in order to reflect the fact that "name" and 
           "style" attributes are required.
     - Misc
         - Updated JAX-RS API to version 1.0. The implementation of the
