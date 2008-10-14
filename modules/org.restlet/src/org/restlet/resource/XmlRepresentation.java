@@ -368,8 +368,10 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
     private Object internalEval(String expression, QName returnType) {
         try {
             return evaluate(expression, returnType);
+        } catch (final RuntimeException e) {
+            throw e;
         } catch (final Exception e) {
-            return null;
+            throw new RuntimeException(e);
         }
     }
 

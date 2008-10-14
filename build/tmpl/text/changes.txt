@@ -14,11 +14,13 @@ Changes log
     - Bugs fixed
         - Updated the type of the digest value from String to array of 
           bytes. Reported and contributed by Kevin Conaway.
-        - Fixed potential NPE in NIO caused by ByteUtils. Reporte by
+        - Fixed potential NPE in NIO caused by ByteUtils. Reported by
           Bruce Lee.
         - Added missing CGLib imports in Spring library manifest. 
           Reported by Adam Harris.
-        - Added missing parsing of the "published" tag in ATOM feeds.
+        - Added missing parsing of the "published" tag in Atom feeds.
+        - XPath expression evaluation could swallow some exceptions
+          in XmlRepresentation subclasses. Reported by Richard Hoberman
     - API enhancements
         - Added a "tcpNoDelay" option for internal and Apache HTTP 
           clients. Contributed by Kevin Conaway.
@@ -35,7 +37,8 @@ Changes log
           WadlResource instances. Suggested by Jérôme Bernard.
     - Misc
         - Updated JAX-RS API to version 1.0. The implementation of the
-          runtime environment is not yet finished.
+          runtime environment is not fully finished yet. We are 
+          waiting for an access to the TCK.
         - Updated Grizzly to latest 1.8.6.1 version.
         - Improved the performance of the ByteUtils#toString() methods
           significantly using a buffer. Impact the performance of the 
