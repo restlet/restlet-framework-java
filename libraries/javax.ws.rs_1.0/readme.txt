@@ -7,4 +7,7 @@ services built according to the Representational State Transfer (REST)
 architectural style."
 
 For more information:
-https://jsr311.dev.java.net/
+* http://jcp.org/aboutJava/communityprocess/final/jsr311/index.html
+* https://jsr311.dev.java.net/
+
+The JAR in this project contains the sources, including the javadoc.
