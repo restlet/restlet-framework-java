@@ -59,16 +59,19 @@ public class HttpDigestHelper extends AuthenticationHelper {
      *            The associated guard to callback.
      * 
      * @return a hash of the username, realm, and password, specified as A1 in
-     *         section 3.2.2.2 of RFC2617
+     *         section 3.2.2.2 of RFC2617, or null if the identifier has no
+     *         corresponding secret
      */
     private static String getHashedSecret(String identifier, Guard guard) {
-        return Engine.getInstance().toMd5(
-                identifier
-                        + ":"
-                        + guard.getRealm()
-                        + ":"
-                        + new String(guard.getSecretResolver().resolve(
-                                identifier)));
+        char[] result = guard.getSecretResolver().resolve(identifier);
+        if (result != null) {
+            return Engine.getInstance().toMd5(
+                    identifier + ":" + guard.getRealm() + ":"
+                            + new String(result));
+        } else {
+            // The given identifier is not known
+            return null;
+        }
     }
 
     /**
@@ -147,20 +150,22 @@ public class HttpDigestHelper extends AuthenticationHelper {
             }
             if (uri.equals(requestUri)) {
                 final String a1 = getHashedSecret(username, guard);
-                final String a2 = Engine.getInstance().toMd5(
-                        request.getMethod() + ":" + requestUri);
+                if (a1 != null) {
+                    final String a2 = Engine.getInstance().toMd5(
+                            request.getMethod() + ":" + requestUri);
 
-                final StringBuffer expectedResponse = new StringBuffer(a1)
-                        .append(':').append(nonce);
-                if (!AuthenticationUtils.anyNull(qop, cnonce, nc)) {
-                    expectedResponse.append(':').append(nc).append(':').append(
-                            cnonce).append(':').append(qop);
-                }
-                expectedResponse.append(':').append(a2);
+                    final StringBuffer expectedResponse = new StringBuffer(a1)
+                            .append(':').append(nonce);
+                    if (!AuthenticationUtils.anyNull(qop, cnonce, nc)) {
+                        expectedResponse.append(':').append(nc).append(':')
+                                .append(cnonce).append(':').append(qop);
+                    }
+                    expectedResponse.append(':').append(a2);
 
-                if (response.equals(Engine.getInstance().toMd5(
-                        expectedResponse.toString()))) {
-                    return Guard.AUTHENTICATION_VALID;
+                    if (response.equals(Engine.getInstance().toMd5(
+                            expectedResponse.toString()))) {
+                        return Guard.AUTHENTICATION_VALID;
+                    }
                 }
             }
 
