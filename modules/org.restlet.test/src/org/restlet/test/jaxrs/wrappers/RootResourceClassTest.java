@@ -69,6 +69,5 @@ public class RootResourceClassTest extends TestCase {
                 .getRootClassWrapper(IllegalPathService2.class);
         PathRegExp rrcRegExp = rrc.getPathRegExp();
         assertEquals("/afsdf:use", rrcRegExp.getPathTemplateDec());
-        // TODO assertEquals("/afsdf%3Ause", rrcRegExp.getPathTemplateEnc());
     }
 }
