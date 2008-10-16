@@ -20,7 +20,10 @@ Changes log
           Reported by Adam Harris.
         - Added missing parsing of the "published" tag in Atom feeds.
         - XPath expression evaluation could swallow some exceptions
-          in XmlRepresentation subclasses. Reported by Richard Hoberman
+          in XmlRepresentation subclasses. Reported by Richard 
+          Hoberman.
+        - Fixed potential NPE with Digest authentication when the 
+          client's identifier is not known.  
     - API enhancements
         - Added a "tcpNoDelay" option for internal and Apache HTTP 
           clients. Contributed by Kevin Conaway.
