@@ -60,6 +60,7 @@ import org.restlet.ext.jaxrs.internal.exceptions.ImplementationException;
 import org.restlet.ext.jaxrs.internal.exceptions.InjectException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingConstructorException;
+import org.restlet.ext.jaxrs.internal.exceptions.ProviderNotInitializableException;
 import org.restlet.ext.jaxrs.internal.util.Converter;
 
 /**
@@ -307,7 +308,14 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
         // NICE optimization: may be cached for speed.
         for (ProviderWrapper mbrw : this.messageBodyReaderWrappers) {
             if (mbrw.supportsRead(mediaType)) {
-                MessageBodyReader mbr = mbrw.getInitializedReader();
+                MessageBodyReader mbr;
+                try {
+                    mbr = mbrw.getInitializedReader();
+                } catch (ProviderNotInitializableException e) {
+                    continue;
+                } catch (WebApplicationException e) {
+                    continue;
+                }
                 if (mbr.isReadable(paramType, genericType, annotations,
                         Converter.toJaxRsMediaType(mediaType)))
                     return mbr;
@@ -346,7 +354,13 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
         // LATER test JaxRsProviders.getContextResolver
         for (ProviderWrapper crWrapper : this.contextResolvers) {
             final javax.ws.rs.ext.ContextResolver<?> cr;
-            cr = crWrapper.getInitializedCtxResolver().getContextResolver();
+            try {
+                cr = crWrapper.getInitializedCtxResolver().getContextResolver();
+            } catch (ProviderNotInitializableException e1) {
+                continue;
+            } catch (WebApplicationException e1) {
+                continue;
+            }
             final Class<?> crClaz = cr.getClass();
             final Class<?> genClass = JaxRsProviders.getCtxResGenClass(crClaz);
             if (genClass == null || !genClass.equals(contextType)) {
@@ -386,17 +400,37 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
             throw new ImplementationException(
                     "The call of an exception mapper with null is not allowed");
         ProviderWrapper mapperWrapper;
-        do {
+        for (;;) {
             mapperWrapper = this.excMappers.get(causeClass);
+            if (mapperWrapper != null) {
+                try {
+                    return (ExceptionMapper<T>) mapperWrapper
+                            .getInitializedExcMapper();
+                } catch (ProviderNotInitializableException e) {
+                    localLogger
+                            .info("The exception mapper for "
+                                    + causeClass
+                                    + " could not be initialized, so it can#t be used. Will look for the next exception mapper in hierarchy.");
+                    // look for next
+                } catch (WebApplicationException e) {
+                    localLogger
+                            .log(
+                                    Level.INFO,
+                                    "The exception mapper for "
+                                            + causeClass
+                                            + " could not be initialized, so it can#t be used. Will look for the next exception mapper in hierarchy.",
+                                    e);
+                    // look for next
+                }
+            }
             Class superclass = causeClass.getSuperclass();
             if (superclass == null || superclass.equals(Object.class))
                 return null;
             causeClass = superclass;
-        } while (mapperWrapper == null);
+        }
         // disabled caching, because adding of new ExceptionMappers could
         // cause trouble.
         // this.excMappers.put(superclass, mapper);
-        return (ExceptionMapper<T>) mapperWrapper.getInitializedExcMapper();
     }
 
     /**
@@ -424,7 +458,14 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
         MediaType restletMediaType = Converter.toRestletMediaType(mediaType);
         for (ProviderWrapper mbww : this.messageBodyWriterWrappers) {
             if (mbww.supportsWrite(restletMediaType)) {
-                MessageBodyWriter mbw = mbww.getInitializedWriter();
+                MessageBodyWriter mbw;
+                try {
+                    mbw = mbww.getInitializedWriter();
+                } catch (ProviderNotInitializableException e) {
+                    continue;
+                } catch (WebApplicationException e) {
+                    continue;
+                }
                 if (mbw.isWriteable(type, genericType, annotations, mediaType))
                     return (javax.ws.rs.ext.MessageBodyWriter<T>) mbw
                             .getJaxRsWriter();
@@ -499,7 +540,12 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
             Type genericType) {
         final List<MessageBodyWriter> mbws = new ArrayList<MessageBodyWriter>();
         for (ProviderWrapper mbww : this.messageBodyWriterWrappers) {
-            MessageBodyWriter mbw = mbww.getInitializedWriter();
+            MessageBodyWriter mbw;
+            try {
+                mbw = mbww.getInitializedWriter();
+            } catch (ProviderNotInitializableException e) {
+                continue;
+            }
             if (mbw.supportsWrite(entityClass, genericType)) {
                 mbws.add(mbw);
             }

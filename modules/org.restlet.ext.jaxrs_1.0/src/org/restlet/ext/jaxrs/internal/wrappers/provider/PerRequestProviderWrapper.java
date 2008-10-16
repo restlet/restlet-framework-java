@@ -19,6 +19,7 @@ package org.restlet.ext.jaxrs.internal.wrappers.provider;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.ws.rs.WebApplicationException;
@@ -35,14 +36,17 @@ import org.restlet.ext.jaxrs.internal.exceptions.ConvertMatrixParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertPathParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertQueryParamException;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalBeanSetterTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalConstrParamTypeException;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalFieldTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathParamTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalTypeException;
+import org.restlet.ext.jaxrs.internal.exceptions.ImplementationException;
 import org.restlet.ext.jaxrs.internal.exceptions.InjectException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingConstructorException;
 import org.restlet.ext.jaxrs.internal.exceptions.NoMessageBodyReaderException;
-import org.restlet.ext.jaxrs.internal.todo.NotYetImplementedException;
+import org.restlet.ext.jaxrs.internal.exceptions.ProviderNotInitializableException;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.ext.jaxrs.internal.wrappers.WrapperUtil;
 import org.restlet.ext.jaxrs.internal.wrappers.params.ParameterList;
@@ -80,14 +84,11 @@ class PerRequestProviderWrapper extends AbstractProviderWrapper {
      * @throws IllegalPathParamTypeException
      * @throws MissingConstructorException
      */
-    private static Object createInstance(Class<?> jaxRsProviderClass,
-            ObjectFactory objectFactory, ThreadLocalizedContext tlContext,
-            JaxRsProviders allProviders,
-            ExtensionBackwardMapping extensionBackwardMapping, Logger logger)
-            throws IllegalArgumentException, InvocationTargetException,
-            InstantiateException, MissingAnnotationException,
-            WebApplicationException, IllegalConstrParamTypeException,
-            IllegalPathParamTypeException, MissingConstructorException {
+    private Object createInstance() throws IllegalArgumentException,
+            InvocationTargetException, InstantiateException,
+            MissingAnnotationException, WebApplicationException,
+            IllegalConstrParamTypeException, IllegalPathParamTypeException,
+            MissingConstructorException {
         Util.checkClassConcrete(jaxRsProviderClass, "provider");
         if (objectFactory != null) {
             Object jaxRsProvider;
@@ -150,6 +151,16 @@ class PerRequestProviderWrapper extends AbstractProviderWrapper {
 
     private final Class<?> jaxRsProviderClass;
 
+    private final ObjectFactory objectFactory;
+
+    private final ThreadLocalizedContext tlContext;
+
+    private final JaxRsProviders allProviders;
+
+    private final ExtensionBackwardMapping extensionBackwardMapping;
+
+    private final Logger logger;
+
     /**
      * Creates a new wrapper for a Provider and initializes the provider. If the
      * given class is not a provider, an {@link IllegalArgumentException} is
@@ -185,9 +196,13 @@ class PerRequestProviderWrapper extends AbstractProviderWrapper {
             IllegalPathParamTypeException {
         super(jaxRsProviderClass);
         this.jaxRsProviderClass = jaxRsProviderClass;
-        // LATER I think this could be removed, but check before
-        createInstance(jaxRsProviderClass, objectFactory, tlContext,
-                allProviders, extensionBackwardMapping, logger);
+        this.objectFactory = objectFactory;
+        this.tlContext = tlContext;
+        this.allProviders = allProviders;
+        this.extensionBackwardMapping = extensionBackwardMapping;
+        this.logger = logger;
+        createInstance(); // test, if it works.
+        // If not, the provider class is not useable.
     }
 
     @Override
@@ -214,42 +229,113 @@ class PerRequestProviderWrapper extends AbstractProviderWrapper {
      * @see org.restlet.ext.jaxrs.internal.wrappers.provider.ProviderWrapper#getExcMapperType()
      */
     public Class<?> getExcMapperType() {
-        // LATER Auto-generated method stub
-        throw new NotYetImplementedException();
+        return Util.getGenericClass(this.jaxRsProviderClass,
+                ExceptionMapper.class);
     }
 
     /**
      * @see org.restlet.ext.jaxrs.internal.wrappers.provider.ProviderWrapper#getInitializedCtxResolver()
      */
-    public ContextResolver getInitializedCtxResolver() {
-        // LATER Auto-generated method stub
-        throw new NotYetImplementedException();
+    public ContextResolver getInitializedCtxResolver()
+            throws ProviderNotInitializableException {
+        return new SingletonProvider(instantiateAndInitialize(), logger);
+    }
+
+    /**
+     * Instantiates the provider class, initializes the instance and returns it
+     * unwrapped.
+     * 
+     * @throws ProviderNotInitializableException
+     * @throws WebApplicationException
+     */
+    private Object instantiateAndInitialize()
+            throws ProviderNotInitializableException {
+        Object jaxRsProvider;
+        try {
+            jaxRsProvider = createInstance();
+        } catch (IllegalConstrParamTypeException e) {
+            throw new ImplementationException(
+                    "The provider could not be instantiated, but this could not be here",
+                    e);
+        } catch (IllegalPathParamTypeException e) {
+            throw new ImplementationException(
+                    "The provider could not be instantiated, but this could not be here",
+                    e);
+        } catch (IllegalArgumentException e) {
+            throw new ImplementationException(
+                    "The provider could not be instantiated, but this could not be here",
+                    e);
+        } catch (WebApplicationException e) {
+            throw new ImplementationException(
+                    "The provider could not be instantiated, but this could not be here",
+                    e);
+        } catch (MissingAnnotationException e) {
+            throw new ImplementationException(
+                    "The provider could not be instantiated, but this could not be here",
+                    e);
+        } catch (MissingConstructorException e) {
+            throw new ImplementationException(
+                    "The provider could not be instantiated, but this could not be here",
+                    e);
+        } catch (InvocationTargetException e) {
+            throw new ImplementationException(
+                    "The provider could not be instantiated, but this could not be here",
+                    e);
+        } catch (InstantiateException e) {
+            throw new ImplementationException(
+                    "The provider could not be instantiated, but this could not be here",
+                    e);
+        }
+        try {
+            initProvider(jaxRsProvider, tlContext, allProviders,
+                    extensionBackwardMapping);
+        } catch (IllegalFieldTypeException e) {
+            logger.log(Level.WARNING, "The provider " + this.getClassName()
+                    + " could not be initialized and so it could not be used",
+                    e);
+            throw new ProviderNotInitializableException();
+        } catch (IllegalBeanSetterTypeException e) {
+            logger.log(Level.WARNING, "The provider " + this.getClassName()
+                    + " could not be initialized and so it could not be used",
+                    e);
+            throw new ProviderNotInitializableException();
+        } catch (InjectException e) {
+            logger.log(Level.WARNING, "The provider " + this.getClassName()
+                    + " could not be initialized and so it could not be used",
+                    e);
+            throw new ProviderNotInitializableException();
+        } catch (InvocationTargetException e) {
+            logger.log(Level.WARNING, "The provider " + this.getClassName()
+                    + " could not be initialized and so it could not be used",
+                    e);
+            throw new ProviderNotInitializableException();
+        }
+        return jaxRsProvider;
     }
 
     /**
      * @see org.restlet.ext.jaxrs.internal.wrappers.provider.ProviderWrapper#getInitializedExcMapper()
      */
-    public ExceptionMapper<? extends Throwable> getInitializedExcMapper() {
-        // LATER Auto-generated method stub
-        throw new NotYetImplementedException();
+    @SuppressWarnings("unchecked")
+    public ExceptionMapper<? extends Throwable> getInitializedExcMapper()
+            throws ProviderNotInitializableException {
+        return (ExceptionMapper<? extends Throwable>) instantiateAndInitialize();
     }
 
     /**
      * @see org.restlet.ext.jaxrs.internal.wrappers.provider.ProviderWrapper#getInitializedReader()
      */
-    @Override
-    public org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyReader getInitializedReader() {
-        // LATER Auto-generated method stub
-        throw new NotYetImplementedException();
+    public org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyReader getInitializedReader()
+            throws ProviderNotInitializableException {
+        return new SingletonProvider(instantiateAndInitialize(), logger);
     }
 
     /**
      * @see org.restlet.ext.jaxrs.internal.wrappers.provider.ProviderWrapper#getInitializedWriter()
      */
-    @Override
-    public org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyWriter getInitializedWriter() {
-        // LATER Auto-generated method stub
-        throw new NotYetImplementedException();
+    public org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyWriter getInitializedWriter()
+            throws ProviderNotInitializableException {
+        return new SingletonProvider(instantiateAndInitialize(), logger);
     }
 
     /**
@@ -261,7 +347,9 @@ class PerRequestProviderWrapper extends AbstractProviderWrapper {
     }
 
     /**
-     * @see EntityProvider#initAtAppStartUp(ThreadLocalizedContext, Providers,
+     * This method does nothing in this class.
+     * 
+     * @see ProviderWrapper#initAtAppStartUp(ThreadLocalizedContext, Providers,
      *      ExtensionBackwardMapping)
      */
     public void initAtAppStartUp(ThreadLocalizedContext tlContext,

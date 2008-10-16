@@ -36,6 +36,13 @@ public abstract class JaxRsException extends Exception {
     private static final long serialVersionUID = -7662465289573982489L;
 
     /**
+     * For subclasses only
+     */
+    JaxRsException() {
+        super();
+    }
+
+    /**
      * @param message
      */
     public JaxRsException(String message) {

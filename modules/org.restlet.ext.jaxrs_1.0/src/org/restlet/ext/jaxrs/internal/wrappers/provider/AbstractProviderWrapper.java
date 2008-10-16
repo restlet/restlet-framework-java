@@ -26,6 +26,7 @@
  */
 package org.restlet.ext.jaxrs.internal.wrappers.provider;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.List;
@@ -34,11 +35,17 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Providers;
 
 import org.restlet.data.MediaType;
+import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalBeanSetterTypeException;
+import org.restlet.ext.jaxrs.internal.exceptions.IllegalFieldTypeException;
+import org.restlet.ext.jaxrs.internal.exceptions.InjectException;
 import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.ext.jaxrs.internal.wrappers.WrapperUtil;
+import org.restlet.ext.jaxrs.internal.wrappers.params.ContextInjector;
 
 /**
  * Wraps a JAX-RS provider, see chapter 4 of JAX-RS specification.
@@ -131,6 +138,24 @@ abstract class AbstractProviderWrapper implements ProviderWrapper {
 
     // TEST before a call of a message body reader or writer the current state
     // of the matched resources and URIs must be stored for the current thread.
+
+    /**
+     * initializes the provider (injection into annotated fields and setters).
+     * 
+     * @throws IllegalFieldTypeException
+     * @throws IllegalBeanSetterTypeException
+     * @throws InjectException
+     * @throws InvocationTargetException
+     */
+    void initProvider(Object jaxRsProvider, ThreadLocalizedContext tlContext,
+            Providers allProviders,
+            ExtensionBackwardMapping extensionBackwardMapping)
+            throws IllegalFieldTypeException, IllegalBeanSetterTypeException,
+            InjectException, InvocationTargetException {
+        final ContextInjector iph = new ContextInjector(jaxRsProvider.getClass(),
+                tlContext, allProviders, extensionBackwardMapping);
+        iph.injectInto(jaxRsProvider, false);
+    }
 
     /**
      * Returns true, if this ProviderWrapper is also a
@@ -280,14 +305,4 @@ abstract class AbstractProviderWrapper implements ProviderWrapper {
     public final String toString() {
         return this.getClassName();
     }
-
-    /**
-     * @return the initialized {@link MessageBodyReader}
-     */
-    public abstract MessageBodyReader getInitializedReader();
-
-    /**
-     * @return the initialized {@link MessageBodyWriter}
-     */
-    public abstract MessageBodyWriter getInitializedWriter();
 }

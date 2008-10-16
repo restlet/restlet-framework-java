@@ -36,6 +36,7 @@ import org.restlet.data.MediaType;
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.InjectException;
+import org.restlet.ext.jaxrs.internal.exceptions.ProviderNotInitializableException;
 
 /**
  * Wraps a JAX-RS provider, see chapter 4 of JAX-RS specification.
@@ -62,8 +63,9 @@ public interface ProviderWrapper {
 
     /**
      * @return an initialized {@link javax.ws.rs.ext.ContextResolver}
+     * @throws ProviderNotInitializableException  
      */
-    abstract ContextResolver getInitializedCtxResolver();
+    abstract ContextResolver getInitializedCtxResolver() throws ProviderNotInitializableException;
 
     /**
      * Beispiele:
@@ -79,21 +81,24 @@ public interface ProviderWrapper {
 
     /**
      * @return the initialized exception mapper
+     * @throws ProviderNotInitializableException 
      */
-    abstract ExceptionMapper<? extends Throwable> getInitializedExcMapper();
+    abstract ExceptionMapper<? extends Throwable> getInitializedExcMapper() throws ProviderNotInitializableException;
 
     /**
      * @return an initialized reader
+     * @throws ProviderNotInitializableException 
      */
-    abstract MessageBodyReader getInitializedReader();
+    abstract MessageBodyReader getInitializedReader() throws ProviderNotInitializableException;
 
     // LATER before a call of a message body reader or writer the current state
     // of the matched resources and URIs must be stored for the current thread.
 
     /**
      * @return an initialized writer
+     * @throws ProviderNotInitializableException
      */
-    abstract MessageBodyWriter getInitializedWriter();
+    abstract MessageBodyWriter getInitializedWriter() throws ProviderNotInitializableException;
 
     /**
      * Returns the list of produced {@link MediaType}s of the wrapped

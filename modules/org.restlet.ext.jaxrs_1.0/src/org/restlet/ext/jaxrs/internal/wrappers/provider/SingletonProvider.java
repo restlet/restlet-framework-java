@@ -39,7 +39,6 @@ import org.restlet.ext.jaxrs.internal.exceptions.IllegalTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.InjectException;
 import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.ext.jaxrs.internal.util.Util;
-import org.restlet.ext.jaxrs.internal.wrappers.params.ContextInjector;
 
 /**
  * @author Stephan
@@ -91,6 +90,7 @@ public class SingletonProvider extends AbstractProviderWrapper implements
     /**
      * @param jaxRsProvider
      * @param logger
+     *            needed, if the provider implements no provider interface
      * @throws IllegalArgumentException
      * @throws WebApplicationException
      */
@@ -238,7 +238,6 @@ public class SingletonProvider extends AbstractProviderWrapper implements
     /**
      * @see org.restlet.ext.jaxrs.internal.wrappers.provider.ProviderWrapper#getInitializedReader()
      */
-    @Override
     public MessageBodyReader getInitializedReader() {
         return this;
     }
@@ -246,7 +245,6 @@ public class SingletonProvider extends AbstractProviderWrapper implements
     /**
      * @see org.restlet.ext.jaxrs.internal.wrappers.provider.ProviderWrapper#getInitializedWriter()
      */
-    @Override
     public MessageBodyWriter getInitializedWriter() {
         return this;
     }
@@ -355,7 +353,7 @@ public class SingletonProvider extends AbstractProviderWrapper implements
      * @throws IllegalTypeException
      *             if the given class is not valid to be annotated with &#64;
      *             {@link Context}.
-     * @see EntityProvider#initAtAppStartUp(ThreadLocalizedContext, Providers,
+     * @see ProviderWrapper#initAtAppStartUp(ThreadLocalizedContext, Providers,
      *      ExtensionBackwardMapping)
      */
     public void initAtAppStartUp(ThreadLocalizedContext tlContext,
@@ -363,11 +361,8 @@ public class SingletonProvider extends AbstractProviderWrapper implements
             ExtensionBackwardMapping extensionBackwardMapping)
             throws InjectException, InvocationTargetException,
             IllegalTypeException {
-        final Class<? extends Object> providerClass = this.jaxRsProvider
-                .getClass();
-        final ContextInjector iph = new ContextInjector(providerClass,
-                tlContext, allProviders, extensionBackwardMapping);
-        iph.injectInto(this.jaxRsProvider, false);
+        initProvider(this.jaxRsProvider, tlContext, allProviders,
+                extensionBackwardMapping);
     }
 
     /**
