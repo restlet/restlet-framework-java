@@ -195,7 +195,7 @@ public class PathRegExp {
                 try {
                     EncodeOrCheck.processPercent(i, true, pathTemplate,
                             pathPattern);
-                } catch (final IllegalArgumentException e) {
+                } catch (IllegalArgumentException e) {
                     throw new IllegalPathException(pathForExcMess, e);
                 }
             } else if (c == '}') {

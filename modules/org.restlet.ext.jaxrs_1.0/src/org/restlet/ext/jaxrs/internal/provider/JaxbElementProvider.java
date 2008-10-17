@@ -112,7 +112,7 @@ public class JaxbElementProvider extends AbstractJaxbProvider<JAXBElement<?>> {
             final Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             JAXBElement<?> je = unmarshaller.unmarshal(new StreamSource(entityStream), type);
             return je;
-        } catch (final JAXBException e) {
+        } catch (JAXBException e) {
             final String message = "Could not unmarshal to " + type.getName();
             throw logAndIOExc(getLogger(), message, e);
         }

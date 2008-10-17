@@ -106,7 +106,7 @@ public abstract class HttpClientHelper extends ClientHelper {
             final HttpClientCall httpCall = getConverter().toSpecific(this,
                     request);
             getConverter().commit(httpCall, request, response);
-        } catch (final Exception e) {
+        } catch (Exception e) {
             getLogger().log(Level.INFO,
                     "Error while handling an HTTP client call", e);
             response.setStatus(Status.CONNECTOR_ERROR_INTERNAL, e);

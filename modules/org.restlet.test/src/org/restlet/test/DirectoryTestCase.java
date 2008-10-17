@@ -229,7 +229,7 @@ public class DirectoryTestCase extends TestCase {
 
             // Now, let's stop the component!
             clientComponent.stop();
-        } catch (final Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

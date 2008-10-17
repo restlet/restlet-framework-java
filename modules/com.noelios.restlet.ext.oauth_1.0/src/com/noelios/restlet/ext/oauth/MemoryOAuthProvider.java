@@ -117,7 +117,7 @@ public class MemoryOAuthProvider extends OAuthProvider {
         String consumer_token = null;
         try {
             consumer_token = requestMessage.getToken();
-        } catch (final IOException e) {
+        } catch (IOException e) {
             return null;
         }
 
@@ -150,7 +150,7 @@ public class MemoryOAuthProvider extends OAuthProvider {
         try {
             final String consumer_key = requestMessage.getConsumerKey();
             return this.consumers.get(consumer_key);
-        } catch (final IOException e) {
+        } catch (IOException e) {
             return null;
         }
     }

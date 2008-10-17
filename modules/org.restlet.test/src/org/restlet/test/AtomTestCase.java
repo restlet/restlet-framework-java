@@ -98,7 +98,7 @@ public class AtomTestCase extends TestCase {
             assertEquals(atomFeed2.getEntries().get(0).getTitle().getContent(),
                     atomFeed2.getEntries().get(0).getTitle().getContent());
 
-        } catch (final Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

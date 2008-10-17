@@ -70,12 +70,12 @@ public class StringProvider extends AbstractProvider<CharSequence> {
         try {
             if (charsetName != null)
                 return string.getBytes(charsetName);
-        } catch (final UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException e) {
             // try with default character set, see below
         }
         try {
             return string.getBytes(Util.JAX_RS_DEFAULT_CHARACTER_SET_AS_STRING);
-        } catch (final UnsupportedEncodingException e1) {
+        } catch (UnsupportedEncodingException e1) {
             return string.getBytes();
         }
         // NICE cache for some seconds

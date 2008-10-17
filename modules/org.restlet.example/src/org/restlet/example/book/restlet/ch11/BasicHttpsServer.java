@@ -66,7 +66,7 @@ public class BasicHttpsServer {
 
         try {
             component.start();
-        } catch (final Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

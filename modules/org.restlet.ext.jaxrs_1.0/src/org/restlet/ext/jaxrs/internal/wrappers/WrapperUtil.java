@@ -189,13 +189,13 @@ public class WrapperUtil {
             InstantiateException {
         try {
             return constructor.newInstance(args);
-        } catch (final IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             throw new InstantiateException("Could not instantiate "
                     + constructor.getDeclaringClass(), e);
-        } catch (final InstantiationException e) {
+        } catch (InstantiationException e) {
             throw new InstantiateException("Could not instantiate "
                     + constructor.getDeclaringClass(), e);
-        } catch (final IllegalAccessException e) {
+        } catch (IllegalAccessException e) {
             throw new InstantiateException("Could not instantiate "
                     + constructor.getDeclaringClass(), e);
         }

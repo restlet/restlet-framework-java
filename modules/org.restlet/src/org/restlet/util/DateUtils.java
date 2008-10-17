@@ -294,7 +294,7 @@ public final class DateUtils {
 
             try {
                 result = parser.parse(date);
-            } catch (final ParseException e) {
+            } catch (ParseException e) {
                 // Ignores error as the next format may work better
             }
         }

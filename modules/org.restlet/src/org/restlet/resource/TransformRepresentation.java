@@ -118,7 +118,7 @@ public class TransformRepresentation extends OutputRepresentation {
                                 .getStream());
                         result.setSystemId(targetUri);
 
-                    } catch (final IOException e) {
+                    } catch (IOException e) {
                         this.context.getLogger().log(Level.WARNING,
                                 "I/O error while getting the response stream",
                                 e);
@@ -354,7 +354,7 @@ public class TransformRepresentation extends OutputRepresentation {
                 // Create a new transformer
                 this.templates = transformerFactory
                         .newTemplates(transformSource);
-            } catch (final TransformerConfigurationException tce) {
+            } catch (TransformerConfigurationException tce) {
                 throw new IOException("Transformer configuration exception. "
                         + tce.getMessage());
             }
@@ -393,10 +393,10 @@ public class TransformRepresentation extends OutputRepresentation {
                             name));
                 }
             }
-        } catch (final TransformerConfigurationException tce) {
+        } catch (TransformerConfigurationException tce) {
             throw new IOException("Transformer configuration exception. "
                     + tce.getMessage());
-        } catch (final TransformerFactoryConfigurationError tfce) {
+        } catch (TransformerFactoryConfigurationError tfce) {
             throw new IOException(
                     "Transformer factory configuration exception. "
                             + tfce.getMessage());
@@ -419,7 +419,7 @@ public class TransformRepresentation extends OutputRepresentation {
             try {
                 result = getSaxTransformerFactory().newTransformerHandler(
                         templates);
-            } catch (final TransformerConfigurationException tce) {
+            } catch (TransformerConfigurationException tce) {
                 throw new IOException("Transformer configuration exception. "
                         + tce.getMessage());
             }
@@ -470,7 +470,7 @@ public class TransformRepresentation extends OutputRepresentation {
         if (templates != null) {
             try {
                 result = getSaxTransformerFactory().newXMLFilter(templates);
-            } catch (final TransformerConfigurationException tce) {
+            } catch (TransformerConfigurationException tce) {
                 throw new IOException("Transformer configuration exception. "
                         + tce.getMessage());
             }
@@ -572,7 +572,7 @@ public class TransformRepresentation extends OutputRepresentation {
             // Generates the result of the transformation
             getTransformer().transform(getSaxSource(),
                     new StreamResult(outputStream));
-        } catch (final TransformerException te) {
+        } catch (TransformerException te) {
             throw new IOException("Transformer exception. " + te.getMessage());
         }
     }

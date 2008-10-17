@@ -232,7 +232,7 @@ public abstract class RestletServerTestCase extends TestCase {
             } else {
                 System.out.println("[no Entity available]");
             }
-        } catch (final IOException e) {
+        } catch (IOException e) {
             System.out.println("Entity not readable: ");
             e.printStackTrace(System.out);
         }
@@ -514,10 +514,10 @@ public abstract class RestletServerTestCase extends TestCase {
             throws Exception {
         try {
             getServerWrapper().startServer(jaxRsApplication, protocol);
-        } catch (final Exception e) {
+        } catch (Exception e) {
             try {
                 stopServer();
-            } catch (final Exception e1) {
+            } catch (Exception e1) {
                 // ignore exception, throw before catched Exception later
             }
             throw e;

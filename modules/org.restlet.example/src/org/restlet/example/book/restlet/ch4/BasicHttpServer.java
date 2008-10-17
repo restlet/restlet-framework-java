@@ -38,7 +38,7 @@ public class BasicHttpServer {
         // Instantiates and starts a simple HTTP server.
         try {
             new Server(Protocol.HTTP, null).start();
-        } catch (final Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

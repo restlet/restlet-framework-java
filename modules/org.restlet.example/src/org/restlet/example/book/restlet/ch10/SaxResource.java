@@ -65,7 +65,7 @@ public class SaxResource extends Resource {
             w.endElement("Person");
             w.endDocument();
             rep = new SaxRepresentation(MediaType.TEXT_XML);
-        } catch (final SAXException e) {
+        } catch (SAXException e) {
             e.printStackTrace();
         }
 

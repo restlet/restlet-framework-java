@@ -891,7 +891,7 @@ public final class XmlWriter extends XMLFilterImpl {
         super.endDocument();
         try {
             flush();
-        } catch (final IOException e) {
+        } catch (IOException e) {
             throw new SAXException(e);
         }
     }
@@ -1370,7 +1370,7 @@ public final class XmlWriter extends XMLFilterImpl {
     private void write(char c) throws SAXException {
         try {
             this.output.write(c);
-        } catch (final IOException e) {
+        } catch (IOException e) {
             throw new SAXException(e);
         }
     }
@@ -1386,7 +1386,7 @@ public final class XmlWriter extends XMLFilterImpl {
     private void write(String s) throws SAXException {
         try {
             this.output.write(s);
-        } catch (final IOException e) {
+        } catch (IOException e) {
             throw new SAXException(e);
         }
     }

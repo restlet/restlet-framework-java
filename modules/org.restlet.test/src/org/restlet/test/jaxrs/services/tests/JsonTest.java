@@ -91,7 +91,7 @@ public class JsonTest extends JaxRsTestCase {
         final String entity = response.getEntity().getText();
         try {
             assertEquals("{\"name1\":\"value1\",\"name2\":\"value2\"}", entity);
-        } catch (final AssertionFailedError afe) {
+        } catch (AssertionFailedError afe) {
             assertEquals("{\"name2\":\"value2\",\"name1\":\"value1\"}", entity);
         }
     }

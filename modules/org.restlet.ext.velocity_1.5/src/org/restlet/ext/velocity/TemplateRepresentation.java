@@ -236,7 +236,7 @@ public class TemplateRepresentation extends OutputRepresentation {
             this.engine = new VelocityEngine();
             this.template = null;
             this.templateName = templateName;
-        } catch (final Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -317,7 +317,7 @@ public class TemplateRepresentation extends OutputRepresentation {
                 try {
                     getEngine().init();
                     this.template = getEngine().getTemplate(this.templateName);
-                } catch (final Exception e) {
+                } catch (Exception e) {
                     final Context context = Context.getCurrent();
 
                     if (context != null) {
@@ -406,7 +406,7 @@ public class TemplateRepresentation extends OutputRepresentation {
             // Process the template
             getTemplate().merge(getContext(), tmplWriter);
             tmplWriter.flush();
-        } catch (final Exception e) {
+        } catch (Exception e) {
             final Context context = Context.getCurrent();
 
             if (context != null) {

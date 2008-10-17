@@ -150,7 +150,7 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
             result = new HttpMethodCall(this, request.getMethod().toString(),
                     request.getResourceRef().toString(), request
                             .isEntityAvailable());
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             getLogger().log(Level.WARNING,
                     "Unable to create the HTTP client call", ioe);
         }

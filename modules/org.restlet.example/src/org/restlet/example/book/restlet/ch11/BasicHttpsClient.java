@@ -62,7 +62,7 @@ public class BasicHttpsClient {
         if (response.isEntityAvailable()) {
             try {
                 response.getEntity().write(System.out);
-            } catch (final IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }

@@ -86,7 +86,7 @@ public class StreamServerCall extends HttpServerCall {
 
         try {
             readRequestHead(getRequestHeadStream());
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             getLogger().log(Level.WARNING, "Unable to parse the HTTP request",
                     ioe);
         }
@@ -110,7 +110,7 @@ public class StreamServerCall extends HttpServerCall {
                 // are properly released.
                 this.socket.close();
             }
-        } catch (final IOException ex) {
+        } catch (IOException ex) {
             getLogger().log(Level.WARNING, "Unable to shutdown server socket",
                     ex);
         }

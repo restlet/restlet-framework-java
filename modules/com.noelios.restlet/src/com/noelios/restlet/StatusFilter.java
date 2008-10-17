@@ -128,7 +128,7 @@ public class StatusFilter extends Filter {
         // Normally handle the call
         try {
             super.doHandle(request, response);
-        } catch (final Throwable t) {
+        } catch (Throwable t) {
             response.setStatus(getStatus(t, request, response));
         }
 

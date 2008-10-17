@@ -110,7 +110,7 @@ public class IdentClient {
                         }
                     }
                 }
-            } catch (final IOException ioe) {
+            } catch (IOException ioe) {
                 Context.getCurrentLogger().log(Level.FINE,
                         "Unable to complete the IDENT request", ioe);
             } finally {
@@ -119,7 +119,7 @@ public class IdentClient {
                     if (in != null) {
                         in.close();
                     }
-                } catch (final IOException ioe) {
+                } catch (IOException ioe) {
                     Context.getCurrentLogger().log(Level.FINE,
                             "Unable to close the socket", ioe);
                 }

@@ -190,7 +190,7 @@ public class PreferenceUtils {
                         client.getAcceptedCharacterSets().add(currentPref);
                         currentPref = pr.readPreference();
                     }
-                } catch (final IOException ioe) {
+                } catch (IOException ioe) {
                     throw new IllegalArgumentException(
                             "An exception occurred during character set preferences parsing. Header: "
                                     + acceptCharsetHeader
@@ -223,7 +223,7 @@ public class PreferenceUtils {
                     preference.getAcceptedEncodings().add(currentPref);
                     currentPref = pr.readPreference();
                 }
-            } catch (final IOException ioe) {
+            } catch (IOException ioe) {
                 throw new IllegalArgumentException(
                         "An exception occurred during encoding preferences parsing. Header: "
                                 + acceptEncodingHeader + ". Ignoring header.");
@@ -254,7 +254,7 @@ public class PreferenceUtils {
                     preference.getAcceptedLanguages().add(currentPref);
                     currentPref = pr.readPreference();
                 }
-            } catch (final IOException ioe) {
+            } catch (IOException ioe) {
                 throw new IllegalArgumentException(
                         "An exception occurred during language preferences parsing. Header: "
                                 + acceptLanguageHeader + ". Ignoring header.");
@@ -284,7 +284,7 @@ public class PreferenceUtils {
                     preference.getAcceptedMediaTypes().add(currentPref);
                     currentPref = pr.readPreference();
                 }
-            } catch (final IOException ioe) {
+            } catch (IOException ioe) {
                 throw new IllegalArgumentException(
                         "An exception occurred during media type preferences parsing. Header: "
                                 + acceptMediaTypeHeader + ". Ignoring header.");
@@ -313,7 +313,7 @@ public class PreferenceUtils {
                 throw new IllegalArgumentException(
                         "Invalid quality value detected. Value must be between 0 and 1.");
             }
-        } catch (final NumberFormatException nfe) {
+        } catch (NumberFormatException nfe) {
             throw new IllegalArgumentException(
                     "Invalid quality value detected. Value must be between 0 and 1.");
         }

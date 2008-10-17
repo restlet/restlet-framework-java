@@ -169,7 +169,7 @@ public class Content {
 
             try {
                 strContent = getInlineContent().getText();
-            } catch (final IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         } else {

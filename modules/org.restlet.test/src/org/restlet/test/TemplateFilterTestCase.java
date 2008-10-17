@@ -249,7 +249,7 @@ public class TemplateFilterTestCase extends TestCase {
             }
             // Now, let's stop the component!
             component.stop();
-        } catch (final Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

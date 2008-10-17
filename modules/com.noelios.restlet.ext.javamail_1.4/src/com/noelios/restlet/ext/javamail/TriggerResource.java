@@ -140,7 +140,7 @@ public class TriggerResource extends Resource {
                     deleteMail(mailIdentifier);
                     mailsSuccessful.add(mailIdentifier);
                 }
-            } catch (final ResourceException e) {
+            } catch (ResourceException e) {
                 mailsUnsuccessful.put(mailIdentifier, e.getMessage());
             }
         }

@@ -56,7 +56,7 @@ public class SimpleHttpServerWithRouter {
         // requests to the router.
         try {
             new Server(Protocol.HTTP, router).start();
-        } catch (final Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

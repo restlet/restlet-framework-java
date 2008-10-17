@@ -177,7 +177,7 @@ public class ClapClientHelper extends LocalClientHelper {
                     // Update the response
                     response.setEntity(output);
                     response.setStatus(Status.SUCCESS_OK);
-                } catch (final IOException ioe) {
+                } catch (IOException ioe) {
                     getLogger().log(Level.WARNING,
                             "Unable to open the representation's input stream",
                             ioe);

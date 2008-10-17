@@ -105,16 +105,16 @@ public class JaxRsOutputRepresentation<T> extends OutputRepresentation {
             this.mbw.writeTo(this.object, this.object.getClass(),
                     this.genericType, this.annotations, getMediaType(),
                     this.httpHeaders, outputStream);
-        } catch (final WebApplicationException e) {
+        } catch (WebApplicationException e) {
             final String msg = "The Restlet extension for JAX-RS do not support the throwing of WebApplicationException in a MessageBodyWriter.";
             LOGGER.config(msg);
             outputStream.close();
             throw e;
-        } catch (final UnsupportedOperationException e) {
+        } catch (UnsupportedOperationException e) {
             LOGGER.log(Level.CONFIG, "operation not supported", e);
             outputStream.close();
             throw e;
-        } catch (final RuntimeException e) {
+        } catch (RuntimeException e) {
             final String msg = e.getClass().getName()
                     + " while running MessageOutputWriter:";
             LOGGER.log(Level.CONFIG, msg, e);

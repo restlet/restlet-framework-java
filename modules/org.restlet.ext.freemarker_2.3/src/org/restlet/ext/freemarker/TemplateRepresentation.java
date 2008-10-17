@@ -141,7 +141,7 @@ public class TemplateRepresentation extends OutputRepresentation {
                 return new Template("template", templateRepresentation
                         .getReader(), config, CharacterSet.UTF_8.getName());
             }
-        } catch (final IOException e) {
+        } catch (IOException e) {
             Context.getCurrentLogger().warning(
                     "Unable to get the template from the representation "
                             + templateRepresentation.getIdentifier()
@@ -163,7 +163,7 @@ public class TemplateRepresentation extends OutputRepresentation {
             Configuration config) {
         try {
             return config.getTemplate(templateName);
-        } catch (final IOException e) {
+        } catch (IOException e) {
             Context.getCurrentLogger().warning(
                     "Unable to get the template " + templateName
                             + ". Error message: " + e.getMessage());
@@ -346,7 +346,7 @@ public class TemplateRepresentation extends OutputRepresentation {
 
             this.template.process(getDataModel(), tmplWriter);
             tmplWriter.flush();
-        } catch (final TemplateException te) {
+        } catch (TemplateException te) {
             throw new IOException("Template processing error "
                     + te.getMessage());
         }

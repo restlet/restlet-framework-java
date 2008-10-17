@@ -134,7 +134,7 @@ public abstract class GrizzlyServerHelper extends HttpServerHelper {
                     });
 
                     controller.start();
-                } catch (final IOException e) {
+                } catch (IOException e) {
                     getLogger().log(Level.WARNING,
                             "Error while starting the Grizzly controller", e);
                 }
@@ -145,7 +145,7 @@ public abstract class GrizzlyServerHelper extends HttpServerHelper {
         // This blocks until the server is ready to receive connections
         try {
             latch.await();
-        } catch (final InterruptedException ex) {
+        } catch (InterruptedException ex) {
             getLogger()
                     .log(
                             Level.WARNING,

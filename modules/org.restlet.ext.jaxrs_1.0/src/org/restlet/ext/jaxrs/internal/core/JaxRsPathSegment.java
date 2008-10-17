@@ -235,7 +235,7 @@ public class JaxRsPathSegment implements PathSegment {
     public void toStringBuilder(StringBuilder stb, boolean convertBraces) {
         try {
             toAppendable(stb, convertBraces);
-        } catch (final IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(
                     "IOException in StringBuilder; that is normally not possible");
         }

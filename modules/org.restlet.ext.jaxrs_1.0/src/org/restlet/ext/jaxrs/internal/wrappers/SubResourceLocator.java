@@ -124,9 +124,9 @@ public class SubResourceLocator extends AbstractMethodWrapper implements
         Object subResObj;
         try {
             subResObj = internalInvoke(resourceObject);
-        } catch (final IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             throw new InstantiateException(this.executeMethod, e);
-        } catch (final IllegalAccessException e) {
+        } catch (IllegalAccessException e) {
             throw new InstantiateException(this.executeMethod, e);
         }
         if (subResObj == null) {

@@ -811,7 +811,7 @@ public class Feed extends SaxRepresentation {
 			writer.startDocument();
 			writeElement(writer);
 			writer.endDocument();
-		} catch (final SAXException e) {
+		} catch (SAXException e) {
 			e.printStackTrace();
 		}
 	}

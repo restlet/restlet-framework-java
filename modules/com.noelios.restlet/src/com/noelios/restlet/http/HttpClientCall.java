@@ -171,7 +171,7 @@ public abstract class HttpClientCall extends HttpCall {
     public static String getLocalAddress() {
         try {
             return InetAddress.getLocalHost().getHostAddress();
-        } catch (final UnknownHostException e) {
+        } catch (UnknownHostException e) {
             return "127.0.0.1";
         }
     }
@@ -388,7 +388,7 @@ public abstract class HttpClientCall extends HttpCall {
                         result = is;
                     }
                 }
-            } catch (final IOException ioe) {
+            } catch (IOException ioe) {
                 getLogger().log(Level.FINER, "End of response entity stream.",
                         ioe);
             }
@@ -459,7 +459,7 @@ public abstract class HttpClientCall extends HttpCall {
             // Now we can access the status code, this MUST happen after closing
             // any open request stream.
             result = new Status(getStatusCode(), null, getReasonPhrase(), null);
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             getHelper()
                     .getLogger()
                     .log(

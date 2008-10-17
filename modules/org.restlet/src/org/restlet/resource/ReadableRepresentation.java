@@ -94,7 +94,7 @@ public class ReadableRepresentation extends ChannelRepresentation {
         if (this.channel != null) {
             try {
                 this.channel.close();
-            } catch (final IOException e) {
+            } catch (IOException e) {
                 Context.getCurrentLogger().log(Level.WARNING,
                         "Error while releasing the representation.", e);
             }

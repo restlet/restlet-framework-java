@@ -53,7 +53,7 @@ public class DynamicApplication extends Application {
                     "D:\\alaska\\forge\\build\\swc\\nre\\trunk\\books\\apress\\manuscript\\sample");
             this.fmc = new Configuration();
             this.fmc.setDirectoryForTemplateLoading(templateDir);
-        } catch (final Exception e) {
+        } catch (Exception e) {
             getLogger().severe("Erreur config FreeMarker");
             e.printStackTrace();
         }

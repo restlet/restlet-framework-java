@@ -130,7 +130,7 @@ public class Component extends Restlet {
                 new Component(LocalReference.createFileReference(args[0]))
                         .start();
             }
-        } catch (final Exception e) {
+        } catch (Exception e) {
             System.err
                     .println("Can't launch the component.\nAn unexpected exception occurred:");
             e.printStackTrace(System.err);
@@ -327,7 +327,7 @@ public class Component extends Restlet {
                         target = (Restlet) targetClass.getConstructor(
                                 Context.class).newInstance(
                                 getContext().createChildContext());
-                    } catch (final NoSuchMethodException e) {
+                    } catch (NoSuchMethodException e) {
                         getLogger()
                                 .log(
                                         Level.FINE,
@@ -350,31 +350,31 @@ public class Component extends Restlet {
                         }
                     }
                 }
-            } catch (final ClassNotFoundException e) {
+            } catch (ClassNotFoundException e) {
                 getLogger().log(
                         Level.WARNING,
                         "Couldn't find the target class. Please check that your classpath includes "
                                 + targetClassName, e);
 
-            } catch (final InstantiationException e) {
+            } catch (InstantiationException e) {
                 getLogger()
                         .log(
                                 Level.WARNING,
                                 "Couldn't instantiate the target class. Please check this class has an empty constructor "
                                         + targetClassName, e);
-            } catch (final IllegalAccessException e) {
+            } catch (IllegalAccessException e) {
                 getLogger()
                         .log(
                                 Level.WARNING,
                                 "Couldn't instantiate the target class. Please check that you have to proper access rights to "
                                         + targetClassName, e);
-            } catch (final NoSuchMethodException e) {
+            } catch (NoSuchMethodException e) {
                 getLogger()
                         .log(
                                 Level.WARNING,
                                 "Couldn't invoke the constructor of the target class. Please check this class has a constructor with a single parameter of Context "
                                         + targetClassName, e);
-            } catch (final InvocationTargetException e) {
+            } catch (InvocationTargetException e) {
                 getLogger()
                         .log(
                                 Level.WARNING,
@@ -434,30 +434,30 @@ public class Component extends Restlet {
                                 "The target descriptor has not been found or is not available, or no client supporting the URI's protocol has been defined on this component. "
                                         + targetDescriptor);
             }
-        } catch (final ClassNotFoundException e) {
+        } catch (ClassNotFoundException e) {
             getLogger().log(
                     Level.WARNING,
                     "Couldn't find the target class. Please check that your classpath includes "
                             + targetClassName, e);
-        } catch (final InstantiationException e) {
+        } catch (InstantiationException e) {
             getLogger()
                     .log(
                             Level.WARNING,
                             "Couldn't instantiate the target class. Please check this class has an empty constructor "
                                     + targetClassName, e);
-        } catch (final IllegalAccessException e) {
+        } catch (IllegalAccessException e) {
             getLogger()
                     .log(
                             Level.WARNING,
                             "Couldn't instantiate the target class. Please check that you have to proper access rights to "
                                     + targetClassName, e);
-        } catch (final NoSuchMethodException e) {
+        } catch (NoSuchMethodException e) {
             getLogger()
                     .log(
                             Level.WARNING,
                             "Couldn't invoke the constructor of the target class. Please check this class has a constructor with a single parameter of Context "
                                     + targetClassName, e);
-        } catch (final InvocationTargetException e) {
+        } catch (InvocationTargetException e) {
             getLogger()
                     .log(
                             Level.WARNING,
@@ -482,7 +482,7 @@ public class Component extends Restlet {
         if (node != null) {
             try {
                 value = Boolean.parseBoolean(node.getNodeValue());
-            } catch (final Exception e) {
+            } catch (Exception e) {
                 value = defaultValue;
             }
         }
@@ -522,7 +522,7 @@ public class Component extends Restlet {
         if (node != null) {
             try {
                 value = Float.parseFloat(node.getNodeValue());
-            } catch (final Exception e) {
+            } catch (Exception e) {
                 value = defaultValue;
             }
         }
@@ -562,7 +562,7 @@ public class Component extends Restlet {
         if (node != null) {
             try {
                 value = Integer.parseInt(node.getNodeValue());
-            } catch (final Exception e) {
+            } catch (Exception e) {
                 value = defaultValue;
             }
         }
@@ -621,7 +621,7 @@ public class Component extends Restlet {
         if (node != null) {
             try {
                 value = Long.parseLong(node.getNodeValue());
-            } catch (final Exception e) {
+            } catch (Exception e) {
                 value = defaultValue;
             }
         }
@@ -1032,7 +1032,7 @@ public class Component extends Restlet {
                         .log(Level.WARNING,
                                 "Unable to find the root \"component\" node in the XML configuration.");
             }
-        } catch (final Exception e) {
+        } catch (Exception e) {
             getLogger().log(Level.WARNING,
                     "Unable to parse the Component XML configuration.", e);
         }

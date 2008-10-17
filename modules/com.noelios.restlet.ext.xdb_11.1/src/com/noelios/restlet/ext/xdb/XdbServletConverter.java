@@ -139,9 +139,9 @@ public class XdbServletConverter extends HttpServerConverter {
                     "[Noelios Restlet Engine] - The ServerServlet address = "
                             + this.localAddress + " port = " + this.localPort
                             + " endPoint = " + endPoint);
-        } catch (final ServletException e) {
+        } catch (ServletException e) {
             context.log("Failed to get SQL Connection", e);
-        } catch (final SQLException s) {
+        } catch (SQLException s) {
             context.log("Failed to get Listener Endpoint", s);
         } finally {
             XdbServerServlet.closeDbResources(preparedstatement, null);

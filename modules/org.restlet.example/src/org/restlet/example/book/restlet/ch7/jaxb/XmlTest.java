@@ -45,12 +45,12 @@ public class XmlTest {
             } else {
                 System.err.println("No entity");
             }
-        } catch (final Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         } finally {
             try {
                 server.stop();
-            } catch (final Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }

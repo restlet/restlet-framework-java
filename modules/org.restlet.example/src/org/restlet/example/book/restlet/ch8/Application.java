@@ -93,7 +93,7 @@ public class Application extends org.restlet.Application {
                     "D:\\alaska\\forge\\build\\swc\\restlet\\trunk\\modules\\org.restlet.example\\src\\org\\restlet\\example\\book\\restlet\\ch8\\web\\tmpl");
             this.fmc = new freemarker.template.Configuration();
             this.fmc.setDirectoryForTemplateLoading(templateDir);
-        } catch (final Exception e) {
+        } catch (Exception e) {
             getLogger().severe("Erreur config FreeMarker");
             e.printStackTrace();
         }

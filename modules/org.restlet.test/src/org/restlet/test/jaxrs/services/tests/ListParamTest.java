@@ -95,7 +95,7 @@ public class ListParamTest extends JaxRsTestCase {
         assertEquals("h=h1", header);
         try {
             assertEquals("hh=[hh1, hh2]", headers);
-        } catch (final AssertionFailedError afe) {
+        } catch (AssertionFailedError afe) {
             assertEquals("hh=[hh2, hh1]", headers);
         }
     }
@@ -111,12 +111,12 @@ public class ListParamTest extends JaxRsTestCase {
         try {
             // LATER test: get in given direction -> Resources.Parameters
             assertEquals("m=m1", m);
-        } catch (final AssertionFailedError afe) {
+        } catch (AssertionFailedError afe) {
             assertEquals("m=m2", m);
         }
         try {
             assertEquals("mm=[mm1, mm2]", mm);
-        } catch (final AssertionFailedError afe) {
+        } catch (AssertionFailedError afe) {
             assertEquals("mm=[mm2, mm1]", mm);
         }
     }

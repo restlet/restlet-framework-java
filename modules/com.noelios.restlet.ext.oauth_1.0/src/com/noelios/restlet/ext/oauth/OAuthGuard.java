@@ -78,7 +78,7 @@ public class OAuthGuard extends Guard {
 
         try {
             requestMessage.validateSignature(accessor);
-        } catch (final Exception e1) {
+        } catch (Exception e1) {
             return Guard.AUTHENTICATION_INVALID;
         }
 

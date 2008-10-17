@@ -204,7 +204,7 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
             dbf.setNamespaceAware(isNamespaceAware());
             dbf.setValidating(false);
             return dbf.newDocumentBuilder();
-        } catch (final ParserConfigurationException pce) {
+        } catch (ParserConfigurationException pce) {
             throw new IOException("Couldn't create the empty document: "
                     + pce.getMessage());
         }
@@ -222,7 +222,7 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
 
         try {
             document = getDocumentBuilder().parse(getStream());
-        } catch (final SAXException se) {
+        } catch (SAXException se) {
             throw new IOException("Couldn't read the XML representation. "
                     + se.getMessage());
         }
@@ -368,9 +368,9 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
     private Object internalEval(String expression, QName returnType) {
         try {
             return evaluate(expression, returnType);
-        } catch (final RuntimeException e) {
+        } catch (RuntimeException e) {
             throw e;
-        } catch (final Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }

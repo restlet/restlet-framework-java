@@ -136,7 +136,7 @@ public class FormReader {
                     readNext = false;
                 }
             }
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             Context
                     .getCurrentLogger()
                     .log(
@@ -147,7 +147,7 @@ public class FormReader {
 
         try {
             this.stream.close();
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             Context.getCurrentLogger().log(Level.WARNING,
                     "Unable to close the form input stream", ioe);
         }
@@ -253,7 +253,7 @@ public class FormReader {
                     }
                 }
             }
-        } catch (final UnsupportedEncodingException uee) {
+        } catch (UnsupportedEncodingException uee) {
             throw new IOException(
                     "Unsupported encoding. Please contact the administrator");
         }

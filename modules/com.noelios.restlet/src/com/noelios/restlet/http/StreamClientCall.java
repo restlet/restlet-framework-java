@@ -79,7 +79,7 @@ public class StreamClientCall extends HttpClientCall {
                     this.socket.shutdownOutput();
                     this.socket.close();
                 }
-            } catch (final IOException ex) {
+            } catch (IOException ex) {
                 this.log.log(Level.WARNING,
                         "An error occured closing the client socket", ex);
             }
@@ -346,7 +346,7 @@ public class StreamClientCall extends HttpClientCall {
 
             // Build the result
             result = new Status(getStatusCode(), null, getReasonPhrase(), null);
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             getHelper()
                     .getLogger()
                     .log(

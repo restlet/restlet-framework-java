@@ -64,18 +64,18 @@ public class MatchedTestService {
         Method subMethod;
         try {
             subMethod = uriInfo.getClass().getMethod(getterName);
-        } catch (final SecurityException e) {
+        } catch (SecurityException e) {
             throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
-        } catch (final NoSuchMethodException e) {
+        } catch (NoSuchMethodException e) {
             throw new WebApplicationException(Status.NOT_FOUND);
         }
         try {
             return subMethod.invoke(uriInfo);
-        } catch (final IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
-        } catch (final IllegalAccessException e) {
+        } catch (IllegalAccessException e) {
             throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
-        } catch (final InvocationTargetException e) {
+        } catch (InvocationTargetException e) {
             throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
         }
     }

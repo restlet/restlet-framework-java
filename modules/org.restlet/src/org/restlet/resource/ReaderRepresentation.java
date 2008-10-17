@@ -96,7 +96,7 @@ public class ReaderRepresentation extends CharacterRepresentation {
         if (this.reader != null) {
             try {
                 this.reader.close();
-            } catch (final IOException e) {
+            } catch (IOException e) {
                 Context.getCurrentLogger().log(Level.WARNING,
                         "Error while releasing the representation.", e);
             }

@@ -203,7 +203,7 @@ public class DocumentationInfo {
 
                 // Restore the SAX writer's dataFormat
                 writer.setDataFormat(isDataFormat);
-            } catch (final IOException e) {
+            } catch (IOException e) {
                 Context
                         .getCurrentLogger()
                         .log(

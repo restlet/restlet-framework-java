@@ -158,7 +158,7 @@ public class StringRepresentation extends Representation {
         if (getText() != null) {
             try {
                 setSize(getText().length());
-            } catch (final Exception e) {
+            } catch (Exception e) {
                 setSize(UNKNOWN_SIZE);
             }
         } else {

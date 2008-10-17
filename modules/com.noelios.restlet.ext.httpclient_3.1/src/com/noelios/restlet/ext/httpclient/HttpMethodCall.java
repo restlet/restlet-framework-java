@@ -136,7 +136,7 @@ public class HttpMethodCall extends HttpClientCall {
                             Engine.loadClass(
                                     this.clientHelper.getRetryHandler())
                                     .newInstance());
-                } catch (final Exception e) {
+                } catch (Exception e) {
                     this.clientHelper
                             .getLogger()
                             .log(
@@ -212,7 +212,7 @@ public class HttpMethodCall extends HttpClientCall {
                     }
                 };
             }
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
         }
 
         return result;
@@ -248,7 +248,7 @@ public class HttpMethodCall extends HttpClientCall {
     public String getServerAddress() {
         try {
             return getHttpMethod().getURI().getHost();
-        } catch (final URIException e) {
+        } catch (URIException e) {
             return null;
         }
     }
@@ -320,7 +320,7 @@ public class HttpMethodCall extends HttpClientCall {
             if (getHttpMethod().getResponseBodyAsStream() == null) {
                 getHttpMethod().releaseConnection();
             }
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             this.clientHelper
                     .getLogger()
                     .log(

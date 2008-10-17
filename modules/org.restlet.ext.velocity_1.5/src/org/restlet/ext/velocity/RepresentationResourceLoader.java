@@ -92,7 +92,7 @@ public class RepresentationResourceLoader extends ResourceLoader {
             } else {
                 result = resultRepresentation.getStream();
             }
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             throw new ResourceNotFoundException(ioe);
         }
 

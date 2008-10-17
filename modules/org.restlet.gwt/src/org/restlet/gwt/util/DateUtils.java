@@ -269,7 +269,7 @@ public final class DateUtils {
 
             try {
                 result = parser.parse(date);
-            } catch (final IllegalArgumentException e) {
+            } catch (IllegalArgumentException e) {
                 // Ignores error as the next format may work better
             }
         }

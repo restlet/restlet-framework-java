@@ -90,7 +90,7 @@ public class SimpleServer {
 
             // Now, start the component
             component.start();
-        } catch (final Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

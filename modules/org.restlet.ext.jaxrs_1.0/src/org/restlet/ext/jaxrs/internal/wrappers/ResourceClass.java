@@ -286,7 +286,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
         final Class<?>[] parameterTypes = subClassMethod.getParameterTypes();
         try {
             return clazz.getMethod(methodName, parameterTypes);
-        } catch (final NoSuchMethodException e) {
+        } catch (NoSuchMethodException e) {
             return null;
         }
     }
@@ -385,14 +385,14 @@ public class ResourceClass extends AbstractJaxRsWrapper {
                                 annotatedMethod, this, httpMethod, tlContext,
                                 jaxRsProviders, extensionBackwardMapping,
                                 logger);
-                    } catch (final IllegalMethodParamTypeException e) {
+                    } catch (IllegalMethodParamTypeException e) {
                         String message = "Ignore method "
                                 + execMethod
                                 + ": An annotated parameter of the resource method "
                                 + annotatedMethod + " is has an illegal type";
                         logger.log(Level.WARNING, message, e);
                         continue;
-                    } catch (final IllegalParamTypeException e) {
+                    } catch (IllegalParamTypeException e) {
                         String message = "Ignore method " + execMethod + ": "
                                 + e.getMessage();
                         logger.log(Level.WARNING, message, e);
@@ -412,7 +412,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
                                     annotatedMethod, this, tlContext,
                                     jaxRsProviders, extensionBackwardMapping,
                                     logger);
-                        } catch (final IllegalMethodParamTypeException e) {
+                        } catch (IllegalMethodParamTypeException e) {
                             String message = "Ignore method "
                                     + execMethod
                                     + ": An annotated parameter of the resource method "
@@ -420,7 +420,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
                                     + " is has an illegal type";
                             logger.log(Level.WARNING, message, e);
                             continue;
-                        } catch (final IllegalParamTypeException e) {
+                        } catch (IllegalParamTypeException e) {
                             String message = "Ignore method " + execMethod
                                     + ": " + e.getMessage();
                             logger.log(Level.WARNING, message, e);
@@ -433,7 +433,7 @@ public class ResourceClass extends AbstractJaxRsWrapper {
                 }
                 // NICE warn, if @Consumes, @Produces or another
                 // non-useful annotation is available on a method to ignore.
-            } catch (final IllegalPathOnMethodException e) {
+            } catch (IllegalPathOnMethodException e) {
                 logger.warning("The method " + annotatedMethod
                         + " is annotated with an illegal path: " + e.getPath()
                         + ". Ignoring this method. (" + e.getMessage() + ")");

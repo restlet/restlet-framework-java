@@ -93,7 +93,7 @@ public class UsersResource extends BaseResource {
             getResponse().redirectSeeOther(
                     getChildReference(getRequest().getResourceRef(), user
                             .getId()));
-        } catch (final ObjectsException e) {
+        } catch (ObjectsException e) {
             final Map<String, Object> dataModel = new TreeMap<String, Object>();
             dataModel.put("currentUser", getCurrentUser());
             dataModel.put("users", this.users);

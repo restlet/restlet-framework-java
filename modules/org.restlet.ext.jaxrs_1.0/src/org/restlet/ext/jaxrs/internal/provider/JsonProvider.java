@@ -113,7 +113,7 @@ public class JsonProvider extends AbstractProvider<Object> {
             if (JSONArray.class.isAssignableFrom(type)) {
                 return new JSONArray(jsonString);
             }
-        } catch (final JSONException e) {
+        } catch (JSONException e) {
             final IOException ioe = new IOException(e.getMessage());
             ioe.initCause(e);
             throw ioe;
@@ -166,7 +166,7 @@ public class JsonProvider extends AbstractProvider<Object> {
                 jsonObject.write(writer);
             }
             writer.flush();
-        } catch (final JSONException e) {
+        } catch (JSONException e) {
             final IOException ioe = new IOException(e.getMessage());
             ioe.initCause(e);
             throw ioe;

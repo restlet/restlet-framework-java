@@ -578,7 +578,7 @@ public class Engine extends org.restlet.gwt.util.Engine {
             throws IllegalArgumentException {
         try {
             return ContentType.parseContentType(contentType);
-        } catch (final Exception e) {
+        } catch (Exception e) {
             throw new IllegalArgumentException("The content type string \""
                     + contentType + "\" can not be parsed: " + e.getMessage());
         }
@@ -589,7 +589,7 @@ public class Engine extends org.restlet.gwt.util.Engine {
         final CookieReader cr = new CookieReader(cookie);
         try {
             return cr.readCookie();
-        } catch (final Exception e) {
+        } catch (Exception e) {
             throw new IllegalArgumentException("Could not read the cookie");
         }
     }
@@ -600,7 +600,7 @@ public class Engine extends org.restlet.gwt.util.Engine {
         final CookieReader cr = new CookieReader(cookieSetting);
         try {
             return cr.readCookieSetting();
-        } catch (final Exception e) {
+        } catch (Exception e) {
             throw new IllegalArgumentException(
                     "Could not read the cookie setting");
         }

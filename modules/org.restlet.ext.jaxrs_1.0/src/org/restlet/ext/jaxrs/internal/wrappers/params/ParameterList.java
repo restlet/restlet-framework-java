@@ -213,36 +213,36 @@ public class ParameterList {
                 final Constructor<?> constr = this.convertTo
                         .getConstructor(String.class);
                 return constr.newInstance(paramValue);
-            } catch (final WebApplicationException wae) {
+            } catch (WebApplicationException wae) {
                 constructorWae = wae;
-            } catch (final Exception e) {
+            } catch (Exception e) {
                 // try valueOf(String) as next step
             }
             Method valueOf;
             try {
                 valueOf = this.convertTo.getMethod("valueOf", String.class);
-            } catch (final SecurityException e) {
+            } catch (SecurityException e) {
                 throw ConvertParameterException.object(this.convertTo,
                         paramValue, e);
-            } catch (final NoSuchMethodException e) {
+            } catch (NoSuchMethodException e) {
                 throw ConvertParameterException.object(this.convertTo,
                         paramValue, e);
             }
             try {
                 return valueOf.invoke(null, paramValue);
-            } catch (final IllegalArgumentException e) {
+            } catch (IllegalArgumentException e) {
                 if (constructorWae != null) {
                     throw constructorWae;
                 }
                 throw ConvertParameterException.object(this.convertTo,
                         paramValue, e);
-            } catch (final IllegalAccessException e) {
+            } catch (IllegalAccessException e) {
                 if (constructorWae != null) {
                     throw constructorWae;
                 }
                 throw ConvertParameterException.object(this.convertTo,
                         paramValue, e);
-            } catch (final InvocationTargetException ite) {
+            } catch (InvocationTargetException ite) {
                 if (constructorWae != null) {
                     throw constructorWae;
                 }
@@ -296,7 +296,7 @@ public class ParameterList {
                     return (Collection) this.collType.newInstance();
                 }
                 return null;
-            } catch (final Exception e) {
+            } catch (Exception e) {
                 throw new RuntimeException(
                         "Could not instantiate the collection type "
                                 + this.collType, e);
@@ -382,7 +382,7 @@ public class ParameterList {
                     throw ConvertParameterException.primitive(this.convertTo,
                             paramValue, null);
                 }
-            } catch (final IllegalArgumentException e) {
+            } catch (IllegalArgumentException e) {
                 throw ConvertParameterException.primitive(this.convertTo,
                         paramValue, e);
             }
@@ -461,7 +461,7 @@ public class ParameterList {
                 }
                 return convertParamValues(new ParamValueIter((Series) cookies
                         .subList(cookieName)));
-            } catch (final ConvertParameterException e) {
+            } catch (ConvertParameterException e) {
                 throw new ConvertCookieParamException(e);
             }
         }
@@ -536,7 +536,7 @@ public class ParameterList {
             final String paramName = this.formParam.value();
             try {
                 return super.getParamValue(form, paramName);
-            } catch (final ConvertParameterException e) {
+            } catch (ConvertParameterException e) {
                 throw new ConvertQueryParamException(e);
             }
         }
@@ -572,7 +572,7 @@ public class ParameterList {
                 }
                 return convertParamValues(new ParamValueIter(httpHeaders
                         .subList(headerName, true)));
-            } catch (final ConvertParameterException e) {
+            } catch (ConvertParameterException e) {
                 throw new ConvertHeaderParamException(e);
             }
         }
@@ -602,7 +602,7 @@ public class ParameterList {
                 matrixParamValues = callContext
                         .matrixParamEncIter(this.matrixParam);
                 return convertParamValues(matrixParamValues);
-            } catch (final ConvertParameterException e) {
+            } catch (ConvertParameterException e) {
                 throw new ConvertMatrixParamException(e);
             }
         }
@@ -722,7 +722,7 @@ public class ParameterList {
                 final String pathParamValue;
                 pathParamValue = callContext.getLastPathParamEnc(pathParam);
                 return convertParamValue(pathParamValue);
-            } catch (final ConvertParameterException e) {
+            } catch (ConvertParameterException e) {
                 throw new ConvertPathParamException(e);
             }
         }
@@ -748,7 +748,7 @@ public class ParameterList {
             final String paramName = this.queryParam.value();
             try {
                 return super.getParamValue(form, paramName);
-            } catch (final ConvertParameterException e) {
+            } catch (ConvertParameterException e) {
                 throw new ConvertQueryParamException(e);
             }
         }

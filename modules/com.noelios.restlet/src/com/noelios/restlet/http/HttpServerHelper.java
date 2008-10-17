@@ -105,25 +105,25 @@ public class HttpServerHelper extends ServerHelper {
                 this.converter = (HttpServerConverter) Engine.loadClass(
                         converterClass).getConstructor(Context.class)
                         .newInstance(getContext());
-            } catch (final IllegalArgumentException e) {
+            } catch (IllegalArgumentException e) {
                 getLogger().log(Level.SEVERE,
                         "Unable to create the HTTP server converter", e);
-            } catch (final SecurityException e) {
+            } catch (SecurityException e) {
                 getLogger().log(Level.SEVERE,
                         "Unable to create the HTTP server converter", e);
-            } catch (final InstantiationException e) {
+            } catch (InstantiationException e) {
                 getLogger().log(Level.SEVERE,
                         "Unable to create the HTTP server converter", e);
-            } catch (final IllegalAccessException e) {
+            } catch (IllegalAccessException e) {
                 getLogger().log(Level.SEVERE,
                         "Unable to create the HTTP server converter", e);
-            } catch (final InvocationTargetException e) {
+            } catch (InvocationTargetException e) {
                 getLogger().log(Level.SEVERE,
                         "Unable to create the HTTP server converter", e);
-            } catch (final NoSuchMethodException e) {
+            } catch (NoSuchMethodException e) {
                 getLogger().log(Level.SEVERE,
                         "Unable to create the HTTP server converter", e);
-            } catch (final ClassNotFoundException e) {
+            } catch (ClassNotFoundException e) {
                 getLogger().log(Level.SEVERE,
                         "Unable to create the HTTP server converter", e);
             }
@@ -146,7 +146,7 @@ public class HttpServerHelper extends ServerHelper {
             final HttpResponse response = new HttpResponse(httpCall, request);
             handle(request, response);
             getConverter().commit(response);
-        } catch (final Exception e) {
+        } catch (Exception e) {
             getLogger().log(Level.WARNING,
                     "Error while handling an HTTP server call: ",
                     e.getMessage());

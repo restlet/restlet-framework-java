@@ -113,7 +113,7 @@ public class SpringFinder extends Finder {
             try {
                 // Invoke the default constructor
                 result = (Resource) getTargetClass().newInstance();
-            } catch (final Exception e) {
+            } catch (Exception e) {
                 getLogger()
                         .log(
                                 Level.WARNING,

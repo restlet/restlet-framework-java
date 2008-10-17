@@ -285,7 +285,7 @@ public class ServerServlet extends HttpServlet {
                     // Set the context based on the Servlet's context
                     application.setContext(new ServletContextAdapter(this,
                             parentContext));
-                } catch (final NoSuchMethodException e) {
+                } catch (NoSuchMethodException e) {
                     log("[Noelios Restlet Engine] - The ServerServlet couldn't invoke the constructor of the target class. Please check this class has a constructor without parameter. The constructor with a parameter of type Context will be used instead.");
                     // The constructor with the Context parameter does not
                     // exist. Create a new instance of the application class by
@@ -294,24 +294,24 @@ public class ServerServlet extends HttpServlet {
                             Context.class).newInstance(
                             new ServletContextAdapter(this, parentContext));
                 }
-            } catch (final ClassNotFoundException e) {
+            } catch (ClassNotFoundException e) {
                 log(
                         "[Noelios Restlet Engine] - The ServerServlet couldn't find the target class. Please check that your classpath includes "
                                 + applicationClassName, e);
 
-            } catch (final InstantiationException e) {
+            } catch (InstantiationException e) {
                 log(
                         "[Noelios Restlet Engine] - The ServerServlet couldn't instantiate the target class. Please check this class has an empty constructor "
                                 + applicationClassName, e);
-            } catch (final IllegalAccessException e) {
+            } catch (IllegalAccessException e) {
                 log(
                         "[Noelios Restlet Engine] - The ServerServlet couldn't instantiate the target class. Please check that you have to proper access rights to "
                                 + applicationClassName, e);
-            } catch (final NoSuchMethodException e) {
+            } catch (NoSuchMethodException e) {
                 log(
                         "[Noelios Restlet Engine] - The ServerServlet couldn't invoke the constructor of the target class. Please check this class has a constructor with a single parameter of Context "
                                 + applicationClassName, e);
-            } catch (final InvocationTargetException e) {
+            } catch (InvocationTargetException e) {
                 log(
                         "[Noelios Restlet Engine] - The ServerServlet couldn't instantiate the target class. An exception was thrown while creating "
                                 + applicationClassName, e);
@@ -394,15 +394,15 @@ public class ServerServlet extends HttpServlet {
                     // Create a new instance of the component class by
                     // invoking the constructor with the Context parameter.
                     component = (Component) targetClass.newInstance();
-                } catch (final ClassNotFoundException e) {
+                } catch (ClassNotFoundException e) {
                     log(
                             "[Noelios Restlet Engine] - The ServerServlet couldn't find the target class. Please check that your classpath includes "
                                     + componentClassName, e);
-                } catch (final InstantiationException e) {
+                } catch (InstantiationException e) {
                     log(
                             "[Noelios Restlet Engine] - The ServerServlet couldn't instantiate the target class. Please check this class has an empty constructor "
                                     + componentClassName, e);
-                } catch (final IllegalAccessException e) {
+                } catch (IllegalAccessException e) {
                     log(
                             "[Noelios Restlet Engine] - The ServerServlet couldn't instantiate the target class. Please check that you have to proper access rights to "
                                     + componentClassName, e);
@@ -657,7 +657,7 @@ public class ServerServlet extends HttpServlet {
         if ((getComponent() != null) && (getComponent().isStarted())) {
             try {
                 getComponent().stop();
-            } catch (final Exception e) {
+            } catch (Exception e) {
                 log("Error during the stopping of the Restlet Component", e);
             }
         }
@@ -811,7 +811,7 @@ public class ServerServlet extends HttpServlet {
             if ((getApplication() != null) && (getApplication().isStopped())) {
                 try {
                     getApplication().start();
-                } catch (final Exception e) {
+                } catch (Exception e) {
                     log("Error during the starting of the Restlet Application",
                             e);
                 }

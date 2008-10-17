@@ -245,7 +245,7 @@ public class JavaMailClientHelper extends ClientHelper {
                 return representationMessageClass.getConstructor(
                         Representation.class, Session.class).newInstance(
                         xmlMessage, session);
-            } catch (final Exception e) {
+            } catch (Exception e) {
                 getLogger().log(
                         Level.SEVERE,
                         "Unable to create a new instance of "
@@ -337,16 +337,16 @@ public class JavaMailClientHelper extends ClientHelper {
             } else if (POP.equals(protocol) || POPS.equals(protocol)) {
                 handlePop(request, response);
             }
-        } catch (final IOException e) {
+        } catch (IOException e) {
             getLogger().log(Level.WARNING, "JavaMail client error", e);
             response.setStatus(Status.CONNECTOR_ERROR_INTERNAL, e.getMessage());
-        } catch (final NoSuchProviderException e) {
+        } catch (NoSuchProviderException e) {
             getLogger().log(Level.WARNING, "JavaMail client error", e);
             response.setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
-        } catch (final AddressException e) {
+        } catch (AddressException e) {
             getLogger().log(Level.WARNING, "JavaMail client error", e);
             response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST, e.getMessage());
-        } catch (final MessagingException e) {
+        } catch (MessagingException e) {
             getLogger().log(Level.WARNING, "JavaMail client error", e);
             response.setStatus(Status.SERVER_ERROR_INTERNAL, e.getMessage());
         }

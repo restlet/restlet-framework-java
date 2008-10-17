@@ -151,7 +151,7 @@ public class XdbServletWarClientHelper extends ServletWarClientHelper {
 
                         output = rl.getTextRepresentation();
                     }
-                } catch (final SQLException sqe) {
+                } catch (SQLException sqe) {
                     getLogger().throwing("XdbServletWarClientHelper",
                             "handleWar", sqe);
                     throw new RuntimeException(
@@ -189,7 +189,7 @@ public class XdbServletWarClientHelper extends ServletWarClientHelper {
                             output.setMediaType(new MediaType(mediaType));
                         }
                     }
-                } catch (final SQLException sqe) {
+                } catch (SQLException sqe) {
                     getLogger().throwing("XdbServletWarClientHelper",
                             "handleWar", sqe);
                     throw new RuntimeException(
@@ -223,7 +223,7 @@ public class XdbServletWarClientHelper extends ServletWarClientHelper {
                 this.connectedUser = "PUBLIC";
             }
             getLogger().info("efective user is: " + this.connectedUser);
-        } catch (final SQLException sqe) {
+        } catch (SQLException sqe) {
             getLogger().throwing("XdbServletWarClientHelper", "start", sqe);
             throw new RuntimeException("Exception querying USER from dual ",
                     sqe);

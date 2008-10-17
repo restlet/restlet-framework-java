@@ -122,14 +122,14 @@ public class RequestTokenResource extends Resource {
         // verify the signature
         try {
             requestMessage.validateSignature(accessor);
-        } catch (final OAuthProblemException oape) {
+        } catch (OAuthProblemException oape) {
             getResponse().setChallengeRequest(challengeRequest);
             // TODO: Use OAuthServlet mapping from problem to status.
             getResponse().setStatus(Status.CLIENT_ERROR_UNAUTHORIZED, oape);
             challengeRequest.getParameters().add("oauth_problem",
                     "signature_invalid");
             return;
-        } catch (final Exception e) {
+        } catch (Exception e) {
             // TODO Auto-generated catch block
             throw new RuntimeException(e);
         }
@@ -142,7 +142,7 @@ public class RequestTokenResource extends Resource {
                     new StringRepresentation(OAuth.formEncode(OAuth.newList(
                             "oauth_token", accessor.requestToken,
                             "oauth_token_secret", accessor.tokenSecret))));
-        } catch (final IOException e) {
+        } catch (IOException e) {
             throw new ResourceException(e);
         }
     }

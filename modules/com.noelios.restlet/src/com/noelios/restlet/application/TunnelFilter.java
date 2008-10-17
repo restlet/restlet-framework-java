@@ -393,7 +393,7 @@ public class TunnelFilter extends Filter {
                         }
                     }
                     reader.close();
-                } catch (final IOException e) {
+                } catch (IOException e) {
                 }
             }
         }

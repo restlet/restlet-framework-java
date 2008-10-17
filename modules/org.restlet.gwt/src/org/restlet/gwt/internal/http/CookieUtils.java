@@ -78,7 +78,7 @@ public class CookieUtils {
         final StringBuilder sb = new StringBuilder();
         try {
             format(cookie, sb);
-        } catch (final Exception e) {
+        } catch (Exception e) {
             // IOExceptions are not possible on StringBuilders
         }
         return sb.toString();
@@ -143,7 +143,7 @@ public class CookieUtils {
 
         try {
             format(cookieSetting, sb);
-        } catch (final Exception e) {
+        } catch (Exception e) {
             // log error
         }
 
@@ -279,7 +279,7 @@ public class CookieUtils {
 
             try {
                 format(cookie, sb);
-            } catch (final Exception e) {
+            } catch (Exception e) {
                 // IOExceptiosn are not possible on StringBuilder
             }
         }

@@ -274,7 +274,7 @@ public class JaxRsUriBuilder extends UriBuilder {
     private URI buildUri(String refAsString) throws UriBuilderException {
         try {
             return new URI(refAsString);
-        } catch (final URISyntaxException e) {
+        } catch (URISyntaxException e) {
             throw new UriBuilderException(
                     "Could not build the URI from String " + refAsString, e);
         }
@@ -451,9 +451,9 @@ public class JaxRsUriBuilder extends UriBuilder {
         String newPathSegment;
         try {
             newPathSegment = Util.getPathTemplateWithoutRegExps(resource);
-        } catch (final IllegalPathOnClassException e) {
+        } catch (IllegalPathOnClassException e) {
             throw e.getCause();
-        } catch (final MissingAnnotationException e) {
+        } catch (MissingAnnotationException e) {
             throw new IllegalArgumentException("The resource class "
                     + resource.getName() + " requires an annotation @Path");
         }
@@ -498,9 +498,9 @@ public class JaxRsUriBuilder extends UriBuilder {
             String path;
             try {
                 path = Util.getPathTemplateWithoutRegExps(method);
-            } catch (final IllegalPathOnMethodException e) {
+            } catch (IllegalPathOnMethodException e) {
                 throw e.getCause();
-            } catch (final MissingAnnotationException e) {
+            } catch (MissingAnnotationException e) {
                 throw new IllegalArgumentException(e);
             }
             if (path == null) {
@@ -545,9 +545,9 @@ public class JaxRsUriBuilder extends UriBuilder {
         String validSegment;
         try {
             validSegment = Util.getPathTemplateWithoutRegExps(method);
-        } catch (final MissingAnnotationException e) {
+        } catch (MissingAnnotationException e) {
             throw new IllegalArgumentException(e);
-        } catch (final IllegalPathException e) {
+        } catch (IllegalPathException e) {
             throw e.getCause();
         }
         addValidPathSegment(validSegment);
@@ -1017,7 +1017,7 @@ public class JaxRsUriBuilder extends UriBuilder {
                 Util.append(stb, this.fragment, convertBraces);
             }
             return stb.toString();
-        } catch (final IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(
                     "Could not write the UriBuilder to a String; but this Exception could not occur normally",
                     e);

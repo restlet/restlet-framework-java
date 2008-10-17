@@ -962,7 +962,7 @@ public class WadlRepresentation extends SaxRepresentation {
                         MediaType.APPLICATION_W3C_XSLT);
                 representation = new TransformRepresentation(this, xslRep);
                 representation.setMediaType(MediaType.TEXT_HTML);
-            } catch (final IOException e) {
+            } catch (IOException e) {
                 Context.getCurrent().getLogger().log(Level.WARNING,
                         "Unable to generate the WADL HTML representation", e);
             }
@@ -993,7 +993,7 @@ public class WadlRepresentation extends SaxRepresentation {
                     "type=\"text/xsl\" href=\"wadl_documentation.xsl\"");
             this.application.writeElement(writer);
             writer.endDocument();
-        } catch (final SAXException e) {
+        } catch (SAXException e) {
             Context.getCurrentLogger().log(Level.SEVERE,
                     "Error when writing the WADL Representation.", e);
         }

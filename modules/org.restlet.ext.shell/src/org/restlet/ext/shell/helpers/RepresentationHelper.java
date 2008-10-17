@@ -59,13 +59,13 @@ public class RepresentationHelper {
             }
 
             return stringWriter.toString();
-        } catch (final IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException("unable to read file");
         } finally {
             if (bufferedReader != null) {
                 try {
                     bufferedReader.close();
-                } catch (final IOException ex) {
+                } catch (IOException ex) {
                     // ignored
                 }
             }
@@ -79,7 +79,7 @@ public class RepresentationHelper {
             outputStream = new FileOutputStream(representation
                     .getDownloadName());
             representation.write(outputStream);
-        } catch (final IOException ex) {
+        } catch (IOException ex) {
             throw new RuntimeException("cannot write to "
                     + representation.getDownloadName(), ex);
         } finally {
@@ -87,7 +87,7 @@ public class RepresentationHelper {
                 if (outputStream != null) {
                     outputStream.close();
                 }
-            } catch (final IOException ex) {
+            } catch (IOException ex) {
                 // ignored
             }
         }

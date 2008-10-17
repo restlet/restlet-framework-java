@@ -185,7 +185,7 @@ public class StringRepresentation extends StreamRepresentation {
                 } else {
                     setSize(getText().getBytes().length);
                 }
-            } catch (final UnsupportedEncodingException e) {
+            } catch (UnsupportedEncodingException e) {
                 Context.getCurrentLogger().log(Level.WARNING,
                         "Unable to update size", e);
                 setSize(UNKNOWN_SIZE);

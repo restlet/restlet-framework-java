@@ -265,7 +265,7 @@ public class Router extends Restlet {
                 if (constructor != null) {
                     result = constructor.newInstance(getContext(), targetClass);
                 }
-            } catch (final Exception e) {
+            } catch (Exception e) {
                 getLogger().log(Level.WARNING,
                         "Exception while instantiating the finder.", e);
             }
@@ -393,7 +393,7 @@ public class Router extends Restlet {
                 // sleep during the "retryDelay" set.
                 try {
                     Thread.sleep(getRetryDelay());
-                } catch (final InterruptedException e) {
+                } catch (InterruptedException e) {
                 }
             }
 

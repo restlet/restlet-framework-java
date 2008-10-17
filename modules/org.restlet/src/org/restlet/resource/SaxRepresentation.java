@@ -138,7 +138,7 @@ public class SaxRepresentation extends XmlRepresentation {
                 this.source.setSystemId(xmlRepresentation.getIdentifier()
                         .getTargetRef().toString());
             }
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             ioe.printStackTrace();
         }
     }
@@ -188,16 +188,16 @@ public class SaxRepresentation extends XmlRepresentation {
                 final Result result = new SAXResult(contentHandler);
                 TransformerFactory.newInstance().newTransformer().transform(
                         this.source, result);
-            } catch (final TransformerConfigurationException tce) {
+            } catch (TransformerConfigurationException tce) {
                 throw new IOException(
                         "Couldn't parse the source representation: "
                                 + tce.getMessage());
-            } catch (final TransformerException te) {
+            } catch (TransformerException te) {
                 te.printStackTrace();
                 throw new IOException(
                         "Couldn't parse the source representation: "
                                 + te.getMessage());
-            } catch (final TransformerFactoryConfigurationError tfce) {
+            } catch (TransformerFactoryConfigurationError tfce) {
                 throw new IOException(
                         "Couldn't parse the source representation: "
                                 + tfce.getMessage());

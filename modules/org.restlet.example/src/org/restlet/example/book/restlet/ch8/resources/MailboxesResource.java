@@ -93,7 +93,7 @@ public class MailboxesResource extends BaseResource {
         try {
             mailbox = getObjectsFacade().createMailbox(mailbox);
             getResponse().redirectSeeOther(getRequest().getResourceRef());
-        } catch (final ObjectsException e) {
+        } catch (ObjectsException e) {
             final Map<String, Object> dataModel = new TreeMap<String, Object>();
             dataModel.put("currentUser", getCurrentUser());
             dataModel.put("mailboxes", this.mailboxes);

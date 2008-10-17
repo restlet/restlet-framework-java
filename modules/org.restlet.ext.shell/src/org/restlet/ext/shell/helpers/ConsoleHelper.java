@@ -55,14 +55,14 @@ public class ConsoleHelper {
         // / ConsoleHelper
         try {
             this.consoleReader = new ConsoleReader();
-        } catch (final IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException("cannot initialize jline", e);
         }
 
         // History
         try {
             this.history = new History(historyFile);
-        } catch (final IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(String.format(
                     "cannot initialize history file %s", historyFile), e);
         }
@@ -80,7 +80,7 @@ public class ConsoleHelper {
 
         try {
             line = this.consoleReader.readLine(aPrompt);
-        } catch (final IOException e) {
+        } catch (IOException e) {
             // do nothing
         }
 
@@ -92,7 +92,7 @@ public class ConsoleHelper {
 
         try {
             password = this.consoleReader.readLine(aPrompt);
-        } catch (final IOException e) {
+        } catch (IOException e) {
             // do nothing
         }
 
@@ -107,7 +107,7 @@ public class ConsoleHelper {
         try {
             this.consoleReader.printString(line + "\n");
             this.consoleReader.flushConsole();
-        } catch (final IOException ex) {
+        } catch (IOException ex) {
             // do nothing
         }
     }

@@ -61,7 +61,7 @@ public class SpringBeanFinderTest extends TestCase {
         try {
             this.finder.createResource();
             fail("Exception not thrown");
-        } catch (final ClassCastException cce) {
+        } catch (ClassCastException cce) {
             assertEquals(
                     "fish does not resolve to an instance of org.restlet.resource.Resource",
                     cce.getMessage());

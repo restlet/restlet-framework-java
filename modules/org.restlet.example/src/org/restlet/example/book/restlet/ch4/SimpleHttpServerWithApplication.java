@@ -69,7 +69,7 @@ public class SimpleHttpServerWithApplication {
         component.getDefaultHost().attach(application);
         try {
             component.start();
-        } catch (final Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

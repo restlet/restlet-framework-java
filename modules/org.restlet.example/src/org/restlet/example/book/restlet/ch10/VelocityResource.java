@@ -79,7 +79,7 @@ public class VelocityResource extends Resource {
                     .addProperty(
                             "file.resource.loader.path",
                             "D:\\alaska\\forge\\build\\swc\\nre\\trunk\\books\\apress\\manuscript\\sample\\");
-        } catch (final Exception e) {
+        } catch (Exception e) {
             getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e);
         }
 

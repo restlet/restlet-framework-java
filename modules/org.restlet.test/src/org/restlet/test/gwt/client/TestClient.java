@@ -61,7 +61,7 @@ public class TestClient implements EntryPoint {
                                 try {
                                     label.setText(response.getEntity()
                                             .getText());
-                                } catch (final Exception ioException) {
+                                } catch (Exception ioException) {
                                     GWT.log("Restlet I/O failed", ioException);
                                 }
                             }

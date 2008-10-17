@@ -81,7 +81,7 @@ public class JettyCall extends HttpServerCall {
             // Fully complete and commit the response
             this.connection.flushResponse();
             this.connection.completeResponse();
-        } catch (final IOException ex) {
+        } catch (IOException ex) {
             getLogger().log(Level.WARNING,
                     "Unable to complete or commit the response", ex);
         }
@@ -125,7 +125,7 @@ public class JettyCall extends HttpServerCall {
     public InputStream getRequestEntityStream(long size) {
         try {
             return getConnection().getRequest().getInputStream();
-        } catch (final IOException e) {
+        } catch (IOException e) {
             getLogger().log(Level.WARNING,
                     "Unable to get request entity stream", e);
             return null;
@@ -206,7 +206,7 @@ public class JettyCall extends HttpServerCall {
     public OutputStream getResponseEntityStream() {
         try {
             return getConnection().getResponse().getOutputStream();
-        } catch (final IOException e) {
+        } catch (IOException e) {
             getLogger().log(Level.WARNING,
                     "Unable to get response entity stream", e);
             return null;
@@ -286,7 +286,7 @@ public class JettyCall extends HttpServerCall {
             try {
                 getConnection().getResponse().sendError(getStatusCode(),
                         getReasonPhrase());
-            } catch (final IOException ioe) {
+            } catch (IOException ioe) {
                 getLogger().log(Level.WARNING,
                         "Unable to set the response error status", ioe);
             }

@@ -101,7 +101,7 @@ public class HttpsUtils extends HttpUtils {
                             try {
                                 keySize = Integer.valueOf(st.nextToken());
                                 break;
-                            } catch (final NumberFormatException e) {
+                            } catch (NumberFormatException e) {
                                 // Tokens that are not integers are ignored.
                             }
                         }

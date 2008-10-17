@@ -148,11 +148,11 @@ public class TemplateFilter extends Filter {
                 }
 
                 response.setEntity(representation);
-            } catch (final ResourceNotFoundException e) {
+            } catch (ResourceNotFoundException e) {
                 response.setStatus(Status.CLIENT_ERROR_NOT_FOUND, e);
-            } catch (final ParseErrorException e) {
+            } catch (ParseErrorException e) {
                 response.setStatus(Status.SERVER_ERROR_INTERNAL, e);
-            } catch (final IOException e) {
+            } catch (IOException e) {
                 response.setStatus(Status.SERVER_ERROR_INTERNAL, e);
             }
         }

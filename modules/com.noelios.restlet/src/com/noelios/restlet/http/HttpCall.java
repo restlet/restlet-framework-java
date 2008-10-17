@@ -204,7 +204,7 @@ public abstract class HttpCall {
                     HttpConstants.HEADER_CONTENT_LENGTH)) {
                 try {
                     contentLength = Long.parseLong(header.getValue());
-                } catch (final NumberFormatException e) {
+                } catch (NumberFormatException e) {
                     contentLength = Representation.UNKNOWN_SIZE;
                 }
             }

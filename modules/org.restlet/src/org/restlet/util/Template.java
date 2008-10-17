@@ -740,7 +740,7 @@ public class Template {
                     result = matcher.end();
                 }
             }
-        } catch (final StackOverflowError soe) {
+        } catch (StackOverflowError soe) {
             getLogger().warning(
                     "StackOverflowError exception encountered while matching this string : "
                             + formattedString);
@@ -797,7 +797,7 @@ public class Template {
 
                     }
                 }
-            } catch (final StackOverflowError soe) {
+            } catch (StackOverflowError soe) {
                 getLogger().warning(
                         "StackOverflowError exception encountered while matching this string : "
                                 + formattedString);

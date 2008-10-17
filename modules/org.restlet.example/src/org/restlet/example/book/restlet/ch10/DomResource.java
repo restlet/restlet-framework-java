@@ -70,7 +70,7 @@ public class DomResource extends Resource {
             r.appendChild(from);
             d.normalizeDocument();
             rep = new DomRepresentation(MediaType.TEXT_XML, d);
-        } catch (final ParserConfigurationException e) {
+        } catch (ParserConfigurationException e) {
             e.printStackTrace();
         }
 

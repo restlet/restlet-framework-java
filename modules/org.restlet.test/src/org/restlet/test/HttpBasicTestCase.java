@@ -271,7 +271,7 @@ public class HttpBasicTestCase extends TestCase {
             HTTPBasicLong();
             HTTPBasicLongWrong();
             stopServer();
-        } catch (final Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

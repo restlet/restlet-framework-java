@@ -100,7 +100,7 @@ public class SimpleCall extends HttpServerCall {
         try {
             // Commit the response
             this.response.commit();
-        } catch (final IOException ex) {
+        } catch (IOException ex) {
             getLogger().log(Level.WARNING, "Unable to commit the response", ex);
         }
     }
@@ -136,7 +136,7 @@ public class SimpleCall extends HttpServerCall {
     public InputStream getRequestEntityStream(long size) {
         try {
             return new KeepAliveInputStream(this.request.getInputStream());
-        } catch (final IOException ex) {
+        } catch (IOException ex) {
             return null;
         }
     }
@@ -205,7 +205,7 @@ public class SimpleCall extends HttpServerCall {
     public OutputStream getResponseEntityStream() {
         try {
             return this.response.getOutputStream();
-        } catch (final IOException ex) {
+        } catch (IOException ex) {
             return null;
         }
     }
@@ -245,7 +245,7 @@ public class SimpleCall extends HttpServerCall {
                             .asList(sslSession.getPeerCertificates());
 
                     return clientCertificates;
-                } catch (final SSLPeerUnverifiedException e) {
+                } catch (SSLPeerUnverifiedException e) {
                     getLogger().log(Level.FINE,
                             "Can't get the client certificates.", e);
                 }

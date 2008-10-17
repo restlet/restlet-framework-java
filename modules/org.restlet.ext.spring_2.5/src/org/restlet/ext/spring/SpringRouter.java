@@ -101,7 +101,7 @@ public class SpringRouter extends Router {
                                     "Unknown object found in the mappings. Only instances of Restlet and subclasses of org.restlet.resource.Resource are allowed.");
                 }
             }
-        } catch (final ClassNotFoundException e) {
+        } catch (ClassNotFoundException e) {
             router.getLogger().log(Level.WARNING,
                     "Unable to set the router mappings", e);
         }

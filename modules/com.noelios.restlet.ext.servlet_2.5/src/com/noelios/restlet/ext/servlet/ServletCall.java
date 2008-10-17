@@ -188,7 +188,7 @@ public class ServletCall extends HttpServerCall {
     public InputStream getRequestEntityStream(long size) {
         try {
             return getRequest().getInputStream();
-        } catch (final IOException e) {
+        } catch (IOException e) {
             return null;
         }
     }
@@ -279,7 +279,7 @@ public class ServletCall extends HttpServerCall {
     public OutputStream getResponseEntityStream() {
         try {
             return getResponse().getOutputStream();
-        } catch (final IOException e) {
+        } catch (IOException e) {
             return null;
         }
     }
@@ -377,7 +377,7 @@ public class ServletCall extends HttpServerCall {
         if (Status.isError(getStatusCode()) && (response.getEntity() == null)) {
             try {
                 getResponse().sendError(getStatusCode(), getReasonPhrase());
-            } catch (final IOException ioe) {
+            } catch (IOException ioe) {
                 getLogger().log(Level.WARNING,
                         "Unable to set the response error status", ioe);
             }

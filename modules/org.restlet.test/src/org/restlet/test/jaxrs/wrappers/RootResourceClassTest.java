@@ -62,7 +62,7 @@ public class RootResourceClassTest extends TestCase {
         try {
             resourceClasses.getRootClassWrapper(IllegalPathService1.class);
             fail("must not pass");
-        } catch (final AssertionFailedError e) {
+        } catch (AssertionFailedError e) {
             // wonderful
         }
         final RootResourceClass rrc = resourceClasses

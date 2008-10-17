@@ -94,7 +94,7 @@ public class VirtualHost extends Router {
 
         try {
             result = InetAddress.getByName(domain).getHostAddress();
-        } catch (final UnknownHostException e) {
+        } catch (UnknownHostException e) {
         }
 
         return result;
@@ -110,7 +110,7 @@ public class VirtualHost extends Router {
 
         try {
             result = InetAddress.getLocalHost().getHostAddress();
-        } catch (final UnknownHostException e) {
+        } catch (UnknownHostException e) {
         }
 
         return result;
@@ -126,7 +126,7 @@ public class VirtualHost extends Router {
 
         try {
             result = InetAddress.getLocalHost().getHostName();
-        } catch (final UnknownHostException e) {
+        } catch (UnknownHostException e) {
         }
 
         return result;

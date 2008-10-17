@@ -91,11 +91,11 @@ public class SecurityUtils {
 
             // Compute the HMAC value
             result = mac.doFinal(source.getBytes());
-        } catch (final NoSuchAlgorithmException nsae) {
+        } catch (NoSuchAlgorithmException nsae) {
             throw new RuntimeException(
                     "Could not find the SHA-1 algorithm. HMac conversion failed.",
                     nsae);
-        } catch (final InvalidKeyException ike) {
+        } catch (InvalidKeyException ike) {
             throw new RuntimeException(
                     "Invalid key exception detected. HMac conversion failed.",
                     ike);
@@ -117,7 +117,7 @@ public class SecurityUtils {
     public static String toMd5(String target) {
         try {
             return toMd5(target, "US-ASCII");
-        } catch (final UnsupportedEncodingException uee) {
+        } catch (UnsupportedEncodingException uee) {
             // Unlikely, US-ASCII comes with every JVM
             throw new RuntimeException(
                     "US-ASCII is an unsupported encoding, unable to compute MD5");
@@ -150,7 +150,7 @@ public class SecurityUtils {
                 md5Chars[i++] = HEXDIGITS[b & 0xF];
             }
             return new String(md5Chars);
-        } catch (final NoSuchAlgorithmException nsae) {
+        } catch (NoSuchAlgorithmException nsae) {
             throw new RuntimeException(
                     "No MD5 algorithm, unable to compute MD5");
         }
@@ -167,7 +167,7 @@ public class SecurityUtils {
     public static String toSha1(String target) {
         try {
             return toSha1(target, "US-ASCII");
-        } catch (final UnsupportedEncodingException uee) {
+        } catch (UnsupportedEncodingException uee) {
             // Unlikely, US-ASCII comes with every JVM
             throw new RuntimeException(
                     "US-ASCII is an unsupported encoding, unable to compute SHA1");
@@ -191,7 +191,7 @@ public class SecurityUtils {
         try {
             return Base64.encode(MessageDigest.getInstance("SHA1").digest(
                     target.getBytes(charsetName)), false);
-        } catch (final NoSuchAlgorithmException nsae) {
+        } catch (NoSuchAlgorithmException nsae) {
             throw new RuntimeException(
                     "No SHA1 algorithm, unable to compute SHA1");
         }

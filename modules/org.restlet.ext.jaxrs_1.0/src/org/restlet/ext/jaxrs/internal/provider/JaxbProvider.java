@@ -88,7 +88,7 @@ public class JaxbProvider extends AbstractJaxbProvider<Object> {
             final JAXBContext jaxbContext = getJaxbContext(type);
             final Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
             return unmarshaller.unmarshal(entityStream);
-        } catch (final JAXBException e) {
+        } catch (JAXBException e) {
             final String message = "Could not unmarshal to " + type.getName();
             throw logAndIOExc(getLogger(), message, e);
         }

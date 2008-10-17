@@ -116,7 +116,7 @@ public class DomRepresentation extends XmlRepresentation {
             }
 
             return transformer;
-        } catch (final TransformerConfigurationException tce) {
+        } catch (TransformerConfigurationException tce) {
             throw new IOException("Couldn't write the XML representation: "
                     + tce.getMessage());
         }
@@ -143,7 +143,7 @@ public class DomRepresentation extends XmlRepresentation {
                 try {
                     this.dom = getDocumentBuilder().parse(
                             this.xmlRepresentation.getStream());
-                } catch (final SAXException se) {
+                } catch (SAXException se) {
                     throw new IOException(
                             "Couldn't read the XML representation. "
                                     + se.getMessage());
@@ -199,13 +199,13 @@ public class DomRepresentation extends XmlRepresentation {
                 transformer.transform(new DOMSource(getDocument()),
                         new StreamResult(outputStream));
             }
-        } catch (final TransformerConfigurationException tce) {
+        } catch (TransformerConfigurationException tce) {
             throw new IOException("Couldn't write the XML representation: "
                     + tce.getMessage());
-        } catch (final TransformerException te) {
+        } catch (TransformerException te) {
             throw new IOException("Couldn't write the XML representation: "
                     + te.getMessage());
-        } catch (final TransformerFactoryConfigurationError tfce) {
+        } catch (TransformerFactoryConfigurationError tfce) {
             throw new IOException("Couldn't write the XML representation: "
                     + tfce.getMessage());
         }

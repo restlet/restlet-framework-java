@@ -46,6 +46,8 @@ Changes log
         - Improved the performance of the ByteUtils#toString() methods
           significantly using a buffer. Impact the performance of the 
           Representation#toString() method. Reported by Aaron Crow.
+        - Removed unecessary 'final' modifiers in catch clauses.
+          Reported by Richard Hoberman.
         
 - 1.1 Release Candidate 2 (2008-09-24)
     - Bugs fixed

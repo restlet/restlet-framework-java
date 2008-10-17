@@ -100,13 +100,13 @@ public class GwtShellServletWrapper extends ServerServlet {
         try {
             this.gwtShellServlet.getClass().getMethod("destroy").invoke(
                     this.gwtShellServlet);
-        } catch (final IllegalAccessException x) {
+        } catch (IllegalAccessException x) {
             log("[Noelios Restlet Engine] - Unable to destroy GWTShellServlet",
                     x);
-        } catch (final InvocationTargetException x) {
+        } catch (InvocationTargetException x) {
             log("[Noelios Restlet Engine] - Unable to destroy GWTShellServlet",
                     x);
-        } catch (final NoSuchMethodException x) {
+        } catch (NoSuchMethodException x) {
             log("[Noelios Restlet Engine] - Unable to destroy GWTShellServlet",
                     x);
         }
@@ -133,11 +133,11 @@ public class GwtShellServletWrapper extends ServerServlet {
             this.gwtShellServlet.getClass().getMethod("init",
                     ServletConfig.class).invoke(this.gwtShellServlet,
                     servletConfig);
-        } catch (final IllegalAccessException x) {
+        } catch (IllegalAccessException x) {
             log("[Noelios Restlet Engine] - Unable to init GWTShellServlet", x);
-        } catch (final InvocationTargetException x) {
+        } catch (InvocationTargetException x) {
             log("[Noelios Restlet Engine] - Unable to init GWTShellServlet", x);
-        } catch (final NoSuchMethodException x) {
+        } catch (NoSuchMethodException x) {
             log("[Noelios Restlet Engine] - Unable to init GWTShellServlet", x);
         }
     }
@@ -152,19 +152,19 @@ public class GwtShellServletWrapper extends ServerServlet {
             this.gwtShellServletServiceMethod = this.gwtShellServlet.getClass()
                     .getMethod("service", ServletRequest.class,
                             ServletResponse.class);
-        } catch (final IllegalAccessException x) {
+        } catch (IllegalAccessException x) {
             log(
                     "[Noelios Restlet Engine] - Unable to instantiate GWTShellServlet",
                     x);
-        } catch (final ClassNotFoundException x) {
+        } catch (ClassNotFoundException x) {
             log(
                     "[Noelios Restlet Engine] - Unable to instantiate GWTShellServlet",
                     x);
-        } catch (final InstantiationException x) {
+        } catch (InstantiationException x) {
             log(
                     "[Noelios Restlet Engine] - Unable to instantiate GWTShellServlet",
                     x);
-        } catch (final NoSuchMethodException x) {
+        } catch (NoSuchMethodException x) {
             log(
                     "[Noelios Restlet Engine] - Unable to find service method for GWTShellServlet",
                     x);
@@ -193,11 +193,11 @@ public class GwtShellServletWrapper extends ServerServlet {
         try {
             this.gwtShellServletServiceMethod.invoke(this.gwtShellServlet,
                     request, response);
-        } catch (final IllegalAccessException x) {
+        } catch (IllegalAccessException x) {
             log(
                     "[Noelios Restlet Engine] - Unable to call service(request,response) in GWTShellServlet",
                     x);
-        } catch (final InvocationTargetException x) {
+        } catch (InvocationTargetException x) {
             log(
                     "[Noelios Restlet Engine] - Unable to call service(request,response) in GWTShellServlet",
                     x);

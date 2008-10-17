@@ -79,7 +79,7 @@ public class ContentType {
                 this.mediaType.getParameters().removeAll("charset");
                 this.characterSet = new CharacterSet(charSet);
             }
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             throw new IllegalArgumentException(
                     "The Content Type could not be read.", ioe);
         }

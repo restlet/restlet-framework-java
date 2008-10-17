@@ -269,7 +269,7 @@ public class JibxRepresentation<T> extends XmlRepresentation {
             mctx
                     .marshalDocument(getObject(), this.encoding, null,
                             outputStream);
-        } catch (final JiBXException e) {
+        } catch (JiBXException e) {
             throw new IOException(e.getMessage());
         }
     }

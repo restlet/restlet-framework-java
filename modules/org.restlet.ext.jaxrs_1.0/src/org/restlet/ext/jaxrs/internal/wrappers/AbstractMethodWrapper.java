@@ -107,7 +107,7 @@ public abstract class AbstractMethodWrapper extends AbstractJaxRsWrapper {
             this.parameters = new ParameterList(executeMethod, annotatedMethod,
                     tlContext, leaveEncoded, jaxRsProviders,
                     extensionBackwardMapping, entityAllowed, logger);
-        } catch (final IllegalTypeException e) {
+        } catch (IllegalTypeException e) {
             throw new IllegalMethodParamTypeException(e);
         }
     }

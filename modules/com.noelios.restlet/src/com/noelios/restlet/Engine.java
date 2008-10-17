@@ -153,7 +153,7 @@ public class Engine extends org.restlet.util.Engine {
         try {
             result = Integer.parseInt(javaVersion.substring(0, javaVersion
                     .indexOf(".")));
-        } catch (final Exception e) {
+        } catch (Exception e) {
             result = 0;
         }
 
@@ -174,7 +174,7 @@ public class Engine extends org.restlet.util.Engine {
         final String javaVersion = System.getProperty("java.version");
         try {
             result = Integer.parseInt(javaVersion.split("\\.")[1]);
-        } catch (final Exception e) {
+        } catch (Exception e) {
             result = 0;
         }
 
@@ -196,7 +196,7 @@ public class Engine extends org.restlet.util.Engine {
         try {
             result = Integer.parseInt(javaVersion.substring(javaVersion
                     .indexOf('_') + 1));
-        } catch (final Exception e) {
+        } catch (Exception e) {
             result = 0;
         }
 
@@ -343,7 +343,7 @@ public class Engine extends org.restlet.util.Engine {
                         try {
                             result = connector.getClass().getConstructor(
                                     Client.class).newInstance(client);
-                        } catch (final Exception e) {
+                        } catch (Exception e) {
                             Context
                                     .getCurrentLogger()
                                     .log(
@@ -398,7 +398,7 @@ public class Engine extends org.restlet.util.Engine {
                         try {
                             result = connector.getClass().getConstructor(
                                     Server.class).newInstance(server);
-                        } catch (final Exception e) {
+                        } catch (Exception e) {
                             Context
                                     .getCurrentLogger()
                                     .log(
@@ -993,7 +993,7 @@ public class Engine extends org.restlet.util.Engine {
             throws IllegalArgumentException {
         try {
             return ContentType.parseContentType(contentType);
-        } catch (final IOException e) {
+        } catch (IOException e) {
             throw new IllegalArgumentException("The content type string \""
                     + contentType + "\" can not be parsed: " + e.getMessage(),
                     e);
@@ -1005,7 +1005,7 @@ public class Engine extends org.restlet.util.Engine {
         final CookieReader cr = new CookieReader(cookie);
         try {
             return cr.readCookie();
-        } catch (final IOException e) {
+        } catch (IOException e) {
             throw new IllegalArgumentException("Could not read the cookie", e);
         }
     }
@@ -1016,7 +1016,7 @@ public class Engine extends org.restlet.util.Engine {
         final CookieReader cr = new CookieReader(cookieSetting);
         try {
             return cr.readCookieSetting();
-        } catch (final IOException e) {
+        } catch (IOException e) {
             throw new IllegalArgumentException(
                     "Could not read the cookie setting", e);
         }
@@ -1177,7 +1177,7 @@ public class Engine extends org.restlet.util.Engine {
                                         constructorClass).newInstance(
                                         constructorClass.cast(null)));
                             }
-                        } catch (final Exception e) {
+                        } catch (Exception e) {
                             Context.getCurrentLogger()
                                     .log(
                                             Level.SEVERE,
@@ -1188,7 +1188,7 @@ public class Engine extends org.restlet.util.Engine {
 
                     line = reader.readLine();
                 }
-            } catch (final IOException e) {
+            } catch (IOException e) {
                 Context.getCurrentLogger().log(
                         Level.SEVERE,
                         "Unable to read the provider descriptor: "
@@ -1198,7 +1198,7 @@ public class Engine extends org.restlet.util.Engine {
                     reader.close();
                 }
             }
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             Context.getCurrentLogger().log(Level.SEVERE,
                     "Exception while detecting the helpers.", ioe);
         }

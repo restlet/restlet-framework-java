@@ -585,7 +585,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
     public URI getAbsolutePath() {
         try {
             return new URI(this.referenceOriginal.toString(false, false));
-        } catch (final URISyntaxException e) {
+        } catch (URISyntaxException e) {
             throw wrapUriSyntaxExc(e, unexpectedLogger, "Could not create URI");
         }
     }
@@ -714,7 +714,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
     public URI getBaseUri() {
         try {
             return new URI(getBaseUriStr());
-        } catch (final URISyntaxException e) {
+        } catch (URISyntaxException e) {
             throw wrapUriSyntaxExc(e, unexpectedLogger, "Could not create URI");
         }
     }
@@ -1081,7 +1081,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
     public URI getRequestUri() {
         try {
             return new URI(this.referenceOriginal.toString(true, true));
-        } catch (final URISyntaxException e) {
+        } catch (URISyntaxException e) {
             throw wrapUriSyntaxExc(e, unexpectedLogger, "Could not create URI");
         }
     }

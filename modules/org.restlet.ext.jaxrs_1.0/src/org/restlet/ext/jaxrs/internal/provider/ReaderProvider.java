@@ -75,10 +75,10 @@ public class ReaderProvider extends AbstractProvider<Reader> {
         }
         try {
             return ByteUtils.getReader(entityStream, cs);
-        } catch (final UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException e) {
             try {
                 return ByteUtils.getReader(entityStream, null);
-            } catch (final UnsupportedEncodingException e2) {
+            } catch (UnsupportedEncodingException e2) {
                 throw new WebApplicationException(500);
             }
         }

@@ -227,7 +227,7 @@ public class FormUtils {
             FormReader fr = null;
             try {
                 fr = new FormReader(post);
-            } catch (final IOException ioe) {
+            } catch (IOException ioe) {
                 Context
                         .getCurrentLogger()
                         .log(

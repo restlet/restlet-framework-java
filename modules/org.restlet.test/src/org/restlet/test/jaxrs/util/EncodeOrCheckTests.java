@@ -77,9 +77,9 @@ public class EncodeOrCheckTests extends TestCase {
             SCHEME = EncodeOrCheck.class.getMethod("scheme", String.class);
             USER_INFO = EncodeOrCheck.class.getMethod("userInfo",
                     CharSequence.class, Boolean.TYPE);
-        } catch (final SecurityException e) {
+        } catch (SecurityException e) {
             throw new RuntimeException(e);
-        } catch (final NoSuchMethodException e) {
+        } catch (NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
     }
@@ -124,11 +124,11 @@ public class EncodeOrCheckTests extends TestCase {
                 }
                 assertEquals(out, result != null ? result.toString() : null);
             }
-        } catch (final InvocationTargetException e) {
+        } catch (InvocationTargetException e) {
             if (!(e.getCause() instanceof IllegalArgumentException)) {
                 throw (RuntimeException) e.getCause();
             }
-        } catch (final IllegalAccessException e) {
+        } catch (IllegalAccessException e) {
             throw new RuntimeException(e);
         }
     }
@@ -144,7 +144,7 @@ public class EncodeOrCheckTests extends TestCase {
             EncodeOrCheck.checkForInvalidUriChars(uriPart, -1, "");
             fail("\"" + uriPart
                     + "\" contains an invalid char. The test must fail");
-        } catch (final IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             // wonderful
         }
     }

@@ -60,7 +60,7 @@ public class HttpBasicHelper extends AuthenticationHelper {
             final String credentials = challenge.getIdentifier() + ':'
                     + new String(challenge.getSecret());
             sb.append(Base64.encode(credentials.getBytes("US-ASCII"), false));
-        } catch (final UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(
                     "Unsupported encoding, unable to encode credentials");
         }
@@ -90,7 +90,7 @@ public class HttpBasicHelper extends AuthenticationHelper {
                 cr.setIdentifier(credentials.substring(0, separator));
                 cr.setSecret(credentials.substring(separator + 1));
             }
-        } catch (final UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException e) {
             getLogger().log(Level.WARNING, "Unsupported encoding error", e);
         }
     }

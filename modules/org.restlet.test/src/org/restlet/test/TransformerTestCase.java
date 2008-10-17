@@ -71,7 +71,7 @@ public class TransformerTestCase extends TestCase {
         try {
             new TransformerTestCase().testTransform();
             new TransformerTestCase().parallelTestTransform();
-        } catch (final Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -121,7 +121,7 @@ public class TransformerTestCase extends TestCase {
                         assertEquals(TransformerTestCase.this.output, result);
                         out.close();
 
-                    } catch (final Throwable e) {
+                    } catch (Throwable e) {
                         tracker.trackFailure(
                                 "Exception during write in thread ", index, e);
                     }

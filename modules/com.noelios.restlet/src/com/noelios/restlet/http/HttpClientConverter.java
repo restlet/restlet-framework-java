@@ -84,7 +84,7 @@ public class HttpClientConverter extends HttpConverter {
                 try {
                     final CookieReader cr = new CookieReader(header.getValue());
                     response.getCookieSettings().add(cr.readCookieSetting());
-                } catch (final Exception e) {
+                } catch (Exception e) {
                     Context.getCurrentLogger().log(
                             Level.WARNING,
                             "Error during cookie setting parsing. Header: "
@@ -257,7 +257,7 @@ public class HttpClientConverter extends HttpConverter {
                     requestHeaders.add(HttpConstants.HEADER_ACCEPT,
                             PreferenceUtils.format(client
                                     .getAcceptedMediaTypes()));
-                } catch (final IOException ioe) {
+                } catch (IOException ioe) {
                     getLogger().log(Level.WARNING,
                             "Unable to format the HTTP Accept header", ioe);
                 }
@@ -271,7 +271,7 @@ public class HttpClientConverter extends HttpConverter {
                     requestHeaders.add(HttpConstants.HEADER_ACCEPT_CHARSET,
                             PreferenceUtils.format(client
                                     .getAcceptedCharacterSets()));
-                } catch (final IOException ioe) {
+                } catch (IOException ioe) {
                     getLogger().log(Level.WARNING,
                             "Unable to format the HTTP Accept header", ioe);
                 }
@@ -282,7 +282,7 @@ public class HttpClientConverter extends HttpConverter {
                     requestHeaders.add(HttpConstants.HEADER_ACCEPT_ENCODING,
                             PreferenceUtils.format(client
                                     .getAcceptedEncodings()));
-                } catch (final IOException ioe) {
+                } catch (IOException ioe) {
                     getLogger().log(Level.WARNING,
                             "Unable to format the HTTP Accept header", ioe);
                 }
@@ -293,7 +293,7 @@ public class HttpClientConverter extends HttpConverter {
                     requestHeaders.add(HttpConstants.HEADER_ACCEPT_LANGUAGE,
                             PreferenceUtils.format(client
                                     .getAcceptedLanguages()));
-                } catch (final IOException ioe) {
+                } catch (IOException ioe) {
                     getLogger().log(Level.WARNING,
                             "Unable to format the HTTP Accept header", ioe);
                 }
@@ -469,7 +469,7 @@ public class HttpClientConverter extends HttpConverter {
             response.getAttributes().put(HttpConstants.ATTRIBUTE_HEADERS,
                     responseHeaders);
             copyResponseTransportHeaders(responseHeaders, response);
-        } catch (final Exception e) {
+        } catch (Exception e) {
             getLogger()
                     .log(
                             Level.FINE,

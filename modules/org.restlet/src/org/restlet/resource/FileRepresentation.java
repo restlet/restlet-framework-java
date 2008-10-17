@@ -152,7 +152,7 @@ public class FileRepresentation extends Representation {
     public FileChannel getChannel() throws IOException {
         try {
             return new FileInputStream(this.file).getChannel();
-        } catch (final FileNotFoundException fnfe) {
+        } catch (FileNotFoundException fnfe) {
             throw new IOException("Couldn't get the channel. File not found");
         }
     }
@@ -184,7 +184,7 @@ public class FileRepresentation extends Representation {
     public FileInputStream getStream() throws IOException {
         try {
             return new FileInputStream(this.file);
-        } catch (final FileNotFoundException fnfe) {
+        } catch (FileNotFoundException fnfe) {
             throw new IOException("Couldn't get the stream. File not found");
         }
     }

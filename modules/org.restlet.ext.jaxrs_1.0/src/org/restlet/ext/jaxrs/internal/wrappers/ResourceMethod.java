@@ -285,10 +285,10 @@ public class ResourceMethod extends AbstractMethodWrapper implements
             ConvertRepresentationException, WebApplicationException {
         try {
             return internalInvoke(resourceObject);
-        } catch (final IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             throw new MethodInvokeException("Could not invoke "
                     + this.executeMethod, e);
-        } catch (final IllegalAccessException e) {
+        } catch (IllegalAccessException e) {
             throw new MethodInvokeException("Could not invoke "
                     + this.executeMethod, e);
         }

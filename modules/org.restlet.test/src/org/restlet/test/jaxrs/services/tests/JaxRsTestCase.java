@@ -357,9 +357,9 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
         String path;
         try {
             path = Util.getPathTemplateWithoutRegExps(jaxRsClass);
-        } catch (final RuntimeException e) {
+        } catch (RuntimeException e) {
             throw e;
-        } catch (final Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
         return createReference(path, subPath);
@@ -609,7 +609,7 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
                     System.out.print("/");
                 }
                 System.out.println(path);
-            } catch (final RuntimeException e) {
+            } catch (RuntimeException e) {
                 e.printStackTrace(System.out);
             }
         }

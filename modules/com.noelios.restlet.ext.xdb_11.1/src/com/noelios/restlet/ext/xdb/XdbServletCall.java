@@ -151,7 +151,7 @@ public class XdbServletCall extends HttpServerCall {
                     this.requestEntityStream = new InputEntityStream(
                             getRequest().getInputStream(), size);
                 }
-            } catch (final IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
@@ -236,7 +236,7 @@ public class XdbServletCall extends HttpServerCall {
                     this.responseEntityStream = new KeepAliveOutputStream(
                             getResponse().getOutputStream());
                 }
-            } catch (final IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
@@ -311,7 +311,7 @@ public class XdbServletCall extends HttpServerCall {
         if (Status.isError(getStatusCode()) && (response == null)) {
             try {
                 getResponse().sendError(getStatusCode(), getReasonPhrase());
-            } catch (final IOException ioe) {
+            } catch (IOException ioe) {
                 getLogger().log(Level.WARNING,
                         "Unable to set the response error status", ioe);
             }

@@ -48,7 +48,7 @@ public class FreeMarkerTestCase extends TestCase {
     public static void main(String[] args) {
         try {
             new FreeMarkerTestCase().testTemplate();
-        } catch (final Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

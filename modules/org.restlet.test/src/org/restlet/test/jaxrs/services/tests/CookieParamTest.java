@@ -113,7 +113,7 @@ public class CookieParamTest extends JaxRsTestCase {
                 .length() - 1);
         try {
             assertEquals("c1, c2", entityWithoutBrackets);
-        } catch (final AssertionFailedError afe) {
+        } catch (AssertionFailedError afe) {
             assertEquals("c2, c1", entityWithoutBrackets);
         }
     }

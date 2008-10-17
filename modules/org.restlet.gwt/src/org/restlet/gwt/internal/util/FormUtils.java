@@ -225,7 +225,7 @@ public class FormUtils {
             FormReader fr = null;
             try {
                 fr = new FormReader(post);
-            } catch (final Exception ioe) {
+            } catch (Exception ioe) {
                 System.err
                         .println("Unable to create a form reader. Parsing aborted.");
             }

@@ -280,7 +280,7 @@ public final class ByteUtils {
                             attempts = 0;
                         }
                     }
-                } catch (final IOException ioe) {
+                } catch (IOException ioe) {
                     throw new IOException(
                             "Unable to write to the non-blocking channel. "
                                     + ioe.getLocalizedMessage());
@@ -352,7 +352,7 @@ public final class ByteUtils {
 
                         this.endReached = (value.intValue() == -1);
                         return value;
-                    } catch (final InterruptedException ie) {
+                    } catch (InterruptedException ie) {
                         throw new IOException(
                                 "Interruption occurred while writing in the queue");
                     }
@@ -375,7 +375,7 @@ public final class ByteUtils {
                             throw new IOException(
                                     "Timeout while writing to the queue-based output stream");
                         }
-                    } catch (final InterruptedException ie) {
+                    } catch (InterruptedException ie) {
                         throw new IOException(
                                 "Interruption occurred while writing in the queue");
                     }
@@ -462,7 +462,7 @@ public final class ByteUtils {
                 for (int i = 0; i < maxSelectors; i++) {
                     selectors.add(Selector.open());
                 }
-            } catch (final IOException ex) {
+            } catch (IOException ex) {
                 // do nothing.
             }
         }
@@ -480,7 +480,7 @@ public final class ByteUtils {
                     if (selectors.size() != 0) {
                         selector = selectors.pop();
                     }
-                } catch (final EmptyStackException ex) {
+                } catch (EmptyStackException ex) {
                 }
 
                 int attempts = 0;
@@ -492,13 +492,13 @@ public final class ByteUtils {
                             if (selectors.size() != 0) {
                                 selector = selectors.pop();
                             }
-                        } catch (final EmptyStackException ex) {
+                        } catch (EmptyStackException ex) {
                             break;
                         }
 
                         attempts++;
                     }
-                } catch (final InterruptedException ex) {
+                } catch (InterruptedException ex) {
                 }
 
                 return selector;
@@ -625,7 +625,7 @@ public final class ByteUtils {
                     final WritableByteChannel wbc = pipe.sink();
                     representation.write(wbc);
                     wbc.close();
-                } catch (final IOException ioe) {
+                } catch (IOException ioe) {
                     Context.getCurrentLogger().log(Level.FINE,
                             "Error while writing to the piped channel.", ioe);
                 }
@@ -675,7 +675,7 @@ public final class ByteUtils {
             public void run() {
                 try {
                     representation.write(pipedWriter);
-                } catch (final IOException ioe) {
+                } catch (IOException ioe) {
                     Context.getCurrentLogger().log(Level.FINE,
                             "Error while writing to the piped reader.", ioe);
                 }
@@ -741,7 +741,7 @@ public final class ByteUtils {
                     representation.write(os);
                     os.write(-1);
                     os.close();
-                } catch (final IOException ioe) {
+                } catch (IOException ioe) {
                     Context.getCurrentLogger().log(Level.FINE,
                             "Error while writing to the piped input stream.",
                             ioe);
@@ -856,7 +856,7 @@ public final class ByteUtils {
                 } else {
                     result = toString(new InputStreamReader(inputStream));
                 }
-            } catch (final Exception e) {
+            } catch (Exception e) {
                 // Returns an empty string
             }
         }
@@ -890,7 +890,7 @@ public final class ByteUtils {
 
                 br.close();
                 result = sb.toString();
-            } catch (final Exception e) {
+            } catch (Exception e) {
                 // Returns an empty string
             }
         }

@@ -138,7 +138,7 @@ public class NetworkHandler {
             }, this.listener);
 
             this.network.start();
-        } catch (final URISyntaxException use) {
+        } catch (URISyntaxException use) {
             throw new NetworkException("invalid uri: "
                     + getClass().getResource(PROFILE_RESOURCE), use);
         }

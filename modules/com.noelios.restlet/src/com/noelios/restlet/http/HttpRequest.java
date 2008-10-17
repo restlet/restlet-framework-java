@@ -189,22 +189,22 @@ public class HttpRequest extends Request {
             // headers.
             try {
                 PreferenceUtils.parseCharacterSets(acceptCharset, result);
-            } catch (final Exception e) {
+            } catch (Exception e) {
                 this.context.getLogger().log(Level.INFO, e.getMessage());
             }
             try {
                 PreferenceUtils.parseEncodings(acceptEncoding, result);
-            } catch (final Exception e) {
+            } catch (Exception e) {
                 this.context.getLogger().log(Level.INFO, e.getMessage());
             }
             try {
                 PreferenceUtils.parseLanguages(acceptLanguage, result);
-            } catch (final Exception e) {
+            } catch (Exception e) {
                 this.context.getLogger().log(Level.INFO, e.getMessage());
             }
             try {
                 PreferenceUtils.parseMediaTypes(acceptMediaType, result);
-            } catch (final Exception e) {
+            } catch (Exception e) {
                 this.context.getLogger().log(Level.INFO, e.getMessage());
             }
 
@@ -308,7 +308,7 @@ public class HttpRequest extends Request {
                         // Read the next token
                         value = hr.readValue();
                     }
-                } catch (final Exception e) {
+                } catch (Exception e) {
                     this.context.getLogger().log(
                             Level.INFO,
                             "Unable to process the if-match header: "
@@ -336,7 +336,7 @@ public class HttpRequest extends Request {
                         // Read the next token
                         value = hr.readValue();
                     }
-                } catch (final Exception e) {
+                } catch (Exception e) {
                     this.context.getLogger().log(
                             Level.INFO,
                             "Unable to process the if-none-match header: "
@@ -371,7 +371,7 @@ public class HttpRequest extends Request {
                         result.add(current);
                         current = cr.readCookie();
                     }
-                } catch (final Exception e) {
+                } catch (Exception e) {
                     this.context.getLogger().log(
                             Level.WARNING,
                             "An exception occurred during cookies parsing. Headers value: "

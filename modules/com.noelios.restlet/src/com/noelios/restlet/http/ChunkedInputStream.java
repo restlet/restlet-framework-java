@@ -211,7 +211,7 @@ public class ChunkedInputStream extends InputStream {
 
         try {
             return Long.parseLong(line.trim(), 16);
-        } catch (final NumberFormatException ex) {
+        } catch (NumberFormatException ex) {
             throw new IOException("<" + line + "> is an invalid chunk size");
         }
     }

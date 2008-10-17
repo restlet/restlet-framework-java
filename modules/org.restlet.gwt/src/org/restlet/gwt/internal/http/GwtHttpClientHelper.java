@@ -91,7 +91,7 @@ public class GwtHttpClientHelper extends HttpClientHelper {
                                 .getSecret()));
             }
 
-        } catch (final Exception ioe) {
+        } catch (Exception ioe) {
             System.err.println("Unable to create the HTTP client call");
         }
 

@@ -96,7 +96,7 @@ public class PerRequestRootResourceClass extends RootResourceClass {
             try {
                 final Object[] args = this.constructorParameters.get();
                 instance = WrapperUtil.createInstance(this.constructor, args);
-            } catch (final ConvertRepresentationException e) {
+            } catch (ConvertRepresentationException e) {
                 // is (or should be :-) ) not possible
                 throw new ImplementationException("Must not be possible", e);
             }
@@ -105,7 +105,7 @@ public class PerRequestRootResourceClass extends RootResourceClass {
         rootResourceObject = new ResourceObject(instance, this);
         try {
             this.injectHelper.injectInto(instance, true);
-        } catch (final InjectException e) {
+        } catch (InjectException e) {
             throw new InstantiateException(e);
         }
         return rootResourceObject;

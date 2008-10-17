@@ -47,7 +47,7 @@ public class VersionHelper {
 
             try {
                 manifestProperties.load(url.openStream());
-            } catch (final IOException ex) {
+            } catch (IOException ex) {
                 version = "unknown";
             }
 

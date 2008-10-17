@@ -111,37 +111,37 @@ class PerRequestProviderWrapper extends AbstractProviderWrapper {
         try {
             final Object[] args = parameters.get();
             return WrapperUtil.createInstance(providerConstructor, args);
-        } catch (final NoMessageBodyReaderException e) {
+        } catch (NoMessageBodyReaderException e) {
             // should be not possible here
             throw new IllegalArgumentException(
                     "Could not instantiate the Provider, class "
                             + jaxRsProviderClass.getName(), e);
-        } catch (final ConvertRepresentationException e) {
+        } catch (ConvertRepresentationException e) {
             // should be not possible here
             throw new IllegalArgumentException(
                     "Could not instantiate the Provider, class "
                             + jaxRsProviderClass.getName(), e);
-        } catch (final ConvertHeaderParamException e) {
+        } catch (ConvertHeaderParamException e) {
             // should be not possible here
             throw new IllegalArgumentException(
                     "Could not instantiate the Provider, class "
                             + jaxRsProviderClass.getName(), e);
-        } catch (final ConvertPathParamException e) {
+        } catch (ConvertPathParamException e) {
             // should be not possible here
             throw new IllegalArgumentException(
                     "Could not instantiate the Provider, class "
                             + jaxRsProviderClass.getName(), e);
-        } catch (final ConvertMatrixParamException e) {
+        } catch (ConvertMatrixParamException e) {
             // should be not possible here
             throw new IllegalArgumentException(
                     "Could not instantiate the Provider, class "
                             + jaxRsProviderClass.getName(), e);
-        } catch (final ConvertQueryParamException e) {
+        } catch (ConvertQueryParamException e) {
             // should be not possible here
             throw new IllegalArgumentException(
                     "Could not instantiate the Provider, class "
                             + jaxRsProviderClass.getName(), e);
-        } catch (final ConvertCookieParamException e) {
+        } catch (ConvertCookieParamException e) {
             // should be not possible here
             throw new IllegalArgumentException(
                     "Could not instantiate the Provider, class "

@@ -89,7 +89,7 @@ public class StreamServerHelper extends HttpServerHelper {
                                         .getInputStream()),
                                 new BufferedOutputStream(this.socket
                                         .getOutputStream()), this.socket));
-            } catch (final IOException ex) {
+            } catch (IOException ex) {
                 this.helper.getLogger().log(Level.WARNING,
                         "Unexpected error while handling a call", ex);
             }
@@ -151,11 +151,11 @@ public class StreamServerHelper extends HttpServerHelper {
                         this.handlerService.submit(new ConnectionHandler(
                                 this.helper, client.socket()));
                     }
-                } catch (final ClosedByInterruptException ex) {
+                } catch (ClosedByInterruptException ex) {
                     this.helper.getLogger().log(Level.FINE,
                             "ServerSocket channel was closed by interrupt", ex);
                     break;
-                } catch (final IOException ex) {
+                } catch (IOException ex) {
                     this.helper.getLogger().log(Level.WARNING,
                             "Unexpected error while accepting new connection",
                             ex);
@@ -269,7 +269,7 @@ public class StreamServerHelper extends HttpServerHelper {
         // This blocks until the server is ready to receive connections
         try {
             this.latch.await();
-        } catch (final InterruptedException ex) {
+        } catch (InterruptedException ex) {
             getLogger()
                     .log(
                             Level.WARNING,
@@ -291,7 +291,7 @@ public class StreamServerHelper extends HttpServerHelper {
             try {
                 this.handlerService.awaitTermination(Long.MAX_VALUE,
                         TimeUnit.SECONDS);
-            } catch (final InterruptedException ex) {
+            } catch (InterruptedException ex) {
                 ex.printStackTrace();
             }
         }
@@ -304,7 +304,7 @@ public class StreamServerHelper extends HttpServerHelper {
             try {
                 this.listenerService.awaitTermination(Long.MAX_VALUE,
                         TimeUnit.SECONDS);
-            } catch (final Exception ex) {
+            } catch (Exception ex) {
                 ex.printStackTrace();
             }
         }

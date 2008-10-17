@@ -55,7 +55,7 @@ public class SimpleHttpServerWithResource {
         component.getDefaultHost().attach(application);
         try {
             component.start();
-        } catch (final Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

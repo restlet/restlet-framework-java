@@ -61,7 +61,7 @@ abstract class AbstractJaxbProvider<T> extends AbstractProvider<T> {
         }
         try {
             return JAXBContext.newInstance(type);
-        } catch (final NoClassDefFoundError e) {
+        } catch (NoClassDefFoundError e) {
             throw new WebApplicationException(Response.serverError().entity(
                     e.getMessage()).build());
         }
@@ -84,7 +84,7 @@ abstract class AbstractJaxbProvider<T> extends AbstractProvider<T> {
             final JAXBContext jaxbContext = getJaxbContext(object.getClass());
             final Marshaller marshaller = jaxbContext.createMarshaller();
             marshaller.marshal(object, entityStream);
-        } catch (final JAXBException e) {
+        } catch (JAXBException e) {
             throw logAndIOExc(getLogger(), "Could not marshal the "
                     + type.getName(), e);
         }

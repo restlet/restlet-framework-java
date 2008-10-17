@@ -188,7 +188,7 @@ public class PipeUtility {
                 a.update(s.getBytes());
 
                 sb = a.digest();
-            } catch (final NoSuchAlgorithmException nsae) {
+            } catch (NoSuchAlgorithmException nsae) {
                 if (logger.isLoggable(Level.WARNING)) {
                     logger.log(Level.WARNING, "unable to digest");
                 }

@@ -142,10 +142,10 @@ public abstract class ReprEntityGetter implements ParamGetter {
         try {
             return new ReprOnlyEntityGetter(representationType
                     .getConstructor(Representation.class));
-        } catch (final SecurityException e) {
+        } catch (SecurityException e) {
             logger.warning("The constructor " + representationType
                     + "(Representation) is not accessable.");
-        } catch (final NoSuchMethodException e) {
+        } catch (NoSuchMethodException e) {
             // try next
         }
         if (!(convToGen instanceof ParameterizedType)) {
@@ -164,20 +164,20 @@ public abstract class ReprEntityGetter implements ParamGetter {
         try {
             return new ReprClassEntityGetter(representationType.getConstructor(
                     Representation.class, Class.class), genClass);
-        } catch (final SecurityException e) {
+        } catch (SecurityException e) {
             logger.warning("The constructor " + representationType
                     + "(Representation) is not accessable.");
-        } catch (final NoSuchMethodException e) {
+        } catch (NoSuchMethodException e) {
             // try next
         }
         try {
             return new ClassReprEntityGetter(genClass, representationType
                     .getConstructor(Class.class, Representation.class));
-        } catch (final SecurityException e) {
+        } catch (SecurityException e) {
             logger.warning("The constructor " + representationType
                     + "(Representation) is not accessable.");
             return null;
-        } catch (final NoSuchMethodException e) {
+        } catch (NoSuchMethodException e) {
             return null;
         }
     }
@@ -215,13 +215,13 @@ public abstract class ReprEntityGetter implements ParamGetter {
                 return null;
             }
             return createInstance(entity);
-        } catch (final IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             throw ConvertRepresentationException.object(getReprClass(),
                     "the message body", e);
-        } catch (final InstantiationException e) {
+        } catch (InstantiationException e) {
             throw ConvertRepresentationException.object(getReprClass(),
                     "the message body", e);
-        } catch (final IllegalAccessException e) {
+        } catch (IllegalAccessException e) {
             throw ConvertRepresentationException.object(getReprClass(),
                     "the message body", e);
         }

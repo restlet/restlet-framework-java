@@ -64,7 +64,7 @@ class Shell {
         try {
             this.scriptEngine.eval(new InputStreamReader(new FileInputStream(
                     script)));
-        } catch (final Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -91,7 +91,7 @@ class Shell {
 
             try {
                 this.scriptEngine.eval(line);
-            } catch (final ScriptException e) {
+            } catch (ScriptException e) {
                 System.err.println(e.getMessage());
             }
         }

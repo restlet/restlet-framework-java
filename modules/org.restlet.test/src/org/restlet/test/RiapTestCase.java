@@ -98,7 +98,7 @@ public class RiapTestCase extends TestCase {
                                         .getClientDispatcher().get(echoRef);
                                 final Representation entity = respo.getEntity();
                                 echoCopy = entity.getText();
-                            } catch (final Exception e) {
+                            } catch (Exception e) {
                                 e.printStackTrace();
                                 fail("Error getting internal reference to "
                                         + echoRef);

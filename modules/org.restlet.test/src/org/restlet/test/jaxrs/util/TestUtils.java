@@ -100,7 +100,7 @@ public class TestUtils {
     public static void sleep() {
         try {
             Thread.sleep(100);
-        } catch (final InterruptedException e) {
+        } catch (InterruptedException e) {
             // shit happens
         }
     }

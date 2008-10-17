@@ -91,7 +91,7 @@ public class RestletServerWrapper implements ServerWrapper {
         for (int i = 0; i < 100; i++) {
             try {
                 Thread.sleep(20);
-            } catch (final InterruptedException e) {
+            } catch (InterruptedException e) {
                 // 
             }
             port = server.getEphemeralPort();

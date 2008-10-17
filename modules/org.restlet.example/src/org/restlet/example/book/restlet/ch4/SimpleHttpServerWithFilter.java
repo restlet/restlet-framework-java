@@ -59,7 +59,7 @@ public class SimpleHttpServerWithFilter {
         // requests to the router.
         try {
             new Server(Protocol.HTTP, statusFilter).start();
-        } catch (final Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

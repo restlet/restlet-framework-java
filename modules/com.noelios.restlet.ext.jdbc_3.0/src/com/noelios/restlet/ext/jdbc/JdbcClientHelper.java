@@ -381,19 +381,19 @@ public class JdbcClientHelper extends ClientHelper {
                         returnGeneratedKeys, sqlRequests);
                 response.setEntity(new RowSetRepresentation(result));
 
-            } catch (final SQLException se) {
+            } catch (SQLException se) {
                 getLogger().log(Level.WARNING,
                         "Error while processing the SQL request", se);
                 response.setStatus(Status.SERVER_ERROR_INTERNAL, se);
-            } catch (final ParserConfigurationException pce) {
+            } catch (ParserConfigurationException pce) {
                 getLogger().log(Level.WARNING,
                         "Error with XML parser configuration", pce);
                 response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST, pce);
-            } catch (final SAXException se) {
+            } catch (SAXException se) {
                 getLogger().log(Level.WARNING,
                         "Error while parsing the XML document", se);
                 response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST, se);
-            } catch (final IOException ioe) {
+            } catch (IOException ioe) {
                 getLogger().log(Level.WARNING, "Input/Output exception", ioe);
                 response.setStatus(Status.SERVER_ERROR_INTERNAL, ioe);
             }
@@ -428,14 +428,14 @@ public class JdbcClientHelper extends ClientHelper {
             if (!connection.getAutoCommit()) {
                 connection.commit();
             }
-        } catch (final SQLException se) {
+        } catch (SQLException se) {
             getLogger().log(Level.WARNING,
                     "Error while processing the SQL requests", se);
             try {
                 if (!connection.getAutoCommit()) {
                     connection.rollback();
                 }
-            } catch (final SQLException se2) {
+            } catch (SQLException se2) {
                 getLogger().log(Level.WARNING,
                         "Error while rollbacking the transaction", se);
             }

@@ -136,7 +136,7 @@ public class FileUploadProvider implements MessageBodyReader<List<FileItem>> {
                 respHeaders);
         try {
             return rfu.parseRequest(requCtx);
-        } catch (final FileUploadException e) {
+        } catch (FileUploadException e) {
             if (e.getCause() instanceof IOException) {
                 throw (IOException) e.getCause();
             }

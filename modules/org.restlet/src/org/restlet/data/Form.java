@@ -273,7 +273,7 @@ public class Form extends Series<Parameter> {
     public String getMatrixString(CharacterSet characterSet) {
         try {
             return encode(characterSet, ';');
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             return null;
         }
     }
@@ -298,7 +298,7 @@ public class Form extends Series<Parameter> {
     public String getQueryString(CharacterSet characterSet) {
         try {
             return encode(characterSet);
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             return null;
         }
     }

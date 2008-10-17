@@ -49,10 +49,10 @@ public class ScriptEngineBuilder {
 
         try {
             scriptEngine.eval(new InputStreamReader(builtins.openStream()));
-        } catch (final ScriptException e) {
+        } catch (ScriptException e) {
             throw new RuntimeException("cannot load builtins.js: "
                     + e.getMessage(), e);
-        } catch (final IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException("cannot load builtins.js: "
                     + e.getMessage(), e);
         }

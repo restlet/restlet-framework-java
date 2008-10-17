@@ -54,7 +54,7 @@ public class SimpleHttpServerWithComponent {
         component.getDefaultHost().attach("/helloWorld", restlet);
         try {
             component.start();
-        } catch (final Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

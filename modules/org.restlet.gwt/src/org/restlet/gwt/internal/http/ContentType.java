@@ -78,7 +78,7 @@ public class ContentType {
             if (charSet != null) {
                 this.characterSet = new CharacterSet(charSet);
             }
-        } catch (final Exception ioe) {
+        } catch (Exception ioe) {
             ioe.printStackTrace();
             // TODO IllegalArgumentException? remove line after think about :-)
         }

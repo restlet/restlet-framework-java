@@ -114,7 +114,7 @@ public class AccessTokenResource extends Resource {
         // verify the signature
         try {
             requestMessage.validateSignature(accessor);
-        } catch (final Exception e1) {
+        } catch (Exception e1) {
             getResponse().setChallengeRequest(challengeRequest);
             getResponse().setStatus(Status.CLIENT_ERROR_UNAUTHORIZED, e1);
             challengeRequest.getParameters().add("oauth_problem",
@@ -139,7 +139,7 @@ public class AccessTokenResource extends Resource {
                     new StringRepresentation(OAuth.formEncode(OAuth.newList(
                             "oauth_token", accessor.accessToken,
                             "oauth_token_secret", accessor.tokenSecret))));
-        } catch (final IOException e) {
+        } catch (IOException e) {
             throw new ResourceException(e);
         }
     }

@@ -78,7 +78,7 @@ public class FreemarkerResource extends Resource {
             map.put("items", this.items);
             representation = new TemplateRepresentation("items.ftl",
                     application.getFmc(), map, MediaType.TEXT_PLAIN);
-        } catch (final Exception e) {
+        } catch (Exception e) {
             System.out.println(e.getMessage());
             getResponse().setStatus(Status.SERVER_ERROR_INTERNAL, e);
         }

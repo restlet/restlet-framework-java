@@ -1134,7 +1134,7 @@ public class Util {
         try {
             return getPathTemplateWithoutRegExps(Util
                     .getPathAnnotation(resource));
-        } catch (final IllegalPathException e) {
+        } catch (IllegalPathException e) {
             throw new IllegalPathOnClassException(e);
         }
     }
@@ -1156,7 +1156,7 @@ public class Util {
         final Path path = getPathAnnotation(method);
         try {
             return getPathTemplateWithoutRegExps(path);
-        } catch (final IllegalPathException e) {
+        } catch (IllegalPathException e) {
             throw new IllegalPathOnMethodException(e);
         }
     }
@@ -1195,7 +1195,7 @@ public class Util {
             } else if (c == '%') {
                 try {
                     EncodeOrCheck.processPercent(i, true, pathTemplate, stb);
-                } catch (final IllegalArgumentException e) {
+                } catch (IllegalArgumentException e) {
                     throw new IllegalPathException(pathForExcMess, e);
                 }
             } else if (c == '}') {
@@ -1301,7 +1301,7 @@ public class Util {
                             try {
                                 field.set(resource, toInject);
                                 return null;
-                            } catch (final IllegalAccessException e) {
+                            } catch (IllegalAccessException e) {
                                 return e;
                             }
                         }
@@ -1311,7 +1311,7 @@ public class Util {
                         + toInject.getClass() + " into field " + field
                         + " of object " + resource, iae);
             }
-        } catch (final RuntimeException e) {
+        } catch (RuntimeException e) {
             throw new InjectException("Could not inject the "
                     + toInject.getClass() + " into field " + field
                     + " of object " + resource, e);
@@ -1333,7 +1333,7 @@ public class Util {
             IllegalArgumentException, InjectException {
         try {
             invokeMethod(resource, beanSetter, toInject);
-        } catch (final MethodInvokeException mie) {
+        } catch (MethodInvokeException mie) {
             throw new InjectException(mie);
         }
     }
@@ -1374,7 +1374,7 @@ public class Util {
                             return null;
                         }
                     });
-        } catch (final PrivilegedActionException e) {
+        } catch (PrivilegedActionException e) {
             final Throwable cause = e.getCause();
             if (cause instanceof IllegalAccessException) {
                 throw new MethodInvokeException(

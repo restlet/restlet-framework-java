@@ -149,7 +149,7 @@ public abstract class Engine {
                         engineClassName = providerName.substring(0,
                                 providerName.indexOf('#')).trim();
                     }
-                } catch (final IOException e) {
+                } catch (IOException e) {
                     Context
                             .getCurrentLogger()
                             .log(
@@ -159,7 +159,7 @@ public abstract class Engine {
                     if (reader != null) {
                         try {
                             reader.close();
-                        } catch (final IOException e) {
+                        } catch (IOException e) {
                             Context.getCurrentLogger().warning(
                                     "IOException encountered while closing an open BufferedReader"
                                             + e.getMessage());
@@ -173,7 +173,7 @@ public abstract class Engine {
                     instance = (Engine) Engine.loadClass(engineClassName)
                             .newInstance();
                     result = instance;
-                } catch (final Exception e) {
+                } catch (Exception e) {
                     Context
                             .getCurrentLogger()
                             .log(

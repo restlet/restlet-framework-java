@@ -102,9 +102,9 @@ public class EntityGetter implements ParamGetter {
             return mbr.readFrom(this.convToCl, this.convToGen,
                     this.annotations, mediaType, entity.getCharacterSet(), httpHeaders, entity
                             .getStream());
-        } catch (final WebApplicationException wae) {
+        } catch (WebApplicationException wae) {
             throw wae;
-        } catch (final IOException e) {
+        } catch (IOException e) {
             throw ConvertRepresentationException.object(this.convToCl,
                     "the message body", e);
         } finally {

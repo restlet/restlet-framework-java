@@ -125,7 +125,7 @@ public class Reference {
 
         try {
             result = URL.decode(toDecode);
-        } catch (final NullPointerException npe) {
+        } catch (NullPointerException npe) {
             System.err
                     .println("Unable to decode the string with the UTF-8 character set.");
         }
@@ -158,7 +158,7 @@ public class Reference {
 
         try {
             result = (characterSet == null) ? toDecode : URL.decode(toDecode);
-        } catch (final NullPointerException npe) {
+        } catch (NullPointerException npe) {
             System.err
                     .println("Unable to decode the string with the UTF-8 character set.");
         }
@@ -180,7 +180,7 @@ public class Reference {
         if (toEncode != null) {
             try {
                 result = URL.encode(toEncode);
-            } catch (final NullPointerException npe) {
+            } catch (NullPointerException npe) {
                 System.err
                         .println("Unable to encode the string with the UTF-8 character set.");
             }
@@ -214,7 +214,7 @@ public class Reference {
 
         try {
             result = (characterSet == null) ? toEncode : URL.encode(toEncode);
-        } catch (final NullPointerException npe) {
+        } catch (NullPointerException npe) {
             System.err
                     .println("Unable to encode the string with the UTF-8 character set.");
         }
@@ -988,7 +988,7 @@ public class Reference {
             if (index != -1) {
                 try {
                     result = Integer.parseInt(authority.substring(index + 1));
-                } catch (final NumberFormatException nfe) {
+                } catch (NumberFormatException nfe) {
                     System.err
                             .println("Can't parse hostPort : [hostRef,requestUri]=["
                                     + getBaseRef()

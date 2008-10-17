@@ -51,7 +51,7 @@ public class SimpleHttpServer {
         // requests to a restlet.
         try {
             new Server(Protocol.HTTP, restlet).start();
-        } catch (final Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

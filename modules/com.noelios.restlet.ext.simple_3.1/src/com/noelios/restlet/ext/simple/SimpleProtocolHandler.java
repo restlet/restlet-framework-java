@@ -86,7 +86,7 @@ public class SimpleProtocolHandler implements ProtocolHandler {
                     // just consume the stream
                 }
             }
-        } catch (final IOException e) {
+        } catch (IOException e) {
             // This is probably ok, the stream was certainly already
             // closed by the Representation.release() method for
             // example.
@@ -100,7 +100,7 @@ public class SimpleProtocolHandler implements ProtocolHandler {
 
         try {
             response.getOutputStream().close();
-        } catch (final IOException e) {
+        } catch (IOException e) {
             getHelper()
                     .getLogger()
                     .log(

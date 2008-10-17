@@ -151,7 +151,7 @@ public class CarListResource {
     public Response newCarOffer() {
         try {
             return Response.created(new URI("../5")).build();
-        } catch (final URISyntaxException e) {
+        } catch (URISyntaxException e) {
             throw new WebApplicationException(e);
         }
     }

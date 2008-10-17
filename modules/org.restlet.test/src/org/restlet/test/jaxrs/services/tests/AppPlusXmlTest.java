@@ -73,10 +73,10 @@ public class AppPlusXmlTest extends JaxRsTestCase {
         final MediaType mediaType = response.getEntity().getMediaType();
         try {
             assertEqualMediaType(MediaType.TEXT_XML, mediaType);
-        } catch (final AssertionFailedError afe) {
+        } catch (AssertionFailedError afe) {
             try {
                 assertEqualMediaType(MediaType.APPLICATION_XML, mediaType);
-            } catch (final AssertionFailedError afe2) {
+            } catch (AssertionFailedError afe2) {
                 assertEqualMediaType(APP_PERSON_XML, mediaType);
             }
         }

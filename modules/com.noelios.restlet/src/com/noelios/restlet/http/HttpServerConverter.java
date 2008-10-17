@@ -302,7 +302,7 @@ public class HttpServerConverter extends HttpConverter {
                 response.getHttpCall().setReasonPhrase(
                         response.getStatus().getDescription());
             }
-        } catch (final Exception e) {
+        } catch (Exception e) {
             getLogger().log(Level.INFO,
                     "Exception intercepted while adding the response headers",
                     e);
@@ -386,7 +386,7 @@ public class HttpServerConverter extends HttpConverter {
 
             // Send the response to the client
             response.getHttpCall().sendResponse(response);
-        } catch (final Exception e) {
+        } catch (Exception e) {
             if (response.getHttpCall().isConnectionBroken(e)) {
                 getLogger()
                         .log(
@@ -404,7 +404,7 @@ public class HttpServerConverter extends HttpConverter {
 
                 try {
                     response.getHttpCall().sendResponse(response);
-                } catch (final IOException ioe) {
+                } catch (IOException ioe) {
                     getLogger().log(Level.WARNING,
                             "Unable to send error response", ioe);
                 }

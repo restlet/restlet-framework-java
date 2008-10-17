@@ -109,7 +109,7 @@ public class WrapperClassesTests extends TestCase {
             final RootResourceClass rrc = resourceClasses
                     .getRootClassWrapper(IllegalRrcPathRrc.class);
             fail("must fail");
-        } catch (final IllegalPathOnClassException iae) {
+        } catch (IllegalPathOnClassException iae) {
             // good
         }
     }

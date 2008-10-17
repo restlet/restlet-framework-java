@@ -710,7 +710,7 @@ public class FileClientHelper extends LocalClientHelper {
                                     ByteUtils.write(request.getEntity()
                                             .getStream(), raf);
                                 }
-                            } catch (final IOException ioe) {
+                            } catch (IOException ioe) {
                                 getLogger().log(Level.WARNING,
                                         "Unable to create the temporary file",
                                         ioe);
@@ -723,7 +723,7 @@ public class FileClientHelper extends LocalClientHelper {
                                     if (raf != null) {
                                         raf.close();
                                     }
-                                } catch (final IOException ioe) {
+                                } catch (IOException ioe) {
                                     getLogger()
                                             .log(
                                                     Level.WARNING,
@@ -744,7 +744,7 @@ public class FileClientHelper extends LocalClientHelper {
                                     ByteUtils.write(request.getEntity()
                                             .getStream(), fos);
                                 }
-                            } catch (final IOException ioe) {
+                            } catch (IOException ioe) {
                                 getLogger().log(Level.WARNING,
                                         "Unable to create the temporary file",
                                         ioe);
@@ -757,7 +757,7 @@ public class FileClientHelper extends LocalClientHelper {
                                     if (fos != null) {
                                         fos.close();
                                     }
-                                } catch (final IOException ioe) {
+                                } catch (IOException ioe) {
                                     getLogger()
                                             .log(
                                                     Level.WARNING,
@@ -810,7 +810,7 @@ public class FileClientHelper extends LocalClientHelper {
                                         wr.close();
                                         renameSuccessfull = true;
                                         tmp.delete();
-                                    } catch (final Exception e) {
+                                    } catch (Exception e) {
                                         renameSuccessfull = false;
                                     }
                                 }
@@ -874,12 +874,12 @@ public class FileClientHelper extends LocalClientHelper {
                                     ByteUtils.write(request.getEntity()
                                             .getStream(), raf);
                                 }
-                            } catch (final FileNotFoundException fnfe) {
+                            } catch (FileNotFoundException fnfe) {
                                 getLogger().log(Level.WARNING,
                                         "Unable to create the new file", fnfe);
                                 response.setStatus(
                                         Status.SERVER_ERROR_INTERNAL, fnfe);
-                            } catch (final IOException ioe) {
+                            } catch (IOException ioe) {
                                 getLogger().log(Level.WARNING,
                                         "Unable to create the new file", ioe);
                                 response.setStatus(
@@ -889,7 +889,7 @@ public class FileClientHelper extends LocalClientHelper {
                                     if (raf != null) {
                                         raf.close();
                                     }
-                                } catch (final IOException ioe) {
+                                } catch (IOException ioe) {
                                     getLogger()
                                             .log(
                                                     Level.WARNING,
@@ -922,12 +922,12 @@ public class FileClientHelper extends LocalClientHelper {
                                             Status.SERVER_ERROR_INTERNAL,
                                             "Unable to create the new file"));
                                 }
-                            } catch (final FileNotFoundException fnfe) {
+                            } catch (FileNotFoundException fnfe) {
                                 getLogger().log(Level.WARNING,
                                         "Unable to create the new file", fnfe);
                                 response.setStatus(
                                         Status.SERVER_ERROR_INTERNAL, fnfe);
-                            } catch (final IOException ioe) {
+                            } catch (IOException ioe) {
                                 getLogger().log(Level.WARNING,
                                         "Unable to create the new file", ioe);
                                 response.setStatus(
@@ -937,7 +937,7 @@ public class FileClientHelper extends LocalClientHelper {
                                     if (fos != null) {
                                         fos.close();
                                     }
-                                } catch (final IOException ioe) {
+                                } catch (IOException ioe) {
                                     getLogger()
                                             .log(
                                                     Level.WARNING,

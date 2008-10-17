@@ -185,7 +185,7 @@ public class Restlet extends Uniform {
         if (isStopped()) {
             try {
                 start();
-            } catch (final Exception e) {
+            } catch (Exception e) {
                 // Occurred while starting the Restlet
                 getContext().getLogger().log(Level.WARNING, UNABLE_TO_START, e);
                 response.setStatus(Status.SERVER_ERROR_INTERNAL);

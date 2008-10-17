@@ -76,14 +76,14 @@ public class HttpHeaderTestService {
             cookies.put("notAllowed", new Cookie("notAllowed", "value"));
             throw new WebApplicationException(Response.serverError().entity(
                     "could add cookie notAllowed").build());
-        } catch (final UnsupportedOperationException uoe) {
+        } catch (UnsupportedOperationException uoe) {
             // not allowed
         }
         try {
             cookies.put("xyz", new Cookie("notAllowed", "value"));
             throw new WebApplicationException(Response.serverError().entity(
                     "could add xyz").build());
-        } catch (final UnsupportedOperationException uoe) {
+        } catch (UnsupportedOperationException uoe) {
             // not allowed
         }
         final Cookie cookie = cookies.get(cookieName);

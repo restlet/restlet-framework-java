@@ -67,7 +67,7 @@ class CommandLineArguments {
     public CommandLineArguments(String[] args) {
         try {
             this.commandLine = commandLineParser.parse(options, args);
-        } catch (final ParseException ex) {
+        } catch (ParseException ex) {
             this.error = ex.getMessage();
         }
     }
@@ -89,7 +89,7 @@ class CommandLineArguments {
 
         try {
             port = Integer.parseInt(this.commandLine.getOptionValue("server"));
-        } catch (final NumberFormatException e) {
+        } catch (NumberFormatException e) {
             port = 8080;
         }
 

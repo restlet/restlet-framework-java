@@ -309,7 +309,7 @@ public class CookieReader extends HeaderReader {
                         }
                     }
                 }
-            } catch (final Exception uee) {
+            } catch (Exception uee) {
                 throw new Exception(
                         "Unsupported encoding. Please contact the administrator");
             }

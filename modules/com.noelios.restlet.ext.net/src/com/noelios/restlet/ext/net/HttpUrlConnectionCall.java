@@ -184,7 +184,7 @@ public class HttpUrlConnectionCall extends HttpClientCall {
     public String getReasonPhrase() {
         try {
             return getConnection().getResponseMessage();
-        } catch (final IOException e) {
+        } catch (IOException e) {
             return null;
         }
     }
@@ -218,7 +218,7 @@ public class HttpUrlConnectionCall extends HttpClientCall {
     public OutputStream getRequestStream() {
         try {
             return getConnection().getOutputStream();
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             return null;
         }
     }
@@ -234,7 +234,7 @@ public class HttpUrlConnectionCall extends HttpClientCall {
 
         try {
             result = getConnection().getInputStream();
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             result = getConnection().getErrorStream();
         }
 
@@ -351,7 +351,7 @@ public class HttpUrlConnectionCall extends HttpClientCall {
 
             // Send the optional entity
             result = super.sendRequest(request);
-        } catch (final ConnectException ce) {
+        } catch (ConnectException ce) {
             getHelper()
                     .getLogger()
                     .log(
@@ -359,7 +359,7 @@ public class HttpUrlConnectionCall extends HttpClientCall {
                             "An error occurred during the connection to the remote HTTP server.",
                             ce);
             result = new Status(Status.CONNECTOR_ERROR_CONNECTION, ce);
-        } catch (final SocketTimeoutException ste) {
+        } catch (SocketTimeoutException ste) {
             getHelper()
                     .getLogger()
                     .log(
@@ -367,7 +367,7 @@ public class HttpUrlConnectionCall extends HttpClientCall {
                             "An timeout error occurred during the communication with the remote HTTP server.",
                             ste);
             result = new Status(Status.CONNECTOR_ERROR_COMMUNICATION, ste);
-        } catch (final FileNotFoundException fnfe) {
+        } catch (FileNotFoundException fnfe) {
             getHelper()
                     .getLogger()
                     .log(
@@ -375,7 +375,7 @@ public class HttpUrlConnectionCall extends HttpClientCall {
                             "An unexpected error occurred during the sending of the HTTP request.",
                             fnfe);
             result = new Status(Status.CONNECTOR_ERROR_INTERNAL, fnfe);
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             getHelper()
                     .getLogger()
                     .log(
@@ -383,7 +383,7 @@ public class HttpUrlConnectionCall extends HttpClientCall {
                             "An error occurred during the communication with the remote HTTP server.",
                             ioe);
             result = new Status(Status.CONNECTOR_ERROR_COMMUNICATION, ioe);
-        } catch (final Exception e) {
+        } catch (Exception e) {
             getHelper()
                     .getLogger()
                     .log(

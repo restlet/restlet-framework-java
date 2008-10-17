@@ -131,7 +131,7 @@ public class FormReader {
                     readNext = false;
                 }
             }
-        } catch (final Exception ioe) {
+        } catch (Exception ioe) {
             System.err
                     .println("Unable to parse a form parameter. Skipping the remaining parameters.");
         }

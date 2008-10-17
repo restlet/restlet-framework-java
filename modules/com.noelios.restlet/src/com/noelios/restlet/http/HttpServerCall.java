@@ -436,7 +436,7 @@ public abstract class HttpServerCall extends HttpCall {
                         try {
                             responseEntityStream.flush();
                             responseEntityStream.close();
-                        } catch (final IOException ioe) {
+                        } catch (IOException ioe) {
                             // The stream was probably already closed by the
                             // connector. Probably ok, low message priority.
                             getLogger()

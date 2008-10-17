@@ -97,7 +97,7 @@ public class MultipartProvider implements MessageBodyReader<Multipart>,
         final DataSource ds = new ByteArrayDataSource(entityStream, contentType);
         try {
             return new MimeMultipart(ds);
-        } catch (final MessagingException e) {
+        } catch (MessagingException e) {
             if (e.getCause() instanceof IOException) {
                 throw (IOException) e.getCause();
             }
@@ -118,7 +118,7 @@ public class MultipartProvider implements MessageBodyReader<Multipart>,
             OutputStream entityStream) throws IOException {
         try {
             multipart.writeTo(entityStream);
-        } catch (final MessagingException e) {
+        } catch (MessagingException e) {
             if (e.getCause() instanceof IOException) {
                 throw (IOException) e.getCause();
             }

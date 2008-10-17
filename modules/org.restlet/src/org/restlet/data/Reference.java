@@ -131,7 +131,7 @@ public class Reference {
 
         try {
             result = URLDecoder.decode(toDecode, "UTF-8");
-        } catch (final UnsupportedEncodingException uee) {
+        } catch (UnsupportedEncodingException uee) {
             Context
                     .getCurrentLogger()
                     .log(
@@ -164,7 +164,7 @@ public class Reference {
         try {
             result = (characterSet == null) ? toDecode : URLDecoder.decode(
                     toDecode, characterSet.getName());
-        } catch (final UnsupportedEncodingException uee) {
+        } catch (UnsupportedEncodingException uee) {
             Context
                     .getCurrentLogger()
                     .log(
@@ -190,7 +190,7 @@ public class Reference {
         if (toEncode != null) {
             try {
                 result = URLEncoder.encode(toEncode, "UTF-8");
-            } catch (final UnsupportedEncodingException uee) {
+            } catch (UnsupportedEncodingException uee) {
                 Context
                         .getCurrentLogger()
                         .log(
@@ -225,7 +225,7 @@ public class Reference {
         try {
             result = (characterSet == null) ? toEncode : URLEncoder.encode(
                     toEncode, characterSet.getName());
-        } catch (final UnsupportedEncodingException uee) {
+        } catch (UnsupportedEncodingException uee) {
             Context
                     .getCurrentLogger()
                     .log(
@@ -1033,7 +1033,7 @@ public class Reference {
             if (index != -1) {
                 try {
                     result = Integer.parseInt(authority.substring(index + 1));
-                } catch (final NumberFormatException nfe) {
+                } catch (NumberFormatException nfe) {
                     Context.getCurrentLogger().log(
                             Level.WARNING,
                             "Can't parse hostPort : [hostRef,requestUri]=["

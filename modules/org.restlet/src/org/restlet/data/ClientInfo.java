@@ -366,7 +366,7 @@ public final class ClientInfo {
                         }
                     }
                     reader.close();
-                } catch (final IOException e) {
+                } catch (IOException e) {
                     return this.agentAttributes;
                 }
             }

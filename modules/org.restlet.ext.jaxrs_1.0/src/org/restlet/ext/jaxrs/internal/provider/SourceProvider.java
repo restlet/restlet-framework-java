@@ -97,7 +97,7 @@ public class SourceProvider extends AbstractProvider<Source> {
         Transformer transformer;
         try {
             transformer = this.transformerFactory.newTransformer();
-        } catch (final TransformerConfigurationException e) {
+        } catch (TransformerConfigurationException e) {
             this.logger.log(Level.WARNING, "Could not create Transformer", e);
             final IOException ioException = new IOException(
                     "Could not create javax.xml.transform.Transformer");
@@ -106,12 +106,12 @@ public class SourceProvider extends AbstractProvider<Source> {
         }
         try {
             transformer.transform(source, streamResult);
-        } catch (final Exception e) {
+        } catch (Exception e) {
             final IOException ioException = new IOException(
                     "Could not transform the javax.xml.transform.Source");
             ioException.setStackTrace(e.getStackTrace());
             throw ioException;
-        } catch (final TransformerFactoryConfigurationError e) {
+        } catch (TransformerFactoryConfigurationError e) {
             final IOException ioException = new IOException(
                     "Could not transform the javax.xml.transform.Source");
             ioException.setStackTrace(e.getStackTrace());

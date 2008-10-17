@@ -344,7 +344,7 @@ public abstract class Handler {
         if (method != null) {
             try {
                 result = method.invoke(this, args);
-            } catch (final Exception e) {
+            } catch (Exception e) {
                 getLogger().log(
                         Level.WARNING,
                         "Couldn't invoke the handle method for \"" + method

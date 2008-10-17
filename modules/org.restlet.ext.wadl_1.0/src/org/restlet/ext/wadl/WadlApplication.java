@@ -185,7 +185,7 @@ public class WadlApplication extends Application {
                             .get(0).getTitle();
                 }
             }
-        } catch (final Exception e) {
+        } catch (Exception e) {
             getLogger().log(Level.WARNING,
                     "Error during the attachment of the WADL application", e);
         }

@@ -178,7 +178,7 @@ public class Finder extends Restlet {
                             Request.class, Response.class);
                     result = (Handler) constructor.newInstance(getContext(),
                             request, response);
-                } catch (final NoSuchMethodException nsme) {
+                } catch (NoSuchMethodException nsme) {
                     // Invoke the default constructor then the init(Context,
                     // Request, Response) method.
                     constructor = targetClass.getConstructor();
@@ -187,7 +187,7 @@ public class Finder extends Restlet {
                         result.init(getContext(), request, response);
                     }
                 }
-            } catch (final InvocationTargetException e) {
+            } catch (InvocationTargetException e) {
                 if (e.getCause() instanceof Error) {
                     throw (Error) e.getCause();
                 } else if (e.getCause() instanceof RuntimeException) {
@@ -199,7 +199,7 @@ public class Finder extends Restlet {
                                     "Exception while instantiating the target handler.",
                                     e);
                 }
-            } catch (final Exception e) {
+            } catch (Exception e) {
                 getLogger().log(Level.WARNING,
                         "Exception while instantiating the target handler.", e);
             }
@@ -287,12 +287,12 @@ public class Finder extends Restlet {
 
         try {
             result = target.getClass().getMethod(sb.toString(), classes);
-        } catch (final SecurityException e) {
+        } catch (SecurityException e) {
             getLogger().log(
                     Level.WARNING,
                     "Couldn't access the " + prefix + " method for \"" + method
                             + "\"", e);
-        } catch (final NoSuchMethodException e) {
+        } catch (NoSuchMethodException e) {
             getLogger().log(
                     Level.INFO,
                     "Couldn't find the " + prefix + " method for \"" + method
@@ -393,7 +393,7 @@ public class Finder extends Restlet {
         if (method != null) {
             try {
                 result = method.invoke(target, args);
-            } catch (final Exception e) {
+            } catch (Exception e) {
                 getLogger().log(
                         Level.WARNING,
                         "Couldn't invoke the handle method for \"" + method

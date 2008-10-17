@@ -238,7 +238,7 @@ public class Collection {
             if (getFeed() != null) {
                 getFeed().writeElement(writer);
             }
-        } catch (final Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

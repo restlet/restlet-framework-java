@@ -123,14 +123,14 @@ public class XdbServerServlet extends ServerServlet {
         if (resultSet != null) {
             try {
                 resultSet.close();
-            } catch (final SQLException s) {
+            } catch (SQLException s) {
                 s.printStackTrace(System.err);
             }
         }
         if (statement != null) {
             try {
                 statement.close();
-            } catch (final SQLException s) {
+            } catch (SQLException s) {
                 s.printStackTrace(System.err);
             }
         }
@@ -150,7 +150,7 @@ public class XdbServerServlet extends ServerServlet {
             try {
                 conn = DriverManager.getConnection("jdbc:oracle:kprb:",
                         "default", "default");
-            } catch (final SQLException s) {
+            } catch (SQLException s) {
                 System.err.println("Exception getting SQL Connection: "
                         + s.getLocalizedMessage());
                 throw new ServletException(
@@ -167,7 +167,7 @@ public class XdbServerServlet extends ServerServlet {
                         + System.getProperty("db.str", "orcl"), System
                         .getProperty("db.usr", "lucene"), System.getProperty(
                         "db.pwd", "lucene"));
-            } catch (final SQLException s) {
+            } catch (SQLException s) {
                 System.err.println("Exception getting SQL Connection: "
                         + s.getLocalizedMessage());
                 throw new ServletException(
@@ -176,14 +176,14 @@ public class XdbServerServlet extends ServerServlet {
                                 + System.getProperty("db.usr", "lucene") + ":"
                                 + System.getProperty("db.pwd", "lucene") + "]",
                         s);
-            } catch (final ClassNotFoundException cnf) {
+            } catch (ClassNotFoundException cnf) {
                 System.err
                         .println("Exception getting oracle.jdbc.driver.OracleDriver class: "
                                 + cnf.getLocalizedMessage());
-            } catch (final InstantiationException ie) {
+            } catch (InstantiationException ie) {
                 System.err.println("Exception in Driver.newIntance(): "
                         + ie.getLocalizedMessage());
-            } catch (final IllegalAccessException iae) {
+            } catch (IllegalAccessException iae) {
                 System.err.println("Exception in Driver.newIntance(): "
                         + iae.getLocalizedMessage());
             }
@@ -257,7 +257,7 @@ public class XdbServerServlet extends ServerServlet {
                         .prepareCall("{ call dbms_debug_jdwp.disconnect }");
                 preparedstatement.execute();
             }
-        } catch (final SQLException e) {
+        } catch (SQLException e) {
             log(e.getLocalizedMessage(), e);
         } finally {
             closeDbResources(preparedstatement, null);
@@ -286,22 +286,22 @@ public class XdbServerServlet extends ServerServlet {
                         + className + " loader: " + loaderClass);
                 targetClass = (Class<?>) meth.invoke(null, new Object[] {
                         cName, sch });
-            } catch (final NoSuchMethodException nse) {
+            } catch (NoSuchMethodException nse) {
                 log(
                         "[Noelios Restlet Engine] - Could not instantiate a class using SCHEMA: "
                                 + sch + " and class: " + cName, nse);
                 targetClass = Engine.loadClass(className);
-            } catch (final IllegalAccessException iae) {
+            } catch (IllegalAccessException iae) {
                 log(
                         "[Noelios Restlet Engine] - Could not instantiate a class using SCHEMA: "
                                 + sch + " and class: " + cName, iae);
                 targetClass = Engine.loadClass(className);
-            } catch (final InvocationTargetException ite) {
+            } catch (InvocationTargetException ite) {
                 log(
                         "[Noelios Restlet Engine] - Could not instantiate a class using SCHEMA: "
                                 + sch + " and class: " + cName, ite);
                 targetClass = Engine.loadClass(className);
-            } catch (final AccessControlException ace) {
+            } catch (AccessControlException ace) {
                 log(
                         "[Noelios Restlet Engine] - Could not instantiate a class using oracle.aurora.rdbms.DbmsJava "
                                 + sch + " and class: " + cName, ace);
@@ -339,7 +339,7 @@ public class XdbServerServlet extends ServerServlet {
             if (resultset.next()) {
                 config = resultset.getString(1);
             }
-        } catch (final SQLException sqe) {
+        } catch (SQLException sqe) {
             log(sqe.getLocalizedMessage(), sqe);
             throw new RuntimeException(
                     ".getConfigParameter:  error from XMLDB loading '/home/'||USER||'"
@@ -398,7 +398,7 @@ public class XdbServerServlet extends ServerServlet {
                     + this.localPort);
             log("[Noelios Restlet Engine] - The ServerServlet endpoint = "
                     + endPoint);
-        } catch (final SQLException e) {
+        } catch (SQLException e) {
             log(e.getLocalizedMessage(), e);
         } finally {
             closeDbResources(preparedstatement, null);
@@ -412,7 +412,7 @@ public class XdbServerServlet extends ServerServlet {
                 preparedstatement.setInt(2, 4000);
                 preparedstatement.execute();
             }
-        } catch (final SQLException e) {
+        } catch (SQLException e) {
             log(e.getLocalizedMessage(), e);
         } finally {
             closeDbResources(preparedstatement, null);
@@ -422,12 +422,12 @@ public class XdbServerServlet extends ServerServlet {
             if ((getApplication() != null) && (getApplication().isStopped())) {
                 try {
                     getApplication().start();
-                } catch (final Exception e) {
+                } catch (Exception e) {
                     log("Error during the starting of the Restlet Application",
                             e);
                 }
             }
-        } catch (final AccessControlException ace) {
+        } catch (AccessControlException ace) {
             log("Error loading Restlet Application", ace);
             throw new ServletException("Error loading Restlet application", ace);
         }

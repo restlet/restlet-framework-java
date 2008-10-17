@@ -73,9 +73,9 @@ public class UriInfoTest extends TestCase {
             MultivaluedMap<String, String> multivaluedMap) {
         try {
             multivaluedMap.add("jh,", "hkj");
-        } catch (final NotYetImplementedException usoe) {
+        } catch (NotYetImplementedException usoe) {
             throw usoe;
-        } catch (final UnsupportedOperationException usoe) {
+        } catch (UnsupportedOperationException usoe) {
             // must be thrown, because it should be unmodifiable
         }
     };

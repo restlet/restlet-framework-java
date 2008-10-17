@@ -102,7 +102,7 @@ public class GrizzlyServerCall extends HttpServerCall {
         try {
             // Read the request header
             readRequestHead(this.requestStream);
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             getLogger().log(Level.WARNING, "Unable to parse the HTTP request",
                     ioe);
         }
@@ -221,7 +221,7 @@ public class GrizzlyServerCall extends HttpServerCall {
                             .asList(sslSession.getPeerCertificates());
 
                     return clientCertificates;
-                } catch (final SSLPeerUnverifiedException e) {
+                } catch (SSLPeerUnverifiedException e) {
                     getLogger().log(Level.FINE,
                             "Can't get the client certificates.", e);
                 }

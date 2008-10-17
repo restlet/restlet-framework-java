@@ -96,7 +96,7 @@ public class InputRepresentation extends StreamRepresentation {
         if (this.stream != null) {
             try {
                 this.stream.close();
-            } catch (final IOException e) {
+            } catch (IOException e) {
                 Context.getCurrentLogger().log(Level.WARNING,
                         "Error while releasing the representation.", e);
             }

@@ -401,10 +401,10 @@ public class ContextInjector {
                         this.injEverSameAims.add(injector);
                     }
                 }
-            } catch (final SecurityException e) {
+            } catch (SecurityException e) {
                 // NICE handle SecurityException
                 throw e;
-            } catch (final IllegalTypeException e) {
+            } catch (IllegalTypeException e) {
                 throw new IllegalFieldTypeException(e);
             }
             try {
@@ -418,10 +418,10 @@ public class ContextInjector {
                         this.injEverSameAims.add(injector);
                     }
                 }
-            } catch (final SecurityException e) {
+            } catch (SecurityException e) {
                 // NICE handle SecurityException
                 throw e;
-            } catch (final IllegalTypeException e) {
+            } catch (IllegalTypeException e) {
                 throw new IllegalBeanSetterTypeException(e);
             }
             jaxRsClass = jaxRsClass.getSuperclass();

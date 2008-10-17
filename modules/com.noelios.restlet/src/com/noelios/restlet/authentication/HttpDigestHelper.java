@@ -102,7 +102,7 @@ public class HttpDigestHelper extends AuthenticationHelper {
                 // valid wrt secretKey, now check lifespan
                 return lifespanMS > (System.currentTimeMillis() - nonceTimeMS);
             }
-        } catch (final Exception e) {
+        } catch (Exception e) {
             throw new CredentialException("error parsing nonce: " + e);
         }
         throw new CredentialException("nonce does not match secretKey");
@@ -133,7 +133,7 @@ public class HttpDigestHelper extends AuthenticationHelper {
                 // stale=true
                 return Guard.AUTHENTICATION_STALE;
             }
-        } catch (final CredentialException ce) {
+        } catch (CredentialException ce) {
             // Invalid nonce, probably doesn't match serverKey
             return Guard.AUTHENTICATION_INVALID;
         }

@@ -60,7 +60,7 @@ public class JaxRsUriBuilderTest extends TestCase {
     static {
         try {
             URI_1 = new URI("http://localhost/path1/path2");
-        } catch (final URISyntaxException e) {
+        } catch (URISyntaxException e) {
             throw new RuntimeException("Can not initialize JaxRsUriBuilderTest");
         }
     }
@@ -95,7 +95,7 @@ public class JaxRsUriBuilderTest extends TestCase {
             UriBuilder actual) throws URISyntaxException {
         try {
             assertEqualsURI(expectedUri, actual.build());
-        } catch (final AssertionFailedError ife) {
+        } catch (AssertionFailedError ife) {
             assertEqualsURI(expectedUri + "/", actual.build());
         }
     }
@@ -320,7 +320,7 @@ public class JaxRsUriBuilderTest extends TestCase {
         try {
             this.uriBuilderWithVars.build("123");
             fail("must fail, because there are not enough arguments");
-        } catch (final IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             // wonderful
         }
         URI uri = this.uriBuilderWithVars.build("123", "456");
@@ -335,7 +335,7 @@ public class JaxRsUriBuilderTest extends TestCase {
         try {
             uriBuilder2.build("123", "456");
             fail("must fail, because there are not enough arguments");
-        } catch (final IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             // wonderful
         }
         final URI uri2 = uriBuilder2.build("123", "456", "789");
@@ -369,14 +369,14 @@ public class JaxRsUriBuilderTest extends TestCase {
         try {
             this.uriBuilderWithVars.buildFromMap(vars);
             fail("must fail, because missing UriTemplate variables");
-        } catch (final IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             // wonderful
         }
         vars.put("var1", "123");
         try {
             this.uriBuilderWithVars.buildFromMap(vars);
             fail("must fail, because missing UriTemplate variable");
-        } catch (final IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             // wonderful
         }
         vars.put("var2", "456");
@@ -415,7 +415,7 @@ public class JaxRsUriBuilderTest extends TestCase {
         try {
             this.uriBuilderWithVars.build();
             fail("must fail, because vars are required");
-        } catch (final IllegalArgumentException ube) {
+        } catch (IllegalArgumentException ube) {
             // wonderful
         }
     }
@@ -467,7 +467,7 @@ public class JaxRsUriBuilderTest extends TestCase {
         try {
             this.uriBuilder.host("test.domain .org a");
             fail();
-        } catch (final IllegalArgumentException iae) {
+        } catch (IllegalArgumentException iae) {
             // good
         }
         assertEqualsURI("http://test.domain.org/path1/path2", this.uriBuilder,
@@ -489,7 +489,7 @@ public class JaxRsUriBuilderTest extends TestCase {
         try {
             assertEqualsURI(URI_1 + ";mp1=mv1;mp1=mv2;mp3=mv3",
                     this.uriBuilder, true);
-        } catch (final AssertionFailedError afe) { // try another possibility
+        } catch (AssertionFailedError afe) { // try another possibility
             assertEqualsURI(URI_1 + ";mp3=mv3;mp1=mv1;mp1=mv2",
                     this.uriBuilder, true);
         }
@@ -665,7 +665,7 @@ public class JaxRsUriBuilderTest extends TestCase {
         try {
             this.uriBuilder.scheme("44");
             fail();
-        } catch (final IllegalArgumentException iae) {
+        } catch (IllegalArgumentException iae) {
             // good
         }
         assertEqualsURI("f4.-+tp://localhost/path1/path2", this.uriBuilder);
@@ -673,7 +673,7 @@ public class JaxRsUriBuilderTest extends TestCase {
         try {
             this.uriBuilder.scheme("f\0");
             fail();
-        } catch (final IllegalArgumentException iae) {
+        } catch (IllegalArgumentException iae) {
             // good
         }
         assertEqualsURI("f4.-+tp://localhost/path1/path2", this.uriBuilder);

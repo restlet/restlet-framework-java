@@ -113,7 +113,7 @@ public class SimpleTrain {
         try {
             uriInfo.getPathParameters(true).add("jkghjk", "khlokh");
             return "The Template Parameter MultivaluedMap must be unmodifiable.";
-        } catch (final UnsupportedOperationException e) {
+        } catch (UnsupportedOperationException e) {
             // ok
         }
         return uriInfo.getPathParameters(true).getFirst("string");
@@ -126,7 +126,7 @@ public class SimpleTrain {
         try {
             uriInfo.getPathParameters(false).add("jkghjk", "khlokh");
             return "The Template Parameter MultivaluedMap must be unmodifiable.";
-        } catch (final UnsupportedOperationException e) {
+        } catch (UnsupportedOperationException e) {
             // ok
         }
         return uriInfo.getPathParameters(false).getFirst("string");

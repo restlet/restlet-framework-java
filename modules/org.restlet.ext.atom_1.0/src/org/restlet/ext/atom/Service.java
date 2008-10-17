@@ -428,7 +428,7 @@ public class Service extends SaxRepresentation {
 
             writer.endElement(APP_NAMESPACE, "service");
             writer.endDocument();
-        } catch (final SAXException se) {
+        } catch (SAXException se) {
             throw new IOException("Couldn't write the service representation: "
                     + se.getMessage());
         }

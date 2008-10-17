@@ -95,7 +95,7 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
                 assertXML(dom);
                 getResponse().setEntity(
                         new DomRepresentation(MediaType.TEXT_XML, doc));
-            } catch (final IOException ex) {
+            } catch (IOException ex) {
                 ex.printStackTrace();
                 fail(ex.getMessage());
             }
@@ -117,7 +117,7 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
             assertEquals("name-1", children.item(1).getAttributes()
                     .getNamedItem("name").getNodeValue());
 
-        } catch (final IOException ex) {
+        } catch (IOException ex) {
             fail(ex.getMessage());
         } finally {
             entity.release();
@@ -137,7 +137,7 @@ public class ChunkedEncodingTestCase extends BaseConnectorsTestCase {
         try {
             return DocumentBuilderFactory.newInstance().newDocumentBuilder()
                     .newDocument();
-        } catch (final ParserConfigurationException ex) {
+        } catch (ParserConfigurationException ex) {
             throw new RuntimeException(ex);
         }
     }

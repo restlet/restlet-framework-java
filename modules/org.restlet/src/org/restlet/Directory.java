@@ -300,7 +300,7 @@ public class Directory extends Finder {
         try {
             return Engine.getInstance().createDirectoryResource(this, request,
                     response);
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             getLogger().log(Level.WARNING,
                     "Unable to find the directory's resource", ioe);
             return null;

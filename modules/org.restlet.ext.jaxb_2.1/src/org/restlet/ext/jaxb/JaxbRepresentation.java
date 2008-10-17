@@ -85,7 +85,7 @@ public class JaxbRepresentation<T> extends XmlRepresentation {
                         m.setProperty("jaxb.encoding", getCharacterSet()
                                 .getName());
                     }
-                } catch (final Exception e) {
+                } catch (Exception e) {
                     Context.getCurrentLogger().log(Level.WARNING,
                             "Problem creating Marshaller", e);
                     return null;
@@ -200,7 +200,7 @@ public class JaxbRepresentation<T> extends XmlRepresentation {
                 javax.xml.bind.Unmarshaller m = null;
                 try {
                     m = getContext(getPackage()).createUnmarshaller();
-                } catch (final Exception e) {
+                } catch (Exception e) {
                     Context.getCurrentLogger().log(Level.WARNING,
                             "Problem creating Unmarshaller", e);
                     return null;
@@ -503,7 +503,7 @@ public class JaxbRepresentation<T> extends XmlRepresentation {
             if (getValidationEventHandler() != null) {
                 try {
                     u.setEventHandler(getValidationEventHandler());
-                } catch (final JAXBException e) {
+                } catch (JAXBException e) {
                     Context.getCurrentLogger().log(Level.WARNING,
                             "Unable to set the event handler", e);
                     throw new IOException("Unable to set the event handler."
@@ -514,7 +514,7 @@ public class JaxbRepresentation<T> extends XmlRepresentation {
             try {
                 this.object = (T) u.unmarshal(this.xmlRepresentation
                         .getStream());
-            } catch (final JAXBException e) {
+            } catch (JAXBException e) {
                 Context.getCurrentLogger().log(Level.WARNING,
                         "Unable to unmarshal the XML representation", e);
                 throw new IOException(
@@ -534,7 +534,7 @@ public class JaxbRepresentation<T> extends XmlRepresentation {
     public SAXSource getSaxSource() throws IOException {
         try {
             return new JAXBSource(getContext(), getObject());
-        } catch (final JAXBException e) {
+        } catch (JAXBException e) {
             throw new IOException(
                     "JAXBException while creating the JAXBSource: "
                             + e.getMessage());
@@ -605,14 +605,14 @@ public class JaxbRepresentation<T> extends XmlRepresentation {
     public void write(OutputStream outputStream) throws IOException {
         try {
             new Marshaller(this.contextPath).marshal(getObject(), outputStream);
-        } catch (final JAXBException e) {
+        } catch (JAXBException e) {
             Context.getCurrentLogger().log(Level.WARNING,
                     "JAXB marshalling error caught.", e);
 
             // Maybe the tree represents a failure, try that.
             try {
                 new Marshaller("failure").marshal(getObject(), outputStream);
-            } catch (final JAXBException e2) {
+            } catch (JAXBException e2) {
                 // We don't know what package this tree is from.
                 throw new IOException(e.getMessage());
             }

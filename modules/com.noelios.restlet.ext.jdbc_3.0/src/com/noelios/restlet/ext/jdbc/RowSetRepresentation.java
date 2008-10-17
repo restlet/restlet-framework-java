@@ -133,7 +133,7 @@ public class RowSetRepresentation extends OutputRepresentation {
     public void write(OutputStream outputStream) throws IOException {
         try {
             this.webRowSet.writeXml(outputStream);
-        } catch (final SQLException se) {
+        } catch (SQLException se) {
             throw new IOException(se.getMessage());
         }
 
@@ -141,7 +141,7 @@ public class RowSetRepresentation extends OutputRepresentation {
             if (this.jdbcResult != null) {
                 this.jdbcResult.release();
             }
-        } catch (final SQLException se) {
+        } catch (SQLException se) {
             throw new IOException(
                     "SQL exception while releasing the JdbcResult instance after writing the representation. "
                             + se.getMessage());
@@ -152,7 +152,7 @@ public class RowSetRepresentation extends OutputRepresentation {
                 this.webRowSet.release();
                 this.webRowSet.close();
             }
-        } catch (final SQLException se) {
+        } catch (SQLException se) {
             throw new IOException(
                     "Error while releasing the WebRowSet instance after writing the representation. "
                             + se.getMessage());

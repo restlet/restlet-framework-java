@@ -607,7 +607,7 @@ public class DirectoryResource extends Resource {
                     result.add(contextResponse.getEntity().getIdentifier());
                 }
             }
-        } catch (final IOException ioe) {
+        } catch (IOException ioe) {
             getLogger().log(Level.WARNING, "Unable to get resource variants",
                     ioe);
         }
