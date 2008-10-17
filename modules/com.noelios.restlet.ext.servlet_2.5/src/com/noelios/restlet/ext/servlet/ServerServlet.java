@@ -457,6 +457,15 @@ public class ServerServlet extends HttpServlet {
                     getServletContext().getInitParameter(initParam));
         }
 
+        // Copy all Servlet's context attributes
+        String attributeName;
+        for (final Enumeration<String> namesEnum = getServletContext()
+                .getAttributeNames(); namesEnum.hasMoreElements();) {
+            attributeName = namesEnum.nextElement();
+            componentContext.getAttributes().put(attributeName,
+                    getServletContext().getAttribute(attributeName));
+        }
+
         return component;
     }
 
