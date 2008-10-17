@@ -41,7 +41,7 @@ import org.restlet.util.Helper;
  */
 public abstract class ConnectorHelper<T extends Connector> extends Helper<T> {
     /** The protocols simultaneously supported. */
-    private volatile List<Protocol> protocols;
+    private final List<Protocol> protocols;
 
     /**
      * Constructor.
@@ -61,11 +61,11 @@ public abstract class ConnectorHelper<T extends Connector> extends Helper<T> {
     }
 
     @Override
-    public synchronized void start() throws Exception {
+    public void start() throws Exception {
     }
 
     @Override
-    public synchronized void stop() throws Exception {
+    public void stop() throws Exception {
     }
 
     @Override

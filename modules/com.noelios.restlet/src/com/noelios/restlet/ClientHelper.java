@@ -40,7 +40,7 @@ public class ClientHelper extends ConnectorHelper<Client> {
      * The number of milliseconds the client should wait for a response before
      * aborting the request and setting its status to an error status.
      */
-    private int connectTimeout = 0;
+    private volatile int connectTimeout = 0;
 
     /**
      * Constructor.

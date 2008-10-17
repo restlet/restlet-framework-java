@@ -23,7 +23,9 @@ Changes log
           in XmlRepresentation subclasses. Reported by Richard 
           Hoberman.
         - Fixed potential NPE with Digest authentication when the 
-          client's identifier is not known.  
+          client's identifier is not known.
+        - Fixed potential thread safety issues with client connectors.
+          Reported by Tim Peierls.  
     - API enhancements
         - Added a "tcpNoDelay" option for internal and Apache HTTP 
           clients. Contributed by Kevin Conaway.
