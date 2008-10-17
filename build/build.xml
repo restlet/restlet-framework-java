@@ -1494,7 +1494,7 @@
 		</javadoc>
 
 		<javadoc packagenames="org.restlet.gwt.*"
-		         excludepackagenames="${exclude-packages}"
+		         excludepackagenames="${exclude-packages},*org.restlet.gwt.engine.*"
 		         destdir="${docs-gwt}"
 		         classpathref="path-all"
 		         author="true"

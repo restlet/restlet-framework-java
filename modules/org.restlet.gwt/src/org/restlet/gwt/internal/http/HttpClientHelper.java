@@ -32,7 +32,7 @@ import org.restlet.gwt.Client;
 import org.restlet.gwt.data.Request;
 import org.restlet.gwt.data.Response;
 import org.restlet.gwt.data.Status;
-import org.restlet.gwt.internal.ClientHelper;
+import org.restlet.gwt.engine.ClientHelper;
 
 /**
  * Base HTTP client connector. Here is the list of parameters that are

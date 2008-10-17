@@ -42,7 +42,7 @@ import org.restlet.gwt.data.MediaType;
 import org.restlet.gwt.data.Parameter;
 import org.restlet.gwt.data.Product;
 import org.restlet.gwt.data.Response;
-import org.restlet.gwt.internal.Helper;
+import org.restlet.gwt.engine.Helper;
 import org.restlet.gwt.resource.Representation;
 import org.restlet.gwt.resource.Variant;
 
@@ -77,7 +77,7 @@ public abstract class Engine {
      */
     public static Engine getInstance() {
         if (instance == null) {
-            org.restlet.gwt.internal.Engine.register();
+            org.restlet.gwt.engine.Engine.register();
         }
 
         return instance;
