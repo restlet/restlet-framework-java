@@ -25,7 +25,7 @@ Changes log
         - Fixed potential NPE with Digest authentication when the 
           client's identifier is not known.
         - Fixed potential thread safety issues with client connectors.
-          Reported by Tim Peierls.  
+          Reported by Tim Peierls.
     - API enhancements
         - Added a "tcpNoDelay" option for internal and Apache HTTP 
           clients. Contributed by Kevin Conaway.
@@ -52,6 +52,8 @@ Changes log
           Reported by Richard Hoberman.
         - ServerServlet now copies all attributes from the Servlet 
           context into the component's context.
+        - Fixed Resource#allowPut() error in Javadocs. Reported by 
+          Erik Beeson.
         
 - 1.1 Release Candidate 2 (2008-09-24)
     - Bugs fixed
