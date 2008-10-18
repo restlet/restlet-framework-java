@@ -203,7 +203,7 @@ public class Resource extends Handler {
     }
 
     /**
-     * Indicates if DELETE calls are allowed by checking the "modifiable"
+     * Indicates if PUT calls are allowed by checking the "modifiable"
      * property.
      * 
      * @return True if the method is allowed.
