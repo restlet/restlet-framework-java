@@ -10,7 +10,7 @@
 		<table width="100%">
 			<tr>
 				<td width="80%">Subject:</td>
-				<td width="20%"><input type="text" name="subject" value="${mail.subject!"(no subject)"}" readonly="readonly"></td>
+				<td width="20%"><input type="text" name="subject" value="${mail.subject!"(no subject)"}" readonly="readonly" /></td>
 			</tr>
 			<tr>
 				<td>Recipients:</td>
@@ -22,10 +22,10 @@
 			</tr>
 			<tr>
 				<td>Tags:</td>
-				<td><input type="text" name="tags" value="<@listToString list=mail.tags![] />" readonly="readonly"></td>
+				<td><input type="text" name="tags" value="<@listToString list=mail.tags![] />" readonly="readonly" /></td>
 			</tr>
 		</table>
-		<input type="button" name="deleteMail" title="Delete the mail" value="Delete" onclick="this.form.action='${resourceRef}?method=delete';this.form.submit();">
+		<input type="button" name="deleteMail" title="Delete the mail" value="Delete" onclick="this.form.action='${resourceRef}?method=delete';this.form.submit();" />
 	</form>
 </div>
 </#if>
@@ -41,7 +41,7 @@
       </ul>
    </div>
    <div>
-      <h3 class="menu"><a href="${rootRef}/users">Accounts<a/></h3>
+      <h3 class="menu"><a href="${rootRef}/users">Accounts</a></h3>
    </div>
 </#global>
 <#include "/footer.ftl"/>

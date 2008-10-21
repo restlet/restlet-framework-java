@@ -26,7 +26,7 @@
 		<table>
 			<tr>
 				<td>Name:</td>
-				<td><input type="text" name="nickname" value="${nickname!""}"></td>
+				<td><input type="text" name="nickname" value="${nickname!""}" /></td>
 			</tr>
 			<tr>
 				<td>Owner:</td>
@@ -44,7 +44,7 @@
 				</td>
 			</tr>
 		</table>
-		<input type="submit" name="createMailbox" title="Create a new mailbox" value="Create">
+		<input type="submit" name="createMailbox" title="Create a new mailbox" value="Create" />
     </form>
 </div>
 </#if>
@@ -55,7 +55,7 @@
       <h3 class="menu"><a href="${rootRef}/mailboxes">Mailboxes</a></h3>
    </div>
    <div>
-      <h3 class="menu"><a href="${rootRef}/users">Accounts<a/></h3>
+      <h3 class="menu"><a href="${rootRef}/users">Accounts</a></h3>
    </div>
 </#global>
 <#include "/footer.ftl"/>

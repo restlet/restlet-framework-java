@@ -9,15 +9,15 @@
 		<table width="100%">
 			<tr>
 				<td width="20%">Nickname:</td>
-				<td width="80%"><input type="text" name="nickname" value="${mailbox.nickname}"></td>
+				<td width="80%"><input type="text" name="nickname" value="${mailbox.nickname}" /></td>
 			</tr>
 			<tr>
 				<td>Reply to name:</td>
-				<td><input type="text" name="senderName" value="${mailbox.senderName}"></td>
+				<td><input type="text" name="senderName" value="${mailbox.senderName}" /></td>
 			</tr>
 		</table>
-		<input type="submit" name="updateMailbox" title="Submit modifications to the mailbox" value="Update" onclick="this.form.action='${resourceRef}?method=put'">
-		<input type="button" name="deleteMailbox" title="Delete the mailbox" value="Delete" onclick="this.form.action='${resourceRef}?method=delete';this.form.submit();">
+		<input type="submit" name="updateMailbox" title="Submit modifications to the mailbox" value="Update" onclick="this.form.action='${resourceRef}?method=put'" />
+		<input type="button" name="deleteMailbox" title="Delete the mailbox" value="Delete" onclick="this.form.action='${resourceRef}?method=delete';this.form.submit();" />
 	</form>
 </div>
 </#if>
@@ -33,7 +33,7 @@
       </ul>
    </div>
    <div>
-      <h3 class="menu"><a href="${rootRef}/users">Accounts<a/></h3>
+      <h3 class="menu"><a href="${rootRef}/users">Accounts</a></h3>
    </div>
 </#global>
 <#include "/footer.ftl"/>

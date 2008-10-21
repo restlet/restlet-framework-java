@@ -6,11 +6,11 @@
 <div>
 	<h4>Mail in ${mail.status} status</h4>
 	<form action="${resourceRef}?method=put" method="post" accept-charset="UTF-8">
-		<input type="hidden" name="status" value="${mail.status}" >
+		<input type="hidden" name="status" value="${mail.status}" />
 		<table width="100%">
 			<tr>
 				<td width="20%">Subject:</td>
-				<td width="80%"><input type="text" name="subject" value="${mail.subject!"(no subject)"}"></td>
+				<td width="80%"><input type="text" name="subject" value="${mail.subject!"(no subject)"}" /></td>
 			</tr>
 			<tr>
 				<td>Recipients:</td>
@@ -22,12 +22,12 @@
 			</tr>
 			<tr>
 				<td>Tags:</td>
-				<td><input type="text" name="tags" value="<@listToString list=mail.tags![] />"></td>
+				<td><input type="text" name="tags" value="<@listToString list=mail.tags![] />" /></td>
 			</tr>
 		</table>
-		<input type="submit" name="updateMail" title="Submit modifications to the mail" value="Update" onclick="this.form.action='${resourceRef}?method=put'">
-		<input type="submit" name="updateMail" title="Submit modifications then send the mail" value="Send" onclick="this.form.status.value='sending';this.form.action='${resourceRef}?method=put';this.form.submit();">
-		<input type="button" name="deleteMail" title="Delete the mail" value="Delete" onclick="this.form.action='${resourceRef}?method=delete';this.form.submit();">
+		<input type="submit" name="updateMail" title="Submit modifications to the mail" value="Update" onclick="this.form.action='${resourceRef}?method=put'" />
+		<input type="submit" name="updateMail" title="Submit modifications then send the mail" value="Send" onclick="this.form.status.value='sending';this.form.action='${resourceRef}?method=put';this.form.submit();" />
+		<input type="button" name="deleteMail" title="Delete the mail" value="Delete" onclick="this.form.action='${resourceRef}?method=delete';this.form.submit();" />
 	</form>
 </div>
 </#if>
@@ -43,7 +43,7 @@
       </ul>
    </div>
    <div>
-      <h3 class="menu"><a href="${rootRef}/users">Accounts<a/></h3>
+      <h3 class="menu"><a href="${rootRef}/users">Accounts</a></h3>
    </div>
 </#global>
 <#include "/footer.ftl"/>

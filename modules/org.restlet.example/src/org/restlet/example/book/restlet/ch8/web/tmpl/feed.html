@@ -10,15 +10,15 @@
 		<table width="100%">
 			<tr>
 				<td width="20%">Name:</td>
-				<td width="80%"><input type="text" name="nickname" value="${feed.nickname}"></td>
+				<td width="80%"><input type="text" name="nickname" value="${feed.nickname}" /></td>
 			</tr>
 			<tr>
 				<td>tags</td>
-				<td><input type="text" name="tags" value="<@listToString list=feed.tags![] />"></td>
+				<td><input type="text" name="tags" value="<@listToString list=feed.tags![] />" /></td>
 			</tr>
 		</table>
-		<input type="submit" name="updateFeed" title="Submit modifications to the feed" value="Update" onclick="this.form.action='${resourceRef}?method=put'">
-		<input type="button" name="deleteFeed" title="Delete the feed" value="Delete" onclick="this.form.action='${resourceRef}?method=delete';this.form.submit();">
+		<input type="submit" name="updateFeed" title="Submit modifications to the feed" value="Update" onclick="this.form.action='${resourceRef}?method=put'" />
+		<input type="button" name="deleteFeed" title="Delete the feed" value="Delete" onclick="this.form.action='${resourceRef}?method=delete';this.form.submit();" />
 	</form>
 </div>
 
@@ -48,7 +48,7 @@
       </ul>
    </div>
    <div>
-      <h3 class="menu"><a href="${rootRef}/users">Accounts<a/></h3>
+      <h3 class="menu"><a href="${rootRef}/users">Accounts</a></h3>
    </div>
 </#global>
 <#include "/footer.ftl"/>
