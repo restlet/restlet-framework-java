@@ -17,7 +17,7 @@
 	<#if currentUser.administrator>
 <div style="width:200px; float: right">
 	<h4>Create a new user.</h4>
-    <form action="${resourceRef}" method="POST" accept-charset="UTF-8">
+    <form action="${resourceRef}" method="post" accept-charset="UTF-8">
 		<#if errorMessage??>
 		<div class="error">${errorMessage}</div>
 		</#if>
