@@ -28,7 +28,10 @@
 package org.restlet.example.book.restlet.ch8;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.Properties;
 
+import org.restlet.Client;
 import org.restlet.Component;
 import org.restlet.Directory;
 import org.restlet.Restlet;
@@ -37,6 +40,8 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.data.LocalReference;
 import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
+import org.restlet.data.Reference;
+import org.restlet.data.Response;
 import org.restlet.example.book.restlet.ch8.data.db4o.Db4oFacade;
 import org.restlet.example.book.restlet.ch8.objects.ObjectsFacade;
 import org.restlet.example.book.restlet.ch8.resources.ContactResource;
@@ -56,11 +61,38 @@ import org.restlet.example.book.restlet.ch8.resources.UsersResource;
  */
 public class Application extends org.restlet.Application {
 
+    /**
+     * Returns a Properties instance loaded from the given URI.
+     * 
+     * @param propertiesUri
+     *            The URI of the properties file.
+     * @return A Properties instance loaded from the given URI.
+     * @throws IOException
+     */
+    public static Properties getProperties(String propertiesUri)
+            throws IOException {
+        Reference reference = new Reference(propertiesUri);
+        Response response = new Client(reference.getSchemeProtocol())
+                .get(reference);
+        if (!(response.getStatus().isSuccess() && response.isEntityAvailable())) {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append("Cannot access to the configuration file: \"");
+            stringBuilder.append(propertiesUri);
+            stringBuilder.append("\"");
+            throw new IllegalArgumentException(stringBuilder.toString());
+        }
+
+        Properties properties = new Properties();
+        properties.load(response.getEntity().getStream());
+        return properties;
+    }
+
     public static void main(String... args) throws Exception {
         // Create a component with an HTTP server connector
         final Component component = new Component();
         component.getServers().add(Protocol.HTTP, 8585);
         component.getClients().add(Protocol.FILE);
+        component.getClients().add(Protocol.CLAP);
         component.getClients().add(Protocol.HTTP);
         // Attach the application to the default host and start it
         component.getDefaultHost().attach("/rmep", new Application());
@@ -73,28 +105,43 @@ public class Application extends org.restlet.Application {
     /** Freemarker configuration object. */
     private freemarker.template.Configuration fmc;
 
+    /** File path to the Db4o database. */
+    private final String dbFilePath;
+
+    /**
+     * File path of the root directory of the web files (images, templates,
+     * etc).
+     */
+    private final String webRootPath;
+
     /**
      * Constructor.
+     * 
+     * @throws IOException
      */
-    public Application() {
+    public Application() throws IOException {
         // List of protocols required by the application.
         getConnectorService().getClientProtocols().add(Protocol.FILE);
+        getConnectorService().getClientProtocols().add(Protocol.CLAP);
         getConnectorService().getClientProtocols().add(Protocol.HTTP);
 
+        // Look for the configuration file in the classpath
+        Properties properties = getProperties("clap://class/config/mailApplication.properties");
+
+        this.dbFilePath = properties.getProperty("db4o.file.path");
+        this.webRootPath = properties.getProperty("web.root.path");
+
         /** Create and chain the Objects and Data facades. */
-        this.dataFacade = new ObjectsFacade(new Db4oFacade(System
-                .getProperty("user.home")
-                + File.separator + "rmep.dbo"));
+        this.dataFacade = new ObjectsFacade(new Db4oFacade(dbFilePath));
         // Check that at least one administrator exists in the database.
         this.dataFacade.initAdmin();
 
         try {
-            final File templateDir = new File(
-                    "D:\\alaska\\forge\\build\\swc\\restlet\\trunk\\modules\\org.restlet.example\\src\\org\\restlet\\example\\book\\restlet\\ch8\\web\\tmpl");
+            final File templateDir = new File(webRootPath + "/tmpl");
             this.fmc = new freemarker.template.Configuration();
             this.fmc.setDirectoryForTemplateLoading(templateDir);
         } catch (Exception e) {
-            getLogger().severe("Erreur config FreeMarker");
+            getLogger().severe("Unable to configure FreeMarker.");
             e.printStackTrace();
         }
 
@@ -119,17 +166,14 @@ public class Application extends org.restlet.Application {
         // Add a route for the MailRoot resource
         router.attachDefault(guard);
 
-        final Directory imgDirectory = new Directory(
-                getContext(),
-                LocalReference
-                        .createFileReference("D:\\alaska\\forge\\build\\swc\\restlet\\trunk\\modules\\org.restlet.example\\src\\org\\restlet\\example\\book\\restlet\\ch8\\web\\images"));
+        final Directory imgDirectory = new Directory(getContext(),
+                LocalReference.createFileReference(webRootPath + "/images"));
         // Add a route for the image resources
         router.attach("/images", imgDirectory);
 
-        final Directory cssDirectory = new Directory(
-                getContext(),
+        final Directory cssDirectory = new Directory(getContext(),
                 LocalReference
-                        .createFileReference("D:\\alaska\\forge\\build\\swc\\restlet\\trunk\\modules\\org.restlet.example\\src\\org\\restlet\\example\\book\\restlet\\ch8\\web\\stylesheets"));
+                        .createFileReference(webRootPath + "/stylesheets"));
         // Add a route for the CSS resources
         router.attach("/stylesheets", cssDirectory);
 
@@ -189,5 +233,4 @@ public class Application extends org.restlet.Application {
     public ObjectsFacade getObjectsFacade() {
         return this.dataFacade;
     }
-
 }
