@@ -27,8 +27,10 @@
 				</td>
 			</tr>
 		</table>
+		<p>
 		<input type="submit" name="updateContact" title="Submit modifications to the contact" value="Update" onclick="this.form.action='${resourceRef}?method=put'" />
 		<input type="button" name="deleteContact" title="Delete the contact" value="Delete" onclick="this.form.action='${resourceRef}?method=delete';this.form.submit();" />
+		</p>
 	</form>
 </div>
 </#if>

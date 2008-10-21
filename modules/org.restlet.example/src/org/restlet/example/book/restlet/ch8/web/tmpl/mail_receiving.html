@@ -25,7 +25,9 @@
 				<td><textarea name="message" cols="50" rows="10" readonly="readonly">${mail.message!""}</textarea></td>
 			</tr>
 		</table>
+		<p>
 		<input type="button" name="deleteMail" title="Delete the mail" value="Delete" onclick="this.form.action='${resourceRef}?method=delete';this.form.submit();" />
+</p>
 	</form>
 </div>
 </#if>

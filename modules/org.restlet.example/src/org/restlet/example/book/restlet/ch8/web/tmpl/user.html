@@ -26,8 +26,10 @@
 				<td><#if user.administrator>yes<#else>no</#if></td>
 			</tr>
 		</table>
+		<p>
 		<input type="submit" name="updateUser" title="Submit modifications to the user" value="Update" onclick="this.form.action='${resourceRef}?method=put'" />
 		<input type="button" name="deleteUser" title="Delete the user" value="Delete" onclick="this.form.action='${resourceRef}?method=delete';this.form.submit();" />
+</p>
 	</form>
 </div>
 

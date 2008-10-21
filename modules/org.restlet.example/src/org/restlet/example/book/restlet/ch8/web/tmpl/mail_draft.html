@@ -25,9 +25,11 @@
 				<td><input type="text" name="tags" value="<@listToString list=mail.tags![] />" /></td>
 			</tr>
 		</table>
+		<p>
 		<input type="submit" name="updateMail" title="Submit modifications to the mail" value="Update" onclick="this.form.action='${resourceRef}?method=put'" />
 		<input type="submit" name="updateMail" title="Submit modifications then send the mail" value="Send" onclick="this.form.status.value='sending';this.form.action='${resourceRef}?method=put';this.form.submit();" />
 		<input type="button" name="deleteMail" title="Delete the mail" value="Delete" onclick="this.form.action='${resourceRef}?method=delete';this.form.submit();" />
+</p>
 	</form>
 </div>
 </#if>

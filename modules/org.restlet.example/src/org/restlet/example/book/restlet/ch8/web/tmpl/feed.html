@@ -17,8 +17,10 @@
 				<td><input type="text" name="tags" value="<@listToString list=feed.tags![] />" /></td>
 			</tr>
 		</table>
+		<p>
 		<input type="submit" name="updateFeed" title="Submit modifications to the feed" value="Update" onclick="this.form.action='${resourceRef}?method=put'" />
 		<input type="button" name="deleteFeed" title="Delete the feed" value="Delete" onclick="this.form.action='${resourceRef}?method=delete';this.form.submit();" />
+</p>
 	</form>
 </div>
 

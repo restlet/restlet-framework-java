@@ -16,8 +16,10 @@
 				<td><input type="text" name="senderName" value="${mailbox.senderName}" /></td>
 			</tr>
 		</table>
+		<p>
 		<input type="submit" name="updateMailbox" title="Submit modifications to the mailbox" value="Update" onclick="this.form.action='${resourceRef}?method=put'" />
 		<input type="button" name="deleteMailbox" title="Delete the mailbox" value="Delete" onclick="this.form.action='${resourceRef}?method=delete';this.form.submit();" />
+</p>
 	</form>
 </div>
 </#if>
