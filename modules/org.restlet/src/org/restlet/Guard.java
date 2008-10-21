@@ -79,7 +79,9 @@ import org.restlet.util.Resolver;
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
  * 
- * @see <a href="http://www.restlet.org/documentation/1.1/tutorial#part09">Tutorial : Guarding access to sensitive resources</a>
+ * @see <a
+ *      href="http://www.restlet.org/documentation/1.1/tutorial#part09">Tutorial
+ *      : Guarding access to sensitive resources< /a>
  * @author Jerome Louvel
  */
 public class Guard extends Filter {
@@ -215,7 +217,7 @@ public class Guard extends Filter {
 
     /**
      * Indicates if the request is authorized to pass through the Guard. This
-     * method is only called if the call was sucessfully authenticated. It
+     * method is only called if the call was successfully authenticated. It
      * always returns true by default. If specific checks are required, they
      * could be added by overriding this method.
      * 
@@ -322,28 +324,44 @@ public class Guard extends Filter {
         switch (authenticate(request)) {
         case AUTHENTICATION_VALID:
             // Valid credentials provided
+            ChallengeResponse challengeResponse = request
+                    .getChallengeResponse();
             if (loggable) {
-                getLogger().fine(
-                        "Authentication suceeded. Valid credentials provided for identifier: "
-                                + request.getChallengeResponse()
-                                        .getIdentifier() + ".");
+                if (challengeResponse != null) {
+                    getLogger().fine(
+                            "Authentication succeeded. Valid credentials provided for identifier: "
+                                    + request.getChallengeResponse()
+                                            .getIdentifier() + ".");
+                } else {
+                    getLogger()
+                            .fine(
+                                    "Authentication succeeded. Valid credentials provided.");
+                }
             }
 
             if (authorize(request)) {
                 if (loggable) {
-                    getLogger().fine(
-                            "Request authorized for identifier: "
-                                    + request.getChallengeResponse()
-                                            .getIdentifier() + ".");
+                    if (challengeResponse != null) {
+                        getLogger().fine(
+                                "Request authorized for identifier: "
+                                        + request.getChallengeResponse()
+                                                .getIdentifier() + ".");
+                    } else {
+                        getLogger().fine("Request authorized.");
+                    }
                 }
 
                 accept(request, response);
             } else {
                 if (loggable) {
-                    getLogger().fine(
-                            "Request not authorized for identifier: "
-                                    + request.getChallengeResponse()
-                                            .getIdentifier() + ".");
+                    if (challengeResponse != null) {
+                        getLogger().fine(
+                                "Request not authorized for identifier: "
+                                        + request.getChallengeResponse()
+                                                .getIdentifier() + ".");
+                    } else {
+                        getLogger().fine("Request not authorized.");
+                    }
                 }
 
                 forbid(response);

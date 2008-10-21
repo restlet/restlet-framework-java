@@ -26,6 +26,8 @@ Changes log
           client's identifier is not known.
         - Fixed potential thread safety issues with client connectors.
           Reported by Tim Peierls.
+        - Fixed potential NPE in Guard#doHandle method. Reported by 
+          Diego Ballve.
     - API enhancements
         - Added a "tcpNoDelay" option for internal and Apache HTTP 
           clients. Contributed by Kevin Conaway.
