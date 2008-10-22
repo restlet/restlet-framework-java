@@ -46,7 +46,7 @@ Changes log
         - Updated JAX-RS API to version 1.0. The implementation of the
           runtime environment is not fully finished yet. We are 
           waiting for an access to the TCK.
-        - Updated Grizzly to latest 1.8.6.1 version.
+        - Updated Grizzly to latest 1.8.6.2 version.
         - Improved the performance of the ByteUtils#toString() methods
           significantly using a buffer. Impact the performance of the 
           Representation#toString() method. Reported by Aaron Crow.
@@ -133,7 +133,7 @@ Changes log
         - Updated JAX-RS API to version 0.11.
         - Updated GWT to version 1.5.2 (final).
         
-- 1.1 Release candidate 1 (2008-08-20)
+- 1.1 Release Candidate 1 (2008-08-20)
     - Breaking change
         - The logger names used by Restlet have been fully refactored 
           to allow use more predictable names, to facilitate logging
