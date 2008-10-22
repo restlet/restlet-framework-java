@@ -225,7 +225,7 @@ public class Resource extends Handler {
         try {
             removeRepresentations();
         } catch (ResourceException re) {
-            getResponse().setStatus(re.getStatus());
+            getResponse().setStatus(re.getStatus(), re);
         }
     }
 
@@ -244,7 +244,7 @@ public class Resource extends Handler {
         try {
             result = represent();
         } catch (ResourceException re) {
-            getResponse().setStatus(re.getStatus());
+            getResponse().setStatus(re.getStatus(), re);
         }
 
         return result;
@@ -689,7 +689,7 @@ public class Resource extends Handler {
         try {
             acceptRepresentation(entity);
         } catch (ResourceException re) {
-            getResponse().setStatus(re.getStatus());
+            getResponse().setStatus(re.getStatus(), re);
         }
     }
 
@@ -707,7 +707,7 @@ public class Resource extends Handler {
         try {
             storeRepresentation(entity);
         } catch (ResourceException re) {
-            getResponse().setStatus(re.getStatus());
+            getResponse().setStatus(re.getStatus(), re);
         }
     }
 
