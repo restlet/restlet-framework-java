@@ -130,7 +130,7 @@ public abstract class EntityClientHelper extends LocalClientHelper {
                 } else {
                     stop = true;
                 }
-            } else if (decodedChar == decodedChar) {
+            } else if (decodedChar == encodedChar) {
                 j++;
             } else {
                 String dec = Reference.decode(encodedEntityName.substring(j,
@@ -153,7 +153,7 @@ public abstract class EntityClientHelper extends LocalClientHelper {
                     + decodedVariantEntityName.substring(i);
         }
 
-        return encodedEntityName.substring(0, j);
+        return encodedEntityName.substring(0, j - 1);
     }
 
     /**
@@ -299,6 +299,8 @@ public abstract class EntityClientHelper extends LocalClientHelper {
                 // We look for the possible variant which has the same
                 // extensions in a distinct order.
 
+                Entity uniqueVariant = null;
+
                 // 1- set up base name as the longest part of the name without
                 // known extensions (beginning from the left)
                 final String baseName = entity.getBaseName(metadataService);
@@ -306,19 +308,23 @@ public abstract class EntityClientHelper extends LocalClientHelper {
                         .getExtensions(metadataService);
 
                 // 2- loooking for resources with the same base name
-                final Collection<Entity> files = entity.getChildren();
-                Entity uniqueVariant = null;
+                Entity parent = entity.getParent();
+                if (parent != null) {
+                    final Collection<Entity> files = parent.getChildren();
 
-                if (files != null) {
-                    for (final Entity entry : files) {
-                        if (baseName.equals(entry.getBaseName(metadataService))) {
-                            final Collection<String> entryExtensions = entry
-                                    .getExtensions(metadataService);
-                            if (entryExtensions.containsAll(extensions)
-                                    && extensions.containsAll(entryExtensions)) {
-                                // The right representation has been found.
-                                uniqueVariant = entry;
-                                break;
+                    if (files != null) {
+                        for (final Entity entry : files) {
+                            if (baseName.equals(entry
+                                    .getBaseName(metadataService))) {
+                                final Collection<String> entryExtensions = entry
+                                        .getExtensions(metadataService);
+                                if (entryExtensions.containsAll(extensions)
+                                        && extensions
+                                                .containsAll(entryExtensions)) {
+                                    // The right representation has been found.
+                                    uniqueVariant = entry;
+                                    break;
+                                }
                             }
                         }
                     }
