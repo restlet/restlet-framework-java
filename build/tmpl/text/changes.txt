@@ -28,6 +28,8 @@ Changes log
           Reported by Tim Peierls.
         - Fixed potential NPE in Guard#doHandle method. Reported by 
           Diego Ballve.
+        - Fixed 404 response with Directory Restlet when the file's name 
+          contains "%" character. Reported by Andrew Herbert.
     - API enhancements
         - Added a "tcpNoDelay" option for internal and Apache HTTP 
           clients. Contributed by Kevin Conaway.

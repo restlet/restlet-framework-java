@@ -227,32 +227,35 @@ public class FileClientHelper extends LocalClientHelper {
      *            resource.
      * @return the variant percent-encoded file name.
      */
-    private String getReencodedVariantFileName(String encodedFileName,
+    protected String getReencodedVariantFileName(String encodedFileName,
             String decodedVariantFileName) {
         int i = 0;
         int j = 0;
         boolean stop = false;
-        for (i = 0; (i < decodedVariantFileName.length())
-                && (j < encodedFileName.length()) && !stop; i++) {
-            final String decodedChar = decodedVariantFileName.substring(i,
-                    i + 1);
-            if (decodedChar.equals(encodedFileName.substring(j, j + 1))) {
+        char[] encodeds = encodedFileName.toCharArray();
+        char[] decodeds = decodedVariantFileName.toCharArray();
+
+        for (i = 0; (i < decodeds.length) && (j < encodeds.length) && !stop; i++) {
+            char decodedChar = decodeds[i];
+            char encodedChar = encodeds[j];
+
+            if (encodedChar == '%') {
+                String dec = Reference.decode(encodedFileName.substring(j,
+                        j + 3));
+                if (decodedChar == dec.charAt(0)) {
+                    j += 3;
+                } else {
+                    stop = true;
+                }
+            } else if (decodedChar == decodedChar) {
                 j++;
             } else {
-                if (encodedFileName.substring(j, j + 1).equals("%")) {
-                    if (decodedChar.equals(Reference.decode(encodedFileName
-                            .substring(j, j + 3)))) {
-                        j += 3;
-                    } else {
-                        stop = true;
-                    }
+                String dec = Reference.decode(encodedFileName.substring(j,
+                        j + 1));
+                if (decodedChar == dec.charAt(0)) {
+                    j++;
                 } else {
-                    if (decodedChar.equals(Reference.decode(encodedFileName
-                            .substring(j, j + 1)))) {
-                        j++;
-                    } else {
-                        stop = true;
-                    }
+                    stop = true;
                 }
             }
         }
