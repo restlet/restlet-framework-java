@@ -37,23 +37,18 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.logging.Level;
 
 import org.restlet.Client;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
-import org.restlet.data.LocalReference;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
-import org.restlet.data.Preference;
 import org.restlet.data.Protocol;
 import org.restlet.data.Range;
-import org.restlet.data.Reference;
-import org.restlet.data.ReferenceList;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -92,7 +87,72 @@ import org.restlet.util.ByteUtils;
  * @author Jerome Louvel
  * @author Thierry Boileau
  */
-public class FileClientHelper extends LocalClientHelper {
+public class FileClientHelper extends LocalFileClientHelper {
+
+    /**
+     * Private implementation of the LocalFile abstract class based on a
+     * java.io.File object.
+     */
+    private class FileLocalFile extends LocalFile {
+        /** The underlying file. */
+        private File file;
+
+        /**
+         * Constructor.
+         * 
+         * @param file
+         *            The underlying file.
+         */
+        public FileLocalFile(File file) {
+            super();
+            this.file = file;
+        }
+
+        @Override
+        public boolean exists() {
+            return this.file.exists();
+        }
+
+        @Override
+        public Collection<LocalFile> getFiles() {
+            List<LocalFile> result = null;
+
+            if (file.isDirectory()) {
+                result = new ArrayList<LocalFile>();
+                for (File f : this.file.listFiles()) {
+                    result.add(new FileLocalFile(f));
+                }
+            }
+
+            return result;
+        }
+
+        @Override
+        public String getName() {
+            return this.file.getName();
+        }
+
+        @Override
+        public LocalFile getParent() {
+            return new FileLocalFile(this.file.getParentFile());
+        }
+
+        @Override
+        public Representation getRepresentation(MediaType defaultMediaType,
+                int timeToLive) {
+            return new FileRepresentation(file, defaultMediaType, timeToLive);
+        }
+
+        @Override
+        public boolean isDirectory() {
+            return this.file.isDirectory();
+        }
+
+        @Override
+        public boolean isFile() {
+            return this.file.isFile();
+        }
+    }
 
     /**
      * Constructor.
@@ -106,18 +166,21 @@ public class FileClientHelper extends LocalClientHelper {
     }
 
     /**
-     * Check that all extensions of the file correspond to a known metadata
+     * Check that all extensions of the file correspond to a known metadata.
      * 
      * @param file
+     *            The file whose extensions are checked.
      * @param metadataService
-     * @param representation
-     * @return
+     *            The metadata service.
+     * @return True if all extensions of the file are known by the metadata
+     *         service.
      */
-    private boolean checkExtensionsConsistency(File file,
+    protected boolean checkExtensionsConsistency(File file,
             MetadataService metadataService) {
         boolean knownExtension = true;
 
-        final Set<String> set = getExtensions(file, metadataService);
+        final Collection<String> set = LocalFile.getExtensions(file.getName(),
+                metadataService);
         final Iterator<String> iterator = set.iterator();
         while (iterator.hasNext() && knownExtension) {
             knownExtension = metadataService.getMetadata(iterator.next()) != null;
@@ -169,108 +232,9 @@ public class FileClientHelper extends LocalClientHelper {
         return result;
     }
 
-    /**
-     * Returns the base name as the longest part of the name without known
-     * extensions (beginning from the left)
-     * 
-     * @param file
-     * @param metadataService
-     * @return the base name of the file
-     */
-    private String getBaseName(File file, MetadataService metadataService) {
-        final String[] result = file.getName().split("\\.");
-        final StringBuilder baseName = new StringBuilder().append(result[0]);
-        boolean extensionFound = false;
-        for (int i = 1; (i < result.length) && !extensionFound; i++) {
-            extensionFound = metadataService.getMetadata(result[i]) != null;
-            if (!extensionFound) {
-                baseName.append(".").append(result[i]);
-            }
-        }
-        return baseName.toString();
-    }
-
-    /**
-     * Returns the Set of extensions of a file
-     * 
-     * @param file
-     * @param metadataService
-     * @return
-     */
-    private Set<String> getExtensions(File file, MetadataService metadataService) {
-        final Set<String> result = new TreeSet<String>();
-
-        final String[] tokens = file.getName().split("\\.");
-        boolean extensionFound = false;
-        int i;
-        for (i = 1; (i < tokens.length) && !extensionFound; i++) {
-            extensionFound = metadataService.getMetadata(tokens[i]) != null;
-        }
-        if (extensionFound) {
-            for (--i; (i < tokens.length); i++) {
-                result.add(tokens[i]);
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Percent-encodes the given percent-decoded variant name of a resource
-     * whose percent-encoded name is given. Tries to match the longest common
-     * part of both encoded file name and decoded variant name.
-     * 
-     * @param encodedFileName
-     *            the percent-encoded name of the initial resource
-     * @param decodedVariantFileName
-     *            the percent-decoded file name of a variant of the initial
-     *            resource.
-     * @return the variant percent-encoded file name.
-     */
-    protected String getReencodedVariantFileName(String encodedFileName,
-            String decodedVariantFileName) {
-        int i = 0;
-        int j = 0;
-        boolean stop = false;
-        char[] encodeds = encodedFileName.toCharArray();
-        char[] decodeds = decodedVariantFileName.toCharArray();
-
-        for (i = 0; (i < decodeds.length) && (j < encodeds.length) && !stop; i++) {
-            char decodedChar = decodeds[i];
-            char encodedChar = encodeds[j];
-
-            if (encodedChar == '%') {
-                String dec = Reference.decode(encodedFileName.substring(j,
-                        j + 3));
-                if (decodedChar == dec.charAt(0)) {
-                    j += 3;
-                } else {
-                    stop = true;
-                }
-            } else if (decodedChar == decodedChar) {
-                j++;
-            } else {
-                String dec = Reference.decode(encodedFileName.substring(j,
-                        j + 1));
-                if (decodedChar == dec.charAt(0)) {
-                    j++;
-                } else {
-                    stop = true;
-                }
-            }
-        }
-
-        if (stop) {
-            return encodedFileName.substring(0, j)
-                    + decodedVariantFileName.substring(i - 1);
-        }
-
-        if (j == encodedFileName.length()) {
-            return encodedFileName.substring(0, j)
-                    + decodedVariantFileName.substring(i);
-        }
-
-        return encodedFileName.substring(0, j);
+    @Override
+    public LocalFile getLocalFile(String decodedPath) {
+        return new FileLocalFile(new File(decodedPath));
     }
 
     /**
@@ -294,13 +258,8 @@ public class FileClientHelper extends LocalClientHelper {
     @Override
     public void handle(Request request, Response response) {
         final String scheme = request.getResourceRef().getScheme();
-
-        // Ensure that all ".." and "." are normalized into the path
-        // to preven unauthorized access to user directories.
-        request.getResourceRef().normalize();
-
-        if (scheme.equalsIgnoreCase("file")) {
-            handleFile(request, response, request.getResourceRef().getPath());
+        if (Protocol.FILE.getSchemeName().equalsIgnoreCase(scheme)) {
+            super.handle(request, response);
         } else {
             throw new IllegalArgumentException(
                     "Protocol \""
@@ -309,31 +268,18 @@ public class FileClientHelper extends LocalClientHelper {
         }
     }
 
-    /**
-     * Handles a call for the FILE protocol.
-     * 
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response to update.
-     * @param path
-     *            The file or directory path.
-     */
-    protected void handleFile(Request request, Response response, String path) {
-        // As the path may be percent-encoded, it has to be percent-decoded.
-        // Then, all generated uris must be encoded.
-        final String decodedPath = LocalReference.localizePath(Reference
-                .decode(path));
-        File file = new File(decodedPath);
-        final MetadataService metadataService = getMetadataService(request);
-
-        if (request.getMethod().equals(Method.GET)
-                || request.getMethod().equals(Method.HEAD)) {
-            handleFileGet(request, response, path, file, metadataService);
-        } else if (request.getMethod().equals(Method.PUT)) {
-            handleFilePut(request, response, path, file, metadataService);
-        } else if (request.getMethod().equals(Method.DELETE)) {
-            handleFileDelete(response, file);
+    @Override
+    protected void handleFile(Request request, Response response, String path,
+            String decodedPath, MetadataService metadataService) {
+        if (Method.GET.equals(request.getMethod())
+                || Method.HEAD.equals(request.getMethod())) {
+            handleFileGet(request, response, path, getLocalFile(decodedPath),
+                    metadataService);
+        } else if (Method.PUT.equals(request.getMethod())) {
+            handleFilePut(request, response, decodedPath,
+                    new File(decodedPath), metadataService);
+        } else if (Method.DELETE.equals(request.getMethod())) {
+            handleFileDelete(response, new File(decodedPath));
         } else {
             response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
             response.getAllowedMethods().add(Method.GET);
@@ -351,7 +297,7 @@ public class FileClientHelper extends LocalClientHelper {
      * @param file
      *            The file or directory to delete.
      */
-    private void handleFileDelete(Response response, File file) {
+    protected void handleFileDelete(Response response, File file) {
         if (file.isDirectory()) {
             if (file.listFiles().length == 0) {
                 if (file.delete()) {
@@ -375,135 +321,6 @@ public class FileClientHelper extends LocalClientHelper {
     }
 
     /**
-     * Handles a GET call for the FILE protocol.
-     * 
-     * @param request
-     *            The request to update.
-     * @param response
-     *            The response to update.
-     * @param path
-     *            The encoded path of the requested file or directory.
-     * @param file
-     *            The requested file or directory.
-     * @param metadataService
-     *            The metadata service.
-     */
-    private void handleFileGet(Request request, Response response, String path,
-            File file, final MetadataService metadataService) {
-        Representation output = null;
-
-        // Get variants for a resource
-        boolean found = false;
-        final Iterator<Preference<MediaType>> iterator = request
-                .getClientInfo().getAcceptedMediaTypes().iterator();
-        while (iterator.hasNext() && !found) {
-            final Preference<MediaType> pref = iterator.next();
-            found = pref.getMetadata().equals(MediaType.TEXT_URI_LIST);
-        }
-        if (found) {
-            // Try to list all variants of this resource
-            // 1- set up base name as the longest part of the name without known
-            // extensions (beginning from the left)
-            final String baseName = getBaseName(file, metadataService);
-            // 2- looking for resources with the same base name
-            if (file.getParentFile() != null) {
-                final File[] files = file.getParentFile().listFiles();
-                if (files != null) {
-                    final ReferenceList rl = new ReferenceList(files.length);
-
-                    final String encodedParentDirectoryURI = path.substring(0,
-                            path.lastIndexOf("/"));
-                    final String encodedFileName = path.substring(path
-                            .lastIndexOf("/") + 1);
-
-                    for (final File entry : files) {
-                        if (baseName
-                                .equals(getBaseName(entry, metadataService))) {
-                            rl
-                                    .add(LocalReference
-                                            .createFileReference(encodedParentDirectoryURI
-                                                    + "/"
-                                                    + getReencodedVariantFileName(
-                                                            encodedFileName,
-                                                            entry.getName())));
-                        }
-                    }
-                    output = rl.getTextRepresentation();
-                }
-            }
-        } else {
-            if (file.exists()) {
-                if (file.isDirectory()) {
-                    // Return the directory listing
-                    final File[] files = file.listFiles();
-                    final ReferenceList rl = new ReferenceList(files.length);
-                    String directoryUri = request.getResourceRef().toString();
-
-                    // Ensures that the directory URI ends with a slash
-                    if (!directoryUri.endsWith("/")) {
-                        directoryUri += "/";
-                    }
-
-                    for (final File entry : files) {
-                        rl
-                                .add(directoryUri
-                                        + Reference.encode(entry.getName()));
-                    }
-
-                    output = rl.getTextRepresentation();
-                } else {
-                    // Return the file content
-                    output = new FileRepresentation(file, metadataService
-                            .getDefaultMediaType(), getTimeToLive());
-                    updateMetadata(metadataService, file.getName(), output);
-                }
-            } else {
-                // We look for the possible variant which has the same
-                // extensions in a distinct order.
-                // 1- set up base name as the longest part of the name without
-                // known extensions (beginning from the left)
-                final String baseName = getBaseName(file, metadataService);
-                final Set<String> extensions = getExtensions(file,
-                        metadataService);
-                // 2- loooking for resources with the same base name
-                final File[] files = file.getParentFile().listFiles();
-                File uniqueVariant = null;
-
-                if (files != null) {
-                    for (final File entry : files) {
-                        if (baseName
-                                .equals(getBaseName(entry, metadataService))) {
-                            final Set<String> entryExtensions = getExtensions(
-                                    entry, metadataService);
-                            if (entryExtensions.containsAll(extensions)
-                                    && extensions.containsAll(entryExtensions)) {
-                                // The right representation has been found.
-                                uniqueVariant = entry;
-                                break;
-                            }
-                        }
-                    }
-                }
-                if (uniqueVariant != null) {
-                    // Return the file content
-                    output = new FileRepresentation(uniqueVariant,
-                            metadataService.getDefaultMediaType(),
-                            getTimeToLive());
-                    updateMetadata(metadataService, file.getName(), output);
-                }
-            }
-        }
-
-        if (output == null) {
-            response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
-        } else {
-            output.setIdentifier(request.getResourceRef());
-            response.setEntity(output);
-            response.setStatus(Status.SUCCESS_OK);
-        }
-    }
-
-    /**
      * Handles a PUT call for the FILE protocol.
      * 
      * @param request
@@ -517,8 +334,9 @@ public class FileClientHelper extends LocalClientHelper {
      * @param metadataService
      *            The metadata service.
      */
-    private void handleFilePut(Request request, Response response, String path,
-            File file, final MetadataService metadataService) {
+    protected void handleFilePut(Request request, Response response,
+            String path, File file, final MetadataService metadataService) {
+
         // Deals with directory
         boolean isDirectory = false;
         if (file.exists()) {
@@ -532,7 +350,7 @@ public class FileClientHelper extends LocalClientHelper {
             // No existing file or directory found
             if (path.endsWith("/")) {
                 isDirectory = true;
-                // Create a new directory and its necessary parents
+                // Create a new directory and its parents if necessary
                 if (file.mkdirs()) {
                     response.setStatus(Status.SUCCESS_NO_CONTENT);
                 } else {
@@ -559,9 +377,10 @@ public class FileClientHelper extends LocalClientHelper {
                 // We look for the possible variants
                 // 1- set up base name as the longest part of the name
                 // without known extensions (beginning from the left)
-                final String baseName = getBaseName(file, metadataService);
-                final Set<String> extensions = getExtensions(file,
+                final String baseName = LocalFile.getBaseName(file.getName(),
                         metadataService);
+                final Collection<String> extensions = LocalFile.getExtensions(
+                        file.getName(), metadataService);
                 // 2- loooking for resources with the same base name
                 final File[] files = file.getParentFile().listFiles();
                 File uniqueVariant = null;
@@ -569,10 +388,11 @@ public class FileClientHelper extends LocalClientHelper {
                 final List<File> variantsList = new ArrayList<File>();
                 if (files != null) {
                     for (final File entry : files) {
-                        if (baseName
-                                .equals(getBaseName(entry, metadataService))) {
-                            final Set<String> entryExtensions = getExtensions(
-                                    entry, metadataService);
+                        if (baseName.equals(LocalFile.getBaseName(entry
+                                .getName(), metadataService))) {
+                            final Collection<String> entryExtensions = LocalFile
+                                    .getExtensions(entry.getName(),
+                                            metadataService);
                             if (entryExtensions.containsAll(extensions)) {
                                 variantsList.add(entry);
                                 if (extensions.containsAll(entryExtensions)) {

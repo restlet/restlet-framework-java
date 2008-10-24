@@ -58,6 +58,7 @@ Changes log
           context into the component's context.
         - Fixed Resource#allowPut() error in Javadocs. Reported by 
           Erik Beeson.
+        - Added the support of content negotiation to the WAR client.
         
 - 1.1 Release Candidate 2 (2008-09-24)
     - Bugs fixed
