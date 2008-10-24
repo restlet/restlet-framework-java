@@ -59,6 +59,8 @@ Changes log
         - Fixed Resource#allowPut() error in Javadocs. Reported by 
           Erik Beeson.
         - Added the support of content negotiation to the WAR client.
+          This was done by refactoring and sharing the existing logic
+          available in the FILE client connector.
         
 - 1.1 Release Candidate 2 (2008-09-24)
     - Bugs fixed

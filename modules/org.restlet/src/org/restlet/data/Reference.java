@@ -1573,7 +1573,7 @@ public class Reference {
         return result;
     }
 
-/**
+    /**
      * Returns the part of the resource identifier remaining after the base
      * reference. Note that the optional fragment is not returned by this
      * method. Must be used with the following prerequisites:
@@ -2155,6 +2155,7 @@ public class Reference {
                 setHostPort(null);
             }
         }
+
         return this;
     }
 

@@ -1,3 +1,30 @@
+/**
+ * Copyright 2005-2008 Noelios Technologies.
+ * 
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
+ * 
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
+ * 
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
+ */
+
 package com.noelios.restlet.local;
 
 import java.util.Collection;
@@ -17,12 +44,13 @@ import org.restlet.resource.Representation;
 import org.restlet.service.MetadataService;
 
 /**
- * Connector to the file resources accessible. That connector supports the
- * content negotiation feature (i.e. for GET and HEAD methods) and implements
- * the response to GET/HEAD methods.
+ * Connector to the local entities. That connector supports the content
+ * negotiation feature (i.e. for GET and HEAD methods) and implements the
+ * response to GET/HEAD methods.
  * 
+ * @author Thierry Boileau
  */
-public abstract class LocalFileClientHelper extends LocalClientHelper {
+public abstract class EntityClientHelper extends LocalClientHelper {
 
     /**
      * Constructor.
@@ -30,7 +58,7 @@ public abstract class LocalFileClientHelper extends LocalClientHelper {
      * @param client
      *            The client to help.
      */
-    public LocalFileClientHelper(Client client) {
+    public EntityClientHelper(Client client) {
         super(client);
     }
 
@@ -39,62 +67,63 @@ public abstract class LocalFileClientHelper extends LocalClientHelper {
      * the translation between the incoming requested path (which is URL
      * encoded).
      * 
+     * @param scheme
+     *            The scheme of the requested resource.
      * @param encodedParentDirPath
      *            The encoded path of the parent dir of the requested resource.
-     * @param encodedFileName
+     * @param encodedEntityName
      *            The encoded name of the requested resource.
      * @param decodedVariantName
      *            The decoded name of a returned resource.
-     * @param scheme
-     *            The scheme of the requested resource.
      * @return A new Reference.
      */
-    public Reference createReference(String encodedParentDirPath,
-            String encodedFileName, String decodedVariantName, String scheme) {
+    public Reference createReference(String scheme,
+            String encodedParentDirPath, String encodedEntityName,
+            String decodedVariantName) {
         Reference result = new Reference(scheme
                 + "://"
                 + encodedParentDirPath
                 + "/"
-                + getReencodedVariantFileName(encodedFileName,
+                + getReencodedVariantEntityName(encodedEntityName,
                         decodedVariantName));
         return result;
     }
 
     /**
-     * Returns an instance of LocalFile according to a given path.
+     * Returns a local entity for the given path.
      * 
      * @param path
-     *            The path of the file.
-     * @return An instance of LocalFile according to the given path.
+     *            The path of the entity.
+     * @return A local entity for the given path.
      */
-    public abstract LocalFile getLocalFile(String path);
+    public abstract Entity getEntity(String path);
 
     /**
      * Percent-encodes the given percent-decoded variant name of a resource
      * whose percent-encoded name is given. Tries to match the longest common
-     * part of both encoded file name and decoded variant name.
+     * part of both encoded entity name and decoded variant name.
      * 
-     * @param encodedFileName
+     * @param encodedEntityName
      *            the percent-encoded name of the initial resource
-     * @param decodedVariantFileName
-     *            the percent-decoded file name of a variant of the initial
+     * @param decodedVariantEntityName
+     *            the percent-decoded entity name of a variant of the initial
      *            resource.
-     * @return the variant percent-encoded file name.
+     * @return The variant percent-encoded entity name.
      */
-    protected String getReencodedVariantFileName(String encodedFileName,
-            String decodedVariantFileName) {
+    protected String getReencodedVariantEntityName(String encodedEntityName,
+            String decodedVariantEntityName) {
         int i = 0;
         int j = 0;
         boolean stop = false;
-        char[] encodeds = encodedFileName.toCharArray();
-        char[] decodeds = decodedVariantFileName.toCharArray();
+        char[] encodeds = encodedEntityName.toCharArray();
+        char[] decodeds = decodedVariantEntityName.toCharArray();
 
         for (i = 0; (i < decodeds.length) && (j < encodeds.length) && !stop; i++) {
             char decodedChar = decodeds[i];
             char encodedChar = encodeds[j];
 
             if (encodedChar == '%') {
-                String dec = Reference.decode(encodedFileName.substring(j,
+                String dec = Reference.decode(encodedEntityName.substring(j,
                         j + 3));
                 if (decodedChar == dec.charAt(0)) {
                     j += 3;
@@ -104,7 +133,7 @@ public abstract class LocalFileClientHelper extends LocalClientHelper {
             } else if (decodedChar == decodedChar) {
                 j++;
             } else {
-                String dec = Reference.decode(encodedFileName.substring(j,
+                String dec = Reference.decode(encodedEntityName.substring(j,
                         j + 1));
                 if (decodedChar == dec.charAt(0)) {
                     j++;
@@ -115,16 +144,16 @@ public abstract class LocalFileClientHelper extends LocalClientHelper {
         }
 
         if (stop) {
-            return encodedFileName.substring(0, j)
-                    + decodedVariantFileName.substring(i - 1);
+            return encodedEntityName.substring(0, j)
+                    + decodedVariantEntityName.substring(i - 1);
         }
 
-        if (j == encodedFileName.length()) {
-            return encodedFileName.substring(0, j)
-                    + decodedVariantFileName.substring(i);
+        if (j == encodedEntityName.length()) {
+            return encodedEntityName.substring(0, j)
+                    + decodedVariantEntityName.substring(i);
         }
 
-        return encodedFileName.substring(0, j);
+        return encodedEntityName.substring(0, j);
     }
 
     /**
@@ -138,20 +167,22 @@ public abstract class LocalFileClientHelper extends LocalClientHelper {
     @Override
     public void handle(Request request, Response response) {
         // Ensure that all ".." and "." are normalized into the path
-        // to preven unauthorized access to user directories.
+        // to prevent unauthorized access to user directories.
         request.getResourceRef().normalize();
         String path = request.getResourceRef().getPath();
+
         // As the path may be percent-encoded, it has to be percent-decoded.
         // Then, all generated uris must be encoded.
         final String decodedPath = LocalReference.localizePath(Reference
                 .decode(path));
         final MetadataService metadataService = getMetadataService(request);
 
-        handleFile(request, response, path, decodedPath, metadataService);
+        // Finally, actually handle the call
+        handleEntity(request, response, path, decodedPath, metadataService);
     }
 
     /**
-     * Handles a call for a local file. By default, only GET and HEAD methods
+     * Handles a call for a local entity. By default, only GET and HEAD methods
      * are implemented.
      * 
      * @param request
@@ -159,17 +190,18 @@ public abstract class LocalFileClientHelper extends LocalClientHelper {
      * @param response
      *            The response to update.
      * @param path
-     *            The file or directory path.
+     *            The entity path.
      * @param decodedPath
-     *            The URL decoded file or directory path.
+     *            The URL decoded entity path.
      * @param metadataService
      *            The metadataService.
      */
-    protected void handleFile(Request request, Response response, String path,
-            final String decodedPath, final MetadataService metadataService) {
+    protected void handleEntity(Request request, Response response,
+            String path, final String decodedPath,
+            final MetadataService metadataService) {
         if (Method.GET.equals(request.getMethod())
                 || Method.HEAD.equals(request.getMethod())) {
-            handleFileGet(request, response, path, getLocalFile(decodedPath),
+            handleEntityGet(request, response, path, getEntity(decodedPath),
                     metadataService);
         } else {
             response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
@@ -186,15 +218,14 @@ public abstract class LocalFileClientHelper extends LocalClientHelper {
      * @param response
      *            The response to update.
      * @param path
-     *            The encoded path of the requested file or directory.
-     * @param localFile
-     *            The requested file or directory.
+     *            The encoded path of the requested entity.
+     * @param entity
+     *            The requested entity (normal or directory).
      * @param metadataService
      *            The metadata service.
      */
-    protected void handleFileGet(Request request, Response response,
-            String path, LocalFile localFile,
-            final MetadataService metadataService) {
+    protected void handleEntityGet(Request request, Response response,
+            String path, Entity entity, final MetadataService metadataService) {
         Representation output = null;
 
         // Get variants for a resource
@@ -205,39 +236,44 @@ public abstract class LocalFileClientHelper extends LocalClientHelper {
             final Preference<MediaType> pref = iterator.next();
             found = pref.getMetadata().equals(MediaType.TEXT_URI_LIST);
         }
+
         if (found) {
             // Try to list all variants of this resource
             // 1- set up base name as the longest part of the name without known
             // extensions (beginning from the left)
-            final String baseName = localFile.getBaseName(metadataService);
-            // 2- looking for resources with the same base name
-            LocalFile parent = localFile.getParent();
-            if (parent != null) {
-                final Collection<LocalFile> files = parent.getFiles();
-                if (files != null) {
-                    final ReferenceList rl = new ReferenceList(files.size());
+            final String baseName = entity.getBaseName(metadataService);
 
+            // 2- looking for resources with the same base name
+            Entity parent = entity.getParent();
+
+            if (parent != null) {
+                final Collection<Entity> entities = parent.getChildren();
+
+                if (entities != null) {
+                    final ReferenceList rl = new ReferenceList(entities.size());
                     final String scheme = request.getResourceRef().getScheme();
                     final String encodedParentDirectoryURI = path.substring(0,
                             path.lastIndexOf("/"));
-                    final String encodedFileName = path.substring(path
+                    final String encodedEntityName = path.substring(path
                             .lastIndexOf("/") + 1);
 
-                    for (final LocalFile entry : files) {
+                    for (final Entity entry : entities) {
                         if (baseName.equals(entry.getBaseName(metadataService))) {
-                            rl.add(createReference(encodedParentDirectoryURI,
-                                    encodedFileName, entry.getName(), scheme));
+                            rl.add(createReference(scheme,
+                                    encodedParentDirectoryURI,
+                                    encodedEntityName, entry.getName()));
                         }
                     }
+
                     output = rl.getTextRepresentation();
                 }
             }
         } else {
-            if (localFile.exists()) {
-                if (localFile.isDirectory()) {
+            if (entity.exists()) {
+                if (entity.isDirectory()) {
                     // Return the directory listing
-                    final Collection<LocalFile> files = localFile.getFiles();
-                    final ReferenceList rl = new ReferenceList(files.size());
+                    final Collection<Entity> children = entity.getChildren();
+                    final ReferenceList rl = new ReferenceList(children.size());
                     String directoryUri = request.getResourceRef().toString();
 
                     // Ensures that the directory URI ends with a slash
@@ -245,7 +281,7 @@ public abstract class LocalFileClientHelper extends LocalClientHelper {
                         directoryUri += "/";
                     }
 
-                    for (final LocalFile entry : files) {
+                    for (final Entity entry : children) {
                         rl
                                 .add(directoryUri
                                         + Reference.encode(entry.getName()));
@@ -254,25 +290,27 @@ public abstract class LocalFileClientHelper extends LocalClientHelper {
                     output = rl.getTextRepresentation();
                 } else {
                     // Return the file content
-                    output = localFile.getRepresentation(metadataService
+                    output = entity.getRepresentation(metadataService
                             .getDefaultMediaType(), getTimeToLive());
                     output.setIdentifier(request.getResourceRef());
-                    updateMetadata(metadataService, localFile.getName(), output);
+                    updateMetadata(metadataService, entity.getName(), output);
                 }
             } else {
                 // We look for the possible variant which has the same
                 // extensions in a distinct order.
+
                 // 1- set up base name as the longest part of the name without
                 // known extensions (beginning from the left)
-                final String baseName = localFile.getBaseName(metadataService);
-                final Collection<String> extensions = localFile
+                final String baseName = entity.getBaseName(metadataService);
+                final Collection<String> extensions = entity
                         .getExtensions(metadataService);
+
                 // 2- loooking for resources with the same base name
-                final Collection<LocalFile> files = localFile.getFiles();
-                LocalFile uniqueVariant = null;
+                final Collection<Entity> files = entity.getChildren();
+                Entity uniqueVariant = null;
 
                 if (files != null) {
-                    for (final LocalFile entry : files) {
+                    for (final Entity entry : files) {
                         if (baseName.equals(entry.getBaseName(metadataService))) {
                             final Collection<String> entryExtensions = entry
                                     .getExtensions(metadataService);
@@ -285,12 +323,13 @@ public abstract class LocalFileClientHelper extends LocalClientHelper {
                         }
                     }
                 }
+
                 if (uniqueVariant != null) {
                     // Return the file content
                     output = uniqueVariant.getRepresentation(metadataService
                             .getDefaultMediaType(), getTimeToLive());
                     output.setIdentifier(request.getResourceRef());
-                    updateMetadata(metadataService, localFile.getName(), output);
+                    updateMetadata(metadataService, entity.getName(), output);
                 }
             }
         }

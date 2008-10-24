@@ -45,14 +45,12 @@ import java.util.logging.Level;
 import org.restlet.Client;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
-import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Range;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.resource.FileRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Variant;
 import org.restlet.service.MetadataService;
@@ -87,72 +85,7 @@ import org.restlet.util.ByteUtils;
  * @author Jerome Louvel
  * @author Thierry Boileau
  */
-public class FileClientHelper extends LocalFileClientHelper {
-
-    /**
-     * Private implementation of the LocalFile abstract class based on a
-     * java.io.File object.
-     */
-    private class FileLocalFile extends LocalFile {
-        /** The underlying file. */
-        private File file;
-
-        /**
-         * Constructor.
-         * 
-         * @param file
-         *            The underlying file.
-         */
-        public FileLocalFile(File file) {
-            super();
-            this.file = file;
-        }
-
-        @Override
-        public boolean exists() {
-            return this.file.exists();
-        }
-
-        @Override
-        public Collection<LocalFile> getFiles() {
-            List<LocalFile> result = null;
-
-            if (file.isDirectory()) {
-                result = new ArrayList<LocalFile>();
-                for (File f : this.file.listFiles()) {
-                    result.add(new FileLocalFile(f));
-                }
-            }
-
-            return result;
-        }
-
-        @Override
-        public String getName() {
-            return this.file.getName();
-        }
-
-        @Override
-        public LocalFile getParent() {
-            return new FileLocalFile(this.file.getParentFile());
-        }
-
-        @Override
-        public Representation getRepresentation(MediaType defaultMediaType,
-                int timeToLive) {
-            return new FileRepresentation(file, defaultMediaType, timeToLive);
-        }
-
-        @Override
-        public boolean isDirectory() {
-            return this.file.isDirectory();
-        }
-
-        @Override
-        public boolean isFile() {
-            return this.file.isFile();
-        }
-    }
+public class FileClientHelper extends EntityClientHelper {
 
     /**
      * Constructor.
@@ -179,7 +112,7 @@ public class FileClientHelper extends LocalFileClientHelper {
             MetadataService metadataService) {
         boolean knownExtension = true;
 
-        final Collection<String> set = LocalFile.getExtensions(file.getName(),
+        final Collection<String> set = Entity.getExtensions(file.getName(),
                 metadataService);
         final Iterator<String> iterator = set.iterator();
         while (iterator.hasNext() && knownExtension) {
@@ -233,8 +166,8 @@ public class FileClientHelper extends LocalFileClientHelper {
     }
 
     @Override
-    public LocalFile getLocalFile(String decodedPath) {
-        return new FileLocalFile(new File(decodedPath));
+    public Entity getEntity(String decodedPath) {
+        return new FileEntity(new File(decodedPath));
     }
 
     /**
@@ -269,11 +202,11 @@ public class FileClientHelper extends LocalFileClientHelper {
     }
 
     @Override
-    protected void handleFile(Request request, Response response, String path,
-            String decodedPath, MetadataService metadataService) {
+    protected void handleEntity(Request request, Response response,
+            String path, String decodedPath, MetadataService metadataService) {
         if (Method.GET.equals(request.getMethod())
                 || Method.HEAD.equals(request.getMethod())) {
-            handleFileGet(request, response, path, getLocalFile(decodedPath),
+            handleEntityGet(request, response, path, getEntity(decodedPath),
                     metadataService);
         } else if (Method.PUT.equals(request.getMethod())) {
             handleFilePut(request, response, decodedPath,
@@ -377,10 +310,10 @@ public class FileClientHelper extends LocalFileClientHelper {
                 // We look for the possible variants
                 // 1- set up base name as the longest part of the name
                 // without known extensions (beginning from the left)
-                final String baseName = LocalFile.getBaseName(file.getName(),
+                final String baseName = Entity.getBaseName(file.getName(),
                         metadataService);
-                final Collection<String> extensions = LocalFile.getExtensions(
-                        file.getName(), metadataService);
+                final Collection<String> extensions = Entity.getExtensions(file
+                        .getName(), metadataService);
                 // 2- loooking for resources with the same base name
                 final File[] files = file.getParentFile().listFiles();
                 File uniqueVariant = null;
@@ -388,9 +321,9 @@ public class FileClientHelper extends LocalFileClientHelper {
                 final List<File> variantsList = new ArrayList<File>();
                 if (files != null) {
                     for (final File entry : files) {
-                        if (baseName.equals(LocalFile.getBaseName(entry
-                                .getName(), metadataService))) {
-                            final Collection<String> entryExtensions = LocalFile
+                        if (baseName.equals(Entity.getBaseName(entry.getName(),
+                                metadataService))) {
+                            final Collection<String> entryExtensions = Entity
                                     .getExtensions(entry.getName(),
                                             metadataService);
                             if (entryExtensions.containsAll(extensions)) {
