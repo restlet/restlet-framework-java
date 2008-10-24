@@ -316,18 +316,6 @@ public class WrapperRequest extends Request {
     }
 
     /**
-     * Indicates if the call came over a confidential channel such as an
-     * SSL-secured connection.
-     * 
-     * @param confidential
-     *            True if the call came over a confidential channel.
-     */
-    @Override
-    public void setConfidential(boolean confidential) {
-        getWrappedRequest().setConfidential(confidential);
-    }
-
-    /**
      * Sets the entity from a higher-level object. This object is converted to a
      * representation using the Application's converter service. If you want to
      * use this method to facilitate the setting of entities, you need to

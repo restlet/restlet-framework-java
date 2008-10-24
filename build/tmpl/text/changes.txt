@@ -44,6 +44,12 @@ Changes log
           "style" attributes are required.
         - Added the ability the give a title to WadlApplication or 
           WadlResource instances. Suggested by Jérôme Bernard.
+        - The Request#isConfidential() method has been refactored to 
+          be supported by Message and Response as well. The method
+          Request#setConfidential() has been removed (back to Restlet
+          1.0 state). Added Protocol#isConfidential() method to support
+          the new implementation which rely on Request#getProtocol().
+          Reported by Kevin Conaway. 
     - Misc
         - Updated JAX-RS API to version 1.0. The implementation of the
           runtime environment is not fully finished yet. We are 

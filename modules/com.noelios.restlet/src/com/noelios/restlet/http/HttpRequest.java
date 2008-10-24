@@ -103,14 +103,6 @@ public class HttpRequest extends Request {
         // Set the properties
         setMethod(Method.valueOf(httpCall.getMethod()));
 
-        if (getHttpCall().isConfidential()) {
-            setConfidential(true);
-        } else {
-            // We don't want to autocreate the security data just for this
-            // information, because that will by the default value of this
-            // property if read by someone.
-        }
-
         // Set the host reference
         final StringBuilder sb = new StringBuilder();
         sb.append(httpCall.getProtocol().getSchemeName()).append("://");

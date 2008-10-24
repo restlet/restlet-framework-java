@@ -72,9 +72,6 @@ public class ChildClientDispatcher extends TemplateDispatcher {
         final Protocol protocol = request.getProtocol();
 
         if (protocol.equals(Protocol.RIAP)) {
-            // Consider that the request is confidential
-            request.setConfidential(true);
-
             // Let's dispatch it
             final LocalReference cr = new LocalReference(request
                     .getResourceRef());

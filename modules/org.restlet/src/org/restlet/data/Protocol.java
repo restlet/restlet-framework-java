@@ -59,7 +59,7 @@ public final class Protocol extends Metadata {
      * @see org.restlet.data.LocalReference
      */
     public static final Protocol CLAP = new Protocol("clap", "CLAP",
-            "Class Loader Access Protocol", UNKNOWN_PORT);
+            "Class Loader Access Protocol", UNKNOWN_PORT, true);
 
     /**
      * FILE is a standard scheme to access to representations stored in the file
@@ -72,7 +72,7 @@ public final class Protocol extends Metadata {
      * @see org.restlet.data.LocalReference
      */
     public static final Protocol FILE = new Protocol("file", "FILE",
-            "Local File System Protocol", UNKNOWN_PORT);
+            "Local File System Protocol", UNKNOWN_PORT, true);
 
     /** FTP protocol. */
     public static final Protocol FTP = new Protocol("ftp", "FTP",
@@ -84,7 +84,7 @@ public final class Protocol extends Metadata {
 
     /** HTTPS protocol (via SSL socket). */
     public static final Protocol HTTPS = new Protocol("https", "HTTPS",
-            "HyperText Transport Protocol (Secure)", 443);
+            "HyperText Transport Protocol (Secure)", 443, true);
 
     /**
      * JAR (Java ARchive) is a common scheme to access to representations inside
@@ -94,7 +94,7 @@ public final class Protocol extends Metadata {
      * @see org.restlet.data.LocalReference
      */
     public static final Protocol JAR = new Protocol("jar", "JAR",
-            "Java ARchive", UNKNOWN_PORT);
+            "Java ARchive", UNKNOWN_PORT, true);
 
     /** JDBC protocol. */
     public static final Protocol JDBC = new Protocol("jdbc", "JDBC",
@@ -106,7 +106,7 @@ public final class Protocol extends Metadata {
 
     /** POPS protocol (via SSL/TLS socket).. */
     public static final Protocol POPS = new Protocol("pops", "POPS",
-            "Post Office Protocol (Secure)", 995);
+            "Post Office Protocol (Secure)", 995, true);
 
     /**
      * RIAP (Restlet Internal Access Protocol) is a custom scheme to access
@@ -120,7 +120,7 @@ public final class Protocol extends Metadata {
      * @see org.restlet.data.LocalReference
      */
     public static final Protocol RIAP = new Protocol("riap", "RIAP",
-            "Restlet Internal Access Protocol", UNKNOWN_PORT);
+            "Restlet Internal Access Protocol", UNKNOWN_PORT, true);
 
     /** SMTP protocol. */
     public static final Protocol SMTP = new Protocol("smtp", "SMTP",
@@ -135,15 +135,16 @@ public final class Protocol extends Metadata {
     @Deprecated
     public static final Protocol SMTP_STARTTLS = new Protocol("smtp",
             "SMTP_STARTTLS",
-            "Simple Mail Transfer Protocol (starting a TLS encryption)", 25);
+            "Simple Mail Transfer Protocol (starting a TLS encryption)", 25,
+            true);
 
     /** SMTPS protocol (via SSL/TLS socket). */
     public static final Protocol SMTPS = new Protocol("smtps", "SMTPS",
-            "Simple Mail Transfer Protocol (Secure)", 465);
+            "Simple Mail Transfer Protocol (Secure)", 465, true);
 
     /** Local Web Archive access protocol. */
     public static final Protocol WAR = new Protocol("war", "WAR",
-            "Web Archive Access Protocol", UNKNOWN_PORT);
+            "Web Archive Access Protocol", UNKNOWN_PORT, true);
 
     /**
      * Creates the protocol associated to a URI scheme name. If an existing
@@ -195,6 +196,9 @@ public final class Protocol extends Metadata {
         return result;
     }
 
+    /** The confidentiality. */
+    private volatile boolean confidential;
+
     /** The default port if known or -1. */
     private volatile int defaultPort;
 
@@ -226,9 +230,30 @@ public final class Protocol extends Metadata {
      */
     public Protocol(final String schemeName, final String name,
             final String description, int defaultPort) {
+        this(schemeName, name, description, defaultPort, false);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param schemeName
+     *            The scheme name.
+     * @param name
+     *            The unique name.
+     * @param description
+     *            The description.
+     * @param defaultPort
+     *            The default port.
+     * @param confidential
+     *            The confidentiality.
+     */
+    public Protocol(final String schemeName, final String name,
+            final String description, int defaultPort,
+            final boolean confidential) {
         super(name, description);
         this.schemeName = schemeName;
         this.defaultPort = defaultPort;
+        this.confidential = confidential;
     }
 
     /** {@inheritDoc} */
@@ -261,4 +286,15 @@ public final class Protocol extends Metadata {
     public int hashCode() {
         return (getName() == null) ? 0 : getName().toLowerCase().hashCode();
     }
+
+    /**
+     * Indicates if the protocol guarantees the confidentially of the messages
+     * exchanged, for example via a SSL-secured connection.
+     * 
+     * @return True if the protocol is confidential.
+     */
+    public boolean isConfidential() {
+        return this.confidential;
+    }
+
 }

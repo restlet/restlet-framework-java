@@ -302,6 +302,17 @@ public class WrapperResponse extends Response {
     }
 
     /**
+     * Indicates if the call came over a confidential channel such as an
+     * SSL-secured connection.
+     * 
+     * @return True if the call came over a confidential channel.
+     */
+    @Override
+    public boolean isConfidential() {
+        return getWrappedResponse().isConfidential();
+    }
+
+    /**
      * Indicates if a content is available and can be sent. Several conditions
      * must be met: the content must exists and have some available data.
      * 

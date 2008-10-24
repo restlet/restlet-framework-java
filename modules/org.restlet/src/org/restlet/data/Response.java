@@ -307,6 +307,11 @@ public class Response extends Message {
         return this.status;
     }
 
+    @Override
+    public boolean isConfidential() {
+        return getRequest().isConfidential();
+    }
+
     /**
      * Permanently redirects the client to a target URI. The client is expected
      * to reuse the same method for the new request.

@@ -78,49 +78,50 @@ public abstract class Message {
         this.saxRepresentation = null;
     }
 
-/**
-	 * Returns the modifiable map of attributes that can be used by developers
-	 * to save information relative to the message. Creates a new instance if no
-	 * one has been set. This is an easier alternative to the creation of a
-	 * wrapper instance around the whole message.<br>
-	 * <br>
-	 * 
-	 * In addition, this map is a shared space between the developer and the
-	 * connectors. In this case, it is used to exchange information that is not
-	 * uniform across all protocols and couldn't therefore be directly included
-	 * in the API. For this purpose, all attribute names starting with
-	 * "org.restlet" are reserved. Currently the following attributes are used:
-	 * <table>
-	 * <tr>
-	 * <th>Attribute name</th>
-	 * <th>Class name</th>
-	 * <th>Description</th>
-	 * </tr>
-	 * <tr>
-	 * <td>org.restlet.http.headers</td>
-	 * <td>org.restlet.data.Form</td>
-	 * <td>Server HTTP connectors must provide all request headers and client
-	 * HTTP connectors must provide all response headers, exactly as they were
-	 * received. In addition, developers can also use this attribute to specify
-	 * <b>non-standard</b> headers that should be added to the request or to
-	 * the response. </td>
-	 * </tr>
-	 * <tr>
-	 * <td>org.restlet.https.clientCertificates</td>
-	 * <td>List<java.security.cert.Certificate></td>
-	 * <td>For requests received via a secure connector, indicates the ordered
-	 * list of client certificates, if they are available and accessible.</td>
-	 * </tr>
-	 * </table><br>
-	 * Most of the standard HTTP headers are directly supported via the Restlet
-	 * API. Thus, adding such HTTP headers is forbidden because it could
-	 * conflict with the connector's internal behavior, limit portability or
-	 * prevent future optimizations. The other standard HTTP headers (that are
-	 * not supported) can be added as attributes via the
-	 * "org.restlet.http.headers" key.<br>
-	 * 
-	 * @return The modifiable attributes map.
-	 */
+    /**
+     * Returns the modifiable map of attributes that can be used by developers
+     * to save information relative to the message. Creates a new instance if no
+     * one has been set. This is an easier alternative to the creation of a
+     * wrapper instance around the whole message.<br>
+     * <br>
+     * 
+     * In addition, this map is a shared space between the developer and the
+     * connectors. In this case, it is used to exchange information that is not
+     * uniform across all protocols and couldn't therefore be directly included
+     * in the API. For this purpose, all attribute names starting with
+     * "org.restlet" are reserved. Currently the following attributes are used:
+     * <table>
+     * <tr>
+     * <th>Attribute name</th>
+     * <th>Class name</th>
+     * <th>Description</th>
+     * </tr>
+     * <tr>
+     * <td>org.restlet.http.headers</td>
+     * <td>org.restlet.data.Form</td>
+     * <td>Server HTTP connectors must provide all request headers and client
+     * HTTP connectors must provide all response headers, exactly as they were
+     * received. In addition, developers can also use this attribute to specify
+     * <b>non-standard</b> headers that should be added to the request or to the
+     * response.</td>
+     * </tr>
+     * <tr>
+     * <td>org.restlet.https.clientCertificates</td>
+     * <td>List<java.security.cert.Certificate></td>
+     * <td>For requests received via a secure connector, indicates the ordered
+     * list of client certificates, if they are available and accessible.</td>
+     * </tr>
+     * </table>
+     * <br>
+     * Most of the standard HTTP headers are directly supported via the Restlet
+     * API. Thus, adding such HTTP headers is forbidden because it could
+     * conflict with the connector's internal behavior, limit portability or
+     * prevent future optimizations. The other standard HTTP headers (that are
+     * not supported) can be added as attributes via the
+     * "org.restlet.http.headers" key.<br>
+     * 
+     * @return The modifiable attributes map.
+     */
     public Map<String, Object> getAttributes() {
         if (this.attributes == null) {
             this.attributes = new TreeMap<String, Object>();
@@ -233,6 +234,14 @@ public abstract class Message {
 
         return this.saxRepresentation;
     }
+
+    /**
+     * Indicates if the message was or will be exchanged confidentially, for
+     * example via a SSL-secured connection.
+     * 
+     * @return True if the message is confidential.
+     */
+    public abstract boolean isConfidential();
 
     /**
      * Indicates if a content is available and can be sent. Several conditions

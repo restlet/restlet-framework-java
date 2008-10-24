@@ -109,9 +109,6 @@ public class Request extends Message {
     /** The condition data. */
     private volatile Conditions conditions;
 
-    /** Indicates if the call came over a confidential channel. */
-    private volatile boolean confidential;
-
     /** The cookies provided by the client. */
     private volatile Series<Cookie> cookies;
 
@@ -140,7 +137,6 @@ public class Request extends Message {
      * Constructor.
      */
     public Request() {
-        this.confidential = false;
     }
 
     /**
@@ -387,13 +383,12 @@ public class Request extends Message {
     }
 
     /**
-     * Indicates if the call came over a confidential channel such as an
-     * SSL-secured connection.
-     * 
-     * @return True if the call came over a confidential channel.
+     * Implemented based on the {@link Protocol#isConfidential()} method for the
+     * request's protocol returned by {@link #getProtocol()};
      */
+    @Override
     public boolean isConfidential() {
-        return this.confidential;
+        return (getProtocol() == null) ? false : getProtocol().isConfidential();
     }
 
     /**
@@ -442,17 +437,6 @@ public class Request extends Message {
      */
     public void setConditions(Conditions conditions) {
         this.conditions = conditions;
-    }
-
-    /**
-     * Indicates if the call came over a confidential channel such as an
-     * SSL-secured connection.
-     * 
-     * @param confidential
-     *            True if the call came over a confidential channel.
-     */
-    public void setConfidential(boolean confidential) {
-        this.confidential = confidential;
     }
 
     /**
