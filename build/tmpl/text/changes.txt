@@ -30,6 +30,9 @@ Changes log
           Diego Ballve.
         - Fixed 404 response with Directory Restlet when the file's name 
           contains "%" character. Reported by Andrew Herbert.
+        - ResourceException was sometimes calling Status#toString() 
+          instead of Status#getDescription() to get the exception
+          message. Reported by Aaron Roberts.
     - API enhancements
         - Added a "tcpNoDelay" option for internal and Apache HTTP 
           clients. Contributed by Kevin Conaway.

@@ -106,8 +106,7 @@ public class ResourceException extends Exception {
      *            The status to associate.
      */
     public ResourceException(final Status status) {
-        super((status == null) ? null : status.toString());
-        this.status = status;
+        this(status, (Throwable) null);
     }
 
     /**
