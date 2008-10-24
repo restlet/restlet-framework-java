@@ -28,25 +28,24 @@
 package com.noelios.restlet.ext.servlet;
 
 import java.io.InputStream;
-import java.util.Iterator;
+import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import javax.servlet.ServletContext;
 
 import org.restlet.Client;
 import org.restlet.data.MediaType;
-import org.restlet.data.Method;
 import org.restlet.data.Protocol;
-import org.restlet.data.Reference;
-import org.restlet.data.ReferenceList;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.data.Status;
 import org.restlet.resource.InputRepresentation;
 import org.restlet.resource.Representation;
-import org.restlet.service.MetadataService;
 
-import com.noelios.restlet.local.FileClientHelper;
+import com.noelios.restlet.local.LocalFile;
+import com.noelios.restlet.local.LocalFileClientHelper;
 
 /**
  * Local client connector based on a Servlet context (JEE Web application
@@ -72,7 +71,128 @@ import com.noelios.restlet.local.FileClientHelper;
  * 
  * @author Jerome Louvel
  */
-public class ServletWarClientHelper extends FileClientHelper {
+public class ServletWarClientHelper extends LocalFileClientHelper {
+
+    /**
+     * Private implementation of a LocalFile based on a servlet context of the
+     * LocalFile abstract class.
+     * 
+     */
+    private class ServletLocalFile extends LocalFile {
+        /**
+         * List of children files if it is a directory. We suppose that in a WAR
+         * file, this list does not change, and thus can be stored.
+         */
+        private List<LocalFile> files = null;
+
+        /** The full name of the file (without trailing "/"). */
+        private String fullName;
+
+        /** Is this file a directory? */
+        private boolean isDirectory;
+
+        /** The relative path of the file inside the context. */
+        private String path;
+
+        /** The Servlet context to use. */
+        private ServletContext servletContext;
+
+        public ServletLocalFile(ServletContext servletContext, String path) {
+            super();
+            this.servletContext = servletContext;
+            this.path = path;
+ 
+            if (path.endsWith("/")) {
+                this.isDirectory = true;
+                fullName = path.substring(0, path.length() - 1);
+            } else {
+                setFiles(servletContext.getResourcePaths(path + "/"));
+                this.isDirectory = this.files != null;
+                fullName = path;
+            }
+        }
+
+        @Override
+        public boolean exists() {
+            try {
+                return (isDirectory() && getFiles() != null)
+                        || (isFile() && servletContext.getResource(this.path) != null);
+            } catch (MalformedURLException e) {
+            }
+            return false;
+        }
+
+        @Override
+        public Collection<LocalFile> getFiles() {
+            List<LocalFile> result = null;
+
+            if (isDirectory()) {
+                if (this.files == null) {
+                    // Lazy initialiation
+                    setFiles(this.servletContext.getResourcePaths(this.path));
+                }
+                result = this.files;
+            }
+
+            return result;
+        }
+
+        @Override
+        public String getName() {
+            int index = this.fullName.lastIndexOf("/");
+            if (index != -1) {
+                return this.fullName.substring(index + 1);
+            } else {
+                return this.fullName;
+            }
+        }
+
+        @Override
+        public LocalFile getParent() {
+            int index = this.fullName.lastIndexOf("/");
+            if (index != -1) {
+                return new ServletLocalFile(this.servletContext, this.fullName
+                        .substring(0, index + 1));
+            }
+
+            return null;
+        }
+
+        @Override
+        public Representation getRepresentation(MediaType defaultMediaType,
+                int timeToLive) {
+            final InputStream ris = getServletContext().getResourceAsStream(
+                    path);
+            return new InputRepresentation(ris, defaultMediaType);
+        }
+
+        @Override
+        public boolean isDirectory() {
+            return this.isDirectory;
+        }
+
+        @Override
+        public boolean isFile() {
+            return !this.isDirectory;
+        }
+
+        /**
+         * Set the listing of files according to a given set of file names.
+         * 
+         * @param set
+         *            The set of file names.
+         */
+        private void setFiles(Set set) {
+            if (set != null && !set.isEmpty()) {
+                this.files = new ArrayList<LocalFile>();
+                for (Object object : set) {
+                    this.files.add(new ServletLocalFile(this.servletContext,
+                            (String) object));
+                }
+            }
+        }
+    }
+
     /** The Servlet context to use. */
     private volatile ServletContext servletContext;
 
@@ -82,13 +202,18 @@ public class ServletWarClientHelper extends FileClientHelper {
      * @param client
      *            The client to help.
      * @param servletContext
-     *            The Servlet context
+     *            The Servlet context.
      */
     public ServletWarClientHelper(Client client, ServletContext servletContext) {
         super(client);
         getProtocols().clear();
         getProtocols().add(Protocol.WAR);
         this.servletContext = servletContext;
+    }
+
+    @Override
+    public LocalFile getLocalFile(String decodedPath) {
+        return new ServletLocalFile(this.servletContext, decodedPath);
     }
 
     /**
@@ -101,71 +226,15 @@ public class ServletWarClientHelper extends FileClientHelper {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void handle(Request request, Response response) {
-
-        if (request.getMethod().equals(Method.GET)
-                || request.getMethod().equals(Method.HEAD)) {
-            // Ensure that all ".." and "." are normalized into the path
-            // to prevent unauthorized access to user directories.
-            request.getResourceRef().normalize();
-
-            final String basePath = request.getResourceRef().getPath();
-            final int lastSlashIndex = basePath.lastIndexOf('/');
-            String entry = (lastSlashIndex == -1) ? basePath : basePath
-                    .substring(lastSlashIndex + 1);
-            Representation output = null;
-
-            if (basePath.endsWith("/")) {
-                // Return the directory listing
-                final Set<String> entries = getServletContext()
-                        .getResourcePaths(basePath);
-                if (entries != null) {
-                    final ReferenceList rl = new ReferenceList(entries.size());
-                    rl.setIdentifier(request.getResourceRef());
-
-                    for (final Iterator<String> iter = entries.iterator(); iter
-                            .hasNext();) {
-                        entry = iter.next();
-                        rl.add(new Reference(basePath
-                                + entry.substring(basePath.length())));
-                    }
-
-                    output = rl.getTextRepresentation();
-                }
-            } else {
-                // Return the entry content
-                final InputStream ris = getServletContext()
-                        .getResourceAsStream(basePath);
-                if (ris != null) {
-                    final MetadataService metadataService = getMetadataService(request);
-                    output = new InputRepresentation(ris, metadataService
-                            .getDefaultMediaType());
-                    output.setIdentifier(request.getResourceRef());
-                    updateMetadata(metadataService, entry, output);
-
-                    // See if the Servlet context specified a particular Mime
-                    // Type
-                    final String mediaType = getServletContext().getMimeType(
-                            basePath);
-
-                    if (mediaType != null) {
-                        output.setMediaType(new MediaType(mediaType));
-                    }
-                }
-
-            }
-
-            response.setEntity(output);
-            if (output != null) {
-                response.setStatus(Status.SUCCESS_OK);
-            } else {
-                response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
-            }
+        final String scheme = request.getResourceRef().getScheme();
+        if (Protocol.WAR.getSchemeName().equalsIgnoreCase(scheme)) {
+            super.handle(request, response);
         } else {
-            response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-            response.getAllowedMethods().add(Method.GET);
-            response.getAllowedMethods().add(Method.HEAD);
+            throw new IllegalArgumentException(
+                    "Protocol \""
+                            + scheme
+                            + "\" not supported by the connector. Only WAR is supported.");
         }
     }
 
