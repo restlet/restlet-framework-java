@@ -34,9 +34,8 @@ import java.io.PushbackInputStream;
 
 /**
  * {@link InputStream} to wrap a source {@link InputStream} that has been
- * chunked.<br>
- * <br>
- * See section 3.6.1 of HTTP Protocol for more information on chunked encoding.
+ * chunked. See section 3.6.1 of HTTP Protocol for more information on chunked
+ * encoding.
  * 
  * @author <a href="mailto:kevin.a.conaway@gmail.com">Kevin Conaway</a>
  * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html">HTTP/1.1

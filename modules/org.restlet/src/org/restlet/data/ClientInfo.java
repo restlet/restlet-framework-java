@@ -43,12 +43,10 @@ import org.restlet.util.Template;
 import org.restlet.util.Variable;
 
 /**
- * Client specific data related to a call.<br>
- * <br>
- * When extracted from a request, most of these data are directly taken from the
- * underlying headers. There are some exceptions: agentAttributes and
- * mainAgentProduct which are taken from the agent name (for example the
- * "user-agent" header for HTTP requests).<br>
+ * Client specific data related to a call. When extracted from a request, most
+ * of these data are directly taken from the underlying headers. There are some
+ * exceptions: agentAttributes and mainAgentProduct which are taken from the
+ * agent name (for example the "user-agent" header for HTTP requests).<br>
  * <br>
  * As described by the HTTP specification, the "user-agent" can be seen as a
  * ordered list of products name (ie a name and a version) and/or comments.<br>
@@ -118,7 +116,8 @@ import org.restlet.util.Variable;
  * <td>facultativeData</td>
  * <td>A sequence of characters that can be empty</td>
  * </tr>
- * </table><br>
+ * </table>
+ * <br>
  * <br>
  * These variables are used to generate a {@link Product} instance with the main
  * data (name, version, comment). This instance is accessible via the

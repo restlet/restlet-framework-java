@@ -46,12 +46,11 @@ import org.restlet.resource.Representation;
 import org.restlet.service.MetadataService;
 
 /**
- * Connector to the class loaders.<br>
- * <br>
- * Note that if you use the class authority for your CLAP URIs, you can provide
- * a custom classloader instead of the one of the connector. For this, your
- * requests need to have a "org.restlet.clap.classloader" attribute set with the
- * instance of your classloader.
+ * Connector to the resources accessed via class loaders. Note that if you use
+ * the class authority for your CLAP URIs, you can provide a custom classloader
+ * instead of the one of the connector. For this, your requests need to have a
+ * "org.restlet.clap.classloader" attribute set with the instance of your
+ * classloader.
  * 
  * @author Jerome Louvel
  */

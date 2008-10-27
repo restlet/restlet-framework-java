@@ -44,10 +44,11 @@ import org.restlet.util.ByteUtils;
 import org.restlet.util.WrapperRepresentation;
 
 /**
- * Representation that wraps another representation and allows to get the
- * computed digest of the wrapped entity after reading or writing operations.
- * The final digest value is guaranteed to be correct only after the wrapped
- * representation has been entirely exhausted (that is to say read or written).<br>
+ * Representation capable of computing a digest. It wraps another representation
+ * and allows to get the computed digest of the wrapped entity after reading or
+ * writing operations. The final digest value is guaranteed to be correct only
+ * after the wrapped representation has been entirely exhausted (that is to say
+ * read or written).<br>
  * This wrapper allows to get the computed digest at the same time the
  * representation is read or written. It does not need two separate operations
  * which may require specific attention for transient representations.
