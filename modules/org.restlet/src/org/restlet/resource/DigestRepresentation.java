@@ -49,6 +49,7 @@ import org.restlet.util.WrapperRepresentation;
  * writing operations. The final digest value is guaranteed to be correct only
  * after the wrapped representation has been entirely exhausted (that is to say
  * read or written).<br>
+ * <br>
  * This wrapper allows to get the computed digest at the same time the
  * representation is read or written. It does not need two separate operations
  * which may require specific attention for transient representations.

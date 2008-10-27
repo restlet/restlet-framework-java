@@ -30,8 +30,10 @@ package org.restlet.data;
 import org.restlet.util.Engine;
 
 /**
- * Cookie setting provided by a server.
+ * Cookie setting provided by a server. This allows a server side application to
+ * add, modify or remove a cookie on the client. *
  * 
+ * @see Response#getCookieSettings()
  * @author Jerome Louvel
  */
 public final class CookieSetting extends Cookie {

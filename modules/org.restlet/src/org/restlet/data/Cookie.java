@@ -30,7 +30,11 @@ package org.restlet.data;
 import org.restlet.util.Engine;
 
 /**
- * Cookie provided by a client.
+ * Cookie provided by a client. To get the list of all cookies sent by a client,
+ * you can use the {@link Request#getCookies()} method.<br>
+ * <br>
+ * Note that if you are on the server side and want to set a cookie on the
+ * client, you should use the {@link CookieSetting} class instead.
  * 
  * @author Jerome Louvel
  */

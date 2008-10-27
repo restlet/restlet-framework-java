@@ -77,7 +77,6 @@ import org.restlet.util.Series;
  * the creation of costly representations is delegated to the
  * {@link #represent(Variant)} method when actually needed.<br>
  * <br>
- * 
  * Concurrency note: typically created by Routers, Resource instances are the
  * final handlers of requests. Unlike the other processors in the Restlet chain,
  * a Resource instance is not reused by several calls and is only invoked by one
@@ -203,8 +202,7 @@ public class Resource extends Handler {
     }
 
     /**
-     * Indicates if PUT calls are allowed by checking the "modifiable"
-     * property.
+     * Indicates if PUT calls are allowed by checking the "modifiable" property.
      * 
      * @return True if the method is allowed.
      */

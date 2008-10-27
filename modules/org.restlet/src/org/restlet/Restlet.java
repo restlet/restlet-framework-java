@@ -39,8 +39,8 @@ import org.restlet.util.Engine;
  * Uniform class that provides a context and life cycle support. It has many
  * subclasses that focus on specific ways to process calls. The context property
  * is typically provided by a parent Component as a way to encapsulate access to
- * shared features such as logging and client connectors.
- * 
+ * shared features such as logging and client connectors.<br>
+ * <br>
  * Concurrency note: instances of this class or its subclasses can be invoked by
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.

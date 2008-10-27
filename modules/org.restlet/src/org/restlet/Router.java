@@ -58,13 +58,15 @@ import org.restlet.util.Template;
  * base reference during the routing if they are selected. It is also important
  * to know that the routing is very strict about path separators in your URI
  * patterns. Finally, you can modify the list of routes while handling incoming
- * calls as the delegation code is ensured to be thread-safe.
- * 
+ * calls as the delegation code is ensured to be thread-safe.<br>
+ * <br>
  * Concurrency note: instances of this class or its subclasses can be invoked by
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
  * 
- * @see <a href="http://www.restlet.org/documentation/1.1/tutorial#part11">Tutorial: Routers and hierarchical URIs</a>
+ * @see <a
+ *      href="http://www.restlet.org/documentation/1.1/tutorial#part11">Tutorial:
+ *      Routers and hierarchical URIs</a>
  * @author Jerome Louvel
  */
 public class Router extends Restlet {

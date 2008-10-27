@@ -59,7 +59,8 @@ import org.xml.sax.SAXException;
 
 /**
  * Representation based on an XML document. It knows how to evaluate XPath
- * expressions and how to manage a namespace context.
+ * expressions and how to manage a namespace context. This class also offers
+ * convenient methods to validate the document against a specified XML scheme.
  * 
  * @author Jerome Louvel
  */

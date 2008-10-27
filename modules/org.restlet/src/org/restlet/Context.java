@@ -43,10 +43,10 @@ import org.restlet.util.Series;
  * It is typically provided by the immediate parent Restlet (Application is the
  * most common case).<br>
  * <br>
- * Note that attributes and parameters of a context are stored in concurrent
- * collections that guarantee thread safe access and modification. If several
- * threads concurrently access objects and modify these collections, they should
- * synchronize on the lock of the Context instance.
+ * Concurrency note: attributes and parameters of a context are stored in
+ * concurrent collections that guarantee thread safe access and modification. If
+ * several threads concurrently access objects and modify these collections,
+ * they should synchronize on the lock of the Context instance.
  * 
  * @author Jerome Louvel
  */

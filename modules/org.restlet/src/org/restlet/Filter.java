@@ -37,8 +37,8 @@ import org.restlet.resource.Resource;
  * purpose is to do some pre-processing or post-processing on the calls going
  * through it before or after they are actually handled by an attached Restlet.
  * Also note that you can attach and detach targets while handling incoming
- * calls as the filter is ensured to be thread-safe.
- * 
+ * calls as the filter is ensured to be thread-safe.<br>
+ * <br>
  * Concurrency note: instances of this class or its subclasses can be invoked by
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.

@@ -37,7 +37,8 @@ import org.restlet.util.ByteUtils;
 
 /**
  * Representation based on a BIO characters writer. This class is a good basis
- * to write your own representations, especially for the dynamic and large ones.
+ * to write your own representations, especially for the dynamic and large ones. <br>
+ * <br>
  * For this you just need to create a subclass and override the abstract
  * Representation.write(Writer) method. This method will later be called back by
  * the connectors when the actual representation's content is needed.

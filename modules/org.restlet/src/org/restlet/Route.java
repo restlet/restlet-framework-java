@@ -46,10 +46,12 @@ import org.restlet.util.Variable;
  * Filter scoring the affinity of calls with the attached Restlet. The score is
  * used by an associated Router in order to determine the most appropriate
  * Restlet for a given call. The routing is based on a reference template. It
- * also supports the extraction of some attributes from a call. Multiple
- * extractions can be defined, based on the query string of the resource
- * reference, on the request form (ex: posted from a browser) or on cookies.
- * 
+ * also supports the extraction of some attributes from a call.<br>
+ * <br>
+ * Multiple extractions can be defined, based on the query string of the
+ * resource reference, on the request form (ex: posted from a browser) or on
+ * cookies.<br>
+ * <br>
  * Concurrency note: instances of this class or its subclasses can be invoked by
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.

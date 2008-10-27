@@ -30,8 +30,8 @@ package org.restlet.service;
 /**
  * Generic service associated to a component or an application. The lifecycle of
  * a service is tigthly related to the one of the associated component or
- * application.
- * 
+ * application.<br>
+ * <br>
  * If you want to use a specific service, you can always disable it before it is
  * actually started via the {@link #setEnabled(boolean)} method.
  * 

@@ -53,13 +53,15 @@ import org.restlet.data.Status;
  * will be automatically be used by the Finder instance at runtime.<br>
  * <br>
  * If no matching handle*() method is found, then a
- * Status.CLIENT_ERROR_METHOD_NOT_ALLOWED is returned.
- * 
+ * Status.CLIENT_ERROR_METHOD_NOT_ALLOWED is returned.<br>
+ * <br>
  * Concurrency note: instances of this class or its subclasses can be invoked by
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
  * 
- * @see <a href="http://www.restlet.org/documentation/1.1/tutorial#part12">Tutorial: Reaching target Resources</a>
+ * @see <a
+ *      href="http://www.restlet.org/documentation/1.1/tutorial#part12">Tutorial:
+ *      Reaching target Resources</a>
  * @author Jerome Louvel
  */
 public class Finder extends Restlet {

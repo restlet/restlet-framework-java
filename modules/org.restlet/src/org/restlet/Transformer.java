@@ -42,8 +42,8 @@ import org.restlet.resource.TransformRepresentation;
 /**
  * Filter that can transform XML representations by applying an XSLT transform
  * sheet. It uses the {@link org.restlet.resource.TransformRepresentation} to
- * actually transform the XML entities.
- * 
+ * actually transform the XML entities.<br>
+ * <br>
  * Concurrency note: instances of this class or its subclasses can be invoked by
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.

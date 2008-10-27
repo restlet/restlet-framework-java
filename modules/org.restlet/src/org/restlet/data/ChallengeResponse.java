@@ -34,7 +34,12 @@ import org.restlet.util.Engine;
 import org.restlet.util.Series;
 
 /**
- * Authentication response sent by client to an origin server.
+ * Authentication response sent by client to an origin server. This is typically
+ * following a {@link ChallengeRequest} sent by the origin server to the client.<br>
+ * <br>
+ * Sometimes, it might be faster to preemptively issue a challenge response if
+ * the client knows for sure that the target resource will require
+ * authentication.
  * 
  * @author Jerome Louvel
  */

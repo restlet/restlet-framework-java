@@ -159,7 +159,7 @@ public final class Conditions {
                 }
             } else {
                 // See
-                //http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.24
+                // http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.24
                 // If none of the entity tags match, or if "*" is given and no
                 // current entity exists, the server MUST NOT perform the
                 // requested method

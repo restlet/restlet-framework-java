@@ -31,7 +31,9 @@ import org.restlet.util.Engine;
 import org.restlet.util.Series;
 
 /**
- * Authentication challenge sent by an origin server to a client.
+ * Authentication challenge sent by an origin server to a client. Upon reception
+ * of this request, the client should send a new request with the proper
+ * {@link ChallengeResponse} set.
  * 
  * @author Jerome Louvel
  */

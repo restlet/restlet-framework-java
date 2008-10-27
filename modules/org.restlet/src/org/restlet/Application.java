@@ -51,7 +51,6 @@ import org.restlet.util.Helper;
  * <ul>
  * <li>"connectorService" to declare necessary client and server connectors.</li>
  * <li>"decoderService" to automatically decode or decompress request entities.</li>
- * <li>"digestService" to verify the integrity of entities received by servers.</li>
  * <li>"metadataService" to provide access to metadata and their associated
  * extension names.</li>
  * <li>"rangeService" to automatically exposes ranges of response entities.</li>

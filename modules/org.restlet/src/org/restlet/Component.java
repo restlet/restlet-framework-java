@@ -78,9 +78,8 @@ import org.w3c.dom.NodeList;
  * <br>
  * The XML Schema of the configuration files is available both <a
  * href="http://www.restlet.org/schemas/1.1/Component">online</a> and inside the
- * API JAR under the "org.restlet.Component.xsd" name.<br>
- * <br>
- * Here is a sample of XML configuration:
+ * API JAR under the "org.restlet.Component.xsd" name. Here is a sample of XML
+ * configuration:
  * 
  * <pre>
  * &lt;?xml version=&quot;1.0&quot;?&gt;
@@ -105,7 +104,9 @@ import org.w3c.dom.NodeList;
  * several threads at the same time and therefore must be thread-safe. You
  * should be especially careful when storing state in member variables.
  * 
- * @see <a href="http://roy.gbiv.com/pubs/dissertation/software_arch.htm#sec_1_2_1">Source dissertation</a>
+ * @see <a
+ *      href="http://roy.gbiv.com/pubs/dissertation/software_arch.htm#sec_1_2_1">Source
+ *      dissertation</a>
  * 
  * @author Jerome Louvel
  */

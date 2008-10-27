@@ -44,8 +44,9 @@ import org.restlet.util.WrapperList;
 /**
  * Descriptor for available representations of a resource. It contains all the
  * important metadata about a representation but is not able to actually serve
- * the representation's content itself. For this, you need to use the
- * Representation subclass.
+ * the representation's content itself.<br>
+ * <br>
+ * For this, you need to use the Representation subclass.
  * 
  * @author Jerome Louvel
  */
