@@ -11,7 +11,7 @@ of your Restlet program, otherwise ClassNotFound exceptions will be thrown.
 A minimal Restlet application requires the org.restlet and com.noelios.restlet JARs.
 
 To configure connectors such as HTTP server or HTTP client connectors, please refer
-to this page: http://www.restlet.org/documentation/1.1/connectors
+to the Restlet User Guide: http://wiki.restlet.org/docs_1.1/
 
  
 org.restlet (Restlet API)
@@ -88,9 +88,9 @@ com.noelios.restlet.example (Tutorial examples)
  - edu.purdue.cs.bloat_1.0 (for book examples)
 
 
-com.noelios.restlet.ext.grizzly_1.7 (HTTP server connector base on Grizzly NIO framework)
---------------------------------------
- - com.sun.grizzly_1.7
+com.noelios.restlet.ext.grizzly_1.8 (HTTP server connector base on Grizzly NIO framework)
+-----------------------------------
+ - com.sun.grizzly_1.8
 
 
 com.noelios.restlet.ext.gwt_1.5 (Integration with GWT 1.5)
