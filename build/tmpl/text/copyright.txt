@@ -21,7 +21,7 @@ agreements. For questions, please contact the copyright holder:
       69 rue Carnot
       92300 Levallois-Perret
       FRANCE
-		http://www.noelios.com/legal
+		http://www.restlet.org/about/legal
 		mailto:legal@noelios.com
 
 ________________________________________________________________________________

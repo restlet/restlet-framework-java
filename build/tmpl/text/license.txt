@@ -26,7 +26,7 @@ For special licensing requests, please contact:
       69 rue Carnot
       92300 Levallois-Perret
       FRANCE
-		http://www.noelios.com/legal
+		http://www.restlet.org/about/legal
 		mailto:legal@noelios.com
 
 _______________________________________________________________________
