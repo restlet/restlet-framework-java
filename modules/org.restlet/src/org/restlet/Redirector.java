@@ -1,19 +1,28 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package org.restlet;
@@ -29,38 +38,48 @@ import org.restlet.util.Template;
 
 /**
  * Rewrites URIs then redirects the call or the client to a new destination.
+ * There are various redirection modes that you can choose from: client-side
+ * redirections ({@link #MODE_CLIENT_FOUND}, {@link #MODE_CLIENT_PERMANENT},
+ * {@link #MODE_CLIENT_SEE_OTHER}, {@link #MODE_CLIENT_TEMPORARY}) or
+ * server-side redirections, similar to a reverse proxy (
+ * {@link #MODE_DISPATCHER}).<br>
+ * <br>
+ * Concurrency note: instances of this class or its subclasses can be invoked by
+ * several threads at the same time and therefore must be thread-safe. You
+ * should be especially careful when storing state in member variables.
  * 
  * @see org.restlet.util.Template
- * @see <a href="http://www.restlet.org/tutorial#part10">Tutorial: URI rewriting
- *      and redirection</a>
- * @author Jerome Louvel (contact@noelios.com)
+ * @see <a
+ *      href="http://www.restlet.org/documentation/1.1/tutorial#part10">Tutorial:
+ *      URI rewriting and redirection</a>
+ * @author Jerome Louvel
  */
 public class Redirector extends Restlet {
     /**
      * In this mode, the client is permanently redirected to the URI generated
-     * from the target URI pattern.<br/> See
-     * org.restlet.data.Status.REDIRECTION_PERMANENT.
+     * from the target URI pattern.<br>
+     * See org.restlet.data.Status.REDIRECTION_PERMANENT.
      */
     public static final int MODE_CLIENT_PERMANENT = 1;
 
     /**
      * In this mode, the client is simply redirected to the URI generated from
-     * the target URI pattern.<br/> See
-     * org.restlet.data.Status.REDIRECTION_FOUND.
+     * the target URI pattern.<br>
+     * See org.restlet.data.Status.REDIRECTION_FOUND.
      */
     public static final int MODE_CLIENT_FOUND = 2;
 
     /**
      * In this mode, the client is simply redirected to the URI generated from
-     * the target URI pattern.<br/> See
-     * org.restlet.data.Status.REDIRECTION_SEE_OTHER.
+     * the target URI pattern.<br>
+     * See org.restlet.data.Status.REDIRECTION_SEE_OTHER.
      */
     public static final int MODE_CLIENT_SEE_OTHER = 3;
 
     /**
      * In this mode, the client is temporarily redirected to the URI generated
-     * from the target URI pattern.<br/> See
-     * org.restlet.data.Status.REDIRECTION_TEMPORARY.
+     * from the target URI pattern.<br>
+     * See org.restlet.data.Status.REDIRECTION_TEMPORARY.
      */
     public static final int MODE_CLIENT_TEMPORARY = 4;
 
@@ -81,13 +100,13 @@ public class Redirector extends Restlet {
     public static final int MODE_DISPATCHER = 5;
 
     /** The target URI pattern. */
-    protected String targetTemplate;
+    protected volatile String targetTemplate;
 
     /** The redirection mode. */
-    protected int mode;
+    protected volatile int mode;
 
     /**
-     * Constructor for the connector mode.
+     * Constructor for the dispatcher mode.
      * 
      * @param context
      *            The context.
@@ -117,16 +136,53 @@ public class Redirector extends Restlet {
     }
 
     /**
-     * Handles a call to a resource or a set of resources.
+     * Returns the redirection mode.
+     * 
+     * @return The redirection mode.
+     */
+    public int getMode() {
+        return this.mode;
+    }
+
+    /**
+     * Returns the target reference to redirect to.
+     * 
+     * @param request
+     *            The request to handle.
+     * @param response
+     *            The response to update.
+     * @return The target reference to redirect to.
+     */
+    protected Reference getTargetRef(Request request, Response response) {
+        // Create the template
+        final Template rt = new Template(this.targetTemplate);
+        rt.setLogger(getLogger());
+
+        // Return the formatted target URI
+        return new Reference(rt.format(request, response));
+    }
+
+    /**
+     * Returns the target URI pattern.
+     * 
+     * @return The target URI pattern.
+     */
+    public String getTargetTemplate() {
+        return this.targetTemplate;
+    }
+
+    /**
+     * Handles a call by redirecting using the selected redirection mode.
      * 
      * @param request
      *            The request to handle.
      * @param response
      *            The response to update.
      */
+    @Override
     public void handle(Request request, Response response) {
         // Generate the target reference
-        Reference targetRef = getTargetRef(request, response);
+        final Reference targetRef = getTargetRef(request, response);
 
         switch (this.mode) {
         case MODE_CLIENT_PERMANENT:
@@ -138,8 +194,15 @@ public class Redirector extends Restlet {
         case MODE_CLIENT_FOUND:
             getLogger().log(Level.INFO,
                     "Redirecting client to found location: " + targetRef);
-            response.setRedirectRef(targetRef);
+            response.setLocationRef(targetRef);
             response.setStatus(Status.REDIRECTION_FOUND);
+            break;
+
+        case MODE_CLIENT_SEE_OTHER:
+            getLogger().log(Level.INFO,
+                    "Redirecting client to another location: " + targetRef);
+            response.setLocationRef(targetRef);
+            response.setStatus(Status.REDIRECTION_SEE_OTHER);
             break;
 
         case MODE_CLIENT_TEMPORARY:
@@ -172,28 +235,34 @@ public class Redirector extends Restlet {
      */
     protected void redirectDispatcher(Reference targetRef, Request request,
             Response response) {
+        // Save the base URI if it exists as we might need it for redirections
+        final Reference baseRef = request.getResourceRef().getBaseRef();
+
+        // Update the request to cleanly go to the target URI
         request.setResourceRef(targetRef);
         request.getAttributes().remove("org.restlet.http.headers");
-        getContext().getDispatcher().handle(request, response);
+        getContext().getClientDispatcher().handle(request, response);
+
+        // Allow for response rewriting and clean the headers
         response.setEntity(rewrite(response.getEntity()));
         response.getAttributes().remove("org.restlet.http.headers");
-    }
 
-    /**
-     * Returns the target reference to redirect to.
-     * 
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response to update.
-     * @return The target reference to redirect to.
-     */
-    protected Reference getTargetRef(Request request, Response response) {
-        // Create the template
-        Template rt = new Template(getLogger(), this.targetTemplate);
+        // In case of redirection, we may have to rewrite the redirect URI
+        if (response.getLocationRef() != null) {
+            final Template rt = new Template(this.targetTemplate);
+            rt.setLogger(getLogger());
+            final int matched = rt.parse(response.getLocationRef().toString(),
+                    request);
 
-        // Return the formatted target URI
-        return new Reference(rt.format(request, response));
+            if (matched > 0) {
+                final String remainingPart = (String) request.getAttributes()
+                        .get("rr");
+
+                if (remainingPart != null) {
+                    response.setLocationRef(baseRef.toString() + remainingPart);
+                }
+            }
+        }
     }
 
     /**
@@ -207,6 +276,26 @@ public class Redirector extends Restlet {
      */
     protected Representation rewrite(Representation initialEntity) {
         return initialEntity;
+    }
+
+    /**
+     * Sets the redirection mode.
+     * 
+     * @param mode
+     *            The redirection mode.
+     */
+    public void setMode(int mode) {
+        this.mode = mode;
+    }
+
+    /**
+     * Sets the target URI pattern.
+     * 
+     * @param targetTemplate
+     *            The target URI pattern.
+     */
+    public void setTargetTemplate(String targetTemplate) {
+        this.targetTemplate = targetTemplate;
     }
 
 }

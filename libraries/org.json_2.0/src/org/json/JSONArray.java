@@ -26,6 +26,7 @@ SOFTWARE.
 
 import java.io.IOException;
 import java.io.Writer;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -101,8 +102,7 @@ public class JSONArray {
      * @param x A JSONTokener
      * @throws JSONException If there is a syntax error.
      */
-    @SuppressWarnings("unchecked")
-	public JSONArray(JSONTokener x) throws JSONException {
+    public JSONArray(JSONTokener x) throws JSONException {
         this();
         if (x.nextClean() != '[') {
             throw x.syntaxError("A JSONArray text must start with '['");
@@ -137,14 +137,14 @@ public class JSONArray {
 
 
     /**
-     * Construct a JSONArray from a source sJSON text.
-     * @param string     A string that begins with
+     * Construct a JSONArray from a source JSON text.
+     * @param source     A string that begins with
      * <code>[</code>&nbsp;<small>(left bracket)</small>
      *  and ends with <code>]</code>&nbsp;<small>(right bracket)</small>.
      *  @throws JSONException If there is a syntax error.
      */
-    public JSONArray(String string) throws JSONException {
-        this(new JSONTokener(string));
+    public JSONArray(String source) throws JSONException {
+        this(new JSONTokener(source));
     }
 
 
@@ -152,11 +152,27 @@ public class JSONArray {
      * Construct a JSONArray from a Collection.
      * @param collection     A Collection.
      */
-    @SuppressWarnings("unchecked")
-	public JSONArray(Collection collection) {
+    public JSONArray(Collection collection) {
         this.myArrayList = (collection == null) ?
-        	new ArrayList() :
-	        new ArrayList(collection);
+            new ArrayList() :
+            new ArrayList(collection);
+    }
+
+
+    /**
+     * Construct a JSONArray from an array
+     * @throws JSONException If not an array.
+     */
+    public JSONArray(Object array) throws JSONException {
+        this();
+        if (array.getClass().isArray()) {
+            int length = Array.getLength(array);
+            for (int i = 0; i < length; i += 1) {
+                this.put(Array.get(array, i));
+            }
+        } else {
+            throw new JSONException("JSONArray initial value should be a string or collection or array.");
+        }
     }
 
 
@@ -212,7 +228,7 @@ public class JSONArray {
         Object o = get(index);
         try {
             return o instanceof Number ?
-                ((Number)o).doubleValue() : 
+                ((Number)o).doubleValue() :
                 Double.valueOf((String)o).doubleValue();
         } catch (Exception e) {
             throw new JSONException("JSONArray[" + index +
@@ -541,14 +557,14 @@ public class JSONArray {
     /**
      * Put a value in the JSONArray, where the value will be a
      * JSONArray which is produced from a Collection.
-     * @param value	A Collection value.
-     * @return		this.
+     * @param value A Collection value.
+     * @return      this.
      */
     public JSONArray put(Collection value) {
         put(new JSONArray(value));
         return this;
     }
-    
+
 
     /**
      * Append a double value. This increases the array's length by one.
@@ -592,15 +608,15 @@ public class JSONArray {
     /**
      * Put a value in the JSONArray, where the value will be a
      * JSONObject which is produced from a Map.
-     * @param value	A Map value.
-     * @return		this.
+     * @param value A Map value.
+     * @return      this.
      */
     public JSONArray put(Map value) {
         put(new JSONObject(value));
         return this;
     }
-    
-    
+
+
     /**
      * Append an object value. This increases the array's length by one.
      * @param value An object value.  The value should be a
@@ -608,7 +624,6 @@ public class JSONArray {
      *  JSONObject.NULL object.
      * @return this.
      */
-    @SuppressWarnings("unchecked")
     public JSONArray put(Object value) {
         this.myArrayList.add(value);
         return this;
@@ -629,13 +644,13 @@ public class JSONArray {
         return this;
     }
 
-    
+
     /**
      * Put a value in the JSONArray, where the value will be a
      * JSONArray which is produced from a Collection.
      * @param index The subscript.
-     * @param value	A Collection value.
-     * @return		this.
+     * @param value A Collection value.
+     * @return      this.
      * @throws JSONException If the index is negative or if the value is
      * not finite.
      */
@@ -644,7 +659,7 @@ public class JSONArray {
         return this;
     }
 
-    
+
     /**
      * Put or replace a double value. If the index is greater than the length of
      *  the JSONArray, then null elements will be added as necessary to pad
@@ -695,8 +710,8 @@ public class JSONArray {
      * Put a value in the JSONArray, where the value will be a
      * JSONObject which is produced from a Map.
      * @param index The subscript.
-     * @param value	The Map value.
-     * @return		this.
+     * @param value The Map value.
+     * @return      this.
      * @throws JSONException If the index is negative or if the the value is
      *  an invalid number.
      */
@@ -704,8 +719,8 @@ public class JSONArray {
         put(index, new JSONObject(value));
         return this;
     }
-    
-    
+
+
     /**
      * Put or replace an object value in the JSONArray. If the index is greater
      *  than the length of the JSONArray, then null elements will be added as
@@ -718,7 +733,6 @@ public class JSONArray {
      * @throws JSONException If the index is negative or if the the value is
      *  an invalid number.
      */
-    @SuppressWarnings("unchecked")
     public JSONArray put(int index, Object value) throws JSONException {
         JSONObject.testValidity(value);
         if (index < 0) {

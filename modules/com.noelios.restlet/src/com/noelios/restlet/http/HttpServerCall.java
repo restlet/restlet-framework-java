@@ -1,46 +1,97 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package com.noelios.restlet.http;
-
-import com.noelios.restlet.util.HeaderReader;
-import org.restlet.Server;
-import org.restlet.data.*;
-import org.restlet.resource.InputRepresentation;
-import org.restlet.resource.ReadableRepresentation;
-import org.restlet.resource.Representation;
-import org.restlet.service.ConnectorService;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
-import java.util.logging.Logger;
+import java.security.cert.Certificate;
+import java.util.List;
+import java.util.logging.Level;
+
+import org.restlet.Server;
+import org.restlet.data.Digest;
+import org.restlet.data.Encoding;
+import org.restlet.data.Language;
+import org.restlet.data.Parameter;
+import org.restlet.data.Response;
+import org.restlet.resource.InputRepresentation;
+import org.restlet.resource.ReadableRepresentation;
+import org.restlet.resource.Representation;
+import org.restlet.service.ConnectorService;
+
+import com.noelios.restlet.util.Base64;
+import com.noelios.restlet.util.RangeUtils;
 
 /**
  * Abstract HTTP server connector call.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public abstract class HttpServerCall extends HttpCall {
+
+    /**
+     * Format {@code fileName} as a Content-Disposition header value
+     * 
+     * @param fileName
+     *            Filename to format
+     * @return {@code fileName} formatted
+     */
+    public static String formatContentDisposition(String fileName) {
+        final StringBuilder b = new StringBuilder("attachment; filename=\"");
+
+        if (fileName != null) {
+            b.append(fileName);
+        }
+
+        b.append('"');
+
+        return b.toString();
+    }
+
     /** Indicates if the "host" header was already parsed. */
-    private boolean hostParsed;
+    private volatile boolean hostParsed;
+
+    /**
+     * Constructor.
+     * 
+     * @param serverAddress
+     *            The server IP address.
+     * @param serverPort
+     *            The server port.
+     */
+    public HttpServerCall(String serverAddress, int serverPort) {
+        setServerAddress(serverAddress);
+        setServerPort(serverPort);
+        this.hostParsed = false;
+    }
 
     /**
      * Constructor.
@@ -49,116 +100,24 @@ public abstract class HttpServerCall extends HttpCall {
      *            The parent server connector.
      */
     public HttpServerCall(Server server) {
-        this(server.getLogger(), server.getAddress(), server.getPort());
+        this(server.getAddress(), server.getPort());
     }
 
     /**
-     * Constructor.
-     * 
-     * @param logger
-     *            The logger.
-     * @param serverAddress
-     *            The server IP address.
-     * @param serverPort
-     *            The server port.
+     * Complete the response
      */
-    public HttpServerCall(Logger logger, String serverAddress, int serverPort) {
-        setLogger(logger);
-        setServerAddress(serverAddress);
-        setServerPort(serverPort);
-        this.hostParsed = false;
+    public void complete() {
+
     }
 
     /**
-     * Returns the request entity channel if it exists.
+     * Returns the content length of the request entity if know,
+     * {@link Representation#UNKNOWN_SIZE} otherwise.
      * 
-     * @return The request entity channel if it exists.
+     * @return The request content length.
      */
-    public abstract ReadableByteChannel getRequestChannel();
-
-    /**
-     * Returns the request entity stream if it exists.
-     * 
-     * @return The request entity stream if it exists.
-     */
-    public abstract InputStream getRequestStream();
-
-    /**
-     * Returns the response channel if it exists.
-     * 
-     * @return The response channel if it exists.
-     */
-    public abstract WritableByteChannel getResponseChannel();
-
-    /**
-     * Returns the response stream if it exists.
-     * 
-     * @return The response stream if it exists.
-     */
-    public abstract OutputStream getResponseStream();
-
-    /**
-     * Returns the request entity if available.
-     * 
-     * @return The request entity if available.
-     */
-    public Representation getRequestEntity() {
-        Representation result = null;
-        InputStream requestStream = getRequestStream();
-        ReadableByteChannel requestChannel = getRequestChannel();
-
-        if (((requestStream != null) || (requestChannel != null))) {
-            // Extract the header values
-            MediaType contentMediaType = null;
-            long contentLength = Representation.UNKNOWN_SIZE;
-
-            if (requestStream != null) {
-                result = new InputRepresentation(requestStream,
-                        contentMediaType, contentLength);
-            } else {
-                result = new ReadableRepresentation(requestChannel,
-                        contentMediaType, contentLength);
-            }
-
-            for (Parameter header : getRequestHeaders()) {
-                if (header.getName().equalsIgnoreCase(
-                        HttpConstants.HEADER_CONTENT_ENCODING)) {
-                    HeaderReader hr = new HeaderReader(header.getValue());
-                    String value = hr.readValue();
-                    while (value != null) {
-                        Encoding encoding = Encoding.valueOf(value);
-                        if (!encoding.equals(Encoding.IDENTITY)) {
-                            result.getEncodings().add(encoding);
-                        }
-                        value = hr.readValue();
-                    }
-                } else if (header.getName().equalsIgnoreCase(
-                        HttpConstants.HEADER_CONTENT_LANGUAGE)) {
-                    HeaderReader hr = new HeaderReader(header.getValue());
-                    String value = hr.readValue();
-                    while (value != null) {
-                        result.getLanguages().add(Language.valueOf(value));
-                        value = hr.readValue();
-                    }
-                } else if (header.getName().equalsIgnoreCase(
-                        HttpConstants.HEADER_CONTENT_TYPE)) {
-                    ContentType contentType = new ContentType(header.getValue());
-                    result.setMediaType(contentType.getMediaType());
-                    result.setCharacterSet(contentType.getCharacterSet());
-
-                } else if (header.getName().equalsIgnoreCase(
-                        HttpConstants.HEADER_CONTENT_LENGTH)) {
-                    try {
-                        contentLength = Long.parseLong(header.getValue());
-                    } catch (NumberFormatException e) {
-                        contentLength = Representation.UNKNOWN_SIZE;
-                    }
-                    result.setSize(contentLength);
-                }
-            }
-        }
-
-        return result;
+    protected long getContentLength() {
+        return getContentLength(getRequestHeaders());
     }
 
     /**
@@ -166,9 +125,11 @@ public abstract class HttpServerCall extends HttpCall {
      * 
      * @return The host domain name.
      */
+    @Override
     public String getHostDomain() {
-        if (!hostParsed)
+        if (!this.hostParsed) {
             parseHost();
+        }
         return super.getHostDomain();
     }
 
@@ -177,20 +138,179 @@ public abstract class HttpServerCall extends HttpCall {
      * 
      * @return The host port.
      */
+    @Override
     public int getHostPort() {
-        if (!hostParsed)
+        if (!this.hostParsed) {
             parseHost();
+        }
         return super.getHostPort();
+    }
+
+    /**
+     * Returns the request entity if available.
+     * 
+     * @return The request entity if available.
+     */
+    public Representation getRequestEntity() {
+        Representation result = null;
+        final long contentLength = getContentLength();
+
+        // Create the result representation
+        final InputStream requestStream = getRequestEntityStream(contentLength);
+        final ReadableByteChannel requestChannel = getRequestEntityChannel(contentLength);
+
+        if (requestStream != null) {
+            result = new InputRepresentation(requestStream, null, contentLength);
+        } else if (requestChannel != null) {
+            result = new ReadableRepresentation(requestChannel, null,
+                    contentLength);
+        }
+
+        // TODO result may be null
+        result.setSize(contentLength);
+
+        // Extract some interesting header values
+        for (final Parameter header : getRequestHeaders()) {
+            if (header.getName().equalsIgnoreCase(
+                    HttpConstants.HEADER_CONTENT_ENCODING)) {
+                final HeaderReader hr = new HeaderReader(header.getValue());
+                String value = hr.readValue();
+                while (value != null) {
+                    final Encoding encoding = Encoding.valueOf(value);
+                    if (!encoding.equals(Encoding.IDENTITY)) {
+                        result.getEncodings().add(encoding);
+                    }
+                    value = hr.readValue();
+                }
+            } else if (header.getName().equalsIgnoreCase(
+                    HttpConstants.HEADER_CONTENT_LANGUAGE)) {
+                final HeaderReader hr = new HeaderReader(header.getValue());
+                String value = hr.readValue();
+                while (value != null) {
+                    result.getLanguages().add(Language.valueOf(value));
+                    value = hr.readValue();
+                }
+            } else if (header.getName().equalsIgnoreCase(
+                    HttpConstants.HEADER_CONTENT_TYPE)) {
+                final ContentType contentType = new ContentType(header
+                        .getValue());
+                result.setMediaType(contentType.getMediaType());
+                result.setCharacterSet(contentType.getCharacterSet());
+            } else if (header.getName().equalsIgnoreCase(
+                    HttpConstants.HEADER_CONTENT_RANGE)) {
+                RangeUtils.parseContentRange(header.getValue(), result);
+            } else if (header.getName().equalsIgnoreCase(
+                    HttpConstants.HEADER_CONTENT_MD5)) {
+                result.setDigest(new Digest(Digest.ALGORITHM_MD5, Base64
+                        .decode(header.getValue())));
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the request entity channel if it exists.
+     * 
+     * @param size
+     *            The expected entity size or -1 if unknown.
+     * 
+     * @return The request entity channel if it exists.
+     */
+    public abstract ReadableByteChannel getRequestEntityChannel(long size);
+
+    /**
+     * Returns the request entity stream if it exists.
+     * 
+     * @param size
+     *            The expected entity size or -1 if unknown.
+     * 
+     * @return The request entity stream if it exists.
+     */
+    public abstract InputStream getRequestEntityStream(long size);
+
+    /**
+     * Returns the request head channel if it exists.
+     * 
+     * @return The request head channel if it exists.
+     */
+    public abstract ReadableByteChannel getRequestHeadChannel();
+
+    /**
+     * Returns the request head stream if it exists.
+     * 
+     * @return The request head stream if it exists.
+     */
+    public abstract InputStream getRequestHeadStream();
+
+    /**
+     * Returns the response channel if it exists.
+     * 
+     * @return The response channel if it exists.
+     */
+    public abstract WritableByteChannel getResponseEntityChannel();
+
+    /**
+     * Returns the response entity stream if it exists.
+     * 
+     * @return The response entity stream if it exists.
+     */
+    public abstract OutputStream getResponseEntityStream();
+
+    /**
+     * Returns the SSL Cipher Suite, if available and accessible.
+     * 
+     * @return The SSL Cipher Suite, if available and accessible.
+     */
+    public String getSslCipherSuite() {
+        return null;
+    }
+
+    /**
+     * Returns the chain of client certificates, if available and accessible.
+     * 
+     * @return The chain of client certificates, if available and accessible.
+     */
+    public List<Certificate> getSslClientCertificates() {
+        return null;
+    }
+
+    /**
+     * Returns the SSL key size, if available and accessible.
+     * 
+     * @return The SSL key size, if available and accessible.
+     */
+    public Integer getSslKeySize() {
+        Integer keySize = null;
+        final String sslCipherSuite = getSslCipherSuite();
+
+        if (sslCipherSuite != null) {
+            keySize = HttpsUtils.extractKeySize(sslCipherSuite);
+        }
+
+        return keySize;
+    }
+
+    @Override
+    protected boolean isClientKeepAlive() {
+        final String header = getRequestHeaders().getFirstValue(
+                HttpConstants.HEADER_CONNECTION, true);
+        return (header == null) || !header.equalsIgnoreCase("close");
+    }
+
+    @Override
+    protected boolean isServerKeepAlive() {
+        return true;
     }
 
     /**
      * Parses the "host" header to set the server host and port properties.
      */
     private void parseHost() {
-        String host = getRequestHeaders().getFirstValue(
+        final String host = getRequestHeaders().getFirstValue(
                 HttpConstants.HEADER_HOST, true);
         if (host != null) {
-            int colonIndex = host.indexOf(':');
+            final int colonIndex = host.indexOf(':');
 
             if (colonIndex != -1) {
                 super.setHostDomain(host.substring(0, colonIndex));
@@ -214,7 +334,7 @@ public abstract class HttpServerCall extends HttpCall {
      * @throws IOException
      */
     protected void readRequestHead(InputStream headStream) throws IOException {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
 
         // Parse the request method
         int next = headStream.read();
@@ -285,33 +405,68 @@ public abstract class HttpServerCall extends HttpCall {
      * 
      * @param response
      *            The high-level response.
+     * @throws IOException
+     *             if the Response could not be written to the network.
      */
     public void sendResponse(Response response) throws IOException {
         if (response != null) {
-            writeResponseHead(response);
-            Representation entity = response.getEntity();
 
-            if ((entity != null)
-                    && !response.getRequest().getMethod().equals(Method.HEAD)
-                    && !response.getStatus().equals(Status.SUCCESS_NO_CONTENT)
-                    && !response.getStatus().equals(
-                            Status.SUCCESS_RESET_CONTENT)) {
-                // Get the connector service to callback
-                ConnectorService connectorService = getConnectorService(response
-                        .getRequest());
-                if (connectorService != null)
-                    connectorService.beforeSend(entity);
+            try {
+                writeResponseHead(response);
+                final Representation entity = response.getEntity();
 
-                writeResponseBody(entity);
+                if (entity != null) {
+                    // Get the connector service to callback
+                    final ConnectorService connectorService = getConnectorService(response
+                            .getRequest());
+                    if (connectorService != null) {
+                        connectorService.beforeSend(entity);
+                    }
 
-                if (connectorService != null)
-                    connectorService.afterSend(entity);
-            }
+                    final WritableByteChannel responseEntityChannel = getResponseEntityChannel();
+                    final OutputStream responseEntityStream = getResponseEntityStream();
+                    writeResponseBody(entity, responseEntityChannel,
+                            responseEntityStream);
 
-            if (getResponseStream() != null) {
-                getResponseStream().flush();
+                    if (connectorService != null) {
+                        connectorService.afterSend(entity);
+                    }
+
+                    if (responseEntityStream != null) {
+                        try {
+                            responseEntityStream.flush();
+                            responseEntityStream.close();
+                        } catch (IOException ioe) {
+                            // The stream was probably already closed by the
+                            // connector. Probably ok, low message priority.
+                            getLogger()
+                                    .log(
+                                            Level.FINE,
+                                            "Exception while flushing and closing the entity stream.",
+                                            ioe);
+                        }
+                    }
+                }
+            } finally {
+                final Representation entity = response.getEntity();
+                if (entity != null) {
+                    entity.release();
+                }
             }
         }
+    }
+
+    /**
+     * Indicates if the response should be chunked because its length is
+     * unknown.
+     * 
+     * @param response
+     *            The response to analyze.
+     * @return True if the response should be chunked.
+     */
+    protected boolean shouldResponseBeChunked(Response response) {
+        return (response.getEntity() != null)
+                && (response.getEntity().getSize() == Representation.UNKNOWN_SIZE);
     }
 
     /**
@@ -321,14 +476,20 @@ public abstract class HttpServerCall extends HttpCall {
      * 
      * @param entity
      *            The representation to write as entity of the body.
+     * @param responseEntityChannel
+     *            The response entity channel or null if a stream is used.
+     * @param responseEntityStream
+     *            The response entity stream or null if a channel is used.
      * @throws IOException
      */
-    public void writeResponseBody(Representation entity) throws IOException {
+    public void writeResponseBody(Representation entity,
+            WritableByteChannel responseEntityChannel,
+            OutputStream responseEntityStream) throws IOException {
         // Send the entity to the client
-        if (getResponseChannel() != null) {
-            entity.write(getResponseChannel());
-        } else if (getResponseStream() != null) {
-            entity.write(getResponseStream());
+        if (responseEntityChannel != null) {
+            entity.write(responseEntityChannel);
+        } else if (responseEntityStream != null) {
+            entity.write(responseEntityStream);
         }
     }
 
@@ -346,33 +507,48 @@ public abstract class HttpServerCall extends HttpCall {
     /**
      * Writes the response head to the given output stream.
      * 
+     * @param response
+     *            The response.
      * @param headStream
      *            The output stream to write to.
      * @throws IOException
      */
-    protected void writeResponseHead(OutputStream headStream)
+    protected void writeResponseHead(Response response, OutputStream headStream)
             throws IOException {
         // Write the status line
-        headStream.write(getVersion().getBytes());
+        final String version = (getVersion() == null) ? "1.1" : getVersion();
+        headStream.write(version.getBytes());
         headStream.write(' ');
-        headStream.write(getStatusCode());
+        headStream.write(Integer.toString(getStatusCode()).getBytes());
         headStream.write(' ');
-        headStream.write(getReasonPhrase().getBytes());
+
+        if (getReasonPhrase() != null) {
+            headStream.write(getReasonPhrase().getBytes());
+        } else {
+            headStream.write(("Status " + getStatusCode()).getBytes());
+        }
+
         headStream.write(13); // CR
         headStream.write(10); // LF
 
         // We don't support persistent connections yet
-        getResponseHeaders()
-                .set(HttpConstants.HEADER_CONNECTION, "close", true);
+        getResponseHeaders().set(HttpConstants.HEADER_CONNECTION, "close",
+                isServerKeepAlive());
+
+        // Check if 'Transfer-Encoding' header should be set
+        if (shouldResponseBeChunked(response)) {
+            getResponseHeaders().add(HttpConstants.HEADER_TRANSFER_ENCODING,
+                    "chunked");
+        }
 
         // Write the response headers
-        for (Parameter header : getResponseHeaders()) {
+        for (final Parameter header : getResponseHeaders()) {
             HttpUtils.writeHeader(header, headStream);
         }
 
         // Write the end of the headers section
         headStream.write(13); // CR
         headStream.write(10); // LF
+        headStream.flush();
     }
-
 }

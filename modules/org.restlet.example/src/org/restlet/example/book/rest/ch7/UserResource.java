@@ -1,19 +1,28 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package org.restlet.example.book.rest.ch7;
@@ -31,6 +40,7 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
+import org.restlet.resource.ResourceException;
 import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
 
@@ -40,17 +50,17 @@ import com.db4o.query.Predicate;
 /**
  * Resource for a persistent user.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class UserResource extends Resource {
 
-    private String login;
+    private final String login;
 
-    private String password;
+    private final String password;
 
     private User user;
 
-    private String userName;
+    private final String userName;
 
     /**
      * Constructor.
@@ -65,24 +75,16 @@ public class UserResource extends Resource {
     public UserResource(Context context, Request request, Response response) {
         super(context, request, response);
         this.userName = (String) request.getAttributes().get("username");
-        ChallengeResponse cr = request.getChallengeResponse();
+        final ChallengeResponse cr = request.getChallengeResponse();
         this.login = (cr != null) ? cr.getIdentifier() : null;
         this.password = (cr != null) ? new String(cr.getSecret()) : null;
         this.user = findUser();
 
-        if (user != null) {
+        if (this.user != null) {
             getVariants().add(new Variant(MediaType.TEXT_PLAIN));
         }
-    }
 
-    @Override
-    public boolean allowDelete() {
-        return true;
-    }
-
-    @Override
-    public boolean allowPut() {
-        return true;
+        setModifiable(true);
     }
 
     /**
@@ -117,12 +119,70 @@ public class UserResource extends Resource {
         return result;
     }
 
+    /**
+     * Finds the associated user.
+     * 
+     * @return The user found or null.
+     */
+    public User findUser() {
+        User result = null;
+
+        if (this.userName != null) {
+            // Create the query predicate
+            final Predicate<User> predicate = new Predicate<User>() {
+                private static final long serialVersionUID = 1L;
+
+                @Override
+                public boolean match(User candidate) {
+                    return UserResource.this.userName.equals(candidate
+                            .getName());
+                }
+            };
+
+            // Query the database and get the first result
+            final List<User> users = getContainer().query(predicate);
+            if ((users != null) && (users.size() > 0)) {
+                result = users.get(0);
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the parent application.
+     * 
+     * @return the parent application.
+     */
     @Override
-    public void delete() {
+    public Application getApplication() {
+        return (Application) super.getApplication();
+    }
+
+    /**
+     * Returns the database container.
+     * 
+     * @return the database container.
+     */
+    public ObjectContainer getContainer() {
+        return getApplication().getContainer();
+    }
+
+    /**
+     * Returns the associated user.
+     * 
+     * @return The associated user.
+     */
+    public User getUser() {
+        return this.user;
+    }
+
+    @Override
+    public void removeRepresentations() throws ResourceException {
         switch (checkAuthorization()) {
         case 1:
             // Delete all associated bookmarks
-            for (Bookmark bookmark : this.user.getBookmarks()) {
+            for (final Bookmark bookmark : this.user.getBookmarks()) {
                 getContainer().delete(bookmark);
             }
 
@@ -144,60 +204,14 @@ public class UserResource extends Resource {
         }
     }
 
-    /**
-     * Finds the associated user.
-     * 
-     * @return The user found or null.
-     */
-    public User findUser() {
-        User result = null;
-
-        if (userName != null) {
-            // Create the query predicate
-            Predicate<User> predicate = new Predicate<User>() {
-                private static final long serialVersionUID = 1L;
-
-                @Override
-                public boolean match(User candidate) {
-                    return userName.equals(candidate.getName());
-                }
-            };
-
-            // Query the database and get the first result
-            List<User> users = getContainer().query(predicate);
-            if ((users != null) && (users.size() > 0)) {
-                result = users.get(0);
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Returns the parent application.
-     * 
-     * @return the parent application.
-     */
-    public Application getApplication() {
-        return (Application) getContext().getAttributes().get(Application.KEY);
-    }
-
-    /**
-     * Returns the database container.
-     * 
-     * @return the database container.
-     */
-    public ObjectContainer getContainer() {
-        return getApplication().getContainer();
-    }
-
     @Override
-    public Representation getRepresentation(Variant variant) {
+    public Representation represent(Variant variant) throws ResourceException {
         Representation result = null;
 
-        if (variant.getMediaType().equals(MediaType.TEXT_PLAIN)) {
+        if ((variant != null)
+                && variant.getMediaType().equals(MediaType.TEXT_PLAIN)) {
             // Creates a text representation
-            StringBuilder sb = new StringBuilder();
+            final StringBuilder sb = new StringBuilder();
             sb.append("------------\n");
             sb.append("User details\n");
             sb.append("------------\n\n");
@@ -210,17 +224,19 @@ public class UserResource extends Resource {
     }
 
     /**
-     * Returns the associated user.
+     * Sets the associated user.
      * 
-     * @return The associated user.
+     * @param user
+     *            The user to set.
      */
-    public User getUser() {
-        return this.user;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Override
-    public void put(Representation entity) {
-        if (entity.getMediaType().equals(MediaType.APPLICATION_WWW_FORM)) {
+    public void storeRepresentation(Representation entity)
+            throws ResourceException {
+        if (entity.getMediaType().equals(MediaType.APPLICATION_WWW_FORM, true)) {
             boolean canSet = true;
 
             if (getUser() == null) {
@@ -249,26 +265,16 @@ public class UserResource extends Resource {
 
             if (canSet) {
                 // Parse the entity as a web form
-                Form form = new Form(entity);
+                final Form form = new Form(entity);
                 getUser().setEmail(form.getFirstValue("user[email]"));
                 getUser().setFullName(form.getFirstValue("user[full_name]"));
                 getUser().setPassword(form.getFirstValue("user[password]"));
 
                 // Commit the changes
-                getContainer().set(getUser());
+                getContainer().store(getUser());
                 getContainer().commit();
             }
         }
-    }
-
-    /**
-     * Sets the associated user.
-     * 
-     * @param user
-     *            The user to set.
-     */
-    public void setUser(User user) {
-        this.user = user;
     }
 
 }

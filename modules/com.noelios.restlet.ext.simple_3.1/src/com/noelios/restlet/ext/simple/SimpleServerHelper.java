@@ -1,19 +1,28 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package com.noelios.restlet.ext.simple;
@@ -29,7 +38,8 @@ import com.noelios.restlet.http.HttpServerHelper;
 
 /**
  * Abstract Simple Web server connector. Here is the list of parameters that are
- * supported: <table>
+ * supported:
+ * <table>
  * <tr>
  * <th>Parameter name</th>
  * <th>Value type</th>
@@ -67,31 +77,29 @@ import com.noelios.restlet.http.HttpServerHelper;
  * </tr>
  * </table>
  * 
- * @author Lars Heuer (heuer[at]semagia.com) <a
- *         href="http://semagia.com/">Semagia</a>
- * @author Jerome Louvel (contact@noelios.com) <a
- *         href="http://www.noelios.com">Noelios Consulting</a>
+ * @author Lars Heuer
+ * @author Jerome Louvel
  */
 public abstract class SimpleServerHelper extends HttpServerHelper {
     /**
      * Indicates if this service is acting in HTTP or HTTPS mode.
      */
-    private boolean confidential;
-
-    /**
-     * Server socket this server is listening to.
-     */
-    private ServerSocket socket;
-
-    /**
-     * Simple pipeline handler.
-     */
-    private PipelineHandler handler;
+    private volatile boolean confidential;
 
     /**
      * Simple connection.
      */
-    private Connection connection;
+    private volatile Connection connection;
+
+    /**
+     * Simple pipeline handler.
+     */
+    private volatile PipelineHandler handler;
+
+    /**
+     * Server socket this server is listening to.
+     */
+    private volatile ServerSocket socket;
 
     /**
      * Constructor.
@@ -103,17 +111,13 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
         super(server);
     }
 
-    /** Stops the Restlet. */
-    public void stop() throws Exception {
-        getSocket().close();
-        setSocket(null);
-        this.setHandler(null);
-        this.setConnection(null);
-
-        // For further information on how to shutdown a Simple
-        // server, see
-        // http://sourceforge.net/mailarchive/forum.php?thread_id=10138257&forum_id=38791
-        // There seems to be place for improvement in this method.
+    /**
+     * Returns the Simple connection.
+     * 
+     * @return The Simple connection.
+     */
+    protected Connection getConnection() {
+        return this.connection;
     }
 
     /**
@@ -122,47 +126,8 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
      * @return The default number of polling threads for a handler object.
      */
     public int getDefaultThreads() {
-        return Integer.parseInt(getParameters().getFirstValue("defaultThreads",
-                "20"));
-    }
-
-    /**
-     * Returns the maximum waiting time between polls of the input.
-     * 
-     * @return The maximum waiting time between polls of the input.
-     */
-    public int getMaxWaitTimeMs() {
-        return Integer.parseInt(getParameters().getFirstValue("maxWaitTimeMs",
-                "200"));
-    }
-
-    /**
-     * Sets the server socket this server is listening to.
-     * 
-     * @param socket
-     *            The server socket this server is listening to.
-     */
-    protected void setSocket(ServerSocket socket) {
-        this.socket = socket;
-    }
-
-    /**
-     * Returns the server socket this server is listening to.
-     * 
-     * @return The server socket this server is listening to.
-     */
-    protected ServerSocket getSocket() {
-        return socket;
-    }
-
-    /**
-     * Sets the Simple pipeline handler.
-     * 
-     * @param handler
-     *            The Simple pipeline handler.
-     */
-    protected void setHandler(PipelineHandler handler) {
-        this.handler = handler;
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "defaultThreads", "20"));
     }
 
     /**
@@ -171,26 +136,35 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
      * @return The Simple pipeline handler.
      */
     protected PipelineHandler getHandler() {
-        return handler;
+        return this.handler;
     }
 
     /**
-     * Sets the Simple connection.
+     * Returns the maximum waiting time between polls of the input.
      * 
-     * @param connection
-     *            The Simple connection.
+     * @return The maximum waiting time between polls of the input.
      */
-    protected void setConnection(Connection connection) {
-        this.connection = connection;
+    public int getMaxWaitTimeMs() {
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "maxWaitTimeMs", "200"));
     }
 
     /**
-     * Returns the Simple connection.
+     * Returns the server socket this server is listening to.
      * 
-     * @return The Simple connection.
+     * @return The server socket this server is listening to.
      */
-    protected Connection getConnection() {
-        return connection;
+    protected ServerSocket getSocket() {
+        return this.socket;
+    }
+
+    /**
+     * Indicates if this service is acting in HTTP or HTTPS mode.
+     * 
+     * @return True if this service is acting in HTTP or HTTPS mode.
+     */
+    protected boolean isConfidential() {
+        return this.confidential;
     }
 
     /**
@@ -204,12 +178,58 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
     }
 
     /**
-     * Indicates if this service is acting in HTTP or HTTPS mode.
+     * Sets the Simple connection.
      * 
-     * @return True if this service is acting in HTTP or HTTPS mode.
+     * @param connection
+     *            The Simple connection.
      */
-    protected boolean isConfidential() {
-        return confidential;
+    protected void setConnection(Connection connection) {
+        this.connection = connection;
+    }
+
+    /**
+     * Sets the Simple pipeline handler.
+     * 
+     * @param handler
+     *            The Simple pipeline handler.
+     */
+    protected void setHandler(PipelineHandler handler) {
+        this.handler = handler;
+    }
+
+    /**
+     * Sets the server socket this server is listening to.
+     * 
+     * @param socket
+     *            The server socket this server is listening to.
+     */
+    protected void setSocket(ServerSocket socket) {
+        this.socket = socket;
+    }
+
+    @Override
+    public synchronized void start() throws Exception {
+        super.start();
+        getLogger().info("Starting the Simple server");
+
+        // Sets the ephemeral port is necessary
+        setEphemeralPort(getSocket());
+    }
+
+    @Override
+    public synchronized void stop() throws Exception {
+        getLogger().info("Stopping the Simple server");
+
+        getSocket().close();
+        setSocket(null);
+        setHandler(null);
+        setConnection(null);
+
+        // For further information on how to shutdown a Simple
+        // server, see
+        // http://sourceforge.net/mailarchive/forum.php?thread_id=10138257&
+        // forum_id=38791
+        // There seems to be place for improvement in this method.
     }
 
 }

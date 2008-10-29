@@ -10,7 +10,7 @@
          <version>@version@</version>
       </dependency>
       <dependency>
-         <groupId>freemarker</groupId>
+         <groupId>org.freemarker</groupId>
          <artifactId>freemarker</artifactId>
          <version>@lib-freemarker-version@</version>
       </dependency>
@@ -24,9 +24,9 @@
          <url>http://www.opensource.org/licenses/cddl1.php</url>
       </license>
       <license>
-         <name>GPL license</name>
+         <name>LGPL license</name>
          <url>
-            http://www.opensource.org/licenses/gpl-license.php
+            http://www.opensource.org/licenses/lgpl-license.php
          </url>
       </license>
    </licenses>

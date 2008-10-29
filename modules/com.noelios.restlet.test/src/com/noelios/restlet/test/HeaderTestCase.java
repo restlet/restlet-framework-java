@@ -1,49 +1,69 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package com.noelios.restlet.test;
 
-import java.io.IOException;
+import java.util.Date;
+
+import junit.framework.TestCase;
 
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Encoding;
 import org.restlet.data.MediaType;
+import org.restlet.util.DateUtils;
 
-import junit.framework.TestCase;
-
-import com.noelios.restlet.util.HeaderReader;
-import com.noelios.restlet.util.PreferenceUtils;
+import com.noelios.restlet.http.HeaderReader;
+import com.noelios.restlet.http.PreferenceUtils;
 
 /**
  * Unit tests for the header.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class HeaderTestCase extends TestCase {
+    public void testInvalidDate() {
+        final String headerValue = "-1";
+        final Date date = DateUtils.parse(headerValue,
+                DateUtils.FORMAT_RFC_1123);
+        assertNull(date);
+
+        final Date unmodifiableDate = DateUtils.unmodifiable(date);
+        assertNull(unmodifiableDate);
+    }
+
     /**
      * Tests the parsing.
      */
-    public void testParsing() throws IOException {
+    public void testParsing() {
         String header1 = "Accept-Encoding,User-Agent";
         String header2 = "Accept-Encoding , User-Agent";
-        String header3 = "Accept-Encoding,\r\tUser-Agent";
-        String header4 = "Accept-Encoding,\r User-Agent";
-        String header5 = "Accept-Encoding, \r \t User-Agent";
+        final String header3 = "Accept-Encoding,\r\tUser-Agent";
+        final String header4 = "Accept-Encoding,\r User-Agent";
+        final String header5 = "Accept-Encoding, \r \t User-Agent";
         String[] values = new String[] { "Accept-Encoding", "User-Agent" };
         testValues(header1, values);
         testValues(header2, values);
@@ -119,7 +139,7 @@ public class HeaderTestCase extends TestCase {
      *            The parsed values.
      */
     public void testValues(String header, String[] values) {
-        HeaderReader hr = new HeaderReader(header);
+        final HeaderReader hr = new HeaderReader(header);
         String value = hr.readValue();
         int index = 0;
         while (value != null) {

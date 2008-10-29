@@ -1,19 +1,28 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package org.restlet;
@@ -21,10 +30,11 @@ package org.restlet;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.service.ConnectorService;
-import org.restlet.service.ConverterService;
 import org.restlet.service.DecoderService;
 import org.restlet.service.MetadataService;
+import org.restlet.service.RangeService;
 import org.restlet.service.StatusService;
+import org.restlet.service.TaskService;
 import org.restlet.service.TunnelService;
 import org.restlet.util.Engine;
 import org.restlet.util.Helper;
@@ -39,97 +49,125 @@ import org.restlet.util.Helper;
  * Applications also have many useful Services associated. They are available as
  * properties that can be eventually overriden:
  * <ul>
- * <li>"connectorService" to manage client and server connectors.</li>
- * <li>"converterService" to convert message entities into higher-level
- * objects.</li>
+ * <li>"connectorService" to declare necessary client and server connectors.</li>
  * <li>"decoderService" to automatically decode or decompress request entities.</li>
  * <li>"metadataService" to provide access to metadata and their associated
  * extension names.</li>
+ * <li>"rangeService" to automatically exposes ranges of response entities.</li>
  * <li>"statusService" to provide common representations for exception status.</li>
+ * <li>"taskService" to run tasks asynchronously.</li>
  * <li>"tunnelService" to tunnel method names or client preferences via query
  * parameters.</li>
  * </ul>
- * <br>
- * If you need to retrieve the reference to an Application from one of its
- * contained Restlets, you can use the {@link #KEY} constant to lookup the
- * Context.attributes property.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * Concurrency note: instances of this class or its subclasses can be invoked by
+ * several threads at the same time and therefore must be thread-safe. You
+ * should be especially careful when storing state in member variables.
+ * 
+ * @author Jerome Louvel
  */
-public abstract class Application extends Restlet {
+public class Application extends Restlet {
+    private static final ThreadLocal<Application> CURRENT = new ThreadLocal<Application>();
+
     /**
-     * Name of the attribute key containing a reference to the current
-     * application.
+     * This variable is stored internally as a thread local variable and updated
+     * each time a call enters an application.
+     * 
+     * Warning: this method should only be used under duress. You should by
+     * default prefer obtaining the current application using methods such as
+     * {@link org.restlet.resource.Resource#getApplication()}
+     * 
+     * @return The current context.
      */
-    public static final String KEY = "org.restlet.application";
+    public static Application getCurrent() {
+        return CURRENT.get();
+    }
 
-    /** The display name. */
-    private String name;
-
-    /** The description. */
-    private String description;
+    /**
+     * Sets the context to associated with the current thread.
+     * 
+     * @param application
+     *            The thread's context.
+     */
+    public static void setCurrent(Application application) {
+        CURRENT.set(application);
+    }
 
     /** The author(s). */
-    private String author;
-
-    /** The owner(s). */
-    private String owner;
-
-    /** The root Restlet. */
-    private Restlet root;
+    private volatile String author;
 
     /** The connector service. */
-    private ConnectorService connectorService;
-
-    /** The converter service. */
-    private ConverterService converterService;
-
-    /** The decoder service. */
-    private DecoderService decoderService;
-
-    /** The local service. */
-    private MetadataService metadataService;
-
-    /** The status service. */
-    private StatusService statusService;
-
-    /** The tunnel service. */
-    private TunnelService tunnelService;
-
-    /** The helper provided by the implementation. */
-    private Helper helper;
+    private volatile ConnectorService connectorService;
 
     /**
-     * Constructor. Note that usage of this constructor is not recommended as
-     * your application won't have access to the parent component context. For
-     * example, no dispatching will be possible as it requires access to the
-     * component's client connectors.
+     * The converter service.
+     * 
+     * @deprecated Since 1.1 with no replacement as it doesn't fit well with
+     *             content negotiation. Most users prefer to handle those
+     *             conversion in Resource subclasses.
+     */
+    @Deprecated
+    private volatile org.restlet.service.ConverterService converterService;
+
+    /** The decoder service. */
+    private volatile DecoderService decoderService;
+
+    /** The description. */
+    private volatile String description;
+
+    /** The helper provided by the implementation. */
+    private volatile Helper<Application> helper;
+
+    /** The local service. */
+    private volatile MetadataService metadataService;
+
+    /** The display name. */
+    private volatile String name;
+
+    /** The owner(s). */
+    private volatile String owner;
+
+    /** The range service. */
+    private volatile RangeService rangeService;
+
+    /** The root Restlet. */
+    private volatile Restlet root;
+
+    /** The status service. */
+    private volatile StatusService statusService;
+
+    /** The task service. */
+    private volatile TaskService taskService;
+
+    /** The tunnel service. */
+    private volatile TunnelService tunnelService;
+
+    /**
+     * Constructor. Note this constructor is convenient because you don't have
+     * to provide a context like for {@link #Application(Context)}. Therefore
+     * the context will initially be null. It's only when you attach the
+     * application to a virtual host via one of its attach*() methods that a
+     * proper context will be set.
      */
     public Application() {
-        this((Context) null);
+        this(null);
     }
 
     /**
      * Constructor.
      * 
-     * @param parentContext
-     *            The parent context. Typically the component's context.
+     * @param context
+     *            The context to use based on parent component context. This
+     *            context should be created using the
+     *            {@link Context#createChildContext()} method to ensure a proper
+     *            isolation with the other applications.
      */
-    public Application(Context parentContext) {
-        super(null);
+    @SuppressWarnings("deprecation")
+    public Application(Context context) {
+        super(context);
 
         if (Engine.getInstance() != null) {
-            this.helper = Engine.getInstance()
-                    .createHelper(this, parentContext);
-
-            // Compose the logger name
-            String applicationName = (getName() == null) ? Integer
-                    .toString(hashCode()) : getName();
-            String loggerName = Application.class.getCanonicalName() + "."
-                    + applicationName;
-
-            // Create the application context
-            setContext(this.helper.createContext(loggerName));
+            this.helper = Engine.getInstance().createHelper(this);
         }
 
         this.name = null;
@@ -137,11 +175,14 @@ public abstract class Application extends Restlet {
         this.author = null;
         this.owner = null;
         this.root = null;
-        this.connectorService = null;
-        this.decoderService = null;
-        this.metadataService = null;
-        this.statusService = null;
-        this.tunnelService = null;
+        this.connectorService = new ConnectorService();
+        this.converterService = new org.restlet.service.ConverterService();
+        this.decoderService = new DecoderService();
+        this.metadataService = new MetadataService();
+        this.rangeService = new RangeService();
+        this.statusService = new StatusService();
+        this.taskService = new TaskService();
+        this.tunnelService = new TunnelService(true, true);
     }
 
     /**
@@ -152,7 +193,9 @@ public abstract class Application extends Restlet {
      * 
      * @return The root Restlet.
      */
-    public abstract Restlet createRoot();
+    public Restlet createRoot() {
+        return null;
+    }
 
     /**
      * Returns the author(s).
@@ -164,35 +207,33 @@ public abstract class Application extends Restlet {
     }
 
     /**
-     * Returns the connector service.
+     * Returns the connector service. The service is enabled by default.
      * 
      * @return The connector service.
      */
     public ConnectorService getConnectorService() {
-        if (this.connectorService == null)
-            this.connectorService = new ConnectorService();
         return this.connectorService;
     }
 
     /**
-     * Returns the converter service.
+     * Returns the converter service. The service is enabled by default.
      * 
      * @return The converter service.
+     * @deprecated Since 1.1 with no replacement as it doesn't fit well with
+     *             content negotiation. Most users prefer to handle those
+     *             conversion in Resource subclasses.
      */
-    public ConverterService getConverterService() {
-        if (this.converterService == null)
-            this.converterService = new ConverterService();
+    @Deprecated
+    public org.restlet.service.ConverterService getConverterService() {
         return this.converterService;
     }
 
     /**
-     * Returns the decoder service. This service is enabled by default.
+     * Returns the decoder service. The service is enabled by default.
      * 
      * @return The decoderservice.
      */
     public DecoderService getDecoderService() {
-        if (this.decoderService == null)
-            this.decoderService = new DecoderService(true);
         return this.decoderService;
     }
 
@@ -210,18 +251,16 @@ public abstract class Application extends Restlet {
      * 
      * @return The helper provided by the implementation.
      */
-    private Helper getHelper() {
+    private Helper<Application> getHelper() {
         return this.helper;
     }
 
     /**
-     * Returns the metadata service.
+     * Returns the metadata service. The service is enabled by default.
      * 
      * @return The metadata service.
      */
     public MetadataService getMetadataService() {
-        if (this.metadataService == null)
-            this.metadataService = new MetadataService();
         return this.metadataService;
     }
 
@@ -244,12 +283,21 @@ public abstract class Application extends Restlet {
     }
 
     /**
-     * Returns the root Restlet. Invokes the createRoot() method if no Restlet
-     * exists.
+     * Returns the range service.
+     * 
+     * @return The range service.
+     */
+    public RangeService getRangeService() {
+        return rangeService;
+    }
+
+    /**
+     * Returns the root Restlet. Invokes the createRoot() method if no root has
+     * been set, and stores the Restlet created for future uses.
      * 
      * @return The root Restlet.
      */
-    public Restlet getRoot() {
+    public synchronized Restlet getRoot() {
         if (this.root == null) {
             this.root = createRoot();
         }
@@ -258,39 +306,40 @@ public abstract class Application extends Restlet {
     }
 
     /**
-     * Returns the status service. This service is enabled by default.
+     * Returns the status service. The service is enabled by default.
      * 
      * @return The status service.
      */
     public StatusService getStatusService() {
-        if (this.statusService == null)
-            this.statusService = new StatusService(true);
         return this.statusService;
     }
 
     /**
-     * Returns the tunnel service. This service is enabled by default.
+     * Returns a task service to run concurrent tasks. The service is enabled by
+     * default.
+     * 
+     * @return A task service.
+     */
+    public TaskService getTaskService() {
+        return this.taskService;
+    }
+
+    /**
+     * Returns the tunnel service. The service is enabled by default.
      * 
      * @return The tunnel service.
      */
     public TunnelService getTunnelService() {
-        if (this.tunnelService == null)
-            this.tunnelService = new TunnelService(true, true, true);
         return this.tunnelService;
     }
 
-    /**
-     * Handles a call.
-     * 
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response to update.
-     */
+    @Override
     public void handle(Request request, Response response) {
-        init(request, response);
-        if (getHelper() != null)
+        super.handle(request, response);
+
+        if (getHelper() != null) {
             getHelper().handle(request, response);
+        }
     }
 
     /**
@@ -304,6 +353,41 @@ public abstract class Application extends Restlet {
     }
 
     /**
+     * Sets the connector service.
+     * 
+     * @param connectorService
+     *            The connector service.
+     */
+    public void setConnectorService(ConnectorService connectorService) {
+        this.connectorService = connectorService;
+    }
+
+    /**
+     * Sets the converter service.
+     * 
+     * @param converterService
+     *            The converter service.
+     * @deprecated Since 1.1 with no replacement as it doesn't fit well with
+     *             content negotiation. Most users prefer to handle those
+     *             conversion in Resource subclasses.
+     */
+    @Deprecated
+    public void setConverterService(
+            org.restlet.service.ConverterService converterService) {
+        this.converterService = converterService;
+    }
+
+    /**
+     * Sets the decoder service.
+     * 
+     * @param decoderService
+     *            The decoder service.
+     */
+    public void setDecoderService(DecoderService decoderService) {
+        this.decoderService = decoderService;
+    }
+
+    /**
      * Sets the description.
      * 
      * @param description
@@ -311,6 +395,16 @@ public abstract class Application extends Restlet {
      */
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    /**
+     * Sets the metadata service.
+     * 
+     * @param metadataService
+     *            The metadata service.
+     */
+    public void setMetadataService(MetadataService metadataService) {
+        this.metadataService = metadataService;
     }
 
     /**
@@ -333,58 +427,24 @@ public abstract class Application extends Restlet {
         this.owner = owner;
     }
 
-    @Override
-    public void start() throws Exception {
-        super.start();
-        if (getHelper() != null)
-            getHelper().start();
-    }
-
-    @Override
-    public void stop() throws Exception {
-        if (getHelper() != null)
-            getHelper().stop();
-        super.stop();
+    /**
+     * Sets the range service.
+     * 
+     * @param rangeService
+     *            The range service.
+     */
+    public void setRangeService(RangeService rangeService) {
+        this.rangeService = rangeService;
     }
 
     /**
-     * Sets the connector service.
+     * Sets the root Restlet.
      * 
-     * @param connectorService
-     *            The connector service.
+     * @param root
+     *            The root Restlet.
      */
-    public void setConnectorService(ConnectorService connectorService) {
-        this.connectorService = connectorService;
-    }
-
-    /**
-     * Sets the converter service.
-     * 
-     * @param converterService
-     *            The converter service.
-     */
-    public void setConverterService(ConverterService converterService) {
-        this.converterService = converterService;
-    }
-
-    /**
-     * Sets the decoder service.
-     * 
-     * @param decoderService
-     *            The decoder service.
-     */
-    public void setDecoderService(DecoderService decoderService) {
-        this.decoderService = decoderService;
-    }
-
-    /**
-     * Sets the metadata service.
-     * 
-     * @param metadataService
-     *            The metadata service.
-     */
-    public void setMetadataService(MetadataService metadataService) {
-        this.metadataService = metadataService;
+    public synchronized void setRoot(Restlet root) {
+        this.root = root;
     }
 
     /**
@@ -398,6 +458,16 @@ public abstract class Application extends Restlet {
     }
 
     /**
+     * Sets the task service.
+     * 
+     * @param taskService
+     *            The task service.
+     */
+    public void setTaskService(TaskService taskService) {
+        this.taskService = taskService;
+    }
+
+    /**
      * Sets the tunnel service.
      * 
      * @param tunnelService
@@ -405,6 +475,94 @@ public abstract class Application extends Restlet {
      */
     public void setTunnelService(TunnelService tunnelService) {
         this.tunnelService = tunnelService;
+    }
+
+    /**
+     * Starts the application then all the enabled associated services.
+     */
+    @Override
+    public synchronized void start() throws Exception {
+        if (isStopped()) {
+            super.start();
+
+            if (getHelper() != null) {
+                getHelper().start();
+            }
+
+            if (getConnectorService() != null) {
+                getConnectorService().start();
+            }
+
+            if (getConverterService() != null) {
+                getConverterService().start();
+            }
+
+            if (getDecoderService() != null) {
+                getDecoderService().start();
+            }
+
+            if (getTaskService() != null) {
+                getTaskService().start();
+            }
+
+            if (getMetadataService() != null) {
+                getMetadataService().start();
+            }
+
+            if (getStatusService() != null) {
+                getStatusService().start();
+            }
+
+            if (getTunnelService() != null) {
+                getTunnelService().start();
+            }
+        }
+    }
+
+    /**
+     * Stops all the enabled associated services the the application itself.
+     */
+    @Override
+    public synchronized void stop() throws Exception {
+        if (isStarted()) {
+            if (getConnectorService() != null) {
+                getConnectorService().stop();
+            }
+
+            if (getConverterService() != null) {
+                getConverterService().stop();
+            }
+
+            if (getDecoderService() != null) {
+                getDecoderService().stop();
+            }
+
+            if (getTaskService() != null) {
+                getTaskService().stop();
+            }
+
+            if (getMetadataService() != null) {
+                getMetadataService().stop();
+            }
+
+            if (getStatusService() != null) {
+                getStatusService().stop();
+            }
+
+            if (getTunnelService() != null) {
+                getTunnelService().stop();
+            }
+
+            if (getRangeService() != null) {
+                getRangeService().stop();
+            }
+
+            if (getHelper() != null) {
+                getHelper().stop();
+            }
+
+            super.stop();
+        }
     }
 
 }

@@ -1,37 +1,47 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package org.restlet.data;
 
+import java.util.logging.Level;
+
+import org.restlet.Context;
+
 /**
  * Validation tag equivalent to the HTTP entity tag. "A strong entity tag may be
  * shared by two entities of a resource only if they are equivalent by octet
- * equality.<br/> A weak entity tag may be shared by two entities of a resource
- * only if the entities are equivalent and could be substituted for each other
- * with no significant change in semantics."
+ * equality.<br>
+ * A weak entity tag may be shared by two entities of a resource only if the
+ * entities are equivalent and could be substituted for each other with no
+ * significant change in semantics."
  * 
- * @see <a
- *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11">HTTP
- *      Entity Tags</a>
- * @see <a
- *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html#sec13.3.2">HTTP
- *      Entity Tag Cache Validators</a>
- * @author Jerome Louvel (contact@noelios.com)
+ * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11">HTTP Entity Tags</a>
+ * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec13.html#sec13.3.2">HTTP Entity Tag Cache Validators</a>
+ * @author Jerome Louvel
  */
 public final class Tag extends Metadata {
     /** Tag matching any other tag, used in call's condition data. */
@@ -41,23 +51,21 @@ public final class Tag extends Metadata {
      * Parses a tag formatted as defined by the HTTP standard.
      * 
      * @param httpTag
-     *            The HTTP tag string; if it starts with a 'W' the tag will be
-     *            marked as weak and the data following the 'W' used as the tag;
-     *            otherwise it should be surrounded with quotes (e.g.,
+     *            The HTTP tag string; if it starts with 'W/' the tag will be
+     *            marked as weak and the data following the 'W/' used as the
+     *            tag; otherwise it should be surrounded with quotes (e.g.,
      *            "sometag").
      * @return A new tag instance.
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11">HTTP
-     *      Entity Tags</a>
+     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11">HTTP Entity Tags</a>
      */
     public static Tag parse(final String httpTag) {
         Tag result = null;
         boolean weak = false;
         String httpTagCopy = httpTag;
 
-        if (httpTagCopy.startsWith("W")) {
+        if (httpTagCopy.startsWith("W/")) {
             weak = true;
-            httpTagCopy = httpTagCopy.substring(1);
+            httpTagCopy = httpTagCopy.substring(2);
         }
 
         if (httpTagCopy.startsWith("\"") && httpTagCopy.endsWith("\"")) {
@@ -66,15 +74,15 @@ public final class Tag extends Metadata {
         } else if (httpTagCopy.equals("*")) {
             result = new Tag("*", weak);
         } else {
-            throw new IllegalArgumentException("Invalid tag format detected: "
-                    + httpTagCopy);
+            Context.getCurrentLogger().log(Level.WARNING,
+                    "Invalid tag format detected: " + httpTagCopy);
         }
 
         return result;
     }
 
     /** The tag weakness. */
-    private boolean weak;
+    private volatile boolean weak;
 
     /**
      * Default constructor. The opaque tag is set to null and the weakness
@@ -133,15 +141,18 @@ public final class Tag extends Metadata {
         boolean result = (object != null) && (object instanceof Tag);
 
         if (result) {
-            Tag that = (Tag) object;
+            final Tag that = (Tag) object;
+
             if (checkWeakness) {
                 result = (that.isWeak() == isWeak());
             }
 
-            if (getName() == null) {
-                result = (that.getName() == null);
-            } else {
-                result = getName().equals(that.getName());
+            if (result) {
+                if (getName() == null) {
+                    result = (that.getName() == null);
+                } else {
+                    result = getName().equals(that.getName());
+                }
             }
         }
 
@@ -152,19 +163,18 @@ public final class Tag extends Metadata {
      * Returns tag formatted as an HTTP tag string.
      * 
      * @return The formatted HTTP tag string.
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11">HTTP
-     *      Entity Tags</a>
+     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.11">HTTP Entity Tags</a>
      */
     public String format() {
         if (getName().equals("*")) {
             return "*";
-        } else {
-            StringBuilder sb = new StringBuilder();
-            if (isWeak())
-                sb.append("W/");
-            return sb.append('"').append(getName()).append('"').toString();
         }
+
+        final StringBuilder sb = new StringBuilder();
+        if (isWeak()) {
+            sb.append("W/");
+        }
+        return sb.append('"').append(getName()).append('"').toString();
     }
 
     /**
@@ -172,6 +182,7 @@ public final class Tag extends Metadata {
      * 
      * @return The description.
      */
+    @Override
     public String getDescription() {
         return "Validation tag equivalent to an HTTP entity tag";
     }
@@ -181,6 +192,7 @@ public final class Tag extends Metadata {
      * 
      * @return The name, corresponding to an HTTP opaque tag value.
      */
+    @Override
     public String getName() {
         return super.getName();
     }

@@ -1,19 +1,28 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package org.restlet.data;
@@ -23,16 +32,17 @@ import java.io.IOException;
 import org.restlet.util.Engine;
 
 /**
- * Multi-usage parameter.
+ * Multi-usage parameter. Note that the name and value properties are thread
+ * safe, stored in volatile members.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Parameter implements Comparable<Parameter> {
     /** The name. */
-    private String name;
+    private volatile String name;
 
     /** The value. */
-    private String value;
+    private volatile String value;
 
     /**
      * Default constructor.
@@ -66,6 +76,42 @@ public class Parameter implements Comparable<Parameter> {
         return getName().compareTo(o.getName());
     }
 
+    /**
+     * Encodes the parameter and appends the result to the given buffer. Uses
+     * the standard URI encoding mechanism.
+     * 
+     * @param buffer
+     *            The buffer to append.
+     * @param characterSet
+     *            The supported character encoding
+     * @throws IOException
+     */
+    public void encode(Appendable buffer, CharacterSet characterSet)
+            throws IOException {
+        if (getName() != null) {
+            buffer.append(Reference.encode(getName(), characterSet));
+
+            if (getValue() != null) {
+                buffer.append('=');
+                buffer.append(Reference.encode(getValue(), characterSet));
+            }
+        }
+    }
+
+    /**
+     * Encodes the parameter using the standard URI encoding mechanism.
+     * 
+     * @param characterSet
+     *            The supported character encoding.
+     * @return The encoded string.
+     * @throws IOException
+     */
+    public String encode(CharacterSet characterSet) throws IOException {
+        final StringBuilder sb = new StringBuilder();
+        encode(sb, characterSet);
+        return sb.toString();
+    }
+
     /** {@inheritDoc} */
     @Override
     public boolean equals(Object obj) {
@@ -74,22 +120,20 @@ public class Parameter implements Comparable<Parameter> {
         // if obj == this no need to go further
         if (!result) {
             // if obj isn't a parameter or is null don't evaluate further
-            if ((obj instanceof Parameter) && obj != null) {
-                Parameter that = (Parameter) obj;
+            if (obj instanceof Parameter) {
+                final Parameter that = (Parameter) obj;
 
-                if (!(this.name == null)) // compare names taking care of
-                // nulls
-                {
+                if (this.name != null) {
+                    // compare names taking care of nulls
                     result = (this.name.equals(that.name));
                 } else {
                     result = (that.name == null);
                 }
 
-                if (result) // if names are equal test the values
-                {
-                    if (!(this.value == null)) // compare values taking care of
-                    // nulls
-                    {
+                if (result) {
+                    // if names are equal test the values
+                    if (this.value != null) {
+                        // compare values taking care of nulls
                         result = (this.value.equals(that.value));
                     } else {
                         result = (that.value == null);
@@ -153,41 +197,5 @@ public class Parameter implements Comparable<Parameter> {
     @Override
     public String toString() {
         return getName() + ": " + getValue();
-    }
-
-    /**
-     * Encodes the parameter using the standard URI encoding mechanism.
-     * 
-     * @param characterSet
-     *            The supported character encoding.
-     * @return The encoded string.
-     * @throws IOException
-     */
-    public String encode(CharacterSet characterSet) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        encode(sb, characterSet);
-        return sb.toString();
-    }
-
-    /**
-     * Encodes the parameter and appends the result to the given buffer. Uses
-     * the standard URI encoding mechanism.
-     * 
-     * @param buffer
-     *            The buffer to append.
-     * @param characterSet
-     *            The supported character encoding
-     * @throws IOException
-     */
-    public void encode(Appendable buffer, CharacterSet characterSet)
-            throws IOException {
-        if (getName() != null) {
-            buffer.append(Reference.encode(getName(), characterSet));
-
-            if (getValue() != null) {
-                buffer.append('=');
-                buffer.append(Reference.encode(getValue(), characterSet));
-            }
-        }
     }
 }

@@ -1,19 +1,28 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package org.restlet;
@@ -26,6 +35,7 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Resource;
 import org.restlet.util.RouteList;
+import org.restlet.util.Template;
 
 /**
  * Restlet routing calls to one of the attached routes. Each route can compute
@@ -48,11 +58,16 @@ import org.restlet.util.RouteList;
  * base reference during the routing if they are selected. It is also important
  * to know that the routing is very strict about path separators in your URI
  * patterns. Finally, you can modify the list of routes while handling incoming
- * calls as the delegation code is ensured to be thread-safe.
+ * calls as the delegation code is ensured to be thread-safe.<br>
+ * <br>
+ * Concurrency note: instances of this class or its subclasses can be invoked by
+ * several threads at the same time and therefore must be thread-safe. You
+ * should be especially careful when storing state in member variables.
  * 
- * @see <a href="http://www.restlet.org/tutorial#part11">Tutorial: Routers and
- *      hierarchical URIs</a>
- * @author Jerome Louvel (contact@noelios.com)
+ * @see <a
+ *      href="http://www.restlet.org/documentation/1.1/tutorial#part11">Tutorial:
+ *      Routers and hierarchical URIs</a>
+ * @author Jerome Louvel
  */
 public class Router extends Restlet {
     /**
@@ -60,6 +75,11 @@ public class Router extends Restlet {
      * required score is reached.
      */
     public static final int BEST = 1;
+
+    /**
+     * Each call will be routed according to a custom mode.
+     */
+    public static final int CUSTOM = 6;
 
     /**
      * Each call is routed to the first route if the required score is reached.
@@ -93,34 +113,38 @@ public class Router extends Restlet {
      */
     public static final int RANDOM = 5;
 
+    /** The default matching mode to use when selecting routes based on URIs. */
+    private volatile int defaultMatchingMode;
+
     /**
-     * Each call will be routed according to a custom mode.
+     * The default setting for whether the routing should be done on URIs with
+     * or without taking into account query string.
      */
-    public static final int CUSTOM = 6;
-
-    /** Finder class to instantiate. */
-    private Class<? extends Finder> finderClass;
-
-    /** The modifiable list of routes. */
-    private RouteList routes;
+    private volatile boolean defaultMatchQuery;
 
     /** The default route tested if no other one was available. */
-    private Route defaultRoute;
+    private volatile Route defaultRoute;
 
-    /** The routing mode. */
-    private int routingMode;
-
-    /** The minimum score required to have a match. */
-    private float requiredScore;
+    /** Finder class to instantiate. */
+    private volatile Class<? extends Finder> finderClass;
 
     /**
      * The maximum number of attempts if no attachment could be matched on the
      * first attempt.
      */
-    private int maxAttempts;
+    private volatile int maxAttempts;
+
+    /** The minimum score required to have a match. */
+    private volatile float requiredScore;
 
     /** The delay (in milliseconds) before a new attempt. */
-    private long retryDelay;
+    private volatile long retryDelay;
+
+    /** The modifiable list of routes. */
+    private volatile RouteList routes;
+
+    /** The routing mode. */
+    private volatile int routingMode;
 
     /**
      * Constructor. Note that usage of this constructor is not recommended as
@@ -140,7 +164,9 @@ public class Router extends Restlet {
      */
     public Router(Context context) {
         super(context);
-        this.routes = null;
+        this.routes = new RouteList();
+        this.defaultMatchingMode = Template.MODE_STARTS_WITH;
+        this.defaultMatchQuery = true;
         this.defaultRoute = null;
         this.finderClass = Finder.class;
         this.routingMode = BEST;
@@ -178,33 +204,6 @@ public class Router extends Restlet {
     }
 
     /**
-     * Creates a new finder instance based on the "targetClass" property.
-     * 
-     * @param targetClass
-     *            The target Resource class to attach.
-     * @return The new finder instance.
-     */
-    private Finder createFinder(Class<? extends Resource> targetClass) {
-        Finder result = null;
-
-        if (getFinderClass() != null) {
-            try {
-                Constructor<? extends Finder> constructor = getFinderClass()
-                        .getConstructor(Context.class, Class.class);
-
-                if (constructor != null) {
-                    result = constructor.newInstance(getContext(), targetClass);
-                }
-            } catch (Exception e) {
-                getLogger().log(Level.WARNING,
-                        "Exception while instantiating the finder.", e);
-            }
-        }
-
-        return result;
-    }
-
-    /**
      * Attaches a target Restlet to this router based on a given URI pattern. A
      * new route will be added routing to the target when calls with a URI
      * matching the pattern will be received.
@@ -217,7 +216,7 @@ public class Router extends Restlet {
      * @return The created route.
      */
     public Route attach(String uriPattern, Restlet target) {
-        Route result = createRoute(uriPattern, target);
+        final Route result = createRoute(uriPattern, target);
         getRoutes().add(result);
         return result;
     }
@@ -245,8 +244,35 @@ public class Router extends Restlet {
      * @return The created route.
      */
     public Route attachDefault(Restlet defaultTarget) {
-        Route result = createRoute("", defaultTarget);
+        final Route result = new Route(this, "", defaultTarget);
         setDefaultRoute(result);
+        return result;
+    }
+
+    /**
+     * Creates a new finder instance based on the "targetClass" property.
+     * 
+     * @param targetClass
+     *            The target Resource class to attach.
+     * @return The new finder instance.
+     */
+    protected Finder createFinder(Class<? extends Resource> targetClass) {
+        Finder result = null;
+
+        if (getFinderClass() != null) {
+            try {
+                final Constructor<? extends Finder> constructor = getFinderClass()
+                        .getConstructor(Context.class, Class.class);
+
+                if (constructor != null) {
+                    result = constructor.newInstance(getContext(), targetClass);
+                }
+            } catch (Exception e) {
+                getLogger().log(Level.WARNING,
+                        "Exception while instantiating the finder.", e);
+            }
+        }
+
         return result;
     }
 
@@ -261,7 +287,10 @@ public class Router extends Restlet {
      * @return The created route.
      */
     protected Route createRoute(String uriPattern, Restlet target) {
-        return new Route(this, uriPattern, target);
+        final Route result = new Route(this, uriPattern, target);
+        result.getTemplate().setMatchingMode(getDefaultMatchingMode());
+        result.setMatchQuery(this.defaultMatchQuery);
+        return result;
     }
 
     /**
@@ -275,8 +304,9 @@ public class Router extends Restlet {
     public void detach(Restlet target) {
         getRoutes().removeAll(target);
         if ((getDefaultRoute() != null)
-                && (getDefaultRoute().getNext() == target))
+                && (getDefaultRoute().getNext() == target)) {
             setDefaultRoute(null);
+        }
     }
 
     /**
@@ -295,6 +325,27 @@ public class Router extends Restlet {
     }
 
     /**
+     * Returns the default matching mode to use when selecting routes based on
+     * URIs. By default it returns {@link Template#MODE_STARTS_WITH}.
+     * 
+     * @return The default matching mode.
+     */
+    public int getDefaultMatchingMode() {
+        return this.defaultMatchingMode;
+    }
+
+    /**
+     * Returns the default setting for whether the routing should be done on
+     * URIs with or without taking into account query string.
+     * 
+     * @return the default setting for whether the routing should be done on
+     *         URIs with or without taking into account query string.
+     */
+    public boolean getDefaultMatchQuery() {
+        return this.defaultMatchQuery;
+    }
+
+    /**
      * Returns the default route to test if no other one was available after
      * retrying the maximum number of attemps.
      * 
@@ -302,6 +353,15 @@ public class Router extends Restlet {
      */
     public Route getDefaultRoute() {
         return this.defaultRoute;
+    }
+
+    /**
+     * Returns the finder class to instantiate.
+     * 
+     * @return the finder class to instantiate.
+     */
+    public Class<? extends Finder> getFinderClass() {
+        return this.finderClass;
     }
 
     /**
@@ -409,13 +469,12 @@ public class Router extends Restlet {
     }
 
     /**
-     * Returns the modifiable list of routes.
+     * Returns the modifiable list of routes. Creates a new instance if no one
+     * has been set.
      * 
      * @return The modifiable list of routes.
      */
     public RouteList getRoutes() {
-        if (this.routes == null)
-            this.routes = new RouteList();
         return this.routes;
     }
 
@@ -436,15 +495,39 @@ public class Router extends Restlet {
      * @param response
      *            The response to update.
      */
+    @Override
     public void handle(Request request, Response response) {
-        init(request, response);
+        super.handle(request, response);
 
-        Restlet next = getNext(request, response);
+        final Restlet next = getNext(request, response);
         if (next != null) {
             next.handle(request, response);
         } else {
             response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
         }
+    }
+
+    /**
+     * Sets the default matching mode to use when selecting routes based on
+     * URIs.
+     * 
+     * @param defaultMatchingMode
+     *            The default matching mode.
+     */
+    public void setDefaultMatchingMode(int defaultMatchingMode) {
+        this.defaultMatchingMode = defaultMatchingMode;
+    }
+
+    /**
+     * Sets the default setting for whether the routing should be done on URIs
+     * with or without taking into account query string.
+     * 
+     * @param defaultMatchQuery
+     *            The default setting for whether the routing should be done on
+     *            URIs with or without taking into account query string.
+     */
+    public void setDefaultMatchQuery(boolean defaultMatchQuery) {
+        this.defaultMatchQuery = defaultMatchQuery;
     }
 
     /**
@@ -455,6 +538,16 @@ public class Router extends Restlet {
      */
     public void setDefaultRoute(Route defaultRoute) {
         this.defaultRoute = defaultRoute;
+    }
+
+    /**
+     * Sets the finder class to instantiate.
+     * 
+     * @param finderClass
+     *            The finder class to instantiate.
+     */
+    public void setFinderClass(Class<? extends Finder> finderClass) {
+        this.finderClass = finderClass;
     }
 
     /**
@@ -490,6 +583,16 @@ public class Router extends Restlet {
     }
 
     /**
+     * Sets the modifiable list of routes.
+     * 
+     * @param routes
+     *            The modifiable list of routes.
+     */
+    public void setRoutes(RouteList routes) {
+        this.routes = routes;
+    }
+
+    /**
      * Sets the routing mode.
      * 
      * @param routingMode
@@ -497,25 +600,6 @@ public class Router extends Restlet {
      */
     public void setRoutingMode(int routingMode) {
         this.routingMode = routingMode;
-    }
-
-    /**
-     * Returns the finder class to instantiate.
-     * 
-     * @return the finder class to instantiate.
-     */
-    public Class<? extends Finder> getFinderClass() {
-        return this.finderClass;
-    }
-
-    /**
-     * Sets the finder class to instantiate.
-     * 
-     * @param finderClass
-     *            The finder class to instantiate.
-     */
-    public void setFinderClass(Class<? extends Finder> finderClass) {
-        this.finderClass = finderClass;
     }
 
 }

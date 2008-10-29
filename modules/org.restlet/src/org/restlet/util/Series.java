@@ -1,19 +1,28 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package org.restlet.util;
@@ -21,6 +30,7 @@ package org.restlet.util;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -33,12 +43,15 @@ import org.restlet.data.Parameter;
  * instance of this class as any other java.util.List, in particular all the
  * helper methods in java.util.Collections.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
+ * @param <E>
+ *            The contained type
  * @see org.restlet.data.Parameter
  * @see java.util.Collections
  * @see java.util.List
  */
 public abstract class Series<E extends Parameter> extends WrapperList<E> {
+
     /**
      * A marker for empty values to differentiate from non existing values
      * (null).
@@ -73,26 +86,6 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
     }
 
     /**
-     * Creates a new entry.
-     * 
-     * @param name
-     *            The name of the entry.
-     * @param value
-     *            The value of the entry.
-     * @return A new entry.
-     */
-    public abstract E createEntry(String name, String value);
-
-    /**
-     * Creates a new series.
-     * 
-     * @param delegate
-     *            Optional delegate series.
-     * @return A new series.
-     */
-    public abstract Series<E> createSeries(List<E> delegate);
-
-    /**
      * Creates then adds a parameter at the end of the list.
      * 
      * @param name
@@ -106,9 +99,9 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
     }
 
     /**
-     * Copies the parameters whose name is a key in the given map.<br/> If a
-     * matching parameter is found, its value is put in the map.<br/> If
-     * multiple values are found, a list is created and set in the map.
+     * Copies the parameters whose name is a key in the given map.<br>
+     * If a matching parameter is found, its value is put in the map.<br>
+     * If multiple values are found, a list is created and set in the map.
      * 
      * @param params
      *            The map controlling the copy.
@@ -117,7 +110,7 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
     public void copyTo(Map<String, Object> params) {
         Parameter param;
         Object currentValue = null;
-        for (Iterator<E> iter = iterator(); iter.hasNext();) {
+        for (final Iterator<E> iter = iterator(); iter.hasNext();) {
             param = iter.next();
 
             if (params.containsKey(param.getName())) {
@@ -152,6 +145,26 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
             }
         }
     }
+
+    /**
+     * Creates a new entry.
+     * 
+     * @param name
+     *            The name of the entry.
+     * @param value
+     *            The value of the entry.
+     * @return A new entry.
+     */
+    public abstract E createEntry(String name, String value);
+
+    /**
+     * Creates a new series.
+     * 
+     * @param delegate
+     *            Optional delegate series.
+     * @return A new series.
+     */
+    public abstract Series<E> createSeries(List<E> delegate);
 
     /**
      * Tests the equality of two string, potentially null, which a case
@@ -202,7 +215,7 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      * @return The first parameter found with the given name.
      */
     public E getFirst(String name, boolean ignoreCase) {
-        for (E param : this) {
+        for (final E param : this) {
             if (equals(param.getName(), name, ignoreCase)) {
                 return param;
             }
@@ -250,7 +263,7 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
     public String getFirstValue(String name, boolean ignoreCase,
             String defaultValue) {
         String result = defaultValue;
-        Parameter param = getFirst(name, ignoreCase);
+        final Parameter param = getFirst(name, ignoreCase);
 
         if (param != null) {
             result = param.getValue();
@@ -279,9 +292,9 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      * @return The set of parameter names.
      */
     public Set<String> getNames() {
-        Set<String> result = new HashSet<String>();
+        final Set<String> result = new HashSet<String>();
 
-        for (Parameter param : this) {
+        for (final Parameter param : this) {
             result.add(param.getName());
         }
 
@@ -318,8 +331,9 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
         String result = null;
         StringBuilder sb = null;
 
-        for (E param : this) {
-            if (param.getName().equalsIgnoreCase(name)) {
+        for (final E param : this) {
+            if ((ignoreCase && param.getName().equalsIgnoreCase(name))
+                    || param.getName().equals(name)) {
                 if (sb == null) {
                     if (result == null) {
                         result = param.getValue();
@@ -336,6 +350,44 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
 
         if (sb != null) {
             result = sb.toString();
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns an array of all the values associated to the given parameter
+     * name.
+     * 
+     * @param name
+     *            The parameter name to match.
+     * @return The array of values.
+     */
+    public String[] getValuesArray(String name) {
+        final List<E> params = subList(name);
+        final String[] result = new String[params.size()];
+
+        for (int i = 0; i < params.size(); i++) {
+            result[i] = params.get(i).getValue();
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns a map of name, value pairs. The order of the map keys is
+     * respected based on the series order. When a name has multiple values,
+     * only the first one is put in the map.
+     * 
+     * @return The map of name, value pairs.
+     */
+    public Map<String, String> getValuesMap() {
+        final Map<String, String> result = new LinkedHashMap<String, String>();
+
+        for (final Parameter param : this) {
+            if (!result.containsKey(param.getName())) {
+                result.put(param.getName(), param.getValue());
+            }
         }
 
         return result;
@@ -365,7 +417,7 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
         boolean changed = false;
         Parameter param = null;
 
-        for (Iterator<E> iter = iterator(); iter.hasNext();) {
+        for (final Iterator<E> iter = iterator(); iter.hasNext();) {
             param = iter.next();
             if (equals(param.getName(), name, ignoreCase)) {
                 iter.remove();
@@ -402,7 +454,7 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
         boolean changed = false;
         Parameter param = null;
 
-        for (Iterator<E> iter = iterator(); iter.hasNext() && !changed;) {
+        for (final Iterator<E> iter = iterator(); iter.hasNext() && !changed;) {
             param = iter.next();
             if (equals(param.getName(), name, ignoreCase)) {
                 iter.remove();
@@ -430,7 +482,7 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
         E param = null;
         boolean found = false;
 
-        for (Iterator<E> iter = iterator(); iter.hasNext();) {
+        for (final Iterator<E> iter = iterator(); iter.hasNext();) {
             param = iter.next();
 
             if (equals(param.getName(), name, ignoreCase)) {
@@ -489,9 +541,9 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      * @return The list of values.
      */
     public Series<E> subList(String name, boolean ignoreCase) {
-        Series<E> result = createSeries(null);
+        final Series<E> result = createSeries(null);
 
-        for (E param : this) {
+        for (final E param : this) {
             if (equals(param.getName(), name, ignoreCase)) {
                 result.add(param);
             }

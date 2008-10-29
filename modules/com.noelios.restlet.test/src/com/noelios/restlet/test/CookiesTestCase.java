@@ -1,19 +1,28 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package com.noelios.restlet.test;
@@ -22,7 +31,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Logger;
 
 import junit.framework.TestCase;
 
@@ -30,15 +38,82 @@ import org.restlet.data.Cookie;
 import org.restlet.data.CookieSetting;
 import org.restlet.util.DateUtils;
 
-import com.noelios.restlet.util.CookieReader;
-import com.noelios.restlet.util.CookieUtils;
+import com.noelios.restlet.http.CookieReader;
+import com.noelios.restlet.http.CookieUtils;
 
 /**
  * Unit tests for the Cookie related classes.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class CookiesTestCase extends TestCase {
+    /**
+     * Test one cookie header.
+     * 
+     * @param headerValue
+     *            The cookie header value.
+     * @throws IOException
+     */
+    private void testCookie(String headerValue) throws IOException {
+        final CookieReader cr = new CookieReader(headerValue);
+        final List<Cookie> cookies = new ArrayList<Cookie>();
+        Cookie cookie = cr.readCookie();
+
+        while (cookie != null) {
+            cookies.add(cookie);
+            cookie = cr.readCookie();
+        }
+
+        // Rewrite the header
+        final String newHeaderValue = CookieUtils.format(cookies);
+
+        // Compare initial and new headers
+        assertEquals(headerValue, newHeaderValue);
+    }
+
+    /**
+     * Test a cookie date value.
+     * 
+     * @param headerValue
+     *            The cookie date value.
+     */
+    private void testCookieDate(String dateValue) {
+        final Date date = DateUtils.parse(dateValue, DateUtils.FORMAT_RFC_1036);
+
+        // Rewrite the date
+        final String newDateValue = DateUtils.format(date,
+                DateUtils.FORMAT_RFC_1036.get(0));
+
+        // Compare initial and new headers
+        assertEquals(dateValue, newDateValue);
+    }
+
+    /**
+     * Test one set cookie header.
+     * 
+     * @param headerValue
+     *            The set cookie header value.
+     * @param compare
+     *            Indicates if the new header should be compared with the old
+     *            one.
+     * @throws IOException
+     */
+    private void testCookieSetting(String headerValue, boolean compare)
+            throws IOException {
+        final CookieReader cr = new CookieReader(headerValue);
+        final CookieSetting cookie = cr.readCookieSetting();
+
+        // Rewrite the header
+        final String newHeaderValue = CookieUtils.format(cookie);
+
+        // Compare initial and new headers
+        if (compare) {
+            final boolean result = newHeaderValue.toLowerCase().startsWith(
+                    headerValue.toLowerCase());
+            assertTrue(result);
+        }
+    }
+
     /**
      * Tests the cookies parsing.
      */
@@ -81,78 +156,6 @@ public class CookiesTestCase extends TestCase {
         testCookieSetting(
                 "RMS_ADMETA_VISITOR_RMS=27756847%3A240105; expires=Thu, 02 Mar 2006 21:09:00 GMT; path=/; domain=.admeta.com",
                 false);
-    }
-
-    /**
-     * Test one cookie header.
-     * 
-     * @param headerValue
-     *            The cookie header value.
-     * @throws IOException
-     */
-    private void testCookie(String headerValue) throws IOException {
-        CookieReader cr = new CookieReader(Logger
-                .getLogger(CookiesTestCase.class.getCanonicalName()),
-                headerValue);
-        List<Cookie> cookies = new ArrayList<Cookie>();
-        Cookie cookie = cr.readCookie();
-
-        while (cookie != null) {
-            cookies.add(cookie);
-            cookie = cr.readCookie();
-        }
-
-        // Rewrite the header
-        String newHeaderValue = CookieUtils.format(cookies);
-
-        // Compare initial and new headers
-        assertEquals(headerValue, newHeaderValue);
-    }
-
-    /**
-     * Test one set cookie header.
-     * 
-     * @param headerValue
-     *            The set cookie header value.
-     * @param compare
-     *            Indicates if the new header should be compared with the old
-     *            one.
-     * @throws IOException
-     */
-    private void testCookieSetting(String headerValue, boolean compare)
-            throws IOException {
-        CookieReader cr = new CookieReader(Logger
-                .getLogger(CookiesTestCase.class.getCanonicalName()),
-                headerValue);
-        CookieSetting cookie = cr.readCookieSetting();
-
-        // Rewrite the header
-        String newHeaderValue = CookieUtils.format(cookie);
-
-        // Compare initial and new headers
-        if (compare) {
-            boolean result = newHeaderValue.toLowerCase().startsWith(
-                    headerValue.toLowerCase());
-            assertTrue(result);
-        }
-    }
-
-    /**
-     * Test a cookie date value.
-     * 
-     * @param headerValue
-     *            The cookie date value.
-     * @throws IOException
-     */
-    private void testCookieDate(String dateValue) throws IOException {
-        Date date = DateUtils.parse(dateValue, DateUtils.FORMAT_RFC_1036);
-
-        // Rewrite the date
-        String newDateValue = DateUtils.format(date, DateUtils.FORMAT_RFC_1036
-                .get(0));
-
-        // Compare initial and new headers
-        assertEquals(dateValue, newDateValue);
     }
 
 }

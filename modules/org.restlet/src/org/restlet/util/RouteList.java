@@ -1,26 +1,35 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package org.restlet.util;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.restlet.Restlet;
 import org.restlet.Route;
@@ -32,32 +41,25 @@ import org.restlet.data.Response;
  * implements the java.util.List interface using the Route class as the generic
  * type. This allows you to use an instance of this class as any other
  * java.util.List, in particular all the helper methods in
- * java.util.Collections.<br/> <br/> Note that structural changes to this list
- * are synchronized.
+ * java.util.Collections.<br>
+ * <br>
+ * Note that structural changes to this list are thread-safe, using an
+ * underlying {@link java.util.concurrent.CopyOnWriteArrayList}.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  * @see java.util.Collections
  * @see java.util.List
  */
 public final class RouteList extends WrapperList<Route> {
     /** The index of the last route used in the round robin mode. */
-    private int lastIndex;
+    private volatile int lastIndex;
 
     /**
      * Constructor.
      */
     public RouteList() {
-        this(null);
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param initialCapacity
-     *            The initial list capacity.
-     */
-    public RouteList(int initialCapacity) {
-        this(new ArrayList<Route>(initialCapacity));
+        super(new CopyOnWriteArrayList<Route>());
+        this.lastIndex = -1;
     }
 
     /**
@@ -67,7 +69,7 @@ public final class RouteList extends WrapperList<Route> {
      *            The delegate list.
      */
     public RouteList(List<Route> delegate) {
-        super(delegate);
+        super(new CopyOnWriteArrayList<Route>(delegate));
         this.lastIndex = -1;
     }
 
@@ -82,12 +84,11 @@ public final class RouteList extends WrapperList<Route> {
      *            The minimum score required to have a match.
      * @return The best route match or null.
      */
-    public synchronized Route getBest(Request request, Response response,
-            float requiredScore) {
+    public Route getBest(Request request, Response response, float requiredScore) {
         Route result = null;
         float bestScore = 0F;
         float score;
-        for (Route current : this) {
+        for (final Route current : this) {
             score = current.score(request, response);
 
             if ((score > bestScore) && (score >= requiredScore)) {
@@ -110,11 +111,12 @@ public final class RouteList extends WrapperList<Route> {
      *            The minimum score required to have a match.
      * @return The first route match or null.
      */
-    public synchronized Route getFirst(Request request, Response response,
+    public Route getFirst(Request request, Response response,
             float requiredScore) {
-        for (Route current : this) {
-            if (current.score(request, response) >= requiredScore)
+        for (final Route current : this) {
+            if (current.score(request, response) >= requiredScore) {
                 return current;
+            }
         }
 
         // No match found
@@ -134,9 +136,11 @@ public final class RouteList extends WrapperList<Route> {
      */
     public synchronized Route getLast(Request request, Response response,
             float requiredScore) {
-        for (int j = (size() - 1); (j >= 0); j--) {
-            if (get(j).score(request, response) >= requiredScore)
-                return get(j);
+        for (int j = size() - 1; (j >= 0); j--) {
+            final Route route = get(j);
+            if (route.score(request, response) >= requiredScore) {
+                return route;
+            }
         }
 
         // No match found
@@ -156,13 +160,17 @@ public final class RouteList extends WrapperList<Route> {
      */
     public synchronized Route getNext(Request request, Response response,
             float requiredScore) {
-        for (int initialIndex = lastIndex++; initialIndex != lastIndex; lastIndex++) {
-            if (lastIndex == size()) {
-                lastIndex = 0;
-            }
+        if (!isEmpty()) {
+            for (final int initialIndex = this.lastIndex++; initialIndex != this.lastIndex; this.lastIndex++) {
+                if (this.lastIndex >= size()) {
+                    this.lastIndex = 0;
+                }
 
-            if (get(lastIndex).score(request, response) >= requiredScore)
-                return get(lastIndex);
+                final Route route = get(this.lastIndex);
+                if (route.score(request, response) >= requiredScore) {
+                    return route;
+                }
+            }
         }
 
         // No match found
@@ -182,17 +190,25 @@ public final class RouteList extends WrapperList<Route> {
      */
     public synchronized Route getRandom(Request request, Response response,
             float requiredScore) {
-        int j = new Random().nextInt(size());
-        if (get(j).score(request, response) >= requiredScore)
-            return get(j);
-
-        for (int initialIndex = j++; initialIndex != j; j++) {
-            if (j == size()) {
-                j = 0;
+        final int length = size();
+        if (length > 0) {
+            int j = new Random().nextInt(length);
+            Route route = get(j);
+            if (route.score(request, response) >= requiredScore) {
+                return route;
             }
 
-            if (get(j).score(request, response) >= requiredScore)
-                return get(j);
+            boolean loopedAround = false;
+            do {
+                if ((j == length) && (loopedAround == false)) {
+                    j = 0;
+                    loopedAround = true;
+                }
+                route = get(j++);
+                if (route.score(request, response) >= requiredScore) {
+                    return route;
+                }
+            } while ((j < length) || !loopedAround);
         }
 
         // No match found
@@ -205,10 +221,11 @@ public final class RouteList extends WrapperList<Route> {
      * @param target
      *            The target Restlet to detach.
      */
-    public void removeAll(Restlet target) {
+    public synchronized void removeAll(Restlet target) {
         for (int i = size() - 1; i >= 0; i--) {
-            if (get(i).getNext() == target)
+            if (get(i).getNext() == target) {
                 remove(i);
+            }
         }
     }
 
@@ -222,7 +239,8 @@ public final class RouteList extends WrapperList<Route> {
      *            The end position (exclusive).
      * @return The sub-list.
      */
-    public synchronized RouteList subList(int fromIndex, int toIndex) {
+    @Override
+    public RouteList subList(int fromIndex, int toIndex) {
         return new RouteList(getDelegate().subList(fromIndex, toIndex));
     }
 }

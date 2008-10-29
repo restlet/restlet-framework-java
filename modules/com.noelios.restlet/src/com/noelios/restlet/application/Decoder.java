@@ -1,21 +1,28 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  * 
- * Portions Copyright 2006 Lars Heuer (heuer[at]semagia.com)
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package com.noelios.restlet.application;
@@ -32,18 +39,22 @@ import org.restlet.resource.Representation;
 /**
  * Filter decompressing entities.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * Concurrency note: instances of this class or its subclasses can be invoked by
+ * several threads at the same time and therefore must be thread-safe. You
+ * should be especially careful when storing state in member variables.
+ * 
+ * @author Jerome Louvel
  */
 public class Decoder extends Filter {
     /**
      * Indicates if the request entity should be decoded.
      */
-    private boolean decodeRequest;
+    private volatile boolean decodeRequest;
 
     /**
      * Indicates if the response entity should be decoded.
      */
-    private boolean decodeResponse;
+    private volatile boolean decodeResponse;
 
     /**
      * Constructor to only decode request entities before handling.
@@ -73,22 +84,6 @@ public class Decoder extends Filter {
     }
 
     /**
-     * Allows filtering before its handling by the target Restlet. Does nothing
-     * by default.
-     * 
-     * @param request
-     *            The request to filter.
-     * @param response
-     *            The response to filter.
-     */
-    public void beforeHandle(Request request, Response response) {
-        // Check if decoding of the request entity is needed
-        if (isDecodeRequest() && canDecode(request.getEntity())) {
-            request.setEntity(decode(request.getEntity()));
-        }
-    }
-
-    /**
      * Allows filtering after its handling by the target Restlet. Does nothing
      * by default.
      * 
@@ -97,11 +92,32 @@ public class Decoder extends Filter {
      * @param response
      *            The response to filter.
      */
+    @Override
     public void afterHandle(Request request, Response response) {
         // Check if decoding of the response entity is needed
         if (isDecodeResponse() && canDecode(response.getEntity())) {
             response.setEntity(decode(response.getEntity()));
         }
+    }
+
+    /**
+     * Allows filtering before its handling by the target Restlet. Does nothing
+     * by default.
+     * 
+     * @param request
+     *            The request to filter.
+     * @param response
+     *            The response to filter.
+     * @return The continuation status.
+     */
+    @Override
+    public int beforeHandle(Request request, Response response) {
+        // Check if decoding of the request entity is needed
+        if (isDecodeRequest() && canDecode(request.getEntity())) {
+            request.setEntity(decode(request.getEntity()));
+        }
+
+        return CONTINUE;
     }
 
     /**
@@ -119,7 +135,7 @@ public class Decoder extends Filter {
 
         if (result) {
             boolean found = false;
-            for (Iterator<Encoding> iter = representation.getEncodings()
+            for (final Iterator<Encoding> iter = representation.getEncodings()
                     .iterator(); !found && iter.hasNext();) {
                 found = (!iter.next().equals(Encoding.IDENTITY));
             }
@@ -145,9 +161,9 @@ public class Decoder extends Filter {
         boolean supported = true;
         // True if all representation's encodings are IDENTITY
         boolean identityEncodings = true;
-        for (Iterator<Encoding> iter = representation.getEncodings().iterator(); supported
-                && iter.hasNext();) {
-            Encoding encoding = iter.next();
+        for (final Iterator<Encoding> iter = representation.getEncodings()
+                .iterator(); supported && iter.hasNext();) {
+            final Encoding encoding = iter.next();
             supported = DecodeRepresentation.getSupportedEncodings().contains(
                     encoding);
             identityEncodings &= encoding.equals(Encoding.IDENTITY);
@@ -170,6 +186,15 @@ public class Decoder extends Filter {
     }
 
     /**
+     * Indicates if the response entity should be decoded.
+     * 
+     * @return True if the response entity should be decoded.
+     */
+    public boolean isDecodeResponse() {
+        return this.decodeResponse;
+    }
+
+    /**
      * Indicates if the request entity should be decoded.
      * 
      * @param decodeRequest
@@ -177,15 +202,6 @@ public class Decoder extends Filter {
      */
     public void setDecodeRequest(boolean decodeRequest) {
         this.decodeRequest = decodeRequest;
-    }
-
-    /**
-     * Indicates if the response entity should be decoded.
-     * 
-     * @return True if the response entity should be decoded.
-     */
-    public boolean isDecodeResponse() {
-        return this.decodeResponse;
     }
 
     /**

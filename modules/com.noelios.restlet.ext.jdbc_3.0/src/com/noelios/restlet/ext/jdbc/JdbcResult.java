@@ -1,19 +1,28 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package com.noelios.restlet.ext.jdbc;
@@ -27,13 +36,13 @@ import java.sql.Statement;
  * JDBC result wrapper. Used by the JDBC client connector as a response entity
  * of JDBC calls.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class JdbcResult implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /** The JDBC statement. */
-    private transient Statement statement;
+    private volatile transient Statement statement;
 
     /**
      * Constructor.
@@ -46,15 +55,13 @@ public class JdbcResult implements Serializable {
     }
 
     /**
-     * Release the statement connection. To call when result navigation is done.
+     * Returns the generated keys.
      * 
+     * @return The generated keys.
      * @throws SQLException
      */
-    public void release() throws SQLException {
-        // One connection per jdbcResult
-        // releasing the instance means releasing the connection too
-        // and not only the statement.
-        statement.getConnection().close();
+    public ResultSet getGeneratedKeys() throws SQLException {
+        return this.statement.getGeneratedKeys();
     }
 
     /**
@@ -64,17 +71,7 @@ public class JdbcResult implements Serializable {
      * @throws SQLException
      */
     public ResultSet getResultSet() throws SQLException {
-        return statement.getResultSet();
-    }
-
-    /**
-     * Returns the generated keys.
-     * 
-     * @return The generated keys.
-     * @throws SQLException
-     */
-    public ResultSet getGeneratedKeys() throws SQLException {
-        return statement.getGeneratedKeys();
+        return this.statement.getResultSet();
     }
 
     /**
@@ -84,7 +81,19 @@ public class JdbcResult implements Serializable {
      * @throws SQLException
      */
     public int getUpdateCount() throws SQLException {
-        return statement.getUpdateCount();
+        return this.statement.getUpdateCount();
+    }
+
+    /**
+     * Release the statement connection. To call when result navigation is done.
+     * 
+     * @throws SQLException
+     */
+    public void release() throws SQLException {
+        // One connection per jdbcResult
+        // releasing the instance means releasing the connection too
+        // and not only the statement.
+        this.statement.getConnection().close();
     }
 
 }

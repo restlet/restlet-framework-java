@@ -1,22 +1,34 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package org.restlet.ext.atom;
+
+import static org.restlet.ext.atom.Feed.ATOM_NAMESPACE;
+import static org.restlet.ext.atom.Service.APP_NAMESPACE;
 
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
@@ -24,32 +36,36 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
+import org.restlet.util.XmlWriter;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.AttributesImpl;
 
 /**
  * Atom Protocol collection, part of a workspace.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Collection {
-    /**
-     * The parent workspace.
-     */
-    private Workspace workspace;
-
-    /**
-     * The title.
-     */
-    private String title;
 
     /**
      * The hypertext reference.
      */
-    private Reference href;
+    private volatile Reference href;
 
     /**
      * The type of members.
      */
-    private MemberType memberType;
+    private volatile MemberType memberType;
+
+    /**
+     * The title.
+     */
+    private volatile String title;
+
+    /**
+     * The parent workspace.
+     */
+    private volatile Workspace workspace;
 
     /**
      * Constructor.
@@ -69,22 +85,47 @@ public class Collection {
     }
 
     /**
-     * Returns the parent workspace.
+     * Returns the feed representation.
      * 
-     * @return The parent workspace.
+     * @return The feed representation.
+     * @throws Exception
      */
-    public Workspace getWorkspace() {
-        return this.workspace;
+    public Feed getFeed() throws Exception {
+        final Reference feedRef = getHref();
+
+        if (feedRef.isRelative()) {
+            feedRef.setBaseRef(getWorkspace().getService().getReference());
+        }
+
+        final Request request = new Request(Method.GET, feedRef.getTargetRef());
+        final Response response = getWorkspace().getService()
+                .getClientDispatcher().handle(request);
+
+        if (response.getStatus().equals(Status.SUCCESS_OK)) {
+            return new Feed(response.getEntity());
+        } else {
+            throw new Exception(
+                    "Couldn't get the feed representation. Status returned: "
+                            + response.getStatus().getDescription());
+        }
     }
 
     /**
-     * Sets the parent workspace.
+     * Returns the hypertext reference.
      * 
-     * @param workspace
-     *            The parent workspace.
+     * @return The hypertext reference.
      */
-    public void setWorkspace(Workspace workspace) {
-        this.workspace = workspace;
+    public Reference getHref() {
+        return this.href;
+    }
+
+    /**
+     * Returns the type of members.
+     * 
+     * @return The type of members.
+     */
+    public MemberType getMemberType() {
+        return this.memberType;
     }
 
     /**
@@ -97,22 +138,35 @@ public class Collection {
     }
 
     /**
-     * Sets the title.
+     * Returns the parent workspace.
      * 
-     * @param title
-     *            The title.
+     * @return The parent workspace.
      */
-    public void setTitle(String title) {
-        this.title = title;
+    public Workspace getWorkspace() {
+        return this.workspace;
     }
 
     /**
-     * Returns the hypertext reference.
+     * Posts a member to the collection resulting in the creation of a new
+     * resource.
      * 
-     * @return The hypertext reference.
+     * @param member
+     *            The member representation to post.
+     * @return The reference of the new resource.
+     * @throws Exception
      */
-    public Reference getHref() {
-        return this.href;
+    public Reference postMember(Representation member) throws Exception {
+        final Request request = new Request(Method.POST, getHref(), member);
+        final Response response = getWorkspace().getService()
+                .getClientDispatcher().handle(request);
+
+        if (response.getStatus().equals(Status.SUCCESS_CREATED)) {
+            return response.getLocationRef();
+        } else {
+            throw new Exception(
+                    "Couldn't post the member representation. Status returned: "
+                            + response.getStatus().getDescription());
+        }
     }
 
     /**
@@ -126,15 +180,6 @@ public class Collection {
     }
 
     /**
-     * Returns the type of members.
-     * 
-     * @return The type of members.
-     */
-    public MemberType getMemberType() {
-        return this.memberType;
-    }
-
-    /**
      * Sets the type of members.
      * 
      * @param memberType
@@ -145,46 +190,59 @@ public class Collection {
     }
 
     /**
-     * Posts a member to the collection resulting in the creation of a new
-     * resource.
+     * Sets the title.
      * 
-     * @param member
-     *            The member representation to post.
-     * @return The reference of the new resource.
-     * @throws Exception
+     * @param title
+     *            The title.
      */
-    public Reference postMember(Representation member) throws Exception {
-        Request request = new Request(Method.POST, getHref(), member);
-        Response response = getWorkspace().getService().getClient().handle(
-                request);
-
-        if (response.getStatus().equals(Status.SUCCESS_CREATED)) {
-            return response.getRedirectRef();
-        } else {
-            throw new Exception(
-                    "Couldn't post the member representation. Status returned: "
-                            + response.getStatus().getDescription());
-        }
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     /**
-     * Returns the feed representation.
+     * Sets the parent workspace.
      * 
-     * @return The feed representation.
-     * @throws Exception
+     * @param workspace
+     *            The parent workspace.
      */
-    public Feed getFeed() throws Exception {
-        Request request = new Request(Method.GET, getHref());
-        Response response = getWorkspace().getService().getClient().handle(
-                request);
+    public void setWorkspace(Workspace workspace) {
+        this.workspace = workspace;
+    }
 
-        if (response.getStatus().equals(Status.SUCCESS_OK)) {
-            return new Feed(response.getEntity());
-        } else {
-            throw new Exception(
-                    "Couldn't get the feed representation. Status returned: "
-                            + response.getStatus().getDescription());
+    /**
+     * Writes the current object as an XML element using the given SAX writer.
+     * 
+     * @param writer
+     *            The SAX writer.
+     * @throws SAXException
+     */
+    public void writeElement(XmlWriter writer) throws SAXException {
+
+        final AttributesImpl attributes = new AttributesImpl();
+        if ((getHref() != null) && (getHref().toString() != null)) {
+            attributes.addAttribute("", "href", null, "atomURI", getHref()
+                    .toString());
         }
+
+        writer.startElement(APP_NAMESPACE, "collection", null, attributes);
+
+        if (getTitle() != null) {
+            writer.dataElement(ATOM_NAMESPACE, "title", getTitle());
+        }
+
+        if (getMemberType() != null) {
+            getMemberType().writeElement(writer, APP_NAMESPACE);
+        }
+
+        try {
+            if (getFeed() != null) {
+                getFeed().writeElement(writer);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        writer.endElement(APP_NAMESPACE, "collection");
     }
 
 }

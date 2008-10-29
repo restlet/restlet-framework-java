@@ -1,19 +1,28 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package org.restlet;
@@ -25,33 +34,24 @@ import org.restlet.data.Response;
 import org.restlet.resource.Representation;
 
 /**
- * Base class exposing the uniform REST interface. 
- * 
- * "The central feature that distinguishes the REST architectural style from
- * other network-based styles is its emphasis on a uniform interface between
- * components. By applying the software engineering principle of generality to
- * the component interface, the overall system architecture is simplified and
- * the visibility of interactions is improved. Implementations are decoupled
- * from the services they provide, which encourages independent evolvability."
- * Roy T. Fielding<br/> <br/>
+ * Base class exposing the uniform REST interface. "The central feature that
+ * distinguishes the REST architectural style from other network-based styles is
+ * its emphasis on a uniform interface between components. By applying the
+ * software engineering principle of generality to the component interface, the
+ * overall system architecture is simplified and the visibility of interactions
+ * is improved. Implementations are decoupled from the services they provide,
+ * which encourages independent evolvability." Roy T. Fielding<br>
+ * <br>
+ * Concurrency note: instances of this class or its subclasses can be invoked by
+ * several threads at the same time and therefore must be thread-safe. You
+ * should be especially careful when storing state in member variables.
  * 
  * @see <a
  *      href="http://roy.gbiv.com/pubs/dissertation/rest_arch_style.htm#sec_5_1_5">Source
  *      dissertation</a>
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public abstract class Uniform {
-    /**
-     * Deletes the identified resource.
-     * 
-     * @param resourceUri
-     *            The URI of the resource to delete.
-     * @return The response.
-     */
-    public final Response delete(String resourceUri) {
-        return handle(new Request(Method.DELETE, resourceUri));
-    }
-
     /**
      * Deletes the identified resource.
      * 
@@ -64,14 +64,14 @@ public abstract class Uniform {
     }
 
     /**
-     * Gets the identified resource.
+     * Deletes the identified resource.
      * 
      * @param resourceUri
-     *            The URI of the resource to get.
+     *            The URI of the resource to delete.
      * @return The response.
      */
-    public final Response get(String resourceUri) {
-        return handle(new Request(Method.GET, resourceUri));
+    public final Response delete(String resourceUri) {
+        return handle(new Request(Method.DELETE, resourceUri));
     }
 
     /**
@@ -86,6 +86,17 @@ public abstract class Uniform {
     }
 
     /**
+     * Gets the identified resource.
+     * 
+     * @param resourceUri
+     *            The URI of the resource to get.
+     * @return The response.
+     */
+    public final Response get(String resourceUri) {
+        return handle(new Request(Method.GET, resourceUri));
+    }
+
+    /**
      * Handles a call.
      * 
      * @param request
@@ -93,7 +104,7 @@ public abstract class Uniform {
      * @return The returned response.
      */
     public final Response handle(Request request) {
-        Response response = new Response(request);
+        final Response response = new Response(request);
         handle(request, response);
         return response;
     }
@@ -111,17 +122,6 @@ public abstract class Uniform {
     /**
      * Gets the identified resource without its representation's content.
      * 
-     * @param resourceUri
-     *            The URI of the resource to get.
-     * @return The response.
-     */
-    public final Response head(String resourceUri) {
-        return handle(new Request(Method.HEAD, resourceUri));
-    }
-
-    /**
-     * Gets the identified resource without its representation's content.
-     * 
      * @param resourceRef
      *            The reference of the resource to get.
      * @return The response.
@@ -131,14 +131,14 @@ public abstract class Uniform {
     }
 
     /**
-     * Gets the options for the identified resource.
+     * Gets the identified resource without its representation's content.
      * 
      * @param resourceUri
      *            The URI of the resource to get.
      * @return The response.
      */
-    public final Response options(String resourceUri) {
-        return handle(new Request(Method.OPTIONS, resourceUri));
+    public final Response head(String resourceUri) {
+        return handle(new Request(Method.HEAD, resourceUri));
     }
 
     /**
@@ -153,16 +153,14 @@ public abstract class Uniform {
     }
 
     /**
-     * Posts a representation to the identified resource.
+     * Gets the options for the identified resource.
      * 
      * @param resourceUri
-     *            The URI of the resource to post to.
-     * @param entity
-     *            The entity to post.
+     *            The URI of the resource to get.
      * @return The response.
      */
-    public final Response post(String resourceUri, Representation entity) {
-        return handle(new Request(Method.POST, resourceUri, entity));
+    public final Response options(String resourceUri) {
+        return handle(new Request(Method.OPTIONS, resourceUri));
     }
 
     /**
@@ -179,16 +177,16 @@ public abstract class Uniform {
     }
 
     /**
-     * Puts a representation in the identified resource.
+     * Posts a representation to the identified resource.
      * 
      * @param resourceUri
-     *            The URI of the resource to modify.
+     *            The URI of the resource to post to.
      * @param entity
-     *            The entity to put.
+     *            The entity to post.
      * @return The response.
      */
-    public final Response put(String resourceUri, Representation entity) {
-        return handle(new Request(Method.PUT, resourceUri, entity));
+    public final Response post(String resourceUri, Representation entity) {
+        return handle(new Request(Method.POST, resourceUri, entity));
     }
 
     /**
@@ -202,6 +200,19 @@ public abstract class Uniform {
      */
     public final Response put(Reference resourceRef, Representation entity) {
         return handle(new Request(Method.PUT, resourceRef, entity));
+    }
+
+    /**
+     * Puts a representation in the identified resource.
+     * 
+     * @param resourceUri
+     *            The URI of the resource to modify.
+     * @param entity
+     *            The entity to put.
+     * @return The response.
+     */
+    public final Response put(String resourceUri, Representation entity) {
+        return handle(new Request(Method.PUT, resourceUri, entity));
     }
 
 }

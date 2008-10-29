@@ -1,19 +1,28 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package org.restlet.data;
@@ -21,31 +30,40 @@ package org.restlet.data;
 import org.restlet.util.Engine;
 
 /**
- * Cookie setting provided by a server.
+ * Cookie setting provided by a server. This allows a server side application to
+ * add, modify or remove a cookie on the client. *
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @see Response#getCookieSettings()
+ * @author Jerome Louvel
  */
 public final class CookieSetting extends Cookie {
+    /**
+     * Indicates whether to restrict cookie access to untrusted parties.
+     * Currently this toggles the non-standard but widely supported HttpOnly
+     * cookie parameter.
+     */
+    private volatile boolean accessRestricted;
+
     /** The user's comment. */
-    private String comment;
+    private volatile String comment;
 
     /**
      * The maximum age in seconds. Use 0 to discard an existing cookie.
      */
-    private int maxAge;
+    private volatile int maxAge;
 
     /** Indicates if cookie should only be transmitted by secure means. */
-    private boolean secure;
+    private volatile boolean secure;
 
     /**
      * Default constructor.
      */
     public CookieSetting() {
-        this(0, null, null, null, null);
+        this(0, null, null);
     }
 
     /**
-     * Preferred constructor.
+     * Constructor.
      * 
      * @param version
      *            The cookie's version.
@@ -59,7 +77,7 @@ public final class CookieSetting extends Cookie {
     }
 
     /**
-     * Preferred constructor.
+     * Constructor.
      * 
      * @param version
      *            The cookie's version.
@@ -74,10 +92,74 @@ public final class CookieSetting extends Cookie {
      */
     public CookieSetting(int version, String name, String value, String path,
             String domain) {
+        this(version, name, value, path, domain, null, -1, false, false);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param version
+     *            The cookie's version.
+     * @param name
+     *            The cookie's name.
+     * @param value
+     *            The cookie's value.
+     * @param path
+     *            The cookie's path.
+     * @param domain
+     *            The cookie's domain name.
+     * @param comment
+     *            The cookie's comment.
+     * @param maxAge
+     *            Sets the maximum age in seconds.<br>
+     *            Use 0 to immediately discard an existing cookie.<br>
+     *            Use -1 to discard the cookie at the end of the session
+     *            (default).
+     * @param secure
+     *            Indicates if cookie should only be transmitted by secure
+     *            means.
+     */
+    public CookieSetting(int version, String name, String value, String path,
+            String domain, String comment, int maxAge, boolean secure) {
+        this(version, name, value, path, domain, comment, maxAge, secure, false);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param version
+     *            The cookie's version.
+     * @param name
+     *            The cookie's name.
+     * @param value
+     *            The cookie's value.
+     * @param path
+     *            The cookie's path.
+     * @param domain
+     *            The cookie's domain name.
+     * @param comment
+     *            The cookie's comment.
+     * @param maxAge
+     *            Sets the maximum age in seconds.<br>
+     *            Use 0 to immediately discard an existing cookie.<br>
+     *            Use -1 to discard the cookie at the end of the session
+     *            (default).
+     * @param secure
+     *            Indicates if cookie should only be transmitted by secure
+     *            means.
+     * @param accessRestricted
+     *            Indicates whether to restrict cookie access to untrusted
+     *            parties. Currently this toggles the non-standard but widely
+     *            supported HttpOnly cookie parameter.
+     */
+    public CookieSetting(int version, String name, String value, String path,
+            String domain, String comment, int maxAge, boolean secure,
+            boolean accessRestricted) {
         super(version, name, value, path, domain);
-        this.comment = null;
-        this.maxAge = -1;
-        this.secure = false;
+        this.comment = comment;
+        this.maxAge = maxAge;
+        this.secure = secure;
+        this.accessRestricted = accessRestricted;
     }
 
     /**
@@ -103,8 +185,8 @@ public final class CookieSetting extends Cookie {
             if (super.equals(obj)) {
                 // if obj isn't a cookie setting or is null don't evaluate
                 // further
-                if ((obj instanceof CookieSetting) && obj != null) {
-                    CookieSetting that = (CookieSetting) obj;
+                if (obj instanceof CookieSetting) {
+                    final CookieSetting that = (CookieSetting) obj;
                     result = (this.maxAge == that.maxAge)
                             && (this.secure == that.secure);
 
@@ -145,9 +227,9 @@ public final class CookieSetting extends Cookie {
     }
 
     /**
-     * Returns the maximum age in seconds.<br/> Use 0 to immediately discard an
-     * existing cookie.<br/> Use -1 to discard the cookie at the end of the
-     * session (default).
+     * Returns the maximum age in seconds.<br>
+     * Use 0 to immediately discard an existing cookie.<br>
+     * Use -1 to discard the cookie at the end of the session (default).
      * 
      * @return The maximum age in seconds.
      */
@@ -163,12 +245,35 @@ public final class CookieSetting extends Cookie {
     }
 
     /**
+     * Indicates if cookie access is restricted for untrusted parties. Currently
+     * this toggles the non-standard but widely supported HttpOnly cookie
+     * parameter.
+     * 
+     * @return accessRestricted True if cookie access should be restricted
+     */
+    public boolean isAccessRestricted() {
+        return this.accessRestricted;
+    }
+
+    /**
      * Indicates if cookie should only be transmitted by secure means.
      * 
      * @return True if cookie should only be transmitted by secure means.
      */
     public boolean isSecure() {
         return this.secure;
+    }
+
+    /**
+     * Indicates whether to restrict cookie access to untrusted parties.
+     * Currently this toggles the non-standard but widely supported HttpOnly
+     * cookie parameter.
+     * 
+     * @param accessRestricted
+     *            True if cookie access should be restricted
+     */
+    public void setAccessRestricted(boolean accessRestricted) {
+        this.accessRestricted = accessRestricted;
     }
 
     /**
@@ -182,9 +287,9 @@ public final class CookieSetting extends Cookie {
     }
 
     /**
-     * Sets the maximum age in seconds.<br/> Use 0 to immediately discard an
-     * existing cookie.<br/> Use -1 to discard the cookie at the end of the
-     * session (default).
+     * Sets the maximum age in seconds.<br>
+     * Use 0 to immediately discard an existing cookie.<br>
+     * Use -1 to discard the cookie at the end of the session (default).
      * 
      * @param maxAge
      *            The maximum age in seconds.

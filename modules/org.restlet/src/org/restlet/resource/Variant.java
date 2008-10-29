@@ -1,19 +1,28 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package org.restlet.resource;
@@ -35,28 +44,43 @@ import org.restlet.util.WrapperList;
 /**
  * Descriptor for available representations of a resource. It contains all the
  * important metadata about a representation but is not able to actually serve
- * the representation's content itself. For this, you need to use the
- * Representation subclass.
+ * the representation's content itself.<br>
+ * <br>
+ * For this, you need to use the Representation subclass.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Variant {
     /**
      * Indicates that the size of the representation can't be known in advance.
+     * 
+     * @deprecated Use the {@link Representation#UNKNOWN_SIZE} constant instead.
      */
+    @Deprecated
     public static final long UNKNOWN_SIZE = -1L;
 
-    /** The natural language(s) of the intended audience for this variant. */
-    private List<Language> languages;
-
-    /** The media type. */
-    private MediaType mediaType;
-
     /** The character set or null if not applicable. */
-    private CharacterSet characterSet;
+    private volatile CharacterSet characterSet;
 
     /** The additional content codings applied to the entity-body. */
-    private List<Encoding> encodings;
+    private volatile List<Encoding> encodings;
+
+    /** The expiration date. */
+    private volatile Date expirationDate;
+
+    /**
+     * The identifier.
+     */
+    private volatile Reference identifier;
+
+    /** The natural language(s) of the intended audience for this variant. */
+    private volatile List<Language> languages;
+
+    /** The media type. */
+    private volatile MediaType mediaType;
+
+    /** The modification date. */
+    private volatile Date modificationDate;
 
     /**
      * The expected size. Dynamic representations can have any size, but
@@ -64,21 +88,10 @@ public class Variant {
      * is specified by the user, it has a higher priority than any size that can
      * be guessed by the representation (like a file size).
      */
-    private long size;
-
-    /** The expiration date. */
-    private Date expirationDate;
-
-    /** The modification date. */
-    private Date modificationDate;
+    private volatile long size;
 
     /** The tag. */
-    private Tag tag;
-
-    /**
-     * The identifier.
-     */
-    private Reference identifier;
+    private volatile Tag tag;
 
     /**
      * Default constructor.
@@ -115,7 +128,8 @@ public class Variant {
     }
 
     /**
-     * Returns the list of encodings applied to the entity-body. An
+     * Returns the modifiable list of encodings applied to the entity-body.
+     * Creates a new instance if no one has been set. An
      * "IllegalArgumentException" exception is thrown when adding a null
      * encoding to this list.
      * 
@@ -123,33 +137,33 @@ public class Variant {
      */
     public List<Encoding> getEncodings() {
         if (this.encodings == null) {
-            encodings = new WrapperList<Encoding>() {
-
-                @Override
-                public void add(int index, Encoding element) {
-                    if (element == null) {
-                        throw new IllegalArgumentException(
-                                "Cannot add a null encoding.");
-                    } else {
-                        super.add(index, element);
-                    }
-                }
+            this.encodings = new WrapperList<Encoding>() {
 
                 @Override
                 public boolean add(Encoding element) {
                     if (element == null) {
                         throw new IllegalArgumentException(
                                 "Cannot add a null encoding.");
-                    } else {
-                        return super.add(element);
                     }
+
+                    return super.add(element);
+                }
+
+                @Override
+                public void add(int index, Encoding element) {
+                    if (element == null) {
+                        throw new IllegalArgumentException(
+                                "Cannot add a null encoding.");
+                    }
+
+                    super.add(index, element);
                 }
 
                 @Override
                 public boolean addAll(Collection<? extends Encoding> elements) {
                     boolean addNull = (elements == null);
                     if (!addNull) {
-                        for (Iterator<? extends Encoding> iterator = elements
+                        for (final Iterator<? extends Encoding> iterator = elements
                                 .iterator(); !addNull && iterator.hasNext();) {
                             addNull = (iterator.next() == null);
                         }
@@ -157,9 +171,9 @@ public class Variant {
                     if (addNull) {
                         throw new IllegalArgumentException(
                                 "Cannot add a null encoding.");
-                    } else {
-                        return super.addAll(elements);
                     }
+
+                    return super.addAll(elements);
                 }
 
                 @Override
@@ -167,7 +181,7 @@ public class Variant {
                         Collection<? extends Encoding> elements) {
                     boolean addNull = (elements == null);
                     if (!addNull) {
-                        for (Iterator<? extends Encoding> iterator = elements
+                        for (final Iterator<? extends Encoding> iterator = elements
                                 .iterator(); !addNull && iterator.hasNext();) {
                             addNull = (iterator.next() == null);
                         }
@@ -175,12 +189,13 @@ public class Variant {
                     if (addNull) {
                         throw new IllegalArgumentException(
                                 "Cannot add a null encoding.");
-                    } else {
-                        return super.addAll(index, elements);
                     }
+
+                    return super.addAll(index, elements);
                 }
             };
         }
+
         return this.encodings;
     }
 
@@ -189,29 +204,44 @@ public class Variant {
      * information is not known, returns null.
      * 
      * @return The expiration date.
+     * @deprecated Use the {@link Representation#getExpirationDate()} method
+     *             instead.
      */
+    @Deprecated
     public Date getExpirationDate() {
         return this.expirationDate;
     }
 
     /**
-     * Returns the list of languages. An "IllegalArgumentException" exception is
-     * thrown when adding a null language to this list.
+     * Returns an optional identifier. This is useful when the representation is
+     * accessible from a location separate from the representation's resource
+     * URI, for example when content negotiation occurs.
+     * 
+     * @return The identifier.
+     */
+    public Reference getIdentifier() {
+        return this.identifier;
+    }
+
+    /**
+     * Returns the modifiable list of languages. Creates a new instance if no
+     * one has been set. An "IllegalArgumentException" exception is thrown when
+     * adding a null language to this list.
      * 
      * @return The list of languages.
      */
     public List<Language> getLanguages() {
-        if (languages == null)
-            languages = new WrapperList<Language>() {
+        if (this.languages == null) {
+            this.languages = new WrapperList<Language>() {
 
                 @Override
                 public void add(int index, Language element) {
                     if (element == null) {
                         throw new IllegalArgumentException(
                                 "Cannot add a null language.");
-                    } else {
-                        super.add(index, element);
                     }
+
+                    super.add(index, element);
                 }
 
                 @Override
@@ -219,16 +249,16 @@ public class Variant {
                     if (element == null) {
                         throw new IllegalArgumentException(
                                 "Cannot add a null language.");
-                    } else {
-                        return super.add(element);
                     }
+
+                    return super.add(element);
                 }
 
                 @Override
                 public boolean addAll(Collection<? extends Language> elements) {
                     boolean addNull = (elements == null);
                     if (!addNull) {
-                        for (Iterator<? extends Language> iterator = elements
+                        for (final Iterator<? extends Language> iterator = elements
                                 .iterator(); !addNull && iterator.hasNext();) {
                             addNull = (iterator.next() == null);
                         }
@@ -236,9 +266,9 @@ public class Variant {
                     if (addNull) {
                         throw new IllegalArgumentException(
                                 "Cannot add a null language.");
-                    } else {
-                        return super.addAll(elements);
                     }
+
+                    return super.addAll(elements);
                 }
 
                 @Override
@@ -246,7 +276,7 @@ public class Variant {
                         Collection<? extends Language> elements) {
                     boolean addNull = (elements == null);
                     if (!addNull) {
-                        for (Iterator<? extends Language> iterator = elements
+                        for (final Iterator<? extends Language> iterator = elements
                                 .iterator(); !addNull && iterator.hasNext();) {
                             addNull = (iterator.next() == null);
                         }
@@ -254,12 +284,13 @@ public class Variant {
                     if (addNull) {
                         throw new IllegalArgumentException(
                                 "Cannot add a null language.");
-                    } else {
-                        return super.addAll(index, elements);
                     }
+
+                    return super.addAll(index, elements);
                 }
 
             };
+        }
         return this.languages;
     }
 
@@ -277,7 +308,10 @@ public class Variant {
      * information is not known, returns null.
      * 
      * @return The modification date.
+     * @deprecated Use the {@link Representation#getModificationDate()} method
+     *             instead.
      */
+    @Deprecated
     public Date getModificationDate() {
         return this.modificationDate;
     }
@@ -286,7 +320,9 @@ public class Variant {
      * Returns the size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
      * 
      * @return The size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
+     * @deprecated Use the {@link Representation#getSize()} method instead.
      */
+    @Deprecated
     public long getSize() {
         return this.size;
     }
@@ -295,7 +331,9 @@ public class Variant {
      * Returns the tag.
      * 
      * @return The tag.
+     * @deprecated Use the {@link Representation#getTag()} method instead.
      */
+    @Deprecated
     public Tag getTag() {
         return this.tag;
     }
@@ -311,14 +349,59 @@ public class Variant {
     }
 
     /**
+     * Sets the list of encodings applied to the entity-body.
+     * 
+     * @param encodings
+     *            The list of encodings applied to the entity-body.
+     */
+    public void setEncodings(List<Encoding> encodings) {
+        this.encodings = encodings;
+    }
+
+    /**
      * Sets the future date when this representation expire. If this information
      * is not known, pass null.
      * 
      * @param expirationDate
      *            The expiration date.
+     * @deprecated Use the {@link Representation#setExpirationDate(Date)} method
+     *             instead.
      */
+    @Deprecated
     public void setExpirationDate(Date expirationDate) {
         this.expirationDate = DateUtils.unmodifiable(expirationDate);
+    }
+
+    /**
+     * Sets the optional identifier. This is useful when the representation is
+     * accessible from a location separate from the representation's resource
+     * URI, for example when content negotiation occurs.
+     * 
+     * @param identifier
+     *            The identifier.
+     */
+    public void setIdentifier(Reference identifier) {
+        this.identifier = identifier;
+    }
+
+    /**
+     * Sets the identifier from a URI string.
+     * 
+     * @param identifierUri
+     *            The identifier to parse.
+     */
+    public void setIdentifier(String identifierUri) {
+        setIdentifier(new Reference(identifierUri));
+    }
+
+    /**
+     * Sets the list of languages.
+     * 
+     * @param languages
+     *            The list of languages.
+     */
+    public void setLanguages(List<Language> languages) {
+        this.languages = languages;
     }
 
     /**
@@ -337,7 +420,10 @@ public class Variant {
      * 
      * @param modificationDate
      *            The modification date.
+     * @deprecated Use the {@link Representation#setModificationDate(Date)}
+     *             method instead.
      */
+    @Deprecated
     public void setModificationDate(Date modificationDate) {
         this.modificationDate = DateUtils.unmodifiable(modificationDate);
     }
@@ -347,7 +433,9 @@ public class Variant {
      * 
      * @param expectedSize
      *            The expected size in bytes if known, -1 otherwise.
+     * @deprecated Use the {@link Representation#setSize(long)} method instead.
      */
+    @Deprecated
     public void setSize(long expectedSize) {
         this.size = expectedSize;
     }
@@ -357,38 +445,11 @@ public class Variant {
      * 
      * @param tag
      *            The tag.
+     * @deprecated Use the {@link Representation#setTag(Tag)} method instead.
      */
+    @Deprecated
     public void setTag(Tag tag) {
         this.tag = tag;
-    }
-
-    /**
-     * Returns the identifier.
-     * 
-     * @return The identifier.
-     */
-    public Reference getIdentifier() {
-        return this.identifier;
-    }
-
-    /**
-     * Sets the identifier.
-     * 
-     * @param identifier
-     *            The identifier.
-     */
-    public void setIdentifier(Reference identifier) {
-        this.identifier = identifier;
-    }
-
-    /**
-     * Sets the identifier from a URI string.
-     * 
-     * @param identifierUri
-     *            The identifier to parse.
-     */
-    public void setIdentifier(String identifierUri) {
-        setIdentifier(new Reference(identifierUri));
     }
 
 }

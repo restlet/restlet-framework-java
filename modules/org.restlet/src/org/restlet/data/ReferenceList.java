@@ -1,19 +1,28 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package org.restlet.data;
@@ -31,11 +40,11 @@ import org.restlet.util.WrapperList;
 /**
  * List of URI references.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class ReferenceList extends WrapperList<Reference> {
-    /** The list identifier. */
-    private Reference identifier;
+    /** The list's identifier. */
+    private volatile Reference identifier;
 
     /**
      * Constructor.
@@ -124,13 +133,13 @@ public class ReferenceList extends WrapperList<Reference> {
      * @return A representation of the list in the "text/uri-list" format.
      */
     public Representation getTextRepresentation() {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
 
         if (getIdentifier() != null) {
             sb.append("# ").append(getIdentifier().toString()).append("\r\n");
         }
 
-        for (Reference ref : this) {
+        for (final Reference ref : this) {
             sb.append(ref.toString()).append("\r\n");
         }
 
@@ -138,30 +147,30 @@ public class ReferenceList extends WrapperList<Reference> {
     }
 
     /**
-     * Returns a representation of the list in the "text/uri-list" format.
+     * Returns a representation of the list in "text/html" format.
      * 
-     * @return A representation of the list in the "text/uri-list" format.
+     * @return A representation of the list in "text/html" format.
      */
     public Representation getWebRepresentation() {
         // Create a simple HTML list
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         sb.append("<html><body>\n");
 
         if (getIdentifier() != null) {
             sb.append("<h2>Listing of \"" + getIdentifier().getPath()
                     + "\"</h2>\n");
-            Reference parentRef = getIdentifier().getParentRef();
+            final Reference parentRef = getIdentifier().getParentRef();
 
             if (!parentRef.equals(getIdentifier())) {
-                sb.append("<a href=\"" + parentRef + "\">..</a><br/>\n");
+                sb.append("<a href=\"" + parentRef + "\">..</a><br>\n");
             }
         } else {
             sb.append("<h2>List of references</h2>\n");
         }
 
-        for (Reference ref : this) {
+        for (final Reference ref : this) {
             sb.append("<a href=\"" + ref.toString() + "\">"
-                    + ref.getRelativeRef(getIdentifier()) + "</a><br/>\n");
+                    + ref.getRelativeRef(getIdentifier()) + "</a><br>\n");
         }
         sb.append("</body></html>\n");
 

@@ -1,25 +1,34 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package org.restlet;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.regex.Pattern;
 
@@ -37,12 +46,18 @@ import org.restlet.util.Variable;
  * Filter scoring the affinity of calls with the attached Restlet. The score is
  * used by an associated Router in order to determine the most appropriate
  * Restlet for a given call. The routing is based on a reference template. It
- * also supports the extraction of some attributes from a call. Multiple
- * extractions can be defined, based on the query string of the resource
- * reference, on the request form (ex: posted from a browser) or on cookies.
+ * also supports the extraction of some attributes from a call.<br>
+ * <br>
+ * Multiple extractions can be defined, based on the query string of the
+ * resource reference, on the request form (ex: posted from a browser) or on
+ * cookies.<br>
+ * <br>
+ * Concurrency note: instances of this class or its subclasses can be invoked by
+ * several threads at the same time and therefore must be thread-safe. You
+ * should be especially careful when storing state in member variables.
  * 
  * @see org.restlet.util.Template
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Route extends Filter {
     /** Internal class holding extraction information. */
@@ -50,11 +65,11 @@ public class Route extends Filter {
         /** Target attribute name. */
         protected String attribute;
 
-        /** Name of the parameter to look for. */
-        protected String parameter;
-
         /** Indicates how to handle repeating values. */
         protected boolean first;
+
+        /** Name of the parameter to look for. */
+        protected String parameter;
 
         /**
          * Constructor.
@@ -78,11 +93,11 @@ public class Route extends Filter {
         /** Name of the attribute to look for. */
         protected String attribute;
 
-        /** Indicates if the attribute presence is required. */
-        protected boolean required;
-
         /** Format of the attribute value, using Regex pattern syntax. */
         protected String format;
+
+        /** Indicates if the attribute presence is required. */
+        protected boolean required;
 
         /**
          * Constructor.
@@ -101,23 +116,29 @@ public class Route extends Filter {
         }
     }
 
-    /** The parent router. */
-    private Router router;
-
-    /** The list of attribute validations. */
-    private List<ValidateInfo> validations;
-
     /** The list of cookies to extract. */
-    private List<ExtractInfo> cookieExtracts;
-
-    /** The list of query parameters to extract. */
-    private List<ExtractInfo> queryExtracts;
+    private volatile List<ExtractInfo> cookieExtracts;
 
     /** The list of request entity parameters to extract. */
-    private List<ExtractInfo> entityExtracts;
+    private volatile List<ExtractInfo> entityExtracts;
+
+    /**
+     * Indicates whether the query part should be taken into account when
+     * matching a reference with the template.
+     */
+    private volatile boolean matchQuery;
+
+    /** The list of query parameters to extract. */
+    private volatile List<ExtractInfo> queryExtracts;
+
+    /** The parent router. */
+    private volatile Router router;
 
     /** The reference template to match. */
-    private Template template;
+    private volatile Template template;
+
+    /** The list of attribute validations. */
+    private volatile List<ValidateInfo> validations;
 
     /**
      * Constructor behaving as a simple extractor filter.
@@ -130,7 +151,10 @@ public class Route extends Filter {
     }
 
     /**
-     * Constructor.
+     * Constructor. The URIs will be matched agains the template using the
+     * {@link Template#MODE_STARTS_WITH} matching mode. This can be changed by
+     * getting the template and calling {@link Template#setMatchingMode(int)}
+     * with {@link Template#MODE_EQUALS} for exact matching.
      * 
      * @param router
      *            The parent router.
@@ -140,9 +164,8 @@ public class Route extends Filter {
      *            The next Restlet.
      */
     public Route(Router router, String uriTemplate, Restlet next) {
-        this(router, new Template(router.getLogger(), uriTemplate,
-                Template.MODE_STARTS_WITH, Variable.TYPE_URI_SEGMENT, "", true,
-                false), next);
+        this(router, new Template(uriTemplate, Template.MODE_STARTS_WITH,
+                Variable.TYPE_URI_SEGMENT, "", true, false), next);
     }
 
     /**
@@ -157,28 +180,33 @@ public class Route extends Filter {
      */
     public Route(Router router, Template template, Restlet next) {
         super(router == null ? null : router.getContext(), next);
+        this.matchQuery = (router == null) ? true : router
+                .getDefaultMatchQuery();
         this.router = router;
-        this.cookieExtracts = null;
-        this.queryExtracts = null;
-        this.entityExtracts = null;
         this.template = template;
-        this.validations = null;
     }
 
     /**
-     * Allows filtering before its handling by the target Restlet. Does nothing
-     * by default.
+     * Allows filtering before its handling by the target Restlet. By default it
+     * parses the template variable, adjust the base reference, then extracts
+     * the attributes from form parameters (query, cookies, entity) and finally
+     * tries to validates the variables as indicated by the
+     * {@link #validate(String, boolean, String)} method.
      * 
      * @param request
      *            The request to filter.
      * @param response
      *            The response to filter.
+     * @return The continuation status.
      */
-    protected void beforeHandle(Request request, Response response) {
+    @Override
+    protected int beforeHandle(Request request, Response response) {
         // 1 - Parse the template variables and adjust the base reference
         if (getTemplate() != null) {
-            String remainingPart = request.getResourceRef().getRemainingPart();
-            int matchedLength = getTemplate().parse(remainingPart, request);
+            final String remainingPart = request.getResourceRef()
+                    .getRemainingPart(false, getMatchQuery());
+            final int matchedLength = getTemplate().parse(remainingPart,
+                    request);
 
             if (getLogger().isLoggable(Level.FINER)) {
                 getLogger().finer(
@@ -189,7 +217,8 @@ public class Route extends Filter {
 
             if (matchedLength != -1) {
                 // Updates the context
-                String matchedPart = remainingPart.substring(0, matchedLength);
+                final String matchedPart = remainingPart.substring(0,
+                        matchedLength);
                 Reference baseRef = request.getResourceRef().getBaseRef();
 
                 if (baseRef == null) {
@@ -208,7 +237,8 @@ public class Route extends Filter {
                     getLogger().fine(
                             "New remaining part: "
                                     + request.getResourceRef()
-                                            .getRemainingPart());
+                                            .getRemainingPart(false,
+                                                    getMatchQuery()));
                 }
 
                 if (getLogger().isLoggable(Level.FINE)) {
@@ -226,6 +256,8 @@ public class Route extends Filter {
 
         // 3 - Validate the attributes extracted (or others)
         validateAttributes(request, response);
+
+        return CONTINUE;
     }
 
     /**
@@ -238,11 +270,11 @@ public class Route extends Filter {
      */
     private void extractAttributes(Request request, Response response) {
         // Extract the query parameters
-        if (this.queryExtracts != null) {
-            Form form = request.getResourceRef().getQueryAsForm();
+        if (!getQueryExtracts().isEmpty()) {
+            final Form form = request.getResourceRef().getQueryAsForm();
 
             if (form != null) {
-                for (ExtractInfo ei : getQueryExtracts()) {
+                for (final ExtractInfo ei : getQueryExtracts()) {
                     if (ei.first) {
                         request.getAttributes().put(ei.attribute,
                                 form.getFirstValue(ei.parameter));
@@ -255,11 +287,11 @@ public class Route extends Filter {
         }
 
         // Extract the request entity parameters
-        if (this.entityExtracts != null) {
-            Form form = request.getEntityAsForm();
+        if (!getEntityExtracts().isEmpty()) {
+            final Form form = request.getEntityAsForm();
 
             if (form != null) {
-                for (ExtractInfo ei : getEntityExtracts()) {
+                for (final ExtractInfo ei : getEntityExtracts()) {
                     if (ei.first) {
                         request.getAttributes().put(ei.attribute,
                                 form.getFirstValue(ei.parameter));
@@ -272,11 +304,11 @@ public class Route extends Filter {
         }
 
         // Extract the cookie parameters
-        if (this.cookieExtracts != null) {
-            Series<Cookie> cookies = request.getCookies();
+        if (!getCookieExtracts().isEmpty()) {
+            final Series<Cookie> cookies = request.getCookies();
 
             if (cookies != null) {
-                for (ExtractInfo ei : getCookieExtracts()) {
+                for (final ExtractInfo ei : getCookieExtracts()) {
                     if (ei.first) {
                         request.getAttributes().put(ei.attribute,
                                 cookies.getFirstValue(ei.parameter));
@@ -347,9 +379,17 @@ public class Route extends Filter {
      * @return The list of query extracts.
      */
     private List<ExtractInfo> getCookieExtracts() {
-        if (this.cookieExtracts == null)
-            this.cookieExtracts = new ArrayList<ExtractInfo>();
-        return this.cookieExtracts;
+        // Lazy initialization with double-check.
+        List<ExtractInfo> ce = this.cookieExtracts;
+        if (ce == null) {
+            synchronized (this) {
+                ce = this.cookieExtracts;
+                if (ce == null) {
+                    this.cookieExtracts = ce = new CopyOnWriteArrayList<ExtractInfo>();
+                }
+            }
+        }
+        return ce;
     }
 
     /**
@@ -358,9 +398,38 @@ public class Route extends Filter {
      * @return The list of query extracts.
      */
     private List<ExtractInfo> getEntityExtracts() {
-        if (this.entityExtracts == null)
-            this.entityExtracts = new ArrayList<ExtractInfo>();
-        return this.entityExtracts;
+        // Lazy initialization with double-check.
+        List<ExtractInfo> ee = this.entityExtracts;
+        if (ee == null) {
+            synchronized (this) {
+                ee = this.entityExtracts;
+                if (ee == null) {
+                    this.entityExtracts = ee = new CopyOnWriteArrayList<ExtractInfo>();
+                }
+            }
+        }
+        return ee;
+    }
+
+    /**
+     * Returns the matching mode to use on the template when parsing a formatted
+     * reference.
+     * 
+     * @return The matching mode to use.
+     */
+    public int getMatchingMode() {
+        return getTemplate().getMatchingMode();
+    }
+
+    /**
+     * Indicates whether the query part should be taken into account when
+     * matching a reference with the template.
+     * 
+     * @return True if the query part of the reference should be taken into
+     *         account, false otherwise.
+     */
+    public boolean getMatchQuery() {
+        return this.matchQuery;
     }
 
     /**
@@ -369,9 +438,17 @@ public class Route extends Filter {
      * @return The list of query extracts.
      */
     private List<ExtractInfo> getQueryExtracts() {
-        if (this.queryExtracts == null)
-            this.queryExtracts = new ArrayList<ExtractInfo>();
-        return this.queryExtracts;
+        // Lazy initialization with double-check.
+        List<ExtractInfo> qe = this.queryExtracts;
+        if (qe == null) {
+            synchronized (this) {
+                qe = this.queryExtracts;
+                if (qe == null) {
+                    this.queryExtracts = qe = new CopyOnWriteArrayList<ExtractInfo>();
+                }
+            }
+        }
+        return qe;
     }
 
     /**
@@ -398,9 +475,17 @@ public class Route extends Filter {
      * @return The list of attribute validations.
      */
     private List<ValidateInfo> getValidations() {
-        if (this.validations == null)
-            this.validations = new ArrayList<ValidateInfo>();
-        return this.validations;
+        // Lazy initialization with double-check.
+        List<ValidateInfo> v = this.validations;
+        if (v == null) {
+            synchronized (this) {
+                v = this.validations;
+                if (v == null) {
+                    this.validations = v = new CopyOnWriteArrayList<ValidateInfo>();
+                }
+            }
+        }
+        return v;
     }
 
     /**
@@ -417,23 +502,24 @@ public class Route extends Filter {
 
         if ((getRouter() != null) && (request.getResourceRef() != null)
                 && (getTemplate() != null)) {
-            String remainingPart = request.getResourceRef().getRemainingPart();
+            final String remainingPart = request.getResourceRef()
+                    .getRemainingPart(false, getMatchQuery());
             if (remainingPart != null) {
-                int matchedLength = getTemplate().match(remainingPart);
+                final int matchedLength = getTemplate().match(remainingPart);
 
                 if (matchedLength != -1) {
-                    float totalLength = remainingPart.length();
+                    final float totalLength = remainingPart.length();
 
                     if (totalLength > 0.0F) {
                         result = getRouter().getRequiredScore()
                                 + (1.0F - getRouter().getRequiredScore())
-                                * (((float) matchedLength) / totalLength);
+                                * (matchedLength / totalLength);
                     } else {
                         result = 1.0F;
                     }
                 }
             }
-            
+
             if (getLogger().isLoggable(Level.FINER)) {
                 getLogger().finer(
                         "Call score for the \"" + getTemplate().getPattern()
@@ -442,6 +528,39 @@ public class Route extends Filter {
         }
 
         return result;
+    }
+
+    /**
+     * Sets the matching mode to use on the template when parsing a formatted
+     * reference.
+     * 
+     * @param matchingMode
+     *            The matching mode to use.
+     */
+    public void setMatchingMode(int matchingMode) {
+        getTemplate().setMatchingMode(matchingMode);
+    }
+
+    /**
+     * Sets whether the matching should be done on the URI with or without query
+     * string.
+     * 
+     * @param matchQuery
+     *            True if the matching should be done with the query string,
+     *            false otherwise.
+     */
+    public void setMatchQuery(boolean matchQuery) {
+        this.matchQuery = matchQuery;
+    }
+
+    /**
+     * Sets the parent router.
+     * 
+     * @param router
+     *            The parent router.
+     */
+    public void setRouter(Router router) {
+        this.router = router;
     }
 
     /**
@@ -480,7 +599,7 @@ public class Route extends Filter {
      */
     private void validateAttributes(Request request, Response response) {
         if (this.validations != null) {
-            for (ValidateInfo validate : getValidations()) {
+            for (final ValidateInfo validate : getValidations()) {
                 if (validate.required
                         && !request.getAttributes().containsKey(
                                 validate.attribute)) {
@@ -491,7 +610,7 @@ public class Route extends Filter {
                                             + validate.attribute
                                             + "\" attribute in the request. Please check your request.");
                 } else if (validate.format != null) {
-                    Object value = request.getAttributes().get(
+                    final Object value = request.getAttributes().get(
                             validate.attribute);
                     if (value == null) {
                         response

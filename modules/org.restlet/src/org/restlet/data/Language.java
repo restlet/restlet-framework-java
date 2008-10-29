@@ -1,32 +1,41 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package org.restlet.data;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Language used in representations and preferences. A language tag is composed
  * of one or more parts: A primary language tag and a possibly empty series of
  * subtags. When formatted as a string, parts are separated by hyphens.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public final class Language extends Metadata {
     /** All languages acceptable. */
@@ -51,9 +60,6 @@ public final class Language extends Metadata {
     public static final Language SPANISH = new Language("es",
             "Spanish language");
 
-    /** The metadata main list of subtags taken from the metadata name. */
-    private List<String> subTags;
-
     /**
      * Returns the language associated to a name. If an existing constant exists
      * then it is returned, otherwise a new instance is created.
@@ -65,25 +71,29 @@ public final class Language extends Metadata {
     public static Language valueOf(final String name) {
         Language result = null;
 
-        if (name != null) {
-            if (name.equalsIgnoreCase(ALL.getName()))
+        if ((name != null) && !name.equals("")) {
+            if (name.equalsIgnoreCase(ALL.getName())) {
                 result = ALL;
-            else if (name.equalsIgnoreCase(ENGLISH.getName()))
+            } else if (name.equalsIgnoreCase(ENGLISH.getName())) {
                 result = ENGLISH;
-            else if (name.equalsIgnoreCase(ENGLISH_US.getName()))
+            } else if (name.equalsIgnoreCase(ENGLISH_US.getName())) {
                 result = ENGLISH_US;
-            else if (name.equalsIgnoreCase(FRENCH.getName()))
+            } else if (name.equalsIgnoreCase(FRENCH.getName())) {
                 result = FRENCH;
-            else if (name.equalsIgnoreCase(FRENCH_FRANCE.getName()))
+            } else if (name.equalsIgnoreCase(FRENCH_FRANCE.getName())) {
                 result = FRENCH_FRANCE;
-            else if (name.equalsIgnoreCase(SPANISH.getName()))
+            } else if (name.equalsIgnoreCase(SPANISH.getName())) {
                 result = SPANISH;
-            else
+            } else {
                 result = new Language(name);
+            }
         }
 
         return result;
     }
+
+    /** The metadata main list of subtags taken from the metadata name. */
+    private volatile List<String> subTags;
 
     /**
      * Constructor.
@@ -121,33 +131,40 @@ public final class Language extends Metadata {
      * @return The primary tag.
      */
     public String getPrimaryTag() {
-        int separator = getName().indexOf('-');
+        final int separator = getName().indexOf('-');
 
         if (separator == -1) {
             return getName();
-        } else {
-            return getName().substring(0, separator);
         }
+
+        return getName().substring(0, separator);
     }
 
     /**
-     * Returns the possibly empty list of subtags.
+     * Returns the modifiable list of subtags. This list can be empty.
      * 
      * @return The list of subtags for this language Tag.
      */
     public List<String> getSubTags() {
-        if (subTags == null) {
-            String[] tags = getName().split("-");
-            subTags = new ArrayList<String>();
-
-            if (tags.length > 0) {
-                for (int i = 1; i < tags.length; i++) {
-                    subTags.add(tags[i]);
+        // Lazy initialization with double-check.
+        List<String> v = this.subTags;
+        if (v == null) {
+            synchronized (this) {
+                v = this.subTags;
+                if (v == null) {
+                    this.subTags = v = new CopyOnWriteArrayList<String>();
+                    if (getName() != null) {
+                        final String[] tags = getName().split("-");
+                        if (tags.length > 0) {
+                            for (int i = 1; i < tags.length; i++) {
+                                this.subTags.add(tags[i]);
+                            }
+                        }
+                    }
                 }
             }
         }
-
-        return subTags;
+        return v;
     }
 
     /** {@inheritDoc} */

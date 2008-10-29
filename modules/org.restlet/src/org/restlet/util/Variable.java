@@ -1,30 +1,42 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package org.restlet.util;
+
+import org.restlet.data.Reference;
 
 /**
  * Variable descriptor for reference templates.
  * 
  * @see Template
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public final class Variable {
+
     /** Matches all characters. */
     public static final int TYPE_ALL = 1;
 
@@ -34,8 +46,17 @@ public final class Variable {
     /** Matches all alphabetical and digital characters. */
     public static final int TYPE_ALPHA_DIGIT = 3;
 
+    /** Matches any TEXT excluding "(" and ")". */
+    public static final int TYPE_COMMENT = 14;
+
+    /** Matches any TEXT inside a comment excluding ";". */
+    public static final int TYPE_COMMENT_ATTRIBUTE = 15;
+
     /** Matches all digital characters. */
     public static final int TYPE_DIGIT = 4;
+
+    /** Matches any CHAR except CTLs or separators. */
+    public static final int TYPE_TOKEN = 13;
 
     /** Matches all URI characters. */
     public static final int TYPE_URI_ALL = 5;
@@ -43,35 +64,44 @@ public final class Variable {
     /** Matches URI fragment characters. */
     public static final int TYPE_URI_FRAGMENT = 6;
 
+    /** Matches URI path characters (not the query or the fragment parts). */
+    public static final int TYPE_URI_PATH = 7;
+
     /** Matches URI query characters. */
-    public static final int TYPE_URI_QUERY = 7;
+    public static final int TYPE_URI_QUERY = 8;
 
     /** Matches URI scheme characters. */
-    public static final int TYPE_URI_SCHEME = 8;
+    public static final int TYPE_URI_SCHEME = 9;
 
     /** Matches URI segment characters. */
-    public static final int TYPE_URI_SEGMENT = 9;
+    public static final int TYPE_URI_SEGMENT = 10;
 
     /** Matches unreserved URI characters. */
-    public static final int TYPE_URI_UNRESERVED = 10;
+    public static final int TYPE_URI_UNRESERVED = 11;
 
     /** Matches all alphabetical and digital characters plus the underscore. */
-    public static final int TYPE_WORD = 11;
+    public static final int TYPE_WORD = 12;
 
-    /** The type of variable. See TYPE_* constants. */
-    private int type;
+    /** Indicates if the parsed value must be decoded. */
+    private volatile boolean decodedOnParse;
 
     /** The default value to use if the key couldn't be found in the model. */
-    private String defaultValue;
+    private volatile String defaultValue;
 
-    /** Indicates if the variable is required or optional. */
-    private boolean required;
+    /** Indicates if the formatted value must be encoded. */
+    private volatile boolean encodedOnFormat;
 
     /**
      * Indicates if the value is fixed, in which case the "defaultValue"
      * property is always used.
      */
-    private boolean fixed;
+    private volatile boolean fixed;
+
+    /** Indicates if the variable is required or optional. */
+    private volatile boolean required;
+
+    /** The type of variable. See TYPE_* constants. */
+    private volatile int type;
 
     /**
      * Default constructor. Type is TYPE_ALL, default value is "", required is
@@ -107,19 +137,62 @@ public final class Variable {
      */
     public Variable(int type, String defaultValue, boolean required,
             boolean fixed) {
+        this(type, defaultValue, required, fixed, false, false);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param type
+     *            The type of variable. See TYPE_* constants.
+     * @param defaultValue
+     *            The default value to use if the key couldn't be found in the
+     *            model.
+     * @param required
+     *            Indicates if the variable is required or optional.
+     * @param fixed
+     *            Indicates if the value is fixed, in which case the
+     *            "defaultValue" property is always used.
+     * @param decodedOnParse
+     *            Indicates if the parsed value must be decoded.
+     * @param encodedOnFormat
+     *            Indicates if the formatted value must be encoded.
+     */
+    public Variable(int type, String defaultValue, boolean required,
+            boolean fixed, boolean decodedOnParse, boolean encodedOnFormat) {
         this.type = type;
         this.defaultValue = defaultValue;
         this.required = required;
         this.fixed = fixed;
+        this.decodedOnParse = decodedOnParse;
+        this.encodedOnFormat = encodedOnFormat;
     }
 
     /**
-     * Returns the type of variable. See TYPE_* constants.
+     * According to the type of the variable, encodes the value given in
+     * parameters.
      * 
-     * @return The type of variable. See TYPE_* constants.
+     * @param value
+     *            The value to encode.
+     * @return The encoded value, according to the variable type.
      */
-    public int getType() {
-        return this.type;
+    public String encode(String value) {
+        switch (this.type) {
+        case Variable.TYPE_URI_ALL:
+            return Reference.encode(value);
+        case Variable.TYPE_URI_UNRESERVED:
+            return Reference.encode(value);
+        case Variable.TYPE_URI_FRAGMENT:
+            return Reference.encode(value);
+        case Variable.TYPE_URI_PATH:
+            return Reference.encode(value);
+        case Variable.TYPE_URI_QUERY:
+            return Reference.encode(value);
+        case Variable.TYPE_URI_SEGMENT:
+            return Reference.encode(value);
+        default:
+            return value;
+        }
     }
 
     /**
@@ -134,12 +207,30 @@ public final class Variable {
     }
 
     /**
-     * Returns true if the variable is required or optional.
+     * Returns the type of variable. See TYPE_* constants.
      * 
-     * @return True if the variable is required or optional.
+     * @return The type of variable. See TYPE_* constants.
      */
-    public boolean isRequired() {
-        return this.required;
+    public int getType() {
+        return this.type;
+    }
+
+    /**
+     * Indicates if the parsed value must be decoded.
+     * 
+     * @return True if the parsed value must be decoded, false otherwise.
+     */
+    public boolean isDecodedOnParse() {
+        return this.decodedOnParse;
+    }
+
+    /**
+     * Indicates if the formatted value must be encoded.
+     * 
+     * @return True if the formatted value must be encoded, false otherwise.
+     */
+    public boolean isEncodedOnFormat() {
+        return this.encodedOnFormat;
     }
 
     /**
@@ -151,6 +242,76 @@ public final class Variable {
      */
     public boolean isFixed() {
         return this.fixed;
+    }
+
+    /**
+     * Returns true if the variable is required or optional.
+     * 
+     * @return True if the variable is required or optional.
+     */
+    public boolean isRequired() {
+        return this.required;
+    }
+
+    /**
+     * Indicates if the parsed value must be decoded.
+     * 
+     * @param decodedOnParse
+     *            True if the parsed value must be decoded, false otherwise.
+     */
+    public void setDecodedOnParse(boolean decodedOnParse) {
+        this.decodedOnParse = decodedOnParse;
+    }
+
+    /**
+     * Sets the default value to use if the key couldn't be found in the model.
+     * 
+     * @param defaultValue
+     *            The default value to use if the key couldn't be found in the
+     *            model.
+     */
+    public void setDefaultValue(String defaultValue) {
+        this.defaultValue = defaultValue;
+    }
+
+    /**
+     * Indicates if the formatted value must be encoded.
+     * 
+     * @param encodedOnFormat
+     *            True if the formatted value must be encoded, false otherwise.
+     */
+    public void setEncodedOnFormat(boolean encodedOnFormat) {
+        this.encodedOnFormat = encodedOnFormat;
+    }
+
+    /**
+     * Indicates if the value is fixed
+     * 
+     * @param fixed
+     *            True if the value is fixed
+     */
+    public void setFixed(boolean fixed) {
+        this.fixed = fixed;
+    }
+
+    /**
+     * Indicates if the variable is required or optional.
+     * 
+     * @param required
+     *            True if the variable is required or optional.
+     */
+    public void setRequired(boolean required) {
+        this.required = required;
+    }
+
+    /**
+     * Sets the type of variable. See TYPE_* constants.
+     * 
+     * @param type
+     *            The type of variable.
+     */
+    public void setType(int type) {
+        this.type = type;
     }
 
 }

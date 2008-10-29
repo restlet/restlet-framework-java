@@ -1,19 +1,28 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package org.restlet.data;
@@ -30,7 +39,7 @@ import org.restlet.util.Series;
 /**
  * Form which is a specialized modifiable list of parameters.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Form extends Series<Parameter> {
     /**
@@ -68,9 +77,11 @@ public class Form extends Series<Parameter> {
      * @param representation
      *            The representation to parse (URL encoded Web form supported).
      * @throws IOException
+     * @deprecated Use the constructor without logger instead.
      */
+    @Deprecated
     public Form(Logger logger, Representation representation) {
-        Engine.getInstance().parse(logger, this, representation);
+        Engine.getInstance().parse(this, representation);
     }
 
     /**
@@ -83,9 +94,32 @@ public class Form extends Series<Parameter> {
      * @param characterSet
      *            The supported character encoding.
      * @throws IOException
+     * @deprecated Use the constructor without logger instead.
      */
+    @Deprecated
     public Form(Logger logger, String queryString, CharacterSet characterSet) {
-        Engine.getInstance().parse(logger, this, queryString, characterSet);
+        this(logger, queryString, characterSet, '&');
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param logger
+     *            The logger to use.
+     * @param parametersString
+     *            The parameters string to parse.
+     * @param characterSet
+     *            The supported character encoding.
+     * @param separator
+     *            The separator character to append between parameters.
+     * @throws IOException
+     * @deprecated Use the constructor without logger instead.
+     */
+    @Deprecated
+    public Form(Logger logger, String parametersString,
+            CharacterSet characterSet, char separator) {
+        Engine.getInstance().parse(this, parametersString, characterSet, true,
+                separator);
     }
 
     /**
@@ -108,8 +142,21 @@ public class Form extends Series<Parameter> {
      * @throws IOException
      */
     public Form(String queryString) {
-        this(Logger.getLogger(Form.class.getCanonicalName()), queryString,
-                CharacterSet.UTF_8);
+        this(queryString, CharacterSet.UTF_8);
+    }
+
+    /**
+     * Constructor. Uses UTF-8 as the character set for encoding non-ASCII
+     * characters.
+     * 
+     * @param parametersString
+     *            The parameters string to parse.
+     * @param separator
+     *            The separator character to append between parameters.
+     * @throws IOException
+     */
+    public Form(String parametersString, char separator) {
+        this(parametersString, CharacterSet.UTF_8, separator);
     }
 
     /**
@@ -122,8 +169,24 @@ public class Form extends Series<Parameter> {
      * @throws IOException
      */
     public Form(String queryString, CharacterSet characterSet) {
-        this(Logger.getLogger(Form.class.getCanonicalName()), queryString,
-                characterSet);
+        this(queryString, characterSet, '&');
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param parametersString
+     *            The parameters string to parse.
+     * @param characterSet
+     *            The supported character encoding.
+     * @param separator
+     *            The separator character to append between parameters.
+     * @throws IOException
+     */
+    public Form(String parametersString, CharacterSet characterSet,
+            char separator) {
+        this(Logger.getLogger(Form.class.getCanonicalName()), parametersString,
+                characterSet, separator);
     }
 
     @Override
@@ -133,10 +196,86 @@ public class Form extends Series<Parameter> {
 
     @Override
     public Series<Parameter> createSeries(List<Parameter> delegate) {
-        if (delegate != null)
+        if (delegate != null) {
             return new Form(delegate);
-        else
-            return new Form();
+        }
+
+        return new Form();
+    }
+
+    /**
+     * Encodes the form using the standard URI encoding mechanism and the UTF-8
+     * character set.
+     * 
+     * @return The encoded form.
+     * @throws IOException
+     */
+    public String encode() throws IOException {
+        return encode(CharacterSet.UTF_8);
+    }
+
+    /**
+     * URL encodes the form. The '&' character is used as a separator.
+     * 
+     * @param characterSet
+     *            The supported character encoding.
+     * @return The encoded form.
+     * @throws IOException
+     */
+    public String encode(CharacterSet characterSet) throws IOException {
+        return encode(characterSet, '&');
+    }
+
+    /**
+     * URL encodes the form.
+     * 
+     * @param characterSet
+     *            The supported character encoding.
+     * @param separator
+     *            The separator character to append between parameters.
+     * @return The encoded form.
+     * @throws IOException
+     */
+    public String encode(CharacterSet characterSet, char separator)
+            throws IOException {
+        final StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < size(); i++) {
+            if (i > 0) {
+                sb.append(separator);
+            }
+            get(i).encode(sb, characterSet);
+        }
+
+        return sb.toString();
+    }
+
+    /**
+     * Formats the form as a matrix path string. Uses UTF-8 as the character set
+     * for encoding non-ASCII characters.
+     * 
+     * @return The form as a matrix string.
+     * @see <a href="http://www.w3.org/DesignIssues/MatrixURIs.html">Matrix URIs
+     *      by Tim Berners Lee</a>
+     */
+    public String getMatrixString() {
+        return getMatrixString(CharacterSet.UTF_8);
+    }
+
+    /**
+     * Formats the form as a query string.
+     * 
+     * @param characterSet
+     *            The supported character encoding.
+     * @return The form as a matrix string.
+     * @see <a href="http://www.w3.org/DesignIssues/MatrixURIs.html">Matrix URIs
+     *      by Tim Berners Lee</a>
+     */
+    public String getMatrixString(CharacterSet characterSet) {
+        try {
+            return encode(characterSet, ';');
+        } catch (IOException ioe) {
+            return null;
+        }
     }
 
     /**
@@ -186,35 +325,6 @@ public class Form extends Series<Parameter> {
     public Representation getWebRepresentation(CharacterSet characterSet) {
         return new StringRepresentation(getQueryString(characterSet),
                 MediaType.APPLICATION_WWW_FORM, null, characterSet);
-    }
-
-    /**
-     * Encodes the form using the standard URI encoding mechanism and the UTF-8
-     * character set.
-     * 
-     * @return The encoded form.
-     * @throws IOException
-     */
-    public String encode() throws IOException {
-        return encode(CharacterSet.UTF_8);
-    }
-
-    /**
-     * URL encodes the form.
-     * 
-     * @param characterSet
-     *            The supported character encoding.
-     * @return The encoded form.
-     * @throws IOException
-     */
-    public String encode(CharacterSet characterSet) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < size(); i++) {
-            if (i > 0)
-                sb.append('&');
-            get(i).encode(sb, characterSet);
-        }
-        return sb.toString();
     }
 
 }

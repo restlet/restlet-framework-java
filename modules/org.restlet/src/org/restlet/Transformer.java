@@ -1,25 +1,34 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package org.restlet;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Encoding;
@@ -32,10 +41,14 @@ import org.restlet.resource.TransformRepresentation;
 
 /**
  * Filter that can transform XML representations by applying an XSLT transform
- * sheet.
+ * sheet. It uses the {@link org.restlet.resource.TransformRepresentation} to
+ * actually transform the XML entities.<br>
+ * <br>
+ * Concurrency note: instances of this class or its subclasses can be invoked by
+ * several threads at the same time and therefore must be thread-safe. You
+ * should be especially careful when storing state in member variables.
  * 
- * @author Jerome Louvel (contact@noelios.com) <a
- *         href="http://www.noelios.com/">Noelios Consulting</a>
+ * @author Jerome Louvel
  */
 public class Transformer extends Filter {
     /**
@@ -51,30 +64,30 @@ public class Transformer extends Filter {
     public static final int MODE_RESPONSE = 2;
 
     /** The transformation mode. */
-    private int mode;
-
-    /** The XSLT transform sheet to apply to message entities. */
-    private Representation transformSheet;
+    private volatile int mode;
 
     /**
      * The character set of the result representation. The default value is
      * null.
      */
-    private CharacterSet resultCharacterSet;
+    private volatile CharacterSet resultCharacterSet;
 
     /**
      * The encodings of the result representation.
      */
-    private List<Encoding> resultEncodings;
+    private volatile List<Encoding> resultEncodings;
 
     /** The languages of the result representation. */
-    private List<Language> resultLanguages;
+    private volatile List<Language> resultLanguages;
 
     /**
      * The media type of the result representation. MediaType.APPLICATION_XML by
      * default.
      */
-    private MediaType resultMediaType;
+    private volatile MediaType resultMediaType;
+
+    /** The XSLT transform sheet to apply to message entities. */
+    private volatile Representation transformSheet;
 
     /**
      * Constructor.
@@ -88,7 +101,6 @@ public class Transformer extends Filter {
         this.mode = mode;
         this.transformSheet = transformSheet;
         this.resultMediaType = MediaType.APPLICATION_XML;
-        this.resultLanguages = null;
         this.resultCharacterSet = null;
     }
 
@@ -100,10 +112,12 @@ public class Transformer extends Filter {
     }
 
     @Override
-    protected void beforeHandle(Request request, Response response) {
+    protected int beforeHandle(Request request, Response response) {
         if (getMode() == MODE_REQUEST) {
             request.setEntity(transform(request.getEntity()));
         }
+
+        return CONTINUE;
     }
 
     /**
@@ -126,26 +140,41 @@ public class Transformer extends Filter {
     }
 
     /**
-     * Returns the encoding of the result representation. The default value is
-     * null.
+     * Returns the modifiable list of encodings of the result representation.
      * 
      * @return The encoding of the result representation.
      */
     public List<Encoding> getResultEncodings() {
-        if (this.resultEncodings == null)
-            this.resultEncodings = new ArrayList<Encoding>();
-        return this.resultEncodings;
+        // Lazy initialization with double-check.
+        List<Encoding> re = this.resultEncodings;
+        if (re == null) {
+            synchronized (this) {
+                re = this.resultEncodings;
+                if (re == null) {
+                    this.resultEncodings = re = new CopyOnWriteArrayList<Encoding>();
+                }
+            }
+        }
+        return re;
     }
 
     /**
-     * Returns the languages of the result representation.
+     * Returns the modifiable list of languages of the result representation.
      * 
      * @return The language of the result representation.
      */
     public List<Language> getResultLanguages() {
-        if (this.resultLanguages == null)
-            this.resultLanguages = new ArrayList<Language>();
-        return this.resultLanguages;
+        // Lazy initialization with double-check.
+        List<Language> v = this.resultLanguages;
+        if (v == null) {
+            synchronized (this) {
+                v = this.resultLanguages;
+                if (v == null) {
+                    this.resultLanguages = v = new CopyOnWriteArrayList<Language>();
+                }
+            }
+        }
+        return v;
     }
 
     /**
@@ -188,6 +217,26 @@ public class Transformer extends Filter {
     }
 
     /**
+     * Sets the encodings of the result representation.
+     * 
+     * @param resultEncodings
+     *            The encodings of the result representation.
+     */
+    public void setResultEncodings(List<Encoding> resultEncodings) {
+        this.resultEncodings = resultEncodings;
+    }
+
+    /**
+     * Sets the languages of the result representation.
+     * 
+     * @param resultLanguages
+     *            The languages of the result representation.
+     */
+    public void setResultLanguages(List<Language> resultLanguages) {
+        this.resultLanguages = resultLanguages;
+    }
+
+    /**
      * Sets the media type of the result representation.
      * 
      * @param resultMediaType
@@ -216,7 +265,7 @@ public class Transformer extends Filter {
      * @return The generated result representation.
      */
     public Representation transform(Representation source) {
-        Representation result = new TransformRepresentation(getContext(),
+        final Representation result = new TransformRepresentation(getContext(),
                 source, getTransformSheet());
 
         if (this.resultLanguages != null) {

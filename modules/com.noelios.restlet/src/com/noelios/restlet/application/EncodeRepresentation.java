@@ -1,19 +1,28 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package com.noelios.restlet.application;
@@ -29,6 +38,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPOutputStream;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.restlet.data.Encoding;
@@ -40,17 +50,27 @@ import org.restlet.util.WrapperRepresentation;
 /**
  * Content that encodes a wrapped content. Allows to apply only one encoding.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class EncodeRepresentation extends WrapperRepresentation {
+    /**
+     * Returns the list of supported encodings.
+     * 
+     * @return The list of supported encodings.
+     */
+    public static List<Encoding> getSupportedEncodings() {
+        return Arrays.<Encoding> asList(Encoding.GZIP, Encoding.DEFLATE,
+                Encoding.ZIP, Encoding.IDENTITY);
+    }
+
     /** Indicates if the encoding can happen. */
-    private boolean canEncode;
+    private volatile boolean canEncode;
 
     /** The encoding to apply. */
-    private Encoding encoding;
+    private volatile Encoding encoding;
 
     /** The applied encodings. */
-    private List<Encoding> encodings;
+    private volatile List<Encoding> encodings;
 
     /**
      * Constructor.
@@ -78,11 +98,100 @@ public class EncodeRepresentation extends WrapperRepresentation {
     }
 
     /**
+     * Returns a readable byte channel. If it is supported by a file a read-only
+     * instance of FileChannel is returned.
+     * 
+     * @return A readable byte channel.
+     */
+    @Override
+    public ReadableByteChannel getChannel() throws IOException {
+        if (canEncode()) {
+            return ByteUtils.getChannel(getStream());
+        }
+
+        return getWrappedRepresentation().getChannel();
+    }
+
+    /**
+     * Returns the applied encodings.
+     * 
+     * @return The applied encodings.
+     */
+    @Override
+    public List<Encoding> getEncodings() {
+        if (this.encodings == null) {
+            this.encodings = new WrapperList<Encoding>() {
+
+                @Override
+                public boolean add(Encoding element) {
+                    if (element == null) {
+                        throw new IllegalArgumentException(
+                                "Cannot add a null encoding.");
+                    }
+
+                    return super.add(element);
+                }
+
+                @Override
+                public void add(int index, Encoding element) {
+                    if (element == null) {
+                        throw new IllegalArgumentException(
+                                "Cannot add a null encoding.");
+                    }
+
+                    super.add(index, element);
+                }
+
+                @Override
+                public boolean addAll(Collection<? extends Encoding> elements) {
+                    boolean addNull = (elements == null);
+                    if (!addNull) {
+                        for (final Iterator<? extends Encoding> iterator = elements
+                                .iterator(); !addNull && iterator.hasNext();) {
+                            addNull = (iterator.next() == null);
+                        }
+                    }
+                    if (addNull) {
+                        throw new IllegalArgumentException(
+                                "Cannot add a null encoding.");
+                    }
+
+                    return super.addAll(elements);
+                }
+
+                @Override
+                public boolean addAll(int index,
+                        Collection<? extends Encoding> elements) {
+                    boolean addNull = (elements == null);
+                    if (!addNull) {
+                        for (final Iterator<? extends Encoding> iterator = elements
+                                .iterator(); !addNull && iterator.hasNext();) {
+                            addNull = (iterator.next() == null);
+                        }
+                    }
+                    if (addNull) {
+                        throw new IllegalArgumentException(
+                                "Cannot add a null encoding.");
+                    }
+
+                    return super.addAll(index, elements);
+                }
+            };
+            this.encodings.addAll(getWrappedRepresentation().getEncodings());
+            if (canEncode()) {
+                this.encodings.add(this.encoding);
+            }
+        }
+        return this.encodings;
+    }
+
+    /**
      * Returns the size in bytes of the encoded representation if known,
      * UNKNOWN_SIZE (-1) otherwise.
      * 
      * @return The size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
      */
+    @Override
     public long getSize() {
         long result = UNKNOWN_SIZE;
 
@@ -98,116 +207,37 @@ public class EncodeRepresentation extends WrapperRepresentation {
     }
 
     /**
-     * Returns the applied encodings.
-     * 
-     * @return The applied encodings.
-     */
-    public List<Encoding> getEncodings() {
-        if (this.encodings == null) {
-            encodings = new WrapperList<Encoding>() {
-
-                @Override
-                public void add(int index, Encoding element) {
-                    if (element == null) {
-                        throw new IllegalArgumentException(
-                                "Cannot add a null encoding.");
-                    } else {
-                        super.add(index, element);
-                    }
-                }
-
-                @Override
-                public boolean add(Encoding element) {
-                    if (element == null) {
-                        throw new IllegalArgumentException(
-                                "Cannot add a null encoding.");
-                    } else {
-                        return super.add(element);
-                    }
-                }
-
-                @Override
-                public boolean addAll(Collection<? extends Encoding> elements) {
-                    boolean addNull = (elements == null);
-                    if (!addNull) {
-                        for (Iterator<? extends Encoding> iterator = elements
-                                .iterator(); !addNull && iterator.hasNext();) {
-                            addNull = (iterator.next() == null);
-                        }
-                    }
-                    if (addNull) {
-                        throw new IllegalArgumentException(
-                                "Cannot add a null encoding.");
-                    } else {
-                        return super.addAll(elements);
-                    }
-                }
-
-                @Override
-                public boolean addAll(int index,
-                        Collection<? extends Encoding> elements) {
-                    boolean addNull = (elements == null);
-                    if (!addNull) {
-                        for (Iterator<? extends Encoding> iterator = elements
-                                .iterator(); !addNull && iterator.hasNext();) {
-                            addNull = (iterator.next() == null);
-                        }
-                    }
-                    if (addNull) {
-                        throw new IllegalArgumentException(
-                                "Cannot add a null encoding.");
-                    } else {
-                        return super.addAll(index, elements);
-                    }
-                }
-            };
-            encodings.addAll(getWrappedRepresentation().getEncodings());
-            if (canEncode()) {
-                encodings.add(this.encoding);
-            }
-        }
-        return this.encodings;
-    }
-
-    /**
-     * Returns a readable byte channel. If it is supported by a file a read-only
-     * instance of FileChannel is returned.
-     * 
-     * @return A readable byte channel.
-     */
-    public ReadableByteChannel getChannel() throws IOException {
-        if (canEncode()) {
-            return ByteUtils.getChannel(getStream());
-        } else {
-            return getWrappedRepresentation().getChannel();
-        }
-    }
-
-    /**
      * Returns a stream with the representation's content.
      * 
      * @return A stream with the representation's content.
      */
+    @Override
     public InputStream getStream() throws IOException {
         if (canEncode()) {
             return ByteUtils.getStream(this);
-        } else {
-            return getWrappedRepresentation().getStream();
         }
+
+        return getWrappedRepresentation().getStream();
     }
 
     /**
-     * Writes the representation to a byte channel.
+     * Converts the representation to a string value. Be careful when using this
+     * method as the conversion of large content to a string fully stored in
+     * memory can result in OutOfMemoryErrors being thrown.
      * 
-     * @param writableChannel
-     *            A writable byte channel.
+     * @return The representation as a string value.
      */
-    public void write(WritableByteChannel writableChannel) throws IOException {
+    @Override
+    public String getText() throws IOException {
+        String result = null;
+
         if (canEncode()) {
-            write(ByteUtils.getStream(writableChannel));
+            result = ByteUtils.toString(getStream(), getCharacterSet());
         } else {
-            getWrappedRepresentation().write(writableChannel);
+            result = getWrappedRepresentation().getText();
         }
+
+        return result;
     }
 
     /**
@@ -216,6 +246,7 @@ public class EncodeRepresentation extends WrapperRepresentation {
      * @param outputStream
      *            The output stream.
      */
+    @Override
     public void write(OutputStream outputStream) throws IOException {
         if (canEncode()) {
             DeflaterOutputStream encoderOutputStream = null;
@@ -225,7 +256,15 @@ public class EncodeRepresentation extends WrapperRepresentation {
             } else if (this.encoding.equals(Encoding.DEFLATE)) {
                 encoderOutputStream = new DeflaterOutputStream(outputStream);
             } else if (this.encoding.equals(Encoding.ZIP)) {
-                encoderOutputStream = new ZipOutputStream(outputStream);
+                final ZipOutputStream stream = new ZipOutputStream(outputStream);
+                if (getWrappedRepresentation().getDownloadName() != null) {
+                    stream.putNextEntry(new ZipEntry(getWrappedRepresentation()
+                            .getDownloadName()));
+                } else {
+                    stream.putNextEntry(new ZipEntry("entry"));
+                }
+
+                encoderOutputStream = stream;
             } else if (this.encoding.equals(Encoding.IDENTITY)) {
                 // Encoder unecessary for identity encoding
             }
@@ -242,31 +281,17 @@ public class EncodeRepresentation extends WrapperRepresentation {
     }
 
     /**
-     * Converts the representation to a string value. Be careful when using this
-     * method as the conversion of large content to a string fully stored in
-     * memory can result in OutOfMemoryErrors being thrown.
+     * Writes the representation to a byte channel.
      * 
-     * @return The representation as a string value.
+     * @param writableChannel
+     *            A writable byte channel.
      */
-    public String getText() throws IOException {
-        String result = null;
-
+    @Override
+    public void write(WritableByteChannel writableChannel) throws IOException {
         if (canEncode()) {
-            result = ByteUtils.toString(getStream(), getCharacterSet());
+            write(ByteUtils.getStream(writableChannel));
         } else {
-            result = getWrappedRepresentation().getText();
+            getWrappedRepresentation().write(writableChannel);
         }
-
-        return result;
-    }
-
-    /**
-     * Returns the list of supported encodings.
-     * 
-     * @return The list of supported encodings.
-     */
-    public static List<Encoding> getSupportedEncodings() {
-        return Arrays.<Encoding> asList(Encoding.GZIP, Encoding.DEFLATE,
-                Encoding.ZIP, Encoding.IDENTITY);
     }
 }

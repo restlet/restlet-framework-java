@@ -1,19 +1,28 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package com.noelios.restlet.test;
@@ -24,17 +33,45 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
 
-import com.noelios.restlet.util.PreferenceReader;
-import com.noelios.restlet.util.PreferenceUtils;
+import com.noelios.restlet.http.PreferenceReader;
+import com.noelios.restlet.http.PreferenceUtils;
 
 /**
  * Unit tests for the Preference related classes.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class PreferencesTestCase extends TestCase {
+    /**
+     * Tests the parsing of a single preference header.
+     * 
+     * @param headerValue
+     *            The preference header.
+     */
+    private void testMediaType(String headerValue, boolean testEquals)
+            throws IOException {
+        final PreferenceReader<MediaType> pr = new PreferenceReader<MediaType>(
+                PreferenceReader.TYPE_MEDIA_TYPE, headerValue);
+        final List<Preference<MediaType>> prefs = new ArrayList<Preference<MediaType>>();
+        Preference<MediaType> pref = pr.readPreference();
+
+        while (pref != null) {
+            prefs.add(pref);
+            pref = pr.readPreference();
+        }
+
+        // Rewrite the header
+        final String newHeaderValue = PreferenceUtils.format(prefs);
+
+        if (testEquals) {
+            // Compare initial and new headers
+            assertEquals(headerValue, newHeaderValue);
+        }
+    }
+
     /**
      * Tests the preferences parsing.
      */
@@ -45,32 +82,5 @@ public class PreferencesTestCase extends TestCase {
         testMediaType(
                 "text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/*,,*/*;q=0.5",
                 false);
-    }
-
-    /**
-     * Tests the parsing of a single preference header.
-     * 
-     * @param headerValue
-     *            The preference header.
-     */
-    private void testMediaType(String headerValue, boolean testEquals)
-            throws IOException {
-        PreferenceReader pr = new PreferenceReader(
-                PreferenceReader.TYPE_MEDIA_TYPE, headerValue);
-        List<Preference> prefs = new ArrayList<Preference>();
-        Preference pref = pr.readPreference();
-
-        while (pref != null) {
-            prefs.add(pref);
-            pref = pr.readPreference();
-        }
-
-        // Rewrite the header
-        String newHeaderValue = PreferenceUtils.format(prefs);
-
-        if (testEquals) {
-            // Compare initial and new headers
-            assertEquals(headerValue, newHeaderValue);
-        }
     }
 }

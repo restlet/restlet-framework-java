@@ -1,19 +1,28 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package com.noelios.restlet.ext.jdbc;
@@ -33,15 +42,15 @@ import com.sun.rowset.WebRowSetImpl;
 /**
  * XML Representation of a ResultSet instance wrapped either in a JdbcResult
  * instance or in a WebRowSet. Leverage the WebRowSet API to create the Response
- * entity.<br/> Give access to the JdbcResult instance and to the WebRowSet for
- * retrieval of the connected ResultSet in the same JVM (for advanced use
- * cases).<br/>
+ * entity.<br>
+ * Give access to the JdbcResult instance and to the WebRowSet for retrieval of
+ * the connected ResultSet in the same JVM (for advanced use cases).
  * 
- * @see <a
- *      href="http://java.sun.com/j2se/1.5.0/docs/api/javax/sql/rowset/WebRowSet.html">WebRowSet
- *      Interface</a>
+ * @see <a href=
+ *      "http://java.sun.com/j2se/1.5.0/docs/api/javax/sql/rowset/WebRowSet.html"
+ *      >WebRowSet Interface</a>
  * @author Thierry Boileau
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class RowSetRepresentation extends OutputRepresentation {
     /**
@@ -53,7 +62,7 @@ public class RowSetRepresentation extends OutputRepresentation {
      * @throws SQLException
      */
     private static WebRowSet create(ResultSet resultSet) throws SQLException {
-        WebRowSet result = new WebRowSetImpl();
+        final WebRowSet result = new WebRowSetImpl();
 
         if (resultSet != null) {
             result.populate(resultSet);
@@ -62,11 +71,11 @@ public class RowSetRepresentation extends OutputRepresentation {
         return result;
     }
 
-    /** Inner WebRowSet Instance. */
-    private WebRowSet webRowSet;
-
     /** JdbcResult instance that gives access to the resultSet. */
-    private JdbcResult jdbcResult;
+    private volatile JdbcResult jdbcResult;
+
+    /** Inner WebRowSet Instance. */
+    private volatile WebRowSet webRowSet;
 
     /**
      * Constructor.
@@ -108,7 +117,7 @@ public class RowSetRepresentation extends OutputRepresentation {
      * @return The inner JdbcResult instance or null.
      */
     public JdbcResult getJdbcResult() {
-        return jdbcResult;
+        return this.jdbcResult;
     }
 
     /**
@@ -123,7 +132,7 @@ public class RowSetRepresentation extends OutputRepresentation {
     @Override
     public void write(OutputStream outputStream) throws IOException {
         try {
-            webRowSet.writeXml(outputStream);
+            this.webRowSet.writeXml(outputStream);
         } catch (SQLException se) {
             throw new IOException(se.getMessage());
         }

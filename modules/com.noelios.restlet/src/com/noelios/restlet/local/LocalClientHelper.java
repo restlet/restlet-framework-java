@@ -1,19 +1,28 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package com.noelios.restlet.local;
@@ -47,10 +56,18 @@ import com.noelios.restlet.ClientHelper;
  * <td>600</td>
  * <td>Time to live for a file representation before it expires (in seconds).</td>
  * </tr>
+ * <tr>
+ * <td>defaultLanguage</td>
+ * <td>String</td>
+ * <td></td>
+ * <td>When no metadata service is available (simple client connector with no
+ * parent application), falls back on this default language. To indicate that no
+ * default language should be set, "*" or "" can be used.</td>
+ * </tr>
  * </table>
  * 
  * @see org.restlet.data.LocalReference
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  * @author Thierry Boileau
  */
 public class LocalClientHelper extends ClientHelper {
@@ -66,6 +83,17 @@ public class LocalClientHelper extends ClientHelper {
     }
 
     /**
+     * Returns the default language. When no metadata service is available
+     * (simple client connector with no parent application), falls back on this
+     * default language.
+     * 
+     * @return The default language.
+     */
+    public String getDefaultLanguage() {
+        return getHelpedParameters().getFirstValue("defaultLanguage", "");
+    }
+
+    /**
      * Returns the metadata service associated to a request.
      * 
      * @param request
@@ -74,16 +102,28 @@ public class LocalClientHelper extends ClientHelper {
      */
     public MetadataService getMetadataService(Request request) {
         MetadataService result = null;
-        Application application = (Application) request.getAttributes().get(
-                Application.KEY);
+        final Application application = Application.getCurrent();
 
         if (application != null) {
             result = application.getMetadataService();
         } else {
             result = new MetadataService();
+            result.setDefaultLanguage(Language.valueOf(getDefaultLanguage()));
         }
 
         return result;
+    }
+
+    /**
+     * Returns the time to live for a file representation before it expires (in
+     * seconds).
+     * 
+     * @return The time to live for a file representation before it expires (in
+     *         seconds).
+     */
+    public int getTimeToLive() {
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "timeToLive", "600"));
     }
 
     /**
@@ -100,7 +140,7 @@ public class LocalClientHelper extends ClientHelper {
     public void updateMetadata(MetadataService metadataService,
             String entryName, Variant variant) {
         if (variant != null) {
-            String[] tokens = entryName.split("\\.");
+            final String[] tokens = entryName.split("\\.");
             Metadata current;
 
             // We found a potential variant
@@ -108,47 +148,53 @@ public class LocalClientHelper extends ClientHelper {
                 current = metadataService.getMetadata(tokens[j]);
                 if (current != null) {
                     // Metadata extension detected
-                    if (current instanceof MediaType)
+                    if (current instanceof MediaType) {
                         variant.setMediaType((MediaType) current);
-                    if (current instanceof CharacterSet)
+                    } else if (current instanceof CharacterSet) {
                         variant.setCharacterSet((CharacterSet) current);
-                    if (current instanceof Encoding)
+                    } else if (current instanceof Encoding) {
                         variant.getEncodings().add((Encoding) current);
-                    if (current instanceof Language)
+                    } else if (current instanceof Language) {
                         variant.getLanguages().add((Language) current);
+                    }
                 }
 
-                int dashIndex = tokens[j].indexOf('-');
+                final int dashIndex = tokens[j].indexOf('-');
                 if (dashIndex != -1) {
                     // We found a language extension with a region area
-                    // specified
+                    // specified.
                     // Try to find a language matching the primary part of the
-                    // extension
-                    String primaryPart = tokens[j].substring(0, dashIndex);
+                    // extension.
+                    final String primaryPart = tokens[j]
+                            .substring(0, dashIndex);
                     current = metadataService.getMetadata(primaryPart);
-                    if (current instanceof Language)
+                    if (current instanceof Language) {
                         variant.getLanguages().add((Language) current);
+                    }
                 }
             }
 
-            // If no language is defines, take the default language
+            // If no language is defined, take the default one
             if (variant.getLanguages().isEmpty()) {
-                variant.getLanguages()
-                        .add(metadataService.getDefaultLanguage());
+                final Language defaultLanguage = metadataService
+                        .getDefaultLanguage();
+
+                if ((defaultLanguage != null)
+                        && !defaultLanguage.equals(Language.ALL)) {
+                    variant.getLanguages().add(defaultLanguage);
+                }
+            }
+
+            // If no media type is defined, take the default one
+            if (variant.getMediaType() == null) {
+                final MediaType defaultMediaType = metadataService
+                        .getDefaultMediaType();
+
+                if ((defaultMediaType != null)
+                        && !defaultMediaType.equals(MediaType.ALL)) {
+                    variant.setMediaType(defaultMediaType);
+                }
             }
         }
     }
-
-    /**
-     * Returns the time to live for a file representation before it expires (in
-     * seconds).
-     * 
-     * @return The time to live for a file representation before it expires (in
-     *         seconds).
-     */
-    public int getTimeToLive() {
-        return Integer.parseInt(getParameters().getFirstValue("timeToLive",
-                "600"));
-    }
-
 }

@@ -1,38 +1,40 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package org.restlet.data;
 
 import java.io.File;
-import java.io.IOException;
 
 /**
  * Reference to a local (i.e. non remote) resource. It has helper methods for
- * the three following schemes: CLAP, FILE and JAR.<br/> <br/> CLAP
- * (ClassLoader Access Protocol) is a custom scheme to access to representations
- * via classloaders. Example URI: "clap://thread/org/restlet/Restlet.class".<br/>
- * <br/> JAR is a common scheme to access to representations inside Java
- * ARchives. Example URI:
- * "jar:http://www.foo.com/bar/baz.jar!/COM/foo/Quux.class".<br/> <br/> FILE is
- * a standard scheme to access to representations stored in the file system
- * (locally most of the time). Example URI: "file:///D/root/index.html".
+ * the three following schemes: {@link Protocol#CLAP}, {@link Protocol#FILE},
+ * {@link Protocol#JAR} and {@link Protocol#RIAP}.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public final class LocalReference extends Reference {
     /**
@@ -42,7 +44,7 @@ public final class LocalReference extends Reference {
      * 
      * @see java.lang.Class#getClassLoader()
      */
-    public static final int CLAP_CLASS = 2;
+    public static final int CLAP_CLASS = 1;
 
     /**
      * The resources will be resolved from the system's classloader. Examples:
@@ -51,7 +53,7 @@ public final class LocalReference extends Reference {
      * 
      * @see java.lang.ClassLoader#getSystemClassLoader()
      */
-    public static final int CLAP_SYSTEM = 3;
+    public static final int CLAP_SYSTEM = 2;
 
     /**
      * The resources will be resolved from the current thread's classloader.
@@ -60,7 +62,25 @@ public final class LocalReference extends Reference {
      * 
      * @see java.lang.Thread#getContextClassLoader()
      */
-    public static final int CLAP_THREAD = 4;
+    public static final int CLAP_THREAD = 3;
+
+    /**
+     * The resources will be resolved from the current application's root
+     * Restlet. Example riap://application/myPath/myResource
+     */
+    public static final int RIAP_APPLICATION = 4;
+
+    /**
+     * The resources will be resolved from the current component's internal
+     * (private) router. Example riap://component/myAppPath/myResource
+     */
+    public static final int RIAP_COMPONENT = 5;
+
+    /**
+     * The resources will be resolved from the current component's virtual host.
+     * Example riap://host/myAppPath/myResource
+     */
+    public static final int RIAP_HOST = 6;
 
     /**
      * Constructor.
@@ -81,11 +101,10 @@ public final class LocalReference extends Reference {
      * 
      * @param file
      *            The file whose path must be used.
-     * @throws IOException
+     * 
      */
-    public static LocalReference createFileReference(File file)
-            throws IOException {
-        return createFileReference(file.getCanonicalPath());
+    public static LocalReference createFileReference(File file) {
+        return createFileReference(file.getAbsolutePath());
     }
 
     /**
@@ -128,6 +147,20 @@ public final class LocalReference extends Reference {
     }
 
     /**
+     * Constructor.
+     * 
+     * @param authorityType
+     *            The authority type for the resource path.
+     * @param path
+     *            The resource path.
+     */
+    public static LocalReference createRiapReference(int authorityType,
+            String path) {
+        return new LocalReference("riap://" + getAuthorityName(authorityType)
+                + path);
+    }
+
+    /**
      * Returns an authority name.
      * 
      * @param authority
@@ -147,6 +180,15 @@ public final class LocalReference extends Reference {
         case CLAP_THREAD:
             result = "thread";
             break;
+        case RIAP_APPLICATION:
+            result = "application";
+            break;
+        case RIAP_COMPONENT:
+            result = "component";
+            break;
+        case RIAP_HOST:
+            result = "host";
+            break;
         }
 
         return result;
@@ -161,7 +203,7 @@ public final class LocalReference extends Reference {
      * @return The localized path.
      */
     public static String localizePath(String path) {
-        StringBuilder result = new StringBuilder();
+        final StringBuilder result = new StringBuilder();
         char nextChar;
         for (int i = 0; i < path.length(); i++) {
             nextChar = path.charAt(i);
@@ -186,7 +228,7 @@ public final class LocalReference extends Reference {
      * @return The normalize path.
      */
     public static String normalizePath(String path) {
-        StringBuilder result = new StringBuilder();
+        final StringBuilder result = new StringBuilder();
         char nextChar;
         for (int i = 0; i < path.length(); i++) {
             nextChar = path.charAt(i);
@@ -194,6 +236,8 @@ public final class LocalReference extends Reference {
                 // Convert the Windows style path separator to the standard path
                 // separator
                 result.append('/');
+            } else if (!isValid(nextChar)) {
+                result.append(Reference.encode("" + nextChar));
             } else {
                 result.append(nextChar);
             }
@@ -231,7 +275,7 @@ public final class LocalReference extends Reference {
         int result = 0;
 
         if (getSchemeProtocol().equals(Protocol.CLAP)) {
-            String authority = getAuthority();
+            final String authority = getAuthority();
 
             if (authority != null) {
                 if (authority.equalsIgnoreCase(getAuthorityName(CLAP_CLASS))) {
@@ -259,11 +303,11 @@ public final class LocalReference extends Reference {
         File result = null;
 
         if (getSchemeProtocol().equals(Protocol.FILE)) {
-            String hostName = getAuthority();
+            final String hostName = getAuthority();
 
             if ((hostName == null) || hostName.equals("")
                     || hostName.equalsIgnoreCase("localhost")) {
-                String filePath = getPath();
+                final String filePath = Reference.decode(getPath());
                 result = new File(filePath);
             } else {
                 throw new RuntimeException(
@@ -283,10 +327,10 @@ public final class LocalReference extends Reference {
         String result = null;
 
         if (getSchemeProtocol().equals(Protocol.JAR)) {
-            String ssp = getSchemeSpecificPart();
+            final String ssp = getSchemeSpecificPart();
 
             if (ssp != null) {
-                int separatorIndex = ssp.indexOf("!/");
+                final int separatorIndex = ssp.indexOf("!/");
 
                 if (separatorIndex != -1) {
                     result = ssp.substring(separatorIndex + 2);
@@ -306,13 +350,41 @@ public final class LocalReference extends Reference {
         Reference result = null;
 
         if (getSchemeProtocol().equals(Protocol.JAR)) {
-            String ssp = getSchemeSpecificPart();
+            final String ssp = getSchemeSpecificPart();
 
             if (ssp != null) {
-                int separatorIndex = ssp.indexOf("!/");
+                final int separatorIndex = ssp.indexOf("!/");
 
                 if (separatorIndex != -1) {
                     result = new Reference(ssp.substring(0, separatorIndex));
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the type of authority.
+     * 
+     * @return The type of authority.
+     */
+    public int getRiapAuthorityType() {
+        int result = 0;
+
+        if (getSchemeProtocol().equals(Protocol.RIAP)) {
+            final String authority = getAuthority();
+
+            if (authority != null) {
+                if (authority
+                        .equalsIgnoreCase(getAuthorityName(RIAP_APPLICATION))) {
+                    result = RIAP_APPLICATION;
+                } else if (authority
+                        .equalsIgnoreCase(getAuthorityName(RIAP_COMPONENT))) {
+                    result = RIAP_COMPONENT;
+                } else if (authority
+                        .equalsIgnoreCase(getAuthorityName(RIAP_HOST))) {
+                    result = RIAP_HOST;
                 }
             }
         }

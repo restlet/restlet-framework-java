@@ -1,6 +1,6 @@
---------------------------
-Jakarta Commons FileUpload
---------------------------
+-------------------------
+Apache Commons FileUpload
+-------------------------
 
 "The Commons FileUpload package makes it easy to add robust, high-performance,
 file upload capability to your servlets and web applications.
@@ -12,4 +12,4 @@ parse that request, and make the results available in a manner easily used by
 the caller."
 
 For more information:
-http://jakarta.apache.org/commons/fileupload/
+http://commons.apache.org/fileupload/

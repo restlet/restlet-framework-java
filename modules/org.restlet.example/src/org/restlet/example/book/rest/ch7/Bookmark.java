@@ -1,19 +1,28 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package org.restlet.example.book.rest.ch7;
@@ -23,7 +32,7 @@ import java.util.Date;
 /**
  * URI saved and annotated by a user.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Bookmark {
 
@@ -56,18 +65,46 @@ public class Bookmark {
     }
 
     /**
+     * @return the longDescription
+     */
+    public String getLongDescription() {
+        return this.longDescription;
+    }
+
+    /**
+     * @return the shortDescription
+     */
+    public String getShortDescription() {
+        return this.shortDescription;
+    }
+
+    /**
+     * @return the uri
+     */
+    public String getUri() {
+        return this.uri;
+    }
+
+    /**
+     * @return the user
+     */
+    public User getUser() {
+        return this.user;
+    }
+
+    /**
+     * @return the restrict
+     */
+    public boolean isRestrict() {
+        return this.restrict;
+    }
+
+    /**
      * @param dateTime
      *            the dateTime to set
      */
     public void setDateTime(Date dateTime) {
         this.dateTime = dateTime;
-    }
-
-    /**
-     * @return the longDescription
-     */
-    public String getLongDescription() {
-        return this.longDescription;
     }
 
     /**
@@ -79,25 +116,11 @@ public class Bookmark {
     }
 
     /**
-     * @return the restrict
-     */
-    public boolean isRestrict() {
-        return this.restrict;
-    }
-
-    /**
      * @param restrict
      *            the restrict to set
      */
     public void setRestrict(boolean restrict) {
         this.restrict = restrict;
-    }
-
-    /**
-     * @return the shortDescription
-     */
-    public String getShortDescription() {
-        return this.shortDescription;
     }
 
     /**
@@ -109,25 +132,11 @@ public class Bookmark {
     }
 
     /**
-     * @return the uri
-     */
-    public String getUri() {
-        return this.uri;
-    }
-
-    /**
      * @param uri
      *            the uri to set
      */
     public void setUri(String uri) {
         this.uri = uri;
-    }
-
-    /**
-     * @return the user
-     */
-    public User getUser() {
-        return this.user;
     }
 
     /**

@@ -1,19 +1,28 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package org.restlet.resource;
@@ -26,10 +35,16 @@ import org.restlet.data.MediaType;
 import org.restlet.util.ByteUtils;
 
 /**
- * Representation based on a writable NIO byte channel. The
- * write(WritableByteChannel) method needs to be overriden in subclasses.
+ * Representation based on a writable NIO byte channel. This class is a good
+ * basis to write your own representations, especially for the dynamic and large
+ * ones.<br>
+ * <br>
+ * For this you just need to create a subclass and override the abstract
+ * Representation.write(WritableByteChannel) method. This method will later be
+ * called back by the connectors when the actual representation's content is
+ * needed.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public abstract class WritableRepresentation extends ChannelRepresentation {
     /**
@@ -42,25 +57,20 @@ public abstract class WritableRepresentation extends ChannelRepresentation {
         super(mediaType);
     }
 
-    /**
-     * Returns a readable byte channel. If it is supported by a file a read-only
-     * instance of FileChannel is returned.
-     * 
-     * @return A readable byte channel.
-     */
+    @Override
     public ReadableByteChannel getChannel() throws IOException {
         return ByteUtils.getChannel(this);
     }
 
     /**
-     * Writes the representation to a byte channel. This method is ensured to
-     * write the full content for each invocation unless it is a transient
-     * representation, in which case an exception is thrown.
-     * 
-     * @param writableChannel
-     *            A writable byte channel.
-     * @throws IOException
+     * Calls parent's implementation.
      */
+    @Override
+    public void release() {
+        super.release();
+    }
+
+    @Override
     public abstract void write(WritableByteChannel writableChannel)
             throws IOException;
 

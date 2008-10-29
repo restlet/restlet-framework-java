@@ -1,19 +1,28 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package org.restlet.data;
@@ -21,7 +30,7 @@ package org.restlet.data;
 /**
  * Method to execute when handling a call.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public final class Method extends Metadata {
     private static final String BASE_HTTP = "http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html";
@@ -31,9 +40,7 @@ public final class Method extends Metadata {
     /**
      * Used with a proxy that can dynamically switch to being a tunnel.
      * 
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.9">HTTP
-     *      RFC - 9.9 CONNECT</a>
+     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.9">HTTP RFC - 9.9 CONNECT</a>
      */
     public static final Method CONNECT = new Method("CONNECT",
             "Used with a proxy that can dynamically switch to being a tunnel",
@@ -44,9 +51,7 @@ public final class Method extends Metadata {
      * Request-URI, in the destination resource, identified by the URI in the
      * Destination header.
      * 
-     * @see <a
-     *      href="http://www.webdav.org/specs/rfc2518.html#METHOD_COPY">WEBDAV
-     *      RFC - 8.8 COPY Method</a>
+     * @see <a href="http://www.webdav.org/specs/rfc2518.html#METHOD_COPY">WEBDAV RFC - 8.8 COPY Method</a>
      */
     public static final Method COPY = new Method(
             "COPY",
@@ -57,9 +62,7 @@ public final class Method extends Metadata {
      * Requests that the origin server deletes the resource identified by the
      * request URI.
      * 
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.7">HTTP
-     *      RFC - 9.7 DELETE</a>
+     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.7">HTTP RFC - 9.7 DELETE</a>
      */
     public static final Method DELETE = new Method(
             "DELETE",
@@ -70,9 +73,7 @@ public final class Method extends Metadata {
      * Retrieves whatever information (in the form of an entity) that is
      * identified by the request URI.
      * 
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.3">HTTP
-     *      RFC - 9.3 GET</a>
+     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.3">HTTP RFC - 9.3 GET</a>
      */
     public static final Method GET = new Method(
             "GET",
@@ -83,9 +84,7 @@ public final class Method extends Metadata {
      * Identical to GET except that the server must not return a message body in
      * the response but only the message header.
      * 
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.4">HTTP
-     *      RFC - 9.4 GET</a>
+     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.4">HTTP RFC - 9.4 GET</a>
      */
     public static final Method HEAD = new Method(
             "HEAD",
@@ -96,9 +95,7 @@ public final class Method extends Metadata {
      * Used to take out a lock of any access type on the resource identified by
      * the request URI.
      * 
-     * @see <a
-     *      href="http://www.webdav.org/specs/rfc2518.html#METHOD_LOCK">WEBDAV
-     *      RFC - 8.10 LOCK Method</a>
+     * @see <a href="http://www.webdav.org/specs/rfc2518.html#METHOD_LOCK">WEBDAV RFC - 8.10 LOCK Method</a>
      */
     public static final Method LOCK = new Method("LOCK",
             "Used to take out a lock of any access type (WebDAV)", BASE_WEBDAV
@@ -108,9 +105,7 @@ public final class Method extends Metadata {
      * MKCOL creates a new collection resource at the location specified by the
      * Request URI.
      * 
-     * @see <a
-     *      href="http://www.webdav.org/specs/rfc2518.html#METHOD_MKCOL">WEBDAV
-     *      RFC - 8.3 MKCOL Method</a>
+     * @see <a href="http://www.webdav.org/specs/rfc2518.html#METHOD_MKCOL">WEBDAV RFC - 8.3 MKCOL Method</a>
      */
     public static final Method MKCOL = new Method("MKCOL",
             "Used to create a new collection (WebDAV)", BASE_WEBDAV
@@ -121,9 +116,7 @@ public final class Method extends Metadata {
      * processing, followed by a delete of the source where all three actions
      * are performed atomically.
      * 
-     * @see <a
-     *      href="http://www.webdav.org/specs/rfc2518.html#METHOD_MOVE">WEBDAV
-     *      RFC - 8.3 MKCOL Method</a>
+     * @see <a href="http://www.webdav.org/specs/rfc2518.html#METHOD_MOVE">WEBDAV RFC - 8.3 MKCOL Method</a>
      */
     public static final Method MOVE = new Method(
             "MOVE",
@@ -134,9 +127,7 @@ public final class Method extends Metadata {
      * Requests for information about the communication options available on the
      * request/response chain identified by the URI.
      * 
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.2">HTTP
-     *      RFC - 9.2 OPTIONS</a>
+     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.2">HTTP RFC - 9.2 OPTIONS</a>
      */
     public static final Method OPTIONS = new Method(
             "OPTIONS",
@@ -148,9 +139,7 @@ public final class Method extends Metadata {
      * request as a new subordinate of the resource identified by the request
      * URI.
      * 
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.5">HTTP
-     *      RFC - 9.5 POST</a>
+     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.5">HTTP RFC - 9.5 POST</a>
      */
     public static final Method POST = new Method(
             "POST",
@@ -161,9 +150,7 @@ public final class Method extends Metadata {
      * Retrieves properties defined on the resource identified by the request
      * URI.
      * 
-     * @see <a
-     *      href="http://www.webdav.org/specs/rfc2518.html#METHOD_PROPFIND">WEBDAV
-     *      RFC - 8.1 PROPFIND</a>
+     * @see <a href="http://www.webdav.org/specs/rfc2518.html#METHOD_PROPFIND">WEBDAV RFC - 8.1 PROPFIND</a>
      */
     public static final Method PROPFIND = new Method(
             "PROPFIND",
@@ -174,9 +161,7 @@ public final class Method extends Metadata {
      * Processes instructions specified in the request body to set and/or remove
      * properties defined on the resource identified by the request URI.
      * 
-     * @see <a
-     *      href="http://www.webdav.org/specs/rfc2518.html#METHOD_PROPPATCH">WEBDAV
-     *      RFC - 8.2 PROPPATCH</a>
+     * @see <a href="http://www.webdav.org/specs/rfc2518.html#METHOD_PROPPATCH">WEBDAV RFC - 8.2 PROPPATCH</a>
      */
     public static final Method PROPPATCH = new Method(
             "PROPPATCH",
@@ -187,9 +172,7 @@ public final class Method extends Metadata {
      * Requests that the enclosed entity be stored under the supplied request
      * URI.
      * 
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6">HTTP
-     *      RFC - 9.6 PUT</a>
+     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6"HTTP RFC - 9.6 PUT</a>
      */
     public static final Method PUT = new Method(
             "PUT",
@@ -200,9 +183,7 @@ public final class Method extends Metadata {
      * Used to invoke a remote, application-layer loop-back of the request
      * message.
      * 
-     * @see <a
-     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.8">HTTP
-     *      RFC - 9.8 TRACE</a>
+     * @see <a href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.8">HTTP RFC - 9.8 TRACE</a>
      */
     public static final Method TRACE = new Method(
             "TRACE",
@@ -213,9 +194,7 @@ public final class Method extends Metadata {
      * Removes the lock identified by the lock token from the request URI, and
      * all other resources included in the lock.
      * 
-     * @see <a
-     *      href="http://www.webdav.org/specs/rfc2518.html#METHOD_UNLOCK">WEBDAV
-     *      RFC - 8.11 UNLOCK Method</a>
+     * @see <a href="http://www.webdav.org/specs/rfc2518.html#METHOD_UNLOCK">WEBDAV RFC - 8.11 UNLOCK Method</a>
      */
     public static final Method UNLOCK = new Method(
             "UNLOCK",
@@ -226,53 +205,54 @@ public final class Method extends Metadata {
      * Returns the method associated to a given method name. If an existing
      * constant exists then it is returned, otherwise a new instance is created.
      * 
-     * @param methodName
+     * @param name
      *            The method name.
      * @return The associated method.
      */
-    public static Method valueOf(final String methodName) {
+    public static Method valueOf(final String name) {
         Method result = null;
 
-        if (methodName != null) {
-            if (methodName.equalsIgnoreCase(GET.getName()))
+        if ((name != null) && !name.equals("")) {
+            if (name.equalsIgnoreCase(GET.getName())) {
                 result = GET;
-            else if (methodName.equalsIgnoreCase(POST.getName()))
+            } else if (name.equalsIgnoreCase(POST.getName())) {
                 result = POST;
-            else if (methodName.equalsIgnoreCase(HEAD.getName()))
+            } else if (name.equalsIgnoreCase(HEAD.getName())) {
                 result = HEAD;
-            else if (methodName.equalsIgnoreCase(OPTIONS.getName()))
+            } else if (name.equalsIgnoreCase(OPTIONS.getName())) {
                 result = OPTIONS;
-            else if (methodName.equalsIgnoreCase(PUT.getName()))
+            } else if (name.equalsIgnoreCase(PUT.getName())) {
                 result = PUT;
-            else if (methodName.equalsIgnoreCase(DELETE.getName()))
+            } else if (name.equalsIgnoreCase(DELETE.getName())) {
                 result = DELETE;
-            else if (methodName.equalsIgnoreCase(CONNECT.getName()))
+            } else if (name.equalsIgnoreCase(CONNECT.getName())) {
                 result = CONNECT;
-            else if (methodName.equalsIgnoreCase(COPY.getName()))
+            } else if (name.equalsIgnoreCase(COPY.getName())) {
                 result = COPY;
-            else if (methodName.equalsIgnoreCase(LOCK.getName()))
+            } else if (name.equalsIgnoreCase(LOCK.getName())) {
                 result = LOCK;
-            else if (methodName.equalsIgnoreCase(MKCOL.getName()))
+            } else if (name.equalsIgnoreCase(MKCOL.getName())) {
                 result = MKCOL;
-            else if (methodName.equalsIgnoreCase(MOVE.getName()))
+            } else if (name.equalsIgnoreCase(MOVE.getName())) {
                 result = MOVE;
-            else if (methodName.equalsIgnoreCase(PROPFIND.getName()))
+            } else if (name.equalsIgnoreCase(PROPFIND.getName())) {
                 result = PROPFIND;
-            else if (methodName.equalsIgnoreCase(PROPPATCH.getName()))
+            } else if (name.equalsIgnoreCase(PROPPATCH.getName())) {
                 result = PROPPATCH;
-            else if (methodName.equalsIgnoreCase(TRACE.getName()))
+            } else if (name.equalsIgnoreCase(TRACE.getName())) {
                 result = TRACE;
-            else if (methodName.equalsIgnoreCase(UNLOCK.getName()))
+            } else if (name.equalsIgnoreCase(UNLOCK.getName())) {
                 result = UNLOCK;
-            else
-                result = new Method(methodName);
+            } else {
+                result = new Method(name);
+            }
         }
 
         return result;
     }
 
     /** The URI of the specification describing the method. */
-    private String uri;
+    private volatile String uri;
 
     /**
      * Constructor.
@@ -334,5 +314,9 @@ public final class Method extends Metadata {
     @Override
     public int hashCode() {
         return (getName() == null) ? 0 : getName().hashCode();
+    }
+
+    public void setUri(String uri) {
+        this.uri = uri;
     }
 }

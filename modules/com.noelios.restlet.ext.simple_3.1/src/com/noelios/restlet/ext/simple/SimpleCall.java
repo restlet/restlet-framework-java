@@ -1,19 +1,28 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package com.noelios.restlet.ext.simple;
@@ -24,6 +33,14 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
+import java.security.cert.Certificate;
+import java.util.Arrays;
+import java.util.List;
+import java.util.logging.Level;
+
+import javax.net.ssl.SSLPeerUnverifiedException;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocket;
 
 import org.restlet.Server;
 import org.restlet.data.Parameter;
@@ -33,27 +50,28 @@ import simple.http.Request;
 import simple.http.Response;
 
 import com.noelios.restlet.http.HttpServerCall;
+import com.noelios.restlet.util.KeepAliveInputStream;
 
 /**
  * Call that is used by the Simple HTTP server.
  * 
- * @author Lars Heuer (heuer[at]semagia.com) <a
- *         href="http://semagia.com/">Semagia</a>
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Lars Heuer
+ * @author Jerome Louvel
  */
 public class SimpleCall extends HttpServerCall {
+
     /**
      * Simple Request.
      */
-    private Request request;
+    private final Request request;
 
     /**
      * Simple Response.
      */
-    private Response response;
+    private final Response response;
 
     /** Indicates if the request headers were parsed and added. */
-    private boolean requestHeadersAdded;
+    private volatile boolean requestHeadersAdded;
 
     /**
      * Constructs this class with the specified {@link simple.http.Request} and
@@ -78,15 +96,24 @@ public class SimpleCall extends HttpServerCall {
     }
 
     @Override
+    public void complete() {
+        try {
+            // Commit the response
+            this.response.commit();
+        } catch (IOException ex) {
+            getLogger().log(Level.WARNING, "Unable to commit the response", ex);
+        }
+    }
+
+    @Override
     public String getClientAddress() {
-        return request.getInetAddress().getHostAddress();
+        return this.request.getInetAddress().getHostAddress();
     }
 
     @Override
     public int getClientPort() {
-        Socket sock = (Socket) request
-                .getAttribute(SimplePipelineFactory.PROPERTY_SOCKET);
-        return (sock != null) ? sock.getPort() : -1;
+        final Socket socket = getSocket();
+        return (socket != null) ? socket.getPort() : -1;
     }
 
     /**
@@ -94,17 +121,29 @@ public class SimpleCall extends HttpServerCall {
      * 
      * @return The request method.
      */
+    @Override
     public String getMethod() {
-        return request.getMethod();
+        return this.request.getMethod();
     }
 
-    /**
-     * Returns the request entity channel if it exists.
-     * 
-     * @return The request entity channel if it exists.
-     */
-    public ReadableByteChannel getRequestChannel() {
+    @Override
+    public ReadableByteChannel getRequestEntityChannel(long size) {
         // Unsupported.
+        return null;
+    }
+
+    @Override
+    public InputStream getRequestEntityStream(long size) {
+        try {
+            return new KeepAliveInputStream(this.request.getInputStream());
+        } catch (IOException ex) {
+            return null;
+        }
+    }
+
+    @Override
+    public ReadableByteChannel getRequestHeadChannel() {
+        // Not available
         return null;
     }
 
@@ -113,13 +152,14 @@ public class SimpleCall extends HttpServerCall {
      * 
      * @return The list of request headers.
      */
+    @Override
     public Series<Parameter> getRequestHeaders() {
-        Series<Parameter> result = super.getRequestHeaders();
+        final Series<Parameter> result = super.getRequestHeaders();
 
         if (!this.requestHeadersAdded) {
-            int headerCount = request.headerCount();
+            final int headerCount = this.request.headerCount();
             for (int i = 0; i < headerCount; i++) {
-                result.add(new Parameter(request.getName(i), request
+                result.add(new Parameter(this.request.getName(i), this.request
                         .getValue(i)));
             }
 
@@ -129,17 +169,10 @@ public class SimpleCall extends HttpServerCall {
         return result;
     }
 
-    /**
-     * Returns the request entity stream if it exists.
-     * 
-     * @return The request entity stream if it exists.
-     */
-    public InputStream getRequestStream() {
-        try {
-            return request.getInputStream();
-        } catch (IOException ex) {
-            return null;
-        }
+    @Override
+    public InputStream getRequestHeadStream() {
+        // Not available
+        return null;
     }
 
     /**
@@ -147,8 +180,9 @@ public class SimpleCall extends HttpServerCall {
      * 
      * @return The full request URI.
      */
+    @Override
     public String getRequestUri() {
-        return request.getURI();
+        return this.request.getURI();
     }
 
     /**
@@ -156,7 +190,8 @@ public class SimpleCall extends HttpServerCall {
      * 
      * @return The response channel if it exists.
      */
-    public WritableByteChannel getResponseChannel() {
+    @Override
+    public WritableByteChannel getResponseEntityChannel() {
         // Unsupported.
         return null;
     }
@@ -166,34 +201,79 @@ public class SimpleCall extends HttpServerCall {
      * 
      * @return The response stream if it exists.
      */
-    public OutputStream getResponseStream() {
+    @Override
+    public OutputStream getResponseEntityStream() {
         try {
-            return response.getOutputStream();
+            return this.response.getOutputStream();
         } catch (IOException ex) {
             return null;
         }
     }
 
+    /**
+     * Returns the request socket.
+     * 
+     * @return The request socket.
+     */
+    private Socket getSocket() {
+        return (Socket) this.request
+                .getAttribute(SimplePipelineFactory.PROPERTY_SOCKET);
+    }
+
+    @Override
+    public String getSslCipherSuite() {
+        final Socket socket = getSocket();
+        if (socket instanceof SSLSocket) {
+            final SSLSocket sslSocket = (SSLSocket) socket;
+            final SSLSession sslSession = sslSocket.getSession();
+            if (sslSession != null) {
+                return sslSession.getCipherSuite();
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public List<Certificate> getSslClientCertificates() {
+        final Socket socket = getSocket();
+        if (socket instanceof SSLSocket) {
+            final SSLSocket sslSocket = (SSLSocket) socket;
+            final SSLSession sslSession = sslSocket.getSession();
+            if (sslSession != null) {
+                try {
+                    final List<Certificate> clientCertificates = Arrays
+                            .asList(sslSession.getPeerCertificates());
+
+                    return clientCertificates;
+                } catch (SSLPeerUnverifiedException e) {
+                    getLogger().log(Level.FINE,
+                            "Can't get the client certificates.", e);
+                }
+            }
+        }
+        return null;
+    }
+
     @Override
     public String getVersion() {
-        return request.getMajor() + "." + request.getMinor();
+        return this.request.getMajor() + "." + this.request.getMinor();
     }
 
     @Override
     public void writeResponseHead(org.restlet.data.Response restletResponse)
             throws IOException {
-        response.clear();
-        for (Parameter header : getResponseHeaders()) {
-            response.add(header.getName(), header.getValue());
+        this.response.clear();
+        for (final Parameter header : getResponseHeaders()) {
+            this.response.add(header.getName(), header.getValue());
         }
 
         // Set the status
-        response.setCode(getStatusCode());
-        response.setText(getReasonPhrase());
+        this.response.setCode(getStatusCode());
+        this.response.setText(getReasonPhrase());
 
         // To ensure that Simple doesn't switch to chunked encoding
         if (restletResponse.getEntity() == null) {
-            response.setContentLength(0);
+            this.response.setContentLength(0);
         }
     }
 }

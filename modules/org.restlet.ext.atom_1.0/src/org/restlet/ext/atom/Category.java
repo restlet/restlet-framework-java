@@ -1,39 +1,53 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package org.restlet.ext.atom;
 
+import static org.restlet.ext.atom.Feed.ATOM_NAMESPACE;
+
 import org.restlet.data.Reference;
+import org.restlet.util.XmlWriter;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.AttributesImpl;
 
 /**
  * Conveys information about a category associated with an entry or feed.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Category {
-    /** The identifier term. */
-    private String term;
+    /** The human-readable label for display in end-user applications. */
+    private volatile String label;
 
     /** The IRI that identifies a categorization scheme. */
-    private Reference scheme;
+    private volatile Reference scheme;
 
-    /** The human-readable label for display in end-user applications. */
-    private String label;
+    /** The identifier term. */
+    private volatile String term;
 
     /**
      * Constructor.
@@ -113,6 +127,31 @@ public class Category {
      */
     public void setTerm(String term) {
         this.term = term;
+    }
+
+    /**
+     * Writes the current object as an XML element using the given SAX writer.
+     * 
+     * @param writer
+     *            The SAX writer.
+     * @throws SAXException
+     */
+    public void writeElement(XmlWriter writer) throws SAXException {
+        final AttributesImpl attributes = new AttributesImpl();
+        if (getLabel() != null) {
+            attributes.addAttribute("", "label", null, "text", getLabel());
+        }
+
+        if ((getScheme() != null) && (getScheme().toString() != null)) {
+            attributes.addAttribute("", "scheme", null, "atomURI", getScheme()
+                    .toString());
+        }
+
+        if (getTerm() != null) {
+            attributes.addAttribute("", "term", null, "text", getTerm());
+        }
+
+        writer.emptyElement(ATOM_NAMESPACE, "category", null, attributes);
     }
 
 }

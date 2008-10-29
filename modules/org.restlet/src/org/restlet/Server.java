@@ -1,23 +1,34 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package org.restlet;
 
+import java.net.InetSocketAddress;
+import java.net.ServerSocket;
 import java.util.Arrays;
 import java.util.List;
 
@@ -29,22 +40,26 @@ import org.restlet.util.Helper;
 
 /**
  * Connector acting as a generic server. It internally uses one of the available
- * connectors registered with the current Restlet implementation.
+ * connector helpers registered with the Restlet engine.<br>
+ * <br>
+ * Concurrency note: instances of this class or its subclasses can be invoked by
+ * several threads at the same time and therefore must be thread-safe. You
+ * should be especially careful when storing state in member variables.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Server extends Connector {
     /** The listening address if specified. */
-    private String address;
-
-    /** The listening port if specified. */
-    private int port;
-
-    /** The target Restlet. */
-    private Restlet target;
+    private volatile String address;
 
     /** The helper provided by the implementation. */
-    private Helper helper;
+    private volatile Helper<Server> helper;
+
+    /** The listening port if specified. */
+    private volatile int port;
+
+    /** The target Restlet. */
+    private volatile Restlet target;
 
     /**
      * Constructor.
@@ -72,7 +87,8 @@ public class Server extends Connector {
      *            The connector protocols.
      * @param address
      *            The optional listening IP address (useful if multiple IP
-     *            addresses available).
+     *            addresses available). You can also use a domain name as an
+     *            alias for the IP address to listen to.
      * @param port
      *            The listening port.
      * @param target
@@ -80,13 +96,36 @@ public class Server extends Connector {
      */
     public Server(Context context, List<Protocol> protocols, String address,
             int port, Restlet target) {
+        this(context, protocols, address, port, target, null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param context
+     *            The context.
+     * @param protocols
+     *            The connector protocols.
+     * @param address
+     *            The optional listening IP address (useful if multiple IP
+     *            addresses available). You can also use a domain name as an
+     *            alias for the IP address to listen to.
+     * @param port
+     *            The listening port.
+     * @param target
+     *            The target Restlet.
+     * @param helperClass
+     *            Optional helper class name.
+     */
+    public Server(Context context, List<Protocol> protocols, String address,
+            int port, Restlet target, String helperClass) {
         super(context, protocols);
         this.address = address;
         this.port = port;
         this.target = target;
 
         if (Engine.getInstance() != null) {
-            this.helper = Engine.getInstance().createHelper(this);
+            this.helper = Engine.getInstance().createHelper(this, helperClass);
         }
     }
 
@@ -117,7 +156,8 @@ public class Server extends Connector {
      *            The target Restlet.
      */
     public Server(Context context, Protocol protocol, Restlet target) {
-        this(context, protocol, null, protocol.getDefaultPort(), target);
+        this(context, protocol, null, (protocol == null) ? -1 : protocol
+                .getDefaultPort(), target);
     }
 
     /**
@@ -129,7 +169,8 @@ public class Server extends Connector {
      *            The connector protocol.
      * @param address
      *            The optional listening IP address (useful if multiple IP
-     *            addresses available).
+     *            addresses available). You can also use a domain name as an
+     *            alias for the IP address to listen to.
      * @param port
      *            The listening port.
      * @param target
@@ -137,7 +178,8 @@ public class Server extends Connector {
      */
     public Server(Context context, Protocol protocol, String address, int port,
             Restlet target) {
-        this(context, Arrays.asList(protocol), address, port, target);
+        this(context, (protocol == null) ? null : Arrays.asList(protocol),
+                address, port, target);
     }
 
     /**
@@ -161,7 +203,8 @@ public class Server extends Connector {
      *            The connector protocols.
      * @param address
      *            The optional listening IP address (useful if multiple IP
-     *            addresses available).
+     *            addresses available). You can also use a domain name as an
+     *            alias for the IP address to listen to.
      * @param port
      *            The listening port.
      * @param target
@@ -199,28 +242,14 @@ public class Server extends Connector {
     }
 
     /**
-     * Constructor using the protocol's default port.
-     * 
-     * @param protocol
-     *            The connector protocol.
-     * @param address
-     *            The listening IP address (useful if multiple IP addresses
-     *            available).
-     * @param target
-     *            The target Restlet.
-     */
-    public Server(Protocol protocol, String address, Restlet target) {
-        this(null, protocol, address, protocol.getDefaultPort(), target);
-    }
-
-    /**
      * Constructor.
      * 
      * @param protocol
      *            The connector protocol.
      * @param address
      *            The optional listening IP address (useful if multiple IP
-     *            addresses available).
+     *            addresses available). You can also use a domain name as an
+     *            alias for the IP address to listen to.
      * @param port
      *            The listening port.
      * @param target
@@ -228,6 +257,22 @@ public class Server extends Connector {
      */
     public Server(Protocol protocol, String address, int port, Restlet target) {
         this(null, protocol, address, port, target);
+    }
+
+    /**
+     * Constructor using the protocol's default port.
+     * 
+     * @param protocol
+     *            The connector protocol.
+     * @param address
+     *            The listening IP address (useful if multiple IP addresses
+     *            available). You can also use a domain name as an alias for the
+     *            IP address to listen to.
+     * @param target
+     *            The target Restlet.
+     */
+    public Server(Protocol protocol, String address, Restlet target) {
+        this(null, protocol, address, protocol.getDefaultPort(), target);
     }
 
     /**
@@ -240,11 +285,23 @@ public class Server extends Connector {
     }
 
     /**
+     * Returns the actual ephemeral port used when the listening port is set to
+     * '0'. The default value is '-1' if no ephemeral port is known.
+     * 
+     * @return The actual ephemeral port used.
+     * @see InetSocketAddress#InetSocketAddress(int)
+     * @see ServerSocket#getLocalPort()
+     */
+    public int getEphemeralPort() {
+        return (Integer) getHelper().getAttributes().get("ephemeralPort");
+    }
+
+    /**
      * Returns the internal server.
      * 
      * @return The internal server.
      */
-    private Helper getHelper() {
+    private Helper<Server> getHelper() {
         return this.helper;
     }
 
@@ -266,16 +323,9 @@ public class Server extends Connector {
         return this.target;
     }
 
-    /**
-     * Handles a call.
-     * 
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response to update.
-     */
+    @Override
     public void handle(Request request, Response response) {
-        init(request, response);
+        super.handle(request, response);
 
         if (getTarget() != null) {
             getTarget().handle(request, response);
@@ -302,7 +352,10 @@ public class Server extends Connector {
     }
 
     /**
-     * Sets the listening port if specified.
+     * Sets the listening port if specified. Note that '0' means that the system
+     * will pick up an ephemeral port at the binding time. This ephemeral can be
+     * retrieved once the server is started using the
+     * {@link #getEphemeralPort()} method.
      * 
      * @param port
      *            The listening port if specified.
@@ -322,17 +375,25 @@ public class Server extends Connector {
     }
 
     @Override
-    public void start() throws Exception {
-        super.start();
-        if (getHelper() != null)
-            getHelper().start();
+    public synchronized void start() throws Exception {
+        if (isStopped()) {
+            super.start();
+
+            if (getHelper() != null) {
+                getHelper().start();
+            }
+        }
     }
 
     @Override
-    public void stop() throws Exception {
-        getHelper().stop();
-        if (getHelper() != null)
+    public synchronized void stop() throws Exception {
+        if (isStarted()) {
+            if (getHelper() != null) {
+                getHelper().stop();
+            }
+
             super.stop();
+        }
     }
 
 }

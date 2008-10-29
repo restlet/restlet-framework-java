@@ -5,15 +5,29 @@ Bundle-SymbolicName: org.mortbay.jetty4
 Bundle-Version: 4.2.25
 Bundle-ClassPath: org.mortbay.jetty.jar
 Bundle-Vendor: Mortbay Consulting
-Bundle-Localization: plugin
 Export-Package: 
  org.mortbay.html,
- org.mortbay.http,
- org.mortbay.http.ajp,
- org.mortbay.http.handler,
- org.mortbay.jetty,
- org.mortbay.jetty.servlet,
+ org.mortbay.http;
+  uses:="org.mortbay.util,
+   javax.servlet.http,
+   new org.mortbay.http,
+   javax.net.ssl",
+ org.mortbay.http.ajp;uses:="org.mortbay.util,org.mortbay.http",
+ org.mortbay.http.handler;uses:="org.mortbay.util,org.mortbay.http",
+ org.mortbay.jetty;uses:="org.mortbay.util,org.mortbay.http,org.mortbay.jetty.servlet",
+ org.mortbay.jetty.servlet;
+  uses:="org.mortbay.util,
+   javax.servlet.http,
+   javax.servlet,
+   org.mortbay.xml,
+   org.mortbay.http,
+   org.mortbay.http.handler",
  org.mortbay.jetty.win32,
- org.mortbay.servlet,
- org.mortbay.util,
- org.mortbay.xml
+ org.mortbay.servlet;
+  uses:="org.mortbay.util,
+   javax.servlet.http,
+   javax.servlet,
+   org.mortbay.http",
+ org.mortbay.util;uses:="new org.mortbay.util",
+ org.mortbay.xml;uses:="org.mortbay.util,org.xml.sax"
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

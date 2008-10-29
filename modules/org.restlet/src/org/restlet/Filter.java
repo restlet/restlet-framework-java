@@ -1,19 +1,28 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package org.restlet;
@@ -28,13 +37,41 @@ import org.restlet.resource.Resource;
  * purpose is to do some pre-processing or post-processing on the calls going
  * through it before or after they are actually handled by an attached Restlet.
  * Also note that you can attach and detach targets while handling incoming
- * calls as the filter is ensured to be thread-safe.
+ * calls as the filter is ensured to be thread-safe.<br>
+ * <br>
+ * Concurrency note: instances of this class or its subclasses can be invoked by
+ * several threads at the same time and therefore must be thread-safe. You
+ * should be especially careful when storing state in member variables.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public abstract class Filter extends Restlet {
+
+    /**
+     * Indicates that the request processing should continue normally. If
+     * returned from the {@link #beforeHandle(Request, Response)} method, the
+     * filter then invokes the {@link #doHandle(Request, Response)} method. If
+     * returned from the {@link #doHandle(Request, Response)} method, the filter
+     * then invokes the {@link #afterHandle(Request, Response)} method.
+     */
+    public static final int CONTINUE = 0;
+
+    /**
+     * Indicates that after the {@link #beforeHandle(Request, Response)} method,
+     * the request processing should skip the
+     * {@link #doHandle(Request, Response)} method to continue with the
+     * {@link #afterHandle(Request, Response)} method.
+     */
+    public static final int SKIP = 1;
+
+    /**
+     * Indicates that the request processing should stop and return the current
+     * response from the filter.
+     */
+    public static final int STOP = 2;
+
     /** The next Restlet. */
-    private Restlet next;
+    private volatile Restlet next;
 
     /**
      * Constructor.
@@ -80,32 +117,53 @@ public abstract class Filter extends Restlet {
     }
 
     /**
-     * Allows filtering before processing by the next Restlet. Does nothing by
-     * default.
+     * Allows filtering before processing by the next Restlet. Returns
+     * {@link #CONTINUE} by default.
      * 
      * @param request
      *            The request to handle.
      * @param response
      *            The response to update.
+     * @return The continuation status. Either {@link #CONTINUE} or
+     *         {@link #SKIP} or {@link #STOP}.
      */
-    protected void beforeHandle(Request request, Response response) {
-        // To be overriden
+    protected int beforeHandle(Request request, Response response) {
+        return CONTINUE;
     }
 
     /**
-     * Handles the call by distributing it to the next Restlet.
+     * Handles the call by distributing it to the next Restlet. If no Restlet is
+     * attached, then a {@link Status#SERVER_ERROR_INTERNAL} status is returned.
+     * Returns {@link #CONTINUE} by default.
      * 
      * @param request
      *            The request to handle.
      * @param response
      *            The response to update.
+     * @return The continuation status. Either {@link #CONTINUE} or
+     *         {@link #STOP}.
      */
-    protected void doHandle(Request request, Response response) {
+    protected int doHandle(Request request, Response response) {
+        final int result = CONTINUE;
+
         if (getNext() != null) {
             getNext().handle(request, response);
+
+            // Re-associate the response to the current thread
+            Response.setCurrent(response);
+
+            // Associate the context to the current thread
+            if (getContext() != null) {
+                Context.setCurrent(getContext());
+            }
         } else {
-            response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+            response.setStatus(Status.SERVER_ERROR_INTERNAL);
+            getLogger()
+                    .warning(
+                            "A filter was executed without a next Restlet attached to it.");
         }
+
+        return result;
     }
 
     /**
@@ -128,11 +186,32 @@ public abstract class Filter extends Restlet {
      * @param response
      *            The response to update.
      */
+    @Override
     public final void handle(Request request, Response response) {
-        init(request, response);
-        beforeHandle(request, response);
-        doHandle(request, response);
-        afterHandle(request, response);
+        super.handle(request, response);
+
+        switch (beforeHandle(request, response)) {
+        case CONTINUE:
+            switch (doHandle(request, response)) {
+            case CONTINUE:
+                afterHandle(request, response);
+                break;
+
+            default:
+                // Stop the processing
+                break;
+            }
+            break;
+
+        case SKIP:
+            afterHandle(request, response);
+            break;
+
+        default:
+            // Stop the processing
+            break;
+        }
+
     }
 
     /**
@@ -145,16 +224,6 @@ public abstract class Filter extends Restlet {
     }
 
     /**
-     * Sets the next Restlet.
-     * 
-     * @param next
-     *            The next Restlet.
-     */
-    public void setNext(Restlet next) {
-        this.next = next;
-    }
-
-    /**
      * Sets the next Restlet as a Finder for a given Resource class. When the
      * call is delegated to the Finder instance, a new instance of the Resource
      * class will be created and will actually handle the request.
@@ -164,6 +233,23 @@ public abstract class Filter extends Restlet {
      */
     public void setNext(Class<? extends Resource> targetClass) {
         setNext(new Finder(getContext(), targetClass));
+    }
+
+    /**
+     * Sets the next Restlet.
+     * 
+     * In addition, this method will set the context of the next Restlet if it
+     * is null by passing a reference to its own context.
+     * 
+     * @param next
+     *            The next Restlet.
+     */
+    public void setNext(Restlet next) {
+        if ((next != null) && (next.getContext() == null)) {
+            next.setContext(getContext());
+        }
+
+        this.next = next;
     }
 
 }

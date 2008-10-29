@@ -1,19 +1,28 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package com.noelios.restlet.component;
@@ -28,9 +37,13 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 
 /**
- * Router scorer based on a target VirtualHost.
+ * Router scorer based on a target client connector.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * Concurrency note: instances of this class or its subclasses can be invoked by
+ * several threads at the same time and therefore must be thread-safe. You
+ * should be especially careful when storing state in member variables.
+ * 
+ * @author Jerome Louvel
  */
 public class ClientRoute extends Route {
     /**
@@ -55,16 +68,6 @@ public class ClientRoute extends Route {
     }
 
     /**
-     * Sets the next client.
-     * 
-     * @param next
-     *            The next client.
-     */
-    public void setNext(Client next) {
-        super.setNext(next);
-    }
-
-    /**
      * Returns the score for a given call (between 0 and 1.0).
      * 
      * @param request
@@ -73,11 +76,12 @@ public class ClientRoute extends Route {
      *            The response to score.
      * @return The score for a given call (between 0 and 1.0).
      */
+    @Override
     public float score(Request request, Response response) {
         float result = 0F;
 
         // Add the protocol score
-        Protocol protocol = request.getProtocol();
+        final Protocol protocol = request.getProtocol();
 
         if (protocol == null) {
             getLogger().warning(
@@ -94,5 +98,15 @@ public class ClientRoute extends Route {
         }
 
         return result;
+    }
+
+    /**
+     * Sets the next client.
+     * 
+     * @param next
+     *            The next client.
+     */
+    public void setNext(Client next) {
+        super.setNext(next);
     }
 }

@@ -1,19 +1,28 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package org.restlet.data;
@@ -22,19 +31,21 @@ import org.restlet.util.Engine;
 import org.restlet.util.Series;
 
 /**
- * Authentication challenge sent by an origin server to a client.
+ * Authentication challenge sent by an origin server to a client. Upon reception
+ * of this request, the client should send a new request with the proper
+ * {@link ChallengeResponse} set.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public final class ChallengeRequest {
     /** The challenge scheme. */
-    private ChallengeScheme scheme;
+    private volatile ChallengeScheme scheme;
 
     /** The authentication realm. */
-    private String realm;
+    private volatile String realm;
 
-    /** The scheme parameters. */
-    private Series<Parameter> parameters;
+    /** The additional scheme parameters. */
+    private volatile Series<Parameter> parameters;
 
     /**
      * Constructor.
@@ -59,9 +70,9 @@ public final class ChallengeRequest {
         if (!result) {
             // if obj isn't a challenge request or is null don't evaluate
             // further
-            if ((obj instanceof ChallengeRequest) && obj != null) {
-                ChallengeRequest that = (ChallengeRequest) obj;
-                result = (this.getParameters().equals(that.getParameters()));
+            if (obj instanceof ChallengeRequest) {
+                final ChallengeRequest that = (ChallengeRequest) obj;
+                result = (getParameters().equals(that.getParameters()));
 
                 if (result) {
                     if (getRealm() != null) {
@@ -85,14 +96,23 @@ public final class ChallengeRequest {
     }
 
     /**
-     * Returns the scheme parameters.
+     * Returns the modifiable series of scheme parameters. Creates a new
+     * instance if no one has been set.
      * 
-     * @return The scheme parameters.
+     * @return The modifiable series of scheme parameters.
      */
     public Series<Parameter> getParameters() {
-        if (this.parameters == null)
-            this.parameters = new Form();
-        return this.parameters;
+        // Lazy initialization with double-check.
+        Series<Parameter> p = this.parameters;
+        if (p == null) {
+            synchronized (this) {
+                p = this.parameters;
+                if (p == null) {
+                    this.parameters = p = new Form();
+                }
+            }
+        }
+        return p;
     }
 
     /**
@@ -117,6 +137,16 @@ public final class ChallengeRequest {
     @Override
     public int hashCode() {
         return Engine.hashCode(getScheme(), getRealm(), getParameters());
+    }
+
+    /**
+     * Sets the modifiable series of scheme parameters.
+     * 
+     * @param parameters
+     *            The modifiable series of scheme parameters.
+     */
+    public void setParameters(Series<Parameter> parameters) {
+        this.parameters = parameters;
     }
 
     /**

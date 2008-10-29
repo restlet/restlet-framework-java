@@ -1,59 +1,72 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package org.restlet;
 
 import java.lang.reflect.Constructor;
-import java.util.Set;
+import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 
 import org.restlet.data.Method;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.resource.Resource;
 
 /**
- * Restlet that can find the target resource that will concretely handle a call.
- * Based on a given resource class, it is also capable of instantiating the
- * resource with the call's context, request and response without requiring the
- * usage of a subclass. It will use either the constructor with three arguments:
- * context, request, response; or it will invoke the default constructor then
- * invoke the init() method with the same arguments.<br>
+ * Restlet that can find the target handler that will effectively handle the
+ * call. Based on a given Handler subclass, it is also capable of instantiating
+ * the handler with the call's context, request and response without requiring
+ * the usage of a Finder subclass. It will use either the constructor with three
+ * arguments: context, request, response; or it will invoke the default
+ * constructor then invoke the init() method with the same arguments.<br>
  * <br>
- * Once the target resource has been found, the call is automatically dispatched
+ * Once the target handler has been found, the call is automatically dispatched
  * to the appropriate handle*() method (where the '*' character corresponds to
  * the method name) if the corresponding allow*() method returns true.<br>
  * <br>
  * For example, if you want to support a MOVE method for a WebDAV server, you
- * just have to add a handleMove() method in your subclass of Resource and it
+ * just have to add a handleMove() method in your subclass of Handler and it
  * will be automatically be used by the Finder instance at runtime.<br>
  * <br>
  * If no matching handle*() method is found, then a
- * Status.CLIENT_ERROR_METHOD_NOT_ALLOWED is returned.
+ * Status.CLIENT_ERROR_METHOD_NOT_ALLOWED is returned.<br>
+ * <br>
+ * Concurrency note: instances of this class or its subclasses can be invoked by
+ * several threads at the same time and therefore must be thread-safe. You
+ * should be especially careful when storing state in member variables.
  * 
- * @see <a href="http://www.restlet.org/tutorial#part12">Tutorial: Reaching
- *      target Resources</a>
- * @author Jerome Louvel (contact@noelios.com)
+ * @see <a
+ *      href="http://www.restlet.org/documentation/1.1/tutorial#part12">Tutorial:
+ *      Reaching target Resources</a>
+ * @author Jerome Louvel
  */
 public class Finder extends Restlet {
-    /** Target resource class. */
-    private Class<? extends Resource> targetClass;
+    /** Target handler class. */
+    private volatile Class<? extends Handler> targetClass;
 
     /**
      * Constructor.
@@ -78,27 +91,27 @@ public class Finder extends Restlet {
      * @param context
      *            The context.
      * @param targetClass
-     *            The target resource class.
+     *            The target handler class.
      */
-    public Finder(Context context, Class<? extends Resource> targetClass) {
+    public Finder(Context context, Class<? extends Handler> targetClass) {
         super(context);
         this.targetClass = targetClass;
     }
 
     /**
-     * Indicates if a method is allowed on a target resource.
+     * Indicates if a method is allowed on a target handler.
      * 
      * @param method
      *            The method to test.
      * @param target
-     *            The target resource.
-     * @return True if a method is allowed on a target resource.
+     *            The target handler.
+     * @return True if a method is allowed on a target handler.
      */
-    private boolean allowMethod(Method method, Resource target) {
+    private boolean allow(Method method, Handler target) {
         boolean result = false;
 
         if (target != null) {
-            if (method.equals(Method.GET) || method.equals(Method.HEAD)) {
+            if (method.equals(Method.GET)) {
                 result = target.allowGet();
             } else if (method.equals(Method.POST)) {
                 result = target.allowPost();
@@ -106,13 +119,15 @@ public class Finder extends Restlet {
                 result = target.allowPut();
             } else if (method.equals(Method.DELETE)) {
                 result = target.allowDelete();
+            } else if (method.equals(Method.HEAD)) {
+                result = target.allowHead();
             } else if (method.equals(Method.OPTIONS)) {
-                result = true;
+                result = target.allowOptions();
             } else {
-                // Dynamically introspect the target resource to detect a
+                // Dynamically introspect the target handler to detect a
                 // matching "allow" method.
-                java.lang.reflect.Method allowMethod = getAllowMethod(method,
-                        target);
+                final java.lang.reflect.Method allowMethod = getAllowMethod(
+                        method, target);
                 if (allowMethod != null) {
                     result = (Boolean) invoke(target, allowMethod);
                 }
@@ -123,61 +138,106 @@ public class Finder extends Restlet {
     }
 
     /**
-     * Finds the target Resource if available. The default behavior is to invoke
-     * the {@link #createResource(Request, Response)} method.
+     * Creates a new instance of the handler class designated by the
+     * "targetClass" property. The default behavior is to invoke the
+     * {@link #createTarget(Class, Request, Response)} with the "targetClass"
+     * property as a parameter.
      * 
      * @param request
      *            The request to handle.
      * @param response
      *            The response to update.
-     * @return The target resource if available or null.
+     * @return The created handler or null.
+     * @deprecated Use the {@link #createTarget(Request, Response)} instead.
      */
-    public Resource findTarget(Request request, Response response) {
-        return createResource(request, response);
+    @Deprecated
+    public Handler createResource(Request request, Response response) {
+        return createTarget(getTargetClass(), request, response);
     }
 
     /**
-     * Creates a new instance of the resource class designated by the
-     * "targetClass" property.
+     * Creates a new instance of a given handler class. Note that Error and
+     * RuntimeException thrown by Handler constructors are rethrown by this
+     * method. Other exception are caught and logged.
      * 
      * @param request
      *            The request to handle.
      * @param response
      *            The response to update.
-     * @return The created resource or null.
+     * @return The created handler or null.
      */
-    public Resource createResource(Request request, Response response) {
-        Resource result = null;
+    public Handler createTarget(Class<? extends Handler> targetClass,
+            Request request, Response response) {
+        Handler result = null;
 
-        if (getTargetClass() != null) {
+        if (targetClass != null) {
             try {
-                Constructor constructor;
+                Constructor<?> constructor;
                 try {
                     // Invoke the constructor with Context, Request and Response
                     // parameters
-                    constructor = getTargetClass().getConstructor(
-                            Context.class, Request.class, Response.class);
-                    result = (Resource) constructor.newInstance(getContext(),
+                    constructor = targetClass.getConstructor(Context.class,
+                            Request.class, Response.class);
+                    result = (Handler) constructor.newInstance(getContext(),
                             request, response);
                 } catch (NoSuchMethodException nsme) {
                     // Invoke the default constructor then the init(Context,
                     // Request, Response) method.
-                    constructor = getTargetClass().getConstructor();
+                    constructor = targetClass.getConstructor();
                     if (constructor != null) {
-                        result = (Resource) constructor.newInstance();
+                        result = (Handler) constructor.newInstance();
                         result.init(getContext(), request, response);
                     }
                 }
+            } catch (InvocationTargetException e) {
+                if (e.getCause() instanceof Error) {
+                    throw (Error) e.getCause();
+                } else if (e.getCause() instanceof RuntimeException) {
+                    throw (RuntimeException) e.getCause();
+                } else {
+                    getLogger()
+                            .log(
+                                    Level.WARNING,
+                                    "Exception while instantiating the target handler.",
+                                    e);
+                }
             } catch (Exception e) {
-                getLogger()
-                        .log(
-                                Level.WARNING,
-                                "Exception while instantiating the target resource.",
-                                e);
+                getLogger().log(Level.WARNING,
+                        "Exception while instantiating the target handler.", e);
             }
         }
 
         return result;
+    }
+
+    /**
+     * Creates a new instance of the handler class designated by the
+     * "targetClass" property. The default behavior is to invoke the
+     * {@link #createTarget(Class, Request, Response)} with the "targetClass"
+     * property as a parameter.
+     * 
+     * @param request
+     *            The request to handle.
+     * @param response
+     *            The response to update.
+     * @return The created handler or null.
+     */
+    protected Handler createTarget(Request request, Response response) {
+        return createTarget(getTargetClass(), request, response);
+    }
+
+    /**
+     * Finds the target Handler if available. The default behavior is to invoke
+     * the {@link #createTarget(Request, Response)} method.
+     * 
+     * @param request
+     *            The request to handle.
+     * @param response
+     *            The response to update.
+     * @return The target handler if available or null.
+     */
+    protected Handler findTarget(Request request, Response response) {
+        return createTarget(request, response);
     }
 
     /**
@@ -186,11 +246,11 @@ public class Finder extends Restlet {
      * @param method
      *            The method to match.
      * @param target
-     *            The target resource.
+     *            The target handler.
      * @return The allow method matching the given method name.
      */
     private java.lang.reflect.Method getAllowMethod(Method method,
-            Resource target) {
+            Handler target) {
         return getMethod("allow", method, target);
     }
 
@@ -201,7 +261,7 @@ public class Finder extends Restlet {
      *            The method to match.
      * @return The handle method matching the given method name.
      */
-    private java.lang.reflect.Method getHandleMethod(Resource target,
+    private java.lang.reflect.Method getHandleMethod(Handler target,
             Method method) {
         return getMethod("handle", method, target);
     }
@@ -216,10 +276,10 @@ public class Finder extends Restlet {
      * @return The method matching the given prefix and method name.
      */
     private java.lang.reflect.Method getMethod(String prefix, Method method,
-            Object target, Class... classes) {
+            Object target, Class<?>... classes) {
         java.lang.reflect.Method result = null;
-        StringBuilder sb = new StringBuilder();
-        String methodName = method.getName().toLowerCase();
+        final StringBuilder sb = new StringBuilder();
+        final String methodName = method.getName().toLowerCase();
 
         if ((methodName != null) && (methodName.length() > 0)) {
             sb.append(prefix);
@@ -245,11 +305,11 @@ public class Finder extends Restlet {
     }
 
     /**
-     * Returns the target Resource class.
+     * Returns the target Handler class.
      * 
-     * @return the target Resource class.
+     * @return the target Handler class.
      */
-    public Class<? extends Resource> getTargetClass() {
+    public Class<? extends Handler> getTargetClass() {
         return this.targetClass;
     }
 
@@ -261,32 +321,33 @@ public class Finder extends Restlet {
      * @param response
      *            The response to update.
      */
+    @Override
     public void handle(Request request, Response response) {
-        init(request, response);
+        super.handle(request, response);
 
         if (isStarted()) {
-            Resource target = findTarget(request, response);
+            final Handler target = findTarget(request, response);
 
             if (!response.getStatus().equals(Status.SUCCESS_OK)) {
-                // Probably during the instantiation of the target resource, or
+                // Probably during the instantiation of the target handler, or
                 // earlier the status was changed from the default one. Don't go
                 // further.
             } else if (target == null) {
                 // If the currrent status is a success but we couldn't find the
-                // target resource for the request's resource URI, then we set
+                // target handler for the request's resource URI, then we set
                 // the response status to 404 (Not Found).
                 response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
             } else {
-                Method method = request.getMethod();
+                final Method method = request.getMethod();
 
                 if (method == null) {
                     response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
                             "No method specified");
                 } else {
-                    if (!allowMethod(method, target)) {
+                    if (!allow(method, target)) {
                         response
                                 .setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-                        updateAllowedMethods(response, target);
+                        target.updateAllowedMethods();
                     } else {
                         if (method.equals(Method.GET)) {
                             target.handleGet();
@@ -301,7 +362,7 @@ public class Finder extends Restlet {
                         } else if (method.equals(Method.OPTIONS)) {
                             target.handleOptions();
                         } else {
-                            java.lang.reflect.Method handleMethod = getHandleMethod(
+                            final java.lang.reflect.Method handleMethod = getHandleMethod(
                                     target, method);
                             if (handleMethod != null) {
                                 invoke(target, handleMethod);
@@ -346,27 +407,13 @@ public class Finder extends Restlet {
     }
 
     /**
-     * Updates the set of allowed methods on the response based on a target
-     * resource.
+     * Sets the target Handler class.
      * 
-     * @param response
-     *            The response to update.
-     * @param target
-     *            The target resource.
+     * @param targetClass
+     *            The target Handler class.
      */
-    private void updateAllowedMethods(Response response, Resource target) {
-        Set<Method> allowedMethods = response.getAllowedMethods();
-        for (java.lang.reflect.Method classMethod : target.getClass()
-                .getMethods()) {
-            if (classMethod.getName().startsWith("allow")
-                    && (classMethod.getParameterTypes().length == 0)) {
-                if ((Boolean) invoke(target, classMethod)) {
-                    Method allowedMethod = Method.valueOf(classMethod.getName()
-                            .substring(5));
-                    allowedMethods.add(allowedMethod);
-                }
-            }
-        }
+    public void setTargetClass(Class<? extends Handler> targetClass) {
+        this.targetClass = targetClass;
     }
 
 }

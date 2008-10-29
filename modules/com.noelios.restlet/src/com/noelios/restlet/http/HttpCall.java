@@ -1,19 +1,28 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package com.noelios.restlet.http;
@@ -23,10 +32,12 @@ import java.util.Date;
 import java.util.logging.Logger;
 
 import org.restlet.Application;
+import org.restlet.Context;
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
+import org.restlet.resource.Representation;
 import org.restlet.service.ConnectorService;
 import org.restlet.util.DateUtils;
 import org.restlet.util.Series;
@@ -34,56 +45,88 @@ import org.restlet.util.Series;
 /**
  * Low-level call for the HTTP connectors.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
-public class HttpCall {
-    /** The logger to use. */
-    private Logger logger;
+public abstract class HttpCall {
 
-    /** The hostRef domain. */
-    private String hostDomain;
+    /**
+     * Formats a date as a header string.
+     * 
+     * @param date
+     *            The date to format.
+     * @param cookie
+     *            Indicates if the date should be in the cookie format.
+     * @return The formatted date.
+     */
+    public static String formatDate(Date date, boolean cookie) {
+        if (cookie) {
+            return DateUtils.format(date, DateUtils.FORMAT_RFC_1036.get(0));
+        } else {
+            return DateUtils.format(date, DateUtils.FORMAT_RFC_1123.get(0));
+        }
+    }
 
-    /** The hostRef port. */
-    private int hostPort;
-
-    /** Indicates if the call is confidential. */
-    private boolean confidential;
+    /**
+     * Parses a date string.
+     * 
+     * @param date
+     *            The date string to parse.
+     * @param cookie
+     *            Indicates if the date is in the cookie format.
+     * @return The parsed date.
+     */
+    public static Date parseDate(String date, boolean cookie) {
+        if (cookie) {
+            return DateUtils.parse(date, DateUtils.FORMAT_RFC_1036);
+        } else {
+            return DateUtils.parse(date, DateUtils.FORMAT_RFC_1123);
+        }
+    }
 
     /** The client IP address. */
-    private String clientAddress;
+    private volatile String clientAddress;
 
     /** The client port. */
-    private int clientPort;
+    private volatile int clientPort;
+
+    /** Indicates if the call is confidential. */
+    private volatile boolean confidential;
+
+    /** The hostRef domain. */
+    private volatile String hostDomain;
+
+    /** The hostRef port. */
+    private volatile int hostPort;
 
     /** The method. */
-    private String method;
+    private volatile String method;
 
     /** The exact protocol. */
-    private Protocol protocol;
+    private volatile Protocol protocol;
 
     /** The reason phrase. */
-    private String reasonPhrase;
+    private volatile String reasonPhrase;
 
     /** The request headers. */
-    private Series<Parameter> requestHeaders;
+    private final Series<Parameter> requestHeaders;
 
     /** The request URI. */
-    private String requestUri;
+    private volatile String requestUri;
 
     /** The response headers. */
-    private Series<Parameter> responseHeaders;
+    private final Series<Parameter> responseHeaders;
 
     /** The server IP address. */
-    private String serverAddress;
+    private volatile String serverAddress;
 
     /** The server port. */
-    private int serverPort;
+    private volatile int serverPort;
 
     /** The status code. */
-    private int statusCode;
+    private volatile int statusCode;
 
     /** The protocol version. */
-    private String version;
+    private volatile String version;
 
     /**
      * Constructor.
@@ -97,9 +140,9 @@ public class HttpCall {
         this.method = null;
         this.protocol = null;
         this.reasonPhrase = "";
-        this.requestHeaders = null;
+        this.requestHeaders = new Form();
         this.requestUri = null;
-        this.responseHeaders = null;
+        this.responseHeaders = new Form();
         this.serverAddress = null;
         this.serverPort = -1;
         this.statusCode = 200;
@@ -107,25 +150,8 @@ public class HttpCall {
     }
 
     /**
-     * Formats a date as a header string.
-     * 
-     * @param date
-     *            The date to format.
-     * @param cookie
-     *            Indicates if the date should be in the cookie format.
-     * @return The formatted date.
-     */
-    public String formatDate(Date date, boolean cookie) {
-        if (cookie) {
-            return DateUtils.format(date, DateUtils.FORMAT_RFC_1036.get(0));
-        } else {
-            return DateUtils.format(date, DateUtils.FORMAT_RFC_1123.get(0));
-        }
-    }
-
-    /**
-     * Returns the client address.<br/> Corresponds to the IP address of the
-     * requesting client.
+     * Returns the client address.<br>
+     * Corresponds to the IP address of the requesting client.
      * 
      * @return The client address.
      */
@@ -134,8 +160,8 @@ public class HttpCall {
     }
 
     /**
-     * Returns the client port.<br/> Corresponds to the TCP/IP port of the
-     * requesting client.
+     * Returns the client port.<br>
+     * Corresponds to the TCP/IP port of the requesting client.
      * 
      * @return The client port.
      */
@@ -152,8 +178,7 @@ public class HttpCall {
      */
     public ConnectorService getConnectorService(Request request) {
         ConnectorService result = null;
-        Application application = (Application) request.getAttributes().get(
-                Application.KEY);
+        final Application application = Application.getCurrent();
 
         if (application != null) {
             result = application.getConnectorService();
@@ -162,6 +187,30 @@ public class HttpCall {
         }
 
         return result;
+    }
+
+    /**
+     * Returns the content length of the request entity if know,
+     * {@link Representation#UNKNOWN_SIZE} otherwise.
+     * 
+     * @return The request content length.
+     */
+    protected long getContentLength(Series<Parameter> headers) {
+        long contentLength = Representation.UNKNOWN_SIZE;
+
+        // Extract the content length header
+        for (final Parameter header : headers) {
+            if (header.getName().equalsIgnoreCase(
+                    HttpConstants.HEADER_CONTENT_LENGTH)) {
+                try {
+                    contentLength = Long.parseLong(header.getValue());
+                } catch (NumberFormatException e) {
+                    contentLength = Representation.UNKNOWN_SIZE;
+                }
+            }
+        }
+
+        return contentLength;
     }
 
     /**
@@ -183,12 +232,12 @@ public class HttpCall {
     }
 
     /**
-     * Returns the logger to use.
+     * Returns the logger.
      * 
-     * @return The logger to use.
+     * @return The logger.
      */
     public Logger getLogger() {
-        return this.logger;
+        return Context.getCurrentLogger();
     }
 
     /**
@@ -206,8 +255,9 @@ public class HttpCall {
      * @return The exact protocol (HTTP or HTTPS).
      */
     public Protocol getProtocol() {
-        if (this.protocol == null)
+        if (this.protocol == null) {
             this.protocol = isConfidential() ? Protocol.HTTPS : Protocol.HTTP;
+        }
         return this.protocol;
     }
 
@@ -226,8 +276,6 @@ public class HttpCall {
      * @return The modifiable list of request headers.
      */
     public Series<Parameter> getRequestHeaders() {
-        if (this.requestHeaders == null)
-            this.requestHeaders = new Form();
         return this.requestHeaders;
     }
 
@@ -247,14 +295,12 @@ public class HttpCall {
      * @return The modifiable list of server headers.
      */
     public Series<Parameter> getResponseHeaders() {
-        if (this.responseHeaders == null)
-            this.responseHeaders = new Form();
         return this.responseHeaders;
     }
 
     /**
-     * Returns the response address.<br/> Corresponds to the IP address of the
-     * responding server.
+     * Returns the response address.<br>
+     * Corresponds to the IP address of the responding server.
      * 
      * @return The response address.
      */
@@ -275,7 +321,7 @@ public class HttpCall {
      * Returns the status code.
      * 
      * @return The status code.
-     * @throws IOException 
+     * @throws IOException
      */
     public int getStatusCode() throws IOException {
         return this.statusCode;
@@ -291,6 +337,13 @@ public class HttpCall {
     }
 
     /**
+     * Indicates if the client wants a persistent connection.
+     * 
+     * @return True if the client wants a persistent connection.
+     */
+    protected abstract boolean isClientKeepAlive();
+
+    /**
      * Indicates if the confidentiality of the call is ensured (ex: via SSL).
      * 
      * @return True if the confidentiality of the call is ensured (ex: via SSL).
@@ -300,21 +353,66 @@ public class HttpCall {
     }
 
     /**
-     * Parses a date string.
+     * Returns true if the given exception is caused by a broken connection.
      * 
-     * @param date
-     *            The date string to parse.
-     * @param cookie
-     *            Indicates if the date is in the cookie format.
-     * @return The parsed date.
+     * @param exception
+     *            The exception to inspect.
+     * @return True if the given exception is caused by a broken connection.
      */
-    public Date parseDate(String date, boolean cookie) {
-        if (cookie) {
-            return DateUtils.parse(date, DateUtils.FORMAT_RFC_1036);
-        } else {
-            return DateUtils.parse(date, DateUtils.FORMAT_RFC_1123);
+    public boolean isConnectionBroken(Exception exception) {
+        boolean result = false;
+
+        if (exception.getMessage() != null) {
+            result = (exception.getMessage().indexOf("Broken pipe") != -1)
+                    || (exception
+                            .getMessage()
+                            .equals(
+                                    "Une connexion existante a dû être fermée par l'hôte distant") || (exception
+                            .getMessage()
+                            .equals("Une connexion établie a été abandonnée par un logiciel de votre ordinateur hôte")));
         }
+
+        return result;
     }
+
+    /**
+     * Indicates if both the client and the server want a persistent connection.
+     * 
+     * @return True if the connection should be kept alive after the call
+     *         processing.
+     */
+    protected boolean isKeepAlive() {
+        return isClientKeepAlive() && isServerKeepAlive();
+    }
+
+    /**
+     * Indicates if the request entity is chunked.
+     * 
+     * @return True if the request entity is chunked.
+     */
+    protected boolean isRequestChunked() {
+        final String header = getRequestHeaders().getFirstValue(
+                HttpConstants.HEADER_TRANSFER_ENCODING, true);
+        return (header != null) && header.equalsIgnoreCase("chunked");
+    }
+
+    /**
+     * Indicates if the response entity is chunked.
+     * 
+     * @return True if the response entity is chunked.
+     */
+    protected boolean isResponseChunked() {
+        final String header = getResponseHeaders().getFirstValue(
+                HttpConstants.HEADER_TRANSFER_ENCODING, true);
+        return (header != null) && header.equalsIgnoreCase("chunked");
+    }
+
+    /**
+     * Indicates if the server wants a persistent connection.
+     * 
+     * @return True if the server wants a persistent connection.
+     */
+    protected abstract boolean isServerKeepAlive();
 
     /**
      * Sets the client address.
@@ -368,16 +466,6 @@ public class HttpCall {
     }
 
     /**
-     * Sets the logger to use.
-     * 
-     * @param logger
-     *            The logger to use.
-     */
-    public void setLogger(Logger logger) {
-        this.logger = logger;
-    }
-
-    /**
      * Sets the request method.
      * 
      * @param method
@@ -422,8 +510,8 @@ public class HttpCall {
     }
 
     /**
-     * Sets the response address.<br/> Corresponds to the IP address of the
-     * responding server.
+     * Sets the response address.<br>
+     * Corresponds to the IP address of the responding server.
      * 
      * @param responseAddress
      *            The response address.

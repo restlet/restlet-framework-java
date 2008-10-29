@@ -1,24 +1,36 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package com.noelios.restlet.ext.jetty;
 
 import java.io.File;
+
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLServerSocketFactory;
 
 import org.mortbay.jetty.AbstractConnector;
 import org.mortbay.jetty.security.SslSelectChannelConnector;
@@ -26,14 +38,26 @@ import org.mortbay.jetty.security.SslSocketConnector;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 
+import com.noelios.restlet.http.HttpsUtils;
+import com.noelios.restlet.util.SslContextFactory;
+
 /**
  * Jetty HTTPS server connector. Here is the list of additional parameters that
- * are supported: <table>
+ * are supported:
+ * <table>
  * <tr>
  * <th>Parameter name</th>
  * <th>Value type</th>
  * <th>Default value</th>
  * <th>Description</th>
+ * </tr>
+ * <tr>
+ * <td>sslContextFactory</td>
+ * <td>String</td>
+ * <td>null</td>
+ * <td>Let you specify a {@link SslContextFactory} class name as a parameter, or
+ * an instance as an attribute for a more complete and flexible SSL context
+ * setting. If set, it takes precedance over the other SSL parameters below.</td>
  * </tr>
  * <tr>
  * <td>keystorePath</td>
@@ -66,10 +90,17 @@ import org.restlet.data.Protocol;
  * <td>SSL certificate algorithm.</td>
  * </tr>
  * <tr>
- * <td>sslProtocol</td>
+ * <td>disabledCipherSuites</td>
  * <td>String</td>
- * <td>TLS</td>
- * <td>SSL protocol.</td>
+ * <td>null</td>
+ * <td>Whitespace-separated list of disabled cipher suites and/or can be
+ * specified multiple times.</td>
+ * </tr>
+ * <tr>
+ * <td>needClientAuthentication</td>
+ * <td>boolean</td>
+ * <td>false</td>
+ * <td>Indicates if we require client certificate authentication.</td>
  * </tr>
  * <tr>
  * <td>secureRandomAlgorithm</td>
@@ -84,10 +115,18 @@ import org.restlet.data.Protocol;
  * <td>Java security provider name (see java.security.Provider class).</td>
  * </tr>
  * <tr>
- * <td>needClientAuthentication</td>
- * <td>boolean</td>
- * <td>false</td>
- * <td>Indicates if we require client certificate authentication.</td>
+ * <td>sslProtocol</td>
+ * <td>String</td>
+ * <td>TLS</td>
+ * <td>SSL protocol.</td>
+ * </tr>
+ * <tr>
+ * <td>type</td>
+ * <td>int</td>
+ * <td>2</td>
+ * <td>The type of Jetty connector to use.<br>
+ * 1 : Selecting NIO connector (Jetty's SslSelectChannelConnector class).<br>
+ * 2 : Blocking BIO connector (Jetty's SslSocketConnector class).</td>
  * </tr>
  * <tr>
  * <td>wantClientAuthentication</td>
@@ -96,20 +135,10 @@ import org.restlet.data.Protocol;
  * <td>Indicates if we would like client certificate authentication (only for
  * the BIO connector type).</td>
  * </tr>
- * <tr>
- * <td>type</td>
- * <td>int</td>
- * <td>2</td>
- * <td>The type of Jetty connector to use.<br/> 1 : Selecting NIO connector
- * (Jetty's SslSelectChannelConnector class).<br/> 2 : Blocking BIO connector
- * (Jetty's SslSocketConnector class).</td>
- * </tr>
  * </table>
  * 
- * @see <a
- *      href="http://docs.codehaus.org/display/JETTY/How+to+configure+SSL">How
- *      to configure SSL for Jetty</a>
- * @author Jerome Louvel (contact@noelios.com)
+ * @see <a href="http://docs.codehaus.org/display/JETTY/How+to+configure+SSL">How to configure SSL for Jetty</a>
+ * @author Jerome Louvel
  */
 public class HttpsServerHelper extends JettyServerHelper {
     /**
@@ -128,42 +157,108 @@ public class HttpsServerHelper extends JettyServerHelper {
      * 
      * @return A new internal Jetty connector.
      */
+    @Override
     protected AbstractConnector createConnector() {
         AbstractConnector result = null;
+        final SslContextFactory sslContextFactory = HttpsUtils
+                .getSslContextFactory(this);
+
+        final String[] excludedCipherSuites = HttpsUtils
+                .getDisabledCipherSuites(this);
 
         // Create and configure the Jetty HTTP connector
         switch (getType()) {
         case 1:
             // Selecting NIO connector
-            SslSelectChannelConnector nioResult = new SslSelectChannelConnector();
-            nioResult.setKeyPassword(getKeyPassword());
-            nioResult.setKeystore(getKeystorePath());
-            nioResult.setKeystoreType(getKeystoreType());
-            nioResult.setNeedClientAuth(isNeedClientAuthentication());
-            nioResult.setPassword(getKeystorePassword());
-            nioResult.setProtocol(getSslProtocol());
-            nioResult.setProvider(getSecurityProvider());
-            nioResult.setSecureRandomAlgorithm(getSecureRandomAlgorithm());
-            nioResult.setSslKeyManagerFactoryAlgorithm(getCertAlgorithm());
-            nioResult.setSslTrustManagerFactoryAlgorithm(getCertAlgorithm());
-            nioResult.setTrustPassword(getKeystorePassword());
+            /*
+             * If an SslContextFactory has been set up, its settings take
+             * priority over the other parameters (which would otherwise be used
+             * to build and initialise an SSLContext internally). Jetty's
+             * SslSelectChannelConnector does not have a setSslContext method
+             * yet, so we override its createSSLContext() method for this
+             * purpose.
+             */
+            SslSelectChannelConnector nioResult;
+            if (sslContextFactory == null) {
+                nioResult = new SslSelectChannelConnector();
+                nioResult.setKeyPassword(getKeyPassword());
+                nioResult.setKeystore(getKeystorePath());
+                nioResult.setKeystoreType(getKeystoreType());
+                nioResult.setPassword(getKeystorePassword());
+                nioResult.setProtocol(getSslProtocol());
+                nioResult.setProvider(getSecurityProvider());
+                nioResult.setSecureRandomAlgorithm(getSecureRandomAlgorithm());
+                nioResult.setSslKeyManagerFactoryAlgorithm(getCertAlgorithm());
+                nioResult
+                        .setSslTrustManagerFactoryAlgorithm(getCertAlgorithm());
+                nioResult.setTrustPassword(getKeystorePassword());
+            } else {
+                nioResult = new SslSelectChannelConnector() {
+                    @Override
+                    protected SSLContext createSSLContext() throws Exception {
+                        return sslContextFactory.createSslContext();
+                    }
+                };
+            }
+
+            if (isNeedClientAuthentication()) {
+                nioResult.setNeedClientAuth(true);
+            } else if (isWantClientAuthentication()) {
+                nioResult.setWantClientAuth(true);
+            }
+
+            if (excludedCipherSuites != null) {
+                nioResult.setExcludeCipherSuites(excludedCipherSuites);
+            }
+
             result = nioResult;
             break;
         case 2:
             // Blocking BIO connector
-            SslSocketConnector bioResult = new SslSocketConnector();
-            bioResult.setKeyPassword(getKeyPassword());
-            bioResult.setKeystore(getKeystorePath());
-            bioResult.setKeystoreType(getKeystoreType());
-            bioResult.setNeedClientAuth(isNeedClientAuthentication());
-            bioResult.setPassword(getKeystorePassword());
-            bioResult.setProtocol(getSslProtocol());
-            bioResult.setProvider(getSecurityProvider());
-            bioResult.setSecureRandomAlgorithm(getSecureRandomAlgorithm());
-            bioResult.setSslKeyManagerFactoryAlgorithm(getCertAlgorithm());
-            bioResult.setSslTrustManagerFactoryAlgorithm(getCertAlgorithm());
-            bioResult.setTrustPassword(getKeystorePassword());
-            bioResult.setWantClientAuth(isWantClientAuthentication());
+            /*
+             * If an SslContextFactory has been set up, its settings take
+             * priority over the other parameters (which would otherwise be used
+             * to build and initialise an SSLContext internally). Jetty's
+             * SslSocketConnector does not have a setSslContext method yet, so
+             * we override its createFactory() method for this purpose.
+             */
+            SslSocketConnector bioResult;
+            if (sslContextFactory == null) {
+                bioResult = new SslSocketConnector();
+                bioResult.setKeyPassword(getKeyPassword());
+                bioResult.setKeystore(getKeystorePath());
+                bioResult.setKeystoreType(getKeystoreType());
+                bioResult.setPassword(getKeystorePassword());
+                bioResult.setProtocol(getSslProtocol());
+                bioResult.setProvider(getSecurityProvider());
+                bioResult.setSecureRandomAlgorithm(getSecureRandomAlgorithm());
+                bioResult.setSslKeyManagerFactoryAlgorithm(getCertAlgorithm());
+                bioResult
+                        .setSslTrustManagerFactoryAlgorithm(getCertAlgorithm());
+                bioResult.setTrustPassword(getKeystorePassword());
+            } else {
+                bioResult = new SslSocketConnector() {
+                    @Override
+                    protected SSLServerSocketFactory createFactory()
+                            throws Exception {
+                        final SSLContext sslContext = sslContextFactory
+                                .createSslContext();
+                        return sslContext.getServerSocketFactory();
+                    }
+
+                };
+            }
+
+            if (isNeedClientAuthentication()) {
+                bioResult.setNeedClientAuth(true);
+            } else if (isWantClientAuthentication()) {
+                bioResult.setWantClientAuth(true);
+            }
+
+            if (excludedCipherSuites != null) {
+                bioResult.setExcludeCipherSuites(excludedCipherSuites);
+            }
+
             result = bioResult;
             break;
         }
@@ -172,31 +267,12 @@ public class HttpsServerHelper extends JettyServerHelper {
     }
 
     /**
-     * Returns the SSL keystore path.
+     * Returns the SSL certificate algorithm.
      * 
-     * @return The SSL keystore path.
+     * @return The SSL certificate algorithm.
      */
-    public String getKeystorePath() {
-        return getParameters().getFirstValue("keystorePath",
-                System.getProperty("user.home") + File.separator + ".keystore");
-    }
-
-    /**
-     * Returns the SSL keystore password.
-     * 
-     * @return The SSL keystore password.
-     */
-    public String getKeystorePassword() {
-        return getParameters().getFirstValue("keystorePassword", "");
-    }
-
-    /**
-     * Returns the SSL keystore type.
-     * 
-     * @return The SSL keystore type.
-     */
-    public String getKeystoreType() {
-        return getParameters().getFirstValue("keystoreType", "JKS");
+    public String getCertAlgorithm() {
+        return getHelpedParameters().getFirstValue("certAlgorithm", "SunX509");
     }
 
     /**
@@ -205,16 +281,26 @@ public class HttpsServerHelper extends JettyServerHelper {
      * @return The SSL key password.
      */
     public String getKeyPassword() {
-        return getParameters().getFirstValue("keyPassword", "");
+        return getHelpedParameters().getFirstValue("keyPassword", "");
     }
 
     /**
-     * Returns the SSL certificate algorithm.
+     * Returns the SSL keystore password.
      * 
-     * @return The SSL certificate algorithm.
+     * @return The SSL keystore password.
      */
-    public String getCertAlgorithm() {
-        return getParameters().getFirstValue("certAlgorithm", "SunX509");
+    public String getKeystorePassword() {
+        return getHelpedParameters().getFirstValue("keystorePassword", "");
+    }
+
+    /**
+     * Returns the SSL keystore path.
+     * 
+     * @return The SSL keystore path.
+     */
+    public String getKeystorePath() {
+        return getHelpedParameters().getFirstValue("keystorePath",
+                System.getProperty("user.home") + File.separator + ".keystore");
     }
 
     /**
@@ -222,8 +308,8 @@ public class HttpsServerHelper extends JettyServerHelper {
      * 
      * @return The SSL keystore type.
      */
-    public String getSslProtocol() {
-        return getParameters().getFirstValue("sslProtocol", "TLS");
+    public String getKeystoreType() {
+        return getHelpedParameters().getFirstValue("keystoreType", "JKS");
     }
 
     /**
@@ -232,7 +318,8 @@ public class HttpsServerHelper extends JettyServerHelper {
      * @return The name of the RNG algorithm.
      */
     public String getSecureRandomAlgorithm() {
-        return getParameters().getFirstValue("secureRandomAlgorithm", null);
+        return getHelpedParameters().getFirstValue("secureRandomAlgorithm",
+                null);
     }
 
     /**
@@ -241,38 +328,16 @@ public class HttpsServerHelper extends JettyServerHelper {
      * @return The Java security provider name.
      */
     public String getSecurityProvider() {
-        return getParameters().getFirstValue("securityProvider", null);
+        return getHelpedParameters().getFirstValue("securityProvider", null);
     }
 
     /**
-     * Indicates if we require client certificate authentication.
+     * Returns the SSL keystore type.
      * 
-     * @return True if we require client certificate authentication.
+     * @return The SSL keystore type.
      */
-    public boolean isNeedClientAuthentication() {
-        return Boolean.parseBoolean(getParameters().getFirstValue(
-                "needClientAuthentication", "false"));
-    }
-
-    /**
-     * Indicates if we would like client certificate authentication.
-     * 
-     * @return True if we would like client certificate authentication.
-     */
-    public boolean isWantClientAuthentication() {
-        return Boolean.parseBoolean(getParameters().getFirstValue(
-                "wantClientAuthentication", "false"));
-    }
-
-    /**
-     * Indicates if we would use the NIO-based connector instead of the BIO one.
-     * 
-     * @return True if we would use the NIO-based connector instead of the BIO
-     *         one.
-     */
-    public boolean isUseNio() {
-        return Boolean.parseBoolean(getParameters().getFirstValue("useNio",
-                "true"));
+    public String getSslProtocol() {
+        return getHelpedParameters().getFirstValue("sslProtocol", "TLS");
     }
 
     /**
@@ -281,7 +346,40 @@ public class HttpsServerHelper extends JettyServerHelper {
      * @return The type of Jetty connector to use.
      */
     public int getType() {
-        return Integer.parseInt(getParameters().getFirstValue("type", "2"));
+        return Integer.parseInt(getHelpedParameters()
+                .getFirstValue("type", "2"));
+    }
+
+    /**
+     * Indicates if we require client certificate authentication.
+     * 
+     * @return True if we require client certificate authentication.
+     */
+    public boolean isNeedClientAuthentication() {
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
+                "needClientAuthentication", "false"));
+    }
+
+    /**
+     * Indicates if we would use the NIO-based connector instead of the BIO one.
+     * 
+     * @return True if we would use the NIO-based connector instead of the BIO
+     *         one.
+     * @deprecated Will be removed in the future.
+     */
+    @Deprecated
+    public boolean isUseNio() {
+        return getType() == 1;
+    }
+
+    /**
+     * Indicates if we would like client certificate authentication.
+     * 
+     * @return True if we would like client certificate authentication.
+     */
+    public boolean isWantClientAuthentication() {
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
+                "wantClientAuthentication", "false"));
     }
 
 }

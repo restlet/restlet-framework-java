@@ -1,19 +1,28 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package org.restlet.resource;
@@ -24,8 +33,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
-import java.util.logging.Logger;
+import java.util.logging.Level;
 
+import org.restlet.Context;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
@@ -34,10 +44,12 @@ import org.restlet.data.MediaType;
  * Represents an Unicode string that can be converted to any character set
  * supported by Java.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class StringRepresentation extends StreamRepresentation {
-    private CharSequence text;
+
+    /** The string value. */
+    private volatile CharSequence text;
 
     /**
      * Constructor. The following metadata are used by default: "text/plain"
@@ -117,36 +129,38 @@ public class StringRepresentation extends StreamRepresentation {
         updateSize();
     }
 
-    /**
-     * Returns a stream with the representation's content. This method is
-     * ensured to return a fresh stream for each invocation unless it is a
-     * transient representation, in which case null is returned.
-     * 
-     * @return A stream with the representation's content.
-     * @throws IOException
-     */
+    @Override
     public InputStream getStream() throws IOException {
         if (getText() != null) {
             if (getCharacterSet() != null) {
                 return new ByteArrayInputStream(getText().getBytes(
                         getCharacterSet().getName()));
-            } else {
-                return new ByteArrayInputStream(getText().getBytes());
             }
-        } else {
-            return null;
+
+            return new ByteArrayInputStream(getText().getBytes());
         }
+
+        return null;
+    }
+
+    @Override
+    public String getText() {
+        return (this.text == null) ? null : this.text.toString();
     }
 
     /**
-     * Converts the representation to a string value. Be careful when using this
-     * method as the conversion of large content to a string fully stored in
-     * memory can result in OutOfMemoryErrors being thrown.
-     * 
-     * @return The representation as a string value.
+     * Closes and releases the input stream.
      */
-    public String getText() {
-        return (this.text == null) ? null : this.text.toString();
+    @Override
+    public void release() {
+        setText(null);
+        super.release();
+    }
+
+    @Override
+    public void setCharacterSet(CharacterSet characterSet) {
+        super.setCharacterSet(characterSet);
+        updateSize();
     }
 
     /**
@@ -172,7 +186,8 @@ public class StringRepresentation extends StreamRepresentation {
                     setSize(getText().getBytes().length);
                 }
             } catch (UnsupportedEncodingException e) {
-                Logger.getLogger(StringRepresentation.class.getCanonicalName());
+                Context.getCurrentLogger().log(Level.WARNING,
+                        "Unable to update size", e);
                 setSize(UNKNOWN_SIZE);
             }
         } else {
@@ -180,15 +195,7 @@ public class StringRepresentation extends StreamRepresentation {
         }
     }
 
-    /**
-     * Writes the representation to a byte stream. This method is ensured to
-     * write the full content for each invocation unless it is a transient
-     * representation, in which case an exception is thrown.
-     * 
-     * @param outputStream
-     *            The output stream.
-     * @throws IOException
-     */
+    @Override
     public void write(OutputStream outputStream) throws IOException {
         if (getText() != null) {
             OutputStreamWriter osw = null;

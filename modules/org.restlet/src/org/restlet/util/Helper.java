@@ -1,24 +1,40 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package org.restlet.util;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
+
 import org.restlet.Context;
+import org.restlet.Restlet;
+import org.restlet.data.Form;
+import org.restlet.data.Parameter;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
@@ -26,17 +42,86 @@ import org.restlet.data.Response;
  * Delegate used by API classes to get support from the implementation classes.
  * Note that this is an SPI class that is not intended for public usage.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
-public abstract class Helper {
+public abstract class Helper<T extends Restlet> {
+
     /**
-     * Creates a new context.
-     * 
-     * @param loggerName
-     *            The JDK's logger name to use for contextual logging.
-     * @return The new context.
+     * The map of attributes exchanged between the API and the Engine via this
+     * helper.
      */
-    public abstract Context createContext(String loggerName);
+    private final Map<String, Object> attributes;
+
+    /**
+     * The helped Restlet.
+     */
+    private volatile T helped;
+
+    /**
+     * Constructor.
+     * 
+     * @param helped
+     *            The helped Restlet.
+     */
+    public Helper(T helped) {
+        this.attributes = new ConcurrentHashMap<String, Object>();
+        this.helped = helped;
+    }
+
+    /**
+     * Returns the map of attributes exchanged between the API and the Engine
+     * via this helper.
+     * 
+     * @return The map of attributes.
+     */
+    public Map<String, Object> getAttributes() {
+        return this.attributes;
+    }
+
+    /**
+     * Returns the helped Restlet context.
+     * 
+     * @return The helped Restlet context.
+     */
+    public Context getContext() {
+        return getHelped().getContext();
+    }
+
+    /**
+     * Returns the helped Restlet.
+     * 
+     * @return The helped Restlet.
+     */
+    public T getHelped() {
+        return this.helped;
+    }
+
+    /**
+     * Returns the helped Restlet logger.
+     * 
+     * @return The helped Restlet logger.
+     */
+    public Logger getLogger() {
+        return (getHelped().getContext() != null) ? getHelped().getContext()
+                .getLogger() : Context.getCurrentLogger();
+    }
+
+    /**
+     * Returns the helped Restlet parameters.
+     * 
+     * @return The helped Restlet parameters.
+     */
+    public Series<Parameter> getHelpedParameters() {
+        Series<Parameter> result = null;
+
+        if ((getHelped() != null) && (getHelped().getContext() != null)) {
+            result = getHelped().getContext().getParameters();
+        } else {
+            result = new Form();
+        }
+
+        return result;
+    }
 
     /**
      * Handles a call.
@@ -46,11 +131,35 @@ public abstract class Helper {
      * @param response
      *            The response to update.
      */
-    public abstract void handle(Request request, Response response);
+    public void handle(Request request, Response response) {
+        // Associate the response to the current thread
+        Response.setCurrent(response);
+
+        // Associate the context to the current thread
+        if (getContext() != null) {
+            Context.setCurrent(getContext());
+        }
+    }
+
+    /**
+     * Sets the helped Restlet.
+     * 
+     * @param helpedRestlet
+     *            The helped Restlet.
+     */
+    public void setHelped(T helpedRestlet) {
+        this.helped = helpedRestlet;
+    }
 
     /** Start callback. */
     public abstract void start() throws Exception;
 
     /** Stop callback. */
     public abstract void stop() throws Exception;
+
+    /**
+     * Update callback with less impact than a {@link #stop()} followed by a
+     * {@link #start()}.
+     */
+    public abstract void update() throws Exception;
 }

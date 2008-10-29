@@ -125,7 +125,7 @@ public class JSONTokener {
         char n = next();
         if (n != c) {
             throw syntaxError("Expected '" + c + "' and instead saw '" +
-                    n + "'.");
+                    n + "'");
         }
         return n;
     }
@@ -171,7 +171,7 @@ public class JSONTokener {
                     for (;;) {
                         c = next();
                         if (c == 0) {
-                            throw syntaxError("Unclosed comment.");
+                            throw syntaxError("Unclosed comment");
                         }
                         if (c == '*') {
                             if (next() == '/') {
@@ -345,7 +345,7 @@ public class JSONTokener {
 
         s = sb.toString().trim();
         if (s.equals("")) {
-            throw syntaxError("Missing value.");
+            throw syntaxError("Missing value");
         }
         if (s.equalsIgnoreCase("true")) {
             return Boolean.TRUE;
@@ -428,13 +428,15 @@ public class JSONTokener {
      * If it is not found, we are left at the end of the source.
      * @param to A string to skip past.
      */
-    public void skipPast(String to) {
+    public boolean skipPast(String to) {
         this.myIndex = this.mySource.indexOf(to, this.myIndex);
         if (this.myIndex < 0) {
             this.myIndex = this.mySource.length();
-        } else {
-            this.myIndex += to.length();
-        }
+            return false;
+        } 
+        this.myIndex += to.length();
+        return true;
+
     }
 
 

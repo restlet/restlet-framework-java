@@ -1,19 +1,28 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package com.noelios.restlet;
@@ -28,6 +37,7 @@ import org.restlet.data.Response;
 import org.restlet.service.LogService;
 import org.restlet.util.Template;
 
+import com.noelios.restlet.component.ChildContext;
 import com.noelios.restlet.util.IdentClient;
 
 /**
@@ -35,19 +45,24 @@ import com.noelios.restlet.util.IdentClient;
  * current format is similar to IIS 6 logs. The logging is based on the
  * java.util.logging package.
  * 
- * @see <a href="http://www.restlet.org/tutorial#part07">Tutorial: Filters and
- *      call logging</a>
- * @author Jerome Louvel (contact@noelios.com)
+ * Concurrency note: instances of this class or its subclasses can be invoked by
+ * several threads at the same time and therefore must be thread-safe. You
+ * should be especially careful when storing state in member variables.
+ * 
+ * @see <a
+ *      href="http://www.restlet.org/documentation/1.1/tutorial#part07">Tutorial
+ *      : Filters and call logging</a>
+ * @author Jerome Louvel
  */
 public class LogFilter extends Filter {
-    /** Obtain a suitable logger. */
-    private Logger logger;
+    /** The log service. */
+    protected volatile LogService logService;
 
     /** The log template to use. */
-    protected Template logTemplate;
+    protected volatile Template logTemplate;
 
-    /** The log service. */
-    protected LogService logService;
+    /** The log service logger. */
+    private volatile Logger logLogger;
 
     /**
      * Constructor.
@@ -62,46 +77,73 @@ public class LogFilter extends Filter {
         this.logService = logService;
 
         if (logService != null) {
-            this.logger = Logger.getLogger(logService.getLoggerName());
             this.logTemplate = (logService.getLogFormat() == null) ? null
-                    : new Template(getLogger(), logService.getLogFormat());
+                    : new Template(logService.getLogFormat());
+
+            if (logService.getLoggerName() != null) {
+                this.logLogger = Logger.getLogger(logService.getLoggerName());
+            } else {
+                this.logLogger = Logger.getLogger(context.getLogger()
+                        .getParent().getName()
+                        + "."
+                        + ChildContext.getBestClassName(logService.getClass()));
+            }
         }
     }
 
     /**
-     * Allows filtering before processing by the next Restlet. Save the start
+     * Allows filtering after processing by the next Restlet. Logs the call.
+     * 
+     * @param request
+     *            The request to handle.
+     * @param response
+     *            The response to update.
+     */
+    @Override
+    protected void afterHandle(Request request, Response response) {
+        // Format the call into a log entry
+        if (this.logTemplate != null) {
+            this.logLogger.log(Level.INFO, format(request, response));
+        } else {
+            if (this.logLogger.isLoggable(Level.INFO)) {
+                final long startTime = (Long) request.getAttributes().get(
+                        "org.restlet.startTime");
+                final int duration = (int) (System.currentTimeMillis() - startTime);
+                this.logLogger.log(Level.INFO, formatDefault(request, response,
+                        duration));
+            }
+        }
+    }
+
+    /**
+     * Allows filtering before processing by the next Restlet. Saves the start
      * time.
      * 
      * @param request
      *            The request to handle.
      * @param response
      *            The response to update.
+     * @return The continuation status.
      */
-    protected void beforeHandle(Request request, Response response) {
+    @Override
+    protected int beforeHandle(Request request, Response response) {
         request.getAttributes().put("org.restlet.startTime",
                 System.currentTimeMillis());
+
+        return CONTINUE;
     }
 
     /**
-     * Allows filtering after processing by the next Restlet. Log the call.
+     * Format a log entry.
      * 
      * @param request
-     *            The request to handle.
+     *            The request to log.
      * @param response
-     *            The response to update.
+     *            The response to log.
+     * @return The formatted log entry.
      */
-    protected void afterHandle(Request request, Response response) {
-        long startTime = (Long) request.getAttributes().get(
-                "org.restlet.startTime");
-        int duration = (int) (System.currentTimeMillis() - startTime);
-
-        // Format the call into a log entry
-        if (this.logTemplate != null) {
-            this.logger.log(Level.INFO, format(request, response));
-        } else {
-            this.logger.log(Level.INFO, formatDefault(request, response,
-                    duration));
-        }
+    protected String format(Request request, Response response) {
+        return this.logTemplate.format(request, response);
     }
 
     /**
@@ -117,8 +159,8 @@ public class LogFilter extends Filter {
      */
     protected String formatDefault(Request request, Response response,
             int duration) {
-        StringBuilder sb = new StringBuilder();
-        long currentTime = System.currentTimeMillis();
+        final StringBuilder sb = new StringBuilder();
+        final long currentTime = System.currentTimeMillis();
 
         // Append the date of the request
         sb.append(String.format("%tF", currentTime));
@@ -129,15 +171,15 @@ public class LogFilter extends Filter {
         sb.append('\t');
 
         // Append the client IP address
-        String clientAddress = request.getClientInfo().getAddress();
+        final String clientAddress = request.getClientInfo().getAddress();
         sb.append((clientAddress == null) ? "-" : clientAddress);
         sb.append('\t');
 
         // Append the user name (via IDENT protocol)
         if (this.logService.isIdentityCheck()) {
-            IdentClient ic = new IdentClient(getLogger(), request
-                    .getClientInfo().getAddress(), request.getClientInfo()
-                    .getPort(), response.getServerInfo().getPort());
+            final IdentClient ic = new IdentClient(request.getClientInfo()
+                    .getAddress(), request.getClientInfo().getPort(), response
+                    .getServerInfo().getPort());
             sb.append((ic.getUserIdentifier() == null) ? "-" : ic
                     .getUserIdentifier());
         } else {
@@ -146,27 +188,30 @@ public class LogFilter extends Filter {
         sb.append('\t');
 
         // Append the server IP address
-        String serverAddress = response.getServerInfo().getAddress();
+        final String serverAddress = response.getServerInfo().getAddress();
         sb.append((serverAddress == null) ? "-" : serverAddress);
         sb.append('\t');
 
         // Append the server port
-        Integer serverport = response.getServerInfo().getPort();
+        final Integer serverport = response.getServerInfo().getPort();
         sb.append((serverport == null) ? "-" : serverport.toString());
         sb.append('\t');
 
         // Append the method name
-        String methodName = request.getMethod().getName();
+        final String methodName = (request.getMethod() == null) ? "-" : request
+                .getMethod().getName();
         sb.append((methodName == null) ? "-" : methodName);
 
         // Append the resource path
         sb.append('\t');
-        String resourcePath = request.getResourceRef().getPath();
+        final String resourcePath = (request.getResourceRef() == null) ? "-"
+                : request.getResourceRef().getPath();
         sb.append((resourcePath == null) ? "-" : resourcePath);
 
         // Append the resource query
         sb.append('\t');
-        String resourceQuery = request.getResourceRef().getQuery();
+        final String resourceQuery = (request.getResourceRef() == null) ? "-"
+                : request.getResourceRef().getQuery();
         sb.append((resourceQuery == null) ? "-" : resourceQuery);
 
         // Append the status code
@@ -203,7 +248,7 @@ public class LogFilter extends Filter {
 
         // Append the agent name
         sb.append('\t');
-        String agentName = request.getClientInfo().getAgent();
+        final String agentName = request.getClientInfo().getAgent();
         sb.append((agentName == null) ? "-" : agentName);
 
         // Append the referrer
@@ -212,19 +257,6 @@ public class LogFilter extends Filter {
                 .getReferrerRef().getIdentifier());
 
         return sb.toString();
-    }
-
-    /**
-     * Format a log entry.
-     * 
-     * @param request
-     *            The request to log.
-     * @param response
-     *            The response to log.
-     * @return The formatted log entry.
-     */
-    protected String format(Request request, Response response) {
-        return this.logTemplate.format(request, response);
     }
 
 }

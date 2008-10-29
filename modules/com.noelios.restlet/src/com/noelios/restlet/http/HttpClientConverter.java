@@ -1,19 +1,28 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package com.noelios.restlet.http;
@@ -27,6 +36,7 @@ import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
+import org.restlet.data.Digest;
 import org.restlet.data.Dimension;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -39,18 +49,97 @@ import org.restlet.util.DateUtils;
 import org.restlet.util.Series;
 
 import com.noelios.restlet.Engine;
-import com.noelios.restlet.util.CookieReader;
-import com.noelios.restlet.util.CookieUtils;
-import com.noelios.restlet.util.HeaderReader;
-import com.noelios.restlet.util.PreferenceUtils;
-import com.noelios.restlet.util.SecurityUtils;
+import com.noelios.restlet.authentication.AuthenticationUtils;
+import com.noelios.restlet.util.Base64;
+import com.noelios.restlet.util.RangeUtils;
 
 /**
  * Converter of high-level uniform calls into low-level HTTP client calls.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class HttpClientConverter extends HttpConverter {
+    /**
+     * Copies headers into a response.
+     * 
+     * @param headers
+     *            The headers to copy.
+     * @param response
+     *            The response to update.
+     * @see Engine#copyResponseHeaders(Iterable, Response)
+     * @see HttpClientCall#copyResponseEntityHeaders(Iterable,
+     *      org.restlet.resource.Representation)
+     */
+    public static void copyResponseTransportHeaders(
+            Iterable<Parameter> headers, Response response) {
+        // Read info from headers
+        for (final Parameter header : headers) {
+            if (header.getName()
+                    .equalsIgnoreCase(HttpConstants.HEADER_LOCATION)) {
+                response.setLocationRef(header.getValue());
+            } else if ((header.getName()
+                    .equalsIgnoreCase(HttpConstants.HEADER_SET_COOKIE))
+                    || (header.getName()
+                            .equalsIgnoreCase(HttpConstants.HEADER_SET_COOKIE2))) {
+                try {
+                    final CookieReader cr = new CookieReader(header.getValue());
+                    response.getCookieSettings().add(cr.readCookieSetting());
+                } catch (Exception e) {
+                    Context.getCurrentLogger().log(
+                            Level.WARNING,
+                            "Error during cookie setting parsing. Header: "
+                                    + header.getValue(), e);
+                }
+            } else if (header.getName().equalsIgnoreCase(
+                    HttpConstants.HEADER_WWW_AUTHENTICATE)) {
+                final ChallengeRequest request = AuthenticationUtils
+                        .parseAuthenticateHeader(header.getValue());
+                response.setChallengeRequest(request);
+            } else if (header.getName().equalsIgnoreCase(
+                    HttpConstants.HEADER_SERVER)) {
+                response.getServerInfo().setAgent(header.getValue());
+            } else if (header.getName().equalsIgnoreCase(
+                    HttpConstants.HEADER_ALLOW)) {
+                final HeaderReader hr = new HeaderReader(header.getValue());
+                String value = hr.readValue();
+                final Set<Method> allowedMethods = response.getAllowedMethods();
+                while (value != null) {
+                    allowedMethods.add(Method.valueOf(value));
+                    value = hr.readValue();
+                }
+            } else if (header.getName().equalsIgnoreCase(
+                    HttpConstants.HEADER_VARY)) {
+                final HeaderReader hr = new HeaderReader(header.getValue());
+                String value = hr.readValue();
+                final Set<Dimension> dimensions = response.getDimensions();
+                while (value != null) {
+                    if (value.equalsIgnoreCase(HttpConstants.HEADER_ACCEPT)) {
+                        dimensions.add(Dimension.MEDIA_TYPE);
+                    } else if (value
+                            .equalsIgnoreCase(HttpConstants.HEADER_ACCEPT_CHARSET)) {
+                        dimensions.add(Dimension.CHARACTER_SET);
+                    } else if (value
+                            .equalsIgnoreCase(HttpConstants.HEADER_ACCEPT_ENCODING)) {
+                        dimensions.add(Dimension.ENCODING);
+                    } else if (value
+                            .equalsIgnoreCase(HttpConstants.HEADER_ACCEPT_LANGUAGE)) {
+                        dimensions.add(Dimension.LANGUAGE);
+                    } else if (value
+                            .equalsIgnoreCase(HttpConstants.HEADER_AUTHORIZATION)) {
+                        dimensions.add(Dimension.AUTHORIZATION);
+                    } else if (value
+                            .equalsIgnoreCase(HttpConstants.HEADER_USER_AGENT)) {
+                        dimensions.add(Dimension.CLIENT_AGENT);
+                    } else if (value.equals("*")) {
+                        dimensions.add(Dimension.UNSPECIFIED);
+                    }
+
+                    value = hr.readValue();
+                }
+            }
+        }
+    }
+
     /**
      * Constructor.
      * 
@@ -59,56 +148,6 @@ public class HttpClientConverter extends HttpConverter {
      */
     public HttpClientConverter(Context context) {
         super(context);
-    }
-
-    /**
-     * Converts a low-level HTTP call into a high-level uniform call.
-     * 
-     * @param client
-     *            The HTTP client that will handle the call.
-     * @param request
-     *            The high-level request.
-     * @return A new high-level uniform call.
-     */
-    public HttpClientCall toSpecific(HttpClientHelper client, Request request) {
-        // Create the low-level HTTP client call
-        HttpClientCall result = client.create(request);
-
-        // Add the request headers
-        addRequestHeaders(result, request);
-
-        return result;
-    }
-
-    /**
-     * Commits the changes to a handled HTTP client call back into the original
-     * uniform call. The default implementation first invokes the
-     * "addResponseHeaders" then asks the "htppCall" to send the response back
-     * to the client.
-     * 
-     * @param httpCall
-     *            The original HTTP call.
-     * @param request
-     *            The high-level request.
-     * @param response
-     *            The high-level response.
-     */
-    public void commit(HttpClientCall httpCall, Request request,
-            Response response) {
-        if (httpCall != null) {
-            // Send the request to the client
-            response.setStatus(httpCall.sendRequest(request));
-
-            // Get the server address
-            response.getServerInfo().setAddress(httpCall.getServerAddress());
-            response.getServerInfo().setPort(httpCall.getServerPort());
-
-            // Read the response headers
-            readResponseHeaders(httpCall, response);
-
-            // Set the entity
-            response.setEntity(httpCall.getResponseEntity());
-        }
     }
 
     /**
@@ -122,18 +161,19 @@ public class HttpClientConverter extends HttpConverter {
     @SuppressWarnings("unchecked")
     protected void addRequestHeaders(HttpClientCall httpCall, Request request) {
         if (httpCall != null) {
-            Series<Parameter> requestHeaders = httpCall.getRequestHeaders();
+            final Series<Parameter> requestHeaders = httpCall
+                    .getRequestHeaders();
 
             // Manually add the host name and port when it is potentially
             // different from the one specified in the target resource
             // reference.
-            Reference hostRef = (request.getResourceRef().getBaseRef() != null) ? request
+            final Reference hostRef = (request.getResourceRef().getBaseRef() != null) ? request
                     .getResourceRef().getBaseRef()
                     : request.getResourceRef();
 
             if (hostRef.getHostDomain() != null) {
                 String host = hostRef.getHostDomain();
-                int hostRefPortValue = hostRef.getHostPort();
+                final int hostRefPortValue = hostRef.getHostPort();
 
                 if ((hostRefPortValue != -1)
                         && (hostRefPortValue != request.getProtocol()
@@ -154,13 +194,14 @@ public class HttpClientConverter extends HttpConverter {
             }
 
             // Add the conditions
-            Conditions condition = request.getConditions();
-            if (condition.getMatch() != null) {
-                StringBuilder value = new StringBuilder();
+            final Conditions condition = request.getConditions();
+            if (!condition.getMatch().isEmpty()) {
+                final StringBuilder value = new StringBuilder();
 
                 for (int i = 0; i < condition.getMatch().size(); i++) {
-                    if (i > 0)
+                    if (i > 0) {
                         value.append(", ");
+                    }
                     value.append(condition.getMatch().get(i).format());
                 }
 
@@ -169,18 +210,19 @@ public class HttpClientConverter extends HttpConverter {
             }
 
             if (condition.getModifiedSince() != null) {
-                String imsDate = DateUtils.format(condition.getModifiedSince(),
-                        DateUtils.FORMAT_RFC_1123.get(0));
+                final String imsDate = DateUtils.format(condition
+                        .getModifiedSince(), DateUtils.FORMAT_RFC_1123.get(0));
                 requestHeaders.add(HttpConstants.HEADER_IF_MODIFIED_SINCE,
                         imsDate);
             }
 
-            if (condition.getNoneMatch() != null) {
-                StringBuilder value = new StringBuilder();
+            if (!condition.getNoneMatch().isEmpty()) {
+                final StringBuilder value = new StringBuilder();
 
                 for (int i = 0; i < condition.getNoneMatch().size(); i++) {
-                    if (i > 0)
+                    if (i > 0) {
                         value.append(", ");
+                    }
                     value.append(condition.getNoneMatch().get(i).format());
                 }
 
@@ -189,7 +231,7 @@ public class HttpClientConverter extends HttpConverter {
             }
 
             if (condition.getUnmodifiedSince() != null) {
-                String iusDate = DateUtils
+                final String iusDate = DateUtils
                         .format(condition.getUnmodifiedSince(),
                                 DateUtils.FORMAT_RFC_1123.get(0));
                 requestHeaders.add(HttpConstants.HEADER_IF_UNMODIFIED_SINCE,
@@ -198,7 +240,7 @@ public class HttpClientConverter extends HttpConverter {
 
             // Add the cookies
             if (request.getCookies().size() > 0) {
-                String cookies = CookieUtils.format(request.getCookies());
+                final String cookies = CookieUtils.format(request.getCookies());
                 requestHeaders.add(HttpConstants.HEADER_COOKIE, cookies);
             }
 
@@ -209,7 +251,7 @@ public class HttpClientConverter extends HttpConverter {
             }
 
             // Add the preferences
-            ClientInfo client = request.getClientInfo();
+            final ClientInfo client = request.getClientInfo();
             if (client.getAcceptedMediaTypes().size() > 0) {
                 try {
                     requestHeaders.add(HttpConstants.HEADER_ACCEPT,
@@ -256,9 +298,14 @@ public class HttpClientConverter extends HttpConverter {
                             "Unable to format the HTTP Accept header", ioe);
                 }
             }
+            // Add Range header
+            if (!request.getRanges().isEmpty()) {
+                requestHeaders.add(HttpConstants.HEADER_RANGE, RangeUtils
+                        .formatRanges(request.getRanges()));
+            }
 
             // Add entity headers
-            if (request.getEntity() != null) {
+            if (request.isEntityAvailable()) {
                 if (request.getEntity().getMediaType() != null) {
                     String contentType = request.getEntity().getMediaType()
                             .toString();
@@ -278,11 +325,12 @@ public class HttpClientConverter extends HttpConverter {
                 }
 
                 if (!request.getEntity().getEncodings().isEmpty()) {
-                    StringBuilder value = new StringBuilder();
+                    final StringBuilder value = new StringBuilder();
                     for (int i = 0; i < request.getEntity().getEncodings()
                             .size(); i++) {
-                        if (i > 0)
+                        if (i > 0) {
                             value.append(", ");
+                        }
                         value.append(request.getEntity().getEncodings().get(i)
                                 .getName());
                     }
@@ -291,32 +339,114 @@ public class HttpClientConverter extends HttpConverter {
                 }
 
                 if (!request.getEntity().getLanguages().isEmpty()) {
-                    StringBuilder value = new StringBuilder();
+                    final StringBuilder value = new StringBuilder();
                     for (int i = 0; i < request.getEntity().getLanguages()
                             .size(); i++) {
-                        if (i > 0)
+                        if (i > 0) {
                             value.append(", ");
+                        }
                         value.append(request.getEntity().getLanguages().get(i)
                                 .getName());
                     }
                     requestHeaders.add(HttpConstants.HEADER_CONTENT_LANGUAGE,
                             value.toString());
                 }
+
+                if (request.getEntity().getSize() > 0) {
+                    requestHeaders.add(HttpConstants.HEADER_CONTENT_LENGTH,
+                            String.valueOf(request.getEntity().getSize()));
+                }
+
+                if (request.getEntity().getRange() != null) {
+                    try {
+                        requestHeaders.add(HttpConstants.HEADER_CONTENT_RANGE,
+                                RangeUtils.formatContentRange(request
+                                        .getEntity().getRange(), request
+                                        .getEntity().getSize()));
+                    } catch (Exception e) {
+                        getLogger()
+                                .log(
+                                        Level.WARNING,
+                                        "Unable to format the HTTP Content-Range header",
+                                        e);
+                    }
+                }
+                // Add Checksum
+                if (request.getEntity().getDigest() != null
+                        && Digest.ALGORITHM_MD5.equals(request.getEntity()
+                                .getDigest().getAlgorithm())) {
+                    requestHeaders.add(HttpConstants.HEADER_CONTENT_MD5, Base64
+                            .encode(request.getEntity().getDigest().getValue(),
+                                    false));
+                }
             }
 
             // Add user-defined extension headers
-            Series<Parameter> additionalHeaders = (Series<Parameter>) request
+            final Series<Parameter> additionalHeaders = (Series<Parameter>) request
                     .getAttributes().get(HttpConstants.ATTRIBUTE_HEADERS);
             addAdditionalHeaders(requestHeaders, additionalHeaders);
 
             // Add the security headers. NOTE: This must stay at the end because
             // the AWS challenge scheme requires access to all HTTP headers
-            ChallengeResponse challengeResponse = request
+            final ChallengeResponse challengeResponse = request
                     .getChallengeResponse();
             if (challengeResponse != null) {
                 requestHeaders.add(HttpConstants.HEADER_AUTHORIZATION,
-                        SecurityUtils.format(challengeResponse, request,
+                        AuthenticationUtils.format(challengeResponse, request,
                                 requestHeaders));
+            }
+        }
+    }
+
+    /**
+     * Commits the changes to a handled HTTP client call back into the original
+     * uniform call. The default implementation first invokes the
+     * "addResponseHeaders" then asks the "htppCall" to send the response back
+     * to the client.
+     * 
+     * @param httpCall
+     *            The original HTTP call.
+     * @param request
+     *            The high-level request.
+     * @param response
+     *            The high-level response.
+     */
+    public void commit(HttpClientCall httpCall, Request request,
+            Response response) {
+        if (httpCall != null) {
+            // Send the request to the client
+            response.setStatus(httpCall.sendRequest(request));
+
+            // Get the server address
+            response.getServerInfo().setAddress(httpCall.getServerAddress());
+            response.getServerInfo().setPort(httpCall.getServerPort());
+
+            // Read the response headers
+            readResponseHeaders(httpCall, response);
+
+            // Set the entity
+            response.setEntity(httpCall.getResponseEntity(response));
+            // Release the representation's content for some obvious cases
+            if (response.getEntity() != null) {
+                if (response.getEntity().getSize() == 0) {
+                    response.getEntity().release();
+                } else if (response.getRequest().getMethod()
+                        .equals(Method.HEAD)) {
+                    response.getEntity().release();
+                } else if (response.getStatus().equals(
+                        Status.SUCCESS_NO_CONTENT)) {
+                    response.getEntity().release();
+                } else if (response.getStatus().equals(
+                        Status.SUCCESS_RESET_CONTENT)) {
+                    response.getEntity().release();
+                    response.setEntity(null);
+                } else if (response.getStatus().equals(
+                        Status.REDIRECTION_NOT_MODIFIED)) {
+                    response.getEntity().release();
+                } else if (response.getStatus().isInformational()) {
+                    response.getEntity().release();
+                    response.setEntity(null);
+                }
             }
         }
     }
@@ -333,84 +463,38 @@ public class HttpClientConverter extends HttpConverter {
     protected void readResponseHeaders(HttpClientCall httpCall,
             Response response) {
         try {
+            final Series<Parameter> responseHeaders = httpCall
+                    .getResponseHeaders();
             // Put the response headers in the call's attributes map
             response.getAttributes().put(HttpConstants.ATTRIBUTE_HEADERS,
-                    httpCall.getResponseHeaders());
-
-            // Read info from headers
-            for (Parameter header : httpCall.getResponseHeaders()) {
-                if (header.getName().equalsIgnoreCase(
-                        HttpConstants.HEADER_LOCATION)) {
-                    response.setRedirectRef(header.getValue());
-                } else if ((header.getName()
-                        .equalsIgnoreCase(HttpConstants.HEADER_SET_COOKIE))
-                        || (header.getName()
-                                .equalsIgnoreCase(HttpConstants.HEADER_SET_COOKIE2))) {
-                    try {
-                        CookieReader cr = new CookieReader(getLogger(), header
-                                .getValue());
-                        response.getCookieSettings()
-                                .add(cr.readCookieSetting());
-                    } catch (Exception e) {
-                        getLogger().log(
-                                Level.WARNING,
-                                "Error during cookie setting parsing. Header: "
-                                        + header.getValue(), e);
-                    }
-                } else if (header.getName().equalsIgnoreCase(
-                        HttpConstants.HEADER_WWW_AUTHENTICATE)) {
-                    ChallengeRequest request = SecurityUtils
-                            .parseRequest(header.getValue());
-                    response.setChallengeRequest(request);
-                } else if (header.getName().equalsIgnoreCase(
-                        HttpConstants.HEADER_SERVER)) {
-                    response.getServerInfo().setAgent(header.getValue());
-                } else if (header.getName().equalsIgnoreCase(
-                        HttpConstants.HEADER_ALLOW)) {
-                    HeaderReader hr = new HeaderReader(header.getValue());
-                    String value = hr.readValue();
-                    Set<Method> allowedMethods = response.getAllowedMethods();
-                    while (value != null) {
-                        allowedMethods.add(Method.valueOf(value));
-                        value = hr.readValue();
-                    }
-                } else if (header.getName().equalsIgnoreCase(
-                        HttpConstants.HEADER_VARY)) {
-                    HeaderReader hr = new HeaderReader(header.getValue());
-                    String value = hr.readValue();
-                    Set<Dimension> dimensions = response.getDimensions();
-                    while (value != null) {
-                        if (value.equalsIgnoreCase(HttpConstants.HEADER_ACCEPT)) {
-                            dimensions.add(Dimension.MEDIA_TYPE);
-                        } else if (value
-                                .equalsIgnoreCase(HttpConstants.HEADER_ACCEPT_CHARSET)) {
-                            dimensions.add(Dimension.CHARACTER_SET);
-                        } else if (value
-                                .equalsIgnoreCase(HttpConstants.HEADER_ACCEPT_ENCODING)) {
-                            dimensions.add(Dimension.ENCODING);
-                        } else if (value
-                                .equalsIgnoreCase(HttpConstants.HEADER_ACCEPT_LANGUAGE)) {
-                            dimensions.add(Dimension.LANGUAGE);
-                        } else if (value
-                                .equalsIgnoreCase(HttpConstants.HEADER_USER_AGENT)) {
-                            dimensions.add(Dimension.CLIENT_AGENT);
-                        } else if (value.equals("*")) {
-                            dimensions.add(Dimension.UNSPECIFIED);
-                        }
-
-                        value = hr.readValue();
-                    }
-                }
-            }
+                    responseHeaders);
+            copyResponseTransportHeaders(responseHeaders, response);
         } catch (Exception e) {
             getLogger()
                     .log(
                             Level.FINE,
                             "An error occured during the processing of the HTTP response.",
                             e);
-            response.setStatus(new Status(Status.CONNECTOR_ERROR_INTERNAL,
-                    "Unable to process the response. " + e.getMessage()));
+            response.setStatus(Status.CONNECTOR_ERROR_INTERNAL, e);
         }
     }
 
+    /**
+     * Converts a low-level HTTP call into a high-level uniform call.
+     * 
+     * @param client
+     *            The HTTP client that will handle the call.
+     * @param request
+     *            The high-level request.
+     * @return A new high-level uniform call.
+     */
+    public HttpClientCall toSpecific(HttpClientHelper client, Request request) {
+        // Create the low-level HTTP client call
+        final HttpClientCall result = client.create(request);
+
+        // Add the request headers
+        addRequestHeaders(result, request);
+
+        return result;
+    }
 }

@@ -2,9 +2,34 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Noelios Restlet Engine - Extension - Apache HTTP Client
 Bundle-SymbolicName: com.noelios.restlet.ext.httpclient
-Bundle-Version: 1.0.0
-Bundle-Vendor: Noelios Consulting
-Bundle-Localization: plugin
-Require-Bundle: com.noelios.restlet;visibility:=reexport,
- org.apache.commons.httpclient;visibility:=reexport
-Export-Package: com.noelios.restlet.ext.httpclient
+Bundle-Version: 1.1
+Bundle-Vendor: Noelios Technologies
+Export-Package: com.noelios.restlet.ext.httpclient;
+  uses:="org.apache.commons.httpclient,
+   com.noelios.restlet.http,
+   org.restlet,
+   org.restlet.util,
+   org.restlet.data"
+Import-Package: com.noelios.restlet,
+ com.noelios.restlet.application,
+ com.noelios.restlet.authentication,
+ com.noelios.restlet.component,
+ com.noelios.restlet.http,
+ com.noelios.restlet.local,
+ com.noelios.restlet.util,
+ org.apache.commons.codec,
+ org.apache.commons.httpclient,
+ org.apache.commons.httpclient.auth,
+ org.apache.commons.httpclient.cookie,
+ org.apache.commons.httpclient.methods,
+ org.apache.commons.httpclient.methods.multipart,
+ org.apache.commons.httpclient.params,
+ org.apache.commons.httpclient.protocol,
+ org.apache.commons.httpclient.util,
+ org.apache.commons.logging,
+ org.restlet,
+ org.restlet.data,
+ org.restlet.resource,
+ org.restlet.service,
+ org.restlet.util
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

@@ -1,23 +1,34 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package com.noelios.restlet.http;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -26,25 +37,68 @@ import java.net.UnknownHostException;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.restlet.data.Parameter;
 import org.restlet.data.Request;
 import org.restlet.data.Status;
+import org.restlet.resource.Representation;
+import org.restlet.util.WrapperRepresentation;
+
+import com.noelios.restlet.util.KeepAliveOutputStream;
 
 /**
  * HTTP client call based on streams.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class StreamClientCall extends HttpClientCall {
-    /** The request to send. */
-    private Request request;
+
+    /**
+     * Wrapper representation to close the associated socket when the
+     * representation is released
+     */
+    private static class SocketWrapperRepresentation extends
+            WrapperRepresentation {
+
+        private final Logger log;
+
+        private final Socket socket;
+
+        public SocketWrapperRepresentation(
+                Representation wrappedRepresentation, Socket socket, Logger log) {
+            super(wrappedRepresentation);
+            this.socket = socket;
+            this.log = log;
+        }
+
+        @Override
+        public void release() {
+            try {
+                if (!this.socket.isClosed()) {
+                    this.socket.shutdownOutput();
+                    this.socket.close();
+                }
+            } catch (IOException ex) {
+                this.log.log(Level.WARNING,
+                        "An error occured closing the client socket", ex);
+            }
+
+            super.release();
+        }
+    }
+
+    /** The request entity output stream. */
+    private volatile OutputStream requestEntityStream;
 
     /** The request output stream. */
-    private OutputStream requestStream;
+    private volatile OutputStream requestStream;
 
     /** The response input stream. */
-    private InputStream responseStream;
+    private volatile InputStream responseStream;
+
+    /** The request socket */
+    private volatile Socket socket;
 
     /**
      * Constructor.
@@ -55,9 +109,10 @@ public class StreamClientCall extends HttpClientCall {
      *            The request to send.
      */
     public StreamClientCall(StreamClientHelper helper, Request request) {
-        super(helper, request.getMethod().toString(), request.getResourceRef()
-                .getPath());
-
+        // The path of the request uri must not be empty.
+        super(helper, request.getMethod().toString(), (request.getResourceRef()
+                .getPath() == null) ? request.getResourceRef().getIdentifier()
+                + "/" : request.getResourceRef().getIdentifier());
         // Set the HTTP version
         setVersion("HTTP/1.1");
     }
@@ -79,33 +134,76 @@ public class StreamClientCall extends HttpClientCall {
         return new Socket(hostDomain, hostPort);
     }
 
-    /**
-     * Returns the request to send.
-     * 
-     * @return The request to send.
-     */
-    public Request getRequest() {
-        return this.request;
+    @Override
+    public StreamClientHelper getHelper() {
+        return (StreamClientHelper) super.getHelper();
     }
 
     @Override
-    public WritableByteChannel getRequestChannel() {
+    protected Representation getRepresentation(InputStream stream) {
+        final Representation result = super.getRepresentation(stream);
+        return new SocketWrapperRepresentation(result, this.socket, getHelper()
+                .getLogger());
+    }
+
+    @Override
+    public WritableByteChannel getRequestEntityChannel() {
         return null;
     }
 
     @Override
-    public OutputStream getRequestStream() {
+    public OutputStream getRequestEntityStream() {
+        if (this.requestEntityStream == null) {
+            if (isRequestChunked()) {
+                if (isKeepAlive()) {
+                    this.requestEntityStream = new ChunkedOutputStream(
+                            new KeepAliveOutputStream(getRequestHeadStream()));
+                } else {
+                    this.requestEntityStream = new ChunkedOutputStream(
+                            getRequestHeadStream());
+                }
+            } else {
+                this.requestEntityStream = new KeepAliveOutputStream(
+                        getRequestHeadStream());
+            }
+        }
+
+        return this.requestEntityStream;
+    }
+
+    @Override
+    public OutputStream getRequestHeadStream() {
         return this.requestStream;
     }
 
     @Override
-    public ReadableByteChannel getResponseChannel() {
+    public ReadableByteChannel getResponseEntityChannel(long size) {
         return null;
     }
 
     @Override
-    public InputStream getResponseStream() {
+    public InputStream getResponseEntityStream(long size) {
+        if (isResponseChunked()) {
+            return new ChunkedInputStream(getResponseStream());
+        } else if (size >= 0) {
+            return new InputEntityStream(getResponseStream(), size);
+        } else {
+            return getResponseStream();
+        }
+    }
+
+    /**
+     * Returns the underlying HTTP response stream.
+     * 
+     * @return The underlying HTTP response stream.
+     */
+    private InputStream getResponseStream() {
         return this.responseStream;
+    }
+
+    @Override
+    protected boolean isClientKeepAlive() {
+        return false;
     }
 
     /**
@@ -114,7 +212,7 @@ public class StreamClientCall extends HttpClientCall {
      * @throws IOException
      */
     protected void parseResponse() throws IOException {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
 
         // Parse the HTTP version
         int next = getResponseStream().read();
@@ -184,32 +282,43 @@ public class StreamClientCall extends HttpClientCall {
 
         try {
             // Extract the host info
-            String hostDomain = request.getResourceRef().getHostDomain();
+            final String hostDomain = request.getResourceRef().getHostDomain();
             int hostPort = request.getResourceRef().getHostPort();
             if (hostPort == -1) {
-                hostPort = request.getResourceRef().getSchemeProtocol()
-                        .getDefaultPort();
+                if (request.getResourceRef().getSchemeProtocol() != null) {
+                    hostPort = request.getResourceRef().getSchemeProtocol()
+                            .getDefaultPort();
+                } else {
+                    hostPort = getProtocol().getDefaultPort();
+                }
             }
 
             // Create the client socket
-            Socket socket = createSocket(hostDomain, hostPort);
-            this.requestStream = socket.getOutputStream();
-            this.responseStream = socket.getInputStream();
+            this.socket = createSocket(hostDomain, hostPort);
+            this.socket.setTcpNoDelay(getHelper().getTcpNoDelay());
+            this.requestStream = new BufferedOutputStream(this.socket
+                    .getOutputStream());
+            this.responseStream = new BufferedInputStream(this.socket
+                    .getInputStream());
 
             // Write the request line
-            getRequestStream().write(getMethod().getBytes());
-            getRequestStream().write(' ');
-            getRequestStream().write(getRequestUri().getBytes());
-            getRequestStream().write(' ');
-            getRequestStream().write(getVersion().getBytes());
-            getRequestStream().write(13); // CR
-            getRequestStream().write(10); // LF
+            getRequestHeadStream().write(getMethod().getBytes());
+            getRequestHeadStream().write(' ');
+            getRequestHeadStream().write(getRequestUri().getBytes());
+            getRequestHeadStream().write(' ');
+            getRequestHeadStream().write(getVersion().getBytes());
+            HttpUtils.writeCRLF(getRequestHeadStream());
+
+            if (shouldRequestBeChunked(request)) {
+                getRequestHeaders().set(HttpConstants.HEADER_TRANSFER_ENCODING,
+                        "chunked", true);
+            }
 
             // We don't support persistent connections yet
             getRequestHeaders().set(HttpConstants.HEADER_CONNECTION, "close",
-                    true);
+                    isClientKeepAlive());
 
-            // We don't support persistent connections yet
+            // Prepare the host header
             String host = hostDomain;
             if (request.getResourceRef().getHostPort() != -1) {
                 host += ":" + request.getResourceRef().getHostPort();
@@ -217,30 +326,34 @@ public class StreamClientCall extends HttpClientCall {
             getRequestHeaders().set(HttpConstants.HEADER_HOST, host, true);
 
             // Write the request headers
-            for (Parameter header : getRequestHeaders()) {
-                HttpUtils.writeHeader(header, getRequestStream());
+            for (final Parameter header : getRequestHeaders()) {
+                HttpUtils.writeHeader(header, getRequestHeadStream());
             }
 
             // Write the end of the headers section
-            getRequestStream().write(13); // CR
-            getRequestStream().write(10); // LF
+            HttpUtils.writeCRLF(getRequestHeadStream());
+            getRequestHeadStream().flush();
 
             // Write the request body
-            super.sendRequest(request);
+            result = super.sendRequest(request);
+
+            if (result.equals(Status.CONNECTOR_ERROR_COMMUNICATION)) {
+                return result;
+            }
 
             // Parse the response
             parseResponse();
+
+            // Build the result
+            result = new Status(getStatusCode(), null, getReasonPhrase(), null);
         } catch (IOException ioe) {
             getHelper()
                     .getLogger()
                     .log(
-                            Level.FINE,
+                            Level.WARNING,
                             "An error occured during the communication with the remote HTTP server.",
                             ioe);
-            result = new Status(
-                    Status.CONNECTOR_ERROR_COMMUNICATION,
-                    "Unable to complete the HTTP call due to a communication error with the remote server. "
-                            + ioe.getMessage());
+            result = new Status(Status.CONNECTOR_ERROR_COMMUNICATION, ioe);
         }
 
         return result;

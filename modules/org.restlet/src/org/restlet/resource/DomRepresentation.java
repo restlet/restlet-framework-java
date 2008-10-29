@@ -1,19 +1,28 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package org.restlet.resource;
@@ -22,9 +31,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -42,14 +50,14 @@ import org.xml.sax.SAXException;
  * XML representation based on a DOM document. DOM is a standard XML object
  * model defined by the W3C.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class DomRepresentation extends XmlRepresentation {
     /** The wrapped DOM document. */
-    private Document dom;
+    private volatile Document dom;
 
     /** The source XML representation. */
-    private Representation xmlRepresentation;
+    private volatile Representation xmlRepresentation;
 
     /**
      * Constructor for an empty document.
@@ -82,31 +90,66 @@ public class DomRepresentation extends XmlRepresentation {
      *            A source XML representation to parse.
      */
     public DomRepresentation(Representation xmlRepresentation) {
-        super(xmlRepresentation.getMediaType());
+        super((xmlRepresentation == null) ? null : xmlRepresentation
+                .getMediaType());
         this.xmlRepresentation = xmlRepresentation;
+    }
+
+    /**
+     * Creates a new JAXP Transformer object that will be used to serialize this
+     * DOM. This method may be overridden in order to set custom properties on
+     * the Transformer.
+     * 
+     * @return The transformer to be used for serialization.
+     */
+    protected Transformer createTransformer() throws IOException {
+        try {
+            final Transformer transformer = TransformerFactory.newInstance()
+                    .newTransformer();
+            transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+
+            if (getDocument().getDoctype() != null) {
+                transformer.setOutputProperty(OutputKeys.DOCTYPE_SYSTEM,
+                        getDocument().getDoctype().getSystemId());
+                transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC,
+                        getDocument().getDoctype().getPublicId());
+            }
+
+            return transformer;
+        } catch (TransformerConfigurationException tce) {
+            throw new IOException("Couldn't write the XML representation: "
+                    + tce.getMessage());
+        }
     }
 
     @Override
     public Object evaluate(String expression, QName returnType)
             throws Exception {
-        XPath xpath = XPathFactory.newInstance().newXPath();
+        final XPath xpath = XPathFactory.newInstance().newXPath();
         xpath.setNamespaceContext(this);
         return xpath.evaluate(expression, getDocument(), returnType);
     }
 
     /**
-     * Returns the wrapped DOM document.
+     * Returns the wrapped DOM document. If no document is defined yet, it
+     * attempts to parse the XML representation eventually given at construction
+     * time. Otherwise, it just creates a new document.
      * 
      * @return The wrapped DOM document.
      */
     public Document getDocument() throws IOException {
-        if ((this.dom == null) && (this.xmlRepresentation != null)) {
-            try {
-                this.dom = getDocumentBuilder().parse(
-                        xmlRepresentation.getStream());
-            } catch (SAXException se) {
-                throw new IOException("Couldn't read the XML representation. "
-                        + se.getMessage());
+        if (this.dom == null) {
+            if (this.xmlRepresentation != null) {
+                try {
+                    this.dom = getDocumentBuilder().parse(
+                            this.xmlRepresentation.getStream());
+                } catch (SAXException se) {
+                    throw new IOException(
+                            "Couldn't read the XML representation. "
+                                    + se.getMessage());
+                }
+            } else {
+                this.dom = getDocumentBuilder().newDocument();
             }
         }
 
@@ -114,20 +157,28 @@ public class DomRepresentation extends XmlRepresentation {
     }
 
     /**
-     * Returns a document builder properly configured.
+     * Returns a DOM source.
      * 
-     * @return A document builder properly configured.
+     * @return A DOM source.
      */
-    private DocumentBuilder getDocumentBuilder() throws IOException {
-        try {
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            dbf.setNamespaceAware(isNamespaceAware());
-            dbf.setValidating(false);
-            return dbf.newDocumentBuilder();
-        } catch (ParserConfigurationException pce) {
-            throw new IOException("Couldn't create the empty document: "
-                    + pce.getMessage());
+    @Override
+    public DOMSource getDomSource() throws IOException {
+        return new DOMSource(getDocument());
+    }
+
+    /**
+     * Releases the wrapped DOM document and the source XML representation if
+     * they have been defined.
+     */
+    @Override
+    public void release() {
+        setDocument(null);
+
+        if (this.xmlRepresentation != null) {
+            this.xmlRepresentation.release();
         }
+
+        super.release();
     }
 
     /**
@@ -140,17 +191,14 @@ public class DomRepresentation extends XmlRepresentation {
         this.dom = dom;
     }
 
-    /**
-     * Writes the representation to a byte stream.
-     * 
-     * @param outputStream
-     *            The output stream.
-     */
+    @Override
     public void write(OutputStream outputStream) throws IOException {
         try {
-            TransformerFactory.newInstance().newTransformer().transform(
-                    new DOMSource(getDocument()),
-                    new StreamResult(outputStream));
+            if (getDocument() != null) {
+                final Transformer transformer = createTransformer();
+                transformer.transform(new DOMSource(getDocument()),
+                        new StreamResult(outputStream));
+            }
         } catch (TransformerConfigurationException tce) {
             throw new IOException("Couldn't write the XML representation: "
                     + tce.getMessage());

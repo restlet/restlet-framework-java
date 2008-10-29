@@ -1,19 +1,28 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package org.restlet.service;
@@ -24,7 +33,7 @@ package org.restlet.service;
  * <br>
  * The default access log format follows the <a
  * href="http://www.w3.org/TR/WD-logfile.html"> W3C Extended Log File Format</a>
- * with the following fields used: <br/>
+ * with the following fields used: <br>
  * <ol>
  * <li>Date (YYYY-MM-DD)</li>
  * <li>Time (HH:MM:SS)</li>
@@ -44,33 +53,28 @@ package org.restlet.service;
  * <li>Referrer reference</li>
  * </ol>
  * <br>
- * <br>
  * If you use <a href="http://www.analog.cx">Analog</a> to generate your log
  * reports, and if you use the default log format, then you can simply specify
  * this string as a value of the LOGFORMAT command:
- * (%Y-%m-%d\t%h:%n:%j\t%S\t%u\t%j\t%j\t%j\t%r\t%q\t%c\t%b\t%j\t%T\t%v\t%B\t%f)<br/>
+ * (%Y-%m-%d\t%h:%n:%j\t%S\t%u\t%j\t%j\t%j\t%r\t%q\t%c\t%b\t%j\t%T\t%v\t%B\t%f)<br>
  * <br>
  * For custom access log format, see the syntax to use and the list of available
  * variable names in {@link org.restlet.util.Template}. <br>
  * 
- * @see <a href="http://www.restlet.org/tutorial#part07">Tutorial: Access
- *      logging</a>
- * @see <a
- *      href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/logging/package-summary.html">java.util.logging</a>
- * @author Jerome Louvel (contact@noelios.com)
+ * @see <a href="http://www.restlet.org/documentation/1.1/tutorial#part07">Tutorial: Access logging</a>
+ * @see <a href="http://wiki.restlet.org/docs_1.1/g1/13-restlet/29-restlet/98-restlet/101-restlet.html">Wiki: Logging</a> 
+ * @see <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/logging/package-summary.html">java.util.logging</a>
+ * @author Jerome Louvel
  */
-public class LogService {
-    /** Indicates if the service has been enabled. */
-    private boolean enabled;
-
+public class LogService extends Service {
     /** The access logger name. */
-    private String loggerName;
+    private volatile String loggerName;
 
     /** The log entry format. */
-    private String logFormat;
+    private volatile String logFormat;
 
     /** Indicates if the identity check (as specified by RFC1413) is enabled. */
-    private boolean identityCheck;
+    private volatile boolean identityCheck;
 
     /**
      * Constructor.
@@ -79,8 +83,8 @@ public class LogService {
      *            True if the service has been enabled.
      */
     public LogService(boolean enabled) {
+        super(enabled);
         this.loggerName = null;
-        this.enabled = enabled;
         this.logFormat = null;
         this.identityCheck = false;
     }
@@ -96,21 +100,16 @@ public class LogService {
     }
 
     /**
-     * Returns the name of the JDK's logger to use when logging calls.
+     * Returns the name of the JDK's logger to use when logging access calls.
+     * The default name will follow this pattern:
+     * "org.restlet.MyComponent.LogService", where "MyComponent" will correspond
+     * to the simple class name of your component subclass or to the base
+     * "Component" class.
      * 
-     * @return The name of the JDK's logger to use when logging calls.
+     * @return The name of the JDK's logger to use when logging access calls.
      */
     public String getLoggerName() {
         return this.loggerName;
-    }
-
-    /**
-     * Indicates if the service should be enabled.
-     * 
-     * @return True if the service should be enabled.
-     */
-    public boolean isEnabled() {
-        return this.enabled;
     }
 
     /**
@@ -121,6 +120,16 @@ public class LogService {
      */
     public boolean isIdentityCheck() {
         return this.identityCheck;
+    }
+
+    /**
+     * Indicates if the identity check (as specified by RFC1413) is enabled.
+     * 
+     * @param identityCheck
+     *            True if the identity check is enabled.
+     */
+    public void setIdentityCheck(boolean identityCheck) {
+        this.identityCheck = identityCheck;
     }
 
     /**
@@ -136,33 +145,13 @@ public class LogService {
     }
 
     /**
-     * Sets the name of the JDK's logger to use when logging calls.
+     * Sets the name of the JDK's logger to use when logging access calls.
      * 
      * @param name
-     *            The name of the JDK's logger to use when logging calls.
+     *            The name of the JDK's logger to use when logging access calls.
      */
     public void setLoggerName(String name) {
         this.loggerName = name;
-    }
-
-    /**
-     * Indicates if the service should be enabled.
-     * 
-     * @param enabled
-     *            True if the service should be enabled.
-     */
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    /**
-     * Indicates if the identity check (as specified by RFC1413) is enabled.
-     * 
-     * @param enabled
-     *            True if the identity check is enabled.
-     */
-    public void setIdentityCheck(boolean enabled) {
-        this.identityCheck = enabled;
     }
 
 }

@@ -1,21 +1,28 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  * 
- * Portions Copyright 2006 Lars Heuer (heuer[at]semagia.com)
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package com.noelios.restlet.application;
@@ -38,15 +45,18 @@ import org.restlet.resource.Representation;
 /**
  * Filter compressing entities. The best encoding is automatically selected
  * based on the preferences of the client and on the encoding supported by NRE:
- * GZip, Zip and Deflate.<br/> If the {@link org.restlet.resource.Representation}
- * has an unknown size, it will always be a candidate for encoding. Candidate
- * representations need to respect media type criteria by the lists of accepted
- * and ignored media types.
+ * GZip, Zip and Deflate.<br>
+ * If the {@link org.restlet.resource.Representation} has an unknown size, it
+ * will always be a candidate for encoding. Candidate representations need to
+ * respect media type criteria by the lists of accepted and ignored media types.
+ * 
+ * Concurrency note: instances of this class or its subclasses can be invoked by
+ * several threads at the same time and therefore must be thread-safe. You
+ * should be especially careful when storing state in member variables.
  * 
  * @author Lars Heuer (heuer[at]semagia.com) <a
  *         href="http://semagia.com/">Semagia</a>
- * @author Jerome Louvel (contact@noelios.com) <a
- *         href="http://www.noelios.com">Noelios Consulting</a>
+ * @author Jerome Louvel
  */
 public class Encoder extends Filter {
     /**
@@ -55,29 +65,59 @@ public class Encoder extends Filter {
     public static final int ENCODE_ALL_SIZES = -1;
 
     /**
-     * Indicates if the request entity should be encoded.
+     * Returns the list of default encoded media types. This can be overriden by
+     * subclasses. By default, all media types are encoded (except those
+     * explicitely ignored).
+     * 
+     * @return The list of default encoded media types.
      */
-    private boolean encodeRequest;
+    public static List<MediaType> getDefaultAcceptedMediaTypes() {
+        final List<MediaType> result = new ArrayList<MediaType>();
+        result.add(MediaType.ALL);
+        return result;
+    }
 
     /**
-     * Indicates if the response entity should be encoded.
+     * Returns the list of default ignored media types. This can be overriden by
+     * subclasses. By default, all archive, audio, image and video media types
+     * are ignored.
+     * 
+     * @return The list of default ignored media types.
      */
-    private boolean encodeResponse;
-
-    /**
-     * The minimal size necessary for encoding.
-     */
-    private long mininumSize;
+    public static List<MediaType> getDefaultIgnoredMediaTypes() {
+        final List<MediaType> result = Arrays.<MediaType> asList(
+                MediaType.APPLICATION_CAB, MediaType.APPLICATION_GNU_ZIP,
+                MediaType.APPLICATION_ZIP, MediaType.APPLICATION_GNU_TAR,
+                MediaType.APPLICATION_JAVA_ARCHIVE,
+                MediaType.APPLICATION_STUFFIT, MediaType.APPLICATION_TAR,
+                MediaType.AUDIO_ALL, MediaType.IMAGE_ALL, MediaType.VIDEO_ALL);
+        return result;
+    }
 
     /**
      * The media types that should be encoded.
      */
-    private List<MediaType> acceptedMediaTypes;
+    private volatile List<MediaType> acceptedMediaTypes;
+
+    /**
+     * Indicates if the request entity should be encoded.
+     */
+    private volatile boolean encodeRequest;
+
+    /**
+     * Indicates if the response entity should be encoded.
+     */
+    private volatile boolean encodeResponse;
 
     /**
      * The media types that should be ignored.
      */
-    private List<MediaType> ignoredMediaTypes;
+    private volatile List<MediaType> ignoredMediaTypes;
+
+    /**
+     * The minimal size necessary for encoding.
+     */
+    private volatile long mininumSize;
 
     /**
      * Constructor using the default media types and with
@@ -109,9 +149,8 @@ public class Encoder extends Filter {
      * @param ignoredMediaTypes
      *            The media types that should be ignored.
      */
-    public Encoder(Context context, boolean encodeInput,
-            boolean encodeOutput, long minimumSize,
-            List<MediaType> acceptedMediaTypes,
+    public Encoder(Context context, boolean encodeInput, boolean encodeOutput,
+            long minimumSize, List<MediaType> acceptedMediaTypes,
             List<MediaType> ignoredMediaTypes) {
         super(context);
         this.encodeRequest = encodeInput;
@@ -119,53 +158,6 @@ public class Encoder extends Filter {
         this.mininumSize = minimumSize;
         this.acceptedMediaTypes = acceptedMediaTypes;
         this.ignoredMediaTypes = ignoredMediaTypes;
-    }
-
-    /**
-     * Returns the list of default encoded media types. This can be overriden by
-     * subclasses. By default, all media types are encoded (except those
-     * explicitely ignored).
-     * 
-     * @return The list of default encoded media types.
-     */
-    public static List<MediaType> getDefaultAcceptedMediaTypes() {
-        List<MediaType> result = new ArrayList<MediaType>();
-        result.add(MediaType.ALL);
-        return result;
-    }
-
-    /**
-     * Returns the list of default ignored media types. This can be overriden by
-     * subclasses. By default, all archive, audio, image and video media types
-     * are ignored.
-     * 
-     * @return The list of default ignored media types.
-     */
-    public static List<MediaType> getDefaultIgnoredMediaTypes() {
-        List<MediaType> result = Arrays.<MediaType> asList(
-                MediaType.APPLICATION_CAB, MediaType.APPLICATION_GNU_ZIP,
-                MediaType.APPLICATION_ZIP, MediaType.APPLICATION_GNU_TAR,
-                MediaType.APPLICATION_JAVA_ARCHIVE,
-                MediaType.APPLICATION_STUFFIT, MediaType.APPLICATION_TAR,
-                MediaType.AUDIO_ALL, MediaType.IMAGE_ALL, MediaType.VIDEO_ALL);
-        return result;
-    }
-
-    /**
-     * Allows filtering before its handling by the target Restlet. Does nothing
-     * by default.
-     * 
-     * @param request
-     *            The request to filter.
-     * @param response
-     *            The response to filter.
-     */
-    public void beforeHandle(Request request, Response response) {
-        // Check if encoding of the request entity is needed
-        if (isEncodeRequest() && canEncode(request.getEntity())) {
-            request.setEntity(encode(request.getClientInfo(), request
-                    .getEntity()));
-        }
     }
 
     /**
@@ -177,12 +169,34 @@ public class Encoder extends Filter {
      * @param response
      *            The response to filter.
      */
+    @Override
     public void afterHandle(Request request, Response response) {
         // Check if encoding of the response entity is needed
         if (isEncodeResponse() && canEncode(response.getEntity())) {
             response.setEntity(encode(request.getClientInfo(), response
                     .getEntity()));
         }
+    }
+
+    /**
+     * Allows filtering before its handling by the target Restlet. Does nothing
+     * by default.
+     * 
+     * @param request
+     *            The request to filter.
+     * @param response
+     *            The response to filter.
+     * @return The continuation status.
+     */
+    @Override
+    public int beforeHandle(Request request, Response response) {
+        // Check if encoding of the request entity is needed
+        if (isEncodeRequest() && canEncode(request.getEntity())) {
+            request.setEntity(encode(request.getClientInfo(), request
+                    .getEntity()));
+        }
+
+        return CONTINUE;
     }
 
     /**
@@ -196,9 +210,10 @@ public class Encoder extends Filter {
         // Test the existence of the representation and that no existing
         // encoding applies
         boolean result = false;
-        if(representation != null){
+        if (representation != null) {
             boolean identity = true;
-            for (Iterator<Encoding> iter = representation.getEncodings().iterator(); identity && iter.hasNext();) {
+            for (final Iterator<Encoding> iter = representation.getEncodings()
+                    .iterator(); identity && iter.hasNext();) {
                 identity = (iter.next().equals(Encoding.IDENTITY));
             }
             result = identity;
@@ -213,10 +228,10 @@ public class Encoder extends Filter {
 
         if (result) {
             // Test the acceptance of the media type
-            MediaType mediaType = representation.getMediaType();
+            final MediaType mediaType = representation.getMediaType();
             boolean accepted = false;
-            for (Iterator<MediaType> iter = getAcceptedMediaTypes().iterator(); !accepted
-                    && iter.hasNext();) {
+            for (final Iterator<MediaType> iter = getAcceptedMediaTypes()
+                    .iterator(); !accepted && iter.hasNext();) {
                 accepted = iter.next().includes(mediaType);
             }
 
@@ -225,10 +240,10 @@ public class Encoder extends Filter {
 
         if (result) {
             // Test the rejection of the media type
-            MediaType mediaType = representation.getMediaType();
+            final MediaType mediaType = representation.getMediaType();
             boolean rejected = false;
-            for (Iterator<MediaType> iter = getIgnoredMediaTypes().iterator(); !rejected
-                    && iter.hasNext();) {
+            for (final Iterator<MediaType> iter = getIgnoredMediaTypes()
+                    .iterator(); !rejected && iter.hasNext();) {
                 rejected = iter.next().includes(mediaType);
             }
 
@@ -251,13 +266,22 @@ public class Encoder extends Filter {
     public Representation encode(ClientInfo client,
             Representation representation) {
         Representation result = representation;
-        Encoding bestEncoding = getBestEncoding(client);
+        final Encoding bestEncoding = getBestEncoding(client);
 
         if (bestEncoding != null) {
             result = new EncodeRepresentation(bestEncoding, representation);
         }
 
         return result;
+    }
+
+    /**
+     * Returns the media types that should be encoded.
+     * 
+     * @return The media types that should be encoded.
+     */
+    public List<MediaType> getAcceptedMediaTypes() {
+        return this.acceptedMediaTypes;
     }
 
     /**
@@ -273,11 +297,11 @@ public class Encoder extends Filter {
         Preference<Encoding> currentPref = null;
         float bestScore = 0F;
 
-        for (Iterator<Encoding> iter = EncodeRepresentation
+        for (final Iterator<Encoding> iter = EncodeRepresentation
                 .getSupportedEncodings().iterator(); iter.hasNext();) {
             currentEncoding = iter.next();
 
-            for (Iterator<Preference<Encoding>> iter2 = client
+            for (final Iterator<Preference<Encoding>> iter2 = client
                     .getAcceptedEncodings().iterator(); iter2.hasNext();) {
                 currentPref = iter2.next();
 
@@ -296,12 +320,41 @@ public class Encoder extends Filter {
     }
 
     /**
+     * Returns the media types that should be ignored.
+     * 
+     * @return The media types that should be ignored.
+     */
+    public List<MediaType> getIgnoredMediaTypes() {
+        return this.ignoredMediaTypes;
+    }
+
+    /**
+     * Returns the minimum size a representation must have before compression is
+     * done.
+     * 
+     * @return The minimum size a representation must have before compression is
+     *         done.
+     */
+    public long getMinimumSize() {
+        return this.mininumSize;
+    }
+
+    /**
      * Indicates if the request entity should be encoded.
      * 
      * @return True if the request entity should be encoded.
      */
     public boolean isEncodeRequest() {
         return this.encodeRequest;
+    }
+
+    /**
+     * Indicates if the response entity should be encoded.
+     * 
+     * @return True if the response entity should be encoded.
+     */
+    public boolean isEncodeResponse() {
+        return this.encodeResponse;
     }
 
     /**
@@ -317,31 +370,11 @@ public class Encoder extends Filter {
     /**
      * Indicates if the response entity should be encoded.
      * 
-     * @return True if the response entity should be encoded.
-     */
-    public boolean isEncodeResponse() {
-        return this.encodeResponse;
-    }
-
-    /**
-     * Indicates if the response entity should be encoded.
-     * 
      * @param encodeResponse
      *            True if the response entity should be encoded.
      */
     public void setEncodeResponse(boolean encodeResponse) {
         this.encodeResponse = encodeResponse;
-    }
-
-    /**
-     * Returns the minimum size a representation must have before compression is
-     * done.
-     * 
-     * @return The minimum size a representation must have before compression is
-     *         done.
-     */
-    public long getMinimumSize() {
-        return mininumSize;
     }
 
     /**
@@ -354,24 +387,6 @@ public class Encoder extends Filter {
      */
     public void setMinimumSize(long mininumSize) {
         this.mininumSize = mininumSize;
-    }
-
-    /**
-     * Returns the media types that should be encoded.
-     * 
-     * @return The media types that should be encoded.
-     */
-    public List<MediaType> getAcceptedMediaTypes() {
-        return this.acceptedMediaTypes;
-    }
-
-    /**
-     * Returns the media types that should be ignored.
-     * 
-     * @return The media types that should be ignored.
-     */
-    public List<MediaType> getIgnoredMediaTypes() {
-        return this.ignoredMediaTypes;
     }
 
 }

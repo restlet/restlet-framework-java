@@ -1,25 +1,37 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package com.noelios.restlet.ext.net;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.util.logging.Level;
+
+import javax.net.ssl.HostnameVerifier;
 
 import org.restlet.Client;
 import org.restlet.data.Protocol;
@@ -29,12 +41,20 @@ import com.noelios.restlet.http.HttpClientCall;
 
 /**
  * HTTP client connector using the HttpUrlConnectionCall. Here is the list of
- * parameters that are supported: <table>
+ * parameters that are supported:
+ * <table>
  * <tr>
  * <th>Parameter name</th>
  * <th>Value type</th>
  * <th>Default value</th>
  * <th>Description</th>
+ * </tr>
+ * <tr>
+ * <td>allowUserInteraction</td>
+ * <td>boolean</td>
+ * <td>false</td>
+ * <td>If true, this URL is being examined in a context in which it makes sense
+ * to allow user interactions such as popping up an authentication dialog.</td>
  * </tr>
  * <tr>
  * <td>chunkLength</td>
@@ -45,31 +65,20 @@ import com.noelios.restlet.http.HttpClientCall;
  * entities.</td>
  * </tr>
  * <tr>
+ * <td>connectTimeout</td>
+ * <td>int</td>
+ * <td>0</td>
+ * <td>Sets a specified timeout value, in milliseconds, to be used when opening
+ * a communications link to the resource referenced. 0 means infinite timeout.
+ * This parameter is deprecated and should be replaced by the connectTimeout
+ * attribute defined by the client.</td>
+ * </tr>
+ * <tr>
  * <td>followRedirects</td>
  * <td>boolean</td>
  * <td>false</td>
  * <td>If true, the protocol will automatically follow redirects. If false, the
  * protocol will not automatically follow redirects.</td>
- * </tr>
- * <tr>
- * <td>allowUserInteraction</td>
- * <td>boolean</td>
- * <td>false</td>
- * <td>If true, this URL is being examined in a context in which it makes sense
- * to allow user interactions such as popping up an authentication dialog.</td>
- * </tr>
- * <tr>
- * <td>useCaches</td>
- * <td>boolean</td>
- * <td>false</td>
- * <td>If true, the protocol is allowed to use caching whenever it can.</td>
- * </tr>
- * <tr>
- * <td>connectTimeout</td>
- * <td>int</td>
- * <td>0</td>
- * <td>Sets a specified timeout value, in milliseconds, to be used when opening
- * a communications link to the resource referenced. 0 means infinite timeout.</td>
  * </tr>
  * <tr>
  * <td>readTimeout</td>
@@ -78,12 +87,30 @@ import com.noelios.restlet.http.HttpClientCall;
  * <td>Sets the read timeout to a specified timeout, in milliseconds. A timeout
  * of zero is interpreted as an infinite timeout.</td>
  * </tr>
+ * <tr>
+ * <td>useCaches</td>
+ * <td>boolean</td>
+ * <td>false</td>
+ * <td>If true, the protocol is allowed to use caching whenever it can.</td>
+ * </tr>
  * </table>
  * 
+ * It is also possible to specify a hostname verifier for HTTPS connections. See
+ * the {@link #getHostnameVerifier()} method for details.
+ * 
+ * Note that by default, the {@link HttpURLConnection} class as implemented by
+ * Sun will retry a request if an IO exception is caught, for example due to a
+ * connection reset by the server. This can be annoying, especially because the
+ * HTTP semantics of non idempotent methods like POST can be broken, but also
+ * because the new request won't include an entity. There is one way to disable
+ * this behavior for POST requests only by setting the system property
+ * "sun.net.http.retryPost" to "false".
+ * 
+ * @see Client#getConnectTimeout()
  * @see <a
  *      href="http://java.sun.com/j2se/1.5.0/docs/guide/net/index.html">Networking
  *      Features</a>
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper {
     /**
@@ -130,18 +157,46 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
      *         response entities.
      */
     public int getChunkLength() {
-        return Integer.parseInt(getParameters().getFirstValue("chunkLength",
-                "0"));
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "chunkLength", "0"));
     }
 
     /**
-     * Indicates if the protocol will automatically follow redirects.
+     * Returns the timeout value, in milliseconds, to be used when opening a
+     * communications link to the resource referenced. 0 means infinite timeout.
      * 
-     * @return True if the protocol will automatically follow redirects.
+     * @return The connection timeout value.
      */
-    public boolean isFollowRedirects() {
-        return Boolean.parseBoolean(getParameters().getFirstValue(
-                "followRedirects", "false"));
+    @Override
+    public int getConnectTimeout() {
+        if (super.getConnectTimeout() > 0) {
+            return super.getConnectTimeout();
+        } else {
+            return Integer.parseInt(getHelpedParameters().getFirstValue(
+                    "connectTimeout", "0"));
+        }
+    }
+
+    /**
+     * Returns the hostname verifier by looking up the "hostnameVerifier"
+     * attribute of the client's context.
+     * 
+     * @return The hostname verifier or null.
+     */
+    public HostnameVerifier getHostnameVerifier() {
+        return (HostnameVerifier) ((getContext() == null) ? null : getContext()
+                .getAttributes().get("hostnameVerifier"));
+    }
+
+    /**
+     * Returns the read timeout value. A timeout of zero is interpreted as an
+     * infinite timeout.
+     * 
+     * @return The read timeout value.
+     */
+    public int getReadTimeout() {
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "readTimeout", "0"));
     }
 
     /**
@@ -152,8 +207,18 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
      * @return True if it makes sense to allow user interactions.
      */
     public boolean isAllowUserInteraction() {
-        return Boolean.parseBoolean(getParameters().getFirstValue(
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
                 "allowUserInteraction", "false"));
+    }
+
+    /**
+     * Indicates if the protocol will automatically follow redirects.
+     * 
+     * @return True if the protocol will automatically follow redirects.
+     */
+    public boolean isFollowRedirects() {
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
+                "followRedirects", "false"));
     }
 
     /**
@@ -162,29 +227,20 @@ public class HttpClientHelper extends com.noelios.restlet.http.HttpClientHelper 
      * @return True if the protocol is allowed to use caching whenever it can.
      */
     public boolean isUseCaches() {
-        return Boolean.parseBoolean(getParameters().getFirstValue("useCaches",
-                "false"));
+        return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
+                "useCaches", "false"));
     }
 
-    /**
-     * Returns the timeout value, in milliseconds, to be used when opening a
-     * communications link to the resource referenced. 0 means infinite timeout.
-     * 
-     * @return The connection timeout value.
-     */
-    public int getConnectTimeout() {
-        return Integer.parseInt(getParameters().getFirstValue("connectTimeout",
-                "0"));
+    @Override
+    public synchronized void start() throws Exception {
+        super.start();
+        getLogger().info("Starting the HTTP client");
     }
 
-    /**
-     * Returns the read timeout value. A timeout of zero is interpreted as an
-     * infinite timeout.
-     * 
-     * @return The read timeout value.
-     */
-    public int getReadTimeout() {
-        return Integer.parseInt(getParameters().getFirstValue("readTimeout",
-                "0"));
+    @Override
+    public synchronized void stop() throws Exception {
+        super.stop();
+        getLogger().info("Stopping the HTTP client");
     }
+
 }

@@ -2,10 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: JavaBeans Activation Framework API and RI
 Bundle-SymbolicName: javax.activation
-Bundle-Version: 1.1
-Bundle-ClassPath: activation.jar
+Bundle-Version: 1.1.1
+Bundle-ClassPath: javax.activation.jar
 Bundle-Vendor: Sun Microsystems Inc.
-Bundle-Localization: plugin
-Export-Package: com.sun.activation.registries,
- com.sun.activation.viewers,
- javax.activation
+Export-Package: javax.activation;version="1.1.1"
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

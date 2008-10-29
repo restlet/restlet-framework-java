@@ -1,19 +1,28 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package org.restlet.util;
@@ -31,18 +40,140 @@ import java.util.WeakHashMap;
 /**
  * Date manipulation utilities.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  * @author Piyush Purang (ppurang@gmail.com)
  */
 public final class DateUtils {
-    /** Preferred HTTP date format (RFC 1123). */
-    public static final List<String> FORMAT_RFC_1123 = unmodifiableList("EEE, dd MMM yyyy HH:mm:ss zzz");
+
+    /**
+     * Class acting as an immutable date class based on the
+     * {@link java.util.Date} class.
+     * 
+     * Throws {@link UnsupportedOperationException} when muttable methods are
+     * invoked.
+     * 
+     * @author Piyush Purang (ppurang@gmail.com)
+     * @see java.util.Date
+     * @see <a href="http://discuss.fogcreek.com/joelonsoftware3/default.asp?cmd=show&ixPost=73959&ixReplies=24"
+     *      >Immutable Date</a>
+     */
+    private static final class ImmutableDate extends Date {
+        private static final transient WeakHashMap<Date, ImmutableDate> CACHE = new WeakHashMap<Date, ImmutableDate>();
+
+        // TODO Are we serializable?
+        private static final long serialVersionUID = -5946186780670229206L;
+
+        /**
+         * Returns an ImmutableDate object wrapping the given date.
+         * 
+         * @param date
+         *            object to be made immutable
+         * @return an immutable date object
+         */
+        public static ImmutableDate valueOf(Date date) {
+            if (!CACHE.containsKey(date)) {
+                CACHE.put(date, new ImmutableDate(date));
+            }
+            return CACHE.get(date);
+        }
+
+        /**
+         * Private constructor. A factory method is provided.
+         * 
+         * @param date
+         *            date to be made immutable
+         */
+        private ImmutableDate(Date date) {
+            super(date.getTime());
+        }
+
+        /** {@inheritDoc} */
+        @Override
+        public Object clone() {
+            throw new UnsupportedOperationException(
+                    "ImmutableDate is immutable");
+        }
+
+        /**
+         * As an ImmutableDate is immutable, this method throws an
+         * UnsupportedOperationException exception.
+         */
+        @Override
+        public void setDate(int arg0) {
+            throw new UnsupportedOperationException(
+                    "ImmutableDate is immutable");
+        }
+
+        /**
+         * As an ImmutableDate is immutable, this method throws an
+         * UnsupportedOperationException exception.
+         */
+        @Override
+        public void setHours(int arg0) {
+            throw new UnsupportedOperationException(
+                    "ImmutableDate is immutable");
+        }
+
+        /**
+         * As an ImmutableDate is immutable, this method throws an
+         * UnsupportedOperationException exception.
+         */
+        @Override
+        public void setMinutes(int arg0) {
+            throw new UnsupportedOperationException(
+                    "ImmutableDate is immutable");
+        }
+
+        /**
+         * As an ImmutableDate is immutable, this method throws an
+         * UnsupportedOperationException exception.
+         */
+        @Override
+        public void setMonth(int arg0) {
+            throw new UnsupportedOperationException(
+                    "ImmutableDate is immutable");
+        }
+
+        /**
+         * As an ImmutableDate is immutable, this method throws an
+         * UnsupportedOperationException exception.
+         */
+        @Override
+        public void setSeconds(int arg0) {
+            throw new UnsupportedOperationException(
+                    "ImmutableDate is immutable");
+        }
+
+        /**
+         * As an ImmutableDate is immutable, this method throws an
+         * UnsupportedOperationException exception.
+         */
+        @Override
+        public void setTime(long arg0) {
+            throw new UnsupportedOperationException(
+                    "ImmutableDate is immutable");
+        }
+
+        /**
+         * As an ImmutableDate is immutable, this method throws an
+         * UnsupportedOperationException exception.
+         */
+        @Override
+        public void setYear(int arg0) {
+            throw new UnsupportedOperationException(
+                    "ImmutableDate is immutable");
+        }
+
+    }
+
+    /** Obsoleted HTTP date format (ANSI C asctime() format). */
+    public static final List<String> FORMAT_ASC_TIME = unmodifiableList("EEE MMM dd HH:mm:ss yyyy");
 
     /** Obsoleted HTTP date format (RFC 1036). */
     public static final List<String> FORMAT_RFC_1036 = unmodifiableList("EEEE, dd-MMM-yy HH:mm:ss zzz");
 
-    /** Obsoleted HTTP date format (ANSI C asctime() format). */
-    public static final List<String> FORMAT_ASC_TIME = unmodifiableList("EEE MMM dd HH:mm:ss yyyy");
+    /** Preferred HTTP date format (RFC 1123). */
+    public static final List<String> FORMAT_RFC_1123 = unmodifiableList("EEE, dd MMM yyyy HH:mm:ss zzz");
 
     /** W3C date format (RFC 3339). */
     public static final List<String> FORMAT_RFC_3339 = unmodifiableList(
@@ -70,11 +201,11 @@ public final class DateUtils {
         if ((baseDate == null) || (afterDate == null)) {
             throw new IllegalArgumentException(
                     "Can't compare the dates, at least one of them is null");
-        } else {
-            long baseTime = baseDate.getTime() / 1000;
-            long afterTime = afterDate.getTime() / 1000;
-            return baseTime < afterTime;
         }
+
+        final long baseTime = baseDate.getTime() / 1000;
+        final long afterTime = afterDate.getTime() / 1000;
+        return baseTime < afterTime;
     }
 
     /**
@@ -90,11 +221,11 @@ public final class DateUtils {
         if ((baseDate == null) || (beforeDate == null)) {
             throw new IllegalArgumentException(
                     "Can't compare the dates, at least one of them is null");
-        } else {
-            long baseTime = baseDate.getTime() / 1000;
-            long beforeTime = beforeDate.getTime() / 1000;
-            return beforeTime < baseTime;
         }
+
+        final long baseTime = baseDate.getTime() / 1000;
+        final long beforeTime = beforeDate.getTime() / 1000;
+        return beforeTime < baseTime;
     }
 
     /**
@@ -110,11 +241,11 @@ public final class DateUtils {
         if ((baseDate == null) || (otherDate == null)) {
             throw new IllegalArgumentException(
                     "Can't compare the dates, at least one of them is null");
-        } else {
-            long baseTime = baseDate.getTime() / 1000;
-            long otherTime = otherDate.getTime() / 1000;
-            return otherTime == baseTime;
         }
+
+        final long baseTime = baseDate.getTime() / 1000;
+        final long otherTime = otherDate.getTime() / 1000;
+        return otherTime == baseTime;
     }
 
     /**
@@ -129,11 +260,12 @@ public final class DateUtils {
     public static String format(final Date date, final String format) {
         if (date == null) {
             throw new IllegalArgumentException("Date is null");
-        } else {
-            SimpleDateFormat formatter = new SimpleDateFormat(format, Locale.US);
-            formatter.setTimeZone(TIMEZONE_GMT);
-            return formatter.format(date);
         }
+
+        final SimpleDateFormat formatter = new SimpleDateFormat(format,
+                Locale.US);
+        formatter.setTimeZone(TIMEZONE_GMT);
+        return formatter.format(date);
     }
 
     /**
@@ -150,24 +282,35 @@ public final class DateUtils {
 
         if (date == null) {
             throw new IllegalArgumentException("Date is null");
-        } else {
-            String format = null;
-            final int formatsSize = formats.size();
-            for (int i = 0; (result == null) && (i < formatsSize); i++) {
-                format = formats.get(i);
-                SimpleDateFormat parser = new SimpleDateFormat(format,
-                        Locale.US);
-                parser.setTimeZone(TIMEZONE_GMT);
+        }
 
-                try {
-                    result = parser.parse(date);
-                } catch (ParseException e) {
-                    // Ignores error as the next format may work better
-                }
+        String format = null;
+        final int formatsSize = formats.size();
+        for (int i = 0; (result == null) && (i < formatsSize); i++) {
+            format = formats.get(i);
+            final SimpleDateFormat parser = new SimpleDateFormat(format,
+                    Locale.US);
+            parser.setTimeZone(TIMEZONE_GMT);
+
+            try {
+                result = parser.parse(date);
+            } catch (ParseException e) {
+                // Ignores error as the next format may work better
             }
         }
 
         return result;
+    }
+
+    /**
+     * Returns an immutable version of a given date.
+     * 
+     * @param date
+     *            The modifiable date.
+     * @return An immutable version of a given date.
+     */
+    public static Date unmodifiable(Date date) {
+        return (date == null) ? null : ImmutableDate.valueOf(date);
     }
 
     /**
@@ -185,118 +328,11 @@ public final class DateUtils {
     }
 
     /**
-     * Returns an immutable version of a given date.
-     * 
-     * @param date
-     *            The modifiable date.
-     * @return An immutable version of a given date.
-     */
-    public static Date unmodifiable(Date date) {
-        return ImmutableDate.valueOf(date);
-    }
-
-    /**
      * Private constructor to ensure that the class acts as a true utility class
      * i.e. it isn't instatiable and extensible.
      */
     private DateUtils() {
 
-    }
-
-    /**
-     * Class acting as an immutable date class based on the
-     * {@link java.util.Date} class.
-     * 
-     * Throws {@link UnsupportedOperationException} when muttable methopds are
-     * invoked.
-     * 
-     * @author Piyush Purang (ppurang@gmail.com)
-     * @see java.util.Date
-     * @see <a
-     *      href="http://discuss.fogcreek.com/joelonsoftware3/default.asp?cmd=show&ixPost=73959&ixReplies=24">Immutable
-     *      Date</a>
-     */
-    private static final class ImmutableDate extends Date {
-        // TODO Are we serializable?
-        private static final long serialVersionUID = -5946186780670229206L;
-
-        private static final transient WeakHashMap<Date, ImmutableDate> CACHE = new WeakHashMap<Date, ImmutableDate>();
-
-        /**
-         * Returns an ImmutableDate object wrapping the given date.
-         * 
-         * @param date
-         *            object to be made immutable
-         * @return an immutable date object
-         */
-        public static ImmutableDate valueOf(Date date) {
-            if (!CACHE.containsKey(date)) {
-                CACHE.put(date, new ImmutableDate(date));
-            }
-            return CACHE.get(date);
-        }
-
-        /** Delegate being wrapped */
-        private final Date delegate;
-
-        /**
-         * Private constructor. A factory method is provided.
-         * 
-         * @param date
-         *            date to be made immutable
-         */
-        private ImmutableDate(Date date) {
-            this.delegate = (Date) date.clone();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public boolean after(Date when) {
-            return delegate.after(when);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public boolean before(Date when) {
-            return delegate.before(when);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public Object clone() {
-            throw new UnsupportedOperationException(
-                    "ImmutableDate is immutable");
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public int compareTo(Date anotherDate) {
-            return delegate.compareTo(anotherDate);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public boolean equals(Object obj) {
-            return delegate.equals(obj);
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public long getTime() {
-            return delegate.getTime();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public int hashCode() {
-            return delegate.hashCode();
-        }
-
-        /** {@inheritDoc} */
-        @Override
-        public String toString() {
-            return delegate.toString();
-        }
     }
 
 }

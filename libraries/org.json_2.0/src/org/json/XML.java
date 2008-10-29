@@ -171,8 +171,12 @@ public class XML {
 
 // Close tag </
 
-            if (name == null || !x.nextToken().equals(name)) {
-                throw x.syntaxError("Mismatched close tag");
+        	t = x.nextToken();
+            if (name == null) {
+                throw x.syntaxError("Mismatched close tag" + t);
+            }            
+            if (!t.equals(name)) {
+                throw x.syntaxError("Mismatched " + name + " and " + t);
             }
             if (x.nextToken() != GT) {
                 throw x.syntaxError("Misshaped close tag");
@@ -224,8 +228,8 @@ public class XML {
                     for (;;) {
                         t = x.nextContent();
                         if (t == null) {
-                            if (name != null) {
-                                throw x.syntaxError("Unclosed tag " + name);
+                            if (n != null) {
+                                throw x.syntaxError("Unclosed tag " + n);
                             }
                             return false;
                         } else if (t instanceof String) {
@@ -275,8 +279,7 @@ public class XML {
     public static JSONObject toJSONObject(String string) throws JSONException {
         JSONObject o = new JSONObject();
         XMLTokener x = new XMLTokener(string);
-        while (x.more()) {
-            x.skipPast("<");
+        while (x.more() && x.skipPast("<")) {
             parse(x, o, null);
         }
         return o;

@@ -1,41 +1,58 @@
-/*
- * Copyright 2005-2007 Noelios Consulting.
+/**
+ * Copyright 2005-2008 Noelios Technologies.
  * 
- * The contents of this file are subject to the terms of the Common Development
- * and Distribution License (the "License"). You may not use this file except in
- * compliance with the License.
+ * The contents of this file are subject to the terms of the following open
+ * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
+ * select the license that you prefer but you may not use this file except in
+ * compliance with one of these Licenses.
  * 
- * You can obtain a copy of the license at
- * http://www.opensource.org/licenses/cddl1.txt See the License for the specific
- * language governing permissions and limitations under the License.
+ * You can obtain a copy of the LGPL 3.0 license at
+ * http://www.gnu.org/licenses/lgpl-3.0.html
  * 
- * When distributing Covered Code, include this CDDL HEADER in each file and
- * include the License file at http://www.opensource.org/licenses/cddl1.txt If
- * applicable, add the following below this CDDL HEADER, with the fields
- * enclosed by brackets "[]" replaced with your own identifying information:
- * Portions Copyright [yyyy] [name of copyright owner]
+ * You can obtain a copy of the LGPL 2.1 license at
+ * http://www.gnu.org/licenses/lgpl-2.1.html
+ * 
+ * You can obtain a copy of the CDDL 1.0 license at
+ * http://www.sun.com/cddl/cddl.html
+ * 
+ * See the Licenses for the specific language governing permissions and
+ * limitations under the Licenses.
+ * 
+ * Alternatively, you can obtain a royaltee free commercial license with less
+ * limitations, transferable or non-transferable, directly at
+ * http://www.noelios.com/products/restlet-engine
+ * 
+ * Restlet is a registered trademark of Noelios Technologies.
  */
 
 package org.restlet.ext.atom;
 
+import static org.restlet.ext.atom.Feed.ATOM_NAMESPACE;
+
+import java.io.IOException;
+
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.resource.Representation;
+import org.restlet.util.XmlWriter;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.AttributesImpl;
 
 /**
  * Either contains or links to the content of the entry.
  * 
- * @author Jerome Louvel (contact@noelios.com)
+ * @author Jerome Louvel
  */
 public class Content {
-    /** Representation for inline content. */
-    private Representation inlineContent;
 
     /** Reference to the external representation. */
-    private Reference externalRef;
+    private volatile Reference externalRef;
 
     /** Expected media type of the external content. */
-    private MediaType externalType;
+    private volatile MediaType externalType;
+
+    /** Representation for inline content. */
+    private volatile Representation inlineContent;
 
     /**
      * Constructor.
@@ -47,21 +64,21 @@ public class Content {
     }
 
     /**
-     * Indicates if the content is available inline.
+     * Returns the reference to the external representation.
      * 
-     * @return True if the content is available inline.
+     * @return The reference to the external representation.
      */
-    public boolean isInline() {
-        return (this.inlineContent != null);
+    public Reference getExternalRef() {
+        return this.externalRef;
     }
 
     /**
-     * Indicates if the content is available externally.
+     * Returns the expected media type of the external content.
      * 
-     * @return True if the content is available externally.
+     * @return The expected media type of the external content.
      */
-    public boolean isExternal() {
-        return (this.externalRef != null);
+    public MediaType getExternalType() {
+        return this.externalType;
     }
 
     /**
@@ -74,22 +91,21 @@ public class Content {
     }
 
     /**
-     * Sets the representation for inline content.
+     * Indicates if the content is available externally.
      * 
-     * @param inlineContent
-     *            The representation for inline content.
+     * @return True if the content is available externally.
      */
-    public void setInlineContent(Representation inlineContent) {
-        this.inlineContent = inlineContent;
+    public boolean isExternal() {
+        return (this.externalRef != null);
     }
 
     /**
-     * Returns the reference to the external representation.
+     * Indicates if the content is available inline.
      * 
-     * @return The reference to the external representation.
+     * @return True if the content is available inline.
      */
-    public Reference getExternalRef() {
-        return this.externalRef;
+    public boolean isInline() {
+        return (this.inlineContent != null);
     }
 
     /**
@@ -103,15 +119,6 @@ public class Content {
     }
 
     /**
-     * Returns the expected media type of the external content.
-     * 
-     * @return The expected media type of the external content.
-     */
-    public MediaType getExternalType() {
-        return this.externalType;
-    }
-
-    /**
      * Sets the expected media type of the external content.
      * 
      * @param externalType
@@ -119,6 +126,72 @@ public class Content {
      */
     public void setExternalType(MediaType externalType) {
         this.externalType = externalType;
+    }
+
+    /**
+     * Sets the representation for inline content.
+     * 
+     * @param inlineContent
+     *            The representation for inline content.
+     */
+    public void setInlineContent(Representation inlineContent) {
+        this.inlineContent = inlineContent;
+    }
+
+    /**
+     * Writes the current object as an XML element using the given SAX writer.
+     * 
+     * @param writer
+     *            The SAX writer.
+     * @throws SAXException
+     */
+    public void writeElement(XmlWriter writer) throws SAXException {
+        final AttributesImpl attributes = new AttributesImpl();
+        String strContent = null;
+
+        if (getInlineContent() != null) {
+            final MediaType mediaType = getInlineContent().getMediaType();
+            String type = null;
+
+            if ((mediaType != null) && (mediaType.getSubType() != null)) {
+                if (mediaType.getSubType().contains("xhtml")) {
+                    type = "xhtml";
+                } else if (mediaType.getSubType().contains("html")) {
+                    type = "html";
+                }
+            }
+
+            if (type == null) {
+                type = "text";
+            }
+
+            attributes.addAttribute("", "type", null, "text", type);
+
+            try {
+                strContent = getInlineContent().getText();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            if ((getExternalType() != null)
+                    && (getExternalType().toString() != null)) {
+                attributes.addAttribute("", "type", null, "atomMediaType",
+                        getExternalType().toString());
+            }
+
+            if ((getExternalRef() != null)
+                    && (getExternalRef().toString() != null)) {
+                attributes.addAttribute("", "src", null, "atomURI",
+                        getExternalRef().toString());
+            }
+        }
+
+        if (strContent == null) {
+            writer.emptyElement(ATOM_NAMESPACE, "content", null, attributes);
+        } else {
+            writer.dataElement(ATOM_NAMESPACE, "content", null, attributes,
+                    strContent);
+        }
     }
 
 }
