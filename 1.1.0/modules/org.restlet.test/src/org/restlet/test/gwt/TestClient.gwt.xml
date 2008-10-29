@@ -1,0 +1,11 @@
+<module>
+
+	<inherits name='com.google.gwt.user.User'/>
+
+	<!-- Inherit the Restlet-GWT API.                         -->
+	<inherits name='org.restlet.GWT'/>
+
+	<!-- Specify the app entry point class.                   -->
+	<entry-point class='org.restlet.test.gwt.client.TestClient'/>
+
+</module>

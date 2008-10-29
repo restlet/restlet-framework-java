@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Oracle XMLDB Servlet API
+Bundle-SymbolicName: oracle.xdb.servlet
+Bundle-Version: 11.1
