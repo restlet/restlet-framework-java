@@ -32,7 +32,7 @@ Changes log
           contains "%" character. Reported by Andrew Herbert.
         - ResourceException was sometimes calling Status#toString() 
           instead of Status#getDescription() to get the exception
-          message. Reported by Aaron Roberts.
+          message. Reported by Aron Roberts.
     - API enhancements
         - Added a "tcpNoDelay" option for internal and Apache HTTP 
           clients. Contributed by Kevin Conaway.
@@ -46,7 +46,7 @@ Changes log
           WADL extension in order to reflect the fact that "name" and 
           "style" attributes are required.
         - Added the ability the give a title to WadlApplication or 
-          WadlResource instances. Suggested by Jérôme Bernard.
+          WadlResource instances. Suggested by Jerome Bernard.
         - The Request#isConfidential() method has been refactored to 
           be supported by Message and Response as well. The method
           Request#setConfidential() has been removed (back to Restlet
