@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: JSON in Java
+Bundle-SymbolicName: org.json
+Bundle-Version: 2.0
+Bundle-ClassPath: org.json.jar
+Bundle-Vendor: JSON.org
+Export-Package: org.json
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

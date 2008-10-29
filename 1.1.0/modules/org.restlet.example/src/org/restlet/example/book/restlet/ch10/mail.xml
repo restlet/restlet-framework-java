@@ -1,0 +1,12 @@
+<?xml version='1.0'?>
+<mail>
+   <subject>This is the topic of the mail.</subject>
+   <from>Me</from>
+   <message>This is the message.</message>
+   <recipients>
+      <to>primary recipient 1</to>
+      <to>primary recipient 2</to>
+      <cc>secondary recipient 1</cc>
+      <cc>secondary recipient 2</cc>
+   </recipients>
+</mail>
