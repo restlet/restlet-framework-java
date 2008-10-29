@@ -1,9 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: JLine
-Bundle-SymbolicName: jline
-Bundle-Version: 0.9
-Bundle-ClassPath: jline.jar
-Bundle-Vendor: Marc Prud'hommeaux
-Export-Package: jline
-Bundle-RequiredExecutionEnvironment: J2SE-1.5

@@ -1,9 +1,0 @@
-<project>
-   <modelVersion>4.0.0</modelVersion>
-   <groupId>@group-id@</groupId>
-   <artifactId>@artifact-id@</artifactId>
-   <version>@version@</version>
-
-   <name>jSSLutils library</name>
-   <description>Set of utilities regarding the use of SSL in Java.</description>
-</project>
