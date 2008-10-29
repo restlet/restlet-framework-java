@@ -1,0 +1,37 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Google Web Toolkit
+Bundle-SymbolicName: com.google.gwt
+Bundle-Version: 1.5.2
+Bundle-ClassPath: gwt-user.jar
+Bundle-Vendor: Google Inc.
+Export-Package: com.google.gwt.animation.client;uses:="com.google.gwt.user.client",
+ com.google.gwt.benchmarks;
+  uses:="com.google.gwt.core.ext.typeinfo,
+   com.google.gwt.benchmarks.client.impl,
+   junit.framework,
+   com.google.gwt.core.ext",
+ com.google.gwt.benchmarks.client;uses:="com.google.gwt.junit.client",
+ com.google.gwt.core.client,
+ com.google.gwt.dom.client;uses:="com.google.gwt.core.client",
+ com.google.gwt.http.client;uses:="com.google.gwt.user.client,com.google.gwt.core.client,new com.google.gwt.http.client",
+ com.google.gwt.i18n.client;uses:="com.google.gwt.user.client,com.google.gwt.i18n.client.constants",
+ com.google.gwt.i18n.client.constants;uses:="com.google.gwt.i18n.client",
+ com.google.gwt.json.client,
+ com.google.gwt.junit.client,
+ com.google.gwt.user.client;uses:="com.google.gwt.core.client,com.google.gwt.dom.client",
+ com.google.gwt.user.client.rpc,
+ com.google.gwt.user.client.rpc.core.java.lang;uses:="com.google.gwt.user.client.rpc",
+ com.google.gwt.user.client.rpc.core.java.sql;uses:="com.google.gwt.user.client.rpc",
+ com.google.gwt.user.client.rpc.core.java.util;uses:="com.google.gwt.user.client.rpc",
+ com.google.gwt.user.client.ui;
+  uses:="com.google.gwt.user.client,
+   com.google.gwt.user.client.ui.impl,
+   com.google.gwt.core.client,
+   new com.google.gwt.user.client.ui,
+   com.google.gwt.dom.client,
+   com.google.gwt.user.client.rpc,
+   com.google.gwt.i18n.client",
+ com.google.gwt.user.server.rpc;uses:="javax.servlet.http,javax.servlet",
+ com.google.gwt.xml.client
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
