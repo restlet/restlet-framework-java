@@ -31,7 +31,6 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.restlet.Client;
-import org.restlet.data.LocalReference;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Preference;
@@ -173,8 +172,7 @@ public abstract class EntityClientHelper extends LocalClientHelper {
 
         // As the path may be percent-encoded, it has to be percent-decoded.
         // Then, all generated uris must be encoded.
-        final String decodedPath = LocalReference.localizePath(Reference
-                .decode(path));
+        final String decodedPath = Reference.decode(path);
         final MetadataService metadataService = getMetadataService(request);
 
         // Finally, actually handle the call
