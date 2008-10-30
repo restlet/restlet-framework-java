@@ -45,6 +45,7 @@ import java.util.logging.Level;
 import org.restlet.Client;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
+import org.restlet.data.LocalReference;
 import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Range;
@@ -167,7 +168,9 @@ public class FileClientHelper extends EntityClientHelper {
 
     @Override
     public Entity getEntity(String decodedPath) {
-        return new FileEntity(new File(decodedPath));
+        // Take care of the file separator.
+        return new FileEntity(
+                new File(LocalReference.localizePath(decodedPath)));
     }
 
     /**
