@@ -81,12 +81,10 @@ public class ServletWarEntity extends Entity {
         this.children = null;
         this.servletContext = servletContext;
         this.path = path;
-        this.directory = path.endsWith("/");
 
-        if (isDirectory()) {
+        if (path.endsWith("/")) {
+            this.directory = true;
             this.fullName = path.substring(0, path.length() - 1);
-        } else {
-            this.fullName = path;
             Set childPaths = getServletContext().getResourcePaths(path);
 
             if (childPaths != null && !childPaths.isEmpty()) {
@@ -96,6 +94,21 @@ public class ServletWarEntity extends Entity {
                     this.children.add(new ServletWarEntity(this.servletContext,
                             (String) childPath));
                 }
+            }
+        } else {
+            this.fullName = path;
+            Set childPaths = getServletContext().getResourcePaths(path);
+
+            if (childPaths != null && !childPaths.isEmpty()) {
+                this.directory = true;
+                this.children = new ArrayList<Entity>();
+
+                for (Object childPath : childPaths) {
+                    this.children.add(new ServletWarEntity(this.servletContext,
+                            (String) childPath));
+                }
+            } else {
+                this.directory = false;
             }
         }
     }
@@ -127,9 +140,9 @@ public class ServletWarEntity extends Entity {
 
         if (index != -1) {
             return this.fullName.substring(index + 1);
-        } else {
-            return this.fullName;
         }
+
+        return this.fullName;
     }
 
     @Override
