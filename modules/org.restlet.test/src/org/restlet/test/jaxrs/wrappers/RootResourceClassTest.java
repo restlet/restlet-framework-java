@@ -26,6 +26,8 @@
  */
 package org.restlet.test.jaxrs.wrappers;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.logging.Logger;
 
 import junit.framework.AssertionFailedError;
@@ -33,8 +35,8 @@ import junit.framework.TestCase;
 
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
 import org.restlet.ext.jaxrs.internal.util.PathRegExp;
-import org.restlet.ext.jaxrs.internal.wrappers.RootResourceClass;
 import org.restlet.ext.jaxrs.internal.wrappers.ResourceClasses;
+import org.restlet.ext.jaxrs.internal.wrappers.RootResourceClass;
 import org.restlet.test.jaxrs.services.path.IllegalPathService1;
 import org.restlet.test.jaxrs.services.path.IllegalPathService2;
 
@@ -60,14 +62,34 @@ public class RootResourceClassTest extends TestCase {
                 new ThreadLocalizedContext(), null, null, Logger
                         .getAnonymousLogger());
         try {
-            resourceClasses.getRootClassWrapper(IllegalPathService1.class);
+            getPerRequestRootClassWrapper(resourceClasses,
+                    IllegalPathService1.class);
             fail("must not pass");
         } catch (AssertionFailedError e) {
             // wonderful
         }
-        final RootResourceClass rrc = resourceClasses
-                .getRootClassWrapper(IllegalPathService2.class);
+        final RootResourceClass rrc = getPerRequestRootClassWrapper(
+                resourceClasses, IllegalPathService2.class);
         PathRegExp rrcRegExp = rrc.getPathRegExp();
         assertEquals("/afsdf:use", rrcRegExp.getPathTemplateDec());
+    }
+
+    static RootResourceClass getPerRequestRootClassWrapper(
+            ResourceClasses resourceClasses, Class<?> jaxRsRootResourceClass) throws Exception {
+        Method method = ResourceClasses.class.getDeclaredMethod(
+                "getPerRequestRootClassWrapper", Class.class);
+        method.setAccessible(true);
+        try {
+            return (RootResourceClass) method.invoke(resourceClasses,
+                    jaxRsRootResourceClass);
+        } catch (InvocationTargetException e) {
+            final Throwable cause = e.getCause();
+            if(cause instanceof Exception)
+                throw (Exception)cause;
+            if(cause instanceof Error)
+                throw (Error)cause;
+            else
+                throw new RuntimeException(cause);
+        }
     }
 }

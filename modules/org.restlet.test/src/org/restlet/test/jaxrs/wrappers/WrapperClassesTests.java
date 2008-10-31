@@ -95,8 +95,9 @@ public class WrapperClassesTests extends TestCase {
                     .getAnonymousLogger());
 
     public void testIllegalMethodPath() throws Exception {
-        final RootResourceClass rrc = resourceClasses
-                .getRootClassWrapper(IllegalMethPathRrc.class);
+        final RootResourceClass rrc = RootResourceClassTest
+                .getPerRequestRootClassWrapper(resourceClasses,
+                        IllegalMethPathRrc.class);
         @SuppressWarnings("unused")
         Collection<ResourceMethod> rms;
         rms = rrc.getMethodsForPath(new RemainingPath("abc"));
@@ -106,8 +107,9 @@ public class WrapperClassesTests extends TestCase {
 
     public void testIllegalRrcPath() throws Exception {
         try {
-            final RootResourceClass rrc = resourceClasses
-                    .getRootClassWrapper(IllegalRrcPathRrc.class);
+            final RootResourceClass rrc = RootResourceClassTest
+                    .getPerRequestRootClassWrapper(resourceClasses,
+                            IllegalRrcPathRrc.class);
             fail("must fail");
         } catch (IllegalPathOnClassException iae) {
             // good
