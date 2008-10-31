@@ -37,8 +37,7 @@ import org.restlet.ext.jaxrs.internal.wrappers.provider.ExtensionBackwardMapping
 import org.restlet.ext.jaxrs.internal.wrappers.provider.JaxRsProviders;
 
 /**
- * @author Stephan
- * 
+ * @author Stephan Koops
  */
 public class SingletonRootResourceClass extends RootResourceClass {
 

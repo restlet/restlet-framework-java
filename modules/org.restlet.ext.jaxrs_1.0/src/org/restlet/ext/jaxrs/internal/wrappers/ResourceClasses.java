@@ -45,7 +45,6 @@ import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathParamTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.InjectException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingConstructorException;
-import org.restlet.ext.jaxrs.internal.todo.NotYetImplementedException;
 import org.restlet.ext.jaxrs.internal.util.PathRegExp;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.ExtensionBackwardMapping;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.JaxRsProviders;
@@ -92,14 +91,13 @@ public class ResourceClasses {
     }
 
     /**
-     * @param jaxRsClass
+     * @param rootResourceClass
      * @return true, if the root resource class could be added, or false if not.
      */
-    public boolean addRootClass(Class<?> jaxRsClass) {
-        Class<?> rootResourceClass = jaxRsClass;
+    public boolean addRootClass(Class<?> rootResourceClass) {
         RootResourceClass newRrc;
         try {
-            newRrc = this.getRootClassWrapper(rootResourceClass);
+            newRrc = this.getPerRequestRootClassWrapper(rootResourceClass);
         } catch (IllegalParamTypeException e) {
             String msg = "Ignore provider " + rootResourceClass.getName()
                     + ": Could not instantiate class "
@@ -171,9 +169,113 @@ public class ResourceClasses {
      * @return true, if the root resource class could be added, or false if not.
      */
     public boolean addRootSingleton(Object jaxRsRootObject) {
-        jaxRsRootObject.toString();
-        // TODO ResourceClasses.addRootSingleton(Object)
-        throw new NotYetImplementedException();
+        Class<?> rootResourceClass = jaxRsRootObject.getClass();
+        RootResourceClass newRrc;
+        try {
+            newRrc = this.getSingletonRootClassWrapper(jaxRsRootObject);
+        } catch (IllegalParamTypeException e) {
+            String msg = "Ignore provider " + rootResourceClass.getName()
+                    + ": Could not instantiate class "
+                    + rootResourceClass.getName();
+            this.logger.log(Level.WARNING, msg, e);
+            return false;
+        } catch (IllegalPathOnClassException e) {
+            this.logger.warning("The root resource class "
+                    + rootResourceClass.getName()
+                    + " is annotated with an illegal path: " + e.getPath()
+                    + ". (" + e.getMessage() + ")");
+            return false;
+        } catch (IllegalArgumentException e) {
+            this.logger.log(Level.WARNING, "The root resource class "
+                    + rootResourceClass.getName()
+                    + " is not a valud root resource class: " + e.getMessage(),
+                    e);
+            return false;
+        } catch (MissingAnnotationException e) {
+            this.logger.log(Level.WARNING, "The root resource class "
+                    + rootResourceClass.getName()
+                    + " is not a valud root resource class: " + e.getMessage(),
+                    e);
+            return false;
+        } catch (MissingConstructorException e) {
+            this.logger
+                    .warning("The root resource class "
+                            + rootResourceClass.getName()
+                            + " has no valid constructor");
+            return false;
+        } catch (IllegalConstrParamTypeException e) {
+            this.logger.warning("The root resource class "
+                    + rootResourceClass.getName()
+                    + " has no valid constructor: " + e.getMessage());
+            // LATER better warning
+            return false;
+        } catch (IllegalBeanSetterTypeException e) {
+            this.logger.warning("The root resource class "
+                    + rootResourceClass.getName()
+                    + " has no valid constructor: " + e.getMessage());
+            // LATER better warning
+            return false;
+        } catch (IllegalFieldTypeException e) {
+            this.logger.warning("The root resource class "
+                    + rootResourceClass.getName()
+                    + " has no valid constructor: " + e.getMessage());
+            // LATER better warning
+            return false;
+        } catch (InjectException e) {
+            this.logger.warning("Dependencies could not be injected in "
+                    + "root resource class " + rootResourceClass.getName()
+                    + ": " + e.getMessage());
+            // LATER better warning
+            return false;
+        } catch (InvocationTargetException e) {
+            this.logger.warning("Exception while calling bean setters in "
+                    + "root resource class " + rootResourceClass.getName()
+                    + ": " + e.getMessage());
+            // LATER better warning
+            return false;
+        }
+        PathRegExp uriTempl = newRrc.getPathRegExp();
+        for (RootResourceClass rrc : this.rootResourceClasses) {
+            if (rrc.getJaxRsClass().equals(rootResourceClass)) {
+                return true;
+            }
+            if (rrc.getPathRegExp().equals(uriTempl)) {
+                this.logger
+                        .warning("There is already a root resource class with path "
+                                + uriTempl.getPathTemplateEnc());
+                return false;
+            }
+        }
+        rootResourceClasses.add(newRrc);
+        return true;
+    }
+
+    /**
+     * Creates a new JAX-RS root resource class wrapper.
+     * 
+     * @param jaxRsRootResourceClass
+     * @return the wrapped root resource class.
+     * @throws IllegalArgumentException
+     *             if the class is not a valid root resource class.
+     * @throws MissingAnnotationException
+     *             if the class is not annotated with &#64;Path.
+     * @throws IllegalPathOnClassException
+     * @throws MissingConstructorException
+     *             if no valid constructor could be found.
+     * @throws IllegalBeanSetterTypeException
+     * @throws IllegalFieldTypeException
+     * @throws IllegalConstrParamTypeException
+     * @throws IllegalPathParamTypeException
+     */
+    private RootResourceClass getPerRequestRootClassWrapper(
+            Class<?> jaxRsRootResourceClass) throws IllegalArgumentException,
+            MissingAnnotationException, IllegalPathOnClassException,
+            MissingConstructorException, IllegalConstrParamTypeException,
+            IllegalFieldTypeException, IllegalBeanSetterTypeException,
+            IllegalPathParamTypeException {
+        return new PerRequestRootResourceClass(jaxRsRootResourceClass,
+                this.tlContext, this.jaxRsProviders,
+                this.extensionBackwardMapping, Context.getCurrentLogger());
     }
 
     /**
@@ -203,33 +305,6 @@ public class ResourceClasses {
     }
 
     /**
-     * Creates a new JAX-RS root resource class wrapper.
-     * 
-     * @param jaxRsRootResourceClass
-     * @return the wrapped root resource class.
-     * @throws IllegalArgumentException
-     *                 if the class is not a valid root resource class.
-     * @throws MissingAnnotationException
-     *                 if the class is not annotated with &#64;Path.
-     * @throws IllegalPathOnClassException
-     * @throws MissingConstructorException
-     *                 if no valid constructor could be found.
-     * @throws IllegalBeanSetterTypeException
-     * @throws IllegalFieldTypeException
-     * @throws IllegalConstrParamTypeException
-     * @throws IllegalPathParamTypeException
-     */
-    public RootResourceClass getRootClassWrapper(Class<?> jaxRsRootResourceClass)
-            throws IllegalArgumentException, MissingAnnotationException,
-            IllegalPathOnClassException, MissingConstructorException,
-            IllegalConstrParamTypeException, IllegalFieldTypeException,
-            IllegalBeanSetterTypeException, IllegalPathParamTypeException {
-        return new PerRequestRootResourceClass(jaxRsRootResourceClass,
-                this.tlContext, this.jaxRsProviders,
-                this.extensionBackwardMapping, Context.getCurrentLogger());
-    }
-
-    /**
      * Creates a JAX-RS root resource object wrapper.
      * 
      * @param jaxRsRootResourceObject
@@ -254,6 +329,33 @@ public class ResourceClasses {
             IllegalFieldTypeException, IllegalBeanSetterTypeException,
             IllegalPathParamTypeException, InjectException,
             InvocationTargetException {
+        return new SingletonRootResourceClass(jaxRsRootResourceObject,
+                this.tlContext, this.jaxRsProviders,
+                this.extensionBackwardMapping, Context.getCurrentLogger());
+    }
+
+    /**
+     * Creates a new JAX-RS root resource class wrapper.
+     * 
+     * @param jaxRsRootResourceClass
+     * @return the wrapped root resource class.
+     * @throws InvocationTargetException
+     *             if an exception occurs while the injecting of dependencies.
+     * @throws IllegalArgumentException
+     *             if the class is not a valid root resource class.
+     * @throws MissingAnnotationException
+     *             if the class is not annotated with &#64;Path.
+     * @throws MissingConstructorException
+     *             if no valid constructor could be found.
+     */
+    private RootResourceClass getSingletonRootClassWrapper(
+            Object jaxRsRootResourceObject) throws IllegalPathOnClassException,
+            IllegalConstrParamTypeException, IllegalFieldTypeException,
+            IllegalBeanSetterTypeException, IllegalPathParamTypeException,
+            IllegalArgumentException, MissingAnnotationException,
+            MissingConstructorException, InjectException,
+            InvocationTargetException {
+        // TEST singleton root resource class
         return new SingletonRootResourceClass(jaxRsRootResourceObject,
                 this.tlContext, this.jaxRsProviders,
                 this.extensionBackwardMapping, Context.getCurrentLogger());
