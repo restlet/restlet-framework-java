@@ -305,37 +305,7 @@ public class ResourceClasses {
     }
 
     /**
-     * Creates a JAX-RS root resource object wrapper.
-     * 
-     * @param jaxRsRootResourceObject
-     * @return the wrapped root resource class
-     * @throws IllegalArgumentException
-     * @throws MissingAnnotationException
-     * @throws IllegalPathOnClassException
-     * @throws MissingConstructorException
-     * @throws IllegalConstrParamTypeException
-     * @throws IllegalFieldTypeException
-     * @throws IllegalBeanSetterTypeException
-     * @throws IllegalPathParamTypeException
-     * @throws InvocationTargetException
-     *                 if an error occurs while the injection of the
-     *                 dependencies.
-     * @throws InjectException
-     */
-    public RootResourceClass getRootSingletonWrapper(
-            Object jaxRsRootResourceObject) throws IllegalArgumentException,
-            MissingAnnotationException, IllegalPathOnClassException,
-            MissingConstructorException, IllegalConstrParamTypeException,
-            IllegalFieldTypeException, IllegalBeanSetterTypeException,
-            IllegalPathParamTypeException, InjectException,
-            InvocationTargetException {
-        return new SingletonRootResourceClass(jaxRsRootResourceObject,
-                this.tlContext, this.jaxRsProviders,
-                this.extensionBackwardMapping, Context.getCurrentLogger());
-    }
-
-    /**
-     * Creates a new JAX-RS root resource class wrapper.
+     * Creates a new JAX-RS root resource object wrapper.
      * 
      * @param jaxRsRootResourceClass
      * @return the wrapped root resource class.
