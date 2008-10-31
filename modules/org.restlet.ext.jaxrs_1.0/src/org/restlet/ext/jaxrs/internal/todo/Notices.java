@@ -40,7 +40,7 @@ public class Notices {
 
     // run tests again Jersey.
 
-    // TODO test, if the URIs are normaized, see spec, sect. 3.7.1 "Request
+    // TEST, if the URIs are normaized, see spec, sect. 3.7.1 "Request
     // Preprocessing"
 
     // TESTEN *ExceptionWriter, see JSR311-dev-mail 1225
