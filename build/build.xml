@@ -1,4 +1,4 @@
-﻿<?xml version="1.0"?>
+<?xml version="1.0"?>
 
 <!-- ===============================================================
      Restlet build script - Copyright 2005-2008 Noelios Technologies
@@ -418,22 +418,10 @@
 		<fileset dir="${lib}/${lib-jibx-id}" includes="*.jar" />
 	</path>
 
-	<path id="mod-jmx-path">
-		<path refid="mod-ri-path" />
-		<pathelement path="${classes}/${mod-ri-id}" />
-	</path>
-
 	<path id="mod-json-path">
 		<path refid="mod-ri-path" />
 		<pathelement path="${classes}/${mod-ri-id}" />
 		<fileset dir="${lib}/${lib-json-id}" includes="*.jar" />
-	</path>
-
-	<path id="mod-jxta-path">
-		<path refid="mod-ri-path" />
-		<pathelement path="${classes}/${mod-ri-id}" />
-		<fileset dir="${lib}/${lib-bouncycastle-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-jxta-id}" includes="*.jar" />
 	</path>
 
 	<path id="mod-net-path">
@@ -463,14 +451,6 @@
 		<pathelement path="${classes}/${mod-gwt-api-id}" />
 		<pathelement path="${classes}/${mod-servlet-id}" />
 		<fileset dir="${lib}/${lib-gwt-id}" includes="*.jar" />
-	</path>
-
-	<path id="mod-shell-path">
-		<path refid="mod-api-path" />
-		<pathelement path="${classes}/${mod-api-id}" />
-		<fileset dir="${lib}/${lib-cli-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-jline-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-script-id}" includes="*.jar" />
 	</path>
 
 	<path id="mod-simple-path">
@@ -533,9 +513,7 @@
 		<pathelement path="${classes}/${mod-jdbc-id}" />
 		<pathelement path="${classes}/${mod-jetty-id}" />
 		<pathelement path="${classes}/${mod-jibx-id}" />
-		<pathelement path="${classes}/${mod-jmx-id}" />
 		<pathelement path="${classes}/${mod-json-id}" />
-		<pathelement path="${classes}/${mod-jxta-id}" />
 		<pathelement path="${classes}/${mod-net-id}" />
 		<pathelement path="${classes}/${mod-oauth-id}" />
 		<pathelement path="${classes}/${mod-servlet-id}" />
@@ -557,9 +535,7 @@
 		<path refid="mod-jdbc-path" />
 		<path refid="mod-jetty-path" />
 		<path refid="mod-jibx-path" />
-		<path refid="mod-jmx-path" />
 		<path refid="mod-json-path" />
-		<path refid="mod-jxta-path" />
 		<path refid="mod-net-path" />
 		<path refid="mod-oauth-path" />
 		<path refid="mod-servlet-path" />
@@ -1134,13 +1110,10 @@
 		<pomModule name="jdbc" ext1="dbcp" />
 		<pomModule name="jetty" />
 		<pomModule name="jibx" />
-		<!-- disabled for now  <pomModule name="jmx" /> -->
 		<pomModule name="json" />
-		<!-- disabled for now  <pomModule name="jxta" /> -->
 		<pomModule name="net" />
 		<pomModule name="oauth" />
 		<pomModule name="servlet" />
-		<!-- disabled for now  <pomModule name="shell" ext1="jline" ext2="rhino" ext3="script" /> -->
 		<pomModule name="simple" />
 		<pomModule name="spring-api" ext1="spring" />
 		<pomModule name="spring-nre" ext1="spring" />
@@ -1267,15 +1240,12 @@
 		<compileModule name="jdbc" />
 		<compileModule name="jetty" />
 		<compileModule name="jibx" />
-		<compileModule name="jmx" />
 		<compileModule name="json" />
-		<compileModule name="jxta" />
 		<compileModule name="net" />
 		<compileModule name="oauth" />
 		<compileModule name="servlet" />
 		<compileModule name="gwt-ri" />
 		<!-- depends on servlet -->
-		<compileModule name="shell" />
 		<compileModule name="simple" />
 		<compileModule name="spring-api" />
 		<compileModule name="spring-nre" />
@@ -1317,15 +1287,11 @@
 		<backportModule name="jetty"
 		                failonwarning="@{backport-failonwarning}" />
 		<backportModule name="jibx" failonwarning="@{backport-failonwarning}" />
-		<backportModule name="jmx" failonwarning="@{backport-failonwarning}" />
 		<backportModule name="json" failonwarning="@{backport-failonwarning}" />
-		<backportModule name="jxta" failonwarning="@{backport-failonwarning}" />
 		<backportModule name="net" failonwarning="@{backport-failonwarning}" />
 		<backportModule name="oauth"
 		                failonwarning="@{backport-failonwarning}" />
 		<backportModule name="servlet"
-		                failonwarning="@{backport-failonwarning}" />
-		<backportModule name="shell"
 		                failonwarning="@{backport-failonwarning}" />
 		<backportModule name="simple"
 		                failonwarning="@{backport-failonwarning}" />
@@ -1441,13 +1407,10 @@
 				<pathelement path="${mod}/${mod-jdbc-id}/src/" />
 				<pathelement path="${mod}/${mod-jetty-id}/src/" />
 				<pathelement path="${mod}/${mod-jibx-id}/src/" />
-				<!-- disabled for now  <pathelement path="${mod}/${mod-jmx-id}/src/" /> -->
 				<pathelement path="${mod}/${mod-json-id}/src/" />
-				<!-- disabled for now  <pathelement path="${mod}/${mod-jxta-id}/src/" /> -->
 				<pathelement path="${mod}/${mod-net-id}/src/" />
 				<pathelement path="${mod}/${mod-oauth-id}/src/" />
 				<pathelement path="${mod}/${mod-servlet-id}/src/" />
-				<!-- disabled for now <pathelement path="${mod}/${mod-shell-id}/src/" /> -->
 				<pathelement path="${mod}/${mod-simple-id}/src/" />
 				<pathelement path="${mod}/${mod-spring-api-id}/src/" />
 				<pathelement path="${mod}/${mod-spring-nre-id}/src/" />
@@ -1628,13 +1591,10 @@
 		<findbugsModule name="jdbc" />
 		<findbugsModule name="jetty" />
 		<findbugsModule name="jibx" />
-		<!-- disabled for now  <findbugsModule name="jmx" /> -->
 		<findbugsModule name="json" />
-		<findbugsModule name="jxta" />
 		<findbugsModule name="net" />
 		<findbugsModule name="oauth" />
 		<findbugsModule name="servlet" />
-		<findbugsModule name="shell" />
 		<findbugsModule name="simple" />
 		<findbugsModule name="spring-api" />
 		<findbugsModule name="spring-nre" />
@@ -1664,13 +1624,10 @@
 		<checkstyleModule name="jdbc" />
 		<checkstyleModule name="jetty" />
 		<checkstyleModule name="jibx" />
-		<checkstyleModule name="jmx" />
 		<checkstyleModule name="json" />
-		<checkstyleModule name="jxta" />
 		<checkstyleModule name="net" />
 		<checkstyleModule name="oauth" />
 		<checkstyleModule name="servlet" />
-		<checkstyleModule name="shell" />
 		<checkstyleModule name="simple" />
 		<checkstyleModule name="spring-api" />
 		<checkstyleModule name="spring-nre" />
@@ -1757,7 +1714,6 @@
 
 		<!-- Packages libraries -->
 		<!-- disabled for now  <stageLibrary name="bouncycastle" /> -->
-		<stageLibrary name="cli" />
 		<stageLibrary name="codec" />
 		<stageLibrary name="collections" />
 		<stageLibrary name="db4o" />
@@ -1774,16 +1730,13 @@
 		<stageLibrary name="activation" />
 		<stageLibrary name="jetty" />
 		<stageLibrary name="jibx" />
-		<!-- disabled for now  <stageLibrary name="jline" /> -->
 		<stageLibrary name="json" />
 		<stageLibrary name="jsslutils" />
-		<!-- disabled for now  <stageLibrary name="jxta" /> -->
 		<stageLibrary name="lang" />
 		<stageLibrary name="logging" />
 		<!-- disabled for now  <stageLibrary name="mina" /> -->
 		<stageLibrary name="oauth" />
 		<stageLibrary name="pool" />
-		<stageLibrary name="rhino" />
 		<stageLibrary name="servlet" />
 		<stageLibrary name="simple" />
 		<stageLibrary name="spring" />
@@ -1809,13 +1762,10 @@
 		<stageModule name="jibx" />
 		<stageModule name="jdbc" />
 		<stageModule name="jetty" />
-		<!-- disabled for now  <stageModule name="jmx" /> -->
 		<stageModule name="json" />
-		<!-- disabled for now  <stageModule name="jxta" /> -->
 		<stageModule name="net" />
 		<stageModule name="oauth" />
 		<stageModule name="servlet" />
-		<!-- disabled for now <stageModule name="shell" /> -->
 		<stageModule name="simple" />
 		<stageModule name="spring-api" />
 		<stageModule name="spring-nre" />
@@ -1865,7 +1815,6 @@
 		<maven2Module name="net" />
 		<maven2Module name="oauth" />
 		<maven2Module name="servlet" />
-		<!-- disabled for now <maven2Module name="shell" /> -->
 		<maven2Module name="simple" />
 		<maven2Module name="spring-api" />
 		<maven2Module name="spring-nre" />
