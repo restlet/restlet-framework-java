@@ -1,0 +1,1039 @@
+   
+===========
+Changes log  
+===========
+
+- @version-full@ (@release-date@)
+    - Bugs fixed
+        - Fixed regression with applications deployed in Servlet 
+          container hosted on Windows (Path "\WEB-INF\restlet.xml" 
+          does not start with a "/" character). Reported by Brian 
+          E. Williams.
+
+- 1.1.0 (2008-10-28)
+    - Important change
+        - The servlet extension now tries to instantiate the single 
+          application with the empty constructor first, then the one 
+          with the parameter of type Context. The aim is to encourage 
+          most people to use the empty constructor as it is the 
+          recommended way since release 1.1M5. The other constructor 
+          is still working but logs once a warning message.
+    - Bugs fixed
+        - Updated the type of the digest value from String to array of 
+          bytes. Reported and contributed by Kevin Conaway.
+        - Fixed potential NPE in NIO caused by ByteUtils. Reported by
+          Bruce Lee.
+        - Added missing CGLib imports in Spring library manifest. 
+          Reported by Adam Harris.
+        - Added missing parsing of the "published" tag in Atom feeds.
+        - XPath expression evaluation could swallow some exceptions
+          in XmlRepresentation subclasses. Reported by Richard 
+          Hoberman.
+        - Fixed potential NPE with Digest authentication when the 
+          client's identifier is not known.
+        - Fixed potential thread safety issues with client connectors.
+          Reported by Tim Peierls.
+        - Fixed potential NPE in Guard#doHandle method. Reported by 
+          Diego Ballve.
+        - Fixed 404 response with Directory Restlet when the file's name 
+          contains "%" character. Reported by Andrew Herbert.
+        - ResourceException was sometimes calling Status#toString() 
+          instead of Status#getDescription() to get the exception
+          message. Reported by Aron Roberts.
+    - API enhancements
+        - Added a "tcpNoDelay" option for internal and Apache HTTP 
+          clients. Contributed by Kevin Conaway.
+        - Added a DigestRepresentation that allows to both use an 
+          entity and compute its digest value. Suggested by Kevin 
+          Conaway.
+        - Added the handling of server or client connector's context 
+          when adding a connector respectively to servers and clients 
+          list of a component.
+        - Refactored constructors of the ParameterInfo class in the 
+          WADL extension in order to reflect the fact that "name" and 
+          "style" attributes are required.
+        - Added the ability the give a title to WadlApplication or 
+          WadlResource instances. Suggested by Jerome Bernard.
+        - The Request#isConfidential() method has been refactored to 
+          be supported by Message and Response as well. The method
+          Request#setConfidential() has been removed (back to Restlet
+          1.0 state). Added Protocol#isConfidential() method to support
+          the new implementation which rely on Request#getProtocol().
+          Reported by Kevin Conaway. 
+    - Misc
+        - Updated JAX-RS API to version 1.0. The implementation of the
+          runtime environment is not fully finished yet. We are 
+          waiting for an access to the TCK.
+        - Updated Grizzly to latest 1.8.6.2 version.
+        - Improved the performance of the ByteUtils#toString() methods
+          significantly using a buffer. Impact the performance of the 
+          Representation#toString() method. Reported by Aaron Crow.
+        - Removed unecessary 'final' modifiers in catch clauses.
+          Reported by Richard Hoberman.
+        - ServerServlet now copies all attributes from the Servlet 
+          context into the component's context.
+        - Fixed Resource#allowPut() error in Javadocs. Reported by 
+          Erik Beeson.
+        - Added the support of content negotiation to the WAR client.
+          This was done by refactoring and sharing the existing logic
+          available in the FILE client connector.
+        
+- 1.1 Release Candidate 2 (2008-09-24)
+    - Bugs fixed
+        - Fixed bug when a webapp is mounted on the root instead of 
+          some context path. Reported by Bruno Dumon.
+        - Fixed bug regarding the deeplyAccessible property for a 
+          directory. Reported by Carlos Alexandre Moscoso.
+        - Fixed GWT javascript recursion with the Engine#getInstance 
+          method. Reported by Doug Alcouffe.
+        - Fixed potential NPE with Spring integration when the 
+          component is not declared in the servlet configuration file. 
+          Reported by Alexander Koppelhuber.
+        - Using a Engine.loadClass(), a ClassNotFound exception was
+          not returning the missing class name. Reported by Vincent 
+          Ricard.
+        - Fixed potential NPE in Restlet constructor when Engine is
+          missing. Reported by John Logdson.
+        - Fixed parsing of the HTTP WWW-Authenticate header when no
+          realm is provided. Reported by Roman Geus.
+        - Now the caller's classloader is used to try to load classes
+          to fix a regression introduced in 1.1 RC1. Reported by 
+          Bruno Dumon.
+        - Unknown challenge schemes used to hide the actual status of
+          response for client HTTP connectors. Now only a warning is
+          logged. Reported by Tamas Cservenak.
+        - Lowered the log message for connectors without protocols 
+          from SEVERE to FINE. Reported by Paolo Borelli.
+        - WadlApplication now correctly handles nested resources when
+          the parent resource has no 'id' attribute. Also supports
+          root resources with no leading slash. Patches contributed 
+          by Vincent Ricard.
+        - Fixed error in Conditions.getStatus() sometimes returning
+          304 for methods other than HEAD and GET. Contributed by
+          Stephan Koops.
+        - Fixed uncessary assumption that an input stream would 
+          return -1 several times at the end. Reported by Marcelo
+          Ochoa. 
+        - SpringHost were created without context, causing some NPE
+          when trying to access client dispatchers. Reported by 
+          Alexei Sokolov.
+        - Fixed potential ClassCastException with 
+          ReadableRepresentation when used with a non selectable
+          channel. Reported by Rob Heittman. 
+        - Fixed IO exception "Resource temporarily unavailable" that
+          could occur on Linux during file transfers due to a bug 
+          fixed in JDK 7 only (#5103988). Reported by Emblem Parade,
+          Roman Geus.
+        - Fixed bug causing blockings when exchanging an entity for a
+          DELETE method with internal connectors. Reported by 
+          Tamas Cservenak.
+        - Fixed autowiring of the default routes. Reported by Paolo 
+          Borelli.
+        - Fixed potential security exception at 
+          ServerServlet#isDefaultComponent method. Reported by Marcelo 
+          Ochoa.
+        - Fixed "Too many open files" exception with the internal 
+          server connector that did not close the socket after sending 
+          the response. Reported by Christoph Korn.
+        - Fixed race issue in SSL unit test with Jetty. Server was 
+          stopped too early.
+        - Fixed potential "Address already in use" exception with the 
+          grizzly connector when the server is required to connect on 
+          ephemeral port.
+        - Fixed Grizzly exceptions "Unable to write to the non-blocking 
+          channel. Unable to select the channel to write to it. 
+          Selection timed out.". Reported by Bruce Lee, Emblem Parade
+          and Roman Geus.
+    - Misc
+        - Removed deprecated code in GWT module not need for a first 
+          release.
+        - Added initial support for HTTP challenges in GWT module.
+          Suggested by Gabor Dolla. Help from Rasmus Agerholm.
+        - Updated db4o to version 7.4.58.
+        - Updated FreeMarker to version 2.3.14.
+        - Updated JAX-RS API to version 0.11.
+        - Updated GWT to version 1.5.2 (final).
+        
+- 1.1 Release Candidate 1 (2008-08-20)
+    - Breaking change
+        - The logger names used by Restlet have been fully refactored 
+          to allow use more predictable names, to facilitate logging
+          configuration, filtering, etc. See the wiki for details:
+          http://wiki.restlet.org/docs_1.1/g1/13-restlet/29-restlet/98-restlet/101-restlet.html
+    - Bugs fixed
+        - Fixed NPE with WadlApplications that host Restlet subclasses.
+          Reported by François Renard.
+        - Removed all 'volatile' declaration in the Restlet-GWT module
+          to prevent compilation issues. Reported by Nitin Gupta and
+          fixed by Rob Heittman.
+        - Fixed NPE occuring in JaxbRepresentation due to recent usage
+          of representation's character set.
+        - Fixed NPE in HttpRequest when using a Server instance without
+          context. Reported by Bruno Dumon.
+        - Fixed NPE in WadlApplication. Reported by Vincent Ricard.
+        - Fixed blockings in internal HTTP connectors while processing
+          requests. Reported by Zsolt Czinkos.
+        - Refactored the ImmutableDate class since comparison operations
+          ("after", etc) may fail. Reported by Mike Brzozowski.
+        - Fixed bug in InputEntityStream when entity was containing '0' 
+          bytes.
+        - Fixed instantion of application with a child context when 
+          deployed in a servlet container. Reported by Vincent Ricard.
+        - Fixed bug in Grizzly connector causing retrieval of a request
+          entity to fail.
+        - Fixed bug in chunked encoding reading, forgetting to read the
+          trailing new line. That caused connection resets between the
+          JDK.net HTTP client and the Grizzly connector. Reported by
+          Ralf Bommersbach. Debugging help from Kevin Conaway.
+        - Fixed bug in Restlet example with HTTPS server configuration.
+          Reported by Christy Ring and fixed by Bruno Harbulot.
+        - Fixed context issue in Spring RestletFrameworkServlet.
+          Contributed by Rhett Sutphin.
+        - Fixed NPE when an application runs inside a servlet container 
+          as compressed WAR file. Reported by Jorge L. Williams.
+    - API Enhancements
+        - Added warning message when no client connector supports the 
+          request's protocol. Suggested by François Renard.
+        - Added the ability to provide Wadl documentation to any 
+          Restlet instances.
+        - Added an org.restlet.data.Digest class, a "digest" property 
+          to Representation and a DigestService for applications. 
+          Suggested by Chris Winters and Benoit Maujean.
+        - Filtered broken connection based on French messages in 
+          addition to English ones.
+        - Vastly improved internal client performances on all operations
+          including chunked reading and writing.
+        - Status#toString() now appends the description if available 
+          for more meaningful messages.
+        - Added Representation#exhaust() method to read and discard 
+          content optimally (better than getText()).
+        - Now a Reference that gets some invalid URI characters will
+          automatically encode those characters instead of throwing
+          an IllegalArgumentException. A message will still be logged
+          with a "fine" level. Suggested by Brad Peabody.
+        - Added static Context.getCurrentLogger() method which always
+          returns a non-null logger, if possible the current context's
+          logger.
+        - Deprecated Form and Template constructors with a logger.
+        - Added static Engine.setUserClassLoader() and 
+          getUserClassLoader() methods to allow a user to provide his
+          own class loader to use in priority for all class loading
+          actions done by Restlet code. Also kept the previous
+          getClassLoader() static method to return the 'best' class
+          loader available. Issue with Groovy reported by Avi Flax.
+    - NRE and Extension Enhancements
+        - Refactored WADL extension based on John Logsdon's feed-back.
+          Added convenience methods and constructors on FaultInfo, 
+          MethodInfo and RepresentationInfo. Removed unecessary methods
+          on WadlResource like getRepresentationInfo(Variant) and
+          getParametersInfo(RequestInfo|ResponseInfo|Representation-
+          Info). Added MethodInfo#add*() short-cut methods.
+        - JAX-RS provider exception handling improved in the
+          MessageBodyReader class. Contributed by Bruno Dumon. 
+        - Updated jSSLutils to version 0.5.
+        - Added com.noelios.restlet.util.TraceHandler for debugging 
+          purpose displaying the logger name and message of each log
+          record received by the log manager.
+    - Misc
+        - Updated Grizzly to version 1.8.4.
+        - Uniformized logger names relying on the static method 
+          Context.getCurrentLogger().
+        - Added maven-metadata.xml files in the Maven repositories. 
+          Suggested by Guillaume Chatelet.
+    
+- 1.1 Milestone 5 (2008-08-07)
+    - Security warning
+        - The handling of Context has been significantly refactored in 
+          this release. A new Context#createChildContext() method has
+          been added to create a new isolated child context from a 
+          parent component's context. Application(Context) constructor
+          doesn't wrap the given context anymore. Attach methods on
+          virtual hosts and internal component router now automatically
+          set the child context on the target application is a null 
+          context is detected.
+    - Bugs fixed
+        - Allowed subclasses of StatusService to get the throwable 
+          that generate the error in getRepresentation() method. 
+          Reported by Loic Mathieu.
+        - The Servlet adapter now stops the whole Component instead
+          of just the Application.
+        - Fixed Apache HttpClient extension bug regarding multiple 
+          headers. Reported by Stephan Koops.
+        - Fixed potential concurrency issues in Response and
+          WrapperList/Series/Form. Reported by Stephan Koops.
+        - Fixed potential NPE when using Velocity with template 
+          representations having no modification date. Reported by 
+          Evan Worley.
+        - Moved generation of entries at the the end of Atom feeds. 
+          Reported by Bruno Harbulot.
+        - Fix potential NPE in Template class. Reported by Ralf
+          Bommersbach
+        - Fixed bug in HTTP client connectors causing a null response
+          entity to be returned when no entity headers were found but
+          when chunked encoding was detected.
+        - Each connector now has its own instance of Context to allow
+          setting of different parameter values on different 
+          connectors.
+        - Fixed issue with character sets and proxies where a character
+          set could be written twice in HTTP headers. Reported by Alex
+          Milowski.
+        - The Router.defaultMatchQuery property wasn't properly taken
+          into account by the Route class. Now it sets the default 
+          value for Route.matchQuery property.
+        - Fixed bug in Grizzly connector causing some requests to hand.
+          Contributed by Bruno Harbulot.
+    - API Enhancements
+        - Added a "Request.originalRef" property containing the URI 
+          reference originally requested by the client. Clarified the
+          purpose of "Request.resourceRef". Suggested by Alex Milowski
+          and Rob Heittman.
+        - Client now has a new constructor taking a string with the 
+          protocol name instead of a Protocol instance.
+        - Replaced "Response.challengeRequest" by "challengeRequests" 
+          list property to conform to HTTP semantics. Contributed by
+          Bruno Harbulot.
+        - Clarified concurrency constraints on Uniform/Restlet 
+          subclasses and on Resource class. 
+          Suggested by Bruno Harbulot.
+        - Added public Resource#getAllowedMethods() method.
+        - Allow the routing of URIs with or without taking into 
+          account the query part. Suggested by Jim Alateras and 
+          contributed by Bruno Dumon.
+        - Completed the Component's XML config with the default query 
+          match setting defined on routers. Suggested by Bruno Dumon.
+        - Replaced the Context#getThread(Runnable) method with a more
+          flexible org.restlet.service.TaskService class and a new
+          "taskService" property on Application. Many design 
+          contributions from Tim Peierls. Suggestions by Kevin Conaway.
+        - Clarified Javadocs for static getCurrent() methods. Suggested
+          by Patrick Logan.
+        - Replaced Map<String, Object> parameters by Map<String, ?>
+          in Template and Resolver classed. Suggested by Leigh Klotz.
+        - Added shortcut Route#getMatchingMode() and setMatchingMode()
+          methods that redirect calls to the "template" property.
+        - Documented the default matching mode on Router.
+        - Deprecated Context#setLogger() as there is no compelling use
+          for it and synchronized setParameters() and setAttributes()
+          methods. Updated Javadocs of Context related to concurrent
+          access and modifications of those collections. Suggested by
+          Tim Peierls.
+        - Added HTTP OAuth authentication scheme constant.
+        - Completed the Component's XML config with the support of 
+          parameters under the component, client and server elements. 
+          Reported by Bruno Harbulot.
+        - Added a org.restlet.service.Service class, super class of all
+          existing service classes, with "enabled" and "started" 
+          properties. Enabled services are automatically started by
+          their parent application or component.
+        - Added an org.restlet.data.Range class to represent content
+          ranges.
+        - Added "enabledCipherSuites" and "disabledCipherSuites" 
+          parameters to HTTPS connectors supporting those settings.
+          Contributed by Bruno Harbulot.
+        - Added Representation.range property to indicates the partial
+          content available. Corresponds to Content-Range HTTP header.
+          Also added a getAvailableSize() to return the range size in
+          case it is set, or getSize() otherwise.
+        - Added a RangeService class and an Application.rangeService
+          property to control to automatic handling of range of 
+          response entities.
+        - Added "resumeUpload" and "temporaryExtension" properties on
+          the Directory class to enable resumable uploads. This 
+          limit the number of concurrent uploads on the same file to
+          one client at a time. 
+    - NRE and Extension Enhancements
+        - Added a static HttpServletRequest getRequest(Request) method
+          to the Servlet extension.
+        - DirectoryResource now exposes isDirectoryTarget() and 
+          isFileTarget() methods. Suggested by Jean-Yves Cronier.
+        - Enhanced WADL extension to support all WADL description 
+          properties and both formatting and parsing. Also added new
+          WadlRepresentation and WadlResource classes to facilitate the
+          description of Resources as WADL documents. 
+          Sponsored by NetDev Ltd (http://www.netdev.co.uk).
+        - The Apache HTTP Client extension can now have a retry handler
+          parameter set. Suggested by Sanjay Acharya.
+        - Added a "sslContextFactory" parameter and attribute to HTTPS 
+          connectors to improve the flexibility of SSL configuration. If
+          this parameter isn't set, the previous parameters are used 
+          instead. Contributed by Bruno Harbulot.
+        - Exceptions occuring while writing the response entities are 
+          now reported as severe errors instead of just info messages.
+          Broken connections are still reported as info messages to 
+          reduce log size. Contributed by Bruno Dumon.
+        - Made the com.noelios.ext.ssl extension public to provide more 
+          flexibility in configuring SSL certificates. Depends on 
+          jSSLutils library 0.4. Contributed by Bruno Harbulot.
+        - Added a port of Restlet to GWT. This is a subset of the 
+          Restlet API and Engine, mostly the client side working on top
+          of GWT 1.5 RC1.
+        - Slightly refactored and documented OAuth extension.
+        - Renamed the "org.restlet.ssl.hostnameVerifier" attribute into
+          just "hostnameVerifier" for consistency with existing naming.
+        - SpringBeanRouter can now search beans in ancestors. 
+          Contribution from James Maki.
+        - JaxbRepresentation now takes into account its "characterSet"
+          property to set the "jaxb.encoding" property on the JAXB 
+          marshaller internally used. Reported by Sanjay Acharya.
+    - Misc
+        - Refactored WAR client to remove remaining class in NRE core.
+        - Refactored OSGi support to not require one activator for each
+          bundle/extension anymore. Only the NRE bundle has an activator 
+          which introspects the installed bundles for the usual 
+          descriptor files in "META-INF/services" directories. Suggested
+          by Hendy Irawan.
+
+- 1.1 Milestone 4 (2008-05-20)
+    - Bugs fixed
+        - Fixed NPE with internal HTTP server when no reason phrase is
+          available for the response status. Reported by Stephan Koops.
+        - Fixed potential NPE in request processing code when a request
+          was not fully set (missing properties like the method).
+        - Fixed issues with chunked encoding and socket closing. 
+          Contributed by Kevin Conaway.
+        - Fixed potential NPE in ApplicationClientDispatcher. Reported
+          by Alex Milowski.
+        - Series.getValues() was not respecting the 'ignoreCase' 
+          parameter. Contributed by Stephan Koops.
+        - Allowed only UTF-8 character set for JsonRepresentation. 
+          Reported by Michael B?ckling.
+    - API Enhancements
+        - Matrix parameters are now fully supported by the Reference 
+          and the Form classes. Added many new methods, similar to the
+          ones available for query strings.
+        - File-like extensions are now fully supported by the Reference
+          class. See getExtensions(), getExtensionsAsArray() and setter
+          methods. 
+        - Added Reference.hasExtensions(), hasFragment(), hasMatrix(), 
+          hasQuery() and hasScheme() methods.
+        - Matrix parameters are now ignored by tunnel service. 
+          Contributed by Stephan Koops.
+        - Refactored the TunnelService implementation, renamed the 
+          "extensionTunnel" to "extensionsTunnel" and added the
+          "queryTunnel" property for consistency. Suggested by Chuck 
+          Mortimer.
+        - Deprecated the Restlet.init() method. In Restlet 1.2, this 
+          method will be removed and its logic directly put in the
+          handle(Request, Response) method.
+        - Added static Response.getCurrent()/setCurrent() and Request.
+          getCurrent() methods. Implementation based on thread local
+          variables updated by component and applications when they
+          handle a request/response couple. Suggested by Stephan Koops.
+        - Added new Response.setStatus() methods and new Status 
+          constructors for more flexibility in setting status with 
+          associated exceptions.
+        - Ensured the all NRE core and extensions classes properly pass
+          the throwable/exceptions to the error statuses so they can be
+          later retrieved or printed. Suggested by Steve Loughran.  
+        - Added support for new RIAP authority: HOST to issue requests 
+          relative to the current virtual host. 
+          Suggested by Rob Heittman.
+        - Added APPLICATION_ALL_XML constant and proper changes to the
+          MediaType.includes() to recognize those patterns. Contributed
+          by Stephan Koops.
+        - Moved shared initialization logic of Resource constructor ands
+          init() method into initialization block.
+        - Static valueOf() methods now treat "" as null.
+        - Added connectTimeout attribute on both Client and 
+          ClientHelper classes. Reported by Avi Flax.
+        - Added static "current" property on Application and 
+          VirtualHost returning the instance associated with the 
+          current thread.
+        - Added Context.getThread(Runnable) method to centralize usage
+          of thread (potentially doing some pooling and currently 
+          copying the thread local variables).
+        - Deprecated Context.getApplication(). Use static method
+          Application.getCurrent() instead.
+        - Removed several unecessary throw clauses in ByteUtils and 
+          added some missing Javadocs. Contributed by Stephan Koops.
+     - NRE and Extension Enhancements
+        - Atom extension is now able to write Feed and Service XML
+          documents and not just reading/parsing them. This can be used
+          to return Atom feeds as representations.
+        - Added Velocity's RepresentationTemplateLoader class and a new
+          constructor to TemplateRepresentation which allows the 
+          processing of a Velocity template provided as a Restlet
+          Representation.
+        - Deprecated Protocol.SMTP_STARTTLS, replaced by a "startTls" 
+          parameter on JavaMail connector.
+        - Added Protocol.POP and POPS constants.
+        - Added ChallengeScheme.POP_BASIC (USER+PASS) and POP_DIGEST 
+          (APOP) constants.
+        - Added support for POP v3 and POP/SSL v3 to the JavaMail 
+          connector and refactored existing code. 
+          Sponsored by RunMyProcess (http://www.runmyprocess.com).
+        - The debugging mode of the JavaMail connector is now optional
+          and can be changed with a connector parameter "debug".
+        - Refactored the JavaMail connector to separate the message 
+          parsing and formatting into three new classes: 
+          MessageRepresentation, MessagesRepresentation and 
+          RepresentationMessage. Suggested by Matthieu Hug.
+        - Added an ObjectFactory to the JAX-RS extension for customized
+          root resource class and provider instantiation. Contributed
+          by Bruno Dumon.
+        - The local connectors (FILE and CLAP connectors for now) have 
+          a new "defaultLanguage" parameter that is uses when no parent
+          application is available (no MetadataService accessible).
+          Limitation reported by Jules Milner-Brage.
+        - Added SslContextFactory and DefaultSslContextFactory to the
+          com.noelios.restlet.util package. Contributed by Bruno 
+          Harbulot.
+    - Misc 
+        - Updated Grizzly to 1.7.3.
+        - Improved logging consistency.
+        - Expressed the Eclipse plugin dependencies using the
+          "Import-Package" instructions instead of "Required-Bundle".
+        - All connector and authentication modules now have OSGi 
+          activator to automatically register themselves with the 
+          engine. The engine module also registers itself with the API.
+          Suggested by Hendy Irawan, with help from Edward Yakop.
+        - Updated db4o 7.2 to latest stable build.
+        - Added Spring example based on REST book chapter 7. 
+          Contributed by Konstantin L?ufer.
+        - Removed unecessary libraries from distribution.
+        - The WAR client is now only available for Application deployed
+          using ServletServer or a subclass. 
+        - Made javax.servlet.* dependencies optional for the fileupload
+          extension. Reported by Hendy Irawan.
+
+ - 1.1 Milestone 3 (2008-04-01)
+    - Bugs fixed
+        - Fixed setRedirectRef(String) method which wasn't supporting 
+          relative URIs when no base reference was available on the 
+          resource reference. Now it uses the resource reference 
+          instead. Reported by Steve Loughran.
+        - Made the SpringApplication constructor public. Reported by 
+          Peter Neubauer.
+        - The AWS authentication wasn't properly detected by the
+          engine. Reported by Steve Loughran.
+        - Fixed directory redirections in DirectoryResource class.
+        - Fixed NPE in RestletFrameworkServlet. Reported by Yuri de Wit
+          and fixed by Rhett Sutphin.
+        - Fixed socket closing issues with the internal HTTP 
+          connectors. Reported and fixed by Kevin Conaway.
+        - Fixed potential NPE in CLAP connector. Reported by Rob 
+          Heittman. 
+        - Fixed potential NPE in Freemarker extension when the 
+          template is provided under the form of a representation.
+        - Request.getProtocol() now returns the protocol of the 
+          targetRef instead of the baseRef when the targetRef itself is
+          absolute. Patch contributed by Jeroen Goubert (Schaubroeck).
+        - When using new Reference(baseref, "absolute-path"), calling 
+          getTargetRef() now returns a reference with the baseRef 
+          cleared. Patch contributed by Jeroen Goubert (Schaubroeck).
+    - API Enhancements
+        - Added OAuth extension as a pluggable authentication scheme.
+          Contributed by Adam Rosien.
+        - Added XDB extension providing integration with Oracle 
+          embedded JVM. Contributed by Marcelo Ochoa.
+        - Made the org.restlet.util.Resolver generic and used it in 
+          Guard to allow the user to provide a secret resolver without
+          needing to subclass Guard.
+        - DomRepresentation.getDocument() now creates a new empty 
+          document if no document is available or can't be parsed.
+        - Reference class now enforces the usage of valid URI 
+          characters only. Suggested by Avi Flax.
+        - Static methods added to Reference: isGenericDelimiter(char),
+          isReserved(char), isSubDelimiter(char), isUnreserved(char)
+          and isValid(char).   
+        - DomRepresentation now has a protected createTransformer()
+          method that can be overridden to customize the properties of
+          the JAXP Transformer. Contributed by Rob Heittman.
+        - All getters in Reference returning URI encoded string now
+          have an additional method taking a 'decode' parameter. 
+          Suggested by Paul J. Lucas.
+        - TransformRepresentation can now be reused multiple times by 
+          multiple threads in parallel. Contributed by Marc Portier.
+        - Parameters and output properties can now be set on the 
+          TransformRepresentation and are automatically passed to the 
+          created JAXP Transformers. Suggested by Marc Portier and
+          Joe Nellis.
+        - Added new constructors to TransformRepresentation making the
+          creation of the internal URI resolver optional and allowing
+          to pass a JAXP Templates precompiled instance directly.
+          Suggested by Joe Nellis. 
+        - Added Context.getCurrent() and setCurrent(..) static methods
+          based on a thread local variable. The static property is also
+          updated when Component and Application instances are handling
+          a call. This can be useful to get access to the context even
+          when it isn't possible to manually pass it down the call 
+          stack. 
+        - Added a new constructor to Client and Server allowing to 
+          specify the class name of the connector to use. Suggested by
+          Dan Diephouse.
+        - Added a "getValuesArray(String name):String[]" method on the
+          Series class. Suggested by Paul J. Lucas.
+        - Method getDocumentBuilder() on XmlRepresentation is now 
+          protected, allowing reuse by subclasses like 
+          JaxbRepresentation, JibxRepresentation or DomRepresentation.
+        - Method XmlRepresentation.getSource() was renamed to 
+          getStreamSource() and new getSaxSource() and getDomSource()
+          methods were added. DomRepresentation has an optimized 
+          implementation of getDomSource() and SaxRepresentation was
+          refactored to support this approach as well with many new
+          constructors added. Suggested by Marc Portier.
+        - TransformRepresentation has been refactored to support SAX
+          pipelining when multiple TransformRepresentation are nested.
+          Suggested by Marc Portier. 
+        - Added a getValuesMap() method to the Series class.
+        - Added "authenticated" property on ChallengeResponse and 
+          refactored Guard and engine to update this property upon
+          authentication. 
+        - Added getPrincipal() method on ChallengeResponse.
+        - Added support of client preferences tunnelling by extensions.
+          Suggested by Chuck Mortimore and contributed by Stephan 
+          Koops.
+    - NRE and Extension Enhancements
+        - Made the ServerServlet.create*() method protected instead of 
+          public.
+        - Added a ServerServlet.createCall() and createWarClient() 
+          methods for easier subclassing by the XDB extension. 
+          Some contributions from Marcelo Ochoa.
+        - Added new javax.annotation library for the JAX-RS extension.
+        - Added ServerServlet.getClass() method to facilitate 
+          subclassing by the XDB extension. Suggested by Marcelo Ochoa.
+        - Added new constructors to JiBX extension not requiring the
+          binding name parameter.
+        - Distributed experimental JAX-RS extension implementing the
+          JSR-311 draft specification. Contributed by Stephan Koops.
+        - All HTTP server connectors now expose the client certificates
+          using the "org.restlet.https.clientCertificates" request 
+          attribute. Contributed by Bruno Harbulot.
+        - Updated Java Activation Framework to version 1.1.1.
+        - Updated JavaMail library to version 1.4.1.
+        - Removed the SpringApplication class as an XML configuration
+          alternative is now documented. 
+        - Updated db4o to version 7.2 with transparent activation 
+          and update.
+        - Improve logging for internal HTTP server when created thread
+          throw uncaught exceptions. Contributed by Kevin Conaway.
+        - HTTPS server connectors expose new attributes related 
+          to SSL: "org.restlet.https.cipherSuite" and 
+          "org.restlet.https.keySize". Contributed by Bruno Harbulot.
+        - Improved the Grizzly connector to support returning chunked
+          responses.
+    - Misc
+        - Reformatting of the changes log. Contributed by Avi Flax.
+        - All Component subclasses now use a main method that throws 
+          exceptions and takes a string array as parameter.
+        - More precise log message for a Resource with no variant.
+        - Optimized Eclipse dependencies by leveraging reexport option.
+        - Updated Spring to version 2.5.2.
+        - Improved handling of connectors created without a protocol.
+          Contributed by Avi Flax.
+        - Representations returned by the CLAP connector now have their
+          modification date set if it is based on a file. Suggested by
+          Keke.
+        - Refactored and improved logging for Guard and challenge
+          processing. Suggested by Alex Milowski.
+        - Updated Reference's Javadocs to mention that getters do not 
+          automatically do URI decoding. Suggested by Paul J. Lucas.
+        - Refactored NRE helpers hierarchy to take advantage of generics
+          and remove duplications.
+        - Added SSL unit test contributed by Bruno Harbulot.
+        - Completed the list of known media-types with Tomcat's 
+          entries. Reported and contributed by Alex Milowski.
+        - The engine can now registers an URLStreamHandlerFactory 
+          adapter on the java.net.URL class that is based on the 
+          current context as retrieved via Context.getCurrent() 
+          method. 
+        - Added condition on javadocs flag for the stage-classic task 
+          in the Ant build script. reported by Kevin Conaway.
+        - Changed licensing scheme to a choice between CDDL 1.0, LGPL
+          3.0 or LGPL 2.1.
+        - Ensured that all the framework (API, Engine and extensions) 
+          are thread safe, especially the representation and
+          the request/reponse related ones. This will allow the usage
+          of separate reader / worker / writer threads to work on the
+          same request/response cycle. Reported by Tim Peierls.
+
+ - 1.1 Milestone 2 (2008-02-29)
+    - Bugs fixed
+        - Fixed NPE in Connector class. Reported by Rob Heittman and
+          fixed by Tim Peierls.
+        - WriterRepresentation was missing a default implementation for
+          getReader() abstract method.
+        - If an error is found in HttpClientHelper.sendRequest(),
+          StreamClientHelper ignores it and continues to parse the
+          response when it should stop processing. Fixed by Kevin
+          Conaway.
+        - Status.isSuccess(), is*Error(), isRedirection() and isInfo()
+          methods now support status classes as specified in HTTP 1.1.
+          Reported by Paul J. Lucas.
+        - The request ClientInfo address and port were not available
+          for the default connector and the Grizzly connector. Patch
+          contributed by Kevin Conaway.
+        - Fixed issue in SpringHost preventing usage of the
+          setRoutes(Map) method. Replaced with a setAttachments(Map)
+          method. Added Javadocs example. Reported by Simon Olofsson.
+        - ResourceException wasn't setting a message. Reported by Derek
+          Chiles.
+        - Representation.isAvailable() now returns false if the size is
+          '0'.
+        - Refactoring of HTTP server connectors code to better deal
+          with HEAD request, 1xx, 204, 205, 304 status codes. Issues
+          reported by Alex Milowski.
+        - Ensured all modifiable collections are properly documented in
+          the API. Suggested by Stephan Koops.
+        - Fixed Spring XML loading issue related to validation in
+          SpringContext class.
+        - Fixed bug with the FileClientHelper returning wrong list of
+          variants. Reported by Iestyn Evans.
+        - Fixed bug in Tag.equals() implementation. Reported by Stephan
+          Koops.
+        - Fixed NPE in the WAR client of the Servlet extension.
+          Reported by Jason Terhune.
+        - Caught exception with Simple connector when flushing a closed
+          stream. Now it is logged at a lower priority. Reported by
+          Todd Nguyen.
+        - Fixed NPE in the MediaTypes class. Reported and contributed
+          by Marc Portier.
+        - Fixed bug in SpringComponent preventing setting of clients.
+          Reported by Garriot Zhang.
+        - Fixed several bugs related to Grizzly (chunked encoding not
+          working, restarting NPE, etc.).
+    - API Enhancements
+        - Deprecated Status.isInfo(), replaced by isInformational() to
+          follow HTTP naming.
+        - Removed unecessary 'synchronized' keyword on
+          Application.createRoot() and added one to the setRoot()
+          method. Reported by Tim Peierls.
+        - Added support for Alpha-numerical sorting of index pages in
+          Directory. Suggested by Davide Angelocola based on David
+          Koelle's original idea. Optimized implementation contributed
+          by Rob Heittman from Solertium Corporation. New
+          setComparator, setAlphaComparator and setAlphaNumComparator
+          methods added. The default sorting is now "AlphaNum".
+        - Synchronized some list setters on Component and Connector
+          with explanation in Javadocs as suggested by Tim Peirls.
+        - Guard.checkSecret() method now has a Request parameter.
+          Suggested by Alex Milowski.
+        - Added new constructors to CookieSetting. Contributed by
+          Stephan Koops.
+        - Filter.beforeHandle() and doHandle() methods can now
+          indicates if the processing should continue normally, go to 
+          the afterHandle() method directly or stop immediately. 
+          IMPORTANT NOTE: as it isn't possible to add a return 
+          parameter to an existing method, the change can break 
+          existing filters. In this case, you just need to return the 
+          "CONTINUE" constant from your method and use "int" as return 
+          parameter. Issue reported by Paul J. Lucas.
+        - Added Handler.getQuery() method to easily return the
+          request's target resource reference query as a parsed form
+          (series of parameters). Suggested by Kevin Conaway.
+        - Added a Reference.clone() method. Contributed by Stephan
+          Koops.
+        - Added more fine-grained lifecycle for Components with new
+          start*() and stop*() methods. Suggested by a discussion with
+          Alex Milowski.
+        - Added Component.updateHosts() method to update the routes
+          after dynamic changes to virtual hosts. Suggested and
+          contributed in part by Alex Milowski.
+        - Added format(Object) and resolve(Object,String) methods to
+          Template to allow for custom variable resolution. Enhancement
+          suggested by Stephan Koops.
+        - Added "defaultMatchingMode" property on Router. Suggested by
+          William Pietri.
+        - Added "throwable" property to the Status class, respecting
+          the immutability. Suggested by Paul J. Lucas.
+        - Added "getEphemeralPort()" method on Server to get the local
+          port actually used by the system when the "port" property is
+          set to '0'. Suggested by William Pietri.
+        - Made the inner Template.VariableResolver interface and
+          "format(VariableResolver)" method public. Suggested by
+          Stephan Koops for the JAX-RS extension.
+        - Added static Representation.createEmpty() method to return a
+          new empty representation.
+        - Added Variable.TYPE_URI_PATH to match any path character
+          except in the query or fragment parts. Suggested by Stephan
+          Koops and Michael Makunas.
+        - Added MediaType.APPLICATION_ATOM_SERVICE_XML constant.
+        - Added TEXT_JAVASCRIPT media type constant. Suggested by
+          Evgeny Shepelyuk.
+        - Added MediaType.getMostSpecific(), isCompatible() and
+          isConcrete() methods. Contributed by Stephan Koops.
+    - NRE and Extension Enhancements
+        - Added new JsonRepresentation constructors taking a Bean or a
+          Map. Suggested by Evgeny K. Shepelyuk and Sean Landis
+        - Updated Spring to version 2.5
+        - Updated db4o to version 7.0
+        - Added a new parameter to ServerServlet allowing specification
+          of a custom component to instantiate.
+        - Added the ability to specify a hostname verifier for the
+          HTTPS client based on JDK's net package. Contributed by Alex
+          Milowski.
+        - Improved robustness of Reference when starting with an empty
+          URI. Contributed by Stephan Koops.
+        - Added new Spring NRE extension containing a
+          SpringServerServlet facilitating the Servlet + Spring +
+          Restlet trio integration. Contributed by Florian Schwarz.
+          Also new classes where contributed by Rhett Sutphin that give
+          even more integration option (RestletFrameworkServlet,
+          SpringBeanFinder and SpringBeanRouter).
+        - Added JiBX extension, alternative to JAXB. Contributed by
+          Florian Schwarz.
+        - Added support for nested resources in WadlComponent.
+          Contributed by Avi Flax.
+        - Resources with no variant set now log a warning on GET
+          requests. Contributed by Avi Flax.
+        - Updated and tested the Atom extension to conform to the
+          latest APP specifications. The extension currently allows to
+          retrieve an APP Service Document and Atom Feeds.
+        - Lowered the logging level for some Simple IO exceptions.
+        - Updated JSON JAR to latest version.
+        - Externalized mappings between file extensions and media types
+          in the MetadataService. Reported by Alex Milowsky.
+        - Closed an open BufferedReader in IdentClient class.
+        - Updated FreeMarker to version 2.3.12.
+        - Added support for DIGEST authentication (client and server
+          side). Contributed by Ray Waldin.
+        - Added a WadlApplication class and refactored the
+          WadlComponent to support many more usage scenarios:
+            - WadlApplication instances can now be added to existing
+              components. 
+            - WadlApplication instances can be modified to add filters
+              in front of the root router 
+            - WADL description documents can be retrieved via HTTP or
+              other protocols 
+            - Only the necessary client connectors are automatically
+              created
+        - Guard is now setting a Principal instance after
+          authorization. Contributed by Stephan Koops.
+        - Refactored engine to support pluggable authentication.
+        - Updated Grizzly to version 1.7.2
+    - Misc
+        - Added Engine.copyResponseHeaders() method. Contributed by
+          Stephan Koops.
+        - Handlers now return a SERVER_INTERNAL_ERROR instead of
+          CLIENT_NOT_FOUND when no next Restlet is attached to them.
+          Suggested by Paul J. Lucas.
+        - Added Engine.formatCookie(), formatCookieSetting() and
+          equivalent parse*() methods. Contributed by Stephan Koops for
+          the JAX-RS implementation.
+        - Updated HTTP server connectors behaviour in the purpose to
+          avoid the sending of entity when the entity is empty, when
+          the status explicitely forbids the sending of entity (e.g.
+          1xx, etc), or when the method must not send entity (e.g.
+          HEAD).
+        - Updated HTTP client connectors behaviour in the purpose to
+          close aggressively the connection in several identified cases
+          when the status explicitely forbids the sending of entity
+          (e.g. 1xx, etc), when the method must not send entity (e.g.
+          HEAD), or when the Content-Length header's value is 0.
+        - Ensure that the headers of the response's entity will be
+          retrieved even if no message body has been sent (in this
+          case, an empty representation is created).
+        - Tutorial examples based on applications are now runnable with
+          the Servlet adapter. Suggested by Marcelo Ochoa.
+        - RIAP request are now considered confidential when dispatched.
+          Suggested by Rob Heittman.
+
+- 1.1 Milestone 1 (2007-12-24)
+    - Bugs fixed
+        - Overridden the StringRepresentation#setCharacterSet method,
+          in order to refresh the size of the representation. Reported
+          by Calvin Cheng.
+        - Fixed issue in the selection of connectors. The last
+          connector in the classpath for a given protocol was selected
+          instead of the first one, leading to counter-intuitive
+          behavior when multiple connectors were present in the
+          classpath.
+        - Fixed bug in DomRepresentation causing the loss of both
+          public and system DocTypes. Reported by Lee Saferite.
+        - Fixed path error in test cases module. Reported by Sean
+          Landis, contributed by Alex Milowski.
+        - SaxRepresentation constructors don't throw IOException
+          anymore. Reported by Paul J. Lucas.
+        - Fixed multi-threading issues. Reported by Tim Peierls. Some
+          contributions by Kevin Conaway.
+        - Renamed the HTTP_AWS challenge scheme into HTTP_AWS_S3 as
+          there are changes for each existing Amazon Web Service.
+          Reported by Guy Ernest.
+    - API Enhancements
+        - Added Response.locationRef property as a replacement for the
+          Response.redirectRef property that is now deprecated.
+          Suggested by Michael Vogel and Avi Flax.
+        - The ConverterService and all related methods on Message are
+          deprecated, with no replacement as it doesn't fit well with
+          content negotiation. Most users prefer to handle those
+          conversion in Resource subclasses. Suggested by Justin
+          Makeig, Rob Heittman, Sumit Lohia.
+        - Added a getApplication() method to Context and Resource
+          classes.
+        - Added abstract CharacterRepresentation for representations
+          based on character streams.
+        - Added ReaderRepresentation for representations based on
+          characters Readers.
+        - Added WriterRepresentation for representations based on
+          characters Writers.
+        - Added ByteUtils.toString(Reader) method and refactored
+          ByteUtils.toString(InputStream) to reuse it.
+        - Added ByteUtils.getReader(InputStream, CharacterSet) method.
+        - Added ByteUtils.getStream(Writer) method. Implementation by
+          Kevin Conaway.
+        - Added getReader() and a write(Writer) methods on
+          Representation class.
+        - Exposed the "file" property on the FileRepresentation class.
+        - Added two new FreeMarker's TemplateRepresentation constructor
+          to allow more ways to provide the template (via a
+          representation or directly as a FreeMarker Template object).
+        - Added validate() methods on XmlRepresentation to validate an
+          XML representation against a given schema.
+        - Added a getSource() method on XmlRepresentation that results
+          a JAXP Source instance.
+        - Added a Template.getVariableNames() method. Suggested by
+          Stian Soiland.
+        - Added new Dimension.AUTHORIZATION enum entry. Suggested by
+          Stian Soiland.
+        - Added a Representation.release() to have an uniform way to
+          release a representation without forcing a read for example
+          or manually closing the socket, the channel, the file, etc.
+        - Added a Message.release() method to have an easy way to
+          release the message's entity. Suggested by Stian Soiland.
+        - Added W3C XML Schema and Relax NG media types.
+        - Added new media types for RSS and WADL. Contributed by Avi
+          Flax.
+        - Added Atom, Relax NG, RSS, RTF, WADL and XSD in the common
+          extensions of MetadataService. Contributed by Avi Flax.
+        - Simplified the management of MediaType constants. Contributed
+          by Stian Soiland.
+        - Application is now concrete and has a setRoot() method.
+        - Added Component.setDefaultHost() method.
+        - Moved the "expirationDate", "modificationDate", "tag", "size"
+          properties from Variant to Representation. The old properties
+          are only deprecated for now but will be removed in a later
+          version.
+        - The Resource class now accepts POST requests without any
+          entity, or with an empty entity. Suggested by Sean Landis and
+          Stian Soiland.
+        - Added setters and getters for all the properties of all the
+          classes in the API, including the collection properties.
+          Clarified the Javadocs for the default collection creations.
+          This will greatly facilitate the usage of the API in IoC
+          containers like Spring.
+        - Renamed "URIResolver" property to "uriResolver" in
+          TransformRepresentation.
+        - Renamed "*Attribute" properties to "*Parameter" in
+          TunnelService.
+        - Added "accessRestricted" property to CookieSetting, currently
+          mapped to the "httpOnly" Cookie attribute supported by recent
+          browsers to prevent XSS attacks. Contributed by Rob Heittman.
+        - Added logger-less constructors to Template. Suggested by
+          Justin Makeig.
+        - Added "available", "modifiable" and "readable" properties to
+          the Resource class.
+        - Added "rechallengeEnabled" property to Guard (true by
+          default) to repeatedly challenge the client upon reception of
+          invalid credentials instead of forbidding the access like
+          before. This conforms more closely to the HTTP 1.1
+          specifications while leaving the door open for the stricter
+          behavior. Reported by Stephan Koops.
+        - Added the "internalRouter" property to Component to attach
+          internal/private Restlets that are accessible via the
+          built-in RIAP client (Restlet Internal Access Protocol).
+          Suggested by Marc Portier who contributed the test case.
+        - Updated the Protocol and LocalReference classes with support
+          for the new RIAP scheme.
+        - In order to facilitate the implementation of your custom
+          Finder, an new createTarget() method taking a Resource class
+          in parameter.
+        - Added support for the "Content-Disposition" field as a
+          "downloadName" property on Representation. Contributed by
+          Kevin Conaway. Added a "downloadable" property to activate
+          the feature.
+        - Added a ResourceException to facilitate the mapping between
+          domain exceptions and response status. Suggested by Paul J.
+          Lucas and others.
+        - Replaced getPreferredRepresentation() and
+          getRepresentation(Variant) methods by represent() and
+          represent(Variant) methods throwing ResourceExceptions.
+        - Added Reference.addQueryParameter() and addSegment() methods.
+          Reported by Kevin Conaway.
+        - Added Reference(Reference baseRef, Reference uriRef)
+          constructor. Suggested by Rob Heittman.
+    - NRE and Extension Enhancements
+        - Added a new Grizzly based HTTP server connector (full NIO).
+          Optmizations and support contributed by Jean-François Arcand.
+        - Upgraded Apache MINA to version 1.1.0.
+        - There are now default internal HTTP client and server
+          connectors exposed in the NRE core. If no other HTTP
+          connectors are found in the classpath, those connectors will
+          be used. They should perform reasonably under normal
+          workloads but won't be as scalable as the NIO based
+          connectors such as Grizzly and MINA based ones. You don't
+          have anything to do to configure them, just put the
+          com.noelios.restlet.jar in your classpath along with the
+          Restlet API's JAR. Note that they don't support HTTPS and
+          persistent connections. The support for chunked encoding and
+          decoding was contributed by Kevin Conaway.
+        - All HTTPS server connectors (Grizzly, Jetty and Simple) now
+          have two configuration parameters to indicates whether a
+          client authentication is wanted or required. Suggested by
+          Toby Thain and Chuck Hinson.
+        - A request attribute "org.restlet.https.clientCertificates"
+          containing the list of SSL session certificates (if available
+          and accessible) is now available. Currently, only the Simple
+          connector is capable or setting it. Suggested by Toby Thain.
+        - Simple connector now initialize a trust manager.
+        - Added JAXB extension based on a contribution by Overstock.com
+          (via Sean Landis).
+        - Added JAXB 2.0 and StAX 1.0 libraries.
+        - The ServletConverter now also copy the Servlet's request
+          attributes into the Restlet attributes map. Suggested by
+          Leigh Klotz.
+        - Added automatic call of release() for outgoing
+          representations via HTTP connectors. Contribution by Alex
+          Milowski.
+        - Added SpringApplication, SpringComponent, SpringHost,
+          SpringRouter, SpringServer to the Spring extension to
+          facilitate the wiring by Spring IoC.
+        - If Resource.getRepresentation(Variant) returns 'null', the
+          Resource.handleGet() method now returns a NOT_FOUND (404)
+          status. Suggested by John D. Mitchell.
+        - Added WADL extension with a WadlComponent capable of
+          automatically wiring a Restlet component, application and
+          resource classes. Suggested by Avi Flax.
+        - Added a createComponent() method on ServerServlet to
+          facilitate the customization of the component for a Servlet.
+        - The Message's getEntityAsDom(), getEntityAsSax() and
+          getEntityAsForm() are now caching the result representation
+          for easier reuse in a Restlet filters chain. Suggested by Rob
+          Heittman.
+        - Finder.createResource() method now rethrows the Error
+          exceptions thrown by Resource constructors. Suggested by
+          Vincent Lari.
+        - A custom classloader can now be specified when using the CLAP
+          URIs. Just set the attribute "org.restlet.clap.classloader"
+          on your Request instances with your classloader instance.
+          This will be automatically be picked up by the CLAP
+          connector. Reported by Alex Milowski.
+        - Guard.secrets is now a final ConcurrentMap instead of just a
+          Map instance. Suggested by Tim Peierls.
+        - Renamed Context's "dispatcher" property into
+          "clientDispatcher" to distinguish with the new
+          "serverDispatcher" property. The "serverDispatcher" property
+          allows the developer to optimize the sending of request to
+          applications under the current component/JVM, as if they were
+          dispatched by one of the server connectors. Suggested by Rob
+          Heittman with feed-back from Marc Portier.
+        - Split the Resource class to separate a new
+          org.restlet.Handler class exposing the lower-level API, from
+          the higher-level API of Resource.
+        - Refactored the implementation of dispatchers to derive from a
+          base TemplateDispatcher class.
+        - The context dispatchers automatically update the identifier
+          property of response entities when they are empty, based on
+          the request's target URI.
+        - Added SpringServer.setParameters(Properties) method.
+          Contributed by Kevin Conaway.
+        - Response.redirect*(String targetUri) methods now
+          automatically resolve relative URIs agains the base reference
+          of the Request's resource reference. Suggested by Rob
+          Heittman.
+    - Misc
+        - Removed AsyncWeb connector, to be replaced by a custom MINA
+          based one.
+        - Removed Jetty 5 connector from the code base. Jetty 6
+          connector is stable enough now.
+        - Updated projects to Eclipse 3.3. Minor adjustments required.
+ 
