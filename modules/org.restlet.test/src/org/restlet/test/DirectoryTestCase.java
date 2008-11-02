@@ -113,10 +113,10 @@ public class DirectoryTestCase extends TestCase {
     String baseFileUrlFrBis = this.webSiteURL.concat("fichier.fr.txt");
 
     String percentEncodedFileUrl = this.webSiteURL.concat(Reference
-            .encode("a new file.txt"));
+            .encode("a new %file.txt"));
 
     String percentEncodedFileUrlBis = this.webSiteURL
-            .concat("a+new%20file.txt");
+            .concat("a+new%20%25file.txt");
 
     /** Tests the creation of directory with unknown parent directories. */
     String testCreationDirectory = webSiteURL.concat("dir/does/not/exist");
