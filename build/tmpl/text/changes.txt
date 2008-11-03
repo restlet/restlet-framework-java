@@ -5,6 +5,13 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Bugs fixed
+    
+    - Misc
+        - Fully moved org.restlet.gwt.internal content into 
+          org.restlet.gwt.engine package.
+
+- 1.1.1 (2008-10-31)
+    - Bugs fixed
         - Fixed regression with applications deployed in Servlet 
           container hosted on Windows (Path "\WEB-INF\restlet.xml" 
           does not start with a "/" character). Reported by Brian 

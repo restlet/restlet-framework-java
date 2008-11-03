@@ -25,7 +25,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.gwt.internal.http;
+package org.restlet.gwt.engine.http;
 
 import java.util.Set;
 
@@ -43,7 +43,7 @@ import org.restlet.gwt.data.Request;
 import org.restlet.gwt.data.Response;
 import org.restlet.gwt.data.Status;
 import org.restlet.gwt.engine.Engine;
-import org.restlet.gwt.internal.util.AuthenticationUtils;
+import org.restlet.gwt.engine.util.AuthenticationUtils;
 import org.restlet.gwt.util.DateUtils;
 import org.restlet.gwt.util.Series;
 

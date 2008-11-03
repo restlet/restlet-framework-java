@@ -36,7 +36,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.restlet.gwt.data.Parameter;
-import org.restlet.gwt.internal.util.ListUtils;
+import org.restlet.gwt.engine.util.ListUtils;
 
 /**
  * Modifiable list of entries with many helper methods. Note that this class

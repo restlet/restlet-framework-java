@@ -31,8 +31,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.restlet.gwt.internal.util.LineReader;
-import org.restlet.gwt.internal.util.ListUtils;
+import org.restlet.gwt.engine.util.LineReader;
+import org.restlet.gwt.engine.util.ListUtils;
 import org.restlet.gwt.resource.Representation;
 import org.restlet.gwt.resource.StringRepresentation;
 import org.restlet.gwt.util.WrapperList;
