@@ -33,7 +33,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
-import org.restlet.gwt.internal.util.ListUtils;
+import org.restlet.gwt.engine.util.ListUtils;
 
 /**
  * List wrapper. Modifiable list that delegates all methods to a wrapped list.

@@ -5,7 +5,6 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Bugs fixed
-        - Fixed bug with applications deployed in Servlet container 
-          hosted on Windows (Path "\WEB-INF\restlet.xml" does not start
-          with a "/" character). Reported by Brian E. Williams.
- 
+    - API changes
+    - Misc
+     
