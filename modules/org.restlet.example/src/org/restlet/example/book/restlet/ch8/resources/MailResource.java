@@ -175,10 +175,10 @@ public class MailResource extends BaseResource {
                 Response response;
                 final Request request = new Request();
                 request.setMethod(Method.POST);
-                request.setEntity(form2.getWebRepresentation());
 
                 for (final Contact contact : this.mail.getRecipients()) {
                     request.setResourceRef(contact.getMailAddress());
+                    request.setEntity(form2.getWebRepresentation());
                     response = client.handle(request);
                     // Error when sending the mail.
                     if (!response.getStatus().isSuccess()) {
