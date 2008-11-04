@@ -14,6 +14,9 @@ default tablespace users
 quota unlimited on users;
 
 grant connect,resource to $sch;
+rem required grants for remote debugging
+rem uncomment this if you need remote debugging
+rem grant DEBUG CONNECT SESSION, DEBUG ANY PROCEDURE, JAVADEBUGPRIV to $sch;
 
 grant create public synonym to $sch;
 
@@ -21,6 +24,9 @@ begin
   -- required grants for using JDK1.4 logging
   dbms_java.grant_permission( UPPER('$sch'), 'SYS:java.lang.RuntimePermission', 'getClassLoader', '' );
   dbms_java.grant_permission( UPPER('$sch'), 'SYS:java.util.logging.LoggingPermission', 'control', '' );
+  -- required for remote debugging
+  -- uncomment this if you need remote debugging
+  -- dbms_java.grant_permission( UPPER('$sch'), 'SYS:java.net.SocketPermission','localhost:4000', 'connect,resolve' );
   -- required grants for some examples
   dbms_java.grant_permission( UPPER('$sch'), 'SYS:java.net.SocketPermission','www.restlet.org', 'connect,resolve' );
   dbms_java.grant_permission( UPPER('$sch'), 'SYS:java.net.SocketPermission','s3.amazonaws.com', 'connect,resolve' );
