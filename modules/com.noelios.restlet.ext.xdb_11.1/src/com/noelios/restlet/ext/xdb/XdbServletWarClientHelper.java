@@ -160,6 +160,9 @@ public class XdbServletWarClientHelper extends ServletWarClientHelper {
                 } finally {
                     XdbServerServlet.closeDbResources(stmt, rset);
                 }
+
+                response.setEntity(output);
+                response.setStatus(Status.SUCCESS_OK);
             } else {
                 // Return the entry content
                 try {
@@ -189,19 +192,24 @@ public class XdbServletWarClientHelper extends ServletWarClientHelper {
                             output.setMediaType(new MediaType(mediaType));
                         }
                     }
+
+                    response.setEntity(output);
+                    response.setStatus(Status.SUCCESS_OK);
                 } catch (SQLException sqe) {
-                    getLogger().throwing("XdbServletWarClientHelper",
-                            "handleWar", sqe);
-                    throw new RuntimeException(
+                    if (sqe.getErrorCode() == 31001) {
+                      // ORA-31001: Invalid resource handle or path name
+                      response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+                    } else {
+                      getLogger().throwing("XdbServletWarClientHelper",
+                            "handleWar: ", sqe);
+                      throw new RuntimeException(
                             "Exception querying xdburitype(?).getBlob() - xdbResPath: "
                                     + xdbResPath, sqe);
+                    }
                 } finally {
                     XdbServerServlet.closeDbResources(stmt, rset);
                 }
             }
-
-            response.setEntity(output);
-            response.setStatus(Status.SUCCESS_OK);
         } else {
             response.setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
             response.getAllowedMethods().add(Method.GET);
