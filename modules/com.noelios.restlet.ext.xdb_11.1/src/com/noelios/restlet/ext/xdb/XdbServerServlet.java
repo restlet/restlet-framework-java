@@ -118,7 +118,7 @@ public class XdbServerServlet extends ServerServlet {
      * @param resultSet
      *            Any result set.
      */
-    protected static void closeDbResources(final Statement statement,
+    public static void closeDbResources(final Statement statement,
             final ResultSet resultSet) {
         if (resultSet != null) {
             try {
@@ -143,7 +143,7 @@ public class XdbServerServlet extends ServerServlet {
      * @return A JDBC connection.
      * @throws ServletException
      */
-    protected static Connection getConnection() throws ServletException {
+    public static Connection getConnection() throws ServletException {
         Connection conn = null;
 
         if (System.getProperty("java.vm.name").equals("JServer VM")) {
@@ -274,7 +274,7 @@ public class XdbServerServlet extends ServerServlet {
         if (doubleDotPos > 0) {
             // Use DbmsJava by reflection to avoid dependency to Oracle libs
             // at compiling time
-            final String sch = className.substring(0, doubleDotPos);
+            final String sch = className.substring(0, doubleDotPos).toUpperCase();
             final String cName = className.substring(doubleDotPos + 1);
             try {
                 final Class<?> loaderClass = Engine
@@ -283,7 +283,7 @@ public class XdbServerServlet extends ServerServlet {
                         "classForNameAndSchema", new Class[] { String.class,
                                 String.class });
                 log("[Noelios Restlet Engine] - Schema: " + sch + " class: "
-                        + className + " loader: " + loaderClass);
+                        + cName + " loader: " + loaderClass);
                 targetClass = (Class<?>) meth.invoke(null, new Object[] {
                         cName, sch });
             } catch (NoSuchMethodException nse) {
@@ -419,9 +419,12 @@ public class XdbServerServlet extends ServerServlet {
         }
 
         try {
-            if ((getApplication() != null) && (getApplication().isStopped())) {
+            String bootstrapClassName = "RESTLET:com.noelios.restlet.ext.xdb.XdbServerServlet";
+            Engine.setUserClassLoader(this.loadClass(bootstrapClassName).getClassLoader());
+            Application app = getApplication();
+            if ((app != null) && (app.isStopped())) {
                 try {
-                    getApplication().start();
+                    app.start();
                 } catch (Exception e) {
                     log("Error during the starting of the Restlet Application",
                             e);
@@ -429,7 +432,12 @@ public class XdbServerServlet extends ServerServlet {
             }
         } catch (AccessControlException ace) {
             log("Error loading Restlet Application", ace);
-            throw new ServletException("Error loading Restlet application", ace);
+            throw new ServletException("Error loading Restlet application",
+                                       ace);
+        } catch (final ClassNotFoundException cne) {
+            log("Error loading Restlet Application", cne);
+            throw new ServletException("Error loading Restlet application",
+                                       cne);
         }
     }
 }
