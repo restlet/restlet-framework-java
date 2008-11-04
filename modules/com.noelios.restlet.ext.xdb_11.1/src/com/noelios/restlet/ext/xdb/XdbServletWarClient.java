@@ -64,16 +64,16 @@ public class XdbServletWarClient extends Client {
     /**
      * Constructor.
      * 
-     * @param context
+     * @param parentContext
      *            The context.
      * @param config
      *            The Servlet config object.
      * @param conn
      *            The JDBC Connection to XMLDB repository.
      */
-    public XdbServletWarClient(Context context, ServletConfig config,
+    public XdbServletWarClient(Context parentContext, ServletConfig config,
             Connection conn) {
-        super(context, (List<Protocol>) null);
+        super(parentContext.createChildContext(), (List<Protocol>) null);
         getProtocols().add(Protocol.WAR);
         this.helper = new XdbServletWarClientHelper(this, config, conn);
     }
