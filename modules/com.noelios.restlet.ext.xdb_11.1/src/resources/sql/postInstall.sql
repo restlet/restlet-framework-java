@@ -7,6 +7,7 @@ define sch=$1;
 begin
   -- REST WS with public access
   dbms_java.grant_permission( 'ANONYMOUS', 'SYS:java.lang.RuntimePermission', 'getClassLoader', '' );
+  dbms_java.grant_permission( 'ANONYMOUS', 'SYS:java.util.logging.LoggingPermission', 'control', '' );
   commit;
 end;
 /
