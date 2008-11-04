@@ -69,6 +69,14 @@
     </exec>
   </target>
 
+  <target name="compile-classes"
+          description="Compile classes under org.restlet and com.noelios.restlet packages">
+    <exec executable="${ORACLE_HOME}/bin/sqlplus" dir="sql">
+      <arg value="${jdbc.username}/${jdbc.password}@${sqlnet.string}"/>
+      <arg value="@compileClasses"/>
+    </exec>
+  </target>
+
   <!-- Remove Direct Invocation Server Side Entry point -->
   <target name="drop-server-side-runtime">
     <dropjava login="${jdbc.username}/${jdbc.password}@${sqlnet.string}"
