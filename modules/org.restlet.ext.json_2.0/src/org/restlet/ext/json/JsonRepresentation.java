@@ -33,6 +33,8 @@ import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONStringer;
+import org.json.JSONTokener;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.resource.Representation;
@@ -43,82 +45,112 @@ import org.restlet.resource.StringRepresentation;
  * Notation and is a lightweight data-interchange format.
  * 
  * @author Jerome Louvel
- * @see <a href="http://www.json.org">JSON home</a>
+ * @see <a href="http://www.json.org">JSON home< /a>
  */
 public class JsonRepresentation extends StringRepresentation {
-    /**
-     * Constructor from a JSON object.
-     * 
-     * @param jsonObject
-     *            The JSON object.
-     */
-    public JsonRepresentation(JSONObject jsonObject) {
-        super(jsonObject.toString(), MediaType.APPLICATION_JSON, null,
-                CharacterSet.UTF_8);
-    }
+	/**
+	 * Constructor from a JSON array.
+	 * 
+	 * @param jsonArray
+	 *            The JSON array.
+	 */
+	public JsonRepresentation(JSONArray jsonArray) {
+		this(jsonArray.toString());
+	}
 
-    /**
-     * Constructor from a map object.
-     * 
-     * @param map
-     *            The map to convert to JSON.
-     * @see org.json.JSONObject#JSONObject(Map)
-     */
-    public JsonRepresentation(Map<Object, Object> map) {
-        this(new JSONObject(map));
-    }
+	/**
+	 * Constructor from a JSON object.
+	 * 
+	 * @param jsonObject
+	 *            The JSON object.
+	 */
+	public JsonRepresentation(JSONObject jsonObject) {
+		super(jsonObject.toString(), MediaType.APPLICATION_JSON, null,
+				CharacterSet.UTF_8);
+	}
 
-    /**
-     * Constructor from a bean using reflection to generate JSON names.
-     * 
-     * @param bean
-     *            The bean to convert to JSON.
-     * @see org.json.JSONObject#JSONObject(Object)
-     */
-    public JsonRepresentation(Object bean) {
-        this(new JSONObject(bean));
-    }
+	/**
+	 * Constructor from a JSON stringer.
+	 * 
+	 * @param jsonStringer
+	 *            The JSON stringer.
+	 */
+	public JsonRepresentation(JSONStringer jsonStringer) {
+		this(jsonStringer.toString());
+	}
 
-    /**
-     * Constructor.
-     * 
-     * @param jsonRepresentation
-     *            A source JSON representation to parse.
-     */
-    public JsonRepresentation(Representation jsonRepresentation)
-            throws IOException {
-        super(jsonRepresentation.getText(), MediaType.APPLICATION_JSON, null,
-                CharacterSet.UTF_8);
-    }
+	/**
+	 * Constructor from a JSON tokener.
+	 * 
+	 * @param jsonTokener
+	 *            The JSON tokener.
+	 */
+	public JsonRepresentation(JSONTokener jsonTokener) {
+		this(jsonTokener.toString());
+	}
 
-    /**
-     * Constructor from a JSON string.
-     * 
-     * @param jsonString
-     *            The JSON string.
-     */
-    public JsonRepresentation(String jsonString) {
-        super(jsonString, MediaType.APPLICATION_JSON, null, CharacterSet.UTF_8);
-    }
+	/**
+	 * Constructor from a map object.
+	 * 
+	 * @param map
+	 *            The map to convert to JSON.
+	 * @see org.json.JSONObject#JSONObject(Map)
+	 */
+	public JsonRepresentation(Map<Object, Object> map) {
+		this(new JSONObject(map));
+	}
 
-    /**
-     * Converts the representation to a JSON array.
-     * 
-     * @return The converted JSON array.
-     * @throws JSONException
-     */
-    public JSONArray toJsonArray() throws JSONException {
-        return new JSONArray(getText());
-    }
+	/**
+	 * Constructor from a bean using reflection to generate JSON names.
+	 * 
+	 * @param bean
+	 *            The bean to convert to JSON.
+	 * @see org.json.JSONObject#JSONObject(Object)
+	 */
+	public JsonRepresentation(Object bean) {
+		this(new JSONObject(bean));
+	}
 
-    /**
-     * Converts the representation to a JSON object.
-     * 
-     * @return The converted JSON object.
-     * @throws JSONException
-     */
-    public JSONObject toJsonObject() throws JSONException {
-        return new JSONObject(getText());
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param jsonRepresentation
+	 *            A source JSON representation to parse.
+	 */
+	public JsonRepresentation(Representation jsonRepresentation)
+			throws IOException {
+		super(jsonRepresentation.getText(), MediaType.APPLICATION_JSON, null,
+				CharacterSet.UTF_8);
+	}
+
+	/**
+	 * Constructor from a JSON string.
+	 * 
+	 * @param jsonString
+	 *            The JSON string.
+	 */
+	public JsonRepresentation(String jsonString) {
+		super(jsonString, MediaType.APPLICATION_JSON, null, CharacterSet.UTF_8);
+	}
+
+	/**
+	 * Converts the representation to a JSON array.
+	 * 
+	 * @return The converted JSON array.
+	 * @throws JSONException
+	 */
+	public JSONArray toJsonArray() throws JSONException {
+		return new JSONArray(getText());
+	}
+
+	/**
+	 * Converts the representation to a JSON object.
+	 * 
+	 * @return The converted JSON object.
+	 * @throws JSONException
+	 */
+	public JSONObject toJsonObject() throws JSONException {
+		return new JSONObject(getText());
+	}
 
 }
