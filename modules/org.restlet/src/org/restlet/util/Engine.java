@@ -107,6 +107,10 @@ public abstract class Engine {
             result = Class.class.getClassLoader();
         }
 
+        if (result == null) {
+            result = ClassLoader.getSystemClassLoader();
+        }
+
         return result;
     }
 
