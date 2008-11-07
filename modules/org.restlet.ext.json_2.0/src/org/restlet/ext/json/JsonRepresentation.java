@@ -33,6 +33,8 @@ import java.util.Map;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONStringer;
+import org.json.JSONTokener;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.resource.Representation;
@@ -43,7 +45,7 @@ import org.restlet.resource.StringRepresentation;
  * Notation and is a lightweight data-interchange format.
  * 
  * @author Jerome Louvel
- * @see <a href="http://www.json.org">JSON home</a>
+ * @see <a href="http://www.json.org">JSON home< /a>
  */
 public class JsonRepresentation extends StringRepresentation {
     /**
@@ -76,7 +78,16 @@ public class JsonRepresentation extends StringRepresentation {
      * @see org.json.JSONObject#JSONObject(Object)
      */
     public JsonRepresentation(Object bean) {
-        this(new JSONObject(bean));
+        super(null, MediaType.APPLICATION_JSON, null, CharacterSet.UTF_8);
+        if (bean instanceof JSONArray) {
+            this.setText(bean.toString());
+        } else if (bean instanceof JSONStringer) {
+            this.setText(bean.toString());
+        } else if (bean instanceof JSONTokener) {
+            this.setText(bean.toString());
+        } else {
+            this.setText(new JSONObject(bean).toString());
+        }
     }
 
     /**

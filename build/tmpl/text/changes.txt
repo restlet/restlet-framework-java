@@ -8,7 +8,8 @@ Changes log
         - org.restlet.util.Engine#getClassLoader() didn't return
           the system classloader when all other were null. Fixed by
           Rob Heittman.
-    
+        - Fixed bug when JsonRepresentation are instantiated with a 
+          JSONArray object. Reported by Adrian Nadeau.
     - Misc
         - Fully moved org.restlet.gwt.internal content into 
           org.restlet.gwt.engine package.
