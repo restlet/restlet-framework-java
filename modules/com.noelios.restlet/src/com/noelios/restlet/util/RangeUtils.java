@@ -191,7 +191,7 @@ public class RangeUtils {
                     String[] tab = value.split("-");
                     if (tab.length == 2) {
                         index = Long.parseLong(tab[0]);
-                        length = Long.parseLong(tab[1]) - index - 1;
+                        length = Long.parseLong(tab[1]) - index + 1;
                     }
                 }
                 result.add(new Range(index, length));
