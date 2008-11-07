@@ -283,7 +283,19 @@ public abstract class Representation extends Variant {
      * @return The available size.
      */
     public long getAvailableSize() {
-        return (getRange() == null) ? getSize() : getRange().getSize();
+        if (getRange() == null) {
+            return getSize();
+        } else if (getRange().getSize() != Range.SIZE_MAX) {
+            return getRange().getSize();
+        } else if (getSize() != Representation.UNKNOWN_SIZE) {
+            if (getRange().getIndex() != Range.INDEX_LAST) {
+                return getSize() - getRange().getIndex();
+            } else {
+                return getSize();
+            }
+        }
+
+        return Representation.UNKNOWN_SIZE;
     }
 
     /**

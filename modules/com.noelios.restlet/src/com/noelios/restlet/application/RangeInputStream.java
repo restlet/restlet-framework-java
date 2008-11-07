@@ -32,6 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.restlet.data.Range;
+import org.restlet.resource.Representation;
 
 /**
  * Filters an input stream to expose only a given range.
@@ -49,6 +50,12 @@ public class RangeInputStream extends FilterInputStream {
     /** The total size of the source stream. */
     private long totalSize;
 
+    /** The start index inside the source stream. */
+    private final long startIndex;
+
+    /** The end index inside the source stream. */
+    private final long endIndex;
+
     /**
      * Constructs a stream exposing only a range of a given source stream.
      * 
@@ -64,6 +71,44 @@ public class RangeInputStream extends FilterInputStream {
         this.range = range;
         this.position = 0;
         this.totalSize = totalSize;
+        if (totalSize == Representation.UNKNOWN_SIZE) {
+            if (range.getIndex() == Range.INDEX_LAST) {
+                if (range.getSize() == Range.SIZE_MAX) {
+                    // Read the whole stream
+                    this.startIndex = -1;
+                    this.endIndex = -1;
+                } else {
+                    throw new IllegalArgumentException(
+                            "Can't determine the start and end index.");
+                }
+            } else {
+                if (range.getSize() == Range.SIZE_MAX) {
+                    this.startIndex = range.getIndex();
+                    this.endIndex = -1;
+                } else {
+                    this.startIndex = range.getIndex();
+                    this.endIndex = range.getIndex() + range.getSize() - 1;
+                }
+            }
+        } else {
+            if (range.getIndex() == Range.INDEX_LAST) {
+                if (range.getSize() == Range.SIZE_MAX) {
+                    this.startIndex = -1;
+                    this.endIndex = -1;
+                } else {
+                    this.startIndex = totalSize - range.getSize();
+                    this.endIndex = -1;
+                }
+            } else {
+                if (range.getSize() == Range.SIZE_MAX) {
+                    this.startIndex = range.getIndex();
+                    this.endIndex = -1;
+                } else {
+                    this.startIndex = range.getIndex();
+                    this.endIndex = range.getIndex() + range.getSize() - 1;
+                }
+            }
+        }
     }
 
     @Override
@@ -95,38 +140,34 @@ public class RangeInputStream extends FilterInputStream {
 
     @Override
     public int read(byte[] b, int off, int len) throws IOException {
-        long startIndex = (range.getIndex() != Range.INDEX_LAST) ? range
-                .getIndex() : totalSize - range.getSize();
-        long skipped = skip(startIndex - position);
-
-        // skip to the index of the range.
-        while ((skipped >= 0) && !(position >= startIndex)
-                && !this.range.isIncluded(position += skipped, totalSize)) {
-            skipped = skip(startIndex - position);
+        // Reach the start index.
+        while (!(position >= startIndex)) {
+            position += skip(startIndex - position);
         }
 
-        // read the number of bytes required, otherwise returns -1
-        // TODO refactoring
-        if (range.getSize() != Range.SIZE_MAX) {
-            long finalIndex = startIndex + range.getSize();
-            if (position >= finalIndex) {
-                return -1;
+        int n = -1;
+        if (endIndex != -1) {
+            // Read up until the end index
+            if (position > endIndex) {
+                // The end index is reached.
+                n = -1;
             } else {
-                int n = super
-                        .read(
-                                b,
-                                off,
-                                ((position + len) > finalIndex) ? (int) (finalIndex - position)
-                                        : len);
-                if (n > 0) {
-                    position += n;
-                }
-
-                return n;
+                // Take care to read the right number of octets according to the
+                // end index and the buffer size.
+                n = super.read(b, off,
+                        ((position + len) > endIndex) ? (int) (endIndex
+                                - position + 1) : len);
             }
         } else {
-            return super.read(b, off, len);
+            // Read normally up until the end of the stream.
+            n = super.read(b, off, len);
         }
 
+        if (n > 0) {
+            // Move the cursor.
+            position += n;
+        }
+
+        return n;
     }
 }
