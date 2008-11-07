@@ -5,6 +5,8 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Bugs fixed
+        - Fixed bug that occurs when a request with a query part is 
+          sent to a Directory Restlet.  
     - API changes
     - Misc
      
