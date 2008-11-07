@@ -161,7 +161,8 @@ public class DirectoryResource extends Resource {
 
         // Update the member variables
         this.directory = directory;
-        this.relativePart = request.getResourceRef().getRemainingPart();
+        this.relativePart = request.getResourceRef().getRemainingPart(false,
+                false);
         setModifiable(this.directory.isModifiable());
         setNegotiateContent(this.directory.isNegotiateContent());
 

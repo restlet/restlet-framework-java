@@ -10,6 +10,8 @@ Changes log
           Rob Heittman.
         - Fixed bug when JsonRepresentation are instantiated with a 
           JSONArray object. Reported by Adrian Nadeau.
+        - Fixed bug that occurs when a request with a query part is 
+          sent to a Directory Restlet.  
     - Misc
         - Fully moved org.restlet.gwt.internal content into 
           org.restlet.gwt.engine package.
