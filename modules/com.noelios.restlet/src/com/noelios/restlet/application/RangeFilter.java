@@ -76,22 +76,28 @@ public class RangeFilter extends Filter {
                             response.setEntity(null);
                         }
                     } else {
+                        boolean rangeEntity = response.getEntity().getRange() != null;
                         if (!requestedRange.equals(response.getEntity()
                                 .getRange())) {
-                            getLogger()
-                                    .info(
-                                            "The range of the response entity is not equal to the requested one.");
+                            if (rangeEntity) {
+                                getLogger()
+                                        .info(
+                                                "The range of the response entity is not equal to the requested one.");
+                            }
                             response.setEntity(new RangeRepresentation(response
                                     .getEntity(), requestedRange));
                         }
-                        if (Method.GET.equals(request.getMethod())
+                        if ((Method.GET.equals(request.getMethod()) || Method.HEAD
+                                .equals(request.getMethod()))
                                 && response.getStatus().isSuccess()
                                 && !Status.SUCCESS_PARTIAL_CONTENT
                                         .equals(response.getStatus())) {
                             response.setStatus(Status.SUCCESS_PARTIAL_CONTENT);
-                            getLogger()
-                                    .info(
-                                            "The status of a response to a partial GET must be \"206 Partial content\".");
+                            if (rangeEntity) {
+                                getLogger()
+                                        .info(
+                                                "The status of a response to a partial GET must be \"206 Partial content\".");
+                            }
                         }
                     }
                 } else if (request.getRanges().size() > 1) {
