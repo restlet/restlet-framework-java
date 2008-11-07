@@ -5,6 +5,9 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Bugs fixed
+        - org.restlet.util.Engine#getClassLoader() didn't return
+          the system classloader when all other were null. Fixed by
+          Rob Heittman.
     
     - Misc
         - Fully moved org.restlet.gwt.internal content into 
