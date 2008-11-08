@@ -285,14 +285,14 @@
 
 		<fileset dir="${lib}/${lib-junit-id}" includes="*.jar" />
 
-		<path refid="mod-net-path" />
-		<pathelement path="${classes}/${mod-net-id}" />
-		<pathelement path="${mod}/${mod-net-id}/src" />
-
 		<path refid="mod-httpclient-path" />
 		<pathelement path="${classes}/${mod-httpclient-id}" />
 		<pathelement path="${mod}/${mod-httpclient-id}/src" />
 
+		<path refid="mod-net-path" />
+		<pathelement path="${classes}/${mod-net-id}" />
+		<pathelement path="${mod}/${mod-net-id}/src" />
+		
 		<path refid="mod-jetty-path" />
 		<pathelement path="${classes}/${mod-jetty-id}" />
 		<pathelement path="${mod}/${mod-jetty-id}/src" />
@@ -1602,8 +1602,8 @@
 				<path refid="mod-api-test-path" />
 			</classpath>
 			<formatter type="plain" />
-			<test name="com.noelios.restlet.test.NoeliosTestSuite"
-			      todir="${temp}/test" />
+<!--			<test name="com.noelios.restlet.test.NoeliosTestSuite"
+			      todir="${temp}/test" /> -->
 			<test name="org.restlet.test.RestletTestSuite"
 			      todir="${temp}/test" />
 		</junit>

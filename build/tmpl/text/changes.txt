@@ -6,7 +6,11 @@ Changes log
 - @version-full@ (@release-date@)
     - Bugs fixed
         - Fixed bug that occurs when a request with a query part is 
-          sent to a Directory Restlet.  
+          sent to a Directory Restlet.
+        - Fixed values of headers "Content-length" and "Content-Range" 
+          issues when serving a range. Clarified the non support of 
+          multiple ranges and cases where the content-range cannot be 
+          properly deduced. Reported by Diego Ballve.
     - API changes
     - Misc
      

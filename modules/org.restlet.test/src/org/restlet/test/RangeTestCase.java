@@ -203,32 +203,56 @@ public class RangeTestCase extends TestCase {
         Response response = client.handle(request);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("1234567890", response.getEntity().getText());
+        assertEquals(10, response.getEntity().getSize());
 
         request = new Request(Method.GET, "http://localhost:8182/testGet");
         request.setRanges(Arrays.asList(new Range(0, 10)));
         response = client.handle(request);
         assertEquals(Status.SUCCESS_PARTIAL_CONTENT, response.getStatus());
         assertEquals("1234567890", response.getEntity().getText());
+        assertEquals(10, response.getEntity().getSize());
+        assertEquals(0, response.getEntity().getRange().getIndex());
+        assertEquals(10, response.getEntity().getRange().getSize());
 
         request.setRanges(Arrays.asList(new Range(Range.INDEX_FIRST, 2)));
         response = client.handle(request);
         assertEquals(Status.SUCCESS_PARTIAL_CONTENT, response.getStatus());
         assertEquals("12", response.getEntity().getText());
+        assertEquals(2, response.getEntity().getSize());
+        assertEquals(0, response.getEntity().getRange().getIndex());
+        assertEquals(2, response.getEntity().getRange().getSize());
 
         request.setRanges(Arrays.asList(new Range(2, 2)));
         response = client.handle(request);
         assertEquals(Status.SUCCESS_PARTIAL_CONTENT, response.getStatus());
         assertEquals("34", response.getEntity().getText());
+        assertEquals(2, response.getEntity().getSize());
+        assertEquals(2, response.getEntity().getRange().getIndex());
+        assertEquals(2, response.getEntity().getRange().getSize());
 
         request.setRanges(Arrays.asList(new Range(2, 7)));
         response = client.handle(request);
         assertEquals(Status.SUCCESS_PARTIAL_CONTENT, response.getStatus());
         assertEquals("3456789", response.getEntity().getText());
+        assertEquals(7, response.getEntity().getSize());
+        assertEquals(2, response.getEntity().getRange().getIndex());
+        assertEquals(7, response.getEntity().getRange().getSize());
 
         request.setRanges(Arrays.asList(new Range(Range.INDEX_LAST, 7)));
         response = client.handle(request);
         assertEquals(Status.SUCCESS_PARTIAL_CONTENT, response.getStatus());
         assertEquals("4567890", response.getEntity().getText());
+        assertEquals(7, response.getEntity().getSize());
+        assertEquals(3, response.getEntity().getRange().getIndex());
+        assertEquals(7, response.getEntity().getRange().getSize());
+
+        request.setRanges(Arrays.asList(new Range(1, Range.SIZE_MAX)));
+        response = client.handle(request);
+        assertEquals(Status.SUCCESS_PARTIAL_CONTENT, response.getStatus());
+        assertEquals("234567890", response.getEntity().getText());
+        assertEquals(9, response.getEntity().getSize());
+        assertEquals(1, response.getEntity().getRange().getIndex());
+        assertEquals(9, response.getEntity().getRange().getSize());
     }
 
     /**

@@ -57,10 +57,13 @@ public class RangeUtils {
             b.append(range.getIndex());
             b.append("-");
             if (range.getSize() != Range.SIZE_MAX) {
-                b.append(range.getIndex() + range.getSize());
+                b.append(range.getIndex() + range.getSize() - 1);
             } else {
                 if (size != Representation.UNKNOWN_SIZE) {
-                    b.append(range.getIndex() + size);
+                    b.append(size - 1);
+                } else {
+                    throw new IllegalArgumentException(
+                            "The entity has an unknown size, can't determine the last byte position.");
                 }
             }
         } else if (range.getIndex() == Range.INDEX_LAST) {
@@ -68,10 +71,10 @@ public class RangeUtils {
                 if (size != Representation.UNKNOWN_SIZE) {
                     b.append(size - range.getSize());
                     b.append("-");
-                    b.append(size);
+                    b.append(size - 1);
                 } else {
-                    b.append("-");
-                    b.append(range.getSize());
+                    throw new IllegalArgumentException(
+                            "The entity has an unknown size, can't determine the last byte position.");
                 }
             } else {
                 // This is not a valid range.
@@ -112,7 +115,7 @@ public class RangeUtils {
                 value.append(range.getIndex());
                 value.append("-");
                 if (range.getSize() != Range.SIZE_MAX) {
-                    value.append(range.getIndex() + range.getSize());
+                    value.append(range.getIndex() + range.getSize() - 1);
                 }
             } else if (range.getIndex() == Range.INDEX_LAST) {
                 value.append("-");
@@ -142,12 +145,16 @@ public class RangeUtils {
             int index = value.indexOf("-");
             int index1 = value.indexOf("/");
 
-            int startIndex = Integer.parseInt(value.substring(0, index));
-            int endIndex = Integer.parseInt(value.substring(index + 1, index1));
-            String strLength = value.substring(index1 + 1, value.length());
+            if (index != -1) {
+                int startIndex = Integer.parseInt(value.substring(0, index));
+                int endIndex = Integer.parseInt(value.substring(index + 1,
+                        index1));
 
-            representation
-                    .setRange(new Range(startIndex, endIndex - startIndex));
+                representation.setRange(new Range(startIndex, endIndex
+                        - startIndex + 1));
+            }
+
+            String strLength = value.substring(index1 + 1, value.length());
             if (!("*".equals(strLength))) {
                 representation.setSize(Long.parseLong(strLength));
             }
@@ -184,7 +191,7 @@ public class RangeUtils {
                     String[] tab = value.split("-");
                     if (tab.length == 2) {
                         index = Long.parseLong(tab[0]);
-                        length = Long.parseLong(tab[1]) - index;
+                        length = Long.parseLong(tab[1]) - index + 1;
                     }
                 }
                 result.add(new Range(index, length));
