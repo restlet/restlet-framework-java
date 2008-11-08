@@ -1565,8 +1565,8 @@
 				<path refid="mod-api-test-path" />
 			</classpath>
 			<formatter type="plain" />
-<!--			<test name="com.noelios.restlet.test.NoeliosTestSuite"
-			      todir="${temp}/test" / -->
+			<test name="com.noelios.restlet.test.NoeliosTestSuite"
+			      todir="${temp}/test" />
 			<test name="org.restlet.test.RestletTestSuite"
 			      todir="${temp}/test" />
 		</junit>
