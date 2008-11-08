@@ -135,9 +135,10 @@ public class HttpServerConverter extends HttpConverter {
                         .format());
             }
 
-            if (entity.getSize() != Representation.UNKNOWN_SIZE) {
+            long size = entity.getAvailableSize();
+            if (size != Representation.UNKNOWN_SIZE) {
                 responseHeaders.add(HttpConstants.HEADER_CONTENT_LENGTH, Long
-                        .toString(entity.getAvailableSize()));
+                        .toString(size));
             }
 
             if (entity.getIdentifier() != null) {
