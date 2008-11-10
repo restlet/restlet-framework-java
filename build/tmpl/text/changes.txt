@@ -19,6 +19,8 @@ Changes log
         - The Maven POM for the JAX-RS extension was referencing the
           JAX-RS 1.0 snapshot version instead of the final 1.0 version.
           Reported by Hendy Irawan
+        - ServerServlet was not always leveraging the createWarClient()
+          method. Reported by Marcelo Ochoa.
     - Misc
         - Fully moved org.restlet.gwt.internal content into 
           org.restlet.gwt.engine package.

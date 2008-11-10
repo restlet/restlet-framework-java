@@ -372,8 +372,7 @@ public class ServerServlet extends HttpServlet {
         Component component = null;
 
         // Look for the Component XML configuration file.
-        ServletWarClient client = new ServletWarClient(new Context(),
-                getServletContext());
+        Client client = createWarClient(new Context(), getServletConfig());
         Response response = client.get("war:///WEB-INF/restlet.xml");
         if (response.getStatus().isSuccess() && response.isEntityAvailable()) {
             component = new Component(response.getEntity());
@@ -836,8 +835,7 @@ public class ServerServlet extends HttpServlet {
      */
     private boolean isDefaultComponent() {
         // The Component is provided via an XML configuration file.
-        ServletWarClient client = new ServletWarClient(new Context(),
-                getServletContext());
+        Client client = createWarClient(new Context(), getServletConfig());
         Response response = client.get("war:///WEB-INF/restlet.xml");
         if (response.getStatus().isSuccess() && response.isEntityAvailable()) {
             return false;
