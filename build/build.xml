@@ -268,9 +268,9 @@
 		<fileset dir="${lib}/${lib-lang-id}" includes="*.jar" />
 
 		<!-- retrotranslator 1.2 -->
-		<pathelement location="tools/retrotranslator/backport-util-concurrent-3.0.jar" />
-		<pathelement location="tools/retrotranslator/retrotranslator-runtime-1.2.jar" />
-		<pathelement location="tools/retrotranslator/retrotranslator-transformer-1.2.jar" />
+		<pathelement location="tools/retrotranslator/backport-util-concurrent-3.1.jar" />
+		<pathelement location="tools/retrotranslator/retrotranslator-runtime-1.2.7.jar" />
+		<pathelement location="tools/retrotranslator/retrotranslator-transformer-1.2.7.jar" />
 	</path>
 
 	<path id="mod-ri-path">
@@ -586,8 +586,8 @@
 	<taskdef name="retrotranslator"
 	         classname="net.sf.retrotranslator.transformer.RetrotranslatorTask">
 		<classpath>
-			<pathelement location="tools/retrotranslator/retrotranslator-transformer-1.2.jar" />
-			<pathelement location="tools/retrotranslator/retrotranslator-runtime-1.2.jar" />
+			<pathelement location="tools/retrotranslator/retrotranslator-transformer-1.2.7.jar" />
+			<pathelement location="tools/retrotranslator/retrotranslator-runtime-1.2.7.jar" />
 		</classpath>
 	</taskdef>
 
