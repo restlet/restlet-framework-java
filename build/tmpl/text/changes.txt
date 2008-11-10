@@ -16,6 +16,9 @@ Changes log
           issues when serving a range. Clarified the non support of 
           multiple ranges and cases where the content-range cannot be 
           properly deduced. Reported by Diego Ballve.
+        - The Maven POM for the JAX-RS extension was referencing the
+          JAX-RS 1.0 snapshot version instead of the final 1.0 version.
+          Reported by Hendy Irawan
     - Misc
         - Fully moved org.restlet.gwt.internal content into 
           org.restlet.gwt.engine package.
