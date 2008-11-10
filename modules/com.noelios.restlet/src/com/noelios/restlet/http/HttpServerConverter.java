@@ -327,14 +327,27 @@ public class HttpServerConverter extends HttpConverter {
                     && response.getRequest().getMethod().equals(Method.HEAD)) {
                 addEntityHeaders(response);
                 response.setEntity(null);
+            } else if ((response.getRequest().getMethod() != null)
+                    && response.getRequest().getMethod().equals(Method.GET)
+                    && response.getStatus().equals(Status.SUCCESS_OK)
+                    && (response.getEntity() == null)) {
+                addEntityHeaders(response);
+
+                getLogger()
+                        .warning(
+                                "A response with a 200 (Ok) status should have an entity. Make sure that resource \""
+                                        + response.getRequest()
+                                                .getResourceRef()
+                                        + "\" returns one or sets the status to 204 (No content).");
             } else if (response.getStatus().equals(Status.SUCCESS_NO_CONTENT)) {
                 addEntityHeaders(response);
+
                 if (response.getEntity() != null) {
                     getLogger()
                             .fine(
                                     "Responses with a 204 (No content) status generally don't have an entity. Only adding entity headers for resource \""
                                             + response.getRequest()
-                                                    .getResourceRef() + ".");
+                                                    .getResourceRef() + "\".");
                     response.setEntity(null);
                 }
             } else if (response.getStatus()
@@ -344,18 +357,19 @@ public class HttpServerConverter extends HttpConverter {
                             .warning(
                                     "Responses with a 205 (Reset content) status can't have an entity. Ignoring the entity for resource \""
                                             + response.getRequest()
-                                                    .getResourceRef() + ".");
+                                                    .getResourceRef() + "\".");
                     response.setEntity(null);
                 }
             } else if (response.getStatus().equals(
                     Status.REDIRECTION_NOT_MODIFIED)) {
                 addEntityHeaders(response);
+
                 if (response.getEntity() != null) {
                     getLogger()
                             .warning(
                                     "Responses with a 304 (Not modified) status can't have an entity. Only adding entity headers for resource \""
                                             + response.getRequest()
-                                                    .getResourceRef() + ".");
+                                                    .getResourceRef() + "\".");
                     response.setEntity(null);
                 }
             } else if (response.getStatus().isInformational()) {
@@ -364,11 +378,12 @@ public class HttpServerConverter extends HttpConverter {
                             .warning(
                                     "Responses with an informational (1xx) status can't have an entity. Ignoring the entity for resource \""
                                             + response.getRequest()
-                                                    .getResourceRef() + ".");
+                                                    .getResourceRef() + "\".");
                     response.setEntity(null);
                 }
             } else {
                 addEntityHeaders(response);
+
                 if ((response.getEntity() != null)
                         && !response.getEntity().isAvailable()) {
                     // An entity was returned but isn't really available
@@ -376,7 +391,7 @@ public class HttpServerConverter extends HttpConverter {
                             .warning(
                                     "A response with an unavailable entity was returned. Ignoring the entity for resource \""
                                             + response.getRequest()
-                                                    .getResourceRef() + ".");
+                                                    .getResourceRef() + "\".");
                     response.setEntity(null);
                 }
             }
