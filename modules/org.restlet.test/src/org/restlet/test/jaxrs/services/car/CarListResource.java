@@ -71,7 +71,7 @@ public class CarListResource {
     /**
      * Diese Methode ist ein <b>sub-resource-locator</b>, weil sie nicht mit
      * einer Http-Methoden annotiert ist. Anfragen werden von der
-     * zuruckgegebenen Resource behandelt.
+     * zurueckgegebenen Resource behandelt.
      * 
      * @param id
      * @return
