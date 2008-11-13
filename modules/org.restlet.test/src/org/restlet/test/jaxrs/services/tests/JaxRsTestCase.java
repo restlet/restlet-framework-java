@@ -329,7 +329,15 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
             application.setGuard(guard);
         }
         application.add(appConfig);
+        modifyApplication(application);
         return application;
+    }
+
+    /**
+     * Possibility to modify the {@link JaxRsApplication}
+     */
+    protected void modifyApplication(JaxRsApplication application) {
+        // hook method
     }
 
     /**
