@@ -90,7 +90,7 @@ public class RequestService {
     @GET
     @Path("selectVariants")
     public Response getSelectVariants(@Context Request request) {
-        // TEST test VariantListBuilder
+        // TEST VariantListBuilder
         final List<Variant> variants = new ArrayList<Variant>();
         variants
                 .add(new Variant(MediaType.TEXT_HTML_TYPE, Locale.ENGLISH, null));
