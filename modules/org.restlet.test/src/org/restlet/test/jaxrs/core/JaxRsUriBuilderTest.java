@@ -171,10 +171,15 @@ public class JaxRsUriBuilderTest extends TestCase {
      * @throws IllegalArgumentException
      * @throws IllegalAccessException
      */
-    private static String getFieldValue(JaxRsUriBuilder jaxRsUriBuilder,
+    static String getFieldValue(JaxRsUriBuilder jaxRsUriBuilder,
             String fieldName) throws Exception {
-        final Field queryField = jaxRsUriBuilder.getClass().getDeclaredField(
-                fieldName);
+        Field queryField;
+        try {
+            queryField = jaxRsUriBuilder.getClass().getDeclaredField(fieldName);
+        } catch (NoSuchFieldException e) {
+            queryField = jaxRsUriBuilder.getClass().getSuperclass()
+                    .getDeclaredField(fieldName);
+        }
         queryField.setAccessible(true);
         final Object value = queryField.get(jaxRsUriBuilder);
         if (value == null) {
@@ -779,7 +784,7 @@ public class JaxRsUriBuilderTest extends TestCase {
     public void testUri() throws Exception {
         URI u = new URI("ftp", "test.org", null, null, "fragment");
         this.uriBuilder.uri(u);
-        assertEqualsURI("ftp://test.org#fragment", this.uriBuilder);
+        assertEqualsURI("ftp://test.org/#fragment", this.uriBuilder);
 
         u = new URI("ftp", "test.org", "/path", "qu=ery", "fragment");
         this.uriBuilder.uri(u);
