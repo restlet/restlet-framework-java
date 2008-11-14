@@ -42,8 +42,10 @@ import javax.ws.rs.core.Variant;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Response.Status;
 
+import org.restlet.Restlet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
+import org.restlet.data.Request;
 import org.restlet.ext.jaxrs.InstantiateException;
 import org.restlet.ext.jaxrs.internal.core.CallContext;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
@@ -88,6 +90,12 @@ public class ExceptionHandler {
 
     private final Logger logger;
 
+    private volatile Restlet noResMethodHandler;
+
+    private volatile Restlet noResourceClHandler;
+
+    private volatile Restlet noRootResClHandler;
+
     /**
      * Creates a new ExceptionHandler.
      * 
@@ -112,6 +120,39 @@ public class ExceptionHandler {
         cre.printStackTrace(new PrintWriter(stw));
         rb.entity(stw.toString());
         throw new WebApplicationException(cre, rb.build());
+    }
+
+    /**
+     * Returns the Restlet that is called, if no resource method class could be
+     * found.
+     * 
+     * @return the Restlet that is called, if no resource method class could be
+     *         found.
+     * @see #setNoResMethodHandler(Restlet)
+     */
+    public Restlet getNoResMethodHandler() {
+        return noResMethodHandler;
+    }
+
+    /**
+     * Returns the Restlet that is called, if no resource class could be found.
+     * 
+     * @return the Restlet that is called, if no resource class could be found.
+     */
+    public Restlet getNoResourceClHandler() {
+        return noResourceClHandler;
+    }
+
+    /**
+     * Returns the Restlet that is called, if no root resource class could be
+     * found.
+     * 
+     * @return the Restlet that is called, if no root resource class could be
+     *         found.
+     * @see #setNoRootResClHandler(Restlet)
+     */
+    public Restlet getNoRootResClHandler() {
+        return noRootResClHandler;
     }
 
     /**
@@ -268,28 +309,63 @@ public class ExceptionHandler {
     }
 
     /**
+     * Handles the case, if no resource method was found. If a Restlet to handle
+     * this case was given (see {@link #setNoResMethodHandler(Restlet)}), it is
+     * called. Otherwise a {@link WebApplicationException} with status 404 is
+     * thrown (see JAX-RS specification)
+     * 
      * @throws WebApplicationException
+     * @throws RequestHandledException
      */
-    public void resourceMethodNotFound() throws WebApplicationException {
-        throw new WebApplicationException(Status.NOT_FOUND);
+    public void resourceMethodNotFound() throws WebApplicationException,
+            RequestHandledException {
+        if (this.noResMethodHandler != null) {
+            this.noResMethodHandler.handle(Request.getCurrent(),
+                    org.restlet.data.Response.getCurrent());
+            throw new RequestHandledException();
+        } else {
+            throw new WebApplicationException(Status.NOT_FOUND);
+        }
     }
 
     /**
-     * see spec, section 3.7.2, item 2 (e)
+     * Handles the case, if no resource class was found. If a Restlet to handle
+     * this case was given (see {@link #setNoResourceClHandler(Restlet)}), it is
+     * called. Otherwise a {@link WebApplicationException} with status 404 is
+     * thrown (see spec, section 3.7.2, item 2e)
      * 
      * @throws WebApplicationException
+     * @throws RequestHandledException
      */
-    public void resourceNotFound() throws WebApplicationException {
-        throw new WebApplicationException(Status.NOT_FOUND);
+    public void resourceNotFound() throws WebApplicationException,
+            RequestHandledException {
+        if (this.noResourceClHandler != null) {
+            this.noResourceClHandler.handle(Request.getCurrent(),
+                    org.restlet.data.Response.getCurrent());
+            throw new RequestHandledException();
+        } else {
+            throw new WebApplicationException(Status.NOT_FOUND);
+        }
     }
 
     /**
-     * see spec, section 3.7.2, item 1 (d)
+     * Handles the case, if no root resource class was found. If a Restlet to
+     * handle this case was given (see {@link #setNoRootResClHandler(Restlet)}),
+     * it is called. Otherwise a {@link WebApplicationException} with status 404
+     * is thrown (see JAX-RS specification, section 3.7.2, item 1d)
      * 
      * @throws WebApplicationException
+     * @throws RequestHandledException
      */
-    public void rootResourceNotFound() throws WebApplicationException {
-        throw new WebApplicationException(Status.NOT_FOUND);
+    public void rootResourceNotFound() throws WebApplicationException,
+            RequestHandledException {
+        if (this.noRootResClHandler != null) {
+            this.noRootResClHandler.handle(Request.getCurrent(),
+                    org.restlet.data.Response.getCurrent());
+            throw new RequestHandledException();
+        } else {
+            throw new WebApplicationException(Status.NOT_FOUND);
+        }
     }
 
     /**
@@ -324,6 +400,48 @@ public class ExceptionHandler {
                 exception);
         exception.printStackTrace();
         throw new RequestHandledException();
+    }
+
+    /**
+     * Sets the Restlet that will handle the {@link Request}s, if no resource
+     * method could be found.
+     * 
+     * @param noResMethodHandler
+     *            the noResMethodHandler to set
+     * @see #getNoResMethodHandler()
+     * @see #setNoResourceClHandler(Restlet)
+     * @see #setNoRootResClHandler(Restlet)
+     */
+    public void setNoResMethodHandler(Restlet noResMethodHandler) {
+        this.noResMethodHandler = noResMethodHandler;
+    }
+
+    /**
+     * Sets the Restlet that will handle the {@link Request}s, if no resource
+     * class could be found.
+     * 
+     * @param noResourceClHandler
+     *            the noResourceClHandler to set
+     * @see #getNoResourceClHandler()
+     * @see #setNoResMethodHandler(Restlet)
+     * @see #setNoRootResClHandler(Restlet)
+     */
+    public void setNoResourceClHandler(Restlet noResourceClHandler) {
+        this.noResourceClHandler = noResourceClHandler;
+    }
+
+    /**
+     * Sets the Restlet that is called, if no root resource class could be
+     * found.
+     * 
+     * @param noRootResClHandler
+     *            the Restlet to call, if no root resource class could be found.
+     * @see #getNoRootResClHandler(Restlet)
+     * @see #setNoResourceClHandler()
+     * @see #setNoResMethodHandler(Restlet)
+     */
+    public void setNoRootResClHandler(Restlet noRootResClHandler) {
+        this.noRootResClHandler = noRootResClHandler;
     }
 
     /**

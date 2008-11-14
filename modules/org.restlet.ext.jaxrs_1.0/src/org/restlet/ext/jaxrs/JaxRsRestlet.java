@@ -54,7 +54,6 @@ import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.restlet.Context;
 import org.restlet.Restlet;
-import org.restlet.Route;
 import org.restlet.Router;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
@@ -155,8 +154,6 @@ public class JaxRsRestlet extends Restlet {
     private final ThreadLocalizedContext tlContext = new ThreadLocalizedContext();
 
     private volatile ObjectFactory objectFactory;
-
-    private volatile Restlet notMatchedRestlet;
 
     /**
      * Creates a new JaxRsRestlet with the given Context. Only the default
@@ -318,45 +315,21 @@ public class JaxRsRestlet extends Restlet {
     }
 
     /**
-     * Sets the Restlet that is called, if no root resource class could be
-     * found. Calls {@link #setNotMatchedRestlet(Restlet)}, but has the same
-     * semantic as {@link Router#attachDefault(Restlet)}.
+     * Sets the Restlet that is called, if no (root) resource class or method
+     * could be found.
      * 
      * @param notMatchedRestlet
-     *            the Restlet to call, if no root resource class could be found.
-     * @see #getNotMatchedRestlet()
-     * @see #setNotMatchedRestlet(Restlet)
+     *            the Restlet to call, if no (root) resource class or method
+     *            could be found.
+     * @see #setNoRootResClHandler(Restlet)
+     * @see #setNoResourceClHandler(Restlet)
+     * @see #setNoResMethodHandler(Restlet)
      * @see Router#attachDefault(Restlet)
-     * @see Router#setDefaultRoute(Route)
      */
     public void attachDefault(Restlet notMatchedRestlet) {
-        this.setNotMatchedRestlet(notMatchedRestlet);
-    }
-
-    /**
-     * Returns the Restlet that is called, if no root resource class could be
-     * found.
-     * 
-     * @return the Restlet that is called, if no root resource class could be
-     *         found.
-     * @see #setNotMatchedRestlet(Restlet)
-     */
-    public Restlet getNotMatchedRestlet() {
-        return this.notMatchedRestlet;
-    }
-
-    /**
-     * Sets the Restlet that is called, if no root resource class could be
-     * found.
-     * 
-     * @param notMatchedRestlet
-     *            the Restlet to call, if no root resource class could be found.
-     * @see #getDefault()
-     * @see Router#attachDefault(Restlet)
-     * @see Router#setDefaultRoute(Route)
-     */
-    public void setNotMatchedRestlet(Restlet notMatchedRestlet) {
-        this.notMatchedRestlet = notMatchedRestlet;
+        this.setNoRootResClHandler(notMatchedRestlet);
+        this.setNoResourceClHandler(notMatchedRestlet);
+        this.setNoResMethodHandler(notMatchedRestlet);
     }
 
     @Override
@@ -477,7 +450,7 @@ public class JaxRsRestlet extends Restlet {
         }
         // (d)
         if (eAndCs.isEmpty())
-            rootResourceNotFound();
+            excHandler.rootResourceNotFound();
         // (e) and (f)
         RootResourceClass tClass = getFirstByNoOfLiteralCharsNoOfCapturingGroups(eAndCs);
         // (f)
@@ -487,20 +460,6 @@ public class JaxRsRestlet extends Restlet {
         addPathVarsToMap(matchResult, tlContext.get());
         ResourceObject o = instantiateRrc(tClass);
         return new RroRemPathAndMatchedPath(o, u, matchResult.getMatched());
-    }
-
-    /**
-     * @throws WebApplicationException
-     * @throws RequestHandledException 
-     */
-    private void rootResourceNotFound() throws WebApplicationException, RequestHandledException {
-        if (this.notMatchedRestlet != null) {
-            this.notMatchedRestlet.handle(Request.getCurrent(), Response
-                    .getCurrent());
-            throw new RequestHandledException();
-        } else {
-            excHandler.rootResourceNotFound();
-        }
     }
 
     /**
@@ -1148,5 +1107,86 @@ public class JaxRsRestlet extends Restlet {
     public void setObjectFactory(ObjectFactory objectFactory) {
         this.objectFactory = objectFactory;
         this.providers.setObjectFactory(objectFactory);
+    }
+
+    /**
+     * Sets the Restlet that is called, if no root resource class could be
+     * found. You could remove a given Restlet by set null here.<br>
+     * If no Restlet is given here, status 404 will be returned.
+     * 
+     * @param noRootResClHandler
+     *            the Restlet to call, if no root resource class could be found.
+     * @see #getNoRootResClHandler(Restlet)
+     * @see #setNoResourceClHandler()
+     * @see #setNoResMethodHandler(Restlet)
+     * @see #attachDefault(Restlet)
+     */
+    public void setNoRootResClHandler(Restlet noRootResClHandler) {
+        excHandler.setNoRootResClHandler(noRootResClHandler);
+    }
+
+    /**
+     * Sets the Restlet that will handle the {@link Request}s, if no resource
+     * class could be found. You could remove a given Restlet by set null here.<br>
+     * If no Restlet is given here, status 404 will be returned.
+     * 
+     * @param noResourceClHandler
+     *            the noResourceClHandler to set
+     * @see #getNoResourceClHandler()
+     * @see #setNoResMethodHandler(Restlet)
+     * @see #setNoRootResClHandler(Restlet)
+     * @see #attachDefault(Restlet)
+     */
+    public void setNoResourceClHandler(Restlet noResourceClHandler) {
+        excHandler.setNoResourceClHandler(noResourceClHandler);
+    }
+
+    /**
+     * Sets the Restlet that will handle the {@link Request}s, if no resource
+     * method could be found.
+     * 
+     * @param noResMethodHandler
+     *            the noResMethodHandler to set
+     * @see #getNoResMethodHandler()
+     * @see #setNoResourceClHandler(Restlet)
+     * @see #setNoRootResClHandler(Restlet)
+     * @see #attachDefault(Restlet)
+     */
+    public void setNoResMethodHandler(Restlet noResMethodHandler) {
+        excHandler.setNoResMethodHandler(noResMethodHandler);
+    }
+
+    /**
+     * Returns the Restlet that is called, if no root resource class could be
+     * found. You could remove a given Restlet by set null here.<br>
+     * If no Restlet is given here, status 404 will be returned.
+     * 
+     * @return the Restlet that is called, if no root resource class could be
+     *         found.
+     * @see #setNoRootResClHandler(Restlet)
+     */
+    public Restlet getNoRootResClHandler() {
+        return excHandler.getNoRootResClHandler();
+    }
+
+    /**
+     * Returns the Restlet that is called, if no resource class could be found.
+     * 
+     * @return the Restlet that is called, if no resource class could be found.
+     */
+    public Restlet getNoResourceClHandler() {
+        return excHandler.getNoResourceClHandler();
+    }
+
+    /**
+     * Returns the Restlet that is called, if no resource method class could be
+     * found.
+     * 
+     * @return the Restlet that is called, if no resource method class could be
+     *         found.
+     * @see #setNoResMethodHandler(Restlet)
+     */
+    public Restlet getNoResMethodHandler() {
+        return excHandler.getNoResMethodHandler();
     }
 }
