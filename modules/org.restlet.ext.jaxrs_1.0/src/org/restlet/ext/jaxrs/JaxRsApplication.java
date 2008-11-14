@@ -27,7 +27,6 @@
 package org.restlet.ext.jaxrs;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 
 import javax.ws.rs.core.Application;
@@ -35,13 +34,8 @@ import javax.ws.rs.core.SecurityContext;
 
 import org.restlet.Component;
 import org.restlet.Context;
-import org.restlet.Directory;
-import org.restlet.Finder;
 import org.restlet.Guard;
 import org.restlet.Restlet;
-import org.restlet.Route;
-import org.restlet.Router;
-import org.restlet.ext.jaxrs.internal.todo.NotYetImplementedException;
 import org.restlet.service.TunnelService;
 
 /**
@@ -119,11 +113,6 @@ public class JaxRsApplication extends org.restlet.Application {
      * this JaxRsApplication. If you won't mix them, instantiate another
      * JaxRsApplication.
      * </p>
-     * <p>
-     * If the given JAX-RS Application is the first attached Application, the
-     * default extension mappings are remove and replaced by the given, see
-     * {@link TunnelService}.
-     * </p>
      * 
      * @param appConfig
      *                Contains the classes to load as root resource classes and
@@ -133,13 +122,13 @@ public class JaxRsApplication extends org.restlet.Application {
      *                will be renamed to {@link javax.ws.rs.Application} in the
      *                next JAX-RS release.
      * @return true, if all resource classes and providers could be added, or
-     *         false if not.
+     *         false at least one could not be added.
      * @throws IllegalArgumentException
      *                 if the appConfig is null.
      * @see #add(Application, boolean)
      */
     public boolean add(Application appConfig) throws IllegalArgumentException {
-        return add(appConfig, true);
+        return add(appConfig, false);
     }
 
     /**
@@ -161,11 +150,14 @@ public class JaxRsApplication extends org.restlet.Application {
      *                extension mappings are remove an replaced by the given,
      *                see {@link TunnelService}
      * @return true, if all resource classes and providers could be added, or
-     *         false if not.
+     *         false at least one could not be added.
      * @throws IllegalArgumentException
      *                 if the appConfig is null.
      * @see #add(Application)
+     * @deprecated if anyone needs this method, let me know (use
+     *             discuss@restlet.tigris.org)
      */
+    @Deprecated
     public boolean add(Application appConfig, boolean clearMetadataIfFirst)
             throws IllegalArgumentException {
         if (appConfig == null) {
@@ -181,8 +173,8 @@ public class JaxRsApplication extends org.restlet.Application {
         boolean everythingFine = true;
         if (singletons != null) {
             for (final Object singleton : singletons) {
-                // LATER test: check, if a singelton also available in the
-                // classes is ignored
+                // LATER test: check, if a singelton is also available in the
+                // classes -> ignore or whatever
                 if (singleton != null
                         && !classes.contains(singleton.getClass())) {
                     everythingFine &= jaxRsRestlet.addSingleton(singleton);
@@ -200,14 +192,11 @@ public class JaxRsApplication extends org.restlet.Application {
 
     @Override
     public Restlet createRoot() {
-
         Restlet restlet = this.jaxRsRestlet;
-
         if (this.guard != null) {
             this.guard.setNext(restlet);
             restlet = this.guard;
         }
-
         return restlet;
     }
 
@@ -257,26 +246,6 @@ public class JaxRsApplication extends org.restlet.Application {
      */
     public Collection<String> getRootUris() {
         return this.jaxRsRestlet.getRootUris();
-    }
-
-    /**
-     * <i>This method is planned!</i><br>
-     * It should return {@link Route}s to attach them to a {@link Router}.<br>
-     * The {@link JaxRsRestlet} does not allow other Restlets directly beside
-     * it. Example: {@link JaxRsRestlet} handles http://host/path1. So you can't
-     * directly add another Restlet handling http://host/path2. When addings
-     * this {@link Route}s to the main {@link Router} for "host" you can add
-     * another {@link Restlet} (e.g. a {@link Directory} or {@link Finder}) for
-     * other pathes.
-     * 
-     * @return an unmodifiable {@link List} of {@link Route}s.
-     * @deprecated planned, but not yet implemented
-     */
-    @Deprecated
-    @SuppressWarnings("unused")
-    private List<Route> getRoutes() {
-        throw new NotYetImplementedException();
-        // NICE JaxRsApplication.getRoutes() : List<Route>
     }
 
     /**
