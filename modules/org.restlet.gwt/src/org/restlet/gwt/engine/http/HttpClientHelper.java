@@ -47,7 +47,7 @@ import org.restlet.gwt.engine.ClientHelper;
  * <tr>
  * <td>converter</td>
  * <td>String</td>
- * <td>com.noelios.restlet.http.HttpClientConverter</td>
+ * <td>org.restlet.engine.http.HttpClientConverter</td>
  * <td>Class name of the converter of low-level HTTP calls into high level
  * requests and responses.</td>
  * </tr>
