@@ -25,56 +25,38 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.util;
+package org.restlet.engine.util;
 
-import java.util.AbstractList;
+import java.util.logging.Handler;
 
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import org.restlet.engine.Engine;
+
 
 /**
- * DOM nodes set that implements the standard List interface for easier
- * iteration.
+ * Access log record formatter which writes a header describing the default log
+ * format.
  * 
  * @author Jerome Louvel
  */
-public class NodeSet extends AbstractList<Node> implements NodeList {
-
-    /** The wrapped node list. */
-    private volatile NodeList nodes;
-
-    /**
-     * Constructor.
-     * 
-     * @param nodes
-     *            The node list to wrap.
-     */
-    public NodeSet(NodeList nodes) {
-        this.nodes = nodes;
-    }
+public class DefaultAccessLogFormatter extends AccessLogFormatter {
 
     @Override
-    public Node get(int index) {
-        return this.nodes.item(index);
-    }
-
-    /**
-     * {@inheritDoc org.w3c.dom.NodeList#getLength()}
-     */
-    public int getLength() {
-        return this.nodes.getLength();
-    }
-
-    /**
-     * {@inheritDoc org.w3c.dom.NodeList#item(int)}
-     */
-    public Node item(int index) {
-        return this.nodes.item(index);
-    }
-
-    @Override
-    public int size() {
-        return this.nodes.getLength();
+    public String getHead(Handler h) {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("#Software: Noelios Restlet Engine ").append(Engine.VERSION)
+                .append('\n');
+        sb.append("#Version: 1.0\n");
+        sb.append("#Date: ");
+        final long currentTime = System.currentTimeMillis();
+        sb.append(String.format("%tF", currentTime));
+        sb.append(' ');
+        sb.append(String.format("%tT", currentTime));
+        sb.append('\n');
+        sb.append("#Fields: ");
+        sb.append("date time c-ip cs-username s-ip s-port cs-method ");
+        sb.append("cs-uri-stem cs-uri-query sc-status sc-bytes cs-bytes ");
+        sb.append("time-taken cs-host cs(User-Agent) cs(Referrer)\n");
+        return sb.toString();
     }
 
 }

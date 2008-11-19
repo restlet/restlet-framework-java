@@ -25,56 +25,43 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.util;
+package org.restlet.engine.authentication;
 
-import java.util.AbstractList;
+import java.io.UnsupportedEncodingException;
 
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import org.restlet.data.ChallengeResponse;
+import org.restlet.data.ChallengeScheme;
+import org.restlet.data.Parameter;
+import org.restlet.data.Request;
+import org.restlet.engine.util.Base64;
+import org.restlet.util.Series;
 
 /**
- * DOM nodes set that implements the standard List interface for easier
- * iteration.
+ * Implements the SMTP PLAIN authentication.
  * 
  * @author Jerome Louvel
  */
-public class NodeSet extends AbstractList<Node> implements NodeList {
-
-    /** The wrapped node list. */
-    private volatile NodeList nodes;
+public class SmtpPlainHelper extends AuthenticationHelper {
 
     /**
      * Constructor.
-     * 
-     * @param nodes
-     *            The node list to wrap.
      */
-    public NodeSet(NodeList nodes) {
-        this.nodes = nodes;
+    public SmtpPlainHelper() {
+        super(ChallengeScheme.SMTP_PLAIN, true, false);
     }
 
     @Override
-    public Node get(int index) {
-        return this.nodes.item(index);
-    }
-
-    /**
-     * {@inheritDoc org.w3c.dom.NodeList#getLength()}
-     */
-    public int getLength() {
-        return this.nodes.getLength();
-    }
-
-    /**
-     * {@inheritDoc org.w3c.dom.NodeList#item(int)}
-     */
-    public Node item(int index) {
-        return this.nodes.item(index);
-    }
-
-    @Override
-    public int size() {
-        return this.nodes.getLength();
+    public void formatCredentials(StringBuilder sb,
+            ChallengeResponse challenge, Request request,
+            Series<Parameter> httpHeaders) {
+        try {
+            final String credentials = "^@" + challenge.getIdentifier() + "^@"
+                    + new String(challenge.getSecret());
+            sb.append(Base64.encode(credentials.getBytes("US-ASCII"), false));
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(
+                    "Unsupported encoding, unable to encode credentials");
+        }
     }
 
 }

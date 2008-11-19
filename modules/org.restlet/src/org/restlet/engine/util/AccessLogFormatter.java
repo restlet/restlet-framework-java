@@ -25,56 +25,22 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.util;
+package org.restlet.engine.util;
 
-import java.util.AbstractList;
-
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import java.util.logging.Formatter;
+import java.util.logging.LogRecord;
 
 /**
- * DOM nodes set that implements the standard List interface for easier
- * iteration.
+ * Log record formatter which simply outputs the message on a new line. Useful
+ * for Web-style logs.
  * 
  * @author Jerome Louvel
  */
-public class NodeSet extends AbstractList<Node> implements NodeList {
-
-    /** The wrapped node list. */
-    private volatile NodeList nodes;
-
-    /**
-     * Constructor.
-     * 
-     * @param nodes
-     *            The node list to wrap.
-     */
-    public NodeSet(NodeList nodes) {
-        this.nodes = nodes;
-    }
+public class AccessLogFormatter extends Formatter {
 
     @Override
-    public Node get(int index) {
-        return this.nodes.item(index);
-    }
-
-    /**
-     * {@inheritDoc org.w3c.dom.NodeList#getLength()}
-     */
-    public int getLength() {
-        return this.nodes.getLength();
-    }
-
-    /**
-     * {@inheritDoc org.w3c.dom.NodeList#item(int)}
-     */
-    public Node item(int index) {
-        return this.nodes.item(index);
-    }
-
-    @Override
-    public int size() {
-        return this.nodes.getLength();
+    public String format(LogRecord logRecord) {
+        return logRecord.getMessage() + '\n';
     }
 
 }

@@ -24,57 +24,44 @@
  * 
  * Restlet is a registered trademark of Noelios Technologies.
  */
+package org.restlet.engine.util;
 
-package org.restlet.util;
+import javax.net.ssl.SSLContext;
 
-import java.util.AbstractList;
-
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import org.restlet.data.Parameter;
+import org.restlet.util.Series;
 
 /**
- * DOM nodes set that implements the standard List interface for easier
- * iteration.
+ * This is an abstract factory that produces configured and initialised
+ * instances of SSLContext. Concrete implementations of SslContextFactory must
+ * implement {@link #createSslContext()}, which should typically consist of:
  * 
- * @author Jerome Louvel
+ * <pre>
+ *    SSLContext sslContext = SSLContext.getInstance(...);
+ *    ...
+ *    sslContext.init(..., ..., ...);
+ *    return sslContext;
+ * </pre>
+ * 
+ * @author Bruno Harbulot (Bruno.Harbulot@manchester.ac.uk)
+ * @see SSLContext
  */
-public class NodeSet extends AbstractList<Node> implements NodeList {
-
-    /** The wrapped node list. */
-    private volatile NodeList nodes;
+public abstract class SslContextFactory {
 
     /**
-     * Constructor.
+     * Creates a configured and initialised SSLContext.
      * 
-     * @param nodes
-     *            The node list to wrap.
+     * @return A configured and initialised SSLContext.
+     * @throws Exception
      */
-    public NodeSet(NodeList nodes) {
-        this.nodes = nodes;
-    }
-
-    @Override
-    public Node get(int index) {
-        return this.nodes.item(index);
-    }
+    public abstract SSLContext createSslContext() throws Exception;
 
     /**
-     * {@inheritDoc org.w3c.dom.NodeList#getLength()}
+     * Initialize the factory with the given connector parameters.
+     * 
+     * @param parameters
+     *            The connector parameters.
      */
-    public int getLength() {
-        return this.nodes.getLength();
-    }
-
-    /**
-     * {@inheritDoc org.w3c.dom.NodeList#item(int)}
-     */
-    public Node item(int index) {
-        return this.nodes.item(index);
-    }
-
-    @Override
-    public int size() {
-        return this.nodes.getLength();
-    }
+    public abstract void init(Series<Parameter> parameters);
 
 }

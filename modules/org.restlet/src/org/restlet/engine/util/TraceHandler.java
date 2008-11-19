@@ -25,56 +25,49 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.util;
+package org.restlet.engine.util;
 
-import java.util.AbstractList;
-
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 /**
- * DOM nodes set that implements the standard List interface for easier
- * iteration.
+ * Special handler that logs in the console all log message sent through the log
+ * manager. For each log record, it displays the source logger name and the
+ * actual message.
+ * 
+ * This is particularly useful for debugging.
  * 
  * @author Jerome Louvel
  */
-public class NodeSet extends AbstractList<Node> implements NodeList {
-
-    /** The wrapped node list. */
-    private volatile NodeList nodes;
+public class TraceHandler extends Handler {
 
     /**
-     * Constructor.
-     * 
-     * @param nodes
-     *            The node list to wrap.
+     * Registers the handler with the root logger. Removes any default handler
+     * like the default console handler.
      */
-    public NodeSet(NodeList nodes) {
-        this.nodes = nodes;
+    public static void register() {
+        Logger rootLogger = Logger.getLogger("");
+
+        for (Handler handler : rootLogger.getHandlers()) {
+            rootLogger.removeHandler(handler);
+        }
+
+        rootLogger.addHandler(new TraceHandler());
     }
 
     @Override
-    public Node get(int index) {
-        return this.nodes.item(index);
-    }
-
-    /**
-     * {@inheritDoc org.w3c.dom.NodeList#getLength()}
-     */
-    public int getLength() {
-        return this.nodes.getLength();
-    }
-
-    /**
-     * {@inheritDoc org.w3c.dom.NodeList#item(int)}
-     */
-    public Node item(int index) {
-        return this.nodes.item(index);
+    public void close() throws SecurityException {
     }
 
     @Override
-    public int size() {
-        return this.nodes.getLength();
+    public void flush() {
+    }
+
+    @Override
+    public void publish(LogRecord record) {
+        System.out.println("[" + record.getLevel().getLocalizedName() + "]["
+                + record.getLoggerName() + "] " + record.getMessage());
     }
 
 }

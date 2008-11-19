@@ -25,56 +25,31 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.util;
+package org.restlet.engine.util;
 
-import java.util.AbstractList;
-
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import java.io.FilterOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 
 /**
- * DOM nodes set that implements the standard List interface for easier
- * iteration.
+ * OutputStream decorator to trap close() calls so that the decorated stream
+ * does not get closed.
  * 
- * @author Jerome Louvel
+ * @author <a href="mailto:kevin.a.conaway@gmail.com">Kevin Conaway</a>
  */
-public class NodeSet extends AbstractList<Node> implements NodeList {
-
-    /** The wrapped node list. */
-    private volatile NodeList nodes;
+public class KeepAliveOutputStream extends FilterOutputStream {
 
     /**
      * Constructor.
      * 
-     * @param nodes
-     *            The node list to wrap.
+     * @param source
+     *            The decorated source stream.
      */
-    public NodeSet(NodeList nodes) {
-        this.nodes = nodes;
+    public KeepAliveOutputStream(OutputStream source) {
+        super(source);
     }
 
     @Override
-    public Node get(int index) {
-        return this.nodes.item(index);
+    public void close() throws IOException {
     }
-
-    /**
-     * {@inheritDoc org.w3c.dom.NodeList#getLength()}
-     */
-    public int getLength() {
-        return this.nodes.getLength();
-    }
-
-    /**
-     * {@inheritDoc org.w3c.dom.NodeList#item(int)}
-     */
-    public Node item(int index) {
-        return this.nodes.item(index);
-    }
-
-    @Override
-    public int size() {
-        return this.nodes.getLength();
-    }
-
 }

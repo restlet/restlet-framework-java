@@ -27,13 +27,9 @@
 
 package org.restlet.util;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.Collection;
 import java.util.List;
-import java.util.logging.Level;
 
 import org.restlet.Application;
 import org.restlet.Client;
@@ -75,9 +71,6 @@ public abstract class Engine {
 
     /** Minor version number. */
     public static final String MINOR_NUMBER = "@minor-number@";
-
-    /** Provider resource. */
-    private static final String providerResource = "META-INF/services/org.restlet.util.Engine";
 
     /** Release number. */
     public static final String RELEASE_NUMBER = "@release-type@@release-number@";
@@ -123,80 +116,7 @@ public abstract class Engine {
         Engine result = instance;
 
         if (result == null) {
-            // Find the engine class name
-            String engineClassName = null;
-
-            // Try the default classloader
-            ClassLoader cl = getClassLoader();
-            URL configURL = cl.getResource(providerResource);
-
-            if (configURL == null) {
-                // Try the current thread's classloader
-                cl = Thread.currentThread().getContextClassLoader();
-                configURL = cl.getResource(providerResource);
-            }
-
-            if (configURL == null) {
-                // Try the system classloader
-                cl = ClassLoader.getSystemClassLoader();
-                configURL = cl.getResource(providerResource);
-            }
-
-            if (configURL != null) {
-                BufferedReader reader = null;
-                try {
-                    reader = new BufferedReader(new InputStreamReader(configURL
-                            .openStream(), "utf-8"));
-                    final String providerName = reader.readLine();
-
-                    if (providerName != null) {
-                        engineClassName = providerName.substring(0,
-                                providerName.indexOf('#')).trim();
-                    }
-                } catch (IOException e) {
-                    Context
-                            .getCurrentLogger()
-                            .log(
-                                    Level.SEVERE,
-                                    "Unable to register the Restlet API implementation. Please check that the JAR file is in your classpath.");
-                } finally {
-                    if (reader != null) {
-                        try {
-                            reader.close();
-                        } catch (IOException e) {
-                            Context.getCurrentLogger().warning(
-                                    "IOException encountered while closing an open BufferedReader"
-                                            + e.getMessage());
-                        }
-                    }
-
-                }
-
-                // Instantiate the engine
-                try {
-                    instance = (Engine) Engine.loadClass(engineClassName)
-                            .newInstance();
-                    result = instance;
-                } catch (Exception e) {
-                    Context
-                            .getCurrentLogger()
-                            .log(
-                                    Level.SEVERE,
-                                    "Unable to register the Restlet API implementation",
-                                    e);
-                    throw new RuntimeException(
-                            "Unable to register the Restlet API implementation");
-                }
-            }
-
-            if (configURL == null) {
-                Context
-                        .getCurrentLogger()
-                        .log(
-                                Level.SEVERE,
-                                "Unable to find an implementation of the Restlet API. Please check your classpath.");
-
-            }
+            result = new org.restlet.engine.Engine();
         }
 
         return result;

@@ -25,56 +25,51 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.util;
+package org.restlet.engine;
 
-import java.util.AbstractList;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import org.restlet.Connector;
+import org.restlet.data.Protocol;
+import org.restlet.util.Helper;
 
 /**
- * DOM nodes set that implements the standard List interface for easier
- * iteration.
+ * Base connector helper.
  * 
  * @author Jerome Louvel
  */
-public class NodeSet extends AbstractList<Node> implements NodeList {
-
-    /** The wrapped node list. */
-    private volatile NodeList nodes;
+public abstract class ConnectorHelper<T extends Connector> extends Helper<T> {
+    /** The protocols simultaneously supported. */
+    private final List<Protocol> protocols;
 
     /**
      * Constructor.
+     */
+    public ConnectorHelper(T connector) {
+        super(connector);
+        this.protocols = new CopyOnWriteArrayList<Protocol>();
+    }
+
+    /**
+     * Returns the protocols simultaneously supported.
      * 
-     * @param nodes
-     *            The node list to wrap.
+     * @return The protocols simultaneously supported.
      */
-    public NodeSet(NodeList nodes) {
-        this.nodes = nodes;
+    public List<Protocol> getProtocols() {
+        return this.protocols;
     }
 
     @Override
-    public Node get(int index) {
-        return this.nodes.item(index);
-    }
-
-    /**
-     * {@inheritDoc org.w3c.dom.NodeList#getLength()}
-     */
-    public int getLength() {
-        return this.nodes.getLength();
-    }
-
-    /**
-     * {@inheritDoc org.w3c.dom.NodeList#item(int)}
-     */
-    public Node item(int index) {
-        return this.nodes.item(index);
+    public void start() throws Exception {
     }
 
     @Override
-    public int size() {
-        return this.nodes.getLength();
+    public void stop() throws Exception {
+    }
+
+    @Override
+    public void update() throws Exception {
     }
 
 }
