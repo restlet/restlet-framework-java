@@ -3,7 +3,7 @@
 
 	<servlet>
 		<servlet-name>adapter</servlet-name>
-		<servlet-class>com.noelios.restlet.ext.gwt.GwtShellServletWrapper</servlet-class>
+		<servlet-class>org.restlet.ext.gwt.GwtShellServletWrapper</servlet-class>
 		<init-param>
 		  <param-name>org.restlet.application</param-name>
 		  <param-value>org.restlet.test.gwt.server.TestApplication</param-value>

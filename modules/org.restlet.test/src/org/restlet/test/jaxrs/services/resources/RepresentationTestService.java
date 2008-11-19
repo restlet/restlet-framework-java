@@ -36,13 +36,13 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.restlet.engine.application.DecodeRepresentation;
 import org.restlet.ext.jaxb.JaxbRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
 import org.restlet.test.jaxrs.services.others.Person;
 import org.restlet.test.jaxrs.services.tests.RepresentationTest;
 
-import com.noelios.restlet.application.DecodeRepresentation;
 
 /**
  * This tests ensures, that it is also working with a Restlet

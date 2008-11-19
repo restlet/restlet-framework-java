@@ -36,8 +36,8 @@ import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.engine.http.HttpCall;
 
-import com.noelios.restlet.http.HttpCall;
 
 /**
  * Test {@link org.restlet.Call}.
