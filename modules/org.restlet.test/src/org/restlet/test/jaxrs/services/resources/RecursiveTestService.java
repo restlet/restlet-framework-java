@@ -44,13 +44,6 @@ public class RecursiveTestService {
 
     private RecursiveTestService parent;
 
-    /**
-     * use from runtime only
-     */
-    @Deprecated
-    public RecursiveTestService() {
-    }
-
     public RecursiveTestService(RecursiveTestService parent) {
         this.parent = parent;
     }

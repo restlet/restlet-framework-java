@@ -224,24 +224,20 @@ public class UnmodifiableMultivaluedMap<K, V> implements MultivaluedMap<K, V> {
         return Collections.unmodifiableSet(this.mmap.keySet());
     }
 
-    @Deprecated
     public List<V> put(K key, List<V> value)
             throws UnsupportedOperationException {
         throw throwUnmodifiable();
     }
 
-    @Deprecated
     public void putAll(Map<? extends K, ? extends List<V>> t)
             throws UnsupportedOperationException {
         throw throwUnmodifiable();
     }
 
-    @Deprecated
     public void putSingle(K key, V value) throws UnsupportedOperationException {
         throw throwUnmodifiable();
     }
 
-    @Deprecated
     public List<V> remove(Object key) throws UnsupportedOperationException {
         throw throwUnmodifiable();
     }

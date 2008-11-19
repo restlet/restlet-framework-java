@@ -508,19 +508,6 @@ public final class Status extends Metadata {
     }
 
     /**
-     * Indicates if the status is an information status.
-     * 
-     * @param code
-     *            The code of the status.
-     * @return True if the status is an information status.
-     * @deprecated Use {@link #isInformational(int)} instead.
-     */
-    @Deprecated
-    public static boolean isInfo(int code) {
-        return isInformational(code);
-    }
-
-    /**
      * Indicates if the status is an information status, meaning "request
      * received, continuing process".
      * 
@@ -1425,17 +1412,6 @@ public final class Status extends Metadata {
      */
     public boolean isError() {
         return isError(getCode());
-    }
-
-    /**
-     * Indicates if the status is an information status.
-     * 
-     * @return True if the status is an information status.
-     * @deprecated Use {@link #isInformational()} instead.
-     */
-    @Deprecated
-    public boolean isInfo() {
-        return isInfo(getCode());
     }
 
     /**

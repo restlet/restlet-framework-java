@@ -36,7 +36,6 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.restlet.Context;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -246,73 +245,8 @@ public class Template {
     private final Map<String, Variable> variables;
 
     /**
-     * Default constructor. Each variable matches any sequence of characters by
-     * default. When parsing, the template will attempt to match the whole
-     * template. When formatting, the variable are replaced by an empty string
-     * if they don't exist in the model.
-     * 
-     * @param logger
-     *            The logger to use.
-     * @param pattern
-     *            The pattern to use for formatting or parsing.
-     * @deprecated Use the constructor with logger instead. The logger can still
-     *             be set using the {@link #setLogger(Logger)} method.
-     */
-    @Deprecated
-    public Template(Logger logger, String pattern) {
-        this(logger, pattern, MODE_EQUALS, Variable.TYPE_ALL, "", true, false);
-    }
-
-    /**
      * Constructor.
      * 
-     * @param logger
-     *            The logger to use.
-     * @param pattern
-     *            The pattern to use for formatting or parsing.
-     * @param matchingMode
-     *            The matching mode to use when parsing a formatted reference.
-     * @deprecated Use the constructor with logger instead. The logger can still
-     *             be set using the {@link #setLogger(Logger)} method.
-     */
-    @Deprecated
-    public Template(Logger logger, String pattern, int matchingMode) {
-        this(logger, pattern, matchingMode, Variable.TYPE_ALL, "", true, false);
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param logger
-     *            The logger to use.
-     * @param pattern
-     *            The pattern to use for formatting or parsing.
-     * @param matchingMode
-     *            The matching mode to use when parsing a formatted reference.
-     * @param defaultType
-     *            The default type of variables with no descriptor.
-     * @param defaultDefaultValue
-     *            The default value for null variables with no descriptor.
-     * @param defaultRequired
-     *            The default required flag for variables with no descriptor.
-     * @param defaultFixed
-     *            The default fixed value for variables with no descriptor.
-     * @deprecated Use the constructor with logger instead. The logger can still
-     *             be set using the {@link #setLogger(Logger)} method.
-     */
-    @Deprecated
-    public Template(Logger logger, String pattern, int matchingMode,
-            int defaultType, String defaultDefaultValue,
-            boolean defaultRequired, boolean defaultFixed) {
-        this(logger, pattern, matchingMode, defaultType, defaultDefaultValue,
-                defaultRequired, defaultFixed, false);
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param logger
-     *            The logger to use.
      * @param pattern
      *            The pattern to use for formatting or parsing.
      * @param matchingMode
@@ -328,11 +262,8 @@ public class Template {
      * @param encodeVariables
      *            True if the variables must be encoded when formatting the
      *            template.
-     * @deprecated Use the constructor with logger instead. The logger can still
-     *             be set using the {@link #setLogger(Logger)} method.
      */
-    @Deprecated
-    public Template(Logger logger, String pattern, int matchingMode,
+    public Template(String pattern, int matchingMode,
             int defaultType, String defaultDefaultValue,
             boolean defaultRequired, boolean defaultFixed,
             boolean encodeVariables) {
@@ -357,7 +288,7 @@ public class Template {
      *            The pattern to use for formatting or parsing.
      */
     public Template(String pattern) {
-        this(Context.getCurrentLogger(), pattern);
+        this(pattern, MODE_EQUALS, Variable.TYPE_ALL, "", true, false);
     }
 
     /**
@@ -369,7 +300,7 @@ public class Template {
      *            The matching mode to use when parsing a formatted reference.
      */
     public Template(String pattern, int matchingMode) {
-        this(Context.getCurrentLogger(), pattern, matchingMode);
+        this(pattern, matchingMode, Variable.TYPE_ALL, "", true, false);
     }
 
     /**
@@ -391,8 +322,8 @@ public class Template {
     public Template(String pattern, int matchingMode, int defaultType,
             String defaultDefaultValue, boolean defaultRequired,
             boolean defaultFixed) {
-        this(Context.getCurrentLogger(), pattern, matchingMode, defaultType,
-                defaultDefaultValue, defaultRequired, defaultFixed);
+        this(pattern, matchingMode, defaultType, defaultDefaultValue,
+                defaultRequired, defaultFixed, false);
     }
 
     /**

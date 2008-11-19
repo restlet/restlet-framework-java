@@ -190,21 +190,6 @@ public class Context {
     }
 
     /**
-     * Returns a request dispatcher to available client connectors. When you ask
-     * the dispatcher to handle a request, it will automatically select the best
-     * client connector for your request, based on the request.protocol property
-     * or on the resource URI's scheme. This call is blocking and will return an
-     * updated response object.
-     * 
-     * @return A request dispatcher to virtual hosts of the local component.
-     * @deprecated Use getClientDispatcher() instead.
-     */
-    @Deprecated
-    public Uniform getDispatcher() {
-        return getClientDispatcher();
-    }
-
-    /**
      * Returns the logger.
      * 
      * @return The logger.

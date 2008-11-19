@@ -236,19 +236,6 @@ public class Guard extends Filter {
      * 
      * @param response
      *            The response to update.
-     * @deprecated Use the {@link #challenge(Response, boolean)} method instead.
-     */
-    @Deprecated
-    public void challenge(Response response) {
-        challenge(response, false);
-    }
-
-    /**
-     * Challenges the client by adding a challenge request to the response and
-     * by setting the status to CLIENT_ERROR_UNAUTHORIZED.
-     * 
-     * @param response
-     *            The response to update.
      * @param stale
      *            Indicates if the new challenge is due to a stale response.
      */
@@ -271,24 +258,6 @@ public class Guard extends Filter {
      * @return true if the secret is valid for the given identifier
      */
     public boolean checkSecret(Request request, String identifier, char[] secret) {
-        return checkSecret(identifier, secret);
-    }
-
-    /**
-     * Indicates if the secret is valid for the given identifier. By default,
-     * this returns true given the correct login/password couple as verified via
-     * the findSecret() method.
-     * 
-     * @param identifier
-     *            the identifier
-     * @param secret
-     *            the identifier's secret
-     * @return true if the secret is valid for the given identifier
-     * @deprecated Use the {@link #checkSecret(Request, String, char[])} method
-     *             instead.
-     */
-    @Deprecated
-    protected boolean checkSecret(String identifier, char[] secret) {
         boolean result = false;
         final char[] secret2 = findSecret(identifier);
 

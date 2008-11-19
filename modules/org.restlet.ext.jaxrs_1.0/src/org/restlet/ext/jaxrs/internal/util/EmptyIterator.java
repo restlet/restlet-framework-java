@@ -40,7 +40,6 @@ public final class EmptyIterator<T> implements Iterator<T> {
     /**
      * Iterator without any element.
      */
-    @SuppressWarnings("deprecation")
     public static final EmptyIterator<?> INSTANCE = new EmptyIterator<Object>();
 
     /**
@@ -52,13 +51,6 @@ public final class EmptyIterator<T> implements Iterator<T> {
     @SuppressWarnings("unchecked")
     public static <A> EmptyIterator<A> get() {
         return (EmptyIterator<A>) INSTANCE;
-    }
-
-    /**
-     * @see #get()
-     */
-    @Deprecated
-    public EmptyIterator() {
     }
 
     /**

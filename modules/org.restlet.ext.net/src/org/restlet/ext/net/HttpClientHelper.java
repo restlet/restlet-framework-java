@@ -65,15 +65,6 @@ import org.restlet.engine.http.HttpClientCall;
  * entities.</td>
  * </tr>
  * <tr>
- * <td>connectTimeout</td>
- * <td>int</td>
- * <td>0</td>
- * <td>Sets a specified timeout value, in milliseconds, to be used when opening
- * a communications link to the resource referenced. 0 means infinite timeout.
- * This parameter is deprecated and should be replaced by the connectTimeout
- * attribute defined by the client.</td>
- * </tr>
- * <tr>
  * <td>followRedirects</td>
  * <td>boolean</td>
  * <td>false</td>
@@ -159,22 +150,6 @@ public class HttpClientHelper extends org.restlet.engine.http.HttpClientHelper {
     public int getChunkLength() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
                 "chunkLength", "0"));
-    }
-
-    /**
-     * Returns the timeout value, in milliseconds, to be used when opening a
-     * communications link to the resource referenced. 0 means infinite timeout.
-     * 
-     * @return The connection timeout value.
-     */
-    @Override
-    public int getConnectTimeout() {
-        if (super.getConnectTimeout() > 0) {
-            return super.getConnectTimeout();
-        } else {
-            return Integer.parseInt(getHelpedParameters().getFirstValue(
-                    "connectTimeout", "0"));
-        }
     }
 
     /**

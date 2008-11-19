@@ -177,22 +177,6 @@ public class Response extends Message {
     }
 
     /**
-     * Returns the authentication request sent by an origin server to a client.
-     * 
-     * @return The authentication request sent by an origin server to a client.
-     * @deprecated Use the {@link #getChallengeRequests()} method instead.
-     */
-    @Deprecated
-    public ChallengeRequest getChallengeRequest() {
-        final List<ChallengeRequest> requests = this.challengeRequests;
-        if ((requests != null) && (requests.size() > 0)) {
-            return requests.get(0);
-        } else {
-            return null;
-        }
-    }
-
-    /**
      * Returns the list of authentication requests sent by an origin server to a
      * client. If none is found, an empty list is returned.
      * 
@@ -255,18 +239,6 @@ public class Response extends Message {
      */
     public Reference getLocationRef() {
         return this.locationRef;
-    }
-
-    /**
-     * Returns the reference that the client should follow for redirections or
-     * resource creations.
-     * 
-     * @return The redirection reference.
-     * @deprecated Use getLocationRef() instead.
-     */
-    @Deprecated
-    public Reference getRedirectRef() {
-        return getLocationRef();
     }
 
     /**
@@ -495,32 +467,6 @@ public class Response extends Message {
         }
 
         setLocationRef(new Reference(baseRef, locationUri).getTargetRef());
-    }
-
-    /**
-     * Sets the reference that the client should follow for redirections or
-     * resource creations.
-     * 
-     * @param locationRef
-     *            The reference to set.
-     * @deprecated Use the setLocationRef() method instead.
-     */
-    @Deprecated
-    public void setRedirectRef(Reference locationRef) {
-        setLocationRef(locationRef);
-    }
-
-    /**
-     * Sets the reference that the client should follow for redirections or
-     * resource creations.
-     * 
-     * @param locationUri
-     *            The URI to set.
-     * @deprecated Use the setLocationRef() method instead.
-     */
-    @Deprecated
-    public void setRedirectRef(String locationUri) {
-        setLocationRef(locationUri);
     }
 
     /**

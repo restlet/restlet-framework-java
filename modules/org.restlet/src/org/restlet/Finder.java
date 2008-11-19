@@ -138,24 +138,6 @@ public class Finder extends Restlet {
     }
 
     /**
-     * Creates a new instance of the handler class designated by the
-     * "targetClass" property. The default behavior is to invoke the
-     * {@link #createTarget(Class, Request, Response)} with the "targetClass"
-     * property as a parameter.
-     * 
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response to update.
-     * @return The created handler or null.
-     * @deprecated Use the {@link #createTarget(Request, Response)} instead.
-     */
-    @Deprecated
-    public Handler createResource(Request request, Response response) {
-        return createTarget(getTargetClass(), request, response);
-    }
-
-    /**
      * Creates a new instance of a given handler class. Note that Error and
      * RuntimeException thrown by Handler constructors are rethrown by this
      * method. Other exception are caught and logged.

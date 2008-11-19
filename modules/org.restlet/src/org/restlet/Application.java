@@ -99,16 +99,6 @@ public class Application extends Restlet {
     /** The connector service. */
     private volatile ConnectorService connectorService;
 
-    /**
-     * The converter service.
-     * 
-     * @deprecated Since 1.1 with no replacement as it doesn't fit well with
-     *             content negotiation. Most users prefer to handle those
-     *             conversion in Resource subclasses.
-     */
-    @Deprecated
-    private volatile org.restlet.service.ConverterService converterService;
-
     /** The decoder service. */
     private volatile DecoderService decoderService;
 
@@ -162,7 +152,6 @@ public class Application extends Restlet {
      *            {@link Context#createChildContext()} method to ensure a proper
      *            isolation with the other applications.
      */
-    @SuppressWarnings("deprecation")
     public Application(Context context) {
         super(context);
 
@@ -176,7 +165,6 @@ public class Application extends Restlet {
         this.owner = null;
         this.root = null;
         this.connectorService = new ConnectorService();
-        this.converterService = new org.restlet.service.ConverterService();
         this.decoderService = new DecoderService();
         this.metadataService = new MetadataService();
         this.rangeService = new RangeService();
@@ -213,19 +201,6 @@ public class Application extends Restlet {
      */
     public ConnectorService getConnectorService() {
         return this.connectorService;
-    }
-
-    /**
-     * Returns the converter service. The service is enabled by default.
-     * 
-     * @return The converter service.
-     * @deprecated Since 1.1 with no replacement as it doesn't fit well with
-     *             content negotiation. Most users prefer to handle those
-     *             conversion in Resource subclasses.
-     */
-    @Deprecated
-    public org.restlet.service.ConverterService getConverterService() {
-        return this.converterService;
     }
 
     /**
@@ -363,21 +338,6 @@ public class Application extends Restlet {
     }
 
     /**
-     * Sets the converter service.
-     * 
-     * @param converterService
-     *            The converter service.
-     * @deprecated Since 1.1 with no replacement as it doesn't fit well with
-     *             content negotiation. Most users prefer to handle those
-     *             conversion in Resource subclasses.
-     */
-    @Deprecated
-    public void setConverterService(
-            org.restlet.service.ConverterService converterService) {
-        this.converterService = converterService;
-    }
-
-    /**
      * Sets the decoder service.
      * 
      * @param decoderService
@@ -493,10 +453,6 @@ public class Application extends Restlet {
                 getConnectorService().start();
             }
 
-            if (getConverterService() != null) {
-                getConverterService().start();
-            }
-
             if (getDecoderService() != null) {
                 getDecoderService().start();
             }
@@ -527,10 +483,6 @@ public class Application extends Restlet {
         if (isStarted()) {
             if (getConnectorService() != null) {
                 getConnectorService().stop();
-            }
-
-            if (getConverterService() != null) {
-                getConverterService().stop();
             }
 
             if (getDecoderService() != null) {

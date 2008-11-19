@@ -56,7 +56,6 @@ public class RuntimeDelegateImpl extends javax.ws.rs.ext.RuntimeDelegate {
      *                 ever.
      */
     @Override
-    @Deprecated
     public <T> T createEndpoint(Application application, Class<T> endpointType)
             throws UnsupportedOperationException {
         throw new UnsupportedOperationException(

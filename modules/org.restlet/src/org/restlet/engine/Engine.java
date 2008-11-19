@@ -1114,18 +1114,11 @@ public class Engine extends org.restlet.util.Engine {
     /**
      * Registers the default authentication helpers.
      */
-    @SuppressWarnings("deprecation")
     public void registerDefaultAuthentications() {
         getRegisteredAuthentications().add(new HttpBasicHelper());
         getRegisteredAuthentications().add(new HttpDigestHelper());
         getRegisteredAuthentications().add(new SmtpPlainHelper());
         getRegisteredAuthentications().add(new HttpAmazonS3Helper());
-
-        // In order to support the deprecated AWS constant
-        // we need to register another instance of S3 helper.
-        final AuthenticationHelper helper = new HttpAmazonS3Helper();
-        helper.setChallengeScheme(ChallengeScheme.HTTP_AWS);
-        getRegisteredAuthentications().add(helper);
     }
 
     /**

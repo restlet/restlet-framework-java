@@ -361,18 +361,6 @@ public class HttpsServerHelper extends JettyServerHelper {
     }
 
     /**
-     * Indicates if we would use the NIO-based connector instead of the BIO one.
-     * 
-     * @return True if we would use the NIO-based connector instead of the BIO
-     *         one.
-     * @deprecated Will be removed in the future.
-     */
-    @Deprecated
-    public boolean isUseNio() {
-        return getType() == 1;
-    }
-
-    /**
      * Indicates if we would like client certificate authentication.
      * 
      * @return True if we would like client certificate authentication.

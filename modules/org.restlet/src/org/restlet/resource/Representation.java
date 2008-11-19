@@ -47,6 +47,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Range;
 import org.restlet.data.Tag;
 import org.restlet.util.ByteUtils;
+import org.restlet.util.DateUtils;
 
 /**
  * Current or intended state of a resource. The content of a representation can
@@ -122,7 +123,6 @@ public abstract class Representation extends Variant {
     /**
      * Indicates that the size of the representation can't be known in advance.
      */
-    @SuppressWarnings("hiding")
     public static final long UNKNOWN_SIZE = -1L;
 
     /**
@@ -151,8 +151,25 @@ public abstract class Representation extends Variant {
      */
     private volatile String downloadName;
 
+    /** The expiration date. */
+    private volatile Date expirationDate;
+
     /** Indicates if the representation's content is transient. */
     private volatile boolean isTransient;
+
+    /** The modification date. */
+    private volatile Date modificationDate;
+
+    /**
+     * The expected size. Dynamic representations can have any size, but
+     * sometimes we can know in advance the expected size. If this expected size
+     * is specified by the user, it has a higher priority than any size that can
+     * be guessed by the representation (like a file size).
+     */
+    private volatile long size;
+
+    /** The tag. */
+    private volatile Tag tag;
 
     /**
      * Indicates where in the full content the partial content available should
@@ -181,6 +198,10 @@ public abstract class Representation extends Variant {
         this.downloadName = null;
         this.isTransient = false;
         this.range = null;
+        this.size = UNKNOWN_SIZE;
+        this.expirationDate = null;
+        this.modificationDate = null;
+        this.tag = null;
     }
 
     /**
@@ -336,10 +357,8 @@ public abstract class Representation extends Variant {
      * 
      * @return The expiration date.
      */
-    @Override
-    @SuppressWarnings("deprecation")
     public Date getExpirationDate() {
-        return super.getExpirationDate();
+        return this.expirationDate;
     }
 
     /**
@@ -348,10 +367,8 @@ public abstract class Representation extends Variant {
      * 
      * @return The modification date.
      */
-    @Override
-    @SuppressWarnings("deprecation")
     public Date getModificationDate() {
-        return super.getModificationDate();
+        return this.modificationDate;
     }
 
     /**
@@ -381,10 +398,8 @@ public abstract class Representation extends Variant {
      * 
      * @return The size in bytes if known, UNKNOWN_SIZE (-1) otherwise.
      */
-    @Override
-    @SuppressWarnings("deprecation")
     public long getSize() {
-        return super.getSize();
+        return this.size;
     }
 
     /**
@@ -402,10 +417,8 @@ public abstract class Representation extends Variant {
      * 
      * @return The tag.
      */
-    @Override
-    @SuppressWarnings("deprecation")
     public Tag getTag() {
-        return super.getTag();
+        return this.tag;
     }
 
     /**
@@ -527,10 +540,8 @@ public abstract class Representation extends Variant {
      * @param expirationDate
      *            The expiration date.
      */
-    @Override
-    @SuppressWarnings("deprecation")
     public void setExpirationDate(Date expirationDate) {
-        super.setExpirationDate(expirationDate);
+        this.expirationDate = DateUtils.unmodifiable(expirationDate);
     }
 
     /**
@@ -540,10 +551,8 @@ public abstract class Representation extends Variant {
      * @param modificationDate
      *            The modification date.
      */
-    @Override
-    @SuppressWarnings("deprecation")
     public void setModificationDate(Date modificationDate) {
-        super.setModificationDate(modificationDate);
+        this.modificationDate = DateUtils.unmodifiable(modificationDate);
     }
 
     /**
@@ -563,10 +572,8 @@ public abstract class Representation extends Variant {
      * @param expectedSize
      *            The expected size in bytes if known, -1 otherwise.
      */
-    @Override
-    @SuppressWarnings("deprecation")
     public void setSize(long expectedSize) {
-        super.setSize(expectedSize);
+        this.size = expectedSize;
     }
 
     /**
@@ -575,10 +582,8 @@ public abstract class Representation extends Variant {
      * @param tag
      *            The tag.
      */
-    @Override
-    @SuppressWarnings("deprecation")
     public void setTag(Tag tag) {
-        super.setTag(tag);
+        this.tag = tag;
     }
 
     /**

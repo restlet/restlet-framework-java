@@ -165,48 +165,6 @@ public class JavaMailClientHelper extends ClientHelper {
             "Post Office Protocol (Secure)", 995);
 
     /**
-     * Creates a high-level request.
-     * 
-     * @param smtpURI
-     *            The SMTP server's URI (ex: smtp://localhost).
-     * @param email
-     *            The email to send (valid XML email).
-     * @deprecated With no replacement as it creates an unecessary dependency on
-     *             NRE classes.
-     */
-    @Deprecated
-    public static Request create(String smtpURI, Representation email) {
-        final Request result = new Request();
-        result.setMethod(Method.POST);
-        result.setResourceRef(smtpURI);
-        result.setEntity(email);
-        return result;
-    }
-
-    /**
-     * Creates a high-level request.
-     * 
-     * @param smtpURI
-     *            The SMTP server's URI (ex: smtp://localhost).
-     * @param email
-     *            The email to send (valid XML email).
-     * @param login
-     *            Authenticate using this login name.
-     * @param password
-     *            Authenticate using this password.
-     * @deprecated With no replacement as it creates an unecessary dependency on
-     *             NRE classes.
-     */
-    @Deprecated
-    public static Request create(String smtpURI, Representation email,
-            String login, String password) {
-        final Request result = create(smtpURI, email);
-        result.getChallengeResponse().setIdentifier(login);
-        result.getChallengeResponse().setSecret(password);
-        return result;
-    }
-
-    /**
      * Constructor.
      * 
      * @param client

@@ -585,7 +585,7 @@ public class ReferenceTestCase extends RestletTestCase {
 
     public void testUserinfo() {
         final Reference reference = new Reference("http://localhost:81");
-        // This format is deprecated, however we may prevent failures.
+        // This format is depre. however we may prevent failures.
         reference.setUserInfo("login:password");
         assertEquals("login:password@localhost:81", reference.getAuthority());
         assertEquals("localhost", reference.getHostDomain());

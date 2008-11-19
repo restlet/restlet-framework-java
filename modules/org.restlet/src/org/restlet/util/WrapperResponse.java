@@ -119,18 +119,6 @@ public class WrapperResponse extends Response {
     }
 
     /**
-     * Returns the authentication request sent by an origin server to a client.
-     * 
-     * @return The authentication request sent by an origin server to a client.
-     * @deprecated Use the {@link #getChallengeRequests()} instead.
-     */
-    @Deprecated
-    @Override
-    public ChallengeRequest getChallengeRequest() {
-        return getWrappedResponse().getChallengeRequest();
-    }
-
-    /**
      * Returns the list of authentication requests sent by an origin server to a
      * client.
      * 
@@ -203,28 +191,6 @@ public class WrapperResponse extends Response {
     }
 
     /**
-     * Returns the entity as a higher-level object. This object is created by
-     * the Application's converter service. If you want to use this method to
-     * facilitate the processing of request entities, you need to provide a
-     * custom implementation of the ConverterService class, overriding the
-     * toObject(Representation) method. <br>
-     * Note that this triggers the parsing of the entity.<br>
-     * This method and the related getEntity*() methods can only be invoked
-     * once.
-     * 
-     * @return The entity as a higher-level object.
-     * @deprecated Since 1.1, the ConverterService is deprecated, with no
-     *             replacement as it doesn't fit well with content negotiation.
-     *             Most users prefer to handle those conversion in Resource
-     *             subclasses.
-     */
-    @Override
-    @Deprecated
-    public Object getEntityAsObject() {
-        return getWrappedResponse().getEntityAsObject();
-    }
-
-    /**
      * Returns the entity as a SAX representation.<br>
      * Note that this kind of representation can only be parsed once. If you
      * evaluate an XPath expression, it can also only be done once. If you need
@@ -247,19 +213,6 @@ public class WrapperResponse extends Response {
     @Override
     public Reference getLocationRef() {
         return getWrappedResponse().getLocationRef();
-    }
-
-    /**
-     * Returns the reference that the client should follow for redirections or
-     * resource creations.
-     * 
-     * @return The redirection reference.
-     * @deprecated Use the getLocationRef() method instead.
-     */
-    @Override
-    @Deprecated
-    public Reference getRedirectRef() {
-        return getWrappedResponse().getRedirectRef();
     }
 
     /**
@@ -427,26 +380,6 @@ public class WrapperResponse extends Response {
     }
 
     /**
-     * Sets the entity from a higher-level object. This object is converted to a
-     * representation using the Application's converter service. If you want to
-     * use this method to facilitate the setting of entities, you need to
-     * provide a custom implementation of the ConverterService class, overriding
-     * the toRepresentation(Object) method.
-     * 
-     * @param object
-     *            The higher-level object.
-     * @deprecated Since 1.1, the ConverterService is deprecated, with no
-     *             replacement as it doesn't fit well with content negotiation.
-     *             Most users prefer to handle those conversion in Resource
-     *             subclasses.
-     */
-    @Override
-    @Deprecated
-    public void setEntity(Object object) {
-        getWrappedResponse().setEntity(object);
-    }
-
-    /**
      * Sets the entity representation.
      * 
      * @param entity
@@ -492,34 +425,6 @@ public class WrapperResponse extends Response {
     @Override
     public void setLocationRef(String locationUri) {
         getWrappedResponse().setLocationRef(locationUri);
-    }
-
-    /**
-     * Sets the reference that the client should follow for redirections or
-     * resource creations.
-     * 
-     * @param redirectRef
-     *            The redirection reference.
-     * @deprecated Use the setLocationRef() method instead.
-     */
-    @Override
-    @Deprecated
-    public void setRedirectRef(Reference redirectRef) {
-        getWrappedResponse().setRedirectRef(redirectRef);
-    }
-
-    /**
-     * Sets the reference that the client should follow for redirections or
-     * resource creations.
-     * 
-     * @param redirectUri
-     *            The redirection URI.
-     * @deprecated Use the setLocationRef() method instead.
-     */
-    @Override
-    @Deprecated
-    public void setRedirectRef(String redirectUri) {
-        getWrappedResponse().setRedirectRef(redirectUri);
     }
 
     /**

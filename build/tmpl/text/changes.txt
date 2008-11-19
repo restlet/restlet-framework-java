@@ -15,5 +15,6 @@ Changes log
         - A response with a 200 (Ok) status should have an entity. Now,
           we make sure that a warning is logged. 
           Reported by Rob Heittman.
+        - Removed all code deprecated in the Restlet 1.1 release.
     - Misc
      

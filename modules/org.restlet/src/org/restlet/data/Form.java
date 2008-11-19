@@ -29,7 +29,6 @@ package org.restlet.data;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.logging.Logger;
 
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
@@ -72,65 +71,12 @@ public class Form extends Series<Parameter> {
     /**
      * Constructor.
      * 
-     * @param logger
-     *            The logger to use.
-     * @param representation
-     *            The representation to parse (URL encoded Web form supported).
-     * @throws IOException
-     * @deprecated Use the constructor without logger instead.
-     */
-    @Deprecated
-    public Form(Logger logger, Representation representation) {
-        Engine.getInstance().parse(this, representation);
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param logger
-     *            The logger to use.
-     * @param queryString
-     *            The Web form parameters as a string.
-     * @param characterSet
-     *            The supported character encoding.
-     * @throws IOException
-     * @deprecated Use the constructor without logger instead.
-     */
-    @Deprecated
-    public Form(Logger logger, String queryString, CharacterSet characterSet) {
-        this(logger, queryString, characterSet, '&');
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param logger
-     *            The logger to use.
-     * @param parametersString
-     *            The parameters string to parse.
-     * @param characterSet
-     *            The supported character encoding.
-     * @param separator
-     *            The separator character to append between parameters.
-     * @throws IOException
-     * @deprecated Use the constructor without logger instead.
-     */
-    @Deprecated
-    public Form(Logger logger, String parametersString,
-            CharacterSet characterSet, char separator) {
-        Engine.getInstance().parse(this, parametersString, characterSet, true,
-                separator);
-    }
-
-    /**
-     * Constructor.
-     * 
      * @param webForm
      *            The URL encoded Web form.
      * @throws IOException
      */
     public Form(Representation webForm) {
-        this(Logger.getLogger(Form.class.getCanonicalName()), webForm);
+        Engine.getInstance().parse(this, webForm);
     }
 
     /**
@@ -185,8 +131,8 @@ public class Form extends Series<Parameter> {
      */
     public Form(String parametersString, CharacterSet characterSet,
             char separator) {
-        this(Logger.getLogger(Form.class.getCanonicalName()), parametersString,
-                characterSet, separator);
+        Engine.getInstance().parse(this, parametersString, characterSet, true,
+                separator);
     }
 
     @Override

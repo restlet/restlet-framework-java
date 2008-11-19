@@ -36,7 +36,6 @@ import org.restlet.Component;
 import org.restlet.Context;
 import org.restlet.Guard;
 import org.restlet.Restlet;
-import org.restlet.service.TunnelService;
 
 /**
  * <p>
@@ -128,38 +127,8 @@ public class JaxRsApplication extends org.restlet.Application {
      * @see #add(Application, boolean)
      */
     public boolean add(Application appConfig) throws IllegalArgumentException {
-        return add(appConfig, false);
-    }
-
-    /**
-     * Attaches a JAX-RS {@link Application} to this Application.<br>
-     * The providers are available for all root resource classes provided to
-     * this JaxRsApplication. If you won't mix them, instantiate another
-     * JaxRsApplication.
-     * 
-     * @param appConfig
-     *                Contains the classes to load as root resource classes and
-     *                as providers. Invalid root resource classes and provider
-     *                classes are ignored, according to JAX-RS specification.<br>
-     *                The JAX-RS class {@link javax.ws.rs.ApplicationConfig}
-     *                will be renamed to {@link javax.ws.rs.Application} in the
-     *                next JAX-RS release.
-     * @param clearMetadataIfFirst
-     *                If this flag is true and the given ApplicationConfig is
-     *                the first attached ApplicationConfig, the default
-     *                extension mappings are remove an replaced by the given,
-     *                see {@link TunnelService}
-     * @return true, if all resource classes and providers could be added, or
-     *         false at least one could not be added.
-     * @throws IllegalArgumentException
-     *                 if the appConfig is null.
-     * @see #add(Application)
-     * @deprecated if anyone needs this method, let me know (use
-     *             discuss@restlet.tigris.org)
-     */
-    @Deprecated
-    public boolean add(Application appConfig, boolean clearMetadataIfFirst)
-            throws IllegalArgumentException {
+        boolean clearMetadataIfFirst = false;
+        
         if (appConfig == null) {
             throw new IllegalArgumentException(
                     "The ApplicationConfig must not be null");
