@@ -419,7 +419,7 @@ public class Util {
 
     /**
      * Converts the given Date into a String. Copied from
-     * {@link com.noelios.restlet.HttpCall}.
+     * {@link org.restlet.engine.HttpCall}.
      * 
      * @param date
      *            Date to format
