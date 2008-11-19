@@ -24,6 +24,9 @@ Changes log
     - Misc
         - Fully moved org.restlet.gwt.internal content into 
           org.restlet.gwt.engine package.
+        - Fixed backport issue with the NRE core (Class not found: 
+          javax.security.auth.login.CredentialException). Contributed 
+          by Taras Puchko.
 
 - 1.1.1 (2008-10-31)
     - Bugs fixed

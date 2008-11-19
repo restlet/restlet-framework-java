@@ -882,7 +882,10 @@
 
 			<retrotranslator verify="true"
 			                 classpath="${backport-@{name}-jarfiles}"
-			                 failonwarning="@{failonwarning}">
+			                 failonwarning="@{failonwarning}"
+							 backport="javax.security.auth.login.CredentialException:javax.security.auth.login.LoginException"
+							 smart="true" 
+							 support="Thread.setUncaughtExceptionHandler">
 				<!-- Caution: Overrides the Java 1.5 generated classes -->
 				<fileset dir="${classes}/${mod-@{name}-id}">
 					<include name="**/*.class" />
