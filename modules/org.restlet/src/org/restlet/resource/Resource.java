@@ -212,43 +212,6 @@ public class Resource extends Handler {
     }
 
     /**
-     * Asks the resource to delete itself and all its representations.The
-     * default behavior is to invoke the {@link #removeRepresentations()}
-     * method.
-     * 
-     * @deprecated Use the {@link #removeRepresentations()} method instead.
-     */
-    @Deprecated
-    public void delete() {
-        try {
-            removeRepresentations();
-        } catch (ResourceException re) {
-            getResponse().setStatus(re.getStatus(), re);
-        }
-    }
-
-    /**
-     * Returns the preferred representation according to the client preferences
-     * specified in the request.
-     * 
-     * @return The preferred representation.
-     * @deprecated Use the {@link #represent()} method instead.
-     * @see #getPreferredVariant()
-     */
-    @Deprecated
-    public Representation getPreferredRepresentation() {
-        Representation result = null;
-
-        try {
-            result = represent();
-        } catch (ResourceException re) {
-            getResponse().setStatus(re.getStatus(), re);
-        }
-
-        return result;
-    }
-
-    /**
      * Returns the preferred variant according to the client preferences
      * specified in the request.
      * 
@@ -293,10 +256,8 @@ public class Resource extends Handler {
      *            The variant whose full representation must be returned.
      * @return The full representation for the variant.
      * @see #getVariants()
-     * @deprecated Use the {@link #represent(Variant)} method instead.
      */
-    @Deprecated
-    public Representation getRepresentation(Variant variant) {
+    private Representation getRepresentation(Variant variant) {
         Representation result = null;
 
         try {
@@ -381,7 +342,11 @@ public class Resource extends Handler {
         }
 
         if (canDelete) {
-            delete();
+            try {
+                removeRepresentations();
+            } catch (ResourceException re) {
+                getResponse().setStatus(re.getStatus(), re);
+            }
         }
     }
 
@@ -534,7 +499,11 @@ public class Resource extends Handler {
                             "POST request received without any entity. Continuing processing.");
         }
 
-        post(getRequest().getEntity());
+        try {
+            acceptRepresentation(getRequest().getEntity());
+        } catch (ResourceException re) {
+            getResponse().setStatus(re.getStatus(), re);
+        }
     }
 
     /**
@@ -600,7 +569,11 @@ public class Resource extends Handler {
 
         if (canPut) {
             if (getRequest().isEntityAvailable()) {
-                put(getRequest().getEntity());
+                try {
+                    storeRepresentation(getRequest().getEntity());
+                } catch (ResourceException re) {
+                    getResponse().setStatus(re.getStatus(), re);
+                }
 
                 // HTTP spec says that PUT may return
                 // the list of allowed methods
@@ -671,42 +644,6 @@ public class Resource extends Handler {
      */
     public boolean isReadable() {
         return this.readable;
-    }
-
-    /**
-     * Posts a representation to the resource. The default behavior is to invoke
-     * the {@link #acceptRepresentation(Representation)} method.
-     * 
-     * @param entity
-     *            The representation posted.
-     * @deprecated Use the {@link #acceptRepresentation(Representation)} method
-     *             instead.
-     */
-    @Deprecated
-    public void post(Representation entity) {
-        try {
-            acceptRepresentation(entity);
-        } catch (ResourceException re) {
-            getResponse().setStatus(re.getStatus(), re);
-        }
-    }
-
-    /**
-     * Puts a representation in the resource. The default behavior is to invoke
-     * the {@link #storeRepresentation(Representation)} method.
-     * 
-     * @param entity
-     *            The representation put.
-     * @deprecated Use the {@link #storeRepresentation(Representation)} method
-     *             instead.
-     */
-    @Deprecated
-    public void put(Representation entity) {
-        try {
-            storeRepresentation(entity);
-        } catch (ResourceException re) {
-            getResponse().setStatus(re.getStatus(), re);
-        }
     }
 
     /**

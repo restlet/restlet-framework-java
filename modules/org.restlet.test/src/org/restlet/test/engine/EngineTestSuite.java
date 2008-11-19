@@ -35,7 +35,7 @@ import junit.framework.TestSuite;
  * 
  * @author Jerome Louvel
  */
-public class NoeliosTestSuite extends TestSuite {
+public class EngineTestSuite extends TestSuite {
 
     /**
      * JUnit constructor.
@@ -43,11 +43,11 @@ public class NoeliosTestSuite extends TestSuite {
      * @return The unit test.
      */
     public static Test suite() {
-        return new NoeliosTestSuite();
+        return new EngineTestSuite();
     }
 
     /** Constructor. */
-    public NoeliosTestSuite() {
+    public EngineTestSuite() {
         addTestSuite(AuthenticationTestCase.class);
         addTestSuite(Base64TestCase.class);
         addTestSuite(ChunkedEncodingPutTestCase.class);
