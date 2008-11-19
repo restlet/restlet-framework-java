@@ -1,0 +1,64 @@
+<!--
+	Copyright 2005-2008 Noelios Technologies.
+	
+	The contents of this file are subject to the terms of the Common Development
+	and Distribution License (the "License"). You may not use this file except in
+	compliance with the License.
+	
+	You can obtain a copy of the license at
+	http://www.opensource.org/licenses/cddl1.txt See the License for the specific
+	language governing permissions and limitations under the License.
+	
+	When distributing Covered Code, include this CDDL HEADER in each file and
+	include the License file at http://www.opensource.org/licenses/cddl1.txt If
+	applicable, add the following below this CDDL HEADER, with the fields
+	enclosed by brackets "[]" replaced with your own identifying information:
+	Portions Copyright [yyyy] [name of copyright owner]
+	
+	@author James Todd (james dot w dot todd at gmail dot com)
+-->
+
+<!DOCTYPE org.http:configuration>
+
+<jxta>
+	<peer descriptor="adhoc" />
+
+	<network id="urn:jxta:uuid-7038704567907394506794356077903402"
+		name="ToddNet" description="ToddNet">
+		<!--
+			<service id="${user.name}.p2mp"
+			name="JXA:HTTP2MP"
+			document="/attention.*"
+			class="net.http.ext.service.peerlet.AttentionPeerlet"/>
+		-->
+		<!--
+			<group id="urn:http:uuid-1989101414002000081518002844102602"
+			name="MyJXTA"
+			password=""
+			description="">
+			<group id="urn:http:uuid-7210772407234707234021340724702802"
+			name="NetBeans"
+			password=""
+			description=""/>
+			</group>
+		-->
+	</network>
+
+	<transport>
+		<tcp>
+			<address>
+				<multicast>udp://224.0.1.85:1234</multicast>
+				tcp://${host.any}:0
+			</address>
+		</tcp>
+
+		<http>
+			<incoming enabled="true" />
+			<address>http://${host.any}:9700</address>
+		</http>
+	</transport>
+
+	<service>
+		<rendezVous mode="adhoc" />
+	</service>
+</jxta>
