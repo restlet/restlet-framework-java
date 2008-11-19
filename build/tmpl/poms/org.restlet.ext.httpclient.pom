@@ -5,19 +5,21 @@
    <version>@version@</version>
    <dependencies>
       <dependency>
-         <groupId>com.noelios.restlet</groupId>
-         <artifactId>com.noelios.restlet</artifactId>
+         <groupId>org.restlet</groupId>
+         <artifactId>org.restlet</artifactId>
          <version>@version@</version>
       </dependency>
       <dependency>
-         <groupId>com.sun.grizzly</groupId>
-         <artifactId>com.sun.grizzly</artifactId>
-         <version>@lib-grizzly-version@</version>
+         <groupId>commons-httpclient</groupId>
+         <artifactId>commons-httpclient</artifactId>
+         <version>@lib-httpclient-version@</version>
       </dependency>
    </dependencies>
 
-   <name>HTTP server connector</name>
-   <description>Integration with Grizzly NIO framework.</description>
+   <name>HTTP client connector</name>
+   <description>
+      Integration with Apache Commons HTTP Client.
+   </description>
    <licenses>
       <license>
          <name>CDDL license</name>

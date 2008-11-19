@@ -5,14 +5,19 @@
    <version>@version@</version>
    <dependencies>
       <dependency>
-         <groupId>jsslutils</groupId>
-         <artifactId>jsslutils</artifactId>
-         <version>@lib-jsslutils-version@</version>
+         <groupId>org.restlet</groupId>
+         <artifactId>org.restlet</artifactId>
+         <version>@version@</version>
+      </dependency>
+      <dependency>
+         <groupId>javax.mail</groupId>
+         <artifactId>mail</artifactId>
+         <version>@lib-javamail-version@</version>
       </dependency>
    </dependencies>
 
-   <name>SSL utilities</name>
-   <description>Utilities to configure SSL support.</description>
+   <name>SMTP client connector</name>
+   <description>Integration with JavaMail.</description>
    <licenses>
       <license>
          <name>CDDL license</name>

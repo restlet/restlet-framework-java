@@ -20,13 +20,8 @@
          <version>@lib-db4o-version@</version>
       </dependency>
       <dependency>
-         <groupId>com.noelios.restlet</groupId>
-         <artifactId>com.noelios.restlet.ext.jetty</artifactId>
-         <version>@version@</version>
-      </dependency>
-      <dependency>
-         <groupId>com.noelios.restlet</groupId>
-         <artifactId>com.noelios.restlet.ext.net</artifactId>
+         <groupId>org.restlet.engine</groupId>
+         <artifactId>org.restlet.ext.jetty</artifactId>
          <version>@version@</version>
       </dependency>
       <dependency>

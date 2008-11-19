@@ -9,15 +9,15 @@
          <artifactId>org.restlet</artifactId>
          <version>@version@</version>
       </dependency>
+      <dependency>
+         <groupId>org.restlet</groupId>
+         <artifactId>org.restlet.ext.servlet</artifactId>
+         <version>@version@</version>
+      </dependency>
    </dependencies>
 
-   <name>Reference Implementation</name>
-   <description>
-      Noelios Restlet Engine is the reference implementation of the
-      Restlet API
-   </description>
-   <url>http://www.restlet.org</url>
-   <inceptionYear>2005</inceptionYear>
+   <name>GWT extension</name>
+   <description>Integration with GWT API.</description>
    <licenses>
       <license>
          <name>CDDL license</name>

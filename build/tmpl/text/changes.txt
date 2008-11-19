@@ -4,6 +4,13 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - Breaking changes
+        - The engine has been moved from "com.noelios.restlet" to
+          the "org.restlet.engine" package, simplifying the packaging.
+        - All engine extensions have been moved to "org.restlet.ext"
+          packages.
+        - The com.noelios.restlet.ext.spring extension has been merged
+          with org.restlet.ext.spring.
     - API changes
         - A response with a 200 (Ok) status should have an entity. Now,
           we make sure that a warning is logged. 

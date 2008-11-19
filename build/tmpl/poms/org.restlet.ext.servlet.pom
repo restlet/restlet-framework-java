@@ -5,19 +5,19 @@
    <version>@version@</version>
    <dependencies>
       <dependency>
-         <groupId>com.noelios.restlet</groupId>
-         <artifactId>com.noelios.restlet</artifactId>
+         <groupId>org.restlet</groupId>
+         <artifactId>org.restlet</artifactId>
          <version>@version@</version>
       </dependency>
       <dependency>
-         <groupId>commons-dbcp</groupId>
-         <artifactId>commons-dbcp</artifactId>
-         <version>@lib-dbcp-version@</version>
+         <groupId>javax.servlet</groupId>
+         <artifactId>servlet-api</artifactId>
+         <version>@lib-servlet-version@</version>
       </dependency>
    </dependencies>
 
-   <name>JDBC client connector</name>
-   <description>Integration with JDBC.</description>
+   <name>HTTP server connector</name>
+   <description>Integration with Servlet API.</description>
    <licenses>
       <license>
          <name>CDDL license</name>

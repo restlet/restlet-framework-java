@@ -34,9 +34,8 @@
 	<property name="excludes"
 	          value="**/.emptyDir **/package.html **/overview.html" />
 	<property name="restlet-api" value="Restlet API" />
-	<property name="restlet-ext-api" value="Restlet API extensions" />
-	<property name="restlet-ext-nre" value="Restlet Engine extensions" />
-	<property name="restlet-nre" value="Restlet Engine" />
+	<property name="restlet-ext" value="Restlet Extensions" />
+	<property name="restlet-engine" value="Restlet Engine" />
 	<property name="restlet-gwt" value="Restlet-GWT" />
 
 	<!-- Location properties -->
@@ -53,7 +52,7 @@
 	<property name="tmpl" value="tmpl" />
 	<property name="docs" value="${temp}/docs" />
 	<property name="docs-api" value="${docs}/api" />
-	<property name="docs-nre" value="${docs}/nre" />
+	<property name="docs-engine" value="${docs}/engine" />
 	<property name="docs-ext" value="${docs}/ext" />
 	<property name="docs-gwt" value="${docs}/gwt" />
 	<property name="uml-reports" value="${temp}/uml-reports" />
@@ -193,31 +192,234 @@
 	<!-- ===  Paths setting  === -->
 	<!-- ======================= -->
 
-	<path id="mod-api-path">
+	<path id="mod-core-path">
 		<pathelement path="${classes}/org.restlet" />
+		<fileset dir="${lib}/${lib-osgi-id}" includes="*.jar" />
 	</path>
 
-	<path id="mod-api-test-path">
-		<pathelement path="${mod}/${mod-api-id}/src" />
+	<path id="mod-core-gwt-path">
+		<path refid="mod-core-path" />
+		<pathelement path="${classes}/${mod-core-id}" />
+		<fileset dir="${lib}/${lib-gwt-id}" includes="*.jar" />
+	</path>
 
-		<pathelement path="${classes}/${mod-ri-id}" />
-		<pathelement path="${mod}/${mod-ri-id}/src" />
+	<path id="mod-atom-path">
+		<path refid="mod-core-path" />
+		<pathelement path="${classes}/${mod-core-id}" />
+	</path>
 
-		<pathelement path="${classes}/${mod-api-test-id}" />
-		<pathelement path="${mod}/${mod-api-test-id}/src" />
+	<path id="mod-fileupload-path">
+		<path refid="mod-core-path" />
+		<pathelement path="${classes}/${mod-core-id}" />
+		<fileset dir="${lib}/${lib-servlet-id}" includes="*.jar" />
+		<fileset dir="${lib}/${lib-fileupload-id}" includes="*.jar" />
+		<fileset dir="${lib}/${lib-io-id}" includes="*.jar" />
+	</path>
 
-		<pathelement path="${classes}/${mod-example-id}" />
+	<path id="mod-freemarker-path">
+		<path refid="mod-core-path" />
+		<pathelement path="${classes}/${mod-core-id}" />
+		<fileset dir="${lib}/${lib-freemarker-id}" includes="*.jar" />
+	</path>
 
-		<path refid="mod-ri-test-path" />
-		<pathelement path="${classes}/${mod-ri-test-id}" />
+	<path id="mod-grizzly-path">
+		<path refid="mod-core-path" />
+		<pathelement path="${classes}/${mod-core-id}" />
+		<fileset dir="${lib}/${lib-grizzly-id}" includes="*.jar" />
+	</path>
+
+	<path id="mod-httpclient-path">
+		<path refid="mod-core-path" />
+		<pathelement path="${classes}/${mod-core-id}" />
+		<fileset dir="${lib}/${lib-httpclient-id}" includes="*.jar" />
+		<fileset dir="${lib}/${lib-logging-id}" includes="*.jar" />
+		<fileset dir="${lib}/${lib-codec-id}" includes="*.jar" />
+	</path>
+
+	<path id="mod-javamail-path">
+		<path refid="mod-core-path" />
+		<pathelement path="${classes}/${mod-core-id}" />
+		<fileset dir="${lib}/${lib-javamail-id}" includes="*.jar" />
+		<fileset dir="${lib}/${lib-activation-id}" includes="*.jar" />
+	</path>
+
+	<path id="mod-jaxb-path">
+		<path refid="mod-core-path" />
+		<pathelement path="${classes}/${mod-core-id}" />
+		<fileset dir="${lib}/${lib-jaxb-id}" includes="*.jar" />
+		<fileset dir="${lib}/${lib-stax-id}" includes="*.jar" />
+	</path>
+
+	<path id="mod-jdbc-path">
+		<path refid="mod-core-path" />
+		<pathelement path="${classes}/${mod-core-id}" />
+		<fileset dir="${lib}/${lib-dbcp-id}" includes="*.jar" />
+		<fileset dir="${lib}/${lib-logging-id}" includes="*.jar" />
+		<fileset dir="${lib}/${lib-pool-id}" includes="*.jar" />
+	</path>
+
+	<path id="mod-jetty-path">
+		<path refid="mod-core-path" />
+		<pathelement path="${classes}/${mod-core-id}" />
+		<fileset dir="${lib}/${lib-servlet-id}" includes="*.jar" />
+		<fileset dir="${lib}/${lib-jetty-id}" includes="*.jar" />
+	</path>
+
+	<path id="mod-jibx-path">
+		<path refid="mod-core-path" />
+		<pathelement path="${classes}/${mod-core-id}" />
+		<fileset dir="${lib}/${lib-jibx-id}" includes="*.jar" />
+	</path>
+
+	<path id="mod-jmx-path">
+		<path refid="mod-core-path" />
+		<pathelement path="${classes}/${mod-core-id}" />
+	</path>
+
+	<path id="mod-json-path">
+		<path refid="mod-core-path" />
+		<pathelement path="${classes}/${mod-core-id}" />
+		<fileset dir="${lib}/${lib-json-id}" includes="*.jar" />
+	</path>
+
+	<path id="mod-jaxrs-path">
+		<path refid="mod-core-path" />
+		<path refid="mod-javamail-path" />
+		<path refid="mod-jaxb-path" />
+		<path refid="mod-json-path" />
+		<pathelement path="${classes}/${mod-core-id}" />
+		<fileset dir="${lib}/${lib-jaxrs-id}" includes="*.jar" />
+		<fileset dir="${lib}/${lib-fileupload-id}" includes="*.jar" />
+		<fileset dir="${lib}/${lib-servlet-id}" includes="*.jar" />
+	</path>
+
+	<path id="mod-jxta-path">
+		<path refid="mod-core-path" />
+		<pathelement path="${classes}/${mod-core-id}" />
+		<fileset dir="${lib}/${lib-bouncycastle-id}" includes="*.jar" />
+		<fileset dir="${lib}/${lib-jxta-id}" includes="*.jar" />
+	</path>
+
+	<path id="mod-net-path">
+		<path refid="mod-core-path" />
+		<pathelement path="${classes}/${mod-core-id}" />
+	</path>
+
+	<path id="mod-oauth-path">
+		<path refid="mod-core-path" />
+		<pathelement path="${classes}/${mod-core-id}" />
+		<fileset dir="${lib}/${lib-oauth-id}" includes="*.jar" />
+		<fileset dir="${lib}/${lib-codec-id}" includes="*.jar" />
+	</path>
+
+	<path id="mod-servlet-path">
+		<path refid="mod-core-path" />
+		<pathelement path="${classes}/${mod-core-id}" />
+		<fileset dir="${lib}/${lib-servlet-id}" includes="*.jar" />
+	</path>
+
+	<path id="mod-gwt-path">
+		<path refid="mod-core-path" />
+		<path refid="mod-core-gwt-path" />
+		<path refid="mod-servlet-path" />
+		<pathelement path="${classes}/${mod-core-id}" />
+		<pathelement path="${classes}/${mod-core-gwt-id}" />
+		<pathelement path="${classes}/${mod-servlet-id}" />
+		<fileset dir="${lib}/${lib-gwt-id}" includes="*.jar" />
+	</path>
+
+	<path id="mod-shell-path">
+		<path refid="mod-core-path" />
+		<pathelement path="${classes}/${mod-core-id}" />
+		<fileset dir="${lib}/${lib-cli-id}" includes="*.jar" />
+		<fileset dir="${lib}/${lib-jline-id}" includes="*.jar" />
+		<fileset dir="${lib}/${lib-script-id}" includes="*.jar" />
+	</path>
+
+	<path id="mod-simple-path">
+		<path refid="mod-core-path" />
+		<pathelement path="${classes}/${mod-core-id}" />
+		<fileset dir="${lib}/${lib-simple-id}" includes="*.jar" />
+	</path>
+
+	<path id="mod-spring-path">
+		<path refid="mod-core-path" />
+		<path refid="mod-servlet-path" />
+		<pathelement path="${classes}/${mod-core-id}" />
+		<pathelement path="${classes}/${mod-servlet-id}" />
+		<fileset dir="${lib}/${lib-logging-id}" includes="*.jar" />
+		<fileset dir="${lib}/${lib-cglib-id}" includes="*.jar" />
+		<fileset dir="${lib}/${lib-spring-id}" includes="*.jar" />
+	</path>
+
+	<path id="mod-ssl-path">
+		<path refid="mod-core-path" />
+		<pathelement path="${classes}/${mod-core-id}" />
+		<fileset dir="${lib}/${lib-jsslutils-id}" includes="*.jar" />
+	</path>
+
+	<path id="mod-velocity-path">
+		<path refid="mod-core-path" />
+		<pathelement path="${classes}/${mod-core-id}" />
+		<fileset dir="${lib}/${lib-collections-id}" includes="*.jar" />
+		<fileset dir="${lib}/${lib-velocity-id}" includes="*.jar" />
+	</path>
+
+	<path id="mod-wadl-path">
+		<path refid="mod-core-path" />
+		<pathelement path="${classes}/${mod-core-id}" />
+	</path>
+
+	<path id="mod-xdb-path">
+		<path refid="mod-core-path" />
+		<path refid="mod-servlet-path" />
+		<pathelement path="${classes}/${mod-core-id}" />
+		<pathelement path="${classes}/${mod-servlet-id}" />
+	</path>
+
+	<path id="mod-core-example-path">
+		<path refid="mod-core-path" />
+		<path refid="mod-atom-path" />
+		<path refid="mod-freemarker-path" />
+		<path refid="mod-jaxb-path" />
+		<path refid="mod-jaxrs-path" />
+		<path refid="mod-jibx-path" />
+		<path refid="mod-json-path" />
+		<path refid="mod-velocity-path" />
+		<pathelement path="${mod}/${mod-jaxrs-id}/src" />
+		<pathelement path="${classes}/${mod-core-id}" />
+		<pathelement path="${classes}/${mod-atom-id}" />
+		<pathelement path="${classes}/${mod-freemarker-id}" />
+		<pathelement path="${classes}/${mod-jaxb-id}" />
+		<pathelement path="${classes}/${mod-jaxrs-id}" />
+		<pathelement path="${classes}/${mod-jibx-id}" />
+		<pathelement path="${classes}/${mod-json-id}" />
+		<pathelement path="${classes}/${mod-velocity-id}" />
+		<fileset dir="${lib}/${lib-bloat-id}" includes="*.jar" />
+		<fileset dir="${lib}/${lib-collections-id}" includes="*.jar" />
+		<fileset dir="${lib}/${lib-db4o-id}" includes="*.jar" />
+		<fileset dir="${lib}/${lib-junit-id}" includes="*.jar" />
+		<fileset dir="${lib}/${lib-lang-id}" includes="*.jar" />
+		<fileset dir="${lib}/${lib-spring-id}" includes="*.jar" />
+		<fileset dir="${lib}/${lib-spring-modules-db4o-id}" includes="*.jar" />
+	</path>
+
+	<path id="mod-core-test-path">
+		<fileset dir="${lib}/${lib-junit-id}" includes="*.jar" />
+
+		<pathelement path="${mod}/${mod-core-id}/src" />
+		<pathelement path="${mod}/${mod-core-test-id}/src" />
+
+		<pathelement path="${classes}/${mod-core-test-id}" />
+		<pathelement path="${classes}/${mod-core-example-id}" />
+
+		<path refid="mod-core-gwt-path" />
+		<pathelement path="${classes}/${mod-core-gwt-id}" />
+		<pathelement path="${mod}/${mod-core-gwt-id}/src" />
 
 		<path refid="mod-atom-path" />
 		<pathelement path="${classes}/${mod-atom-id}" />
 		<pathelement path="${mod}/${mod-atom-id}/src" />
-
-		<path refid="mod-gwt-api-path" />
-		<pathelement path="${classes}/${mod-gwt-api-id}" />
-		<pathelement path="${mod}/${mod-gwt-api-id}/src" />
 
 		<path refid="mod-net-path" />
 		<pathelement path="${classes}/${mod-net-id}" />
@@ -231,6 +433,14 @@
 		<pathelement path="${classes}/${mod-freemarker-id}" />
 		<pathelement path="${mod}/${mod-freemarker-id}/src" />
 
+		<path refid="mod-grizzly-path" />
+		<pathelement path="${classes}/${mod-grizzly-id}" />
+		<pathelement path="${mod}/${mod-grizzly-id}/src" />
+
+		<path refid="mod-httpclient-path" />
+		<pathelement path="${classes}/${mod-httpclient-id}" />
+		<pathelement path="${mod}/${mod-httpclient-id}/src" />
+
 		<path refid="mod-jaxb-path" />
 		<pathelement path="${classes}/${mod-jaxb-id}" />
 		<pathelement path="${mod}/${mod-jaxb-id}/src" />
@@ -238,18 +448,26 @@
 		<path refid="mod-jaxrs-path" />
 		<pathelement path="${classes}/${mod-jaxrs-id}" />
 		<pathelement path="${mod}/${mod-jaxrs-id}/src" />
+		
+		<path refid="mod-jetty-path" />
+		<pathelement path="${classes}/${mod-jetty-id}" />
+		<pathelement path="${mod}/${mod-jetty-id}/src" />
 
 		<path refid="mod-jibx-path" />
 		<pathelement path="${classes}/${mod-jibx-id}" />
 		<pathelement path="${mod}/${mod-jibx-id}/src" />
 
-		<path refid="mod-spring-api-path" />
-		<pathelement path="${classes}/${mod-spring-api-id}" />
-		<pathelement path="${mod}/${mod-spring-api-id}/src" />
+		<path refid="mod-net-path" />
+		<pathelement path="${classes}/${mod-net-id}" />
+		<pathelement path="${mod}/${mod-net-id}/src" />
 
-		<path refid="mod-spring-nre-path" />
-		<pathelement path="${classes}/${mod-spring-nre-id}" />
-		<pathelement path="${mod}/${mod-spring-nre-id}/src" />
+		<path refid="mod-simple-path" />
+		<pathelement path="${classes}/${mod-simple-id}" />
+		<pathelement path="${mod}/${mod-simple-id}/src" />
+
+		<path refid="mod-spring-path" />
+		<pathelement path="${classes}/${mod-spring-id}" />
+		<pathelement path="${mod}/${mod-spring-id}/src" />
 
 		<path refid="mod-ssl-path" />
 		<pathelement path="${classes}/${mod-ssl-id}" />
@@ -273,259 +491,14 @@
 		<pathelement location="tools/retrotranslator/retrotranslator-transformer-1.2.7.jar" />
 	</path>
 
-	<path id="mod-ri-path">
-		<path refid="mod-api-path" />
-		<pathelement path="${classes}/${mod-api-id}" />
-		<fileset dir="${lib}/${lib-osgi-id}" includes="*.jar" />
-	</path>
-
-	<path id="mod-ri-test-path">
-		<path refid="mod-ri-path" />
-		<pathelement path="${classes}/${mod-ri-id}" />
-
-		<fileset dir="${lib}/${lib-junit-id}" includes="*.jar" />
-
-		<path refid="mod-httpclient-path" />
-		<pathelement path="${classes}/${mod-httpclient-id}" />
-		<pathelement path="${mod}/${mod-httpclient-id}/src" />
-
-		<path refid="mod-net-path" />
-		<pathelement path="${classes}/${mod-net-id}" />
-		<pathelement path="${mod}/${mod-net-id}/src" />
-		
-		<path refid="mod-jetty-path" />
-		<pathelement path="${classes}/${mod-jetty-id}" />
-		<pathelement path="${mod}/${mod-jetty-id}/src" />
-
-		<path refid="mod-simple-path" />
-		<pathelement path="${classes}/${mod-simple-id}" />
-		<pathelement path="${mod}/${mod-simple-id}/src" />
-
-		<path refid="mod-grizzly-path" />
-		<pathelement path="${classes}/${mod-grizzly-id}" />
-		<pathelement path="${mod}/${mod-grizzly-id}/src" />
-	</path>
-
-	<path id="mod-atom-path">
-		<path refid="mod-ri-path" />
-		<pathelement path="${classes}/${mod-ri-id}" />
-	</path>
-
-	<path id="mod-example-path">
-		<path refid="mod-ri-path" />
-		<path refid="mod-json-path" />
-		<path refid="mod-jaxrs-path" />
-		<path refid="mod-freemarker-path" />
-		<path refid="mod-velocity-path" />
-		<path refid="mod-jaxb-path" />
-		<path refid="mod-jibx-path" />
-		<path refid="mod-atom-path" />
-		<pathelement path="${mod}/${mod-jaxrs-id}/src" />
-		<pathelement path="${classes}/${mod-jaxrs-id}" />
-		<pathelement path="${classes}/${mod-ri-id}" />
-		<pathelement path="${classes}/${mod-json-id}" />
-		<pathelement path="${classes}/${mod-freemarker-id}" />
-		<pathelement path="${classes}/${mod-velocity-id}" />
-		<pathelement path="${classes}/${mod-jaxb-id}" />
-		<pathelement path="${classes}/${mod-jibx-id}" />
-		<pathelement path="${classes}/${mod-atom-id}" />
-		<fileset dir="${lib}/${lib-db4o-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-bloat-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-collections-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-junit-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-lang-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-spring-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-spring-modules-db4o-id}" includes="*.jar" />
-	</path>
-
-	<path id="mod-fileupload-path">
-		<path refid="mod-ri-path" />
-		<pathelement path="${classes}/${mod-ri-id}" />
-		<fileset dir="${lib}/${lib-servlet-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-fileupload-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-io-id}" includes="*.jar" />
-	</path>
-
-	<path id="mod-freemarker-path">
-		<path refid="mod-ri-path" />
-		<pathelement path="${classes}/${mod-ri-id}" />
-		<fileset dir="${lib}/${lib-freemarker-id}" includes="*.jar" />
-	</path>
-
-	<path id="mod-grizzly-path">
-		<path refid="mod-ri-path" />
-		<pathelement path="${classes}/${mod-ri-id}" />
-		<fileset dir="${lib}/${lib-grizzly-id}" includes="*.jar" />
-	</path>
-
-	<path id="mod-gwt-api-path">
-		<path refid="mod-ri-path" />
-		<pathelement path="${classes}/${mod-ri-id}" />
-		<fileset dir="${lib}/${lib-gwt-id}" includes="*.jar" />
-	</path>
-
-	<path id="mod-httpclient-path">
-		<path refid="mod-ri-path" />
-		<pathelement path="${classes}/${mod-ri-id}" />
-		<fileset dir="${lib}/${lib-httpclient-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-logging-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-codec-id}" includes="*.jar" />
-	</path>
-
-	<path id="mod-javamail-path">
-		<path refid="mod-ri-path" />
-		<pathelement path="${classes}/${mod-ri-id}" />
-		<fileset dir="${lib}/${lib-javamail-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-activation-id}" includes="*.jar" />
-	</path>
-
-	<path id="mod-jaxb-path">
-		<path refid="mod-ri-path" />
-		<pathelement path="${classes}/${mod-ri-id}" />
-		<fileset dir="${lib}/${lib-jaxb-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-stax-id}" includes="*.jar" />
-	</path>
-
-	<path id="mod-jaxrs-path">
-		<path refid="mod-ri-path" />
-		<path refid="mod-javamail-path" />
-		<path refid="mod-jaxb-path" />
-		<path refid="mod-json-path" />
-		<pathelement path="${classes}/${mod-ri-id}" />
-		<fileset dir="${lib}/${lib-jaxrs-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-fileupload-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-servlet-id}" includes="*.jar" />
-	</path>
-
-	<path id="mod-jdbc-path">
-		<path refid="mod-ri-path" />
-		<pathelement path="${classes}/${mod-ri-id}" />
-		<fileset dir="${lib}/${lib-dbcp-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-logging-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-pool-id}" includes="*.jar" />
-	</path>
-
-	<path id="mod-jetty-path">
-		<path refid="mod-ri-path" />
-		<pathelement path="${classes}/${mod-ri-id}" />
-		<fileset dir="${lib}/${lib-servlet-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-jetty-id}" includes="*.jar" />
-	</path>
-
-	<path id="mod-jibx-path">
-		<path refid="mod-ri-path" />
-		<pathelement path="${classes}/${mod-ri-id}" />
-		<fileset dir="${lib}/${lib-jibx-id}" includes="*.jar" />
-	</path>
-
-	<path id="mod-jmx-path">
-		<path refid="mod-ri-path" />
-		<pathelement path="${classes}/${mod-ri-id}" />
-	</path>
-
-	<path id="mod-json-path">
-		<path refid="mod-ri-path" />
-		<pathelement path="${classes}/${mod-ri-id}" />
-		<fileset dir="${lib}/${lib-json-id}" includes="*.jar" />
-	</path>
-
-	<path id="mod-jxta-path">
-		<path refid="mod-ri-path" />
-		<pathelement path="${classes}/${mod-ri-id}" />
-		<fileset dir="${lib}/${lib-bouncycastle-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-jxta-id}" includes="*.jar" />
-	</path>
-
-	<path id="mod-net-path">
-		<path refid="mod-ri-path" />
-		<pathelement path="${classes}/${mod-ri-id}" />
-	</path>
-
-	<path id="mod-oauth-path">
-		<path refid="mod-ri-path" />
-		<pathelement path="${classes}/${mod-ri-id}" />
-		<fileset dir="${lib}/${lib-oauth-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-codec-id}" includes="*.jar" />
-	</path>
-
-	<path id="mod-servlet-path">
-		<path refid="mod-ri-path" />
-		<pathelement path="${classes}/${mod-ri-id}" />
-		<fileset dir="${lib}/${lib-servlet-id}" includes="*.jar" />
-	</path>
-
-	<path id="mod-gwt-ri-path">
-		<path refid="mod-ri-path" />
-		<path refid="mod-api-path" />
-		<path refid="mod-gwt-api-path" />
-		<path refid="mod-servlet-path" />
-		<pathelement path="${classes}/${mod-ri-id}" />
-		<pathelement path="${classes}/${mod-gwt-api-id}" />
-		<pathelement path="${classes}/${mod-servlet-id}" />
-		<fileset dir="${lib}/${lib-gwt-id}" includes="*.jar" />
-	</path>
-
-	<path id="mod-shell-path">
-		<path refid="mod-api-path" />
-		<pathelement path="${classes}/${mod-api-id}" />
-		<fileset dir="${lib}/${lib-cli-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-jline-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-script-id}" includes="*.jar" />
-	</path>
-
-	<path id="mod-simple-path">
-		<path refid="mod-ri-path" />
-		<pathelement path="${classes}/${mod-ri-id}" />
-		<fileset dir="${lib}/${lib-simple-id}" includes="*.jar" />
-	</path>
-
-	<path id="mod-spring-api-path">
-		<path refid="mod-ri-path" />
-		<pathelement path="${classes}/${mod-ri-id}" />
-		<fileset dir="${lib}/${lib-logging-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-cglib-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-spring-id}" includes="*.jar" />
-	</path>
-
-	<path id="mod-spring-nre-path">
-		<path refid="mod-spring-api-path" />
-		<path refid="mod-servlet-path" />
-		<pathelement path="${classes}/${mod-servlet-id}" />
-	</path>
-
-	<path id="mod-ssl-path">
-		<path refid="mod-ri-path" />
-		<pathelement path="${classes}/${mod-ri-id}" />
-		<fileset dir="${lib}/${lib-jsslutils-id}" includes="*.jar" />
-	</path>
-
-	<path id="mod-velocity-path">
-		<path refid="mod-ri-path" />
-		<pathelement path="${classes}/${mod-ri-id}" />
-		<fileset dir="${lib}/${lib-collections-id}" includes="*.jar" />
-		<fileset dir="${lib}/${lib-velocity-id}" includes="*.jar" />
-	</path>
-
-	<path id="mod-wadl-path">
-		<path refid="mod-ri-path" />
-		<pathelement path="${classes}/${mod-ri-id}" />
-	</path>
-
-	<path id="mod-xdb-path">
-		<path refid="mod-ri-path" />
-		<path refid="mod-servlet-path" />
-		<pathelement path="${classes}/${mod-ri-id}" />
-		<pathelement path="${classes}/${mod-servlet-id}" />
-	</path>
-
 	<path id="path-all">
-		<pathelement path="${classes}/${mod-api-id}" />
-		<pathelement path="${classes}/${mod-ri-id}" />
+		<pathelement path="${classes}/${mod-core-id}" />
+		<pathelement path="${classes}/${mod-core-id}" />
 		<pathelement path="${classes}/${mod-fileupload-id}" />
 		<pathelement path="${classes}/${mod-freemarker-id}" />
 		<pathelement path="${classes}/${mod-grizzly-id}" />
-		<pathelement path="${classes}/${mod-gwt-api-id}" />
-		<pathelement path="${classes}/${mod-gwt-ri-id}" />
+		<pathelement path="${classes}/${mod-core-gwt-id}" />
+		<pathelement path="${classes}/${mod-gwt-id}" />
 		<pathelement path="${classes}/${mod-httpclient-id}" />
 		<pathelement path="${classes}/${mod-javamail-id}" />
 		<pathelement path="${classes}/${mod-jaxb-id}" />
@@ -539,8 +512,7 @@
 		<pathelement path="${classes}/${mod-net-id}" />
 		<pathelement path="${classes}/${mod-oauth-id}" />
 		<pathelement path="${classes}/${mod-servlet-id}" />
-		<pathelement path="${classes}/${mod-spring-api-id}" />
-		<pathelement path="${classes}/${mod-spring-nre-id}" />
+		<pathelement path="${classes}/${mod-spring-id}" />
 		<pathelement path="${classes}/${mod-ssl-id}" />
 		<pathelement path="${classes}/${mod-velocity-id}" />
 		<pathelement path="${classes}/${mod-wadl-id}" />
@@ -548,8 +520,8 @@
 		<path refid="mod-fileupload-path" />
 		<path refid="mod-freemarker-path" />
 		<path refid="mod-grizzly-path" />
-		<path refid="mod-gwt-api-path" />
-		<path refid="mod-gwt-ri-path" />
+		<path refid="mod-core-gwt-path" />
+		<path refid="mod-gwt-path" />
 		<path refid="mod-httpclient-path" />
 		<path refid="mod-javamail-path" />
 		<path refid="mod-jaxb-path" />
@@ -564,8 +536,7 @@
 		<path refid="mod-oauth-path" />
 		<path refid="mod-servlet-path" />
 		<path refid="mod-simple-path" />
-		<path refid="mod-spring-api-path" />
-		<path refid="mod-spring-nre-path" />
+		<path refid="mod-spring-path" />
 		<path refid="mod-ssl-path" />
 		<path refid="mod-velocity-path" />
 		<path refid="mod-wadl-path" />
@@ -1114,14 +1085,14 @@
 
 		<!-- Generate the Maven POM files -->
 		<mkdir dir="${temp}/poms" />
-		<pomModule name="api" />
-		<pomModule name="ri" />
+		<pomModule name="core" />
+		<pomModule name="core-gwt" ext1="gwt" />
+		<pomModule name="core-example" />
 		<pomModule name="atom" />
 		<pomModule name="fileupload" />
 		<pomModule name="freemarker" />
 		<pomModule name="grizzly" />
-		<pomModule name="gwt-api" ext1="gwt" />
-		<pomModule name="gwt-ri" ext1="gwt" />
+		<pomModule name="gwt" ext1="gwt" />
 		<pomModule name="httpclient" />
 		<pomModule name="javamail" />
 		<pomModule name="jaxb" />
@@ -1142,19 +1113,17 @@
 		<pomModule name="servlet" />
 		<!-- disabled for now  <pomModule name="shell" ext1="jline" ext2="rhino" ext3="script" /> -->
 		<pomModule name="simple" />
-		<pomModule name="spring-api" ext1="spring" />
-		<pomModule name="spring-nre" ext1="spring" />
+		<pomModule name="spring" ext1="spring" />
 		<pomModule name="ssl" ext1="jsslutils" />
 		<pomModule name="velocity" />
 		<pomModule name="wadl" />
 		<pomModule name="xdb" />
-		<pomModule name="example" />
 
 		<pomLibrary name="simple" />
 		<pomLibrary name="jaxrs" />
 		<pomLibrary name="json" />
 		<pomLibrary name="jsslutils" />
-		<pomLibrary name="db4o" depend1="example" type1="mod" />
+		<pomLibrary name="db4o" depend1="core-example" type1="mod" />
 		<pomLibrary name="db4o-nativequery" />
 		<pomLibrary name="bloat"
 		            depend1="db4o"
@@ -1196,8 +1165,8 @@
 		<copy file="${tmpl}/javadocs/overview-api.tmpl"
 		      tofile="${temp}/javadocs/overview-api.html"
 		      overwrite="true" />
-		<copy file="${tmpl}/javadocs/overview-nre.tmpl"
-		      tofile="${temp}/javadocs/overview-nre.html"
+		<copy file="${tmpl}/javadocs/overview-engine.tmpl"
+		      tofile="${temp}/javadocs/overview-engine.html"
 		      overwrite="true" />
 		<copy file="${tmpl}/javadocs/overview-ext.tmpl"
 		      tofile="${temp}/javadocs/overview-ext.html"
@@ -1208,7 +1177,7 @@
 		<replace file="${temp}/javadocs/overview-api.html"
 		         token="@version-minor@"
 		         value="${version-minor}" />
-		<replace file="${temp}/javadocs/overview-nre.html"
+		<replace file="${temp}/javadocs/overview-engine.html"
 		         token="@version-minor@"
 		         value="${version-minor}" />
 		<replace file="${temp}/javadocs/overview-ext.html"
@@ -1227,65 +1196,74 @@
 		<copy todir="${mod}" overwrite="true">
 			<fileset dir="../modules" />
 		</copy>
-		<replace file="${mod}/${mod-api-id}/src/org/restlet/util/Engine.java"
+		<replace file="${mod}/${mod-core-id}/src/org/restlet/util/Engine.java"
 		         token="@major-number@"
 		         value="${major-number}" />
-		<replace file="${mod}/${mod-api-id}/src/org/restlet/util/Engine.java"
+		<replace file="${mod}/${mod-core-id}/src/org/restlet/util/Engine.java"
 		         token="@minor-number@"
 		         value="${minor-number}" />
-		<replace file="${mod}/${mod-api-id}/src/org/restlet/util/Engine.java"
+		<replace file="${mod}/${mod-core-id}/src/org/restlet/util/Engine.java"
 		         token="@release-type@"
 		         value="${release-type}" />
-		<replace file="${mod}/${mod-api-id}/src/org/restlet/util/Engine.java"
+		<replace file="${mod}/${mod-core-id}/src/org/restlet/util/Engine.java"
 		         token="@release-number@"
 		         value="${release-number}" />
 
-		<replace file="${mod}/${mod-gwt-api-id}/src/org/restlet/gwt/util/Engine.java"
+		<replace file="${mod}/${mod-core-gwt-id}/src/org/restlet/gwt/util/Engine.java"
 		         token="@major-number@"
 		         value="${major-number}" />
-		<replace file="${mod}/${mod-gwt-api-id}/src/org/restlet/gwt/util/Engine.java"
+		<replace file="${mod}/${mod-core-gwt-id}/src/org/restlet/gwt/util/Engine.java"
 		         token="@minor-number@"
 		         value="${minor-number}" />
-		<replace file="${mod}/${mod-gwt-api-id}/src/org/restlet/gwt/util/Engine.java"
+		<replace file="${mod}/${mod-core-gwt-id}/src/org/restlet/gwt/util/Engine.java"
 		         token="@release-type@"
 		         value="${release-type}" />
-		<replace file="${mod}/${mod-gwt-api-id}/src/org/restlet/gwt/util/Engine.java"
+		<replace file="${mod}/${mod-core-gwt-id}/src/org/restlet/gwt/util/Engine.java"
 		         token="@release-number@"
 		         value="${release-number}" />
 
-		<compileModule name="api" />
-		<compileModule name="ri" />
+		<compileModule name="core" />
+		<compileModule name="core-gwt" />
 		<compileModule name="atom" />
 		<compileModule name="fileupload" />
 		<compileModule name="freemarker" />
 		<compileModule name="grizzly" />
-		<compileModule name="gwt-api" />
 		<compileModule name="httpclient" />
 		<compileModule name="javamail" />
 		<compileModule name="jaxb" />
-		<compileModule name="jaxrs" />
 		<compileModule name="jdbc" />
 		<compileModule name="jetty" />
 		<compileModule name="jibx" />
 		<compileModule name="jmx" />
 		<compileModule name="json" />
+
+	    <!-- depends on json -->
+		<compileModule name="jaxrs" />
+		
 		<compileModule name="jxta" />
 		<compileModule name="net" />
 		<compileModule name="oauth" />
 		<compileModule name="servlet" />
-		<compileModule name="gwt-ri" />
+
 		<!-- depends on servlet -->
+		<compileModule name="gwt" />
+		
 		<compileModule name="shell" />
 		<compileModule name="simple" />
-		<compileModule name="spring-api" />
-		<compileModule name="spring-nre" />
+
+		<!-- depends on servlet -->
+		<compileModule name="spring" />
+		
 		<compileModule name="ssl" />
 		<compileModule name="velocity" />
 		<compileModule name="wadl" />
+
+		<!-- depends on servlet -->
 		<compileModule name="xdb" />
-		<compileModule name="example" />
-		<compileModule name="api-test" />
-		<compileModule name="ri-test" />
+
+		<!-- depends on many things -->
+		<compileModule name="core-example" />
+		<compileModule name="core-test" />
 	</target>
 
 	<!-- GENERATE-BACKPORT target -->
@@ -1293,8 +1271,13 @@
 	        if="do-backport"
 	        depends="generate-classes"
 	        description="Backport classes using Retrotranslator.">
-		<backportModule name="api" failonwarning="@{backport-failonwarning}" />
-		<backportModule name="ri" failonwarning="@{backport-failonwarning}" />
+		<backportModule name="core" failonwarning="@{backport-failonwarning}" />
+		<backportModule name="core-example"
+		                failonwarning="@{backport-failonwarning}" />
+		<backportModule name="core-gwt"
+		                failonwarning="@{backport-failonwarning}" />
+		<backportModule name="core-test"
+		                failonwarning="@{backport-failonwarning}" />
 		<backportModule name="atom" failonwarning="@{backport-failonwarning}" />
 		<backportModule name="fileupload"
 		                failonwarning="@{backport-failonwarning}" />
@@ -1302,9 +1285,7 @@
 		                failonwarning="@{backport-failonwarning}" />
 		<backportModule name="grizzly"
 		                failonwarning="@{backport-failonwarning}" />
-		<backportModule name="gwt-api"
-		                failonwarning="@{backport-failonwarning}" />
-		<backportModule name="gwt-ri"
+		<backportModule name="gwt"
 		                failonwarning="@{backport-failonwarning}" />
 		<backportModule name="httpclient"
 		                failonwarning="@{backport-failonwarning}" />
@@ -1329,21 +1310,13 @@
 		                failonwarning="@{backport-failonwarning}" />
 		<backportModule name="simple"
 		                failonwarning="@{backport-failonwarning}" />
-		<backportModule name="spring-api"
-		                failonwarning="@{backport-failonwarning}" />
-		<backportModule name="spring-nre"
+		<backportModule name="spring"
 		                failonwarning="@{backport-failonwarning}" />
 		<backportModule name="ssl" failonwarning="@{backport-failonwarning}" />
 		<backportModule name="velocity"
 		                failonwarning="@{backport-failonwarning}" />
 		<backportModule name="wadl" failonwarning="@{backport-failonwarning}" />
 		<backportModule name="xdb" failonwarning="@{backport-failonwarning}" />
-		<backportModule name="example"
-		                failonwarning="@{backport-failonwarning}" />
-		<backportModule name="api-test"
-		                failonwarning="@{backport-failonwarning}" />
-		<backportModule name="ri-test"
-		                failonwarning="@{backport-failonwarning}" />
 	</target>
 
 	<!-- JAVADOC target -->
@@ -1353,7 +1326,7 @@
 	        description="Generate the Javadocs.">
 		<delete includeEmptyDirs="true" verbose="false" quiet="true">
 			<fileset dir="${docs-api}" excludes="**/.svn" />
-			<fileset dir="${docs-nre}" excludes="**/.svn" />
+			<fileset dir="${docs-engine}" excludes="**/.svn" />
 			<fileset dir="${docs-ext}" excludes="**/.svn" />
 			<fileset dir="${docs-gwt}" excludes="**/.svn" />
 		</delete>
@@ -1371,7 +1344,7 @@
 		         stylesheetfile="${tmpl}/javadocs/stylesheet.css"
 		         verbose="${verbose}">
 			<sourcepath>
-				<pathelement path="${mod}/${mod-api-id}/src/" />
+				<pathelement path="${mod}/${mod-core-id}/src/" />
 			</sourcepath>
 
 			<bottom>
@@ -1385,28 +1358,28 @@
 			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
 		</javadoc>
 
-		<javadoc packagenames="com.noelios.restlet.*"
+		<javadoc packagenames="org.restlet.engine.*"
 		         excludepackagenames="${exclude-packages}"
-		         destdir="${docs-nre}"
+		         destdir="${docs-engine}"
 		         classpathref="path-all"
 		         author="true"
 		         version="true"
 		         use="true"
-		         windowtitle="Noelios Restlet Engine ${version-full}"
-		         doctitle="Noelios Restlet Engine ${version-full}"
-		         overview="${temp}/javadocs/overview-nre.html"
+		         windowtitle="Restlet Engine ${version-full}"
+		         doctitle="Restlet Engine ${version-full}"
+		         overview="${temp}/javadocs/overview-engine.html"
 		         stylesheetfile="${tmpl}/javadocs/stylesheet.css"
 		         verbose="${verbose}">
 			<sourcepath>
-				<pathelement path="${mod}/${mod-ri-id}/src/" />
+				<pathelement path="${mod}/${mod-core-id}/src/" />
 			</sourcepath>
 
 			<bottom>
 				<![CDATA[<i>Copyright &#169; 2005-2008 <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
 			</bottom>
 
-			<group title="${restlet-nre}">
-				<package name="com.noelios.restlet*" />
+			<group title="${restlet-engine}">
+				<package name="org.restlet.engine*" />
 			</group>
 
 			<link href="http://www.restlet.org/documentation/${version-minor}/api/"
@@ -1415,7 +1388,7 @@
 			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
 		</javadoc>
 
-		<javadoc packagenames="org.restlet.ext.*,com.noelios.restlet.ext.*"
+		<javadoc packagenames="org.restlet.ext.*"
 		         excludepackagenames="${exclude-packages}"
 		         destdir="${docs-ext}"
 		         classpathref="path-all"
@@ -1432,8 +1405,8 @@
 				<pathelement path="${mod}/${mod-fileupload-id}/src/" />
 				<pathelement path="${mod}/${mod-freemarker-id}/src/" />
 				<pathelement path="${mod}/${mod-grizzly-id}/src/" />
-				<pathelement path="${mod}/${mod-gwt-api-id}/src/" />
-				<pathelement path="${mod}/${mod-gwt-ri-id}/src/" />
+				<pathelement path="${mod}/${mod-core-gwt-id}/src/" />
+				<pathelement path="${mod}/${mod-gwt-id}/src/" />
 				<pathelement path="${mod}/${mod-httpclient-id}/src/" />
 				<pathelement path="${mod}/${mod-javamail-id}/src/" />
 				<pathelement path="${mod}/${mod-jaxb-id}/src/" />
@@ -1449,8 +1422,7 @@
 				<pathelement path="${mod}/${mod-servlet-id}/src/" />
 				<!-- disabled for now <pathelement path="${mod}/${mod-shell-id}/src/" /> -->
 				<pathelement path="${mod}/${mod-simple-id}/src/" />
-				<pathelement path="${mod}/${mod-spring-api-id}/src/" />
-				<pathelement path="${mod}/${mod-spring-nre-id}/src/" />
+				<pathelement path="${mod}/${mod-spring-id}/src/" />
 				<pathelement path="${mod}/${mod-ssl-id}/src/" />
 				<pathelement path="${mod}/${mod-velocity-id}/src/" />
 				<pathelement path="${mod}/${mod-wadl-id}/src/" />
@@ -1461,12 +1433,8 @@
 				<![CDATA[<i>Copyright &#169; 2005-2008 <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
 			</bottom>
 
-			<group title="${restlet-ext-api}">
+			<group title="${restlet-ext}">
 				<package name="org.restlet.ext*" />
-			</group>
-
-			<group title="${restlet-ext-nre}">
-				<package name="com.noelios.restlet.ext*" />
 			</group>
 
 			<link href="http://freemarker.sourceforge.net/docs/api/" />
@@ -1487,8 +1455,8 @@
 			<link href="http://www.restlet.org/documentation/${version-minor}/api/"
 			      packagelistLoc="${docs-api}"
 			      offline="true" />
-			<link href="http://www.restlet.org/documentation/${version-minor}/nre/"
-			      packagelistLoc="${docs-nre}"
+			<link href="http://www.restlet.org/documentation/${version-minor}/engine/"
+			      packagelistLoc="${docs-engine}"
 			      offline="true" />
 			<link href="http://www.simpleframework.org/doc/javadoc/" />
 		</javadoc>
@@ -1506,7 +1474,7 @@
 		         stylesheetfile="${tmpl}/javadocs/stylesheet.css"
 		         verbose="${verbose}">
 			<sourcepath>
-				<pathelement path="${mod}/${mod-gwt-api-id}/src/" />
+				<pathelement path="${mod}/${mod-core-gwt-id}/src/" />
 			</sourcepath>
 
 			<bottom>
@@ -1538,7 +1506,7 @@
 		         stylesheetfile="${tmpl}/javadocs/stylesheet.css"
 		         verbose="${verbose}">
 			<sourcepath>
-				<pathelement path="${mod}/${mod-api-id}/src/" />
+				<pathelement path="${mod}/${mod-core-id}/src/" />
 			</sourcepath>
 
 			<bottom>
@@ -1598,12 +1566,10 @@
 		       filtertrace="true"
 		       showoutput="${verbose}">
 			<classpath>
-				<path location="${mod}/${mod-ri-test-id}/src" />
-				<path refid="mod-api-test-path" />
+				<path location="${mod}/${mod-core-test-id}/src" />
+				<path refid="mod-core-test-path" />
 			</classpath>
 			<formatter type="plain" />
-			<test name="com.noelios.restlet.test.NoeliosTestSuite"
-			      todir="${temp}/test" />
 			<test name="org.restlet.test.RestletTestSuite"
 			      todir="${temp}/test" />
 		</junit>
@@ -1613,14 +1579,14 @@
 	        if="do-findbugs"
 	        description="Attempts to find bugs.">
 		<mkdir dir="${temp}/findbugs" />
-		<findbugsModule name="api" />
-		<findbugsModule name="ri" />
+		<findbugsModule name="core" />
+		<findbugsModule name="core-example" />
+		<findbugsModule name="core-gwt" />
 		<findbugsModule name="atom" />
 		<findbugsModule name="fileupload" />
 		<findbugsModule name="freemarker" />
 		<findbugsModule name="grizzly" />
-		<findbugsModule name="gwt-api" />
-		<findbugsModule name="gwt-ri" />
+		<findbugsModule name="gwt" />
 		<findbugsModule name="httpclient" />
 		<findbugsModule name="javamail" />
 		<findbugsModule name="jaxb" />
@@ -1636,27 +1602,25 @@
 		<findbugsModule name="servlet" />
 		<findbugsModule name="shell" />
 		<findbugsModule name="simple" />
-		<findbugsModule name="spring-api" />
-		<findbugsModule name="spring-nre" />
+		<findbugsModule name="spring" />
 		<findbugsModule name="ssl" />
 		<findbugsModule name="velocity" />
 		<findbugsModule name="wadl" />
 		<findbugsModule name="xdb" />
-		<findbugsModule name="example" />
 	</target>
 
 	<target name="verify-checkstyle"
 	        if="do-checkstyle"
 	        description="Check the style of the code.">
 		<mkdir dir="${temp}/checkstyle" />
-		<checkstyleModule name="api" />
-		<checkstyleModule name="ri" />
+		<checkstyleModule name="core" />
+		<checkstyleModule name="core-example" />
+		<checkstyleModule name="core-gwt" />
 		<checkstyleModule name="atom" />
 		<checkstyleModule name="fileupload" />
 		<checkstyleModule name="freemarker" />
 		<checkstyleModule name="grizzly" />
-		<checkstyleModule name="gwt-api" />
-		<checkstyleModule name="gwt-ri" />
+		<checkstyleModule name="gwt" />
 		<checkstyleModule name="httpclient" />
 		<checkstyleModule name="javamail" />
 		<checkstyleModule name="jaxb" />
@@ -1672,13 +1636,11 @@
 		<checkstyleModule name="servlet" />
 		<checkstyleModule name="shell" />
 		<checkstyleModule name="simple" />
-		<checkstyleModule name="spring-api" />
-		<checkstyleModule name="spring-nre" />
+		<checkstyleModule name="spring" />
 		<checkstyleModule name="ssl" />
 		<checkstyleModule name="velocity" />
 		<checkstyleModule name="wadl" />
 		<checkstyleModule name="xdb" />
-		<checkstyleModule name="example" />
 	</target>
 
 	<!-- Integrate target -->
@@ -1722,8 +1684,8 @@
 				<copy todir="${dist-classic}/docs/ext">
 					<fileset dir="${docs-ext}" />
 				</copy>
-				<copy todir="${dist-classic}/docs/nre">
-					<fileset dir="${docs-nre}" />
+				<copy todir="${dist-classic}/docs/engine">
+					<fileset dir="${docs-engine}" />
 				</copy>
 				<copy todir="${dist-classic}/docs/gwt">
 					<fileset dir="${docs-gwt}" />
@@ -1794,14 +1756,14 @@
 		<stageLibrary name="xdb" />
 
 		<!-- Package modules -->
-		<stageModule name="api" />
-		<stageModule name="ri" />
+		<stageModule name="core" />
+		<stageModule name="core-example" />
+		<stageModule name="core-gwt" includeSource="true" />
 		<stageModule name="atom" />
 		<stageModule name="fileupload" />
 		<stageModule name="freemarker" />
 		<stageModule name="grizzly" />
-		<stageModule name="gwt-api" includeSource="true" />
-		<stageModule name="gwt-ri" />
+		<stageModule name="gwt" />
 		<stageModule name="httpclient" />
 		<stageModule name="javamail" />
 		<stageModule name="jaxb" />
@@ -1817,13 +1779,11 @@
 		<stageModule name="servlet" />
 		<!-- disabled for now <stageModule name="shell" /> -->
 		<stageModule name="simple" />
-		<stageModule name="spring-api" />
-		<stageModule name="spring-nre" />
+		<stageModule name="spring" />
 		<stageModule name="ssl" />
 		<stageModule name="velocity" />
 		<stageModule name="wadl" />
 		<stageModule name="xdb" />
-		<stageModule name="example" />
 
 		<!-- Copy the POM files -->
 		<!-- 
@@ -1846,14 +1806,13 @@
 		        verbose="false"
 		        quiet="true"
 		        includeEmptyDirs="true" />
-		<maven2Module name="api" />
-		<maven2Module name="ri" />
+		<maven2Module name="core" />
+		<maven2Module name="core-example" />
+		<maven2Module name="core-gwt" />
 		<maven2Module name="atom" />
-		<maven2Module name="example" />
 		<maven2Module name="fileupload" />
 		<maven2Module name="freemarker" />
-		<maven2Module name="gwt-api" />
-		<maven2Module name="gwt-ri" />
+		<maven2Module name="gwt" />
 		<maven2Module name="httpclient" />
 		<maven2Module name="javamail" />
 		<maven2Module name="jaxb" />
@@ -1867,8 +1826,7 @@
 		<maven2Module name="servlet" />
 		<!-- disabled for now <maven2Module name="shell" /> -->
 		<maven2Module name="simple" />
-		<maven2Module name="spring-api" />
-		<maven2Module name="spring-nre" />
+		<maven2Module name="spring" />
 		<maven2Module name="ssl" />
 		<maven2Module name="velocity" />
 		<maven2Module name="xdb" />

@@ -5,8 +5,8 @@
    <version>@version@</version>
    <dependencies>
       <dependency>
-         <groupId>com.noelios.restlet</groupId>
-         <artifactId>com.noelios.restlet</artifactId>
+         <groupId>org.restlet</groupId>
+         <artifactId>org.restlet</artifactId>
          <version>@version@</version>
       </dependency>
       <dependency>

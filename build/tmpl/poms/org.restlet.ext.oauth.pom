@@ -3,21 +3,30 @@
    <groupId>@group-id@</groupId>
    <artifactId>@artifact-id@</artifactId>
    <version>@version@</version>
+
+   <repositories>
+       <repository>
+          <id>oauth-repo</id>
+          <name>OAuth repository</name>
+          <url>http://oauth.googlecode.com/svn/code/maven</url>
+       </repository>
+   </repositories>
+
    <dependencies>
       <dependency>
-         <groupId>com.noelios.restlet</groupId>
-         <artifactId>com.noelios.restlet</artifactId>
+         <groupId>org.restlet</groupId>
+         <artifactId>org.restlet</artifactId>
          <version>@version@</version>
       </dependency>
       <dependency>
-         <groupId>com.noelios.restlet</groupId>
-         <artifactId>com.noelios.restlet.ext.servlet</artifactId>
-         <version>@version@</version>
+         <groupId>net.oauth</groupId>
+         <artifactId>core</artifactId>
+         <version>20080229</version>
       </dependency>
    </dependencies>
 
-   <name>GWT extension</name>
-   <description>Integration with GWT API.</description>
+   <name>OAuth Authentication</name>
+   <description>OAuth Authentication</description>
    <licenses>
       <license>
          <name>CDDL license</name>

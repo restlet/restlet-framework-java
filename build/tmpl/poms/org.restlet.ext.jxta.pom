@@ -3,30 +3,21 @@
    <groupId>@group-id@</groupId>
    <artifactId>@artifact-id@</artifactId>
    <version>@version@</version>
-
-   <repositories>
-       <repository>
-          <id>oauth-repo</id>
-          <name>OAuth repository</name>
-          <url>http://oauth.googlecode.com/svn/code/maven</url>
-       </repository>
-   </repositories>
-
    <dependencies>
       <dependency>
-         <groupId>com.noelios.restlet</groupId>
-         <artifactId>com.noelios.restlet</artifactId>
+         <groupId>org.restlet</groupId>
+         <artifactId>org.restlet</artifactId>
          <version>@version@</version>
       </dependency>
       <dependency>
-         <groupId>net.oauth</groupId>
-         <artifactId>core</artifactId>
-         <version>20080229</version>
+         <groupId>jxta</groupId>
+         <artifactId>jxta</artifactId>
+         <version>@lib-jxta-version@</version>
       </dependency>
    </dependencies>
 
-   <name>OAuth Authentication</name>
-   <description>OAuth Authentication</description>
+   <name>JXTA connectors</name>
+   <description>Integration with JXTA framework.</description>
    <licenses>
       <license>
          <name>CDDL license</name>

@@ -6,7 +6,7 @@
    <dependencies>
       <dependency>
          <groupId>org.restlet</groupId>
-         <artifactId>com.noelios.restlet</artifactId>
+         <artifactId>org.restlet.engine</artifactId>
          <version>@version@</version>
       </dependency>
       <dependency>

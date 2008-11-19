@@ -5,19 +5,19 @@
    <version>@version@</version>
    <dependencies>
       <dependency>
-         <groupId>com.noelios.restlet</groupId>
-         <artifactId>com.noelios.restlet</artifactId>
+         <groupId>org.restlet</groupId>
+         <artifactId>org.restlet</artifactId>
          <version>@version@</version>
       </dependency>
       <dependency>
-         <groupId>jxta</groupId>
-         <artifactId>jxta</artifactId>
-         <version>@lib-jxta-version@</version>
+         <groupId>org.simpleframework</groupId>
+         <artifactId>org.simpleframework</artifactId>
+         <version>@lib-simple-version@</version>
       </dependency>
    </dependencies>
 
-   <name>JXTA connectors</name>
-   <description>Integration with JXTA framework.</description>
+   <name>HTTP server connector</name>
+   <description>Integration with Simple framework.</description>
    <licenses>
       <license>
          <name>CDDL license</name>

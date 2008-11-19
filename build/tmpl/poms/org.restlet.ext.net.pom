@@ -5,20 +5,15 @@
    <version>@version@</version>
    <dependencies>
       <dependency>
-         <groupId>com.noelios.restlet</groupId>
-         <artifactId>com.noelios.restlet</artifactId>
+         <groupId>org.restlet</groupId>
+         <artifactId>org.restlet</artifactId>
          <version>@version@</version>
-      </dependency>
-      <dependency>
-         <groupId>commons-httpclient</groupId>
-         <artifactId>commons-httpclient</artifactId>
-         <version>@lib-httpclient-version@</version>
       </dependency>
    </dependencies>
 
    <name>HTTP client connector</name>
    <description>
-      Integration with Apache Commons HTTP Client.
+      Integration with java.net.HttpURLConnection class.
    </description>
    <licenses>
       <license>

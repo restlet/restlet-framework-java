@@ -5,19 +5,19 @@
    <version>@version@</version>
    <dependencies>
       <dependency>
-         <groupId>com.noelios.restlet</groupId>
-         <artifactId>com.noelios.restlet</artifactId>
+         <groupId>org.restlet</groupId>
+         <artifactId>org.restlet</artifactId>
          <version>@version@</version>
       </dependency>
       <dependency>
-         <groupId>javax.servlet</groupId>
-         <artifactId>servlet-api</artifactId>
-         <version>@lib-servlet-version@</version>
+         <groupId>com.sun.grizzly</groupId>
+         <artifactId>com.sun.grizzly</artifactId>
+         <version>@lib-grizzly-version@</version>
       </dependency>
    </dependencies>
 
    <name>HTTP server connector</name>
-   <description>Integration with Servlet API.</description>
+   <description>Integration with Grizzly NIO framework.</description>
    <licenses>
       <license>
          <name>CDDL license</name>

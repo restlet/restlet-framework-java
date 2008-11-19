@@ -5,19 +5,19 @@
    <version>@version@</version>
    <dependencies>
       <dependency>
-         <groupId>com.noelios.restlet</groupId>
-         <artifactId>com.noelios.restlet</artifactId>
+         <groupId>org.restlet</groupId>
+         <artifactId>org.restlet</artifactId>
          <version>@version@</version>
       </dependency>
       <dependency>
-         <groupId>org.simpleframework</groupId>
-         <artifactId>org.simpleframework</artifactId>
-         <version>@lib-simple-version@</version>
+         <groupId>jsslutils</groupId>
+         <artifactId>jsslutils</artifactId>
+         <version>@lib-jsslutils-version@</version>
       </dependency>
    </dependencies>
 
-   <name>HTTP server connector</name>
-   <description>Integration with Simple framework.</description>
+   <name>SSL utilities</name>
+   <description>Utilities to configure SSL support.</description>
    <licenses>
       <license>
          <name>CDDL license</name>
