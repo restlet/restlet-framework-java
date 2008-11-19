@@ -21,6 +21,8 @@ Changes log
           Reported by Hendy Irawan
         - ServerServlet was not always leveraging the createWarClient()
           method. Reported by Marcelo Ochoa.
+        - Fixed NPE when using the "cri" and "crs" variables in log 
+          format. Reported by Maxence Bernard.
     - Misc
         - Fully moved org.restlet.gwt.internal content into 
           org.restlet.gwt.engine package.

@@ -30,6 +30,7 @@ package org.restlet.util;
 import java.util.Date;
 import java.util.Map;
 
+import org.restlet.data.ChallengeResponse;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
@@ -135,12 +136,16 @@ public abstract class Resolver<T> {
                     } else if (variableName.equals("cig")) {
                         result = this.request.getClientInfo().getAgent();
                     } else if (variableName.equals("cri")) {
-                        result = this.request.getChallengeResponse()
-                                .getIdentifier();
+                        ChallengeResponse cr = this.request
+                                .getChallengeResponse();
+                        if (cr != null) {
+                            result = cr.getIdentifier();
+                        }
                     } else if (variableName.equals("crs")) {
-                        if (this.request.getChallengeResponse().getScheme() != null) {
-                            result = this.request.getChallengeResponse()
-                                    .getScheme().getTechnicalName();
+                        ChallengeResponse cr = this.request
+                                .getChallengeResponse();
+                        if (cr != null && cr.getScheme() != null) {
+                            result = cr.getScheme().getTechnicalName();
                         }
                     } else if (variableName.equals("d")) {
                         result = DateUtils.format(new Date(),
