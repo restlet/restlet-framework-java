@@ -36,12 +36,13 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Variant;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.ext.ExceptionMapper;
 
+import org.restlet.Application;
+import org.restlet.ext.jaxrs.ExtendedUriBuilder;
+import org.restlet.ext.jaxrs.ExtendedUriInfo;
 import org.restlet.ext.jaxrs.internal.exceptions.NotAcceptableWebAppException;
 import org.restlet.ext.jaxrs.internal.exceptions.UnsupportedMediaTypeWebAppException;
 import org.restlet.ext.jaxrs.internal.util.Converter;
@@ -62,7 +63,7 @@ public class WebAppExcMapper implements
     private HttpHeaders httpHeaders;
 
     @Context
-    private UriInfo uriInfo;
+    private ExtendedUriInfo uriInfo;
 
     /**
      * Adds the extensions for the given {@link Variant}.
@@ -74,7 +75,7 @@ public class WebAppExcMapper implements
      * @return true, if the extensions where added, or false, if the extension
      *         for the media type is not available.
      */
-    private boolean addExtensions(UriBuilder uriBuilder, Variant variant) {
+    private boolean addExtensions(ExtendedUriBuilder uriBuilder, Variant variant) {
         uriBuilder.equals(null);
         String mediaTypeExt = null;
         String languageExt = null;
@@ -100,15 +101,15 @@ public class WebAppExcMapper implements
                 encodingExt = variant.getEncoding();
             }
         }
-        // LATER do something for content negotiation
         if (languageExt != null) {
-            // uriBuilder.extension(languageExt.toString());
+            uriBuilder.extensionLanguage(languageExt);
         }
         if (mediaTypeExt != null) {
-            // uriBuilder.extension(mediaTypeExt);
+            uriBuilder.extensionMedia(mediaTypeExt);
         }
         if (encodingExt != null) {
-            // uriBuilder.extension(encodingExt);
+            uriBuilder.queryParam(Application.getCurrent().getTunnelService()
+                    .getEncodingParameter(), encodingExt);
         }
         return true;
     }
@@ -207,7 +208,7 @@ public class WebAppExcMapper implements
             }
             stb.append("\n");
             for (final Variant variant : supportedVariants) {
-                final UriBuilder uriBuilder = this.uriInfo
+                final ExtendedUriBuilder uriBuilder = this.uriInfo
                         .getRequestUriBuilder();
                 final boolean added = addExtensions(uriBuilder, variant);
                 if (!added) {

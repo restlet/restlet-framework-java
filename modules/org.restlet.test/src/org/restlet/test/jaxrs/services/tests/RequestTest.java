@@ -254,7 +254,7 @@ public class RequestTest extends JaxRsTestCase {
         response = get("date", conditions);
         assertEquals(PREC_FAILED, response.getStatus());
 
-        // NICE testen, was bei ungultigem Datum passiert:
+        // NICE testen, was bei ungueltigem Datum passiert:
         // If-Unmodified-Since-Header ignorieren.
     }
 

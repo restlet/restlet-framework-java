@@ -74,11 +74,11 @@ public class ResourceClasses {
 
     /**
      * @param tlContext
-     *                the {@link ThreadLocalizedContext} of the
-     *                {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
+     *            the {@link ThreadLocalizedContext} of the
+     *            {@link org.restlet.ext.jaxrs.JaxRsRestlet}.
      * @param jaxRsProviders
      * @param extensionBackwardMapping
-     *                the extension backward mapping
+     *            the extension backward mapping
      * @param logger
      */
     public ResourceClasses(ThreadLocalizedContext tlContext,
@@ -131,20 +131,19 @@ public class ResourceClasses {
         } catch (IllegalConstrParamTypeException e) {
             this.logger.warning("The root resource class "
                     + rootResourceClass.getName()
-                    + " has no valid constructor: " + e.getMessage());
-            // LATER better warning
+                    + " has an invalid parameter: " + e.getMessage());
             return false;
         } catch (IllegalBeanSetterTypeException e) {
             this.logger.warning("The root resource class "
                     + rootResourceClass.getName()
-                    + " has no valid constructor: " + e.getMessage());
-            // LATER better warning
+                    + " has an bean setter with an illegal type: "
+                    + e.getMessage());
             return false;
         } catch (IllegalFieldTypeException e) {
             this.logger.warning("The root resource class "
                     + rootResourceClass.getName()
-                    + " has no valid constructor: " + e.getMessage());
-            // LATER better warning
+                    + " has an illegal annotated and typed field: "
+                    + e.getMessage());
             return false;
         }
         PathRegExp uriTempl = newRrc.getPathRegExp();
@@ -206,32 +205,29 @@ public class ResourceClasses {
         } catch (IllegalConstrParamTypeException e) {
             this.logger.warning("The root resource class "
                     + rootResourceClass.getName()
-                    + " has no valid constructor: " + e.getMessage());
-            // LATER better warning
+                    + " has an invalid parameter: " + e.getMessage());
             return false;
         } catch (IllegalBeanSetterTypeException e) {
             this.logger.warning("The root resource class "
                     + rootResourceClass.getName()
-                    + " has no valid constructor: " + e.getMessage());
-            // LATER better warning
+                    + " has an bean setter with an illegal type: "
+                    + e.getMessage());
             return false;
         } catch (IllegalFieldTypeException e) {
             this.logger.warning("The root resource class "
                     + rootResourceClass.getName()
-                    + " has no valid constructor: " + e.getMessage());
-            // LATER better warning
+                    + " has an illegal annotated and typed field: "
+                    + e.getMessage());
             return false;
         } catch (InjectException e) {
             this.logger.warning("Dependencies could not be injected in "
                     + "root resource class " + rootResourceClass.getName()
                     + ": " + e.getMessage());
-            // LATER better warning
             return false;
         } catch (InvocationTargetException e) {
             this.logger.warning("Exception while calling bean setters in "
                     + "root resource class " + rootResourceClass.getName()
                     + ": " + e.getMessage());
-            // LATER better warning
             return false;
         }
         PathRegExp uriTempl = newRrc.getPathRegExp();

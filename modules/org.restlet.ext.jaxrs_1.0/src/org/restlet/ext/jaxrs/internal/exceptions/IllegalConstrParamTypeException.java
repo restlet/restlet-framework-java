@@ -27,8 +27,8 @@
 package org.restlet.ext.jaxrs.internal.exceptions;
 
 /**
- * This kind of exception is thrown, when a type of a bean setter must not be
- * annotated with the given JAX-RS annotation
+ * This kind of exception is thrown, when a type of a parameter of constructor
+ * is illegal.
  * 
  * @author Stephan Koops
  */

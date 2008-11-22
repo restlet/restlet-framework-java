@@ -42,7 +42,11 @@ import org.restlet.test.jaxrs.services.tests.RecursiveTest;
 @Produces("text/plain")
 public class RecursiveTestService {
 
-    private RecursiveTestService parent;
+    private final RecursiveTestService parent;
+    
+    public RecursiveTestService() {
+       this.parent = null; 
+    }
 
     public RecursiveTestService(RecursiveTestService parent) {
         this.parent = parent;

@@ -78,6 +78,7 @@ import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Status;
 import org.restlet.data.Tag;
+import org.restlet.ext.jaxrs.ExtendedUriBuilder;
 import org.restlet.ext.jaxrs.RoleChecker;
 import org.restlet.ext.jaxrs.internal.todo.NotYetImplementedException;
 import org.restlet.ext.jaxrs.internal.util.Converter;
@@ -364,7 +365,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
         final List<PathSegment> pathSegments = new ArrayList<PathSegment>(l);
         for (int i = 0; i < l; i++) {
             final String segmentEnc = segmentsEnc.get(i);
-            pathSegments.add(new JaxRsPathSegment(segmentEnc, decode, i));
+            pathSegments.add(new PathSegmentImpl(segmentEnc, decode, i));
         }
         return Collections.unmodifiableList(pathSegments);
     }
@@ -376,7 +377,18 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      */
     private UriBuilder createUriBuilder(Reference ref) {
         // NICE what happens, if the Reference is invalid for the UriBuilder?
-        final UriBuilder b = new JaxRsUriBuilder();
+        UriBuilder b = new UriBuilderImpl();
+        return fillUriBuilder(ref, b);
+    }
+
+    /**
+     * @param ref
+     * @param b
+     * @return
+     * @throws IllegalArgumentException
+     */
+    private UriBuilder fillUriBuilder(Reference ref, final UriBuilder b)
+            throws IllegalArgumentException {
         b.scheme(ref.getScheme(false));
         b.userInfo(ref.getUserInfo(false));
         b.host(ref.getHostDomain(false));
@@ -384,6 +396,14 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
         b.path(ref.getPath(false));
         b.replaceQuery(ref.getQuery(false));
         b.fragment(ref.getFragment(false));
+        return b;
+    }
+    
+    private ExtendedUriBuilder createExtendedUriBuilder(Reference ref) {
+        ExtendedUriBuilder b = new ExtendedUriBuilder();
+        fillUriBuilder(ref, b);
+        String extension = ref.getExtensions();
+        b.extension(extension);
         return b;
     }
 
@@ -602,6 +622,10 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
         return createUriBuilder(this.referenceOriginal);
     }
 
+    ExtendedUriBuilder getAbsolutePathBuilderExtended() {
+        return createExtendedUriBuilder(this.referenceOriginal);
+    }
+
     /**
      * @see javax.ws.rs.core.HttpHeaders#getAcceptableLanguages()
      */
@@ -730,6 +754,13 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      */
     public UriBuilder getBaseUriBuilder() {
         return UriBuilder.fromUri(getBaseUriStr());
+    }
+
+    ExtendedUriBuilder getBaseUriBuilderExtended() {
+        ExtendedUriBuilder uriBuilder = ExtendedUriBuilder.fromUri(getBaseUriStr());
+        ExtendedUriBuilder originalRef = createExtendedUriBuilder(this.referenceOriginal);
+        uriBuilder.extension(originalRef.getExtension());
+        return uriBuilder;
     }
 
     private String getBaseUriStr() {
@@ -1094,6 +1125,10 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      */
     public UriBuilder getRequestUriBuilder() {
         return UriBuilder.fromUri(getRequestUri());
+    }
+
+    ExtendedUriBuilder getRequestUriBuilderExtended() {
+        return ExtendedUriBuilder.fromUri(getRequestUri());
     }
 
     /**

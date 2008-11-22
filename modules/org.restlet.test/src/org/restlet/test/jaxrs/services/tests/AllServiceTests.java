@@ -46,6 +46,7 @@ public class AllServiceTests extends TestCase {
         mySuite.addTestSuite(CookieParamTest.class);
         mySuite.addTestSuite(DeterminingMediaTypeTest.class);
         mySuite.addTestSuite(ExcMapperTest.class);
+        mySuite.addTestSuite(ExtendedUriBuilderByServiceTest.class);
         mySuite.addTestSuite(FormTest.class);
         mySuite.addTestSuite(GenericTypeTestCase.class);
         mySuite.addTestSuite(HeadOptionsTest.class);
@@ -77,7 +78,6 @@ public class AllServiceTests extends TestCase {
         mySuite.addTestSuite(SecurityContextTest.class);
         mySuite.addTestSuite(SimpleHouseTest.class);
         mySuite.addTestSuite(SimpleTrainTest.class);
-        mySuite.addTestSuite(ThreadLocalContextTest.class);
         mySuite.addTestSuite(ThrowExceptionTest.class);
         mySuite.addTestSuite(ThrowWebAppExcProviderTest.class);
         mySuite.addTestSuite(UriBuilderByServiceTest.class);

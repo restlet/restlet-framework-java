@@ -64,7 +64,7 @@ import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.ext.jaxrs.internal.core.CallContext;
-import org.restlet.ext.jaxrs.internal.core.JaxRsPathSegment;
+import org.restlet.ext.jaxrs.internal.core.PathSegmentImpl;
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedUriInfo;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertCookieParamException;
@@ -692,7 +692,7 @@ public class ParameterList {
          */
         private PathSegment createPathSegment(final String pathSegmentEnc)
                 throws IllegalArgumentException {
-            return new JaxRsPathSegment(pathSegmentEnc, this.decode(), -1);
+            return new PathSegmentImpl(pathSegmentEnc, this.decode(), -1);
         }
 
         @Override

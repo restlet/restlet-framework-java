@@ -17,4 +17,10 @@ Changes log
           Reported by Rob Heittman.
         - Removed all code deprecated in the Restlet 1.1 release.
     - Misc
-     
+        - JAX-RS extension:
+            - added class ExendedUriBuilder with "file" extensions for
+              content negotiation and an ExtendedUriInfo to get it.
+            - Supports per-request-providers now.
+            - JaxRsApplication will not clear the MetadataService (as
+              before; was required to not use other extensions as given
+              in the JAX-RS ApplicationConfig class).

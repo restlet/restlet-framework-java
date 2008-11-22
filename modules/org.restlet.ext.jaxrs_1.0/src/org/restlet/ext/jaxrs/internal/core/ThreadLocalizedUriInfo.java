@@ -34,6 +34,8 @@ import javax.ws.rs.core.PathSegment;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 
+import org.restlet.ext.jaxrs.ExtendedUriInfo;
+
 /**
  * A ThreadLocalizedUriInfo is used to inject, if a {@link UriInfo} is required
  * to inject. It must be new instantiated for every place to inject.
@@ -90,6 +92,7 @@ public class ThreadLocalizedUriInfo implements UriInfo {
     /**
      * @see JaxRsUriInfo#getAbsolutePathBuilder()
      * @see UriInfo#getAbsolutePathBuilder()
+     * @see ExtendedUriInfo#getAbsolutePathBuilder()
      */
     public UriBuilder getAbsolutePathBuilder() {
         return getCallContext().getAbsolutePathBuilder();
@@ -134,7 +137,7 @@ public class ThreadLocalizedUriInfo implements UriInfo {
         return getCallContext().getBaseUriBuilder();
     }
 
-    private CallContext getCallContext() throws IllegalStateException {
+    protected CallContext getCallContext() throws IllegalStateException {
         return this.tlContext.get();
     }
 

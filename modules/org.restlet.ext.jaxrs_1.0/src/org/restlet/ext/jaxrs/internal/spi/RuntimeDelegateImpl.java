@@ -38,8 +38,8 @@ import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.Variant.VariantListBuilder;
 
-import org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder;
 import org.restlet.ext.jaxrs.internal.core.ResponseBuilderImpl;
+import org.restlet.ext.jaxrs.internal.core.UriBuilderImpl;
 import org.restlet.ext.jaxrs.internal.core.VariantListBuilderImpl;
 
 /**
@@ -111,7 +111,7 @@ public class RuntimeDelegateImpl extends javax.ws.rs.ext.RuntimeDelegate {
      */
     @Override
     public UriBuilder createUriBuilder() {
-        return new JaxRsUriBuilder();
+        return new UriBuilderImpl();
     }
 
     /**

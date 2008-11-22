@@ -134,6 +134,8 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
      */
     public static void assertEqualMediaType(MediaType expected,
             Representation actualEntity) {
+        if (actualEntity == null)
+            fail("The entity must not be null, if a media type should be read");
         assertEqualMediaType(expected, actualEntity.getMediaType());
     }
 
@@ -144,6 +146,8 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
      */
     public static void assertEqualMediaType(MediaType expected,
             Response actualResponse) {
+        if (actualResponse == null)
+            fail("The response must not be null, if an entity should be read");
         assertEqualMediaType(expected, actualResponse.getEntity());
     }
 
@@ -638,7 +642,8 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
     }
 
     /**
-     * @param application the JAX-RS {@link Application}.
+     * @param application
+     *            the JAX-RS {@link Application}.
      * @param protocol
      * @param challengeScheme
      * @param roleChecker

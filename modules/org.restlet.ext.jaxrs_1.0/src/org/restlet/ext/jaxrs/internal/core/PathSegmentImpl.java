@@ -42,7 +42,7 @@ import org.restlet.ext.jaxrs.internal.util.Util;
  * 
  * @author Stephan Koops
  */
-public class JaxRsPathSegment implements PathSegment {
+public class PathSegmentImpl implements PathSegment {
 
     /**
      * @param matrParamString
@@ -121,7 +121,7 @@ public class JaxRsPathSegment implements PathSegment {
      * @throws IllegalArgumentException
      *             the segment is null, if decode and encode is both true
      */
-    public JaxRsPathSegment(String segmentEnc, boolean decode,
+    public PathSegmentImpl(String segmentEnc, boolean decode,
             int indexForErrMess) throws IllegalArgumentException {
         if (segmentEnc == null) {
             if (indexForErrMess >= 0) {
@@ -150,7 +150,7 @@ public class JaxRsPathSegment implements PathSegment {
         if (this == object) {
             return true;
         }
-        if (!(object instanceof JaxRsPathSegment)) {
+        if (!(object instanceof PathSegmentImpl)) {
             return false;
         }
         final PathSegment other = (PathSegment) object;

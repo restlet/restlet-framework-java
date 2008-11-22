@@ -164,9 +164,9 @@ public class UriInfoTest extends TestCase {
      * .
      */
     public void testGetAbsolutePath() throws Exception {
-        JaxRsUriBuilderTest.assertEqualsURI(BASE_REF_STR + RELATIV_1,
+        UriBuilderImplTest.assertEqualsURI(BASE_REF_STR + RELATIV_1,
                 createUriInfo1().getAbsolutePath());
-        JaxRsUriBuilderTest.assertEqualsURI(BASE_REF_STR + RELATIV_2,
+        UriBuilderImplTest.assertEqualsURI(BASE_REF_STR + RELATIV_2,
                 createUriInfo2().getAbsolutePath());
     }
 
@@ -176,7 +176,7 @@ public class UriInfoTest extends TestCase {
      * .
      */
     public void testGetAbsolutePathBuilder() throws Exception {
-        JaxRsUriBuilderTest.assertEqualsURI(BASE_REF_STR + RELATIV_1,
+        UriBuilderImplTest.assertEqualsURI(BASE_REF_STR + RELATIV_1,
                 createUriInfo1().getAbsolutePathBuilder());
     }
 
@@ -197,7 +197,7 @@ public class UriInfoTest extends TestCase {
      */
     public void testGetBaseUriBuilder() throws Exception {
         final URI uri = createUriInfo1().getBaseUri();
-        JaxRsUriBuilderTest.assertEqualsURI(BASE_REF_STR, uri);
+        UriBuilderImplTest.assertEqualsURI(BASE_REF_STR, uri);
     }
 
     /**
@@ -323,7 +323,7 @@ public class UriInfoTest extends TestCase {
 
     public void testGetRequestUriBuilder() throws Exception {
         final UriBuilder uriBuilder1 = createUriInfo1().getRequestUriBuilder();
-        JaxRsUriBuilderTest.assertEqualsURI(
+        UriBuilderImplTest.assertEqualsURI(
                 "http://localhost/test/relativ/a/b", uriBuilder1);
     }
 }

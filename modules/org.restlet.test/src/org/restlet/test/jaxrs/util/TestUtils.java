@@ -95,7 +95,7 @@ public class TestUtils {
     }
 
     /**
-     * @throws InterruptedException
+     * Sleeps 100 seconds. Will not throw an InterruptedException
      */
     public static void sleep() {
         try {

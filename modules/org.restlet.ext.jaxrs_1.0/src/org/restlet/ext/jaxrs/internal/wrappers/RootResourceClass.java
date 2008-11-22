@@ -142,6 +142,8 @@ public abstract class RootResourceClass extends ResourceClass implements
             this.constructorParameters = new ParameterList(this.constructor,
                     tlContext, constructorLeaveEncoded, jaxRsProviders,
                     extensionBackwardMapping, true, logger, !this.singelton);
+        } catch (IllegalConstrParamTypeException e) {
+            throw e;
         } catch (IllegalTypeException e) {
             throw new IllegalConstrParamTypeException(e);
         }

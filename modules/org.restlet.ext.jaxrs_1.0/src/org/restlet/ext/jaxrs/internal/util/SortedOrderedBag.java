@@ -36,6 +36,7 @@ public class SortedOrderedBag<E> implements Collection<E> {
     private static final class Compar<A extends Comparable<A>> implements
             Comparator<A> {
 
+        /***/
         public Compar() {
         }
 

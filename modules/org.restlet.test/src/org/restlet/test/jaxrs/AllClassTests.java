@@ -30,8 +30,8 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import org.restlet.test.jaxrs.core.JaxRsPathSegmentTest;
-import org.restlet.test.jaxrs.core.JaxRsUriBuilderTest;
+import org.restlet.test.jaxrs.core.PathSegmentImplTest;
+import org.restlet.test.jaxrs.core.UriBuilderImplTest;
 import org.restlet.test.jaxrs.core.UriInfoTest;
 import org.restlet.test.jaxrs.util.ConverterTests;
 import org.restlet.test.jaxrs.util.EncodeOrCheckTests;
@@ -57,8 +57,8 @@ public class AllClassTests extends TestCase {
         mySuite.addTestSuite(ExceptionMappersTest.class);
         // logs only: mySuite.addTestSuite(JaxRsApplicationTest.class);
         // package .core.
-        mySuite.addTestSuite(JaxRsPathSegmentTest.class);
-        mySuite.addTestSuite(JaxRsUriBuilderTest.class);
+        mySuite.addTestSuite(PathSegmentImplTest.class);
+        mySuite.addTestSuite(UriBuilderImplTest.class);
         mySuite.addTestSuite(UriInfoTest.class);
         // package .util.
         mySuite.addTestSuite(ConverterTests.class);

@@ -34,25 +34,26 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.ws.rs.core.UriBuilder;
-import javax.ws.rs.core.UriBuilderException;
 import javax.ws.rs.ext.RuntimeDelegate;
 
 import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
 import org.restlet.data.Reference;
-import org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder;
+import org.restlet.ext.jaxrs.ExtendedUriBuilder;
+import org.restlet.ext.jaxrs.internal.core.UriBuilderImpl;
 import org.restlet.test.jaxrs.services.car.CarListResource;
 import org.restlet.test.jaxrs.services.car.CarResource;
 import org.restlet.test.jaxrs.services.resources.SimpleTrain;
 
 /**
  * @author Stephan Koops
- * @see JaxRsUriBuilder
  * @see UriBuilder
+ * @see UriBuilderImpl
+ * @see ExtendedUriBuilder
  */
 @SuppressWarnings("all")
-public class JaxRsUriBuilderTest extends TestCase {
+public class UriBuilderImplTest extends TestCase {
 
     private static final String TEMPL_VARS_EXPECTED = "abc://username:password@www.secure.org:8080/def/ghi;jkl=mno/pqr;stu=vwx?ABC=DEF&GHI=JKL#MNO";
 
@@ -111,8 +112,8 @@ public class JaxRsUriBuilderTest extends TestCase {
      * @param expectedQuery
      * @param actualUriBuilder
      * @param compareResult
-     *                if true, also the builded URIs are compared (this causes
-     *                trouble sometimes, e.g. with "/").
+     *            if true, also the builded URIs are compared (this causes
+     *            trouble sometimes, e.g. with "/").
      * @param expectedPathSegments
      */
     private static void assertEqualUriBuilder(String expectedScheme,
@@ -120,28 +121,28 @@ public class JaxRsUriBuilderTest extends TestCase {
             String expectedPath, String expectedQuery,
             UriBuilder actualUriBuilder, boolean compareResult)
             throws Exception {
-        if (actualUriBuilder instanceof JaxRsUriBuilder) {
-            final JaxRsUriBuilder jaxRsUriBuilder = (JaxRsUriBuilder) actualUriBuilder;
-            assertEquals(expectedScheme, getScheme(jaxRsUriBuilder));
-            assertEquals(expectedUserInfo, getUserInfo(jaxRsUriBuilder));
-            assertEquals(expectedHost, getHost(jaxRsUriBuilder));
-            assertEquals(expectedPort, getPort(jaxRsUriBuilder));
-            final String actPath = getPath(jaxRsUriBuilder);
+        if (actualUriBuilder.getClass().getPackage().getName().startsWith(
+                "org.restlet.ext.jaxrs")) {
+            assertEquals(expectedScheme, getScheme(actualUriBuilder));
+            assertEquals(expectedUserInfo, getUserInfo(actualUriBuilder));
+            assertEquals(expectedHost, getHost(actualUriBuilder));
+            assertEquals(expectedPort, getPort(actualUriBuilder));
+            final String actPath = getPath(actualUriBuilder);
             try {
                 assertEquals(expectedPath, actPath);
             } catch (junit.framework.ComparisonFailure cf) {
                 if (expectedPath == null)
                     assertEquals("", actPath);
             }
-            CharSequence actualQuery = getQuery(jaxRsUriBuilder);
+            CharSequence actualQuery = getQuery(actualUriBuilder);
             if (actualQuery != null) {
                 actualQuery = actualQuery.toString();
             }
             assertEquals(expectedQuery, actualQuery);
         }
         if (compareResult) {
-            final JaxRsUriBuilder expectedUriBuilder = (JaxRsUriBuilder) RuntimeDelegate
-                    .getInstance().createUriBuilder();
+            UriBuilder expectedUriBuilder = RuntimeDelegate.getInstance()
+                    .createUriBuilder();
             if (expectedScheme != null) {
                 expectedUriBuilder.scheme(expectedScheme);
             }
@@ -151,7 +152,25 @@ public class JaxRsUriBuilderTest extends TestCase {
             if (expectedHost != null) {
                 expectedUriBuilder.host(expectedHost);
             }
-            expectedUriBuilder.port(expectedPort);
+            if (expectedUriBuilder instanceof UriBuilderImpl) {
+                ((UriBuilderImpl) expectedUriBuilder).port(expectedPort);
+            } else if (expectedUriBuilder instanceof ExtendedUriBuilder) {
+                ((ExtendedUriBuilder) expectedUriBuilder).port(expectedPort);
+            } else {
+                if (expectedPort == null || expectedPort.equals("")) {
+                    expectedUriBuilder.port(-1);
+                } else {
+                    try {
+                        int portInt = Integer.valueOf(expectedPort);
+                    } catch (NumberFormatException e) {
+                        System.out
+                                .println("Sorry, could not do this test with an expected port \""
+                                        + expectedPort
+                                        + "\" and an UriBuilder of type "
+                                        + expectedUriBuilder.getClass());
+                    }
+                }
+            }
             expectedUriBuilder.path(expectedPath);
             if (expectedQuery != null) {
                 expectedUriBuilder.replaceQuery(expectedQuery);
@@ -163,7 +182,7 @@ public class JaxRsUriBuilderTest extends TestCase {
     }
 
     /**
-     * @param jaxRsUriBuilder
+     * @param uriBuilder
      * @param fieldName
      * @return
      * @throws NoSuchFieldException
@@ -171,17 +190,17 @@ public class JaxRsUriBuilderTest extends TestCase {
      * @throws IllegalArgumentException
      * @throws IllegalAccessException
      */
-    static String getFieldValue(JaxRsUriBuilder jaxRsUriBuilder,
-            String fieldName) throws Exception {
+    static String getFieldValue(UriBuilder uriBuilder, String fieldName)
+            throws Exception {
         Field queryField;
         try {
-            queryField = jaxRsUriBuilder.getClass().getDeclaredField(fieldName);
+            queryField = uriBuilder.getClass().getDeclaredField(fieldName);
         } catch (NoSuchFieldException e) {
-            queryField = jaxRsUriBuilder.getClass().getSuperclass()
+            queryField = uriBuilder.getClass().getSuperclass()
                     .getDeclaredField(fieldName);
         }
         queryField.setAccessible(true);
-        final Object value = queryField.get(jaxRsUriBuilder);
+        final Object value = queryField.get(uriBuilder);
         if (value == null) {
             return null;
         }
@@ -189,22 +208,20 @@ public class JaxRsUriBuilderTest extends TestCase {
     }
 
     /**
-     * @param jaxRsUriBuilder
+     * @param uriBuilderImpl
      * @return
      */
-    private static String getHost(JaxRsUriBuilder jaxRsUriBuilder)
-            throws Exception {
-        return getFieldValue(jaxRsUriBuilder, "host");
+    private static String getHost(UriBuilder uriBuilder) throws Exception {
+        return getFieldValue(uriBuilder, "host");
     }
 
     /**
-     * @param jaxRsUriBuilder
+     * @param uriBuilderImpl
      * @return
      */
     @SuppressWarnings("unchecked")
-    private static String getPath(JaxRsUriBuilder jaxRsUriBuilder)
-            throws Exception {
-        final Object path = getFieldValue(jaxRsUriBuilder, "path");
+    private static String getPath(UriBuilder uriBuilder) throws Exception {
+        final Object path = getFieldValue(uriBuilder, "path");
         if (path == null) {
             return null;
         }
@@ -212,39 +229,35 @@ public class JaxRsUriBuilderTest extends TestCase {
     }
 
     /**
-     * @param jaxRsUriBuilder
+     * @param uriBuilderImpl
      * @return
      */
-    private static String getPort(JaxRsUriBuilder jaxRsUriBuilder)
-            throws Exception {
-        return getFieldValue(jaxRsUriBuilder, "port");
+    private static String getPort(UriBuilder uriBuilder) throws Exception {
+        return getFieldValue(uriBuilder, "port");
     }
 
     /**
-     * @param jaxRsUriBuilder
+     * @param uriBuilderImpl
      * @return
      */
-    private static String getQuery(JaxRsUriBuilder jaxRsUriBuilder)
-            throws Exception {
-        return getFieldValue(jaxRsUriBuilder, "query");
+    private static String getQuery(UriBuilder uriBuilder) throws Exception {
+        return getFieldValue(uriBuilder, "query");
     }
 
     /**
-     * @param jaxRsUriBuilder
+     * @param uriBuilderImpl
      * @return
      */
-    private static String getScheme(JaxRsUriBuilder jaxRsUriBuilder)
-            throws Exception {
-        return getFieldValue(jaxRsUriBuilder, "scheme");
+    private static String getScheme(UriBuilder uriBuilder) throws Exception {
+        return getFieldValue(uriBuilder, "scheme");
     }
 
     /**
-     * @param jaxRsUriBuilder
+     * @param uriBuilderImpl
      * @return
      */
-    private static String getUserInfo(JaxRsUriBuilder jaxRsUriBuilder)
-            throws Exception {
-        return getFieldValue(jaxRsUriBuilder, "userInfo");
+    private static String getUserInfo(UriBuilder uriBuilder) throws Exception {
+        return getFieldValue(uriBuilder, "userInfo");
     }
 
     public static void main(String[] args) {
@@ -288,7 +301,7 @@ public class JaxRsUriBuilderTest extends TestCase {
     /**
      * @throws IllegalArgumentException
      */
-    private void changeWithTemplVars(JaxRsUriBuilder uriBuilder) {
+    private void changeWithTemplVars(UriBuilderImpl uriBuilder) {
         uriBuilder.scheme("{scheme}");
         uriBuilder.userInfo("{userInfo}");
         uriBuilder.host("{host}");
@@ -319,7 +332,8 @@ public class JaxRsUriBuilderTest extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#build(java.lang.String[])} .
+     * {@link org.restlet.ext.jaxrs.impl.UriBuilderImpl#build(java.lang.String[])}
+     * .
      */
     public void testBuildFromArray() throws Exception {
         try {
@@ -367,7 +381,7 @@ public class JaxRsUriBuilderTest extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#build(java.util.Map)} .
+     * {@link org.restlet.ext.jaxrs.impl.UriBuilderImpl#build(java.util.Map)} .
      */
     public void testBuildFromMap() throws Exception {
         final Map<String, Object> vars = new HashMap<String, Object>();
@@ -411,8 +425,8 @@ public class JaxRsUriBuilderTest extends TestCase {
     }
 
     /**
-     * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#build()}.
+     * Test method for {@link org.restlet.ext.jaxrs.impl.UriBuilderImpl#build()}
+     * .
      */
     public void testBuildWithoutArgs() throws Exception {
         assertEquals(URI_1, this.uriBuilder.build());
@@ -426,8 +440,8 @@ public class JaxRsUriBuilderTest extends TestCase {
     }
 
     /**
-     * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#clone()}.
+     * Test method for {@link org.restlet.ext.jaxrs.impl.UriBuilderImpl#clone()}
+     * .
      */
     public void testClone() {
         assertEquals(this.uriBuilder.build(), this.uriBuilder.clone().build());
@@ -435,7 +449,7 @@ public class JaxRsUriBuilderTest extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#encode(boolean)} .
+     * {@link org.restlet.ext.jaxrs.impl.UriBuilderImpl#encode(boolean)} .
      */
     public void testEncode() throws Exception {
         final UriBuilder uriBuilder = RuntimeDelegate.getInstance()
@@ -450,7 +464,8 @@ public class JaxRsUriBuilderTest extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#fragment(java.lang.String)} .
+     * {@link org.restlet.ext.jaxrs.impl.UriBuilderImpl#fragment(java.lang.String)}
+     * .
      */
     public void testFragmentEnc() throws Exception {
         this.uriBuilder.fragment(String.valueOf((char) 9));
@@ -462,7 +477,8 @@ public class JaxRsUriBuilderTest extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#host(java.lang.String)} .
+     * {@link org.restlet.ext.jaxrs.impl.UriBuilderImpl#host(java.lang.String)}
+     * .
      */
     public void testHostEnc() throws Exception {
         this.uriBuilder.host("test.domain.org");
@@ -481,9 +497,10 @@ public class JaxRsUriBuilderTest extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#replaceMatrixParams(java.lang.String)} .
-     * and
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#matrixParam(java.lang.String, java.lang.String)} .
+     * {@link org.restlet.ext.jaxrs.impl.UriBuilderImpl#replaceMatrixParams(java.lang.String)}
+     * . and
+     * {@link org.restlet.ext.jaxrs.impl.UriBuilderImpl#matrixParam(java.lang.String, java.lang.String)}
+     * .
      */
     public void testMatrixParam() throws Exception {
         this.uriBuilder.matrixParam("mp1", "mv1");
@@ -511,7 +528,7 @@ public class JaxRsUriBuilderTest extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#path(java.lang.Class)} .
+     * {@link org.restlet.ext.jaxrs.impl.UriBuilderImpl#path(java.lang.Class)} .
      */
     public void testPathClass() throws Exception {
         this.uriBuilder.replacePath(null);
@@ -522,7 +539,8 @@ public class JaxRsUriBuilderTest extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#path(java.lang.Class, java.lang.String)} .
+     * {@link org.restlet.ext.jaxrs.impl.UriBuilderImpl#path(java.lang.Class, java.lang.String)}
+     * .
      */
     public void testPathClassString() throws Exception {
         this.uriBuilder.replacePath(null);
@@ -533,7 +551,8 @@ public class JaxRsUriBuilderTest extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#path(java.lang.Class, java.lang.String)} .
+     * {@link org.restlet.ext.jaxrs.impl.UriBuilderImpl#path(java.lang.Class, java.lang.String)}
+     * .
      */
     public void testPathClassStringEnc() throws Exception {
         this.uriBuilder.replacePath(null);
@@ -544,7 +563,8 @@ public class JaxRsUriBuilderTest extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#path(java.lang.reflect.Method[])} .
+     * {@link org.restlet.ext.jaxrs.impl.UriBuilderImpl#path(java.lang.reflect.Method[])}
+     * .
      */
     public void testPathMethodArray() throws Exception {
         this.uriBuilder.replacePath(null);
@@ -559,7 +579,8 @@ public class JaxRsUriBuilderTest extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#path(java.lang.String[])} .
+     * {@link org.restlet.ext.jaxrs.impl.UriBuilderImpl#path(java.lang.String[])}
+     * .
      */
     public void testPathStringArrayEnc() throws Exception {
         this.uriBuilder.segment("jjj", "kkk", "ll");
@@ -573,7 +594,7 @@ public class JaxRsUriBuilderTest extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#port(int)}.
+     * {@link org.restlet.ext.jaxrs.impl.UriBuilderImpl#port(int)}.
      */
     public void testPort() throws Exception {
         this.uriBuilder.port(4711);
@@ -585,7 +606,8 @@ public class JaxRsUriBuilderTest extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#queryParam(java.lang.String, java.lang.String)} .
+     * {@link org.restlet.ext.jaxrs.impl.UriBuilderImpl#queryParam(java.lang.String, java.lang.String)}
+     * .
      */
     public void testQueryEnc() throws Exception {
         this.uriBuilder.queryParam("qn", "qv");
@@ -617,7 +639,8 @@ public class JaxRsUriBuilderTest extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#replacePath(java.lang.String)} .
+     * {@link org.restlet.ext.jaxrs.impl.UriBuilderImpl#replacePath(java.lang.String)}
+     * .
      */
     public void testReplacePath() throws Exception {
         this.uriBuilder.replacePath("newPath");
@@ -659,7 +682,8 @@ public class JaxRsUriBuilderTest extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#scheme(java.lang.String)} .
+     * {@link org.restlet.ext.jaxrs.impl.UriBuilderImpl#scheme(java.lang.String)}
+     * .
      */
     public void testScheme() throws Exception {
         this.uriBuilder.scheme("ftp");
@@ -686,7 +710,8 @@ public class JaxRsUriBuilderTest extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#schemeSpecificPart(java.lang.String)} .
+     * {@link org.restlet.ext.jaxrs.impl.UriBuilderImpl#schemeSpecificPart(java.lang.String)}
+     * .
      */
     public void testSchemeSpecificPart() throws Exception {
         this.uriBuilder.schemeSpecificPart("//shkf");
@@ -726,14 +751,14 @@ public class JaxRsUriBuilderTest extends TestCase {
      */
     public void testStaticFromPath() throws Exception {
         UriBuilder uriBuilder = UriBuilder.fromPath("path");
-        if (uriBuilder instanceof JaxRsUriBuilder) {
+        if (uriBuilder instanceof UriBuilderImpl) {
             assertEqualUriBuilder(null, null, null, null, "path", null,
                     uriBuilder, true);
         }
         assertEqualsURI("path", uriBuilder);
 
         uriBuilder = UriBuilder.fromPath("path1/path2/abc.html");
-        if (uriBuilder instanceof JaxRsUriBuilder) {
+        if (uriBuilder instanceof UriBuilderImpl) {
             assertEqualUriBuilder(null, null, null, null,
                     "path1/path2/abc.html", null, uriBuilder, true);
         }
@@ -741,7 +766,7 @@ public class JaxRsUriBuilderTest extends TestCase {
 
         uriBuilder = UriBuilder
                 .fromPath("path1/path2;mp1=mv 1;mp2=mv2/abc.html");
-        if (uriBuilder instanceof JaxRsUriBuilder) {
+        if (uriBuilder instanceof UriBuilderImpl) {
             assertEqualUriBuilder(null, null, null, null,
                     "path1/path2;mp1=mv%201;mp2=mv2/abc.html", null,
                     uriBuilder, false);
@@ -752,7 +777,7 @@ public class JaxRsUriBuilderTest extends TestCase {
         final String path = "path1/path2;mp1=mv1" + Reference.encode("?")
                 + ";mp2=mv2/abc.html";
         uriBuilder = UriBuilder.fromPath(path);
-        if (uriBuilder instanceof JaxRsUriBuilder) {
+        if (uriBuilder instanceof UriBuilderImpl) {
             assertEqualUriBuilder(null, null, null, null,
                     "path1/path2;mp1=mv1%3F;mp2=mv2/abc.html", null,
                     uriBuilder, false);
@@ -760,7 +785,7 @@ public class JaxRsUriBuilderTest extends TestCase {
     }
 
     public void testTemplateParams() throws Exception {
-        changeWithTemplVars((JaxRsUriBuilder) this.uriBuilderWithVars);
+        changeWithTemplVars((UriBuilderImpl) this.uriBuilderWithVars);
 
         URI uri = buildFromTemplVarsWithMap(this.uriBuilderWithVars);
         assertEqualsURI(TEMPL_VARS_EXPECTED, uri);
@@ -771,7 +796,7 @@ public class JaxRsUriBuilderTest extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#toString()}.
+     * {@link org.restlet.ext.jaxrs.impl.UriBuilderImpl#toString()}.
      */
     public void testToString() {
         assertEquals("http://localhost/path1/path2", this.uriBuilder.toString());
@@ -779,11 +804,9 @@ public class JaxRsUriBuilderTest extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#uri(java.net.URI)} .
+     * {@link org.restlet.ext.jaxrs.impl.UriBuilderImpl#uri(java.net.URI)} .
      */
     public void testUri() throws Exception {
-        if(true) // this test method is temporrily not used.
-            return;
         URI u = new URI("ftp", "test.org", null, null, "fragment");
         this.uriBuilder.uri(u);
         assertEqualsURI("ftp://test.org/#fragment", this.uriBuilder);
@@ -802,7 +825,8 @@ public class JaxRsUriBuilderTest extends TestCase {
 
     /**
      * Test method for
-     * {@link org.restlet.ext.jaxrs.internal.core.JaxRsUriBuilder#userInfo(java.lang.String)} .
+     * {@link org.restlet.ext.jaxrs.impl.UriBuilderImpl#userInfo(java.lang.String)}
+     * .
      */
     public void testUserInfo() throws Exception {
         this.uriBuilder.userInfo("username");

@@ -46,7 +46,9 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Providers;
 
+import org.restlet.ext.jaxrs.ExtendedUriInfo;
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
+import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedExtendedUriInfo;
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedUriInfo;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalBeanSetterTypeException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalFieldTypeException;
@@ -230,8 +232,7 @@ public class ContextInjector {
     }
 
     /**
-     * @author Stephan
-     * 
+     * @author Stephan Koops
      */
     private static final class UriInfoInjector implements Injector {
 
@@ -242,6 +243,28 @@ public class ContextInjector {
         UriInfoInjector(InjectionAim aim, ThreadLocalizedContext tlContext) {
             this.aim = aim;
             this.uriInfo = new ThreadLocalizedUriInfo(tlContext);
+        }
+
+        public void injectInto(Object resource, boolean allMustBeAvailable)
+                throws IllegalArgumentException, InjectException,
+                InvocationTargetException {
+            this.uriInfo.saveStateForCurrentThread(allMustBeAvailable);
+            this.aim.injectInto(resource, this.uriInfo, allMustBeAvailable);
+        }
+    }
+
+    /**
+     * @author Stephan Koops
+     */
+    private static final class ExtendedUriInfoInjector implements Injector {
+
+        private final InjectionAim aim;
+
+        private final ThreadLocalizedExtendedUriInfo uriInfo;
+
+        ExtendedUriInfoInjector(InjectionAim aim, ThreadLocalizedContext tlContext) {
+            this.aim = aim;
+            this.uriInfo = new ThreadLocalizedExtendedUriInfo(tlContext);
         }
 
         public void injectInto(Object resource, boolean allMustBeAvailable)
@@ -322,6 +345,8 @@ public class ContextInjector {
             throws IllegalTypeException {
         if (declaringClass.equals(UriInfo.class)) {
             return new UriInfoInjector(aim, tlContext);
+        } if (declaringClass.equals(ExtendedUriInfo.class)) {
+            return new ExtendedUriInfoInjector(aim, tlContext);
         } else {
             return new EverSameInjector(aim, getInjectObject(declaringClass,
                     tlContext, allProviders, extensionBackwardMapping));

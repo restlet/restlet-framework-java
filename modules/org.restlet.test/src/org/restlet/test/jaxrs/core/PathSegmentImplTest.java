@@ -33,15 +33,15 @@ import javax.ws.rs.core.PathSegment;
 
 import junit.framework.TestCase;
 
-import org.restlet.ext.jaxrs.internal.core.JaxRsPathSegment;
+import org.restlet.ext.jaxrs.internal.core.PathSegmentImpl;
 
 /**
  * @author Stephan Koops
- * @see JaxRsPathSegment
+ * @see PathSegmentImpl
  * @see PathSegment
  */
 @SuppressWarnings("all")
-public class JaxRsPathSegmentTest extends TestCase {
+public class PathSegmentImplTest extends TestCase {
 
     @Override
     protected void setUp() throws Exception {
@@ -54,7 +54,7 @@ public class JaxRsPathSegmentTest extends TestCase {
     }
 
     public void testParseMatrixParams() {
-        final MultivaluedMap<String, String> matrixParams = JaxRsPathSegment
+        final MultivaluedMap<String, String> matrixParams = PathSegmentImpl
                 .parseMatrixParams("mpn1=mpv1;mpn1=mpv2;mpn3=mpv3", true);
         final List<String> mpn1 = matrixParams.get("mpn1");
         assertEquals(2, mpn1.size());
@@ -67,7 +67,7 @@ public class JaxRsPathSegmentTest extends TestCase {
     }
 
     public void testParseMatrixParamsFalseFalse() {
-        final MultivaluedMap<String, String> matrixParams = JaxRsPathSegment
+        final MultivaluedMap<String, String> matrixParams = PathSegmentImpl
                 .parseMatrixParams("mpn1=mpv1%20;mpn1=mp%20v2;mp%20n3=%20mpv3",
                         false);
         final List<String> mpn1 = matrixParams.get("mpn1");
@@ -81,7 +81,7 @@ public class JaxRsPathSegmentTest extends TestCase {
     }
 
     public void testParseMatrixParamsTrueFalse() {
-        final MultivaluedMap<String, String> matrixParams = JaxRsPathSegment
+        final MultivaluedMap<String, String> matrixParams = PathSegmentImpl
                 .parseMatrixParams("mpn1=mpv1%20;mpn1=mp%20v2;mp%20n3=%20mpv3",
                         true);
         final List<String> mpn1 = matrixParams.get("mpn1");

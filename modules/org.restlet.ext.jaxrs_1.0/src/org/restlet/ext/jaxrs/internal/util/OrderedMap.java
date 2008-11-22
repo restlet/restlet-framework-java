@@ -93,8 +93,7 @@ public class OrderedMap<K, V> implements Map<K, V> {
     }
 
     /**
-     * @author Stephan
-     * 
+     * @author Stephan Koops
      */
     private abstract class KeyValueSetIterator<KK, VV> {
 
@@ -104,10 +103,13 @@ public class OrderedMap<K, V> implements Map<K, V> {
             this.entryIter = entryIter;
         }
 
+        /** @return the next element
+         *  @see Iterator#hasNext() */
         public final boolean hasNext() {
             return this.entryIter.hasNext();
         }
 
+        /** @see Iterator#remove() */
         public final void remove() {
             this.entryIter.remove();
         }

@@ -107,6 +107,7 @@ public class Util {
     /**
      * The default character set to be used, if no character set is given, as
      * String
+     * 
      * @see #JAX_RS_DEFAULT_CHARACTER_SET
      */
     public static final String JAX_RS_DEFAULT_CHARACTER_SET_AS_STRING = JAX_RS_DEFAULT_CHARACTER_SET
@@ -134,7 +135,6 @@ public class Util {
             if (rt != 0) {
                 return rt;
             }
-            // NICE optimizing possible here: do not use toString()
             return mediaType1.toString().compareToIgnoreCase(
                     mediaType2.toString());
         }
@@ -176,12 +176,51 @@ public class Util {
      */
     public static void append(Appendable stb, CharSequence string,
             boolean convertBraces) throws IOException {
+        append(stb, string, convertBraces, 0, string.length());
+    }
+
+    /**
+     * appends the given String to the StringBuilder. If convertBraces is true,
+     * all "{" and "}" are converted to "%7B" and "%7D"
+     * 
+     * @param stb
+     *            the Appendable to append on
+     * @param string
+     *            the CharSequence to append
+     * @param convertBraces
+     *            if true, all braces are converted, if false then not.
+     * @param startIndex
+     * @throws IOException
+     *             If the Appendable have a problem
+     */
+    public static void append(Appendable stb, CharSequence string,
+            boolean convertBraces, int startIndex) throws IOException {
+        append(stb, string, convertBraces, startIndex, string.length());
+    }
+
+    /**
+     * appends the given String to the StringBuilder. If convertBraces is true,
+     * all "{" and "}" are converted to "%7B" and "%7D"
+     * 
+     * @param stb
+     *            the Appendable to append on
+     * @param string
+     *            the CharSequence to append
+     * @param convertBraces
+     *            if true, all braces are converted, if false then not.
+     * @param startIndex
+     * @param endIndex
+     * @throws IOException
+     *             If the Appendable have a problem
+     */
+    public static void append(Appendable stb, CharSequence string,
+            boolean convertBraces, int startIndex, int endIndex)
+            throws IOException {
         if (!convertBraces) {
-            stb.append(string);
+            stb.append(string, startIndex, endIndex);
             return;
         }
-        final int l = string.length();
-        for (int i = 0; i < l; i++) {
+        for (int i = startIndex; i < endIndex; i++) {
             final char c = string.charAt(i);
             if (c == '{') {
                 stb.append("%7B");
@@ -403,6 +442,24 @@ public class Util {
     }
 
     /**
+     * Checks, if the given CharSequence ends with the given character.
+     * 
+     * @param charSequence
+     * @param character
+     * @return true, if the given charSequence ends with the given character,
+     *         otherwise false.
+     * @see #notEndsWith(CharSequence, char)
+     * @see #startsWith(CharSequence, char)
+     */
+    public static boolean endsWith(CharSequence charSequence, char character) {
+        if (charSequence == null)
+            return false;
+        if (charSequence.length() == 0)
+            return false;
+        return charSequence.charAt(charSequence.length() - 1) == character;
+    }
+
+    /**
      * Check if the given objects are equal. Can deal with null references. if
      * both elements are null, than the result is true.
      * 
@@ -445,6 +502,46 @@ public class Util {
      */
     public static String formatDimensions(Set<Dimension> dimensions) {
         return Engine.getInstance().formatDimensions(dimensions);
+    }
+
+    /**
+     * @param genCompType
+     * @param forMessage
+     * @throws NegativeArraySizeException
+     * @throws ImplementationException
+     */
+    private static Class<?> getArrayClass(Type genCompType, Type forMessage)
+            throws NegativeArraySizeException, ImplementationException {
+        if (genCompType.equals(Byte.TYPE)) {
+            return (new byte[0]).getClass();
+        }
+        if (genCompType.equals(Short.TYPE)) {
+            return (new short[0]).getClass();
+        }
+        if (genCompType.equals(Integer.TYPE)) {
+            return (new int[0]).getClass();
+        }
+        if (genCompType.equals(Long.TYPE)) {
+            return (new long[0]).getClass();
+        }
+        if (genCompType.equals(Float.TYPE)) {
+            return (new float[0]).getClass();
+        }
+        if (genCompType.equals(Double.TYPE)) {
+            return (new double[0]).getClass();
+        }
+        if (genCompType.equals(Character.TYPE)) {
+            return (new char[0]).getClass();
+        }
+        if (genCompType.equals(Boolean.TYPE)) {
+            return (new boolean[0]).getClass();
+        }
+        if (genCompType instanceof Class) {
+            return Array.newInstance((Class<?>) genCompType, 0).getClass();
+        }
+        throw new ImplementationException("Sorry, could not handle a "
+                + forMessage.getClass());
+        // LATER could not handle all classes
     }
 
     /**
@@ -713,46 +810,6 @@ public class Util {
         if (superClass != null)
             return getGenericClass(superClass, implInterface, gsatp);
         return null;
-    }
-
-    /**
-     * @param genCompType
-     * @param forMessage
-     * @throws NegativeArraySizeException
-     * @throws ImplementationException
-     */
-    private static Class<?> getArrayClass(Type genCompType, Type forMessage)
-            throws NegativeArraySizeException, ImplementationException {
-        if (genCompType.equals(Byte.TYPE)) {
-            return (new byte[0]).getClass();
-        }
-        if (genCompType.equals(Short.TYPE)) {
-            return (new short[0]).getClass();
-        }
-        if (genCompType.equals(Integer.TYPE)) {
-            return (new int[0]).getClass();
-        }
-        if (genCompType.equals(Long.TYPE)) {
-            return (new long[0]).getClass();
-        }
-        if (genCompType.equals(Float.TYPE)) {
-            return (new float[0]).getClass();
-        }
-        if (genCompType.equals(Double.TYPE)) {
-            return (new double[0]).getClass();
-        }
-        if (genCompType.equals(Character.TYPE)) {
-            return (new char[0]).getClass();
-        }
-        if (genCompType.equals(Boolean.TYPE)) {
-            return (new boolean[0]).getClass();
-        }
-        if (genCompType instanceof Class) {
-            return Array.newInstance((Class<?>) genCompType, 0).getClass();
-        }
-        throw new ImplementationException("Sorry, could not handle a "
-                + forMessage.getClass());
-        // LATER could not handle all classes
     }
 
     /**
@@ -1253,6 +1310,52 @@ public class Util {
     }
 
     /**
+     * Returns the index of the first ";" in the last path segment.
+     * 
+     * @param path
+     *            the path, without a query.
+     * @return the index of the first ";" in the last path segment. Returns -1,
+     *         if no ';' is available.
+     */
+    public static int indexBeginMatrixOfLastSegment(CharSequence path) {
+        // NICE optimize for speed; avoid conversion to String, if it is faster.
+        String pathStr = path.toString();
+        return pathStr.indexOf(';', pathStr.lastIndexOf('/'));
+    }
+
+    /**
+     * Returns the index of the first occurrence of the given character between
+     * the given indexes.
+     * 
+     * @param charSequence
+     *            the char sequence to look in
+     * @param c
+     *            the character to look for.
+     * @param beginIndex
+     * @param endIndex
+     * @return the index of the given character between the given indexes, or -1
+     *         if the character could not be found in the given range.
+     * @see String#indexOf(String, int)
+     * @see String#substring(int, int)
+     */
+    public static int indexOfBetween(CharSequence charSequence, char c,
+            int beginIndex, int endIndex) {
+        if (beginIndex < 0) {
+            beginIndex = 0;
+        }
+        if (endIndex < 0) {
+            endIndex = 0;
+        }
+        for (int i = beginIndex; i < endIndex; i++) {
+            char csc = charSequence.charAt(i);
+            if(csc == c) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**
      * Injects the given toInject in the resource field or the given bean
      * setter.
      * 
@@ -1480,12 +1583,48 @@ public class Util {
      * @return UFT-8
      */
     private static CharacterSet logUnsupportedCharSet(String charsetName) {
-        Context.getCurrentLogger()
-                .warning(
-                        "The character set " + charsetName + " is not "
-                                + "available. Will use "
-                                + JAX_RS_DEFAULT_CHARACTER_SET_AS_STRING);
+        Context.getCurrentLogger().warning(
+                "The character set " + charsetName + " is not "
+                        + "available. Will use "
+                        + JAX_RS_DEFAULT_CHARACTER_SET_AS_STRING);
         return JAX_RS_DEFAULT_CHARACTER_SET;
+    }
+
+    /**
+     * Checks, if the given CharSequence ends with the given character.
+     * 
+     * @param charSequence
+     * @param character
+     * @return true, if the given charSequence ends with the given character,
+     *         otherwise false.
+     * @see #endsWith(CharSequence, char)
+     * @see #notStartsWith(CharSequence, char)
+     */
+    public static boolean notEndsWith(CharSequence charSequence, char character) {
+        if (charSequence == null)
+            return true;
+        if (charSequence.length() == 0)
+            return true;
+        return charSequence.charAt(charSequence.length() - 1) != character;
+    }
+
+    /**
+     * Checks, if the given CharSequence starts with the given character.
+     * 
+     * @param charSequence
+     * @param character
+     * @return true, if the given charSequence starts with the given character,
+     *         otherwise false.
+     * @see #startsWith(CharSequence, char)
+     * @see #notEndsWith(CharSequence, char)
+     */
+    public static boolean notStartsWith(CharSequence charSequence,
+            char character) {
+        if (charSequence == null)
+            return true;
+        if (charSequence.length() == 0)
+            return true;
+        return charSequence.charAt(0) != character;
     }
 
     /**
@@ -1608,6 +1747,24 @@ public class Util {
             return 0;
         }
         return 1;
+    }
+
+    /**
+     * Checks, if the given CharSequence starts with the given character.
+     * 
+     * @param charSequence
+     * @param character
+     * @return true, if the given charSequence starts with the given character,
+     *         otherwise false.
+     * @see #notStartsWith(CharSequence, char)
+     * @see #endsWith(CharSequence, char)
+     */
+    public static boolean startsWith(CharSequence charSequence, char character) {
+        if (charSequence == null)
+            return false;
+        if (charSequence.length() == 0)
+            return false;
+        return charSequence.charAt(0) == character;
     }
 
     /**

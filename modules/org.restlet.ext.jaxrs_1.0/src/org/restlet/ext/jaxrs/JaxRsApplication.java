@@ -69,9 +69,6 @@ import org.restlet.Restlet;
  */
 public class JaxRsApplication extends org.restlet.Application {
 
-    /** Indicates if any {@link ApplicationConfig} is attached yet */
-    private volatile boolean appConfigAttached = false;
-
     /** The {@link Guard} to use. May be null. */
     private volatile Guard guard;
 
@@ -116,25 +113,16 @@ public class JaxRsApplication extends org.restlet.Application {
      * @param appConfig
      *                Contains the classes to load as root resource classes and
      *                as providers. Invalid root resource classes and provider
-     *                classes are ignored, according to JAX-RS specification.<br>
-     *                The JAX-RS class {@link javax.ws.rs.ApplicationConfig}
-     *                will be renamed to {@link javax.ws.rs.Application} in the
-     *                next JAX-RS release.
+     *                classes are ignored, according to JAX-RS specification.
      * @return true, if all resource classes and providers could be added, or
-     *         false at least one could not be added.
+     *         false at least one could not be added. Exceptions were logged.
      * @throws IllegalArgumentException
-     *                 if the appConfig is null.
-     * @see #add(Application, boolean)
+     *                 if the given appConfig is null.
      */
     public boolean add(Application appConfig) throws IllegalArgumentException {
-        boolean clearMetadataIfFirst = false;
-        
         if (appConfig == null) {
             throw new IllegalArgumentException(
                     "The ApplicationConfig must not be null");
-        }
-        if (clearMetadataIfFirst && !this.appConfigAttached) {
-            getMetadataService().clearExtensions();
         }
         final JaxRsRestlet jaxRsRestlet = this.jaxRsRestlet;
         final Set<Class<?>> classes = appConfig.getClasses();
@@ -155,7 +143,6 @@ public class JaxRsApplication extends org.restlet.Application {
                 everythingFine &= jaxRsRestlet.addClass(clazz);
             }
         }
-        this.appConfigAttached = true;
         return everythingFine;
     }
 

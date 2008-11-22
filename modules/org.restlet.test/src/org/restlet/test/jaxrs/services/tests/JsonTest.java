@@ -40,6 +40,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.ext.jaxb.JaxbRepresentation;
+import org.restlet.ext.jaxrs.JaxRsApplication;
 import org.restlet.ext.jaxrs.internal.provider.JsonProvider;
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
@@ -83,6 +84,11 @@ public class JsonTest extends JaxRsTestCase {
             }
         };
     }
+    
+    @Override
+    protected void modifyApplication(JaxRsApplication app) {
+        app.getTunnelService().setExtensionsTunnel(true);
+    }
 
     public void testGetJsonObject() throws Exception {
         final Response response = get("JSONObject");
@@ -101,9 +107,6 @@ public class JsonTest extends JaxRsTestCase {
                 MediaType.APPLICATION_JSON);
         checkJsonResponse(response);
 
-        if(true) // LATER add extension possibility again
-            return;
-        
         response = get("person.json?firstname=Angela&lastname=Merkel",
                 MediaType.TEXT_XML);
         checkJsonResponse(response);
