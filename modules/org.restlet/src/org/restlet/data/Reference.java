@@ -64,8 +64,8 @@ import org.restlet.Context;
  * assumes that the URIs or the URI parts passed in are properly encoded using
  * the standard URI encoding mechanism. You can use the static "encode()" and
  * "decode()" methods for this purpose. Note that if an invalid URI character is
- * detected by the constructor or one of the setters, an
- * IllegalArgumentException will be thrown.
+ * detected by the constructor or one of the setters, a trace will be logged and
+ * the character will be automatically encoded.
  * </p>
  * <p>
  * The fundamental point to underline is the difference between an URI

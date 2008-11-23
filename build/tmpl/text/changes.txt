@@ -29,6 +29,7 @@ Changes log
         - Fixed backport issue with the NRE core (Class not found: 
           javax.security.auth.login.CredentialException). Contributed 
           by Taras Puchko.
+		- Fixed Javadocs of Reference regarding invalid URI characters.
 
 - 1.1.1 (2008-10-31)
     - Bugs fixed
