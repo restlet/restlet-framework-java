@@ -1517,7 +1517,7 @@
 			</group>
 
 			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
-			<link href="http://google-web-toolkit-doc-1-5.googlecode.com/svn/javadoc/1.5/" />
+			<link href="http://google-web-toolkit.googlecode.com/svn/javadoc/1.5/package-list" />
 		</javadoc>
 	</target>
 		
