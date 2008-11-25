@@ -35,7 +35,7 @@
 	          value="**/.emptyDir **/package.html **/overview.html" />
 	<property name="restlet-api" value="Restlet API" />
 	<property name="restlet-ext" value="Restlet Extensions" />
-	<property name="restlet-eng" value="Restlet Engine" />
+	<property name="restlet-engine" value="Restlet Engine" />
 	<property name="restlet-gwt" value="Restlet-GWT" />
 
 	<!-- Location properties -->
@@ -52,7 +52,7 @@
 	<property name="tmpl" value="tmpl" />
 	<property name="docs" value="${temp}/docs" />
 	<property name="docs-api" value="${docs}/api" />
-	<property name="docs-eng" value="${docs}/eng" />
+	<property name="docs-engine" value="${docs}/engine" />
 	<property name="docs-ext" value="${docs}/ext" />
 	<property name="docs-gwt" value="${docs}/gwt" />
 	<property name="uml-reports" value="${temp}/uml-reports" />
@@ -1168,8 +1168,8 @@
 		<copy file="${tmpl}/javadocs/overview-api.tmpl"
 		      tofile="${temp}/javadocs/overview-api.html"
 		      overwrite="true" />
-		<copy file="${tmpl}/javadocs/overview-eng.tmpl"
-		      tofile="${temp}/javadocs/overview-eng.html"
+		<copy file="${tmpl}/javadocs/overview-engine.tmpl"
+		      tofile="${temp}/javadocs/overview-engine.html"
 		      overwrite="true" />
 		<copy file="${tmpl}/javadocs/overview-ext.tmpl"
 		      tofile="${temp}/javadocs/overview-ext.html"
@@ -1180,7 +1180,7 @@
 		<replace file="${temp}/javadocs/overview-api.html"
 		         token="@version-minor@"
 		         value="${version-minor}" />
-		<replace file="${temp}/javadocs/overview-eng.html"
+		<replace file="${temp}/javadocs/overview-engine.html"
 		         token="@version-minor@"
 		         value="${version-minor}" />
 		<replace file="${temp}/javadocs/overview-ext.html"
@@ -1329,7 +1329,7 @@
 	        description="Generate the Javadocs.">
 		<delete includeEmptyDirs="true" verbose="false" quiet="true">
 			<fileset dir="${docs-api}" excludes="**/.svn" />
-			<fileset dir="${docs-eng}" excludes="**/.svn" />
+			<fileset dir="${docs-engine}" excludes="**/.svn" />
 			<fileset dir="${docs-ext}" excludes="**/.svn" />
 			<fileset dir="${docs-gwt}" excludes="**/.svn" />
 		</delete>
@@ -1363,14 +1363,14 @@
 
 		<javadoc packagenames="org.restlet.engine.*"
 		         excludepackagenames="${exclude-packages}"
-		         destdir="${docs-eng}"
+		         destdir="${docs-engine}"
 		         classpathref="path-all"
 		         author="true"
 		         version="true"
 		         use="true"
 		         windowtitle="Restlet Engine ${version-full}"
 		         doctitle="Restlet Engine ${version-full}"
-		         overview="${temp}/javadocs/overview-eng.html"
+		         overview="${temp}/javadocs/overview-engine.html"
 		         stylesheetfile="${tmpl}/javadocs/stylesheet.css"
 		         verbose="${verbose}">
 			<sourcepath>
@@ -1381,7 +1381,7 @@
 				<![CDATA[<i>Copyright &#169; 2005-2008 <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
 			</bottom>
 
-			<group title="${restlet-eng}">
+			<group title="${restlet-engine}">
 				<package name="org.restlet.engine*" />
 			</group>
 
@@ -1458,8 +1458,8 @@
 			<link href="http://www.restlet.org/documentation/${version-minor}/api/"
 			      packagelistLoc="${docs-api}"
 			      offline="true" />
-			<link href="http://www.restlet.org/documentation/${version-minor}/eng/"
-			      packagelistLoc="${docs-eng}"
+			<link href="http://www.restlet.org/documentation/${version-minor}/engine/"
+			      packagelistLoc="${docs-engine}"
 			      offline="true" />
 			<link href="http://www.simpleframework.org/doc/javadoc/" />
 		</javadoc>
@@ -1687,8 +1687,8 @@
 				<copy todir="${dist-classic}/docs/ext">
 					<fileset dir="${docs-ext}" />
 				</copy>
-				<copy todir="${dist-classic}/docs/eng">
-					<fileset dir="${docs-eng}" />
+				<copy todir="${dist-classic}/docs/engine">
+					<fileset dir="${docs-engine}" />
 				</copy>
 				<copy todir="${dist-classic}/docs/gwt">
 					<fileset dir="${docs-gwt}" />
