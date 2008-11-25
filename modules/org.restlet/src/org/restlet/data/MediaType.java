@@ -124,9 +124,21 @@ public final class MediaType extends Metadata {
     public static final MediaType APPLICATION_PROJECT = register(
             "application/vnd.ms-project", "Microsoft Project document");
 
+    public static final MediaType APPLICATION_RDF_TRIG = register(
+            "application/x-trig",
+            "Plain text serialized Resource Description Framework document");
+
+    public static final MediaType APPLICATION_RDF_TRIX = register(
+            "application/trix",
+            "Simple XML serialized Resource Description Framework document");
+
+    public static final MediaType APPLICATION_RDF_TURTLE = register(
+            "application/x-turtle",
+            "Plain text serialized Resource Description Framework document");
+
     public static final MediaType APPLICATION_RDF_XML = register(
             "application/rdf+xml",
-            "XML serialized Resource Description Framework document");
+            "Normalized XML serialized Resource Description Framework document");
 
     public static final MediaType APPLICATION_RELAXNG_COMPACT = register(
             "application/relax-ng-compact-syntax",
@@ -141,6 +153,12 @@ public final class MediaType extends Metadata {
 
     public static final MediaType APPLICATION_RTF = register("application/rtf",
             "Rich Text Format document");
+
+    public static final MediaType APPLICATION_SPARQL_RESULTS_XML = register("application/sparql-results+xml",
+            "SPARQL Query Results XML document");
+
+    public static final MediaType APPLICATION_SPARQL_RESULTS_JSON = register("application/sparql-results+json",
+            "SPARQL Query Results JSON document");
 
     public static final MediaType APPLICATION_STUFFIT = register(
             "application/x-stuffit", "Stuffit archive");

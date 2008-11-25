@@ -52,6 +52,16 @@ public class Link {
     private Reference typeRef;
 
     /**
+     * Constructor by copy.
+     * 
+     * @param from
+     *            The link to copy from.
+     */
+    public Link(Link from) {
+        this(from.sourceRef, from.typeRef, from.target);
+    }
+
+    /**
      * Constructor.
      * 
      * @param sourceRef
@@ -75,7 +85,7 @@ public class Link {
      * @param target
      *            The target.
      */
-    public Link(Reference sourceRef, Reference typeRef, Object target) {
+    private Link(Reference sourceRef, Reference typeRef, Object target) {
         this.sourceRef = sourceRef;
         this.target = target;
         this.typeRef = typeRef;
