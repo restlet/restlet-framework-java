@@ -35,6 +35,9 @@
 	          value="**/.emptyDir **/package.html **/overview.html" />
 	<property name="restlet-api" value="Restlet API" />
 	<property name="restlet-ext" value="Restlet Extensions" />
+	<property name="restlet-ext-standards" value="Restlet Extensions - Standards" />
+	<property name="restlet-ext-connectors" value="Restlet Extensions - Connectors" />
+	<property name="restlet-ext-integrations" value="Restlet Extensions - Integrations" />
 	<property name="restlet-engine" value="Restlet Engine" />
 	<property name="restlet-gwt" value="Restlet-GWT" />
 
@@ -1436,8 +1439,33 @@
 				<![CDATA[<i>Copyright &#169; 2005-2008 <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
 			</bottom>
 
-			<group title="${restlet-ext}">
-				<package name="org.restlet.ext*" />
+			<group title="${restlet-ext-standards}">
+				<package name="org.restlet.ext.oauth.*" />
+				<package name="org.restlet.ext.atom.*" />
+				<package name="org.restlet.ext.jaxrs.*" />
+				<package name="org.restlet.ext.ssl.*" />
+				<package name="org.restlet.ext.wadl.*" />
+			</group>
+			<group title="${restlet-ext-connectors}">
+				<package name="org.restlet.ext.grizzly.*" />
+				<package name="org.restlet.ext.httpclient.*" />
+				<package name="org.restlet.ext.javamail.*" />
+				<package name="org.restlet.ext.jdbc.*" />
+				<package name="org.restlet.ext.jetty.*" />
+				<package name="org.restlet.ext.net.*" />
+				<package name="org.restlet.ext.simple.*" />
+			</group>
+			<group title="${restlet-ext-integrations}">
+				<package name="org.restlet.ext.gwt.*" />
+				<package name="org.restlet.ext.servlet.*" />
+				<package name="org.restlet.ext.spring.*" />
+				<package name="org.restlet.ext.xdb.*" />
+				<package name="org.restlet.ext.fileupload.*" />
+				<package name="org.restlet.ext.freemarker.*" />
+				<package name="org.restlet.ext.jaxb.*" />
+				<package name="org.restlet.ext.jibx.*" />
+				<package name="org.restlet.ext.json.*" />
+				<package name="org.restlet.ext.velocity.*" />
 			</group>
 
 			<link href="http://freemarker.sourceforge.net/docs/api/" />
