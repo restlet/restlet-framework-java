@@ -55,13 +55,44 @@ public class Link {
      * Constructor.
      * 
      * @param sourceRef
-     * @param target
+     *            The source resource reference.
      * @param typeRef
+     *            The type reference.
+     * @param targetLit
+     *            The target literal.
      */
-    private Link(Reference sourceRef, Object target, Reference typeRef) {
+    public Link(Reference sourceRef, Reference typeRef, Literal targetLit) {
+        this(sourceRef, typeRef, (Object) targetLit);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param sourceRef
+     *            The source resource reference.
+     * @param typeRef
+     *            The type reference.
+     * @param target
+     *            The target.
+     */
+    public Link(Reference sourceRef, Reference typeRef, Object target) {
         this.sourceRef = sourceRef;
         this.target = target;
         this.typeRef = typeRef;
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param sourceRef
+     *            The source resource reference.
+     * @param typeRef
+     *            The type reference.
+     * @param targetRef
+     *            The target resource reference.
+     */
+    public Link(Reference sourceRef, Reference typeRef, Reference targetRef) {
+        this(sourceRef, typeRef, (Object) targetRef);
     }
 
     /**
