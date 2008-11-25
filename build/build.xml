@@ -1338,7 +1338,7 @@
 		</delete>
 
 		<javadoc packagenames="org.restlet.*"
-		         excludepackagenames="${exclude-packages}"
+		         excludepackagenames="${exclude-packages}, org.restlet.engine.*"
 		         destdir="${docs-api}"
 		         classpathref="path-all"
 		         author="true"
