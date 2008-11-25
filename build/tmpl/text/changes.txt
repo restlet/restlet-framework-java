@@ -16,9 +16,10 @@ Changes log
           we make sure that a warning is logged. 
           Reported by Rob Heittman.
         - Removed all code deprecated in the Restlet 1.1 release.
-        - Added org.restlet.data.Literal class to represent RDF
-          literals. Composed of a "value" property and optional 
-          "language" and "datatype" properties.
+        - Added org.restlet.data.Literal to represent RDF
+          literals with an optional datatype. 
+        - Added org.restlet.data.Link to represent RDF links (aka 
+          triples, statements or relationships).
     - Misc
         - JAX-RS extension:
             - added class ExendedUriBuilder with "file" extensions for
