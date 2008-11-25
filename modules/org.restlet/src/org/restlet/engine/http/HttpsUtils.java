@@ -35,8 +35,8 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.logging.Level;
 
 import org.restlet.Context;
-import org.restlet.util.Helper;
 
+import org.restlet.engine.Helper;
 import org.restlet.engine.util.SslContextFactory;
 
 /**

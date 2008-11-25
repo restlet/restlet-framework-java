@@ -33,8 +33,8 @@ import java.util.List;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.engine.Helper;
 import org.restlet.util.Engine;
-import org.restlet.util.Helper;
 
 /**
  * Connector acting as a generic client. It internally uses one of the available

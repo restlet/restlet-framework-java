@@ -20,6 +20,8 @@ Changes log
           literals with an optional datatype. 
         - Added org.restlet.data.Link to represent RDF links (aka 
           triples, statements or relationships).
+        - Moved o.r.u.Helper class, used privately by API classes to the
+          o.r.engine package.
     - Misc
         - JAX-RS extension:
             - added class ExendedUriBuilder with "file" extensions for

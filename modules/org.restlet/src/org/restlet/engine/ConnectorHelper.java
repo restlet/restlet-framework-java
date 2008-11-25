@@ -32,7 +32,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.restlet.Connector;
 import org.restlet.data.Protocol;
-import org.restlet.util.Helper;
 
 /**
  * Base connector helper.

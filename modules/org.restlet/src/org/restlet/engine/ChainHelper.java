@@ -36,7 +36,6 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.service.LogService;
-import org.restlet.util.Helper;
 
 /**
  * Chain helper serving as base class for Application and Component helpers.
