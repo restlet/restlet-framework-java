@@ -67,73 +67,72 @@ import org.restlet.resource.Resource;
  */
 public class SpringFinder extends Finder {
 
-    /**
-     * Constructor.
-     */
-    public SpringFinder() {
-        super();
-    }
+	/**
+	 * Constructor.
+	 */
+	public SpringFinder() {
+		super();
+	}
 
-    /**
-     * Constructor.
-     * 
-     * @param context
-     *            The context.
-     */
-    public SpringFinder(Context context) {
-        super(context);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param context
+	 *            The context.
+	 */
+	public SpringFinder(Context context) {
+		super(context);
+	}
 
-    /**
-     * Constructor.
-     * 
-     * @param context
-     *            The context.
-     * @param targetClass
-     *            The target resource class.
-     */
-    public SpringFinder(Context context, Class<? extends Resource> targetClass) {
-        super(context, targetClass);
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param context
+	 *            The context.
+	 * @param targetClass
+	 *            The target resource class.
+	 */
+	public SpringFinder(Context context, Class<? extends Resource> targetClass) {
+		super(context, targetClass);
+	}
 
-    /**
-     * Creates a new instance of the resource class designated by the
-     * "targetClass" property. For easier Spring configuration, the default
-     * target resource's constructor is invoked. The created instance is
-     * initialized by the calling {@link #createResource(Request, Response)}
-     * method, by invoking the {@link Resource#init(Context, Request, Response)}
-     * method on the resource.
-     * 
-     * @return The created resource or null.
-     */
-    public Resource createResource() {
-        Resource result = null;
+	/**
+	 * Creates a new instance of the resource class designated by the
+	 * "targetClass" property. For easier Spring configuration, the default
+	 * target resource's constructor is invoked. The created instance must be
+	 * initialized by invoking the
+	 * {@link Resource#init(Context, Request, Response)} method on the resource.
+	 * 
+	 * @return The created resource or null.
+	 */
+	public Resource createResource() {
+		Resource result = null;
 
-        if (getTargetClass() != null) {
-            try {
-                // Invoke the default constructor
-                result = (Resource) getTargetClass().newInstance();
-            } catch (Exception e) {
-                getLogger()
-                        .log(
-                                Level.WARNING,
-                                "Exception while instantiating the target resource.",
-                                e);
-            }
-        }
+		if (getTargetClass() != null) {
+			try {
+				// Invoke the default constructor
+				result = (Resource) getTargetClass().newInstance();
+			} catch (Exception e) {
+				getLogger()
+						.log(
+								Level.WARNING,
+								"Exception while instantiating the target resource.",
+								e);
+			}
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    @Override
-    public Resource createTarget(Request request, Response response) {
-        final Resource result = createResource();
+	@Override
+	public Resource createTarget(Request request, Response response) {
+		final Resource result = createResource();
 
-        if (result != null) {
-            result.init(getContext(), request, response);
-        }
+		if (result != null) {
+			result.init(getContext(), request, response);
+		}
 
-        return result;
-    }
+		return result;
+	}
 
 }

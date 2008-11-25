@@ -1116,8 +1116,8 @@ public class JaxRsRestlet extends Restlet {
      * 
      * @param noRootResClHandler
      *            the Restlet to call, if no root resource class could be found.
-     * @see #getNoRootResClHandler(Restlet)
-     * @see #setNoResourceClHandler()
+     * @see #getNoRootResClHandler()
+     * @see #setNoResourceClHandler(Restlet)
      * @see #setNoResMethodHandler(Restlet)
      * @see #attachDefault(Restlet)
      */
