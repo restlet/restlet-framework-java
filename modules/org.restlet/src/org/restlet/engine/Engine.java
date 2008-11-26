@@ -47,7 +47,6 @@ import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
 import org.restlet.Context;
-import org.restlet.Directory;
 import org.restlet.Guard;
 import org.restlet.Restlet;
 import org.restlet.Server;
@@ -86,13 +85,11 @@ import org.restlet.engine.http.HttpUtils;
 import org.restlet.engine.http.StreamClientHelper;
 import org.restlet.engine.http.StreamServerHelper;
 import org.restlet.engine.local.ClapClientHelper;
-import org.restlet.engine.local.DirectoryResource;
 import org.restlet.engine.local.FileClientHelper;
 import org.restlet.engine.util.Base64;
 import org.restlet.engine.util.FormUtils;
 import org.restlet.engine.util.SecurityUtils;
 import org.restlet.resource.Representation;
-import org.restlet.resource.Resource;
 import org.restlet.resource.Variant;
 import org.restlet.util.Series;
 
@@ -312,12 +309,6 @@ public class Engine extends org.restlet.util.Engine {
     public void copyResponseHeaders(Response response, Series<Parameter> headers) {
         HttpServerConverter.addResponseHeaders(response, headers);
         HttpServerConverter.addEntityHeaders(response.getEntity(), headers);
-    }
-
-    @Override
-    public Resource createDirectoryResource(Directory directory,
-            Request request, Response response) throws IOException {
-        return new DirectoryResource(directory, request, response);
     }
 
     @Override

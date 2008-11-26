@@ -27,7 +27,6 @@
 
 package org.restlet.util;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
@@ -35,7 +34,6 @@ import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
 import org.restlet.Context;
-import org.restlet.Directory;
 import org.restlet.Guard;
 import org.restlet.Restlet;
 import org.restlet.Server;
@@ -53,7 +51,6 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.engine.Helper;
 import org.restlet.resource.Representation;
-import org.restlet.resource.Resource;
 import org.restlet.resource.Variant;
 
 /**
@@ -293,21 +290,6 @@ public abstract class Engine {
      */
     public abstract void copyResponseHeaders(Response response,
             Series<Parameter> headers);
-
-    /**
-     * Creates a directory resource.
-     * 
-     * @param handler
-     *            The parent directory handler.
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response to return.
-     * @return A new directory resource.
-     * @throws IOException
-     */
-    public abstract Resource createDirectoryResource(Directory handler,
-            Request request, Response response) throws IOException;
 
     /**
      * Creates a new helper for a given component.

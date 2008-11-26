@@ -35,6 +35,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.logging.Level;
 
+import org.restlet.Context;
 import org.restlet.Directory;
 import org.restlet.Uniform;
 import org.restlet.data.MediaType;
@@ -128,7 +129,7 @@ public class DirectoryResource extends Resource {
     /** The unique representation of the target URI, if it exists. */
     private Reference uniqueReference;
 
-/**
+    /**
      * This constructor aims at answering the following questions:<br>
      * <ul>
      * <li>does this request target a directory?</li>
@@ -140,27 +141,30 @@ public class DirectoryResource extends Resource {
      * <br>
      * The following constraints must be taken into account:<br>
      * <ul>
-     * <li>the underlying helper may not support content negotiation and be
-     * able to return the list of possible variants of the target file (e.g. the
-     * CLAP helper).</li>
+     * <li>the underlying helper may not support content negotiation and be able
+     * to return the list of possible variants of the target file (e.g. the CLAP
+     * helper).</li>
      * <li>the underlying helper may not support directory listing</li>
      * <li>the extensions tunneling cannot apply on a directory</li>
      * <li>underlying helpers that do not support content negotiation cannot
      * support extensions tunneling</li>
      * </ul>
      * 
-     * @param directory
-     *                The parent directory handler.
+     * @param context
+     *            The parent context.
      * @param request
-     *                The handled call.
+     *            The request to handle.
+     * @param response
+     *            The response to return.
      * @throws IOException
      */
-    public DirectoryResource(Directory directory, Request request,
-            Response response) throws IOException {
-        super(directory.getContext(), request, response);
+    public DirectoryResource(Context context, Request request, Response response)
+            throws IOException {
+        super(context, request, response);
 
         // Update the member variables
-        this.directory = directory;
+        this.directory = (Directory) request.getAttributes().get(
+                "org.restlet.directory");
         this.relativePart = request.getResourceRef().getRemainingPart(false,
                 false);
         setModifiable(this.directory.isModifiable());

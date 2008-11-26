@@ -34,3 +34,9 @@ Changes log
             - JaxRsApplication will not clear the MetadataService (as
               before; was required to not use other extensions as given
               in the JAX-RS ApplicationConfig class).
+        - The Directory class doesn't override the findTarget() method
+          but uses the defaut Finder mechanism based on the 
+          "targetClass" property. Therefore, it is easier to specify a
+          subclass of org.restlet.engine.local.DirectoryResource in
+          order to customize the default behavior. 
+          Suggested by Cliff Binstock.

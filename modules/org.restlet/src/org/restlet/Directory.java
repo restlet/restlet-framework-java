@@ -27,21 +27,19 @@
 
 package org.restlet;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.logging.Level;
 
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.ReferenceList;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.engine.local.DirectoryResource;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Variant;
-import org.restlet.util.Engine;
 
 /**
  * Finder mapping a directory of local resources. Those resources have
@@ -262,6 +260,7 @@ public class Directory extends Finder {
         this.listingAllowed = false;
         this.modifiable = false;
         this.negotiateContent = true;
+        setTargetClass(DirectoryResource.class);
     }
 
     /**
@@ -284,27 +283,6 @@ public class Directory extends Finder {
      */
     public Directory(Context context, String rootUri) {
         this(context, new Reference(rootUri));
-    }
-
-    /**
-     * Finds the target handler if available.
-     * 
-     * @param request
-     *            The request to filter.
-     * @param response
-     *            The response to filter.
-     * @return The target handler if available or null.
-     */
-    @Override
-    public Handler findTarget(Request request, Response response) {
-        try {
-            return Engine.getInstance().createDirectoryResource(this, request,
-                    response);
-        } catch (IOException ioe) {
-            getLogger().log(Level.WARNING,
-                    "Unable to find the directory's resource", ioe);
-            return null;
-        }
     }
 
     /**
@@ -373,6 +351,12 @@ public class Directory extends Finder {
      */
     public Reference getRootRef() {
         return this.rootRef;
+    }
+
+    @Override
+    public void handle(Request request, Response response) {
+        request.getAttributes().put("org.restlet.directory", this);
+        super.handle(request, response);
     }
 
     /**
