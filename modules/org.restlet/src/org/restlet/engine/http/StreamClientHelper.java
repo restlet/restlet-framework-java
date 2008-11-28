@@ -48,10 +48,9 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.engine.Engine;
 
-
 /**
- * HTTP client helper based on BIO sockets. Here is the list of parameters that are
- * supported:
+ * HTTP client helper based on BIO sockets. Here is the list of parameters that
+ * are supported:
  * <table>
  * <tr>
  * <th>Parameter name</th>
@@ -150,8 +149,179 @@ public class StreamClientHelper extends HttpClientHelper {
     @Override
     public HttpClientCall create(Request request) {
         request.getClientInfo().setAgent(Engine.VERSION_HEADER);
-        
-        return new StreamClientCall(this, request, createSocketFactory(request.isConfidential()));
+        return new StreamClientCall(this, request, createSocketFactory(request
+                .isConfidential()));
+    }
+
+    /**
+     * Creates a properly configured secure socket factory.
+     * 
+     * @return Properly configured secure socket factory.
+     * @throws IOException
+     * @throws GeneralSecurityException
+     */
+    protected SocketFactory createSecureSocketFactory() throws IOException,
+            GeneralSecurityException {
+        // Retrieve the configuration variables
+        String certAlgorithm = getCertAlgorithm();
+        String keystorePath = getKeystorePath();
+        String keystorePassword = getKeystorePassword();
+        String keyPassword = getKeyPassword();
+        String truststorePath = getTruststorePath();
+        String truststorePassword = getTruststorePassword();
+        String secureRandomAlgorithm = getSecureRandomAlgorithm();
+        String securityProvider = getSecurityProvider();
+
+        // Initialize a key store
+        InputStream keystoreInputStream = null;
+        if (keystorePath != null) {
+            keystoreInputStream = new FileInputStream(keystorePath);
+        }
+
+        KeyStore keyStore = KeyStore.getInstance(getKeystoreType());
+        keyStore.load(keystoreInputStream, keystorePassword == null ? null
+                : keystorePassword.toCharArray());
+
+        // Initialize a key manager
+        KeyManagerFactory keyManagerFactory = KeyManagerFactory
+                .getInstance(certAlgorithm);
+        keyManagerFactory.init(keyStore, keyPassword == null ? null
+                : keyPassword.toCharArray());
+        KeyManager[] keyManagers = keyManagerFactory.getKeyManagers();
+
+        // Initialize the trust store
+        InputStream truststoreInputStream = null;
+        if (truststorePath != null) {
+            truststoreInputStream = new FileInputStream(truststorePath);
+        }
+
+        KeyStore trustStore = KeyStore.getInstance(getTruststoreType());
+        trustStore.load(truststoreInputStream,
+                truststorePassword == null ? null : truststorePassword
+                        .toCharArray());
+
+        // Initialize the trust manager
+        TrustManagerFactory trustManagerFactory = TrustManagerFactory
+                .getInstance(certAlgorithm);
+        trustManagerFactory.init(trustStore);
+        TrustManager[] trustManagers = trustManagerFactory.getTrustManagers();
+
+        // Initialize the SSL context
+        SecureRandom secureRandom = secureRandomAlgorithm == null ? null
+                : SecureRandom.getInstance(secureRandomAlgorithm);
+
+        SSLContext context = securityProvider == null ? SSLContext
+                .getInstance(getSslProtocol()) : SSLContext.getInstance(
+                getSslProtocol(), securityProvider);
+        context.init(keyManagers, trustManagers, secureRandom);
+
+        // Return the SSL socket factory
+        return context.getSocketFactory();
+    }
+
+    /**
+     * Creates a normal or secure socket factory.
+     * 
+     * @param secure
+     *            Indicates if the sockets should be secured.
+     * @return A normal or secure socket factory.
+     */
+    protected SocketFactory createSocketFactory(boolean secure) {
+        SocketFactory result = null;
+
+        if (secure) {
+            try {
+                return createSecureSocketFactory();
+            } catch (IOException ex) {
+                getLogger().log(
+                        Level.SEVERE,
+                        "Could not create secure socket factory: "
+                                + ex.getMessage(), ex);
+            } catch (GeneralSecurityException ex) {
+                getLogger().log(
+                        Level.SEVERE,
+                        "Could not create secure socket factory: "
+                                + ex.getMessage(), ex);
+            }
+        } else {
+            result = SocketFactory.getDefault();
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the SSL certificate algorithm.
+     * 
+     * @return The SSL certificate algorithm.
+     */
+    public String getCertAlgorithm() {
+        return getHelpedParameters().getFirstValue("certAlgorithm", "SunX509");
+    }
+
+    /**
+     * Returns the SSL key password.
+     * 
+     * @return The SSL key password.
+     */
+    public String getKeyPassword() {
+        return getHelpedParameters().getFirstValue("keyPassword", "");
+    }
+
+    /**
+     * Returns the SSL keystore password.
+     * 
+     * @return The SSL keystore password.
+     */
+    public String getKeystorePassword() {
+        return getHelpedParameters().getFirstValue("keystorePassword", "");
+    }
+
+    /**
+     * Returns the SSL keystore path.
+     * 
+     * @return The SSL keystore path.
+     */
+    public String getKeystorePath() {
+        return getHelpedParameters().getFirstValue("keystorePath",
+                System.getProperty("user.home") + File.separator + ".keystore");
+    }
+
+    /**
+     * Returns the SSL keystore type.
+     * 
+     * @return The SSL keystore type.
+     */
+    public String getKeystoreType() {
+        return getHelpedParameters().getFirstValue("keystoreType", "JKS");
+    }
+
+    /**
+     * Returns the name of the RNG algorithm.
+     * 
+     * @return The name of the RNG algorithm.
+     */
+    public String getSecureRandomAlgorithm() {
+        return getHelpedParameters().getFirstValue("secureRandomAlgorithm",
+                null);
+    }
+
+    /**
+     * Returns the Java security provider name.
+     * 
+     * @return The Java security provider name.
+     */
+    public String getSecurityProvider() {
+        return getHelpedParameters().getFirstValue("securityProvider", null);
+    }
+
+    /**
+     * Returns the SSL keystore type.
+     * 
+     * @return The SSL keystore type.
+     */
+    public String getSslProtocol() {
+        return getHelpedParameters().getFirstValue("sslProtocol", "TLS");
     }
 
     /**
@@ -165,160 +335,15 @@ public class StreamClientHelper extends HttpClientHelper {
                 "tcpNoDelay", "false"));
     }
 
-    @Override
-    public synchronized void start() throws Exception {
-        super.start();
-        getLogger().info("Starting the HTTP client");
-    }
-    
-    @Override
-    public synchronized void stop() throws Exception {
-        super.stop();
-        getLogger().info("Stopping the HTTP client");
-    }
-    
-    protected SocketFactory createSocketFactory(boolean secure) {
-        if (secure) {
-            try {
-                return createSecureSocketFactory();
-            } catch (IOException ex) {
-                getLogger().log(Level.SEVERE, "Could not create secure socket factory: "+ex.getMessage(), ex);
-            } catch (GeneralSecurityException ex) {
-                getLogger().log(Level.SEVERE, "Could not create secure socket factory: "+ex.getMessage(), ex);
-            }
-        }
-        return SocketFactory.getDefault();
-    }
-    
     /**
-     * The code below is heavily based on {@link org.mortbay.jetty.security.SslSocketConnector#createFactory()}
-     *  
-     * @return Properly configured secure socket factory
-     * @throws IOException
-     * @throws GeneralSecurityException
+     * Returns the SSL truststore password.
+     * 
+     * @return The SSL truststore password.
      */
-    protected SocketFactory createSecureSocketFactory() throws IOException, GeneralSecurityException {
-        String keystorePath = getKeystorePath();
-        String keystorePassword = getKeystorePassword();
-        String keyPassword = getKeyPassword();
-        String truststorePath = getTruststorePath();
-        String truststorePassword = getTruststorePassword();
-        String secureRandomAlgorithm = getSecureRandomAlgorithm();
-        String securityProvider = getSecurityProvider();
-        
-        InputStream keystoreInputStream = null;
-        if (keystorePath != null) {
-            keystoreInputStream = new FileInputStream(keystorePath);
-        }
-        
-        KeyStore keyStore = KeyStore.getInstance(getKeystoreType());
-        keyStore.load(keystoreInputStream, keystorePassword == null ? null : keystorePassword.toCharArray());
+    public String getTruststorePassword() {
+        return getHelpedParameters().getFirstValue("truststorePassword", "");
+    }
 
-        KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(getCertAlgorithm());        
-        keyManagerFactory.init(keyStore, keyPassword == null ? null : keyPassword.toCharArray());
-        KeyManager[] keyManagers = keyManagerFactory.getKeyManagers();
-
-        InputStream truststoreInputStream = null;
-        if (truststorePath != null) {
-            truststoreInputStream = new FileInputStream(truststorePath);
-        }
-        KeyStore trustStore = KeyStore.getInstance(getTruststoreType());
-        trustStore.load(truststoreInputStream, truststorePassword == null ? null : truststorePassword.toCharArray());
-        
-        TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(getCertAlgorithm());
-        trustManagerFactory.init(trustStore);
-        TrustManager[] trustManagers = trustManagerFactory.getTrustManagers();
-
-        SecureRandom secureRandom = secureRandomAlgorithm == null ? null : SecureRandom.getInstance(secureRandomAlgorithm);
-
-        SSLContext context = securityProvider == null ? SSLContext.getInstance(getSslProtocol()) : SSLContext.getInstance(getSslProtocol(), securityProvider);
-        context.init(keyManagers, trustManagers, secureRandom);
-        return context.getSocketFactory();
-    }
-    
-    /**
-     * Returns the SSL keystore type.
-     * 
-     * @return The SSL keystore type.
-     */
-    public String getKeystoreType() {
-        return getHelpedParameters().getFirstValue("keystoreType", "JKS");
-    }
-    
-    /**
-     * Returns the SSL keystore path.
-     * 
-     * @return The SSL keystore path.
-     */
-    public String getKeystorePath() {
-        return getHelpedParameters().getFirstValue("keystorePath",
-                System.getProperty("user.home") + File.separator + ".keystore");
-    }
-    
-    /**
-     * Returns the SSL keystore password.
-     * 
-     * @return The SSL keystore password.
-     */
-    public String getKeystorePassword() {
-        return getHelpedParameters().getFirstValue("keystorePassword", "");
-    }
-    
-    /**
-     * Returns the SSL certificate algorithm.
-     * 
-     * @return The SSL certificate algorithm.
-     */
-    public String getCertAlgorithm() {
-        return getHelpedParameters().getFirstValue("certAlgorithm", "SunX509");
-    }
-    
-    /**
-     * Returns the SSL key password.
-     * 
-     * @return The SSL key password.
-     */
-    public String getKeyPassword() {
-        return getHelpedParameters().getFirstValue("keyPassword", "");
-    }
-    
-    /**
-     * Returns the name of the RNG algorithm.
-     * 
-     * @return The name of the RNG algorithm.
-     */
-    public String getSecureRandomAlgorithm() {
-        return getHelpedParameters().getFirstValue("secureRandomAlgorithm",
-                null);
-    }
-    
-    /**
-     * Returns the Java security provider name.
-     * 
-     * @return The Java security provider name.
-     */
-    public String getSecurityProvider() {
-        return getHelpedParameters().getFirstValue("securityProvider", null);
-    }
-    
-    /**
-     * Returns the SSL keystore type.
-     * 
-     * @return The SSL keystore type.
-     */
-    public String getSslProtocol() {
-        return getHelpedParameters().getFirstValue("sslProtocol", "TLS");
-    }
-    
-    /**
-     * Returns the SSL truststore type.
-     * 
-     * @return The SSL truststore type.
-     */
-    public String getTruststoreType() {
-        return getHelpedParameters().getFirstValue("truststoreType", null);
-    }
-    
     /**
      * Returns the SSL truststore path.
      * 
@@ -327,13 +352,25 @@ public class StreamClientHelper extends HttpClientHelper {
     public String getTruststorePath() {
         return getHelpedParameters().getFirstValue("truststorePath", null);
     }
-    
+
     /**
-     * Returns the SSL truststore password.
+     * Returns the SSL truststore type.
      * 
-     * @return The SSL truststore password.
+     * @return The SSL truststore type.
      */
-    public String getTruststorePassword() {
-        return getHelpedParameters().getFirstValue("truststorePassword", "");
+    public String getTruststoreType() {
+        return getHelpedParameters().getFirstValue("truststoreType", null);
+    }
+
+    @Override
+    public synchronized void start() throws Exception {
+        super.start();
+        getLogger().info("Starting the HTTP client");
+    }
+
+    @Override
+    public synchronized void stop() throws Exception {
+        super.stop();
+        getLogger().info("Stopping the HTTP client");
     }
 }
