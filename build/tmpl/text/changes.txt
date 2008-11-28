@@ -23,6 +23,8 @@ Changes log
           method. Reported by Marcelo Ochoa.
         - Fixed NPE when using the "cri" and "crs" variables in log 
           format. Reported by Maxence Bernard.
+        - Fixed NPE with OSGi. Reported by Hendy Irawan and fixed by
+          Xuhui Wang. 
     - Misc
         - Fully moved org.restlet.gwt.internal content into 
           org.restlet.gwt.engine package.

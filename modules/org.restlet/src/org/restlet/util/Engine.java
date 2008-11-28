@@ -283,6 +283,12 @@ public abstract class Engine {
             result = loadClass(Class.class.getClassLoader(), className);
         }
 
+        // Then, try using the engine class loader
+        if (result == null && getInstance() != null) {
+            result = loadClass(getInstance().getClass().getClassLoader(),
+                    className);
+        }
+
         // Then, try using the caller's class loader
         if (result == null) {
             result = Class.forName(className);
