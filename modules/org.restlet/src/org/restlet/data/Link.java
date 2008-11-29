@@ -42,6 +42,9 @@ import org.restlet.resource.Resource;
  */
 public class Link {
 
+    /** The optional self identifier. */
+    private Reference identifier;
+
     /** The source resource reference. */
     private Reference sourceRef;
 
@@ -86,6 +89,24 @@ public class Link {
      *            The target.
      */
     private Link(Reference sourceRef, Reference typeRef, Object target) {
+        this(sourceRef, typeRef, target, null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param sourceRef
+     *            The source resource reference.
+     * @param typeRef
+     *            The type reference.
+     * @param target
+     *            The target.
+     * @param identifier
+     *            The optional self identifier.
+     */
+    private Link(Reference sourceRef, Reference typeRef, Object target,
+            Reference identifier) {
+        this.identifier = identifier;
         this.sourceRef = sourceRef;
         this.target = target;
         this.typeRef = typeRef;
@@ -103,6 +124,35 @@ public class Link {
      */
     public Link(Reference sourceRef, Reference typeRef, Reference targetRef) {
         this(sourceRef, typeRef, (Object) targetRef);
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        boolean result = false;
+
+        if (object instanceof Link) {
+            Link link = (Link) object;
+
+            result = ((getIdentifier() == null) || (getIdentifier().equals(link
+                    .getIdentifier())))
+                    && ((getSourceRef() == null) || (getSourceRef().equals(link
+                            .getSourceRef())))
+                    && ((getTarget() == null) || (getTarget().equals(link
+                            .getTarget())))
+                    && ((getTypeRef() == null) || (getTypeRef().equals(link
+                            .getTypeRef())));
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the optional self identifier.
+     * 
+     * @return The optional self identifier.
+     */
+    public Reference getIdentifier() {
+        return identifier;
     }
 
     /**
@@ -167,6 +217,16 @@ public class Link {
      */
     public boolean hasReferenceTarget() {
         return getTarget() instanceof Reference;
+    }
+
+    /**
+     * Sets the optional self identifier.
+     * 
+     * @param identifier
+     *            The optional self identifier.
+     */
+    public void setIdentifier(Reference identifier) {
+        this.identifier = identifier;
     }
 
     /**

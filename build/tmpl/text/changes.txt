@@ -29,7 +29,9 @@ Changes log
           APPLICATION_RDF_TRIX, APPLICATION_RDF_TURTLE, 
           APPLICATION_SPARQL_RESULTS_XML and
           APPLICATION_SPARQL_RESULTS_JSON for RDF and SPARQL.
-    - Misc
+        - Added LinkReference and LinkSet classes to support RDF reference 
+          manipulation (blank nodes for example) and RDF graphs or models.
+     - Misc
         - JAX-RS extension:
             - added class ExendedUriBuilder with "file" extensions for
               content negotiation and an ExtendedUriInfo to get it.
