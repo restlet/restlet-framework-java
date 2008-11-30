@@ -33,9 +33,7 @@
   <target name="load-required-libs"
           description="Load Restlet required libs">
     <loadjava-with-public-synonym login="${jdbc.username}/${jdbc.password}@${sqlnet.string}"
-              file="${dist-base}/lib/${mod-api-id}.jar"/>
-    <loadjava-with-public-synonym login="${jdbc.username}/${jdbc.password}@${sqlnet.string}"
-              file="${dist-base}/lib/${mod-ri-id}.jar"
+              file="${dist-base}/lib/${mod-core-id}.jar"
 	      failonerror="no"/>
     <echo message="Ignore some resolvers errors due are not used classes"/>
     <loadjava-with-public-synonym login="${jdbc.username}/${jdbc.password}@${sqlnet.string}"
@@ -51,7 +49,7 @@
   <target name="load-server-side-demos"
           description="Load restlet examples and tutorial">
     <loadjava-with-public-synonym login="${jdbc.username}/${jdbc.password}@${sqlnet.string}"
-              file="${dist-base}/lib/${mod-example-id}.jar"
+              file="${dist-base}/lib/${mod-core-example-id}.jar"
               failonerror="no"/>
     <echo message="Ignore some resolvers errors due are not used classes"/>
     <exec executable="${ORACLE_HOME}/bin/sqlplus" dir="sql">
@@ -86,9 +84,7 @@
     <dropjava login="${jdbc.username}/${jdbc.password}@${sqlnet.string}"
               file="${dist-base}/lib/${mod-servlet-id}.jar"/>
     <dropjava login="${jdbc.username}/${jdbc.password}@${sqlnet.string}"
-              file="${dist-base}/lib/${mod-ri-id}.jar"/>
-    <dropjava login="${jdbc.username}/${jdbc.password}@${sqlnet.string}"
-              file="${dist-base}/lib/${mod-api-id}.jar"/>
+              file="${dist-base}/lib/${mod-core-id}.jar"/>
   </target>
   
   <target name="all"
