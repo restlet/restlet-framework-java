@@ -45,3 +45,4 @@ Changes log
           subclass of org.restlet.engine.local.DirectoryResource in
           order to customize the default behavior. 
           Suggested by Cliff Binstock.
+        - Upgraded db4o to version 7.7.67.
