@@ -428,14 +428,18 @@ public class Util {
      * 
      * @param clazz
      * @param interfaze
-     * @return true, if the class implements the given interface.
+     * @return true, if the class implements the given interface, otherwise false.
+     * if the clazz or interfaze is null, false is returned 
      */
-    public static boolean doesImplements(Class<?> clazz, Class<?> interfaze) {
+    public static boolean doesImplement(Class<?> clazz, Class<?> interfaze) {
+        if(clazz == null || interfaze == null)
+            return false;
+        if(doesImplement(clazz.getSuperclass(), interfaze))
+            return true;
         for (Class<?> interf : clazz.getInterfaces()) {
-            if (interf.equals(interfaze)) {
+            if (interf.equals(interfaze))
                 return true;
-            }
-            if (doesImplements(clazz, interf))
+            if (doesImplement(interf, interfaze))
                 return true;
         }
         return false;
