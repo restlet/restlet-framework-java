@@ -49,6 +49,21 @@ import org.restlet.ext.jaxrs.internal.util.Util;
 @SuppressWarnings("all")
 public class UtilTests extends TestCase {
 
+    /** test interface for test of {@link Util#doesImplement(Class, Class)}. */
+    private static interface I1 { }
+    /** test interface for test of {@link Util#doesImplement(Class, Class)}. */
+    private static interface I2 extends I1 {}
+    /** test interface for test of {@link Util#doesImplement(Class, Class)}. */
+    private static class C1 { }
+    /** test class for test of {@link Util#doesImplement(Class, Class)}. */
+    private static class C2 extends C1 implements I1 {}
+    /** test class for test of {@link Util#doesImplement(Class, Class)}. */
+    private static class C3 implements I1 {}
+    /** test class for test of {@link Util#doesImplement(Class, Class)}. */
+    private static class C4 extends C3 {}
+    /** test class for test of {@link Util#doesImplement(Class, Class)}. */
+    private static class C5 extends C3 implements I2 {}
+
     private MultivaluedMap<String, Object> httpHeaders;
 
     /**
@@ -116,9 +131,21 @@ public class UtilTests extends TestCase {
     }
 
     public void testDoesImplements() {
-        assertTrue(Util.doesImplements(String.class, CharSequence.class));
-        assertFalse(Util.doesImplements(CharSequence.class, String.class));
-        assertFalse(Util.doesImplements(Object.class, CharSequence.class));
+        assertTrue(Util.doesImplement(String.class, CharSequence.class));
+        assertFalse(Util.doesImplement(CharSequence.class, String.class));
+        assertFalse(Util.doesImplement(Object.class, CharSequence.class));
+        assertTrue(Util.doesImplement(Integer.class, Comparable.class));
+        
+        assertFalse(Util.doesImplement(C1.class, I1.class));
+        assertFalse(Util.doesImplement(C1.class, I2.class));
+        assertTrue(Util.doesImplement(C2.class, I1.class));
+        assertFalse(Util.doesImplement(C2.class, I2.class));
+        assertTrue(Util.doesImplement(C3.class, I1.class));
+        assertFalse(Util.doesImplement(C3.class, I2.class));
+        assertTrue(Util.doesImplement(C4.class, I1.class));
+        assertFalse(Util.doesImplement(C4.class, I2.class));
+        assertTrue(Util.doesImplement(C5.class, I1.class));
+        assertTrue(Util.doesImplement(C5.class, I2.class));
     }
 
     public void testGetOfContentType0() {

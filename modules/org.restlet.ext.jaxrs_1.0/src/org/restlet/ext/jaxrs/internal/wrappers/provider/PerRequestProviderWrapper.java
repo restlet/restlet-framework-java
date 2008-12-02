@@ -365,7 +365,7 @@ class PerRequestProviderWrapper extends AbstractProviderWrapper {
      */
     @Override
     public boolean isContextResolver() {
-        return Util.doesImplements(jaxRsProviderClass,
+        return Util.doesImplement(jaxRsProviderClass,
                 javax.ws.rs.ext.ContextResolver.class); // NICE cache for speed
     }
 
@@ -374,7 +374,7 @@ class PerRequestProviderWrapper extends AbstractProviderWrapper {
      */
     @Override
     public boolean isExceptionMapper() {
-        return Util.doesImplements(jaxRsProviderClass,
+        return Util.doesImplement(jaxRsProviderClass,
                 javax.ws.rs.ext.ExceptionMapper.class); // NICE cache for speed
     }
 
@@ -383,7 +383,7 @@ class PerRequestProviderWrapper extends AbstractProviderWrapper {
      */
     @Override
     public boolean isReader() {
-        return Util.doesImplements(jaxRsProviderClass,
+        return Util.doesImplement(jaxRsProviderClass,
                 javax.ws.rs.ext.MessageBodyReader.class); // NICE cache for speed
     }
 
@@ -392,7 +392,7 @@ class PerRequestProviderWrapper extends AbstractProviderWrapper {
      */
     @Override
     public boolean isWriter() {
-        return Util.doesImplements(jaxRsProviderClass,
+        return Util.doesImplement(jaxRsProviderClass,
                 javax.ws.rs.ext.MessageBodyWriter.class); // NICE cache for speed
     }
 }
