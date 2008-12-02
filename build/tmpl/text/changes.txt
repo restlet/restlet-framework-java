@@ -24,7 +24,10 @@ Changes log
         - Fixed NPE when using the "cri" and "crs" variables in log 
           format. Reported by Maxence Bernard.
         - Fixed NPE with OSGi. Reported by Hendy Irawan and fixed by
-          Xuhui Wang. 
+          Xuhui Wang.
+        - Fixed a bug in JAX-RS extension in Util.doesImplements(..)
+          and renamed it to Util.doesImplement(..). Reported by
+          Luke Studley and Bruno Dumon.
     - Misc
         - Fully moved org.restlet.gwt.internal content into 
           org.restlet.gwt.engine package.
