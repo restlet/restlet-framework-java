@@ -32,6 +32,7 @@ Changes log
           javax.security.auth.login.CredentialException). Contributed 
           by Taras Puchko.
 		- Fixed Javadocs of Reference regarding invalid URI characters.
+		- Upgraded jSSLutils to version 0.5.1.
 
 - 1.1.1 (2008-10-31)
     - Bugs fixed
