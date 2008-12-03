@@ -463,7 +463,8 @@ public class Resource extends Handler {
 
             if (selectedRepresentation == null) {
                 if ((getResponse().getStatus() == null)
-                        || getResponse().getStatus().isSuccess()) {
+                        || (getResponse().getStatus().isSuccess() && !Status.SUCCESS_NO_CONTENT
+                                .equals(getResponse().getStatus()))) {
                     getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
                 } else {
                     // Keep the current status as the developer might prefer a
