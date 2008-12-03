@@ -25,6 +25,10 @@ Changes log
           format. Reported by Maxence Bernard.
         - Fixed NPE with OSGi. Reported by Hendy Irawan and fixed by
           Xuhui Wang.
+        - When a Resource was returning a 204 (No content) status, it
+          was converted into a 404 error. Now it is left untouched.
+          Reported by Ryan Niemeyer. 
+          Xuhui Wang.
         - Fixed a bug in JAX-RS extension in Util.doesImplements(..)
           and renamed it to Util.doesImplement(..). Reported by
           Luke Studley and Bruno Dumon.
