@@ -74,6 +74,22 @@
 		<format property="release-date" pattern="yyyy-MM-dd" />
 	</tstamp>
 
+	<!-- Maven time stamp -->
+	<tstamp>
+		<format property="maven-snapshot-timestamp" pattern="yyyyMMdd.HHmmss" />
+	</tstamp>
+	<!-- Svn revision number -->
+	<exec executable="svn" output="${temp}/svninfo.xml">
+		<arg line="info --xml" />
+	</exec>
+	<xmlproperty file="${temp}/svninfo.xml" collapseattributes="true" />
+	<property name="svn.revision" value="${info.entry.revision}" />
+
+	<!-- Snapshot? -->
+	<condition property="is.snapshot" else="false">
+		<contains string="${version-maven}" substring="-SNAPSHOT" />
+	</condition>
+
 	<condition property="ant-old">
 		<not>
 			<contains string="${ant.version}" substring="Ant version 1.7" />
@@ -975,6 +991,11 @@
 	<macrodef name="maven2Module">
 		<attribute name="name" />
 		<sequential>
+			<condition property="mod-@{name}-version-maven"
+		               value="${version-maven}-${maven-snapshot-timestamp}-${svn.revision}"
+		               else="${version-maven}">
+				<istrue value="${is.snapshot}" />
+			</condition>
 			<propertyregex property="mod-dir-@{name}-maven-groupId"
 			               input="${mod-@{name}-maven-groupId}"
 			               regexp="\."
@@ -995,33 +1016,33 @@
 			<mkdir dir="${mod-dir-@{name}-maven2}" />
 
 			<copy file="${dist-classic}/lib/${mod-@{name}-id}.jar"
-			      tofile="${mod-dir-@{name}-maven2}/${mod-pom-@{name}-artifactId}-${version-maven}.jar"
+			      tofile="${mod-dir-@{name}-maven2}/${mod-pom-@{name}-artifactId}-${mod-@{name}-version-maven}.jar"
 			      overwrite="true" />
 
-			<jar destfile="${mod-dir-@{name}-maven2}/${mod-pom-@{name}-artifactId}-${version-maven}-sources.jar"
+			<jar destfile="${mod-dir-@{name}-maven2}/${mod-pom-@{name}-artifactId}-${mod-@{name}-version-maven}-sources.jar"
 			     filesetmanifest="merge">
 				<fileset dir="${mod}/${mod-@{name}-id}/src" includes="**/*" />
 			</jar>
 
 			<copy file="${temp}/poms/${mod-@{name}-id}.pom"
-			      tofile="${mod-dir-@{name}-maven2}/${mod-pom-@{name}-artifactId}-${version-maven}.pom"
+			      tofile="${mod-dir-@{name}-maven2}/${mod-pom-@{name}-artifactId}-${mod-@{name}-version-maven}.pom"
 			      overwrite="true" />
-			<checksum file="${mod-dir-@{name}-maven2}/${mod-pom-@{name}-artifactId}-${version-maven}.jar"
+			<checksum file="${mod-dir-@{name}-maven2}/${mod-pom-@{name}-artifactId}-${mod-@{name}-version-maven}.jar"
 			          algorithm="MD5"
 			          fileext=".md5" />
-			<checksum file="${mod-dir-@{name}-maven2}/${mod-pom-@{name}-artifactId}-${version-maven}.jar"
+			<checksum file="${mod-dir-@{name}-maven2}/${mod-pom-@{name}-artifactId}-${mod-@{name}-version-maven}.jar"
 			          algorithm="SHA"
 			          fileext=".sha1" />
-			<checksum file="${mod-dir-@{name}-maven2}/${mod-pom-@{name}-artifactId}-${version-maven}-sources.jar"
+			<checksum file="${mod-dir-@{name}-maven2}/${mod-pom-@{name}-artifactId}-${mod-@{name}-version-maven}-sources.jar"
 			          algorithm="MD5"
 			          fileext=".md5" />
-			<checksum file="${mod-dir-@{name}-maven2}/${mod-pom-@{name}-artifactId}-${version-maven}-sources.jar"
+			<checksum file="${mod-dir-@{name}-maven2}/${mod-pom-@{name}-artifactId}-${mod-@{name}-version-maven}-sources.jar"
 			          algorithm="SHA"
 			          fileext=".sha1" />
-			<checksum file="${mod-dir-@{name}-maven2}/${mod-pom-@{name}-artifactId}-${version-maven}.pom"
+			<checksum file="${mod-dir-@{name}-maven2}/${mod-pom-@{name}-artifactId}-${mod-@{name}-version-maven}.pom"
 			          algorithm="MD5"
 			          fileext=".md5" />
-			<checksum file="${mod-dir-@{name}-maven2}/${mod-pom-@{name}-artifactId}-${version-maven}.pom"
+			<checksum file="${mod-dir-@{name}-maven2}/${mod-pom-@{name}-artifactId}-${mod-@{name}-version-maven}.pom"
 			          algorithm="SHA"
 			          fileext=".sha1" />
 		</sequential>
