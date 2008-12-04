@@ -78,6 +78,7 @@
 	<tstamp>
 		<format property="maven-snapshot-timestamp" pattern="yyyyMMdd.HHmmss" />
 	</tstamp>
+
 	<!-- Svn revision number -->
 	<exec executable="svn" output="${temp}/svninfo.xml">
 		<arg line="info --xml" />
