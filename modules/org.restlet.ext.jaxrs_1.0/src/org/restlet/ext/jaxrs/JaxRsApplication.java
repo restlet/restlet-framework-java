@@ -93,8 +93,8 @@ public class JaxRsApplication extends org.restlet.Application {
      * {@link #setAuthentication(Guard, RoleChecker)}, to set access control.<br>
      * 
      * @param context
-     *                The application's dedicated context based on the protected
-     *                parent component's context.
+     *            The application's dedicated context based on the protected
+     *            parent component's context.
      */
     public JaxRsApplication(Context context) {
         super(context);
@@ -111,13 +111,13 @@ public class JaxRsApplication extends org.restlet.Application {
      * </p>
      * 
      * @param appConfig
-     *                Contains the classes to load as root resource classes and
-     *                as providers. Invalid root resource classes and provider
-     *                classes are ignored, according to JAX-RS specification.
+     *            Contains the classes to load as root resource classes and as
+     *            providers. Invalid root resource classes and provider classes
+     *            are ignored, according to JAX-RS specification.
      * @return true, if all resource classes and providers could be added, or
      *         false at least one could not be added. Exceptions were logged.
      * @throws IllegalArgumentException
-     *                 if the given appConfig is null.
+     *             if the given appConfig is null.
      */
     public boolean add(Application appConfig) throws IllegalArgumentException {
         if (appConfig == null) {
@@ -166,6 +166,15 @@ public class JaxRsApplication extends org.restlet.Application {
     }
 
     /**
+     * Returns the used {@link JaxRsRestlet}.
+     * 
+     * @return the used {@link JaxRsRestlet}.
+     */
+    public JaxRsRestlet getJaxRsRestlet() {
+        return this.jaxRsRestlet;
+    }
+
+    /**
      * Returns the ObjectFactory for root resource class and provider
      * instantiation, if given.
      * 
@@ -210,9 +219,9 @@ public class JaxRsApplication extends org.restlet.Application {
      * role management for the JAX-RS extension.
      * 
      * @param guard
-     *                the Guard to use.
+     *            the Guard to use.
      * @param roleChecker
-     *                the RoleChecker to use
+     *            the RoleChecker to use
      * @see #setGuard(Guard)
      * @see #setRoleChecker(RoleChecker)
      */
@@ -234,7 +243,7 @@ public class JaxRsApplication extends org.restlet.Application {
      * {@link #createRoot()}.
      * 
      * @param guard
-     *                the Guard to use.
+     *            the Guard to use.
      * @see #setAuthentication(Guard, RoleChecker)
      */
     public void setGuard(Guard guard) {
@@ -246,8 +255,8 @@ public class JaxRsApplication extends org.restlet.Application {
      * instantiation.
      * 
      * @param objectFactory
-     *                the ObjectFactory for root resource class and provider
-     *                instantiation.
+     *            the ObjectFactory for root resource class and provider
+     *            instantiation.
      */
     public void setObjectFactory(ObjectFactory objectFactory) {
         this.jaxRsRestlet.setObjectFactory(objectFactory);
