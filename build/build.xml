@@ -901,7 +901,7 @@
 			                 failonwarning="@{failonwarning}"
                              backport="javax.security.auth.login.CredentialException:javax.security.auth.login.LoginException"
 			                 smart="true" 
-			                 support="Thread.setUncaughtExceptionHandler">
+			                 support="Thread.setUncaughtExceptionHandler;URLConnection.setConnectTimeout;URLConnection.setReadTimeout;HttpURLConnection.setFixedLengthStreamingMode;HttpURLConnection.setChunkedStreamingMode">
 				<!-- Caution: Overrides the Java 1.5 generated classes -->
 				<fileset dir="${classes}/${mod-@{name}-id}">
 					<include name="**/*.class" />
