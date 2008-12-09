@@ -31,6 +31,8 @@ Changes log
         - Fixed a bug in JAX-RS extension in Util.doesImplements(..)
           and renamed it to Util.doesImplement(..). Reported by
           Luke Studley and Bruno Dumon.
+        - Added translation of the HttpUrlConnectionCall class for the 
+          backport to JDK 1.4. Contributed by Taras Puchko.
     - Misc
         - Fully moved org.restlet.gwt.internal content into 
           org.restlet.gwt.engine package.
