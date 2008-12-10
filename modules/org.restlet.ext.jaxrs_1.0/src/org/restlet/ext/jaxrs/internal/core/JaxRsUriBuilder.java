@@ -518,7 +518,6 @@ public class JaxRsUriBuilder extends UriBuilder {
                     + " has no method with the name " + methodName
                     + " annotated with @Path");
         }
-        path(resource);
         addValidPathSegment(resMethodPath);
         return this;
     }

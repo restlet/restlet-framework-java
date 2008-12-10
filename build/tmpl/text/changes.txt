@@ -28,11 +28,16 @@ Changes log
         - When a Resource was returning a 204 (No content) status, it
           was converted into a 404 error. Now it is left untouched.
           Reported by Ryan Niemeyer.
-        - Fixed a bug in JAX-RS extension in Util.doesImplements(..)
-          and renamed it to Util.doesImplement(..). Reported by
-          Luke Studley and Bruno Dumon.
         - Added translation of the HttpUrlConnectionCall class for the 
           backport to JDK 1.4. Contributed by Taras Puchko.
+        - Fixed some bugs in JAX-RS extension:
+            - in Util.doesImplements(..) and renamed it to 
+              Util.doesImplement(..). Reported by Luke Studley and 
+              Bruno Dumon.
+            - JaxRsUriBuilder.path(Class, String). Reported by 
+              Juergen Zimmermann
+            - NPE in JaxRsProviders.getContextResolver(..). Reported
+              by Juergen Zimmermann
     - Misc
         - Fully moved org.restlet.gwt.internal content into 
           org.restlet.gwt.engine package.

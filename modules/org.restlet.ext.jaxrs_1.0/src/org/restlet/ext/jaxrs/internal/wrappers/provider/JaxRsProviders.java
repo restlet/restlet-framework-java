@@ -361,6 +361,9 @@ public class JaxRsProviders implements javax.ws.rs.ext.Providers,
             } catch (WebApplicationException e1) {
                 continue;
             }
+            if (cr == null) {
+                continue;
+            }
             final Class<?> crClaz = cr.getClass();
             final Class<?> genClass = JaxRsProviders.getCtxResGenClass(crClaz);
             if (genClass == null || !genClass.equals(contextType)) {

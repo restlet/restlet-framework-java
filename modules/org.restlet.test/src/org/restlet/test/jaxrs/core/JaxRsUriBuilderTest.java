@@ -522,8 +522,8 @@ public class JaxRsUriBuilderTest extends TestCase {
     public void testPathClassString() throws Exception {
         this.uriBuilder.replacePath(null);
         this.uriBuilder.path(CarListResource.class, "getOffers");
-        assertEqualsURI("http://localhost/" + CarListResource.PATH + "/"
-                + CarListResource.OFFERS_PATH, this.uriBuilder, true);
+        assertEqualsURI("http://localhost/" + CarListResource.OFFERS_PATH,
+                this.uriBuilder, true);
     }
 
     /**
@@ -533,8 +533,8 @@ public class JaxRsUriBuilderTest extends TestCase {
     public void testPathClassStringEnc() throws Exception {
         this.uriBuilder.replacePath(null);
         this.uriBuilder.path(CarListResource.class, "getOffers");
-        assertEqualsURI("http://localhost/" + CarListResource.PATH + "/"
-                + CarListResource.OFFERS_PATH, this.uriBuilder, true);
+        assertEqualsURI("http://localhost/" + CarListResource.OFFERS_PATH,
+                this.uriBuilder, true);
     }
 
     /**
