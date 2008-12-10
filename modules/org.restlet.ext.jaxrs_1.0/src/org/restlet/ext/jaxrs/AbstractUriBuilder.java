@@ -541,7 +541,6 @@ public abstract class AbstractUriBuilder extends UriBuilder {
                     + " has no method with the name " + methodName
                     + " annotated with @Path");
         }
-        path(rootResource);
         addValidPathSegment(resMethodPath);
         return this;
     }

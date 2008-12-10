@@ -40,6 +40,7 @@ import junit.framework.AssertionFailedError;
 import junit.framework.TestCase;
 
 import org.restlet.data.Reference;
+import org.restlet.ext.jaxrs.AbstractUriBuilder;
 import org.restlet.ext.jaxrs.ExtendedUriBuilder;
 import org.restlet.ext.jaxrs.internal.core.UriBuilderImpl;
 import org.restlet.test.jaxrs.services.car.CarListResource;
@@ -538,27 +539,23 @@ public class UriBuilderImplTest extends TestCase {
     }
 
     /**
-     * Test method for
-     * {@link org.restlet.ext.jaxrs.impl.UriBuilderImpl#path(java.lang.Class, java.lang.String)}
-     * .
+     * Test method for {@link AbstractUriBuilder#path(Class, String).
      */
     public void testPathClassString() throws Exception {
         this.uriBuilder.replacePath(null);
         this.uriBuilder.path(CarListResource.class, "getOffers");
-        assertEqualsURI("http://localhost/" + CarListResource.PATH + "/"
-                + CarListResource.OFFERS_PATH, this.uriBuilder, true);
+        assertEqualsURI("http://localhost/" + CarListResource.OFFERS_PATH,
+                this.uriBuilder, true);
     }
 
     /**
-     * Test method for
-     * {@link org.restlet.ext.jaxrs.impl.UriBuilderImpl#path(java.lang.Class, java.lang.String)}
-     * .
+     * Test method for {@link AbstractUriBuilder#path(Class, String).
      */
     public void testPathClassStringEnc() throws Exception {
         this.uriBuilder.replacePath(null);
         this.uriBuilder.path(CarListResource.class, "getOffers");
-        assertEqualsURI("http://localhost/" + CarListResource.PATH + "/"
-                + CarListResource.OFFERS_PATH, this.uriBuilder, true);
+        assertEqualsURI("http://localhost/" + CarListResource.OFFERS_PATH,
+                this.uriBuilder, true);
     }
 
     /**
