@@ -233,8 +233,8 @@ public class XdbServletCall extends HttpServerCall {
                     this.responseEntityStream = new ChunkedOutputStream(
                             getResponse().getOutputStream());
                 } else {
-                    this.responseEntityStream = new KeepAliveOutputStream(
-                            getResponse().getOutputStream());
+                    //this.responseEntityStream = new KeepAliveOutputStream(
+                    this.responseEntityStream = getResponse().getOutputStream();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
