@@ -75,6 +75,7 @@ public class XdbServletWarClient extends Client {
             Connection conn) {
         super(parentContext.createChildContext(), (List<Protocol>) null);
         getProtocols().add(Protocol.WAR);
+        getProtocols().add(Protocol.FILE);
         this.helper = new XdbServletWarClientHelper(this, config, conn);
     }
 
