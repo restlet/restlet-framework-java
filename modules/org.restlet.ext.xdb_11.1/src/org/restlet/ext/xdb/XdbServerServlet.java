@@ -34,7 +34,6 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -313,44 +312,6 @@ public class XdbServerServlet extends ServerServlet {
         return targetClass;
     }
 
-    /**
-     * Returns a configuration parameter.
-     * 
-     * @return An String object within the /home/'||USER||'/restlet/app.xml
-     *         XMLDB file.
-     */
-    private String getConfigParameter(String app, String name) {
-        String config = null;
-        ResultSet resultset = null;
-        PreparedStatement preparedstatement = null;
-        log("[Noelios Restlet Engine] - Try to load '" + name
-                + "' parameter from '/home/'||USER||'" + "/restlet/" + app
-                + ".xml");
-
-        try {
-            preparedstatement = this.conn
-                    .prepareStatement("select extractValue(res,'/res:Resource/res:Contents/restlet-app/'||?,"
-                            + "'xmlns:res=http://xmlns.oracle.com/xdb/XDBResource.xsd') from\n"
-                            + "resource_view where equals_path(res,'/home/'||USER||?)=1");
-            preparedstatement.setString(1, name);
-            preparedstatement.setString(2, "/restlet/" + app + ".xml");
-            resultset = preparedstatement.executeQuery();
-
-            if (resultset.next()) {
-                config = resultset.getString(1);
-            }
-        } catch (SQLException sqe) {
-            log(sqe.getLocalizedMessage(), sqe);
-            throw new RuntimeException(
-                    ".getConfigParameter:  error from XMLDB loading '/home/'||USER||'"
-                            + "/restlet/" + app + ".xml", sqe);
-        } finally {
-            closeDbResources(preparedstatement, resultset);
-        }
-
-        return config;
-    }
-
     @Override
     public String getInitParameter(String name, String defaultValue) {
         String result = null;
@@ -358,12 +319,6 @@ public class XdbServerServlet extends ServerServlet {
         // XDB do not support Servlet Context parameter
         // use Servlet init parameter instead
         result = this.getInitParameter(name);
-
-        if (result == null) {
-            final String app = getServletConfig().getServletName();
-            // Try to load from XMLDB repository
-            result = getConfigParameter(app, name);
-        }
 
         if (result == null) {
             result = defaultValue;
