@@ -445,9 +445,6 @@
 		<pathelement path="${classes}/${mod-net-id}" />
 		<pathelement path="${mod}/${mod-net-id}/src" />
 
-		<path refid="mod-simple-path" />
-		<pathelement path="${classes}/${mod-simple-id}" />
-		<pathelement path="${mod}/${mod-simple-id}/src" />
 
 		<path refid="mod-freemarker-path" />
 		<pathelement path="${classes}/${mod-freemarker-id}" />
@@ -456,6 +453,10 @@
 		<path refid="mod-grizzly-path" />
 		<pathelement path="${classes}/${mod-grizzly-id}" />
 		<pathelement path="${mod}/${mod-grizzly-id}/src" />
+
+		<path refid="mod-simple-path" />
+		<pathelement path="${classes}/${mod-simple-id}" />
+		<pathelement path="${mod}/${mod-simple-id}/src" />
 
 		<path refid="mod-httpclient-path" />
 		<pathelement path="${classes}/${mod-httpclient-id}" />
