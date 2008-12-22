@@ -445,7 +445,6 @@
 		<pathelement path="${classes}/${mod-net-id}" />
 		<pathelement path="${mod}/${mod-net-id}/src" />
 
-
 		<path refid="mod-freemarker-path" />
 		<pathelement path="${classes}/${mod-freemarker-id}" />
 		<pathelement path="${mod}/${mod-freemarker-id}/src" />
