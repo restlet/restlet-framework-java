@@ -992,7 +992,7 @@
 		<attribute name="name" />
 		<sequential>
 			<condition property="mod-@{name}-version-maven"
-		               value="${version-maven}-${maven-snapshot-timestamp}-${svn.revision}"
+		               value="${version-minor}-${maven-snapshot-timestamp}-${svn.revision}"
 		               else="${version-maven}">
 				<istrue value="${is.snapshot}" />
 			</condition>
