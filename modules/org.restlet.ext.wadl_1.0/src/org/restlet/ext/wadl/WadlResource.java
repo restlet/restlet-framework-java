@@ -188,7 +188,7 @@ public class WadlResource extends Resource {
                 doc.setTitle(getTitle());
             }
 
-            if (MediaType.APPLICATION_WADL_XML.equals(variant.getMediaType())) {
+            if (MediaType.APPLICATION_WADL.equals(variant.getMediaType())) {
                 result = new WadlRepresentation(resourceInfo);
             } else if (MediaType.TEXT_HTML.equals(variant.getMediaType())) {
                 result = new WadlRepresentation(resourceInfo)
@@ -354,7 +354,7 @@ public class WadlResource extends Resource {
      */
     protected List<Variant> getWadlVariants() {
         final List<Variant> result = new ArrayList<Variant>();
-        result.add(new Variant(MediaType.APPLICATION_WADL_XML));
+        result.add(new Variant(MediaType.APPLICATION_WADL));
         result.add(new Variant(MediaType.TEXT_HTML));
         return result;
     }

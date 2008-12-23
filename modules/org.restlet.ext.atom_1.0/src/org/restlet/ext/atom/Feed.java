@@ -287,7 +287,7 @@ public class Feed extends SaxRepresentation {
 			} else if (type.equals("html")) {
 				result = MediaType.TEXT_HTML;
 			} else if (type.equals("xhtml")) {
-				result = MediaType.APPLICATION_XHTML_XML;
+				result = MediaType.APPLICATION_XHTML;
 			} else {
 				result = new MediaType(type);
 			}
@@ -513,7 +513,7 @@ public class Feed extends SaxRepresentation {
 	 * Constructor.
 	 */
 	public Feed() {
-		super(MediaType.APPLICATION_ATOM_XML);
+		super(MediaType.APPLICATION_ATOM);
 		this.authors = null;
 		this.categories = null;
 		this.contributors = null;

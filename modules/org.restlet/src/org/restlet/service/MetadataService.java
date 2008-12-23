@@ -198,7 +198,7 @@ public class MetadataService extends Service {
         addExtension("fr", Language.FRENCH);
 
         addExtension("ai", MediaType.APPLICATION_POSTSCRIPT);
-        addExtension("atom", MediaType.APPLICATION_ATOM_XML);
+        addExtension("atom", MediaType.APPLICATION_ATOM);
         addExtension("au", MediaType.AUDIO_BASIC);
         addExtension("bin", MediaType.APPLICATION_OCTET_STREAM);
         addExtension("bmp", MediaType.IMAGE_BMP);
@@ -228,7 +228,7 @@ public class MetadataService extends Service {
         addExtension("kar", MediaType.AUDIO_MIDI);
         addExtension("latex", MediaType.APPLICATION_LATEX);
         addExtension("man", MediaType.APPLICATION_TROFF_MAN);
-        addExtension("mathml", MediaType.APPLICATION_MATHML_XML);
+        addExtension("mathml", MediaType.APPLICATION_MATHML);
         addExtension("mid", MediaType.AUDIO_MIDI);
         addExtension("midi", MediaType.AUDIO_MIDI);
         addExtension("mov", MediaType.VIDEO_QUICKTIME);
@@ -247,7 +247,7 @@ public class MetadataService extends Service {
         addExtension("rdf", MediaType.APPLICATION_RDF_XML);
         addExtension("rnc", MediaType.APPLICATION_RELAXNG_COMPACT);
         addExtension("rng", MediaType.APPLICATION_RELAXNG_XML);
-        addExtension("rss", MediaType.APPLICATION_RSS_XML);
+        addExtension("rss", MediaType.APPLICATION_RSS);
         addExtension("rtf", MediaType.APPLICATION_RTF);
         addExtension("sit", MediaType.APPLICATION_STUFFIT);
         addExtension("snd", MediaType.AUDIO_BASIC);
@@ -262,15 +262,15 @@ public class MetadataService extends Service {
         addExtension("vm", Encoding.VELOCITY);
         addExtension("vrml", MediaType.MODEL_VRML);
         addExtension("vxml", MediaType.APPLICATION_VOICEXML);
-        addExtension("wadl", MediaType.APPLICATION_WADL_XML);
+        addExtension("wadl", MediaType.APPLICATION_WADL);
         addExtension("wav", MediaType.AUDIO_WAV);
         addExtension("wrl", MediaType.MODEL_VRML);
-        addExtension("xht", MediaType.APPLICATION_XHTML_XML);
-        addExtension("xhtml", MediaType.APPLICATION_XHTML_XML);
+        addExtension("xht", MediaType.APPLICATION_XHTML);
+        addExtension("xhtml", MediaType.APPLICATION_XHTML);
         addExtension("xls", MediaType.APPLICATION_EXCEL);
         addExtension("xml", MediaType.TEXT_XML);
         addExtension("xml", MediaType.APPLICATION_XML);
-        addExtension("xsd", MediaType.APPLICATION_W3C_SCHEMA_XML);
+        addExtension("xsd", MediaType.APPLICATION_W3C_SCHEMA);
         addExtension("xslt", MediaType.APPLICATION_W3C_XSLT);
         addExtension("xul", MediaType.APPLICATION_XUL);
         addExtension("z", MediaType.APPLICATION_COMPRESS);

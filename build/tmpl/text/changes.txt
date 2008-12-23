@@ -36,7 +36,24 @@ Changes log
           Charset instances and a toCharset() method. Suggested by
           Charles Gay.
         - Added Reference#toUri(), toUrl() and constructors from 
-          java.net.URI and URL instances. Suggested by Cliff Binstock.          
+          java.net.URI and URL instances. Suggested by Cliff Binstock.
+        - Added APPLICATION_ATOM media type constant and 
+          deprecated APPLICATION_ATOM_XML.          
+        - Added APPLICATION_ATOM_SERVICE_XML media type constant and 
+          deprecated APPLICATION_ATOMPUB_SERVICE.
+        - Added APPLICATION_ATOMPUB_CATEGORY media type constant.
+        - Added APPLICATION_KML and APPLICATION_KMZ media type 
+          constants. Suggested by Frank Hellwig.          
+        - Added APPLICATION_MATHML_XML media type constant and 
+          deprecated APPLICATION_MATHML.
+        - Added APPLICATION_RSS_XML media type constant and 
+          deprecated APPLICATION_RSS.
+        - Added APPLICATION_W3C_SCHEMA_XML media type constant and 
+          deprecated APPLICATION_W3C_SCHEMA.
+        - Added APPLICATION_WADL_XML media type constant and 
+          deprecated APPLICATION_WADL.
+        - Added APPLICATION_XHTML_XML media type constant and 
+          deprecated APPLICATION_XHTML.
      - Misc
         - JAX-RS extension:
             - added class ExendedUriBuilder with "file" extensions for

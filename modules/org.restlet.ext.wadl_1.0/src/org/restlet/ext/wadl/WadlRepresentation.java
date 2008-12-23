@@ -863,7 +863,7 @@ public class WadlRepresentation extends SaxRepresentation {
      * Constructor.
      */
     public WadlRepresentation() {
-        super(MediaType.APPLICATION_WADL_XML);
+        super(MediaType.APPLICATION_WADL);
     }
 
     /**
@@ -873,7 +873,7 @@ public class WadlRepresentation extends SaxRepresentation {
      *            The root element of the WADL document.
      */
     public WadlRepresentation(ApplicationInfo application) {
-        super(MediaType.APPLICATION_WADL_XML);
+        super(MediaType.APPLICATION_WADL);
         this.application = application;
     }
 
@@ -887,7 +887,7 @@ public class WadlRepresentation extends SaxRepresentation {
     public WadlRepresentation(Representation xmlRepresentation)
             throws IOException {
         super(xmlRepresentation);
-        setMediaType(MediaType.APPLICATION_WADL_XML);
+        setMediaType(MediaType.APPLICATION_WADL);
 
         // Parse the given document using SAX to produce an ApplicationInfo
         // instance.
@@ -903,7 +903,7 @@ public class WadlRepresentation extends SaxRepresentation {
      *            The root element of the WADL document.
      */
     public WadlRepresentation(ResourceInfo resource) {
-        super(MediaType.APPLICATION_WADL_XML);
+        super(MediaType.APPLICATION_WADL);
 
         this.application = new ApplicationInfo();
         if (!resource.getDocumentations().isEmpty()) {

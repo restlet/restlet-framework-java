@@ -55,17 +55,34 @@ public final class MediaType extends Metadata {
     public static final MediaType APPLICATION_ALL_XML = register(
             "application/*+xml", "All application/*+xml documents");
 
-    public static final MediaType APPLICATION_ATOM_SERVICE_XML = register(
-            "application/atomsvc+xml", "Atom service documents");
+    public static final MediaType APPLICATION_ATOM = register(
+            "application/atom+xml", "Atom document");
 
+    /**
+     * @deprecated Use {@link #APPLICATION_ATOMPUB_SERVICE} instead.
+     */
+    @Deprecated
+    public static final MediaType APPLICATION_ATOM_SERVICE_XML = register(
+            "application/atomsvc+xml", "Atom service document");
+
+    /**
+     * @deprecated Use {@link #APPLICATION_ATOMPUB_SERVICE} instead.
+     */
+    @Deprecated
     public static final MediaType APPLICATION_ATOM_XML = register(
-            "application/atom+xml", "Atom syndication documents");
+            "application/atom+xml", "Atom document");
+
+    public static final MediaType APPLICATION_ATOMPUB_CATEGORY = register(
+            "application/atomcat+xml", "Atom category document");
+
+    public static final MediaType APPLICATION_ATOMPUB_SERVICE = register(
+            "application/atomsvc+xml", "Atom service document");
 
     public static final MediaType APPLICATION_CAB = register(
             "application/vnd.ms-cab-compressed", "Microsoft Cabinet archive");
 
     public static final MediaType APPLICATION_COMPRESS = register(
-            "application/x-compress", "Compressed filed");
+            "application/x-compress", "Compressed file");
 
     public static final MediaType APPLICATION_EXCEL = register(
             "application/vnd.ms-excel", "Microsoft Excel document");
@@ -100,14 +117,29 @@ public final class MediaType extends Metadata {
     public static final MediaType APPLICATION_JSON = register(
             "application/json", "JavaScript Object Notation document");
 
+    public static final MediaType APPLICATION_KML = register(
+            "application/vnd.google-earth.kml+xml",
+            "Google Earth/Maps KML document");
+
+    public static final MediaType APPLICATION_KMZ = register(
+            "application/vnd.google-earth.kmz",
+            "Google Earth/Maps KMZ document");
+
     public static final MediaType APPLICATION_LATEX = register(
             "application/x-latex", "LaTeX");
 
     public static final MediaType APPLICATION_MAC_BINHEX40 = register(
             "application/mac-binhex40", "Mac binhex40");
 
+    public static final MediaType APPLICATION_MATHML = register(
+            "application/mathml+xml", "MathML XML document");
+
+    /**
+     * @deprecated Use {@link #APPLICATION_MATHML} instead.
+     */
+    @Deprecated
     public static final MediaType APPLICATION_MATHML_XML = register(
-            "application/mathml+xml", "Mathml XML document");
+            "application/mathml+xml", "MathML XML document");
 
     public static final MediaType APPLICATION_OCTET_STREAM = register(
             "application/octet-stream", "Raw octet stream");
@@ -147,18 +179,26 @@ public final class MediaType extends Metadata {
     public static final MediaType APPLICATION_RELAXNG_XML = register(
             "application/x-relax-ng+xml",
             "Relax NG Schema document, XML syntax");
-
-    public static final MediaType APPLICATION_RSS_XML = register(
+    public static final MediaType APPLICATION_RSS = register(
             "application/rss+xml", "Really Simple Syndication document");
 
+    /**
+     * @deprecated Use {@link #APPLICATION_RSS} instead.
+     */
+    @Deprecated
+    public static final MediaType APPLICATION_RSS_XML = register(
+            "application/rss+xml", "Really Simple Syndication document");
+    
     public static final MediaType APPLICATION_RTF = register("application/rtf",
             "Rich Text Format document");
 
-    public static final MediaType APPLICATION_SPARQL_RESULTS_XML = register("application/sparql-results+xml",
-            "SPARQL Query Results XML document");
-
-    public static final MediaType APPLICATION_SPARQL_RESULTS_JSON = register("application/sparql-results+json",
+    public static final MediaType APPLICATION_SPARQL_RESULTS_JSON = register(
+            "application/sparql-results+json",
             "SPARQL Query Results JSON document");
+
+    public static final MediaType APPLICATION_SPARQL_RESULTS_XML = register(
+            "application/sparql-results+xml",
+            "SPARQL Query Results XML document");
 
     public static final MediaType APPLICATION_STUFFIT = register(
             "application/x-stuffit", "Stuffit archive");
@@ -175,12 +215,27 @@ public final class MediaType extends Metadata {
     public static final MediaType APPLICATION_VOICEXML = register(
             "application/voicexml+xml", "VoiceXML");
 
+    public static final MediaType APPLICATION_W3C_SCHEMA = register(
+            "application/x-xsd+xml", "W3C XML Schema document");
+
+    /**
+     * @deprecated Use {@link #APPLICATION_W3C_SCHEMA} instead.
+     */
+    @Deprecated
     public static final MediaType APPLICATION_W3C_SCHEMA_XML = register(
             "application/x-xsd+xml", "W3C XML Schema document");
 
     public static final MediaType APPLICATION_W3C_XSLT = register(
             "application/xsd+xml", "W3C XSLT Stylesheet");
 
+    public static final MediaType APPLICATION_WADL = register(
+            "application/vnd.sun.wadl+xml",
+            "Web Application Description Language document");
+
+    /**
+     * @deprecated Use {@link #APPLICATION_WADL} instead.
+     */
+    @Deprecated
     public static final MediaType APPLICATION_WADL_XML = register(
             "application/vnd.sun.wadl+xml",
             "Web Application Description Language document");
@@ -191,6 +246,13 @@ public final class MediaType extends Metadata {
     public static final MediaType APPLICATION_WWW_FORM = register(
             "application/x-www-form-urlencoded", "Web form (URL encoded)");
 
+    public static final MediaType APPLICATION_XHTML = register(
+            "application/xhtml+xml", "XHTML document");
+
+    /**
+     * @deprecated Use {@link #APPLICATION_XHTML} instead.
+     */
+    @Deprecated
     public static final MediaType APPLICATION_XHTML_XML = register(
             "application/xhtml+xml", "XHTML document");
 

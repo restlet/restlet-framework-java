@@ -123,7 +123,7 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
         String result = null;
 
         if (schemaRepresentation != null) {
-            if (MediaType.APPLICATION_W3C_SCHEMA_XML
+            if (MediaType.APPLICATION_W3C_SCHEMA
                     .equals(schemaRepresentation.getMediaType())) {
                 result = XMLConstants.W3C_XML_SCHEMA_NS_URI;
             } else if (MediaType.APPLICATION_RELAXNG_COMPACT

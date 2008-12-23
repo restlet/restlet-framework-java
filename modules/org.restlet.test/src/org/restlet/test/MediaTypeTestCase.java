@@ -97,7 +97,7 @@ public class MediaTypeTestCase extends RestletTestCase {
         }
 
         mt1 = MediaType.APPLICATION_ALL_XML;
-        mt2 = MediaType.APPLICATION_ATOM_SERVICE_XML;
+        mt2 = MediaType.APPLICATION_ATOMPUB_SERVICE;
         assertTrue(mt1.includes(mt1));
         assertTrue(mt2.includes(mt2));
         assertTrue(mt1.includes(mt2));

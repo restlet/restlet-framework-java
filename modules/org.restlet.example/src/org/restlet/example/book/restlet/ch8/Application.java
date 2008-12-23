@@ -146,7 +146,7 @@ public class Application extends org.restlet.Application {
         }
 
         getMetadataService().addExtension("xml",
-                MediaType.APPLICATION_ATOM_XML, true);
+                MediaType.APPLICATION_ATOM, true);
     }
 
     @Override

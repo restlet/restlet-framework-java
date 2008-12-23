@@ -106,7 +106,7 @@ public class FeedResource extends BaseResource {
 
                     // This resource supports two kinds of representations.
                     getVariants().add(
-                            new Variant(MediaType.APPLICATION_ATOM_XML));
+                            new Variant(MediaType.APPLICATION_ATOM));
                     getVariants().add(new Variant(MediaType.TEXT_HTML));
                 }
             }
@@ -167,7 +167,7 @@ public class FeedResource extends BaseResource {
 
             representation = getHTMLTemplateRepresentation("feed.html",
                     dataModel);
-        } else if (MediaType.APPLICATION_ATOM_XML.equals(mediaType)) {
+        } else if (MediaType.APPLICATION_ATOM.equals(mediaType)) {
             final org.restlet.ext.atom.Feed atomFeed = new org.restlet.ext.atom.Feed();
 
             /** The author of the feed. */
