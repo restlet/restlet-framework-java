@@ -32,11 +32,13 @@ import java.util.logging.Level;
 import org.restlet.Context;
 import org.restlet.Filter;
 import org.restlet.data.MediaType;
+import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
+import org.restlet.service.StatusService;
 
 /**
  * Filter associating a response entity based on the status. In order to
@@ -57,14 +59,17 @@ import org.restlet.resource.StringRepresentation;
  * @author Jerome Louvel
  */
 public class StatusFilter extends Filter {
-    /** Email address of the administrator to contact in case of error. */
-    private volatile String email;
+    /** The email address of the administrator to contact in case of error. */
+    private volatile String contactEmail;
 
     /** The home URI to propose in case of error. */
-    private volatile String homeURI;
+    private volatile Reference homeRef;
 
-    /** Indicates whether an existing representation should be overwritten. */
+    /** Indicates if existing representations should be overwritten. */
     private volatile boolean overwrite;
+
+    /** The helped status service. */
+    private volatile StatusService statusService;
 
     /**
      * Constructor.
@@ -77,15 +82,30 @@ public class StatusFilter extends Filter {
      * @param email
      *            Email address of the administrator to contact in case of
      *            error.
-     * @param homeUri
+     * @param homeRef
      *            The home URI to propose in case of error.
      */
     public StatusFilter(Context context, boolean overwrite, String email,
-            String homeUri) {
+            Reference homeRef) {
         super(context);
         this.overwrite = overwrite;
-        this.email = email;
-        this.homeURI = homeUri;
+        this.contactEmail = email;
+        this.homeRef = homeRef;
+        this.statusService = null;
+    }
+
+    /**
+     * Constructor from a status service.
+     * 
+     * @param context
+     *            The context.
+     * @param statusService
+     *            The helped status service.
+     */
+    public StatusFilter(Context context, StatusService statusService) {
+        this(context, statusService.isOverwrite(), statusService
+                .getContactEmail(), statusService.getHomeRef());
+        this.statusService = statusService;
     }
 
     /**
@@ -106,7 +126,7 @@ public class StatusFilter extends Filter {
 
         // Do we need to get a representation for the current status?
         if (response.getStatus().isError()
-                && ((response.getEntity() == null) || this.overwrite)) {
+                && ((response.getEntity() == null) || isOverwrite())) {
             response.setEntity(getRepresentation(response.getStatus(), request,
                     response));
         }
@@ -136,6 +156,16 @@ public class StatusFilter extends Filter {
     }
 
     /**
+     * Returns the email address of the administrator to contact in case of
+     * error.
+     * 
+     * @return The email address.
+     */
+    public String getContactEmail() {
+        return contactEmail;
+    }
+
+    /**
      * Returns a representation for the given status.<br>
      * In order to customize the default representation, this method can be
      * overriden.
@@ -148,8 +178,8 @@ public class StatusFilter extends Filter {
      *            The response updated.
      * @return The representation of the given status.
      */
-    public Representation getRepresentation(Status status, Request request,
-            Response response) {
+    public Representation getDefaultRepresentation(Status status,
+            Request request, Response response) {
         final StringBuilder sb = new StringBuilder();
         sb.append("<html>\n");
         sb.append("<head>\n");
@@ -168,16 +198,16 @@ public class StatusFilter extends Filter {
         sb.append(status.getUri());
         sb.append("\">here</a>.<br>\n");
 
-        if (this.email != null) {
+        if (getContactEmail() != null) {
             sb
                     .append("For further assistance, you can contact the <a href=\"mailto:");
-            sb.append(this.email);
+            sb.append(getContactEmail());
             sb.append("\">administrator</a>.<br>\n");
         }
 
-        if (this.homeURI != null) {
+        if (getHomeRef() != null) {
             sb.append("Please continue your visit at our <a href=\"");
-            sb.append(this.homeURI);
+            sb.append(getHomeRef());
             sb.append("\">home page</a>.\n");
         }
 
@@ -186,6 +216,40 @@ public class StatusFilter extends Filter {
         sb.append("</html>\n");
 
         return new StringRepresentation(sb.toString(), MediaType.TEXT_HTML);
+    }
+
+    /**
+     * Returns the home URI to propose in case of error.
+     * 
+     * @return The home URI.
+     */
+    public Reference getHomeRef() {
+        return homeRef;
+    }
+
+    /**
+     * Returns a representation for the given status.<br>
+     * In order to customize the default representation, this method can be
+     * overriden.
+     * 
+     * @param status
+     *            The status to represent.
+     * @param request
+     *            The request handled.
+     * @param response
+     *            The response updated.
+     * @return The representation of the given status.
+     */
+    public Representation getRepresentation(Status status, Request request,
+            Response response) {
+        Representation result = getStatusService().getRepresentation(status,
+                request, response);
+
+        if (result == null) {
+            result = getDefaultRepresentation(status, request, response);
+        }
+
+        return result;
     }
 
     /**
@@ -204,8 +268,71 @@ public class StatusFilter extends Filter {
      */
     public Status getStatus(Throwable throwable, Request request,
             Response response) {
-        getLogger().log(Level.SEVERE,
-                "Unhandled exception or error intercepted", throwable);
-        return new Status(Status.SERVER_ERROR_INTERNAL, throwable);
+        Status result = getStatusService().getStatus(throwable, request,
+                response);
+        if (result == null) {
+            getLogger().log(Level.SEVERE,
+                    "Unhandled exception or error intercepted", throwable);
+            result = new Status(Status.SERVER_ERROR_INTERNAL, throwable);
+        }
+        return result;
+    }
+
+    /**
+     * Returns the helped status service.
+     * 
+     * @return The helped status service.
+     */
+    public StatusService getStatusService() {
+        return statusService;
+    }
+
+    /**
+     * Indicates if existing representations should be overwritten.
+     * 
+     * @return True if existing representations should be overwritten.
+     */
+    public boolean isOverwrite() {
+        return overwrite;
+    }
+
+    /**
+     * Sets the email address of the administrator to contact in case of error.
+     * 
+     * @param email
+     *            The email address.
+     */
+    public void setContactEmail(String email) {
+        this.contactEmail = email;
+    }
+
+    /**
+     * Sets the home URI to propose in case of error.
+     * 
+     * @param homeRef
+     *            The home URI.
+     */
+    public void setHomeRef(Reference homeRef) {
+        this.homeRef = homeRef;
+    }
+
+    /**
+     * Indicates if existing representations should be overwritten.
+     * 
+     * @param overwrite
+     *            True if existing representations should be overwritten.
+     */
+    public void setOverwrite(boolean overwrite) {
+        this.overwrite = overwrite;
+    }
+
+    /**
+     * Sets the helped status service.
+     * 
+     * @param statusService
+     *            The helped status service.
+     */
+    public void setStatusService(StatusService statusService) {
+        this.statusService = statusService;
     }
 }

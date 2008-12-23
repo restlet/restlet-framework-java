@@ -70,3 +70,5 @@ Changes log
           Suggested by Cliff Binstock.
         - Upgraded db4o to version 7.7.67.
 		  - Upgraded Grizzly to version 1.9.0.
+		- Refactored engine support for the StatusService. Removed
+		  ApplicationStatusFilter and ComponentStatusFilter.

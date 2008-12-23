@@ -40,7 +40,6 @@ import org.restlet.data.Protocol;
 import org.restlet.engine.ChainHelper;
 import org.restlet.engine.StatusFilter;
 
-
 /**
  * Component helper.
  * 
@@ -158,7 +157,7 @@ public class ComponentHelper extends ChainHelper<Component> {
      * @return The new status filter.
      */
     protected StatusFilter createStatusFilter(Component component) {
-        return new ComponentStatusFilter(component);
+        return new StatusFilter(getContext(), component.getStatusService());
     }
 
     /**

@@ -33,6 +33,7 @@ import org.restlet.Filter;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.engine.ChainHelper;
+import org.restlet.engine.StatusFilter;
 
 /**
  * Application implementation.
@@ -69,7 +70,7 @@ public class ApplicationHelper extends ChainHelper<Application> {
      * @return The new status filter.
      */
     protected Filter createStatusFilter(Application application) {
-        return new ApplicationStatusFilter(application);
+        return new StatusFilter(getContext(), application.getStatusService());
     }
 
     /**
@@ -93,6 +94,7 @@ public class ApplicationHelper extends ChainHelper<Application> {
     protected Filter createRangeFilter(Context context) {
         return new RangeFilter(context);
     }
+
     /**
      * In addition to the default behavior, it saves the current application
      * instance into the current thread.

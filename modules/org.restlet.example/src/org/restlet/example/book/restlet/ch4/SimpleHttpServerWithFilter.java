@@ -30,11 +30,11 @@ package org.restlet.example.book.restlet.ch4;
 import org.restlet.Restlet;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
+import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.engine.StatusFilter;
-
 
 /**
  *
@@ -52,7 +52,7 @@ public class SimpleHttpServerWithFilter {
         };
 
         final StatusFilter statusFilter = new StatusFilter(null, true,
-                "admin@example.com", "http://www.example.com");
+                "admin@example.com", new Reference("http://www.example.com"));
         statusFilter.setNext(restlet);
 
         // Instantiates a simple HTTP server that redirects all incoming
