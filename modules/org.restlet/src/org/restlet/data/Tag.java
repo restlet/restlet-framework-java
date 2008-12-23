@@ -35,6 +35,7 @@ import org.restlet.Context;
  * Validation tag equivalent to the HTTP entity tag. "A strong entity tag may be
  * shared by two entities of a resource only if they are equivalent by octet
  * equality.<br>
+ * <br>
  * A weak entity tag may be shared by two entities of a resource only if the
  * entities are equivalent and could be substituted for each other with no
  * significant change in semantics."

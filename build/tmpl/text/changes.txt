@@ -35,6 +35,8 @@ Changes log
         - Added CharacterSet#DEFAULT constant, new constructor for 
           Charset instances and a toCharset() method. Suggested by
           Charles Gay.
+        - Added Reference#toUri(), toUrl() and constructors from 
+          java.net.URI and URL instances. Suggested by Cliff Binstock.          
      - Misc
         - JAX-RS extension:
             - added class ExendedUriBuilder with "file" extensions for

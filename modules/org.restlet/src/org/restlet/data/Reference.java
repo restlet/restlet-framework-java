@@ -28,6 +28,9 @@
 package org.restlet.data;
 
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -603,6 +606,26 @@ public class Reference {
     public Reference(String scheme, String hostName, int hostPort, String path,
             String query, String fragment) {
         this(toString(scheme, hostName, hostPort, path, query, fragment));
+    }
+
+    /**
+     * Constructor from an {@link URI} instance.
+     * 
+     * @param uri
+     *            The {@link URI} instance.
+     */
+    public Reference(URI uri) {
+        this(uri.toString());
+    }
+
+    /**
+     * Constructor from an {@link URL} instance.
+     * 
+     * @param url
+     *            The {@link URL} instance.
+     */
+    public Reference(URL url) {
+        this(url.toString());
     }
 
     /**
@@ -2862,6 +2885,34 @@ public class Reference {
         }
 
         return this.internalRef;
+    }
+
+    /**
+     * Converts to a {@link URI} instance. Note that relative references are
+     * resolved before conversion using the {@link #getTargetRef()} method.
+     * 
+     * @return A {@link URI} instance.
+     */
+    public URI toUri() {
+        return URI.create(getTargetRef().toString());
+    }
+
+    /**
+     * Converts to a {@link URL} instance. Note that relative references are
+     * resolved before conversion using the {@link #getTargetRef()} method.
+     * 
+     * @return A {@link URL} instance.
+     */
+    public URL toUrl() {
+        URL result = null;
+
+        try {
+            result = new URL(getTargetRef().toString());
+        } catch (MalformedURLException e) {
+            throw new IllegalArgumentException("Malformed URL exception", e);
+        }
+
+        return result;
     }
 
     /**

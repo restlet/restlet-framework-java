@@ -38,11 +38,18 @@ import org.restlet.resource.Representation;
 
 /**
  * High level API for processing file uploads. This class handles multiple files
- * per single HTML widget, sent using multipart/mixed encoding type, as
- * specified by RFC 1867. Use parseRequest(Call) to acquire a list of FileItems
- * associated with a given HTML widget.How the data for individual parts is
- * stored is determined by the factory used to create them; a given part may be
- * in memory, on disk, or somewhere else.
+ * per single HTML widget, sent using the "multipart/mixed" encoding type, as
+ * specified by RFC 1867. Use {@link #parseRequest(Request)} method to acquire a
+ * list of FileItems associated with a given HTML widget.<br>
+ * <br>
+ * How the data for individual parts is stored is determined by the factory used
+ * to create them; a given part may be in memory, on disk, or somewhere else.<br>
+ * <br>
+ * In addition, it is possible to use <a
+ * href="http://commons.apache.org/fileupload/streaming.html> FileUpload's
+ * streaming API</a> to prevent the intermediary storage step. For this, use the
+ * {@link #getItemIterator(org.apache.commons.fileupload.RequestContext)}
+ * method.
  * 
  * @author Jerome Louvel
  */
