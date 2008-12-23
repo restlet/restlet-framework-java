@@ -38,6 +38,8 @@ Changes log
               Juergen Zimmermann
             - NPE in JaxRsProviders.getContextResolver(..). Reported
               by Juergen Zimmermann
+        - Fixed bug in StatusService preventing the "homeRef" property
+          from being taken into account. Reported by Remi Dewitte.
     - Misc
         - Fully moved org.restlet.gwt.internal content into 
           org.restlet.gwt.engine package.

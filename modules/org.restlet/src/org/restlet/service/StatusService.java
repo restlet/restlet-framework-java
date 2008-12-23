@@ -82,7 +82,7 @@ public class StatusService extends Service {
     public StatusService(boolean enabled) {
         super(enabled);
         this.contactEmail = null;
-        this.homeRef = null;
+        this.homeRef = new Reference("/");
         this.overwrite = false;
     }
 
