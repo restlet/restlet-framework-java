@@ -44,14 +44,17 @@ public abstract class Message {
     /** The modifiable attributes map. */
     private volatile Map<String, Object> attributes;
 
-    /** The payload of the message. */
-    private volatile Representation entity;
-
     /** The optional cached DOM representation. */
     private volatile DomRepresentation domRepresentation;
 
+    /** The payload of the message. */
+    private volatile Representation entity;
+
     /** The optional cached Form. */
     private volatile Form form;
+
+    /** The optional cached LinkSet. */
+    private volatile LinkSet linkSet;
 
     /** The optional cached SAX representation. */
     private volatile SaxRepresentation saxRepresentation;
@@ -74,6 +77,7 @@ public abstract class Message {
         this.entity = entity;
         this.domRepresentation = null;
         this.form = null;
+        this.linkSet = null;
         this.saxRepresentation = null;
     }
 
@@ -170,6 +174,22 @@ public abstract class Message {
         }
 
         return this.form;
+    }
+
+    /**
+     * Returns the entity as a link set.<br>
+     * This method can be called several times and will always return the same
+     * instance. Note that if the entity is large this method can result in
+     * important memory consumption.
+     * 
+     * @return The entity as a link set.
+     */
+    public LinkSet getEntityAsLinkSet() {
+        if (this.linkSet == null) {
+            this.linkSet = new LinkSet(getEntity());
+        }
+
+        return this.linkSet;
     }
 
     /**

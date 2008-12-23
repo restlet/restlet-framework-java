@@ -23,14 +23,18 @@ Changes log
           literals with an optional datatype. 
         - Added org.restlet.data.Link to represent RDF links (aka 
           triples, statements or relationships).
-        - Moved o.r.u.Helper class, used privately by API classes to the
-          o.r.engine package.
+        - Moved o.r.u.Helper class, used privately by API classes to 
+          the o.r.engine package.
         - Added MediaType constants APPLICATION_RDF_TRIG, 
           APPLICATION_RDF_TRIX, APPLICATION_RDF_TURTLE, 
           APPLICATION_SPARQL_RESULTS_XML and
           APPLICATION_SPARQL_RESULTS_JSON for RDF and SPARQL.
-        - Added LinkReference and LinkSet classes to support RDF reference 
-          manipulation (blank nodes for example) and RDF graphs or models.
+        - Added LinkReference and LinkSet classes to support RDF 
+          reference manipulation (blank nodes for example) and RDF 
+          graphs or models.
+        - Added CharacterSet#DEFAULT constant, new constructor for 
+          Charset instances and a toCharset() method. Suggested by
+          Charles Gay.
      - Misc
         - JAX-RS extension:
             - added class ExendedUriBuilder with "file" extensions for

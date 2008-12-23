@@ -27,6 +27,8 @@
 
 package org.restlet.data;
 
+import java.nio.charset.Charset;
+
 /**
  * Character set used to encode characters in textual representations.
  * 
@@ -36,6 +38,14 @@ public final class CharacterSet extends Metadata {
     /** All character sets acceptable. */
     public static final CharacterSet ALL = new CharacterSet("*",
             "All character sets");
+
+    /**
+     * The default character set of the JVM.
+     * 
+     * @see Charset#defaultCharset()
+     */
+    public static final CharacterSet DEFAULT = new CharacterSet(Charset
+            .defaultCharset());
 
     /**
      * The ISO/IEC 8859-1 or Latin 1 character set.
@@ -54,20 +64,20 @@ public final class CharacterSet extends Metadata {
             "US ASCII character set");
 
     /**
-     * The UTF-8 character set.
-     * 
-     * @see <a href="http://en.wikipedia.org/wiki/UTF-8">Wikipedia page</a>
-     */
-    public static final CharacterSet UTF_8 = new CharacterSet("UTF-8",
-            "UTF 8 character set");
-
-    /**
      * The UTF-16 character set.
      * 
      * @see <a href="http://en.wikipedia.org/wiki/UTF-16">Wikipedia page</a>
      */
     public static final CharacterSet UTF_16 = new CharacterSet("UTF-16",
             "UTF 16 character set");
+
+    /**
+     * The UTF-8 character set.
+     * 
+     * @see <a href="http://en.wikipedia.org/wiki/UTF-8">Wikipedia page</a>
+     */
+    public static final CharacterSet UTF_8 = new CharacterSet("UTF-8",
+            "UTF 8 character set");
 
     /**
      * Returns the character set associated to a name. If an existing constant
@@ -105,6 +115,16 @@ public final class CharacterSet extends Metadata {
      * @param name
      *            The name.
      */
+    public CharacterSet(final Charset charset) {
+        this(charset.name(), charset.displayName());
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param name
+     *            The name.
+     */
     public CharacterSet(final String name) {
         this(name == null ? null : name.toUpperCase(),
                 "Character set or range of character sets");
@@ -134,5 +154,14 @@ public final class CharacterSet extends Metadata {
     @Override
     public int hashCode() {
         return (getName() == null) ? 0 : getName().toLowerCase().hashCode();
+    }
+
+    /**
+     * Returns the NIO charset matching the character set name.
+     * 
+     * @return The NIO charset.
+     */
+    public Charset toCharset() {
+        return Charset.forName(getName());
     }
 }
