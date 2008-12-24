@@ -66,32 +66,34 @@ import com.noelios.restlet.http.HttpServerHelper;
  * <br>
  * There are three separate ways to configure the deployment using this Servlet.
  * They are described below by order of priority:
+ * <table>
  * <tr>
  * <th>Mode</th>
  * <th>Description</th>
  * </tr>
  * <tr>
- * <td>Mode 1</td>
+ * <td><b>Mode 1</b></td>
  * <td>If a "/WEB-INF/restlet.xml" file exists and contains a valid XML
  * configuration as described in the documentation of the {@link Component}
  * class. It is used to instantiate and attach the described component,
  * contained applications and connectors.</td>
  * </tr>
  * <tr>
- * <td>Mode 2</td>
+ * <td><b>Mode 2</b></td>
  * <td>If the "/WEB-INF/web.xml" file contains a context parameter named
  * "org.restlet.component", its value must be the path of a class that inherits
  * from {@link Component}. It is used to instantiate and attach the described
  * component, contained applications and connectors.</td>
  * </tr>
  * <tr>
- * <td>Mode 3</td>
+ * <td><b>Mode 3</b></td>
  * <td>If the "/WEB-INF/web.xml" file contains a context parameter named
  * "org.restlet.application", its value must be the path of a class that
  * inherits from {@link Application}. It is used to instantiate the application
  * and to attach it to a default Restlet Component.</td>
  * </tr>
- * </table> <br>
+ * </table>
+ * <br>
  * In deployment mode 3, you can also add an optionnal "org.restlet.clients"
  * context parameter that contains a space separated list of client protocols
  * supported by the underlying component. For each one, a new client connector
@@ -122,12 +124,12 @@ import com.noelios.restlet.http.HttpServerHelper;
  *                 &lt;param-name&gt;org.restlet.clients&lt;/param-name&gt;
  *                 &lt;param-value&gt;HTTP HTTPS FILE&lt;/param-value&gt;
  *         &lt;/context-param&gt;
+ 
  *         &lt;!-- Add the Servlet context path to the routes (Optional - true by default) --&gt;
  *         &lt;context-param&gt;
  *                 &lt;param-name&gt;org.restlet.autoWire&lt;/param-name&gt;
  *                 &lt;param-value&gt;true&lt;/param-value&gt;
  *         &lt;/context-param&gt;
- *         
  * 
  *         &lt;!-- Restlet adapter (Mandatory) --&gt;
  *         &lt;servlet&gt;
@@ -171,7 +173,7 @@ import com.noelios.restlet.http.HttpServerHelper;
  * control the URI wiring, you can disable the auto-wiring by setting the
  * property to "false".
  * 
- * @see <a href="http://java.sun.com/j2ee/">J2EE home page< /a>
+ * @see <a href="http://java.sun.com/j2ee/">J2EE home page</a>
  * @author Jerome Louvel
  */
 public class ServerServlet extends HttpServlet {
