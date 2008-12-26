@@ -13,6 +13,7 @@
          <groupId>javax.servlet</groupId>
          <artifactId>servlet-api</artifactId>
          <version>@lib-servlet-version@</version>
+         <scope>provided</scope> 
       </dependency>
    </dependencies>
 
