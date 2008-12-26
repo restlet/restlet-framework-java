@@ -40,6 +40,9 @@ Changes log
               by Juergen Zimmermann
         - Fixed bug in StatusService preventing the "homeRef" property
           from being taken into account. Reported by Remi Dewitte.
+        - Fixed bug in servlet extension pom which causes the 
+          javax.servlet api archive to be mistakenly packaged in 
+          generated war file. Reported by Daniel Woo.
     - Misc
         - Fully moved org.restlet.gwt.internal content into 
           org.restlet.gwt.engine package.
