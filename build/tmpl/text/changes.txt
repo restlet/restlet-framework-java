@@ -48,6 +48,8 @@ Changes log
         - Fixed bug in the internal HTTP client preventing the 
           sending of requests with a relative resource reference.
           Reported by Paul Austin.
+        - Fixed NPE in DecodeRepresentation when the wrapped
+          representation has no stream. Reported by Nicolas Rinaudo.
     - Misc
         - Fully moved org.restlet.gwt.internal content into 
           org.restlet.gwt.engine package.
