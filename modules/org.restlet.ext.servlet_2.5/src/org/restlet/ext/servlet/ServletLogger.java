@@ -67,7 +67,11 @@ public class ServletLogger extends Logger {
      */
     @Override
     public void log(LogRecord record) {
-        getContext().log(record.getMessage(), record.getThrown());
+        if (record.getThrown() != null) {
+            getContext().log(record.getMessage(), record.getThrown());
+        } else {
+            getContext().log(record.getMessage());
+        }
     }
 
 }
