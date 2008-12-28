@@ -45,6 +45,9 @@ Changes log
           generated war file. Reported by Daniel Woo.
         - Fixed potential NPE in Servlet logging. 
           Reported by Yuri de Witt.
+        - Fixed bug in the internal HTTP client preventing the 
+          sending of requests with a relative resource reference.
+          Reported by Paul Austin.
     - Misc
         - Fully moved org.restlet.gwt.internal content into 
           org.restlet.gwt.engine package.

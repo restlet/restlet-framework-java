@@ -40,6 +40,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.restlet.data.Parameter;
+import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
@@ -88,6 +89,20 @@ public class StreamClientCall extends HttpClientCall {
         }
     }
 
+    /**
+     * Returns the absolute request URI.
+     * 
+     * @param resourceRef
+     *            The resource reference.
+     * @return The absolute request URI.
+     */
+    private static String getRequestUri(Reference resourceRef) {
+        Reference absoluteRef = resourceRef.isAbsolute() ? resourceRef
+                : resourceRef.getTargetRef();
+        return (absoluteRef.getPath() == null) ? absoluteRef.getIdentifier()
+                + "/" : absoluteRef.getIdentifier();
+    }
+
     /** The request entity output stream. */
     private volatile OutputStream requestEntityStream;
 
@@ -110,9 +125,8 @@ public class StreamClientCall extends HttpClientCall {
      */
     public StreamClientCall(StreamClientHelper helper, Request request) {
         // The path of the request uri must not be empty.
-        super(helper, request.getMethod().toString(), (request.getResourceRef()
-                .getPath() == null) ? request.getResourceRef().getIdentifier()
-                + "/" : request.getResourceRef().getIdentifier());
+        super(helper, request.getMethod().toString(), getRequestUri(request
+                .getResourceRef()));
         // Set the HTTP version
         setVersion("HTTP/1.1");
     }
@@ -281,12 +295,17 @@ public class StreamClientCall extends HttpClientCall {
         Status result = null;
 
         try {
+            // Resolve relative references
+            Reference resourceRef = request.getResourceRef().isRelative() ? request
+                    .getResourceRef().getTargetRef()
+                    : request.getResourceRef();
+
             // Extract the host info
-            final String hostDomain = request.getResourceRef().getHostDomain();
-            int hostPort = request.getResourceRef().getHostPort();
+            final String hostDomain = resourceRef.getHostDomain();
+            int hostPort = resourceRef.getHostPort();
             if (hostPort == -1) {
-                if (request.getResourceRef().getSchemeProtocol() != null) {
-                    hostPort = request.getResourceRef().getSchemeProtocol()
+                if (resourceRef.getSchemeProtocol() != null) {
+                    hostPort = resourceRef.getSchemeProtocol()
                             .getDefaultPort();
                 } else {
                     hostPort = getProtocol().getDefaultPort();
@@ -320,8 +339,8 @@ public class StreamClientCall extends HttpClientCall {
 
             // Prepare the host header
             String host = hostDomain;
-            if (request.getResourceRef().getHostPort() != -1) {
-                host += ":" + request.getResourceRef().getHostPort();
+            if (resourceRef.getHostPort() != -1) {
+                host += ":" + resourceRef.getHostPort();
             }
             getRequestHeaders().set(HttpConstants.HEADER_HOST, host, true);
 
