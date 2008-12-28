@@ -37,8 +37,15 @@ import java.io.Writer;
  * @author Kevin Conaway
  */
 public class WriterOutputStream extends OutputStream {
+    /** The wrapped writer. */
     private final Writer writer;
 
+    /**
+     * Constructor.
+     * 
+     * @param writer
+     *            The wrapped writer.
+     */
     public WriterOutputStream(Writer writer) {
         this.writer = writer;
     }

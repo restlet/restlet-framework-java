@@ -38,6 +38,7 @@ import java.nio.channels.Selector;
  * @author Jerome Louvel
  */
 public class NioUtils {
+    /** The number of miliseconds after which NIO operation will time out. */
     public static final int NIO_TIMEOUT = 60000;
 
     /**

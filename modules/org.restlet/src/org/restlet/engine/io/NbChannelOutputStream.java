@@ -42,6 +42,7 @@ import java.nio.channels.WritableByteChannel;
  * @author Jerome Louvel
  */
 public class NbChannelOutputStream extends OutputStream {
+    /** The internal byte buffer. */
     private final ByteBuffer bb = ByteBuffer.allocate(8192);
 
     /** The channel to write to. */
@@ -50,9 +51,11 @@ public class NbChannelOutputStream extends OutputStream {
     /** The selectable channel to write to. */
     private final SelectableChannel selectableChannel;
 
-    private SelectionKey selectionKey;
+    /** The selection key. */
+    private volatile SelectionKey selectionKey;
 
-    private Selector selector;
+    /** The selector. */
+    private volatile Selector selector;
 
     /**
      * Constructor.

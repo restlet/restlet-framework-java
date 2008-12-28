@@ -41,13 +41,14 @@ import java.nio.channels.Selector;
  * @author Jerome Louvel
  */
 public class NbChannelInputStream extends InputStream {
+    /** The internal byte buffer. */
     private final ByteBuffer bb;
 
     /** The channel to read from. */
     private final ReadableByteChannel channel;
 
     /** Indicates if further reads can be attempted. */
-    private boolean endReached;
+    private volatile boolean endReached;
 
     /** The selectable channel to read from. */
     private final SelectableChannel selectableChannel;

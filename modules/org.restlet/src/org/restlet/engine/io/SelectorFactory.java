@@ -38,24 +38,16 @@ import java.util.Stack;
  * @author Jean-Francois Arcand
  */
 public class SelectorFactory {
-    /**
-     * The number of <code>Selector</code> to create.
-     */
+    /** The number of <code>Selector</code> to create. */
     public static int maxSelectors = 20;
 
-    /**
-     * Cache of <code>Selector</code>
-     */
+    /** Cache of <code>Selector</code>. */
     private final static Stack<Selector> selectors = new Stack<Selector>();
 
-    /**
-     * The timeout before we exit.
-     */
+    /** The timeout before we exit. */
     public static long timeout = 5000;
 
-    /**
-     * Creates the <code>Selector</code>
-     */
+    /** Creates the <code>Selector</code>. */
     static {
         try {
             for (int i = 0; i < maxSelectors; i++) {
@@ -67,9 +59,9 @@ public class SelectorFactory {
     }
 
     /**
-     * Get a exclusive <code>Selector</code>
+     * Get an exclusive <code>Selector</code>.
      * 
-     * @return <code>Selector</code>
+     * @return An exclusive <code>Selector</code>.
      */
     public final static Selector getSelector() {
         synchronized (selectors) {
@@ -105,14 +97,14 @@ public class SelectorFactory {
     }
 
     /**
-     * Return the <code>Selector</code> to the cache
+     * Returns the <code>Selector</code> to the cache.
      * 
-     * @param s
-     *            <code>Selector</code>
+     * @param selector
+     *            The <code>Selector</code> to return.
      */
-    public final static void returnSelector(Selector s) {
+    public final static void returnSelector(Selector selector) {
         synchronized (selectors) {
-            selectors.push(s);
+            selectors.push(selector);
             if (selectors.size() == 1) {
                 selectors.notify();
             }

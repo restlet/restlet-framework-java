@@ -40,16 +40,26 @@ import org.restlet.data.CharacterSet;
  * @author Jerome Louvel
  */
 public class ReaderInputStream extends InputStream {
-    private byte[] buffer;
+    /** The byte buffer. */
+    private volatile byte[] buffer;
 
+    /** The underlying character set. */
     private final CharacterSet characterSet;
 
-    private int index;
+    /** The reading index. */
+    private volatile int index;
 
-    private final BufferedReader localReader;
+    /** The wrapped reader. */
+    private final BufferedReader reader;
 
+    /**
+     * Constructor.
+     * 
+     * @param reader
+     * @param characterSet
+     */
     public ReaderInputStream(Reader reader, CharacterSet characterSet) {
-        this.localReader = (reader instanceof BufferedReader) ? (BufferedReader) reader
+        this.reader = (reader instanceof BufferedReader) ? (BufferedReader) reader
                 : new BufferedReader(reader);
         this.buffer = null;
         this.index = -1;
@@ -62,12 +72,7 @@ public class ReaderInputStream extends InputStream {
 
         // If the buffer is empty, read a new line
         if (this.buffer == null) {
-            final String line = this.localReader.readLine();
-
-            if (line != null) {
-                this.buffer = line.getBytes(this.characterSet.getName());
-                this.index = 0;
-            }
+            refill();
         }
 
         if (this.buffer != null) {
@@ -81,5 +86,24 @@ public class ReaderInputStream extends InputStream {
         }
 
         return result;
+    }
+
+    /**
+     * Refills the byte buffer.
+     * 
+     * @throws IOException
+     */
+    private void refill() throws IOException {
+        final String line = this.reader.readLine();
+
+        if (line != null) {
+            this.buffer = line.getBytes(this.characterSet.getName());
+            this.index = 0;
+        }
+    }
+
+    @Override
+    public int read(byte[] b, int off, int len) throws IOException {
+        return super.read(b, off, len);
     }
 }
