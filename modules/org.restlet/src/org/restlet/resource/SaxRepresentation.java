@@ -123,7 +123,8 @@ public class SaxRepresentation extends XmlRepresentation {
      * @throws IOException
      */
     public SaxRepresentation(Representation xmlRepresentation) {
-        super(xmlRepresentation.getMediaType());
+        super((xmlRepresentation == null) ? null : xmlRepresentation
+                .getMediaType());
 
         try {
             if (xmlRepresentation instanceof XmlRepresentation) {

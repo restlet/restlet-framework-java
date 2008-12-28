@@ -121,11 +121,11 @@ public class PathParamTest2 extends JaxRsTestCase {
     public void testGetMediaType() throws IOException {
         Response response = get("MediaType/467");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEquals("467", response.getEntity().getText());
+        assertEquals("467/*", response.getEntity().getText());
 
         response = get("MediaType/abc");
         assertEquals(Status.SUCCESS_OK, response.getStatus());
-        assertEquals("abc", response.getEntity().getText());
+        assertEquals("abc/*", response.getEntity().getText());
     }
 
     public void testGetMn() throws IOException {
