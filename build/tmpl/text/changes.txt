@@ -43,6 +43,8 @@ Changes log
         - Fixed bug in servlet extension pom which causes the 
           javax.servlet api archive to be mistakenly packaged in 
           generated war file. Reported by Daniel Woo.
+        - Fixed potential NPE in Servlet logging. 
+          Reported by Yuri de Witt.
     - Misc
         - Fully moved org.restlet.gwt.internal content into 
           org.restlet.gwt.engine package.
