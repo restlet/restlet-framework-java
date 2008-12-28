@@ -40,6 +40,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.net.SocketFactory;
+import javax.net.ssl.SSLSocket;
 
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
@@ -78,7 +79,9 @@ public class StreamClientCall extends HttpClientCall {
         public void release() {
             try {
                 if (!this.socket.isClosed()) {
-                    this.socket.shutdownOutput();
+                    if (!(this.socket instanceof SSLSocket)) {
+                        this.socket.shutdownOutput();
+                    }
                     this.socket.close();
                 }
             } catch (IOException ex) {

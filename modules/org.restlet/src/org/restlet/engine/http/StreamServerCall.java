@@ -35,6 +35,8 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.logging.Level;
 
+import javax.net.ssl.SSLSocket;
+
 import org.restlet.Server;
 import org.restlet.data.Response;
 import org.restlet.engine.util.KeepAliveOutputStream;
@@ -98,11 +100,15 @@ public class StreamServerCall extends HttpServerCall {
                 // Exhaust the input stream before closing in case
                 // the client is still writing to it
                 ByteUtils.exhaust(getRequestEntityStream(getContentLength()));
-                this.socket.shutdownInput();
+                if (!(this.socket instanceof SSLSocket)) {
+                    this.socket.shutdownInput();
+                }
 
                 // Flush the output stream
                 this.socket.getOutputStream().flush();
-                this.socket.shutdownOutput();
+                if (!(this.socket instanceof SSLSocket)) {
+                    this.socket.shutdownOutput();
+                }
 
                 // As we don't support persistent connections,
                 // we must call this method to make sure sockets
