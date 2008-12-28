@@ -33,6 +33,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.restlet.Restlet;
+import org.restlet.engine.util.CookieSettingSeries;
 import org.restlet.util.Series;
 
 /**
@@ -45,44 +46,6 @@ import org.restlet.util.Series;
  * @author Jerome Louvel
  */
 public class Response extends Message {
-    /**
-     * Private cookie setting series.
-     * 
-     * @author Jerome Louvel
-     */
-    private static class CookieSettingSeries extends Series<CookieSetting> {
-        /**
-         * Constructor.
-         */
-        public CookieSettingSeries() {
-            super();
-        }
-
-        /**
-         * Constructor.
-         * 
-         * @param delegate
-         *            The delegate list.
-         */
-        public CookieSettingSeries(List<CookieSetting> delegate) {
-            super(delegate);
-        }
-
-        @Override
-        public CookieSetting createEntry(String name, String value) {
-            return new CookieSetting(name, value);
-        }
-
-        @Override
-        public Series<CookieSetting> createSeries(List<CookieSetting> delegate) {
-            if (delegate != null) {
-                return new CookieSettingSeries(delegate);
-            }
-
-            return new CookieSettingSeries();
-        }
-    }
-
     private static final ThreadLocal<Response> CURRENT = new ThreadLocal<Response>();
 
     /**
