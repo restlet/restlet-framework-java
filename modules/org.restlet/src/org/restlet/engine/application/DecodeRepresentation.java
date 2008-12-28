@@ -121,17 +121,20 @@ public class DecodeRepresentation extends WrapperRepresentation {
             InputStream encodedStream) throws IOException {
         InputStream result = null;
 
-        if (encoding.equals(Encoding.GZIP)) {
-            result = new GZIPInputStream(encodedStream);
-        } else if (encoding.equals(Encoding.DEFLATE)) {
-            result = new InflaterInputStream(encodedStream);
-        } else if (encoding.equals(Encoding.ZIP)) {
-            final ZipInputStream stream = new ZipInputStream(encodedStream);
-            if (stream.getNextEntry() != null) {
-                result = stream;
+        if (encodedStream != null) {
+            if (encoding.equals(Encoding.GZIP)) {
+                result = new GZIPInputStream(encodedStream);
+            } else if (encoding.equals(Encoding.DEFLATE)) {
+                result = new InflaterInputStream(encodedStream);
+            } else if (encoding.equals(Encoding.ZIP)) {
+                final ZipInputStream stream = new ZipInputStream(encodedStream);
+                if (stream.getNextEntry() != null) {
+                    result = stream;
+                }
+            } else if (encoding.equals(Encoding.IDENTITY)) {
+                throw new IOException(
+                        "Decoder unecessary for identity decoding");
             }
-        } else if (encoding.equals(Encoding.IDENTITY)) {
-            throw new IOException("Decoder unecessary for identity decoding");
         }
 
         return result;
