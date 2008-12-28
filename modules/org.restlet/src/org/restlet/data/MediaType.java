@@ -179,6 +179,7 @@ public final class MediaType extends Metadata {
     public static final MediaType APPLICATION_RELAXNG_XML = register(
             "application/x-relax-ng+xml",
             "Relax NG Schema document, XML syntax");
+
     public static final MediaType APPLICATION_RSS = register(
             "application/rss+xml", "Really Simple Syndication document");
 
@@ -188,7 +189,7 @@ public final class MediaType extends Metadata {
     @Deprecated
     public static final MediaType APPLICATION_RSS_XML = register(
             "application/rss+xml", "Really Simple Syndication document");
-    
+
     public static final MediaType APPLICATION_RTF = register("application/rtf",
             "Rich Text Format document");
 
@@ -349,6 +350,12 @@ public final class MediaType extends Metadata {
 
     public static final MediaType TEXT_XML = register("text/xml", "XML text");
 
+    /**
+     * Illegal ASCII characters as defined in RFC 1521.
+     * http://www.ietf.org/rfc/rfc1521.txt
+     */
+    private static final String TSPECIALS = "()<>@,;:/[]?=\\\"";
+
     public static final MediaType VIDEO_ALL = register("video/*", "All videos");
 
     public static final MediaType VIDEO_AVI = register("video/x-msvideo",
@@ -431,6 +438,66 @@ public final class MediaType extends Metadata {
     }
 
     /**
+     * Normalizes the specified token.
+     * 
+     * @param token
+     *            Token to normalize.
+     * @return The normalized token.
+     * @throws IllegalArgumentException
+     *             if <code>token</code> is not legal.
+     */
+    private static String normalizeToken(String token) {
+        int length;
+        char c;
+
+        // Makes sure we're not dealing with a "*" token.
+        token = token.trim();
+        if ("".equals(token) || "*".equals(token))
+            return "*";
+
+        // Makes sure the token is RFC compliant.
+        length = token.length();
+        for (int i = 0; i < length; i++) {
+            c = token.charAt(i);
+            if (c <= 32 || c >= 127 || TSPECIALS.indexOf(c) != -1)
+                throw new IllegalArgumentException("Illegal token: " + token);
+        }
+
+        return token;
+    }
+
+    /**
+     * Normalizes the specified media type.
+     * 
+     * @param name
+     *            The name of the type to normalize.
+     * @return The normalized type.
+     */
+    private static String normalizeType(String name) {
+        int index;
+        String mainType;
+        String subType;
+
+        // Ignore null names (backward compatibility).
+        if (name == null)
+            return null;
+
+        // No main / sub separator, assumes name/*.
+        if ((index = name.indexOf('/')) == -1) {
+            mainType = normalizeToken(name);
+            subType = "*";
+        }
+
+        // Normalizes the main and sub types.
+        else {
+            mainType = normalizeToken(name.substring(0, index));
+            subType = normalizeToken(name.substring(index + 1));
+        }
+
+        return mainType + '/' + subType;
+    }
+
+    /**
      * Register a media type as a known type that can later be retrieved using
      * {@link #valueOf(String)}. If the type already exists, the existing type
      * is returned, otherwise a new instance is created.
@@ -510,7 +577,7 @@ public final class MediaType extends Metadata {
      */
     public MediaType(String name, Series<Parameter> parameters,
             String description) {
-        super((name == null) ? null : name, description);
+        super(normalizeType(name), description);
         this.parameters = parameters;
     }
 

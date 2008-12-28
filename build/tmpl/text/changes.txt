@@ -54,6 +54,10 @@ Changes log
           deprecated APPLICATION_WADL.
         - Added APPLICATION_XHTML_XML media type constant and 
           deprecated APPLICATION_XHTML.
+        - MediaType constructor now normalizes the main and sub parts.
+          If invalid characters are detected, an IllegalArgumentExcept
+          is thrown. Spaces are also trimmed and empty parts are 
+          converted to '*'. Contributed by Nicolas Rinaudo.
      - Misc
         - JAX-RS extension:
             - added class ExendedUriBuilder with "file" extensions for

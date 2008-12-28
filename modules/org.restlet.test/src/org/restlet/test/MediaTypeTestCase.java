@@ -43,6 +43,39 @@ public class MediaTypeTestCase extends RestletTestCase {
     protected final static String DEFAULT_SCHEMEPART = "//";
 
     /**
+     * Makes sure that a {@link MediaType} instance initialised on the specified
+     * name has the expected values.
+     * 
+     * @param name
+     *            type to analyse.
+     * @param main
+     *            expected main type.
+     * @param sub
+     *            expected subtype.
+     * @param concrete
+     *            expected 'concrete' flag.
+     */
+    public void assertMediaType(String name, String main, String sub,
+            boolean concrete) {
+        MediaType type;
+
+        type = new MediaType(name);
+        assertEquals(main, type.getMainType());
+        assertEquals(sub, type.getSubType());
+        assertEquals(concrete, type.isConcrete());
+    }
+
+    /**
+     * Makes sure concrete types are properly initialised.
+     */
+    public void testConcrete() {
+        assertMediaType("application/xml", "application", "xml", true);
+        assertMediaType("application/ xml ", "application", "xml", true);
+        assertMediaType(" application /xml", "application", "xml", true);
+        assertMediaType(" application / xml ", "application", "xml", true);
+    }
+
+    /**
      * Equality tests.
      */
     public void testEquals() throws Exception {
@@ -122,6 +155,87 @@ public class MediaTypeTestCase extends RestletTestCase {
                 MediaType.TEXT_PLAIN, MediaType.ALL, MediaType.TEXT_ALL));
         assertEquals(MediaType.TEXT_PLAIN, MediaType.getMostSpecific(
                 MediaType.TEXT_PLAIN, MediaType.TEXT_ALL, MediaType.ALL));
+    }
+
+    /**
+     * Makes sure that 'abstract' types are properly initialised.
+     */
+    public void testNotConcrete() {
+        // */*
+        assertMediaType("", "*", "*", false);
+        assertMediaType("  ", "*", "*", false);
+        assertMediaType("*/", "*", "*", false);
+        assertMediaType("*/  ", "*", "*", false);
+        assertMediaType(" * /", "*", "*", false);
+        assertMediaType("/*", "*", "*", false);
+        assertMediaType("  /*", "*", "*", false);
+        assertMediaType("/ * ", "*", "*", false);
+        assertMediaType("  / * ", "*", "*", false);
+        assertMediaType("*/*", "*", "*", false);
+        assertMediaType(" * /*", "*", "*", false);
+        assertMediaType("*/ * ", "*", "*", false);
+        assertMediaType(" * / * ", "*", "*", false);
+
+        // */xml
+        assertMediaType("/xml", "*", "xml", false);
+        assertMediaType("/ xml ", "*", "xml", false);
+        assertMediaType("  /xml", "*", "xml", false);
+        assertMediaType("  / xml ", "*", "xml", false);
+        assertMediaType("*/xml", "*", "xml", false);
+        assertMediaType(" * /xml", "*", "xml", false);
+        assertMediaType("*/ xml ", "*", "xml", false);
+        assertMediaType(" * / xml ", "*", "xml", false);
+
+        // application/*
+        assertMediaType("application", "application", "*", false);
+        assertMediaType(" application ", "application", "*", false);
+        assertMediaType("application/", "application", "*", false);
+        assertMediaType(" application /", "application", "*", false);
+        assertMediaType(" application /  ", "application", "*", false);
+        assertMediaType("application/*", "application", "*", false);
+        assertMediaType(" application /*", "application", "*", false);
+        assertMediaType("application/ * ", "application", "*", false);
+        assertMediaType(" application /*", "application", "*", false);
+    }
+
+    /**
+     * Tests RFC compliance.
+     * <p>
+     * Note that we don't need to check predefined types: they are registered at
+     * runtime through MediaType's static initialisation.
+     * </p>
+     */
+    public void testRfcCompliance() {
+        String TSPECIALS;
+        int length;
+
+        TSPECIALS = "()<>@,;:/[]?=\\\"";
+        length = TSPECIALS.length();
+
+        // Checks that TSPECIALS token are spotted.
+        // In theory, we should also check for non-ASCII characters,
+        // but it's not worth the pain.
+        for (int i = 0; i < length; i++) {
+            Exception error;
+
+            // Makes sure that errors in the subtype are spotted.
+            error = null;
+            try {
+                new MediaType("application/" + TSPECIALS.charAt(i));
+            } catch (IllegalArgumentException e) {
+                error = e;
+            }
+            assertNotNull(error);
+
+            // Makes sure that errors in the main type are spotted.
+            error = null;
+            try {
+                new MediaType(TSPECIALS.charAt(i) + "/xml");
+            } catch (IllegalArgumentException e) {
+                error = e;
+            }
+            assertNotNull(error);
+        }
     }
 
     /**
