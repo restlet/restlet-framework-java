@@ -28,7 +28,7 @@ SOFTWARE.
  * The XMLTokener extends the JSONTokener to provide additional methods
  * for the parsing of XML texts.
  * @author JSON.org
- * @version 2
+ * @version 2008-09-18
  */
 public class XMLTokener extends JSONTokener {
 
@@ -272,6 +272,7 @@ public class XMLTokener extends JSONTokener {
                 }
                 switch (c) {
                 case 0:
+                	return sb.toString();
                 case '>':
                 case '/':
                 case '=':
@@ -288,5 +289,77 @@ public class XMLTokener extends JSONTokener {
                 }
             }
         }
+    }
+    
+    
+    /**
+     * Skip characters until past the requested string.
+     * If it is not found, we are left at the end of the source with a result of false.
+     * @param to A string to skip past.
+     * @throws JSONException
+     */
+    public boolean skipPast(String to) throws JSONException {
+    	boolean b;
+    	char c;
+    	int i;
+    	int j;
+    	int offset = 0;
+    	int n = to.length();
+        char[] circle = new char[n];
+        
+        /*
+         * First fill the circle buffer with as many characters as are in the
+         * to string. If we reach an early end, bail.
+         */
+        
+    	for (i = 0; i < n; i += 1) {
+    		c = next();
+    		if (c == 0) {
+    			return false;
+    		}
+    		circle[i] = c;
+    	}
+    	/*
+    	 * We will loop, possibly for all of the remaining characters.
+    	 */
+    	for (;;) {
+    		j = offset;
+    		b = true;
+    		/*
+    		 * Compare the circle buffer with the to string. 
+    		 */
+    		for (i = 0; i < n; i += 1) {
+    			if (circle[j] != to.charAt(i)) {
+    				b = false;
+    				break;
+    			}
+    			j += 1;
+    			if (j >= n) {
+    				j -= n;
+    			}
+    		}
+    		/*
+    		 * If we exit the loop with b intact, then victory is ours.
+    		 */
+    		if (b) {
+    			return true;
+    		}
+    		/*
+    		 * Get the next character. If there isn't one, then defeat is ours.
+    		 */
+    		c = next();
+    		if (c == 0) {
+    			return false;
+    		}
+    		/*
+    		 * Shove the character in the circle buffer and advance the 
+    		 * circle offset. The offset is mod n.
+    		 */
+    		circle[offset] = c;
+    		offset += 1;
+    		if (offset >= n) {
+    			offset -= n;
+    		}
+    	}
     }
 }

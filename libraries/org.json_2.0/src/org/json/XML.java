@@ -31,7 +31,7 @@ import java.util.Iterator;
  * This provides static methods to convert an XML text into a JSONObject,
  * and to covert a JSONObject into an XML text.
  * @author JSON.org
- * @version 2
+ * @version 2008-10-14
  */
 public class XML {
 
@@ -95,6 +95,25 @@ public class XML {
             }
         }
         return sb.toString();
+    }
+    
+    /**
+     * Throw an exception if the string contains whitespace. 
+     * Whitespace is not allowed in tagNames and attributes.
+     * @param string
+     * @throws JSONException
+     */
+    public static void noSpace(String string) throws JSONException {
+    	int i, length = string.length();
+    	if (length == 0) {
+    		throw new JSONException("Empty string.");
+    	}
+    	for (i = 0; i < length; i += 1) {
+		    if (Character.isWhitespace(string.charAt(i))) {
+		    	throw new JSONException("'" + string + 
+		    			"' contains a space character.");
+		    }
+		}
     }
 
     /**
@@ -207,7 +226,7 @@ public class XML {
                         if (!(t instanceof String)) {
                             throw x.syntaxError("Missing value");
                         }
-                        o.accumulate(s, t);
+                        o.accumulate(s, JSONObject.stringToValue((String)t));
                         t = null;
                     } else {
                         o.accumulate(s, "");
@@ -235,7 +254,7 @@ public class XML {
                         } else if (t instanceof String) {
                             s = (String)t;
                             if (s.length() > 0) {
-                                o.accumulate("content", s);
+                                o.accumulate("content", JSONObject.stringToValue(s));
                             }
 
 // Nested element
@@ -331,7 +350,10 @@ public class XML {
             keys = jo.keys();
             while (keys.hasNext()) {
                 k = keys.next().toString();
-                v = jo.get(k);
+                v = jo.opt(k);
+                if (v == null) {
+                	v = "";
+                }
                 if (v instanceof String) {
                     s = (String)v;
                 } else {
@@ -360,7 +382,18 @@ public class XML {
                     ja = (JSONArray)v;
                     len = ja.length();
                     for (i = 0; i < len; i += 1) {
-                        b.append(toString(ja.get(i), k));
+                    	v = ja.get(i);
+                    	if (v instanceof JSONArray) {
+                            b.append('<');
+                            b.append(k);
+                            b.append('>');
+                    		b.append(toString(v));
+                            b.append("</");
+                            b.append(k);
+                            b.append('>');
+                    	} else {
+                    		b.append(toString(v, k));
+                    	}
                     }
                 } else if (v.equals("")) {
                     b.append('<');
@@ -390,8 +423,8 @@ public class XML {
             ja = (JSONArray)o;
             len = ja.length();
             for (i = 0; i < len; ++i) {
-                b.append(toString(
-                    ja.opt(i), (tagName == null) ? "array" : tagName));
+            	v = ja.opt(i);
+                b.append(toString(v, (tagName == null) ? "array" : tagName));
             }
             return b.toString();
         } else {

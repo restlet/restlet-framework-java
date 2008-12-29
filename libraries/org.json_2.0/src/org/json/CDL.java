@@ -41,7 +41,7 @@ SOFTWARE.
  * The names for the elements in the JSONObjects can be taken from the names
  * in the first row.
  * @author JSON.org
- * @version 2
+ * @version 2008-09-18
  */
 public class CDL {
 
@@ -56,7 +56,7 @@ public class CDL {
         char c;
         do {
             c = x.next();
-        } while (c <= ' ' && c != 0);
+        } while (c == ' ' || c == '\t');
         switch (c) {
         case 0:
             return null;
@@ -82,7 +82,7 @@ public class CDL {
         JSONArray ja = new JSONArray();
         for (;;) {
             String value = getValue(x);
-            if (value == null) {
+            if (value == null || (ja.length() == 0 && value.length() == 0)) {
                 return null;
             }
             ja.put(value);
