@@ -58,6 +58,8 @@ Changes log
           If invalid characters are detected, an IllegalArgumentExcept
           is thrown. Spaces are also trimmed and empty parts are 
           converted to '*'. Contributed by Nicolas Rinaudo.
+        - Method#setUri() has been deprecated as Method instances 
+          shouldn't be modifiable.          
      - Misc
         - JAX-RS extension:
             - added class ExendedUriBuilder with "file" extensions for
