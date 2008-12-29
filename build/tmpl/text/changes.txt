@@ -50,6 +50,8 @@ Changes log
           Reported by Paul Austin.
         - Fixed NPE in DecodeRepresentation when the wrapped
           representation has no stream. Reported by Nicolas Rinaudo.
+        - Fixed potential encoding bug with ReaderRepresentation.
+          Reported by Nicolas Rinaudo.        
     - Misc
         - Fully moved org.restlet.gwt.internal content into 
           org.restlet.gwt.engine package.

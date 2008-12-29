@@ -33,6 +33,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.io.PipedReader;
 import java.io.PipedWriter;
 import java.io.RandomAccessFile;
@@ -389,44 +392,79 @@ public final class ByteUtils {
      * Input stream based on a reader.
      */
     private static class ReaderInputStream extends InputStream {
-        private byte[] buffer;
+        /**
+         * Writer to an output stream that converts characters according to a given
+         * character set.
+         */
+        private final OutputStreamWriter outputStreamWriter;
 
-        private final CharacterSet characterSet;
+        /** Input stream that gets its content from the piped output stream. */
+        private final PipedInputStream pipedInputStream;
 
-        private int index;
+        /** Output stream that sends its content to the piped input stream. */
+        private final PipedOutputStream pipedOutputStream;
 
-        private final BufferedReader localReader;
+        /** The wrapped reader. */
+        private final BufferedReader reader;
 
-        public ReaderInputStream(Reader reader, CharacterSet characterSet) {
-            this.localReader = (reader instanceof BufferedReader) ? (BufferedReader) reader
+        /**
+         * Constructor.
+         * 
+         * @param reader
+         * @param characterSet
+         * @throws IOException
+         */
+        public ReaderInputStream(Reader reader, CharacterSet characterSet)
+                throws IOException {
+            this.reader = (reader instanceof BufferedReader) ? (BufferedReader) reader
                     : new BufferedReader(reader);
-            this.buffer = null;
-            this.index = -1;
-            this.characterSet = characterSet;
+            this.pipedInputStream = new PipedInputStream();
+            this.pipedOutputStream = new PipedOutputStream(this.pipedInputStream);
+
+            if (characterSet != null) {
+                this.outputStreamWriter = new OutputStreamWriter(
+                        this.pipedOutputStream, characterSet.getName());
+            } else {
+                this.outputStreamWriter = new OutputStreamWriter(
+                        this.pipedOutputStream);
+            }
+        }
+
+        @Override
+        public int available() throws IOException {
+            int result = this.pipedInputStream.available();
+
+            if (result == 0) {
+                result = this.reader.ready() ? 1 : 0;
+            }
+
+            return result;
+        }
+
+        @Override
+        public void close() throws IOException {
+            this.reader.close();
+            this.outputStreamWriter.close();
+            this.pipedInputStream.close();
         }
 
         @Override
         public int read() throws IOException {
             int result = -1;
 
-            // If the buffer is empty, read a new line
-            if (this.buffer == null) {
-                final String line = this.localReader.readLine();
+            if (this.pipedInputStream.available() == 0) {
+                if (this.reader.ready()) {
+                    int character = this.reader.read();
 
-                if (line != null) {
-                    this.buffer = line.getBytes(this.characterSet.getName());
-                    this.index = 0;
+                    if (character != -1) {
+                        this.outputStreamWriter.write(character);
+                        this.outputStreamWriter.flush();
+                        this.pipedOutputStream.flush();
+                        result = this.pipedInputStream.read();
+                    }
                 }
-            }
-
-            if (this.buffer != null) {
-                // Read the next byte and increment the index
-                result = this.buffer[this.index++];
-
-                // Check if the buffer has been fully read
-                if (this.index == this.buffer.length) {
-                    this.buffer = null;
-                }
+            } else {
+                result = this.pipedInputStream.read();
             }
 
             return result;
@@ -712,7 +750,16 @@ public final class ByteUtils {
      * @return An input stream based on a given character reader.
      */
     public static InputStream getStream(Reader reader, CharacterSet characterSet) {
-        return new ReaderInputStream(reader, characterSet);
+        InputStream result = null;
+
+        try {
+            result = new ReaderInputStream(reader, characterSet);
+        } catch (IOException e) {
+            Context.getCurrentLogger().log(Level.WARNING,
+                    "Unable to create the reader input stream", e);
+        }
+
+        return result;
     }
 
     /**
