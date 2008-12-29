@@ -36,5 +36,16 @@ import junit.framework.TestCase;
  *         href="http://www.semagia.com/">Semagia</a>
  */
 public abstract class RestletTestCase extends TestCase {
-    // Currently emtpy.
+    
+    public static final String RESTLET_TEST_PORT = "restlet.test.port";
+    
+    public static final int DEFAULT_PORT = 1337;
+    
+    protected int getPort() {
+
+        if (System.getProperties().containsKey(RESTLET_TEST_PORT)) {
+            return Integer.parseInt(System.getProperty(RESTLET_TEST_PORT));
+        }
+        return DEFAULT_PORT;
+    }
 }

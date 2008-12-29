@@ -44,7 +44,9 @@ import org.restlet.data.MediaType;
 import org.restlet.util.ByteUtils;
 
 /**
- * Representation based on a file.
+ * Representation based on a static file. Note that in order for Web clients to
+ * display a download box upon receiption of a file representation, in need in
+ * addition to call {@link #setDownloadable(boolean)} with a 'true' value.
  * 
  * @author Jerome Louvel
  */

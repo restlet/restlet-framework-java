@@ -81,3 +81,7 @@ Changes log
 		  maintenance.
 		- Clarified Javadocs in Reference#getPath() methods.
         - Fixed potential NPE in Reference#decode() method.
+        - Clarified Javadocs in FileRepresentation and methods 
+          Representation#getDownloadName(), setDownloadName() in order
+          to explain that setDownloadable(true) must be called first.
+          Issue reported by Kevin Conaway.

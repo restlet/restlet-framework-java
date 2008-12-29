@@ -343,7 +343,9 @@ public abstract class Representation extends Variant {
     /**
      * Returns the suggested download file name for this representation. This is
      * mainly used to suggest to the client a local name for a downloaded
-     * representation.
+     * representation. Note that in order for this property to be sent from
+     * servers to clients, you also need to call
+     * {@link #setDownloadable(boolean)} with a 'true' value.
      * 
      * @return The suggested file name for this representation.
      */
@@ -524,7 +526,9 @@ public abstract class Representation extends Variant {
     }
 
     /**
-     * Set the suggested download file name for this representation.
+     * Set the suggested download file name for this representation. Note that
+     * in order for this property to be sent from servers to clients, you also
+     * need to call {@link #setDownloadable(boolean)} with a 'true' value.
      * 
      * @param fileName
      *            The suggested file name.
