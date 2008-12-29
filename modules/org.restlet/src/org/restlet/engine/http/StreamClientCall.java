@@ -103,8 +103,7 @@ public class StreamClientCall extends HttpClientCall {
     private static String getRequestUri(Reference resourceRef) {
         Reference absoluteRef = resourceRef.isAbsolute() ? resourceRef
                 : resourceRef.getTargetRef();
-        return (absoluteRef.getPath() == null) ? absoluteRef.getIdentifier()
-                + "/" : absoluteRef.getIdentifier();
+        return absoluteRef.getPath();
     }
 
     /** The socket factory. */
@@ -315,8 +314,7 @@ public class StreamClientCall extends HttpClientCall {
             int hostPort = resourceRef.getHostPort();
             if (hostPort == -1) {
                 if (resourceRef.getSchemeProtocol() != null) {
-                    hostPort = resourceRef.getSchemeProtocol()
-                            .getDefaultPort();
+                    hostPort = resourceRef.getSchemeProtocol().getDefaultPort();
                 } else {
                     hostPort = getProtocol().getDefaultPort();
                 }

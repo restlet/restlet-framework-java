@@ -85,3 +85,6 @@ Changes log
           Representation#getDownloadName(), setDownloadName() in order
           to explain that setDownloadable(true) must be called first.
           Issue reported by Kevin Conaway.
+        - The internal HTTP client doesn't send absolute request URIs
+          anymore. It now sends them as relative URIs according to the
+          HTTP 1.1 specification. Reported by Jonas Maturana Larsen.
