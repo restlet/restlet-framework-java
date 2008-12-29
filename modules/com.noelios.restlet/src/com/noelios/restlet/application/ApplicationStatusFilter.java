@@ -54,8 +54,10 @@ public class ApplicationStatusFilter extends StatusFilter {
     public ApplicationStatusFilter(Application application) {
         super(application.getContext(), application.getStatusService()
                 .isOverwrite(), application.getStatusService()
-                .getContactEmail(), application.getStatusService().getHomeRef()
-                .getTargetRef().toString());
+                .getContactEmail(), (application.getStatusService()
+                .getHomeRef().isRelative()) ? application.getStatusService()
+                .getHomeRef().toString() : application.getStatusService()
+                .getHomeRef().getTargetRef().toString());
     }
 
     @Override
