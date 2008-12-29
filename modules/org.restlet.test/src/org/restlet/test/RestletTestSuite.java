@@ -66,6 +66,7 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(HeaderTestCase.class);
         addTestSuite(HttpBasicTestCase.class);
         addTestSuite(ImmutableDateTestCase.class);
+        addTestSuite(LanguageTestCase.class);
         addTestSuite(MediaTypeTestCase.class);
         addTestSuite(ProductTokenTestCase.class);
         addTestSuite(RangeTestCase.class);

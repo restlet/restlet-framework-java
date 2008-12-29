@@ -27,6 +27,7 @@
 
 package org.restlet.data;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -141,7 +142,7 @@ public final class Language extends Metadata {
     }
 
     /**
-     * Returns the modifiable list of subtags. This list can be empty.
+     * Returns the unmodifiable list of subtags. This list can be empty.
      * 
      * @return The list of subtags for this language Tag.
      */
@@ -152,15 +153,17 @@ public final class Language extends Metadata {
             synchronized (this) {
                 v = this.subTags;
                 if (v == null) {
-                    this.subTags = v = new CopyOnWriteArrayList<String>();
+                    List<String> tokens = new CopyOnWriteArrayList<String>();
                     if (getName() != null) {
                         final String[] tags = getName().split("-");
                         if (tags.length > 0) {
                             for (int i = 1; i < tags.length; i++) {
-                                this.subTags.add(tags[i]);
+                                tokens.add(tags[i]);
                             }
                         }
                     }
+
+                    this.subTags = v = Collections.unmodifiableList(tokens);
                 }
             }
         }

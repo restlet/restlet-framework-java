@@ -59,7 +59,8 @@ Changes log
           is thrown. Spaces are also trimmed and empty parts are 
           converted to '*'. Contributed by Nicolas Rinaudo.
         - Method#setUri() has been deprecated as Method instances 
-          shouldn't be modifiable.          
+          shouldn't be modifiable.
+        - Language.getSubTags() now returns an unmodifiable list.        
      - Misc
         - JAX-RS extension:
             - added class ExendedUriBuilder with "file" extensions for
