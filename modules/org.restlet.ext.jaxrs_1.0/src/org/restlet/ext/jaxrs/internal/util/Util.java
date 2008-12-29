@@ -561,14 +561,18 @@ public class Util {
     public static String getCharsetName(
             MultivaluedMap<String, Object> httpHeaders, CharacterSet defaultCs) {
         String result = null;
+        CharacterSet charSet = null;
         final Object contentType = httpHeaders.getFirst(CONTENT_TYPE);
 
         if (contentType == null) {
-            return null;
-        }
+            charSet = defaultCs;
+        } else {
+            charSet = ContentType.parseCharacterSet(contentType.toString());
 
-        CharacterSet charSet = ContentType.parseCharacterSet(contentType
-                .toString());
+            if (charSet == null) {
+                charSet = defaultCs;
+            }
+        }
 
         if (charSet != null) {
             result = charSet.getName();
