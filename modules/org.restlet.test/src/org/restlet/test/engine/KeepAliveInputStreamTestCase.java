@@ -30,7 +30,7 @@ package org.restlet.test.engine;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.restlet.engine.util.KeepAliveInputStream;
+import org.restlet.engine.io.KeepAliveInputStream;
 
 import junit.framework.TestCase;
 

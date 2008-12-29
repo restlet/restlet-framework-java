@@ -45,7 +45,7 @@ import javax.net.ssl.SSLSocket;
 import org.restlet.Server;
 import org.restlet.data.Parameter;
 import org.restlet.engine.http.HttpServerCall;
-import org.restlet.engine.util.KeepAliveInputStream;
+import org.restlet.engine.io.KeepAliveInputStream;
 import org.restlet.util.Series;
 
 import simple.http.Request;

@@ -31,7 +31,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.restlet.engine.util.KeepAliveOutputStream;
+import org.restlet.engine.io.KeepAliveOutputStream;
 
 import junit.framework.TestCase;
 
