@@ -28,6 +28,7 @@
 package org.restlet.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -35,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 
 /**
@@ -57,6 +59,19 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      * (null).
      */
     public static final Object EMPTY_VALUE = new Object();
+
+    /**
+     * Returns an unmodifiable view of the specified series. Attempts to call a
+     * modification method will throw an UnsupportedOperationException.
+     * 
+     * @param series
+     *            The series for which an unmodifiable view should be returned.
+     * @return The unmodifiable view of the specified series.
+     */
+    public static Series<? extends Parameter> unmodifiableSeries(
+            Series<? extends Parameter> series) {
+        return new Form(Collections.unmodifiableList(series.getDelegate()));
+    }
 
     /**
      * Constructor.

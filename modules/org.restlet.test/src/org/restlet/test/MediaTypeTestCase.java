@@ -291,4 +291,19 @@ public class MediaTypeTestCase extends RestletTestCase {
         assertSame(registeredType, MediaType
                 .valueOf("application/x-restlet-test"));
     }
+
+    @SuppressWarnings("unchecked")
+    public void testUnmodifiable() {
+        Form form = new Form();
+        form.add("name1", "value1");
+
+        try {
+            Series<Parameter> unmodifiableForm = (Series<Parameter>) Series
+                    .unmodifiableSeries(form);
+            unmodifiableForm.add("name2", "value2");
+            fail("The series should be unmodifiable now");
+        } catch (UnsupportedOperationException uoe) {
+            // As expected
+        }
+    }
 }

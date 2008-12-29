@@ -575,10 +575,15 @@ public final class MediaType extends Metadata {
      * @param description
      *            The description.
      */
+    @SuppressWarnings("unchecked")
     public MediaType(String name, Series<Parameter> parameters,
             String description) {
         super(normalizeType(name), description);
-        this.parameters = parameters;
+
+        if (parameters != null) {
+            this.parameters = (Series<Parameter>) Series
+                    .unmodifiableSeries(parameters);
+        }
     }
 
     /**
@@ -655,11 +660,12 @@ public final class MediaType extends Metadata {
     }
 
     /**
-     * Returns the modifiable list of parameters. Creates a new instance if no
+     * Returns the unmodifiable list of parameters. Creates a new instance if no
      * one has been set.
      * 
      * @return The list of parameters.
      */
+    @SuppressWarnings("unchecked")
     public Series<Parameter> getParameters() {
         // Lazy initialization with double-check.
         Series<Parameter> p = this.parameters;
@@ -667,7 +673,8 @@ public final class MediaType extends Metadata {
             synchronized (this) {
                 p = this.parameters;
                 if (p == null) {
-                    this.parameters = p = new Form();
+                    this.parameters = p = (Series<Parameter>) Series
+                            .unmodifiableSeries(new Form());
                 }
             }
         }

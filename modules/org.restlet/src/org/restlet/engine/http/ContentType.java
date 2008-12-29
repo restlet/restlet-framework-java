@@ -31,7 +31,6 @@ import java.io.IOException;
 
 import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
-import org.restlet.data.Preference;
 
 /**
  * Association of a media type and a character set.
@@ -39,20 +38,33 @@ import org.restlet.data.Preference;
  * @author Jerome Louvel
  */
 public class ContentType {
+
     /**
-     * Parses the Content Type.
+     * Parses the given content type header and returns the media type.
      * 
-     * @param headerValue
-     * @return MediaType
-     * @throws IOException
+     * @param contentType
+     *            The content type header to parse.
+     * @return The media type.
      */
-    public static MediaType parseContentType(String headerValue)
-            throws IOException {
-        final PreferenceReader<MediaType> pr = new PreferenceReader<MediaType>(
-                PreferenceReader.TYPE_MEDIA_TYPE, headerValue);
-        final Preference<MediaType> pref = pr.readPreference();
-        return pref.getMetadata();
+    public static MediaType parseMediaType(String contentType) {
+        return new ContentType(contentType).getMediaType();
     }
+
+    /**
+     * Parses the given content type header and returns the character set.
+     * 
+     * @param contentType
+     *            The content type header to parse.
+     * @return The character set.
+     */
+    public static CharacterSet parseCharacterSet(String contentType) {
+        return new ContentType(contentType).getCharacterSet();
+    }
+
+    /**
+     * The content character set.
+     */
+    private volatile CharacterSet characterSet;
 
     /**
      * The content media type.
@@ -60,9 +72,17 @@ public class ContentType {
     private volatile MediaType mediaType;
 
     /**
-     * The content character set.
+     * Constructor.
+     * 
+     * @param mediaType
+     *            The media type.
+     * @param characterSet
+     *            The character set.
      */
-    private volatile CharacterSet characterSet;
+    public ContentType(MediaType mediaType, CharacterSet characterSet) {
+        this.mediaType = mediaType;
+        this.characterSet = characterSet;
+    }
 
     /**
      * Constructor.
@@ -72,13 +92,10 @@ public class ContentType {
      */
     public ContentType(String headerValue) {
         try {
-            this.mediaType = parseContentType(headerValue);
-            final String charSet = this.mediaType.getParameters()
-                    .getFirstValue("charset");
-            if (charSet != null) {
-                this.mediaType.getParameters().removeAll("charset");
-                this.characterSet = new CharacterSet(charSet);
-            }
+            ContentTypeReader ctr = new ContentTypeReader(headerValue);
+            ContentType ct = ctr.readContentType();
+            this.mediaType = ct.getMediaType();
+            this.characterSet = ct.getCharacterSet();
         } catch (IOException ioe) {
             throw new IllegalArgumentException(
                     "The Content Type could not be read.", ioe);

@@ -72,6 +72,7 @@ import org.restlet.data.Metadata;
 import org.restlet.data.Parameter;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.engine.http.ContentType;
 import org.restlet.ext.jaxrs.internal.core.UnmodifiableMultivaluedMap;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
@@ -93,11 +94,6 @@ import org.restlet.util.Series;
  * @author Stephan Koops
  */
 public class Util {
-
-    /**
-     * Key of the parameter of the charset in the content type.
-     */
-    private static final String CHARSET = "charset";
 
     /**
      * The default character set to be used, if no character set is given.
@@ -428,13 +424,13 @@ public class Util {
      * 
      * @param clazz
      * @param interfaze
-     * @return true, if the class implements the given interface, otherwise false.
-     * if the clazz or interfaze is null, false is returned 
+     * @return true, if the class implements the given interface, otherwise
+     *         false. if the clazz or interfaze is null, false is returned
      */
     public static boolean doesImplement(Class<?> clazz, Class<?> interfaze) {
-        if(clazz == null || interfaze == null)
+        if (clazz == null || interfaze == null)
             return false;
-        if(doesImplement(clazz.getSuperclass(), interfaze))
+        if (doesImplement(clazz.getSuperclass(), interfaze))
             return true;
         for (Class<?> interf : clazz.getInterfaces()) {
             if (interf.equals(interfaze))
@@ -564,15 +560,21 @@ public class Util {
      */
     public static String getCharsetName(
             MultivaluedMap<String, Object> httpHeaders, CharacterSet defaultCs) {
-        final MediaType mediaType = getMediaType(httpHeaders);
-        String charset = null;
-        if (mediaType != null) {
-            charset = mediaType.getParameters().getFirstValue(CHARSET);
+        String result = null;
+        final Object contentType = httpHeaders.getFirst(CONTENT_TYPE);
+
+        if (contentType == null) {
+            return null;
         }
-        if ((charset == null) || (charset.length() == 0)) {
-            return defaultCs != null ? defaultCs.toString() : null;
+
+        CharacterSet charSet = ContentType.parseCharacterSet(contentType
+                .toString());
+
+        if (charSet != null) {
+            result = charSet.getName();
         }
-        return charset;
+
+        return result;
     }
 
     /**
@@ -1026,7 +1028,7 @@ public class Util {
             return Converter
                     .toRestletMediaType((javax.ws.rs.core.MediaType) contentType);
         }
-        return Engine.getInstance().parseContentType(contentType.toString());
+        return ContentType.parseMediaType(contentType.toString());
     }
 
     /**
@@ -1352,7 +1354,7 @@ public class Util {
         }
         for (int i = beginIndex; i < endIndex; i++) {
             char csc = charSequence.charAt(i);
-            if(csc == c) {
+            if (csc == c) {
                 return i;
             }
         }

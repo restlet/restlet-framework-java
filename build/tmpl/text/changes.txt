@@ -60,7 +60,10 @@ Changes log
           converted to '*'. Contributed by Nicolas Rinaudo.
         - Method#setUri() has been deprecated as Method instances 
           shouldn't be modifiable.
-        - Language.getSubTags() now returns an unmodifiable list.        
+        - Language.getSubTags() now returns an unmodifiable list.
+        - MediaType.parameters property is now unmodifiable. Initial
+          issue reported by Nicolas Rinaudo. 
+        - Added static Series#unmodifiableSeries() method.			 
      - Misc
         - JAX-RS extension:
             - added class ExendedUriBuilder with "file" extensions for

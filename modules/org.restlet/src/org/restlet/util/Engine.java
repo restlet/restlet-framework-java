@@ -44,7 +44,6 @@ import org.restlet.data.CookieSetting;
 import org.restlet.data.Dimension;
 import org.restlet.data.Form;
 import org.restlet.data.Language;
-import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
 import org.restlet.data.Product;
 import org.restlet.data.Request;
@@ -431,18 +430,6 @@ public abstract class Engine {
      */
     public abstract void parse(Form form, String parametersString,
             CharacterSet characterSet, boolean decode, char separator);
-
-    /**
-     * Parses the given Content Type.
-     * 
-     * @param contentType
-     *            the Content Type as String
-     * @return the ContentType as MediaType; charset etc. are parameters.
-     * @throws IllegalArgumentException
-     *             if the String can not be parsed.
-     */
-    public abstract MediaType parseContentType(String contentType)
-            throws IllegalArgumentException;
 
     /**
      * Parses the given String to a Cookie

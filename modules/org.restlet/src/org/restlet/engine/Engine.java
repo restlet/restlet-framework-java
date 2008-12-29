@@ -75,7 +75,6 @@ import org.restlet.engine.authentication.SmtpPlainHelper;
 import org.restlet.engine.component.ChildContext;
 import org.restlet.engine.component.ComponentContext;
 import org.restlet.engine.component.ComponentHelper;
-import org.restlet.engine.http.ContentType;
 import org.restlet.engine.http.CookieReader;
 import org.restlet.engine.http.CookieUtils;
 import org.restlet.engine.http.HttpClientCall;
@@ -975,18 +974,6 @@ public class Engine extends org.restlet.util.Engine {
             boolean decode, char separator) {
         if ((queryString != null) && !queryString.equals("")) {
             FormUtils.parse(form, queryString, characterSet, decode, separator);
-        }
-    }
-
-    @Override
-    public MediaType parseContentType(String contentType)
-            throws IllegalArgumentException {
-        try {
-            return ContentType.parseContentType(contentType);
-        } catch (IOException e) {
-            throw new IllegalArgumentException("The content type string \""
-                    + contentType + "\" can not be parsed: " + e.getMessage(),
-                    e);
         }
     }
 

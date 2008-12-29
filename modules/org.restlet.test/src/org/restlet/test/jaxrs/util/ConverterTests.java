@@ -34,6 +34,7 @@ import java.util.Locale;
 
 import junit.framework.TestCase;
 
+import org.restlet.data.Form;
 import org.restlet.data.MediaType;
 import org.restlet.ext.jaxrs.internal.util.PathRegExp;
 
@@ -55,8 +56,9 @@ public class ConverterTests extends TestCase {
     }
 
     public void testGetMediaTypeWitoutParams2() {
-        final MediaType mt = new MediaType("a/b");
-        mt.getParameters().add("abc", "def");
+        Form params = new Form();
+        params.add("abc", "def");
+        final MediaType mt = new MediaType("a/b", params);
         assertEquals("a/b", getMediaTypeWithoutParams(mt).toString());
     }
 
