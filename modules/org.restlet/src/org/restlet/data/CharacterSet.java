@@ -112,8 +112,8 @@ public final class CharacterSet extends Metadata {
     /**
      * Constructor.
      * 
-     * @param name
-     *            The name.
+     * @param charset
+     *            The character set.
      */
     public CharacterSet(final Charset charset) {
         this(charset.name(), charset.displayName());
