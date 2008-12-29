@@ -79,3 +79,5 @@ Changes log
 		- Extracted all internal classes of ByteUtils into the new
 		  org.restlet.engine.io package for easier reuse and 
 		  maintenance.
+		- Clarified Javadocs in Reference#getPath() methods.
+        - Fixed potential NPE in Reference#decode() method.

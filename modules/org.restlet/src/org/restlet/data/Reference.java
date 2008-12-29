@@ -132,15 +132,17 @@ public class Reference {
     public static String decode(String toDecode) {
         String result = null;
 
-        try {
-            result = URLDecoder.decode(toDecode, "UTF-8");
-        } catch (UnsupportedEncodingException uee) {
-            Context
-                    .getCurrentLogger()
-                    .log(
-                            Level.WARNING,
-                            "Unable to decode the string with the UTF-8 character set.",
-                            uee);
+        if (toDecode != null) {
+            try {
+                result = URLDecoder.decode(toDecode, "UTF-8");
+            } catch (UnsupportedEncodingException uee) {
+                Context
+                        .getCurrentLogger()
+                        .log(
+                                Level.WARNING,
+                                "Unable to decode the string with the UTF-8 character set.",
+                                uee);
+            }
         }
 
         return result;
@@ -1246,7 +1248,8 @@ public class Reference {
     }
 
     /**
-     * Returns the path component for hierarchical identifiers.<br>
+     * Returns the path component for hierarchical identifiers. If not path is
+     * available it returns null.<br>
      * Note that no URI decoding is done by this method.
      * 
      * @return The path component for hierarchical identifiers.
@@ -1291,7 +1294,8 @@ public class Reference {
     }
 
     /**
-     * Returns the optionnally decoded path component.
+     * Returns the optionnally decoded path component. If not path is available
+     * it returns null.
      * 
      * @param decode
      *            Indicates if the result should be decoded using the
