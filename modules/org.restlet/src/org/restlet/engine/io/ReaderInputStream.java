@@ -30,6 +30,9 @@ package org.restlet.engine.io;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
 import java.io.Reader;
 
 import org.restlet.data.CharacterSet;
@@ -40,14 +43,17 @@ import org.restlet.data.CharacterSet;
  * @author Jerome Louvel
  */
 public class ReaderInputStream extends InputStream {
-    /** The byte buffer. */
-    private volatile byte[] buffer;
+    /**
+     * Writer to an output stream that converts characters according to a given
+     * character set.
+     */
+    private final OutputStreamWriter outputStreamWriter;
 
-    /** The underlying character set. */
-    private final CharacterSet characterSet;
+    /** Input stream that gets its content from the piped output stream. */
+    private final PipedInputStream pipedInputStream;
 
-    /** The reading index. */
-    private volatile int index;
+    /** Output stream that sends its content to the piped input stream. */
+    private final PipedOutputStream pipedOutputStream;
 
     /** The wrapped reader. */
     private final BufferedReader reader;
@@ -57,53 +63,62 @@ public class ReaderInputStream extends InputStream {
      * 
      * @param reader
      * @param characterSet
+     * @throws IOException
      */
-    public ReaderInputStream(Reader reader, CharacterSet characterSet) {
+    public ReaderInputStream(Reader reader, CharacterSet characterSet)
+            throws IOException {
         this.reader = (reader instanceof BufferedReader) ? (BufferedReader) reader
                 : new BufferedReader(reader);
-        this.buffer = null;
-        this.index = -1;
-        this.characterSet = characterSet;
+        this.pipedInputStream = new PipedInputStream();
+        this.pipedOutputStream = new PipedOutputStream(this.pipedInputStream);
+
+        if (characterSet != null) {
+            this.outputStreamWriter = new OutputStreamWriter(
+                    this.pipedOutputStream, characterSet.getName());
+        } else {
+            this.outputStreamWriter = new OutputStreamWriter(
+                    this.pipedOutputStream);
+        }
+    }
+
+    @Override
+    public int available() throws IOException {
+        int result = this.pipedInputStream.available();
+
+        if (result == 0) {
+            result = this.reader.ready() ? 1 : 0;
+        }
+
+        return result;
+    }
+
+    @Override
+    public void close() throws IOException {
+        this.reader.close();
+        this.outputStreamWriter.close();
+        this.pipedInputStream.close();
     }
 
     @Override
     public int read() throws IOException {
         int result = -1;
 
-        // If the buffer is empty, read a new line
-        if (this.buffer == null) {
-            refill();
-        }
+        if (this.pipedInputStream.available() == 0) {
+            if (this.reader.ready()) {
+                int character = this.reader.read();
 
-        if (this.buffer != null) {
-            // Read the next byte and increment the index
-            result = this.buffer[this.index++];
-
-            // Check if the buffer has been fully read
-            if (this.index == this.buffer.length) {
-                this.buffer = null;
+                if (character != -1) {
+                    this.outputStreamWriter.write(character);
+                    this.outputStreamWriter.flush();
+                    this.pipedOutputStream.flush();
+                    result = this.pipedInputStream.read();
+                }
             }
+        } else {
+            result = this.pipedInputStream.read();
         }
 
         return result;
     }
 
-    /**
-     * Refills the byte buffer.
-     * 
-     * @throws IOException
-     */
-    private void refill() throws IOException {
-        final String line = this.reader.readLine();
-
-        if (line != null) {
-            this.buffer = line.getBytes(this.characterSet.getName());
-            this.index = 0;
-        }
-    }
-
-    @Override
-    public int read(byte[] b, int off, int len) throws IOException {
-        return super.read(b, off, len);
-    }
 }

@@ -226,7 +226,16 @@ public final class ByteUtils {
      * @return An input stream based on a given character reader.
      */
     public static InputStream getStream(Reader reader, CharacterSet characterSet) {
-        return new ReaderInputStream(reader, characterSet);
+        InputStream result = null;
+
+        try {
+            result = new ReaderInputStream(reader, characterSet);
+        } catch (IOException e) {
+            Context.getCurrentLogger().log(Level.WARNING,
+                    "Unable to create the reader input stream", e);
+        }
+
+        return result;
     }
 
     /**
