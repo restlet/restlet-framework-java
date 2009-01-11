@@ -16,6 +16,7 @@ Changes log
           Contributed by Kevin Conaway.
         - Added a Lucene extension including a Solr client connector
           contributed by Remi Dewitte.
+        - 
     - API changes
         - A response with a 200 (Ok) status should have an entity. Now,
           we make sure that a warning is logged. 
@@ -65,7 +66,9 @@ Changes log
         - Language.getSubTags() now returns an unmodifiable list.
         - MediaType.parameters property is now unmodifiable. Initial
           issue reported by Nicolas Rinaudo. 
-        - Added static Series#unmodifiableSeries() method.			 
+        - Added static Series#unmodifiableSeries() method.
+        - Added DateUtils.format(Date) method which uses HTTP default
+          format.			 
      - Misc
         - JAX-RS extension:
             - added class ExendedUriBuilder with "file" extensions for
@@ -96,3 +99,4 @@ Changes log
         - The internal HTTP client doesn't send absolute request URIs
           anymore. It now sends them as relative URIs according to the
           HTTP 1.1 specification. Reported by Jonas Maturana Larsen.
+        - Upgraded Apache Commons IO to version 1.4.

@@ -72,8 +72,8 @@ public class HttpServerConverter extends HttpConverter {
             responseHeaders.add(HttpConstants.HEADER_CONTENT_LENGTH, "0");
         } else {
             if (entity.getExpirationDate() != null) {
-                responseHeaders.add(HttpConstants.HEADER_EXPIRES, HttpCall
-                        .formatDate(entity.getExpirationDate(), false));
+                responseHeaders.add(HttpConstants.HEADER_EXPIRES, DateUtils
+                        .format(entity.getExpirationDate()));
             }
 
             if (!entity.getEncodings().isEmpty()) {
@@ -204,8 +204,8 @@ public class HttpServerConverter extends HttpConverter {
         }
 
         // Add the date
-        responseHeaders.add(HttpConstants.HEADER_DATE, DateUtils.format(
-                new Date(), DateUtils.FORMAT_RFC_1123.get(0)));
+        responseHeaders.add(HttpConstants.HEADER_DATE, DateUtils
+                .format(new Date()));
 
         // Add the cookie settings
         final List<CookieSetting> cookies = response.getCookieSettings();

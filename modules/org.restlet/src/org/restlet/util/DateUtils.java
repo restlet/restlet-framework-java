@@ -54,7 +54,8 @@ public final class DateUtils {
      * 
      * @author Piyush Purang (ppurang@gmail.com)
      * @see java.util.Date
-     * @see <a href="http://discuss.fogcreek.com/joelonsoftware3/default.asp?cmd=show&ixPost=73959&ixReplies=24"
+     * @see <a
+     *      href="http://discuss.fogcreek.com/joelonsoftware3/default.asp?cmd=show&ixPost=73959&ixReplies=24"
      *      >Immutable Date</a>
      */
     private static final class ImmutableDate extends Date {
@@ -246,6 +247,17 @@ public final class DateUtils {
         final long baseTime = baseDate.getTime() / 1000;
         final long otherTime = otherDate.getTime() / 1000;
         return otherTime == baseTime;
+    }
+
+    /**
+     * Formats a Date in the default HTTP format (RFC 1123).
+     * 
+     * @param date
+     *            The date to format.
+     * @return The formatted date.
+     */
+    public static String format(final Date date) {
+        return format(date, DateUtils.FORMAT_RFC_1123.get(0));
     }
 
     /**
