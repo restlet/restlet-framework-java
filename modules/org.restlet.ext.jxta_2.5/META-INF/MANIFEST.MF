@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Restlet Extension - JXTA
 Bundle-SymbolicName: org.restlet.ext.jxta
-Bundle-Version: 1.1
+Bundle-Version: 1.2
 Bundle-Vendor: Noelios Technologies
 Import-Package: org.restlet.engine,
  org.restlet.engine.application,

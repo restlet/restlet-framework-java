@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Restlet Extension - Apache HTTP Client
 Bundle-SymbolicName: org.restlet.ext.httpclient
-Bundle-Version: 1.1
+Bundle-Version: 1.2
 Bundle-Vendor: Noelios Technologies
 Export-Package: org.restlet.ext.httpclient;
   uses:="org.apache.commons.httpclient,

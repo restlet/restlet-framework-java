@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Restlet Extension - Lucene
+Bundle-SymbolicName: org.restlet.ext.lucene
+Bundle-Version: 1.2
+Bundle-Vendor: Noelios Technologies
+Export-Package: org.restlet.ext.lucene
+Import-Package: org.apache.solr.common.params,
+ org.apache.solr.common.util,
+ org.apache.solr.core,
+ org.apache.solr.request,
+ org.restlet,
+ org.restlet.data,
+ org.restlet.engine,
+ org.restlet.resource,
+ org.restlet.service,
+ org.restlet.util
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

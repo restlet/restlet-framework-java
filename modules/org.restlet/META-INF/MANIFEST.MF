@@ -3,7 +3,7 @@ Main-Class: org.restlet.Component
 Bundle-ManifestVersion: 2
 Bundle-Name: Restlet API
 Bundle-SymbolicName: org.restlet
-Bundle-Version: 1.1
+Bundle-Version: 1.2
 Bundle-Vendor: Noelios Technologies
 Export-Package: org.restlet,
  org.restlet.data,

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Restlet Extension - GWT
 Bundle-SymbolicName: org.restlet.ext.gwt
-Bundle-Version: 1.1
+Bundle-Version: 1.2
 Bundle-Vendor: Noelios Technologies
 Export-Package: org.restlet.ext.gwt;uses:="javax.servlet.http,org.restlet.ext.servlet"
 Import-Package: javax.servlet,

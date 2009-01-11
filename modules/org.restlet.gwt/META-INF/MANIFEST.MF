@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Restlet API for GWT
 Bundle-SymbolicName: org.restlet.gwt
-Bundle-Version: 1.1
+Bundle-Version: 1.2
 Bundle-Vendor: Noelios Technologies
 Export-Package: org.restlet.gwt;uses:="org.restlet.gwt.data,org.restlet.gwt.resource,org.restlet.gwt.util",
  org.restlet.gwt.data;uses:="org.restlet.gwt.resource,org.restlet.gwt.util",
