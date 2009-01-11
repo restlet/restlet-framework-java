@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2008 Noelios Technologies.
+ * Copyright 2005-2009 Noelios Technologies.
  * 
  * The contents of this file are subject to the terms of the following open
  * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
@@ -18,7 +18,7 @@
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
  * 
- * Alternatively, you can obtain a royaltee free commercial license with less
+ * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * http://www.noelios.com/products/restlet-engine
  * 
@@ -357,7 +357,7 @@ public class JaxRsRestlet extends Restlet {
         request.setRootRef(new Reference(baseRef.toString()));
         // NICE Normally, the "rootRef" property is set by the VirtualHost, each
         // time a request is handled by one of its routes.
-        // Email from Jerome, 2008-09-22
+        // Email from Jerome, 2009-09-22
         try {
             CallContext callContext;
             callContext = new CallContext(request, response, this.roleChecker);
@@ -386,7 +386,7 @@ public class JaxRsRestlet extends Restlet {
     }
 
     /**
-     * Implementation of algorithm in JAX-RS-Spec (2008-04-16), Section 3.7.2
+     * Implementation of algorithm in JAX-RS-Spec (2009-04-16), Section 3.7.2
      * "Request Matching"
      * 
      * @return (Sub)Resource Method
@@ -415,7 +415,7 @@ public class JaxRsRestlet extends Restlet {
     }
 
     /**
-     * Identifies the root resource class, see JAX-RS-Spec (2008-04-16), section
+     * Identifies the root resource class, see JAX-RS-Spec (2009-04-16), section
      * 3.7.2 "Request Matching", Part 1: "Identify the root resource class"
      * 
      * @param u
@@ -464,7 +464,7 @@ public class JaxRsRestlet extends Restlet {
 
     /**
      * Obtains the object that will handle the request, see JAX-RS-Spec
-     * (2008-04-16), section 3.7.2 "Request Matching", Part 2: "Obtain the
+     * (2009-04-16), section 3.7.2 "Request Matching", Part 2: "Obtain the
      * object that will handle the request"
      * 
      * @param rroRemPathAndMatchedPath
@@ -500,7 +500,7 @@ public class JaxRsRestlet extends Restlet {
                     continue;
                 if (matchingResult.getFinalCapturingGroup().isEmptyOrSlash())
                     eWithMethod.add(methodOrLocator);
-                // the following is added by Stephan (is not in spec 2008-03-06)
+                // the following is added by Stephan (is not in spec 2009-03-06)
                 else if (methodOrLocator instanceof SubResourceLocator)
                     eWithMethod.add(methodOrLocator);
             }
@@ -533,7 +533,7 @@ public class JaxRsRestlet extends Restlet {
 
     /**
      * Identifies the method that will handle the request, see JAX-RS-Spec
-     * (2008-04-16), section 3.7.2 "Request Matching", Part 3: Identify the
+     * (2009-04-16), section 3.7.2 "Request Matching", Part 3: Identify the
      * method that will handle the request:"
      * 
      * @return Resource Object and Method, that handle the request.
@@ -805,7 +805,7 @@ public class JaxRsRestlet extends Restlet {
     }
 
     /**
-     * Determines the MediaType for a response, see JAX-RS-Spec (2008-08-27),
+     * Determines the MediaType for a response, see JAX-RS-Spec (2009-08-27),
      * section 3.8 "Determining the MediaType of Responses"
      * 
      * @param jaxRsResponseMediaType

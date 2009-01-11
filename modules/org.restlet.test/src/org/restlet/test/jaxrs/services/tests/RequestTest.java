@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2008 Noelios Technologies.
+ * Copyright 2005-2009 Noelios Technologies.
  * 
  * The contents of this file are subject to the terms of the following open
  * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
@@ -18,7 +18,7 @@
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
  * 
- * Alternatively, you can obtain a royaltee free commercial license with less
+ * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * http://www.noelios.com/products/restlet-engine
  * 
@@ -59,15 +59,15 @@ import org.restlet.test.jaxrs.util.TestUtils;
  */
 public class RequestTest extends JaxRsTestCase {
     /**
-     * After than 2008-01-08, 12h
+     * After than 2009-01-08, 12h
      * 
      * @see EvaluatePreconditionService#getLastModificationDateFromDatastore()
      */
     @SuppressWarnings("deprecation")
-    public static final Date AFTER = new Date(2008 - 1900, 0, 9); // 2008-01-09
+    public static final Date AFTER = new Date(2009 - 1900, 0, 9); // 2009-01-09
 
     /**
-     * Before 2008-01-08, 12h
+     * Before 2009-01-08, 12h
      * 
      * @see EvaluatePreconditionService#getLastModificationDateFromDatastore()
      */

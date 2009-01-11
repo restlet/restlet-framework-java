@@ -15,8 +15,10 @@ Changes log
         - Internal HTTP connector now supports HTTPS connections.
           Contributed by Kevin Conaway.
         - Added a Lucene extension including a Solr client connector
-          contributed by Remi Dewitte.
-        - 
+          contributed by Remi Dewitte. Also contains a useful 
+          TikaRepresentation to extract metadata from a representation
+          using Lucene Tika parsing and analysis library. Suggested by
+          Ben Johnson.
     - API changes
         - A response with a 200 (Ok) status should have an entity. Now,
           we make sure that a warning is logged. 

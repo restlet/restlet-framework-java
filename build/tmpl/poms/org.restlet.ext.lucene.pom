@@ -1,0 +1,38 @@
+<project>
+   <modelVersion>4.0.0</modelVersion>
+   <groupId>@group-id@</groupId>
+   <artifactId>@artifact-id@</artifactId>
+   <version>@version@</version>
+   <dependencies>
+      <dependency>
+         <groupId>org.restlet</groupId>
+         <artifactId>org.restlet</artifactId>
+         <version>@version@</version>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.solr</groupId>
+         <artifactId>solr-core</artifactId>
+         <version>@lib-solr-version@</version>
+      </dependency> 
+      <dependency>
+         <groupId>org.apache.tika</groupId>
+         <artifactId>tika</artifactId>
+         <version>@lib-tika-version@</version>
+      </dependency> 
+   </dependencies>
+
+   <name>Lucene extension</name>
+   <description>Integration with Apache Lucene, Solr and Tika sub-projects.</description>
+   <licenses>
+      <license>
+         <name>CDDL license</name>
+         <url>http://www.opensource.org/licenses/cddl1.php</url>
+      </license>
+      <license>
+         <name>LGPL license</name>
+         <url>
+            http://www.opensource.org/licenses/lgpl-license.php
+         </url>
+      </license>
+   </licenses>
+</project>

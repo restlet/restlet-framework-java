@@ -81,7 +81,7 @@
 		<format property="maven-snapshot-timestamp" pattern="yyyyMMdd.HHmmss" />
 	</tstamp>
 
-	<!-- Svn revision number -->
+	<!-- SVN revision number -->
 	<exec executable="svn" output="${temp}/svninfo.xml">
 		<arg line="info --xml" />
 	</exec>
@@ -320,6 +320,14 @@
 		<fileset dir="${lib}/${lib-jxta-id}" includes="*.jar" />
 	</path>
 
+	<path id="mod-lucene-path">
+		<path refid="mod-core-path" />
+		<pathelement path="${classes}/${mod-core-id}" />
+		<fileset dir="${lib}/${lib-lucene-id}" includes="*.jar" />
+		<fileset dir="${lib}/${lib-solr-id}" includes="*.jar" />
+		<fileset dir="${lib}/${lib-tika-id}" includes="*.jar" />
+	</path>
+
 	<path id="mod-net-path">
 		<path refid="mod-core-path" />
 		<pathelement path="${classes}/${mod-core-id}" />
@@ -453,6 +461,10 @@
 		<pathelement path="${classes}/${mod-grizzly-id}" />
 		<pathelement path="${mod}/${mod-grizzly-id}/src" />
 
+		<path refid="mod-lucene-path" />
+		<pathelement path="${classes}/${mod-lucene-id}" />
+		<pathelement path="${mod}/${mod-lucene-id}/src" />
+
 		<path refid="mod-simple-path" />
 		<pathelement path="${classes}/${mod-simple-id}" />
 		<pathelement path="${mod}/${mod-simple-id}/src" />
@@ -529,6 +541,7 @@
 		<pathelement path="${classes}/${mod-jmx-id}" />
 		<pathelement path="${classes}/${mod-json-id}" />
 		<pathelement path="${classes}/${mod-jxta-id}" />
+		<pathelement path="${classes}/${mod-lucene-id}" />
 		<pathelement path="${classes}/${mod-net-id}" />
 		<pathelement path="${classes}/${mod-oauth-id}" />
 		<pathelement path="${classes}/${mod-servlet-id}" />
@@ -552,6 +565,7 @@
 		<path refid="mod-jmx-path" />
 		<path refid="mod-json-path" />
 		<path refid="mod-jxta-path" />
+		<path refid="mod-lucene-path" />
 		<path refid="mod-net-path" />
 		<path refid="mod-oauth-path" />
 		<path refid="mod-servlet-path" />
@@ -1136,6 +1150,7 @@
 		<!-- disabled for now  <pomModule name="jmx" /> -->
 		<pomModule name="json" />
 		<!-- disabled for now  <pomModule name="jxta" /> -->
+		<pomModule name="lucene" />
 		<pomModule name="net" />
 		<pomModule name="oauth" />
 		<pomModule name="servlet" />
@@ -1269,6 +1284,7 @@
 		<compileModule name="jaxrs" />
 		
 		<compileModule name="jxta" />
+		<compileModule name="lucene" />
 		<compileModule name="net" />
 		<compileModule name="oauth" />
 		<compileModule name="servlet" />
@@ -1329,6 +1345,7 @@
 		<backportModule name="jmx" failonwarning="@{backport-failonwarning}" />
 		<backportModule name="json" failonwarning="@{backport-failonwarning}" />
 		<backportModule name="jxta" failonwarning="@{backport-failonwarning}" />
+		<backportModule name="lucene" failonwarning="@{backport-failonwarning}" />
 		<backportModule name="net" failonwarning="@{backport-failonwarning}" />
 		<backportModule name="oauth"
 		                failonwarning="@{backport-failonwarning}" />
@@ -1444,6 +1461,7 @@
 				<pathelement path="${mod}/${mod-jibx-id}/src/" />
 				<!-- disabled for now  <pathelement path="${mod}/${mod-jmx-id}/src/" /> -->
 				<pathelement path="${mod}/${mod-json-id}/src/" />
+				<pathelement path="${mod}/${mod-lucene-id}/src/" />
 				<!-- disabled for now  <pathelement path="${mod}/${mod-jxta-id}/src/" /> -->
 				<pathelement path="${mod}/${mod-net-id}/src/" />
 				<pathelement path="${mod}/${mod-oauth-id}/src/" />
@@ -1464,7 +1482,7 @@
 			<group title="${restlet-ext-standards}">
 				<package name="org.restlet.ext.oauth*" />
 				<package name="org.restlet.ext.atom*" />
-				<package name="org.restlet.ext.jaxrs*" />
+				<package name="org.restlet.ext.json*" />
 				<package name="org.restlet.ext.ssl*" />
 				<package name="org.restlet.ext.wadl*" />
 			</group>
@@ -1474,19 +1492,21 @@
 				<package name="org.restlet.ext.javamail*" />
 				<package name="org.restlet.ext.jdbc*" />
 				<package name="org.restlet.ext.jetty*" />
+				<package name="org.restlet.ext.lucene*" />
 				<package name="org.restlet.ext.net*" />
 				<package name="org.restlet.ext.simple*" />
 			</group>
 			<group title="${restlet-ext-integrations}">
 				<package name="org.restlet.ext.gwt*" />
+				<package name="org.restlet.ext.lucene*" />
 				<package name="org.restlet.ext.servlet*" />
 				<package name="org.restlet.ext.spring*" />
 				<package name="org.restlet.ext.xdb*" />
 				<package name="org.restlet.ext.fileupload*" />
 				<package name="org.restlet.ext.freemarker*" />
 				<package name="org.restlet.ext.jaxb*" />
+				<package name="org.restlet.ext.jaxrs*" />
 				<package name="org.restlet.ext.jibx*" />
-				<package name="org.restlet.ext.json*" />
 				<package name="org.restlet.ext.velocity*" />
 			</group>
 
@@ -1503,6 +1523,9 @@
 			<link href="http://jetty.mortbay.org/apidocs/" />
 			<link href="http://jibx.sourceforge.net/api/" />
 			<link href="https://jsr311.dev.java.net/nonav/javadoc/" />
+			<link href="http://lucene.apache.org/java/2_4_0/api/" />
+			<link href="http://lucene.apache.org/solr/api/" />
+			<link href="http://lucene.apache.org/tika/apidocs/" />
 			<link href="http://static.springframework.org/spring/docs/2.0.x/api/" />
 			<link href="http://www.json.org/javadoc/" />
 			<link href="http://www.restlet.org/documentation/${version-minor}/api/"
@@ -1650,6 +1673,7 @@
 		<!-- disabled for now  <findbugsModule name="jmx" /> -->
 		<findbugsModule name="json" />
 		<findbugsModule name="jxta" />
+		<findbugsModule name="lucene" />
 		<findbugsModule name="net" />
 		<findbugsModule name="oauth" />
 		<findbugsModule name="servlet" />
@@ -1684,6 +1708,7 @@
 		<checkstyleModule name="jmx" />
 		<checkstyleModule name="json" />
 		<checkstyleModule name="jxta" />
+		<checkstyleModule name="lucene" />
 		<checkstyleModule name="net" />
 		<checkstyleModule name="oauth" />
 		<checkstyleModule name="servlet" />
@@ -1795,14 +1820,17 @@
 		<!-- disabled for now  <stageLibrary name="jxta" /> -->
 		<stageLibrary name="lang" />
 		<stageLibrary name="logging" />
+		<stageLibrary name="lucene" />
 		<!-- disabled for now  <stageLibrary name="mina" /> -->
 		<stageLibrary name="oauth" />
 		<stageLibrary name="pool" />
 		<stageLibrary name="rhino" />
 		<stageLibrary name="servlet" />
 		<stageLibrary name="simple" />
+		<stageLibrary name="solr" />
 		<stageLibrary name="spring" />
 		<stageLibrary name="stax" />
+		<stageLibrary name="tika" />
 		<stageLibrary name="velocity" />
 		<stageLibrary name="wrapper" />
 		<stageLibrary name="bloat" />
@@ -1827,6 +1855,7 @@
 		<!-- disabled for now  <stageModule name="jmx" /> -->
 		<stageModule name="json" />
 		<!-- disabled for now  <stageModule name="jxta" /> -->
+		<stageModule name="lucene" />
 		<stageModule name="net" />
 		<stageModule name="oauth" />
 		<stageModule name="servlet" />
@@ -1874,6 +1903,7 @@
 		<maven2Module name="jetty" />
 		<maven2Module name="jibx" />
 		<maven2Module name="json" />
+		<maven2Module name="lucene" />
 		<maven2Module name="net" />
 		<maven2Module name="oauth" />
 		<maven2Module name="servlet" />
@@ -1884,6 +1914,7 @@
 		<maven2Module name="velocity" />
 		<maven2Module name="xdb" />
 		<maven2Module name="wadl" />
+		
 		<maven2Library name="simple" />
 		<maven2Library name="jsslutils" />
 		<maven2Library name="jaxrs" />

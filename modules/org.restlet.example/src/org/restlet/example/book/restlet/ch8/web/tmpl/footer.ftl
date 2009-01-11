@@ -29,7 +29,7 @@
       </div>
       <div id="footer">
          <a href="http://www.noelios.com" title="Noelios Technologies site"><img src="${rootRef}/images/logoNoelios.png" alt="Logo Noelios" /></a>
-         <small>Copyright &copy; 2008 <a href="http://www.noelios.com" title="Noelios Technologies site">Noelios Technologies</a></small>
+         <small>Copyright &copy; 2009 <a href="http://www.noelios.com" title="Noelios Technologies site">Noelios Technologies</a></small>
       </div>	
    </body>
 </html>

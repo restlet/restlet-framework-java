@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?><templates><template autoinsert="false" context="filecomment_context" deleted="false" description="Comment for created Java files" enabled="true" id="org.eclipse.jdt.ui.text.codetemplates.filecomment" name="filecomment">/**&#13;
- * Copyright 2005-2008 Noelios Technologies.&#13;
+ * Copyright 2005-2009 Noelios Technologies.&#13;
  * &#13;
  * The contents of this file are subject to the terms of the following open&#13;
  * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can&#13;
@@ -18,7 +18,7 @@
  * See the Licenses for the specific language governing permissions and&#13;
  * limitations under the Licenses.&#13;
  * &#13;
- * Alternatively, you can obtain a royaltee free commercial license with less&#13;
+ * Alternatively, you can obtain a royalty free commercial license with less&#13;
  * limitations, transferable or non-transferable, directly at&#13;
  * http://www.noelios.com/products/restlet-engine/.&#13;
  * &#13;

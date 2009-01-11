@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2008 Noelios Technologies.
+ * Copyright 2005-2009 Noelios Technologies.
  * 
  * The contents of this file are subject to the terms of the following open
  * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
@@ -18,7 +18,7 @@
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
  * 
- * Alternatively, you can obtain a royaltee free commercial license with less
+ * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
  * http://www.noelios.com/products/restlet-engine
  * 
@@ -172,7 +172,7 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
      * the JAX-RS implementor, and if the actual date is after a given date.
      * This method checks this.
      * 
-     * Year is 2008
+     * Year is 2009
      * 
      * @param dayOfMonth
      *            1-31
@@ -182,7 +182,7 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
      *         workspace.
      */
     public static boolean jaxRxImplementorCheck(int dayOfMonth, int month) {
-        return jaxRxImplementorCheck(dayOfMonth, month, 2008);
+        return jaxRxImplementorCheck(dayOfMonth, month, 2009);
     }
 
     /**
@@ -191,7 +191,7 @@ public abstract class JaxRsTestCase extends RestletServerTestCase {
      * @param month
      *            1-12
      * @param year
-     *            e.g. 2008
+     *            e.g. 2009
      * @return true, if this workspace seems not to be JAX-RS implementors
      *         workspace.
      * @see #jaxRxImplementorAndAfter(int, int)
