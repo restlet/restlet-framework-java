@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Restlet API - Tests
+Bundle-Name: Restlet Unit Tests
 Bundle-SymbolicName: org.restlet.test
 Bundle-Version: 1.1
 Bundle-Vendor: Noelios Technologies

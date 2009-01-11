@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Noelios Restlet Engine - Extension - Java ssl utils
+Bundle-Name: Restlet Extension - SSL support
 Bundle-SymbolicName: org.restlet.ext.ssl
 Bundle-Version: 1.1
 Bundle-Vendor: Noelios Technologies

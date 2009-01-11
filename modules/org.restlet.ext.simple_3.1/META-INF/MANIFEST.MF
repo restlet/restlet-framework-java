@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Noelios Restlet Engine - Extension - Simple
+Bundle-Name: Restlet Extension - Simple
 Bundle-SymbolicName: org.restlet.ext.simple
 Bundle-Version: 1.1
 Bundle-Vendor: Noelios Technologies

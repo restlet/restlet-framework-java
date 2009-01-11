@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Restlet - Extension - Shell
+Bundle-Name: Restlet Extension - Shell
 Bundle-SymbolicName: org.restlet.ext.shell
 Bundle-Version: 1.1
 Bundle-Vendor: Noelios Technologies

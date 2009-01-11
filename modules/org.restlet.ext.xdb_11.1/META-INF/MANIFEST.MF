@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Noelios Restlet Engine - Extension - Oracle XML DB
+Bundle-Name: Restlet Extension - Oracle XML DB
 Bundle-SymbolicName: org.restlet.ext.xdb
 Bundle-Version: 1.1
 Bundle-Vendor: Noelios Technologies
