@@ -35,6 +35,8 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 /**
  * Restlet {@link Router} which behaves like Spring's
@@ -72,7 +74,10 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
  * @author James Maki
  */
 public class SpringBeanRouter extends Router implements
-        BeanFactoryPostProcessor {
+        ApplicationContextAware, BeanFactoryPostProcessor {
+
+    /** The Spring application context. */
+    private volatile ApplicationContext applicationContext;
 
     /** If beans should be searched for higher up in the BeanFactory hierarchy */
     private volatile boolean findInAncestors = true;
@@ -117,10 +122,12 @@ public class SpringBeanRouter extends Router implements
                         true, true) : factory.getBeanNamesForType(
                 Resource.class, true, true);
 
+        BeanFactory bf = this.applicationContext == null ? factory
+                : this.applicationContext;
         for (final String name : names) {
             final String uri = resolveUri(name, factory);
             if (uri != null) {
-                attach(uri, createFinder(factory, name));
+                attach(uri, createFinder(bf, name));
             }
         }
     }
@@ -140,6 +147,17 @@ public class SpringBeanRouter extends Router implements
         }
 
         return null;
+    }
+
+    /**
+     * Sets the Spring application context.
+     * 
+     * @param applicationContext
+     *            The context to set.
+     */
+    public void setApplicationContext(ApplicationContext applicationContext)
+            throws BeansException {
+        this.applicationContext = applicationContext;
     }
 
     /**

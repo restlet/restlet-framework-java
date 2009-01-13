@@ -73,7 +73,9 @@ Changes log
           format.
         - Added a proposal "org.restlet.security" package with a
           potential replacement for current Guard mechanism. This is
-          an alpha level package not intended for Restlet users yey.		 
+          an alpha level package not intended for Restlet users yey.
+        - Made the SpringBeanRouter implement ApplicationContextAware
+          to enable AOP on target resources. Suggested by Daniel Woo.		 
      - Misc
         - JAX-RS extension:
             - added class ExendedUriBuilder with "file" extensions for
