@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: FreeMarker template engine
 Bundle-SymbolicName: org.freemarker
-Bundle-Version: 2.3.13
+Bundle-Version: 2.3.15
 Bundle-ClassPath: org.freemarker.jar
 Bundle-Vendor: FreeMarker project
 Export-Package: freemarker,
@@ -53,7 +53,12 @@ Export-Package: freemarker,
    freemarker.ext.beans,
    org.mozilla.javascript,
    freemarker.ext.util",
- freemarker.ext.servlet;uses:="javax.servlet.http,freemarker.template,javax.servlet",
+ freemarker.ext.servlet;
+  uses:="javax.servlet.http,
+   freemarker.template,
+   freemarker.core,
+   javax.servlet,
+   freemarker.cache",
  freemarker.ext.util;uses:="freemarker.template",
  freemarker.ext.xml;uses:="freemarker.template,org.jaxen",
  freemarker.log,
