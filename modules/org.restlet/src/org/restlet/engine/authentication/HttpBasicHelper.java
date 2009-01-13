@@ -42,7 +42,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-public class HttpBasicHelper extends AuthenticationHelper {
+public class HttpBasicHelper extends ChallengeAuthenticatorHelper {
 
     /**
      * Constructor.

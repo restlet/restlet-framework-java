@@ -70,7 +70,10 @@ Changes log
           issue reported by Nicolas Rinaudo. 
         - Added static Series#unmodifiableSeries() method.
         - Added DateUtils.format(Date) method which uses HTTP default
-          format.			 
+          format.
+        - Added a proposal "org.restlet.security" package with a
+          potential replacement for current Guard mechanism. This is
+          an alpha level package not intended for Restlet users yey.		 
      - Misc
         - JAX-RS extension:
             - added class ExendedUriBuilder with "file" extensions for

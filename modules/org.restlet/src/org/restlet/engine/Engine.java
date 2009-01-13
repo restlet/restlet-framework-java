@@ -66,7 +66,7 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.engine.application.ApplicationHelper;
-import org.restlet.engine.authentication.AuthenticationHelper;
+import org.restlet.engine.authentication.ChallengeAuthenticatorHelper;
 import org.restlet.engine.authentication.AuthenticationUtils;
 import org.restlet.engine.authentication.HttpAmazonS3Helper;
 import org.restlet.engine.authentication.HttpBasicHelper;
@@ -221,7 +221,7 @@ public class Engine extends org.restlet.util.Engine {
     }
 
     /** List of available authentication helpers. */
-    private volatile List<AuthenticationHelper> registeredAuthentications;
+    private volatile List<ChallengeAuthenticatorHelper> registeredAuthentications;
 
     /** List of available client connectors. */
     private volatile List<ClientHelper> registeredClients;
@@ -245,7 +245,7 @@ public class Engine extends org.restlet.util.Engine {
     public Engine(boolean discoverHelpers) {
         this.registeredClients = new CopyOnWriteArrayList<ClientHelper>();
         this.registeredServers = new CopyOnWriteArrayList<ServerHelper>();
-        this.registeredAuthentications = new CopyOnWriteArrayList<AuthenticationHelper>();
+        this.registeredAuthentications = new CopyOnWriteArrayList<ChallengeAuthenticatorHelper>();
 
         if (discoverHelpers) {
             try {
@@ -499,11 +499,11 @@ public class Engine extends org.restlet.util.Engine {
      *            Indicates if server side support is required.
      * @return The authentication helper or null.
      */
-    public AuthenticationHelper findHelper(ChallengeScheme challengeScheme,
+    public ChallengeAuthenticatorHelper findHelper(ChallengeScheme challengeScheme,
             boolean clientSide, boolean serverSide) {
-        AuthenticationHelper result = null;
-        final List<AuthenticationHelper> helpers = getRegisteredAuthentications();
-        AuthenticationHelper current;
+        ChallengeAuthenticatorHelper result = null;
+        final List<ChallengeAuthenticatorHelper> helpers = getRegisteredAuthentications();
+        ChallengeAuthenticatorHelper current;
 
         for (int i = 0; (result == null) && (i < helpers.size()); i++) {
             current = helpers.get(i);
@@ -807,7 +807,7 @@ public class Engine extends org.restlet.util.Engine {
      * 
      * @return The list of available authentication helpers.
      */
-    public List<AuthenticationHelper> getRegisteredAuthentications() {
+    public List<ChallengeAuthenticatorHelper> getRegisteredAuthentications() {
         return this.registeredAuthentications;
     }
 

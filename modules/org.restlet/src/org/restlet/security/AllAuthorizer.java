@@ -25,43 +25,24 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.authentication;
+package org.restlet.security;
 
-import java.io.UnsupportedEncodingException;
-
-import org.restlet.data.ChallengeResponse;
-import org.restlet.data.ChallengeScheme;
-import org.restlet.data.Parameter;
 import org.restlet.data.Request;
-import org.restlet.engine.util.Base64;
-import org.restlet.util.Series;
 
 /**
- * Implements the SMTP PLAIN authentication.
+ * Authorize returning true all the time.
  * 
  * @author Jerome Louvel
  */
-public class SmtpPlainHelper extends ChallengeAuthenticatorHelper {
+public class AllAuthorizer implements Authorizer {
 
     /**
-     * Constructor.
+     * Returns true for all requests.
+     * 
+     * @return True for all requests.
      */
-    public SmtpPlainHelper() {
-        super(ChallengeScheme.SMTP_PLAIN, true, false);
-    }
-
-    @Override
-    public void formatCredentials(StringBuilder sb,
-            ChallengeResponse challenge, Request request,
-            Series<Parameter> httpHeaders) {
-        try {
-            final String credentials = "^@" + challenge.getIdentifier() + "^@"
-                    + new String(challenge.getSecret());
-            sb.append(Base64.encode(credentials.getBytes("US-ASCII"), false));
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(
-                    "Unsupported encoding, unable to encode credentials");
-        }
+    public boolean authorize(Request request) {
+        return true;
     }
 
 }
