@@ -1796,12 +1796,6 @@
 	</target>
 
 	
-	<target name="stage-maven"
-	        depends="prepare-stage-maven,stage-maven-2"
-	        if="do-maven"
-	        description="Generate the maven distributions." />
-
-	<!-- STAGE-MAVEN-2 target -->
 	<target name="prepare-stage-maven"
 	        if="do-prepare-stage-maven"
 	        description="Prepare the generation of the maven distributions." >
@@ -1819,7 +1813,13 @@
 		</condition>
 	</target>
 
-		<target name="stage-maven-2"
+	<target name="stage-maven"
+	        depends="prepare-stage-maven,stage-maven-2"
+	        if="do-maven"
+	        description="Generate the maven distributions." />
+
+	<!-- STAGE-MAVEN-2 target -->
+	<target name="stage-maven-2"
 	        if="do-maven"
 	        description="Generate the maven-2.x distributions.">
 		<delete dir="${dist-maven2}"
