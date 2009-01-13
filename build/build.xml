@@ -1481,7 +1481,6 @@
 				<package name="org.restlet.ext.javamail*" />
 				<package name="org.restlet.ext.jdbc*" />
 				<package name="org.restlet.ext.jetty*" />
-				<package name="org.restlet.ext.lucene*" />
 				<package name="org.restlet.ext.net*" />
 				<package name="org.restlet.ext.simple*" />
 			</group>
