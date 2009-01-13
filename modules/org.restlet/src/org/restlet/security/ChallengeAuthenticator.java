@@ -40,7 +40,7 @@ import org.restlet.engine.authentication.ChallengeAuthenticatorHelper;
 import org.restlet.util.Resolver;
 
 /**
- * Authenticator base on a challenge scheme like HTTP Basic or HTTP Digest.
+ * Authenticator based on a challenge scheme like HTTP Basic or HTTP Digest.
  * 
  * @author Jerome Louvel
  */

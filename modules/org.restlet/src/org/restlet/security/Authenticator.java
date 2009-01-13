@@ -47,13 +47,13 @@ public interface Authenticator {
     /** Valid credentials provided. */
     public static int RESULT_VALID = 1;
 
-    /** No credentials provided. */
+    /** Stale credentials provided. */
     public static int RESULT_STALE = 2;
 
-    /** Stale credentials provided. */
+    /** Unsupported credentials. */
     public static int RESULT_UNSUPPORTED = 3;
 
-    /** Invalid credentials provided. */
+    /** Authenticator unavailable. */
     public static int RESULT_UNAVAILABLE = 4;
 
     /**

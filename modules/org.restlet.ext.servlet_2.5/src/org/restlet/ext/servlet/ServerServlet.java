@@ -71,21 +71,21 @@ import org.restlet.util.Engine;
  * <th>Description</th>
  * </tr>
  * <tr>
- * <td><b>Mode 1</b></td>
+ * <td><b>1</b></td>
  * <td>If a "/WEB-INF/restlet.xml" file exists and contains a valid XML
  * configuration as described in the documentation of the {@link Component}
  * class. It is used to instantiate and attach the described component,
  * contained applications and connectors.</td>
  * </tr>
  * <tr>
- * <td><b>Mode 2</b></td>
+ * <td><b>2</b></td>
  * <td>If the "/WEB-INF/web.xml" file contains a context parameter named
  * "org.restlet.component", its value must be the path of a class that inherits
  * from {@link Component}. It is used to instantiate and attach the described
  * component, contained applications and connectors.</td>
  * </tr>
  * <tr>
- * <td><b>Mode 3</b></td>
+ * <td><b>3</b></td>
  * <td>If the "/WEB-INF/web.xml" file contains a context parameter named
  * "org.restlet.application", its value must be the path of a class that
  * inherits from {@link Application}. It is used to instantiate the application
