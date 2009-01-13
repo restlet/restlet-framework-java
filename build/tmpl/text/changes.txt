@@ -105,3 +105,7 @@ Changes log
           anymore. It now sends them as relative URIs according to the
           HTTP 1.1 specification. Reported by Jonas Maturana Larsen.
         - Upgraded Apache Commons IO to version 1.4.
+        - The ServerServlet now sets the HTTP headers after the status
+          to prevent issues with Tomcat 5.0 and "Content-Length: 0" 
+          headers sending the response immediately. 
+          Reported by Eirik Bjorsnos. 
