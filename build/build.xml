@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0"?>
 
 <!-- ===============================================================
-     Restlet build script - Copyright 2005-2008 Noelios Technologies
+     Restlet build script - Copyright 2005-2009 Noelios Technologies
      =============================================================== -->
 
 <project name="Restlet" default="rebuild">
@@ -1393,7 +1393,7 @@
 			</sourcepath>
 
 			<bottom>
-				<![CDATA[<i>Copyright &#169; 2005-2008 <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
+				<![CDATA[<i>Copyright &#169; 2005-2009 <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
          	</bottom>
 
 			<group title="${restlet-api}">
@@ -1420,7 +1420,7 @@
 			</sourcepath>
 
 			<bottom>
-				<![CDATA[<i>Copyright &#169; 2005-2008 <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
+				<![CDATA[<i>Copyright &#169; 2005-2009 <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
 			</bottom>
 
 			<group title="${restlet-engine}">
@@ -1476,12 +1476,13 @@
 			</sourcepath>
 
 			<bottom>
-				<![CDATA[<i>Copyright &#169; 2005-2008 <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
+				<![CDATA[<i>Copyright &#169; 2005-2009 <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
 			</bottom>
 
 			<group title="${restlet-ext-standards}">
 				<package name="org.restlet.ext.oauth*" />
 				<package name="org.restlet.ext.atom*" />
+				<package name="org.restlet.ext.jaxrs*" />
 				<package name="org.restlet.ext.json*" />
 				<package name="org.restlet.ext.ssl*" />
 				<package name="org.restlet.ext.wadl*" />
@@ -1505,7 +1506,6 @@
 				<package name="org.restlet.ext.fileupload*" />
 				<package name="org.restlet.ext.freemarker*" />
 				<package name="org.restlet.ext.jaxb*" />
-				<package name="org.restlet.ext.jaxrs*" />
 				<package name="org.restlet.ext.jibx*" />
 				<package name="org.restlet.ext.velocity*" />
 			</group>
@@ -1554,7 +1554,7 @@
 			</sourcepath>
 
 			<bottom>
-				<![CDATA[<i>Copyright &#169; 2005-2008 <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
+				<![CDATA[<i>Copyright &#169; 2005-2009 <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
 			</bottom>
 
 			<group title="${restlet-gwt}">
@@ -1586,7 +1586,7 @@
 			</sourcepath>
 
 			<bottom>
-				<![CDATA[<i>Copyright &#169; 2005-2008 <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
+				<![CDATA[<i>Copyright &#169; 2005-2009 <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
          	</bottom>
 
 			<group title="${restlet-api}">
