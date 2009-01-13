@@ -62,6 +62,7 @@ Changes log
 		- Upgraded jSSLutils to version 0.5.1.
 		- Upgraded Grizzly to version 1.9.0.
       - Upgraded JSON library to latest version.
+      - Updated FreeMarker to 2.3.15.
 - 1.1.1 (2008-10-31)
     - Bugs fixed
         - Fixed regression with applications deployed in Servlet 
