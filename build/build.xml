@@ -81,18 +81,6 @@
 		<format property="maven-snapshot-timestamp" pattern="yyyyMMdd.HHmmss" />
 	</tstamp>
 
-	<!-- SVN revision number -->
-	<exec executable="svn" output="${temp}/svninfo.xml">
-		<arg line="info --xml" />
-	</exec>
-	<xmlproperty file="${temp}/svninfo.xml" collapseattributes="true" />
-	<property name="svn.revision" value="${info.entry.revision}" />
-
-	<!-- Snapshot? -->
-	<condition property="is.snapshot" else="false">
-		<contains string="${version-maven}" substring="-SNAPSHOT" />
-	</condition>
-
 	<condition property="ant-old">
 		<not>
 			<contains string="${ant.version}" substring="Ant version 1.7" />
@@ -1875,8 +1863,25 @@
  		-->
 	</target>
 
+	<target name="prepare-stage-maven"
+	        if="do-prepare-stage-maven"
+	        description="Prepare the generation of the maven distributions." >
+		<!-- Svn revision number -->
+		<mkdir dir="${temp}"/>
+		<exec executable="svn" output="${temp}/svninfo.xml" >
+			<arg line="info --xml" />
+		</exec>
+		<xmlproperty file="${temp}/svninfo.xml" collapseattributes="true" />
+		<property name="svn.revision" value="${info.entry.revision}" />
+
+		<!-- Snapshot? -->
+		<condition property="is.snapshot" else="false">
+			<contains string="${version-maven}" substring="-SNAPSHOT" />
+		</condition>
+	</target>
+
 	<target name="stage-maven"
-	        depends="stage-maven-2"
+	        depends="prepare-stage-maven,stage-maven-2"
 	        if="do-maven"
 	        description="Generate the maven distributions." />
 
