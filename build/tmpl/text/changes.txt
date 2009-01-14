@@ -51,7 +51,12 @@ Changes log
         - Fixed NPE in DecodeRepresentation when the wrapped
           representation has no stream. Reported by Nicolas Rinaudo.
         - Fixed potential encoding bug with ReaderRepresentation.
-          Reported by Nicolas Rinaudo.        
+          Reported by Nicolas Rinaudo.
+        - The ServerServlet now sets the HTTP headers after the status 
+          to prevent issues with Tomcat 5.0 and "Content-Length: 0" 
+          headers sending the response immediately. This also fixes 
+          a similar issue with GWT that forced to return an empty
+          representation. Reported by Eirik Bjorsnos. 
     - Misc
         - Fully moved org.restlet.gwt.internal content into 
           org.restlet.gwt.engine package.

@@ -52,6 +52,7 @@ import org.restlet.data.Status;
 import org.restlet.util.Series;
 
 import com.noelios.restlet.http.HttpCall;
+import com.noelios.restlet.http.HttpConstants;
 import com.noelios.restlet.http.HttpRequest;
 import com.noelios.restlet.http.HttpServerCall;
 
@@ -363,19 +364,27 @@ public class ServletCall extends HttpServerCall {
      */
     @Override
     public void sendResponse(Response response) throws IOException {
-        // Add the response headers
-        Parameter header;
-        for (final Iterator<Parameter> iter = getResponseHeaders().iterator(); iter
-                .hasNext();) {
-            header = iter.next();
-            getResponse().addHeader(header.getName(), header.getValue());
-        }
-
         // Set the status code in the response. We do this after adding the
         // headers because when we have to rely on the 'sendError' method,
         // the Servlet containers are expected to commit their response.
         if (Status.isError(getStatusCode()) && (response.getEntity() == null)) {
             try {
+                // Add the response headers
+                Parameter header;
+                for (final Iterator<Parameter> iter = getResponseHeaders()
+                        .iterator(); iter.hasNext();) {
+                    header = iter.next();
+
+                    // We don't need to set the content length, especially
+                    // because it could send the response too early on some
+                    // containers (ex: Tomcat 5.0).
+                    if (!header.getName().equals(
+                            HttpConstants.HEADER_CONTENT_LENGTH)) {
+                        getResponse().addHeader(header.getName(),
+                                header.getValue());
+                    }
+                }
+
                 getResponse().sendError(getStatusCode(), getReasonPhrase());
             } catch (IOException ioe) {
                 getLogger().log(Level.WARNING,
@@ -384,6 +393,17 @@ public class ServletCall extends HttpServerCall {
         } else {
             // Send the response entity
             getResponse().setStatus(getStatusCode());
+
+            // Add the response headers after setting the status because
+            // otherwise some containers (ex: Tomcat 5.0) immediately send
+            // the response if a "Content-Length: 0" header is found.
+            Parameter header;
+            for (final Iterator<Parameter> iter = getResponseHeaders()
+                    .iterator(); iter.hasNext();) {
+                header = iter.next();
+                getResponse().addHeader(header.getName(), header.getValue());
+            }
+
             super.sendResponse(response);
         }
     }
