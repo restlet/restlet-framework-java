@@ -54,12 +54,6 @@ public class ResourceTestCase extends TestCase {
 
     public class AutoDetectResource extends Resource {
 
-        public AutoDetectResource(Context context, Request request,
-                Response response) {
-            super(context, request, response);
-
-        }
-
         public Representation representXml() {
             return new StringRepresentation("<root>test</root>",
                     MediaType.TEXT_XML);
@@ -84,8 +78,8 @@ public class ResourceTestCase extends TestCase {
                 new Preference<MediaType>(MediaType.TEXT_XML));
         Response response = new Response(request);
 
-        Resource target = new AutoDetectResource(new Context(), request,
-                response);
+        Resource target = new AutoDetectResource();
+        target.init(new Context(), request, response);
         target.handleGet();
         Representation rep = response.getEntity();
 

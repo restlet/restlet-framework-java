@@ -92,10 +92,10 @@ import org.restlet.util.Series;
  * must return a {@link Representation} instance and accept optional input
  * parameter of the following classes: {@link MediaType}, {@link Variant},
  * {@link CharacterSet}. Their value is provided from the selected variant to
- * represent. Note that if several media type or character set extension are
+ * represent. Note that if several media type or character set extensions are
  * detected, they will produce separate variants. However, several languages or
- * encoding will produce only one list for each defined variant. The list of
- * supported extension and their matching metadata is provided by the
+ * encodings will produce only one list for each defined variant. The list of
+ * supported extensions and their matching metadata is provided by the
  * application's {@link MetadataService}. If needed, this feature can be turned
  * off by calling {@link #setDetectVariants(boolean)}.<br>
  * <br>
