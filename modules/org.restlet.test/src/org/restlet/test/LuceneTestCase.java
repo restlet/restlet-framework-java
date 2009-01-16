@@ -62,7 +62,7 @@ public class LuceneTestCase extends TestCase {
 
         // Analyze the RTF representation
         TikaRepresentation tr = new TikaRepresentation(rtfSample);
-        tr.setTikeParser(new RTFParser());
+        tr.setTikaParser(new RTFParser());
         tr.parse(transform);
     }
 }
