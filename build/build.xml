@@ -1578,9 +1578,17 @@
 			</classpath>
 			<formatter type="plain" />
 			<test name="com.noelios.restlet.test.NoeliosTestSuite"
-			      todir="${temp}/test" />
+			      todir="${temp}/test"
+			      failureproperty="noelios.test.suite.error" />
 			<test name="org.restlet.test.RestletTestSuite"
-			      todir="${temp}/test" />
+			      todir="${temp}/test"
+			      failureproperty="restlet.test.suite.error" />
+		<fail if="noelios.test.suite.error">
+                   Error during the Noelios test suite. See this file for more details: ${temp}/test/TEST-com.noelios.restlet.test.NoeliosTestSuite.txt.
+		</fail>
+		<fail if="restlet.test.suite.error">
+                   Error during the Restlet test suite. See this file for more details: ${temp}/test/TEST-org.restlet.test.RestletTestSuite.txt.
+		</fail>
 		</junit>
 	</target>
 
