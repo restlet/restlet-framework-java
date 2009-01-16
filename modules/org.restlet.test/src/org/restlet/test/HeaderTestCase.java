@@ -65,8 +65,6 @@ public class HeaderTestCase extends RestletTestCase {
 
     private static final String HTTP_HEADERS = "org.restlet.http.headers";
 
-    private static final int PORT = 8182;
-
     /**
      * Name of a test header field
      */
@@ -101,20 +99,21 @@ public class HeaderTestCase extends RestletTestCase {
     private Response getWithParams(Parameter... parameters) {
         final Client client = new Client(Protocol.HTTP);
         final Request request = new Request(Method.GET, "http://localhost:"
-                + PORT);
+                + RestletTestSuite.PORT);
         final Form headers = getHttpHeaders(request);
         for (final Parameter p : parameters) {
             headers.add(p);
         }
 
-        return client.handle(request);
+        Response result = client.handle(request);
+        return result;
     }
 
     @Override
     public void setUp() throws Exception {
         if (this.component == null) {
             this.component = new Component();
-            this.component.getServers().add(Protocol.HTTP, PORT);
+            this.component.getServers().add(Protocol.HTTP, RestletTestSuite.PORT);
             this.component.getDefaultHost().attachDefault(
                     new TestHeaderRestlet());
         }

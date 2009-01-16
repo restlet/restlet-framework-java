@@ -94,7 +94,7 @@ public class RedirectTestCase extends TestCase {
         originComponent.getDefaultHost().attach("", trace);
 
         // Create the server connectors
-        proxyComponent.getServers().add(Protocol.HTTP, 8182);
+        proxyComponent.getServers().add(Protocol.HTTP, RestletTestSuite.PORT);
         originComponent.getServers().add(Protocol.HTTP, 9090);
 
         // Now, let's start the components!
@@ -104,15 +104,18 @@ public class RedirectTestCase extends TestCase {
 
         // Tests
         final Context context = clientComponent.getContext();
-        String uri = "http://localhost:8182/?foo=bar";
+        String uri = "http://localhost:" + RestletTestSuite.PORT + "/?foo=bar";
         testCall(context, Method.GET, uri);
         testCall(context, Method.DELETE, uri);
 
-        uri = "http://localhost:8182/abcd/efgh/ijkl?foo=bar&foo=beer";
+        uri = "http://localhost:" + RestletTestSuite.PORT
+                + "/abcd/efgh/ijkl?foo=bar&foo=beer";
         testCall(context, Method.GET, uri);
         testCall(context, Method.DELETE, uri);
 
-        uri = "http://localhost:8182/v1/client/kwse/CnJlNUQV9%252BNNqbUf7Lhs2BYEK2Y%253D/user/johnm/uVGYTDK4kK4zsu96VHGeTCzfwso%253D/";
+        uri = "http://localhost:" + RestletTestSuite.PORT
+                + "/v1/client/kwse/CnJlNUQV9%252BNNqbUf7Lhs2BYEK2Y%253D"
+                + "/user/johnm/uVGYTDK4kK4zsu96VHGeTCzfwso%253D/";
         testCall(context, Method.GET, uri);
 
         // Stop the components

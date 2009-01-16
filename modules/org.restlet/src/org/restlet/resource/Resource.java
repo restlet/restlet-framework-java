@@ -570,7 +570,8 @@ public class Resource extends Handler {
         try {
             result = represent(variant);
 
-            if ((result == null) && isDetectVariants()) {
+            if ((result == null) && isDetectVariants()
+                    && (this.representMethods != null)) {
                 for (Resource.MethodInfo rm : this.representMethods) {
                     if (result == null) {
                         for (Variant rmVariant : rm.getMethodVariants()) {

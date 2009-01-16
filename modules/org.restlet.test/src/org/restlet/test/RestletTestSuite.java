@@ -40,6 +40,9 @@ import org.restlet.test.spring.AllSpringTests;
  * @author Jerome Louvel
  */
 public class RestletTestSuite extends TestSuite {
+    public static final int PORT = Integer.getInteger("org.restlet.test.port",
+            10080);
+
     /**
      * JUnit constructor.
      * 

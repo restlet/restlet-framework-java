@@ -38,6 +38,7 @@ import org.restlet.data.Preference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.test.RestletTestSuite;
 
 /**
  * Tests cases for the tunneling of preferences based on user agent.
@@ -45,7 +46,8 @@ import org.restlet.data.Status;
 public class UserAgentTunnelFilterTestCase extends TestCase {
 
     /** . */
-    private static final String URL = "http://localhost:8182/test";
+    private static final String URL = "http://localhost:"
+        + RestletTestSuite.PORT +"/test";
 
     private Application application;
 

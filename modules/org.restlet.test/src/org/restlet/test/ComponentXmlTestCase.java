@@ -42,9 +42,9 @@ import org.restlet.resource.StringRepresentation;
  */
 public class ComponentXmlTestCase extends TestCase {
 
-    private final int port = 8182;
+    private final int port = RestletTestSuite.PORT;
 
-    private final int port2 = 8183;
+    private final int port2 = port + 1;
 
     public void testComponentXMLConfig() throws Exception {
         final StringBuilder builder = new StringBuilder();
