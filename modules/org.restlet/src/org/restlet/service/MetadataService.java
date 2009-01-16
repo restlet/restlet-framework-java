@@ -27,6 +27,7 @@
 
 package org.restlet.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -113,7 +114,7 @@ public class MetadataService extends Service {
         addCommonExtensions();
     }
 
-/**
+    /**
      * Adds a common list of associations from extensions to metadata. The list
      * of languages extensions:<br>
      * <ul>
@@ -181,7 +182,7 @@ public class MetadataService extends Service {
      * <li>vxml: VoiceXML source file</li>
      * <li>wadl: Web Application Description Language document</li>
      * <li>wav: Waveform audio</li>
-     * <li>wrl: Plain text VRML file </li>
+     * <li>wrl: Plain text VRML file</li>
      * <li>xht, xhtml: XHTML document</li>
      * <li>xls: Microsoft Excel document</li>
      * <li>xml: XML document</li>
@@ -320,6 +321,33 @@ public class MetadataService extends Service {
     }
 
     /**
+     * Returns all the metadata associated to this extension. It returns null if
+     * the extension was not declared.
+     * 
+     * @param extension
+     *            The extension name without any delimiter.
+     * @return The list of metadata associated to this extension.
+     */
+    public List<Metadata> getAllMetadata(String extension) {
+        List<Metadata> result = null;
+
+        if (extension != null) {
+            // Look for all registered convenient mapping.
+            for (final MetadataExtension metadataExtension : this.mappings) {
+                if (extension.equals(metadataExtension.getName())) {
+                    if (result == null) {
+                        result = new ArrayList<Metadata>();
+                    }
+
+                    result.add(metadataExtension.getMetadata());
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * Returns the default encoding for local representations.
      * 
      * @return The default encoding for local representations.
@@ -367,7 +395,9 @@ public class MetadataService extends Service {
 
     /**
      * Returns the metadata associated to this extension. It returns null if the
-     * extension was not declared.
+     * extension was not declared. If several metadata are associated to the
+     * same extension (ex: 'xml' for both 'text/xml' and 'application/xml') then
+     * only the first matching metadata is returned.
      * 
      * @param extension
      *            The extension name without any delimiter.

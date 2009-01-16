@@ -55,9 +55,7 @@ public class Variant {
     /** The additional content codings applied to the entity-body. */
     private volatile List<Encoding> encodings;
 
-    /**
-     * The identifier.
-     */
+    /** The identifier. */
     private volatile Reference identifier;
 
     /** The natural language(s) of the intended audience for this variant. */

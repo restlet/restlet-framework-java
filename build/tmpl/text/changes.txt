@@ -75,7 +75,14 @@ Changes log
           potential replacement for current Guard mechanism. This is
           an alpha level package not intended for Restlet users yey.
         - Made the SpringBeanRouter implement ApplicationContextAware
-          to enable AOP on target resources. Suggested by Daniel Woo.		 
+          to enable AOP on target resources. Suggested by Daniel Woo.
+        - Resource subclasses can now declared variants and match them
+          more easily using an automatic detection mechanism based on
+          represent*() methods where '*' is a series of extensions. 
+          Also added a "detectVariants" property to turn off this
+          behavior if necessary.
+        - Added a getAllMetadata(String extension) method on the
+          MetadataService class. 		 
      - Misc
         - JAX-RS extension:
             - added class ExendedUriBuilder with "file" extensions for
