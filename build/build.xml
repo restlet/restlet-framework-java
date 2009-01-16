@@ -1625,7 +1625,7 @@
 
 		<junit printsummary="true"
 		       fork="true"
-		       haltonfailure="true"
+                       haltonfailure="true"
 		       filtertrace="true"
 		       showoutput="${verbose}">
 			<classpath>
@@ -1634,9 +1634,12 @@
 			</classpath>
 			<formatter type="plain" />
 			<test name="org.restlet.test.RestletTestSuite"
-			      todir="${temp}/test" />
+			      todir="${temp}/test" failureproperty="restlet.test.suite.error"/>
 		</junit>
-	</target>
+		<fail if="restlet.test.suite.error">
+                   Error during the Restlet test suite. See this file for more details: ${temp}/test/TEST-org.restlet.test.RestletTestSuite.txt.
+		</fail>
+ 	</target>
 
 	<target name="verify-findbugs"
 	        if="do-findbugs"
