@@ -1637,9 +1637,9 @@
 			      todir="${temp}/test"
 			      failureproperty="restlet.test.suite.error"/>
 		</junit>
-		<fail if="restlet.test.suite.error">
-                   Error during the Restlet test suite. See this file for more details: ${temp}/test/TEST-org.restlet.test.RestletTestSuite.txt.
-		</fail>
+		<echo>
+                   See the JUnit log file for more details: ${temp}/test/TEST-org.restlet.test.RestletTestSuite.txt.
+		</echo>
  	</target>
 
 	<target name="verify-findbugs"
