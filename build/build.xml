@@ -1634,7 +1634,8 @@
 			</classpath>
 			<formatter type="plain" />
 			<test name="org.restlet.test.RestletTestSuite"
-			      todir="${temp}/test" failureproperty="restlet.test.suite.error"/>
+			      todir="${temp}/test"
+			      failureproperty="restlet.test.suite.error"/>
 		</junit>
 		<fail if="restlet.test.suite.error">
                    Error during the Restlet test suite. See this file for more details: ${temp}/test/TEST-org.restlet.test.RestletTestSuite.txt.
