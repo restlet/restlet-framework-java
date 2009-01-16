@@ -1,63 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
-   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
-   <bean id="component" class="org.restlet.ext.spring.SpringComponent">
-      <property name="clientsList">
-         <list>
-            <value>file</value>
-         </list>
-      </property>
-      <property name="server" ref="server" />
-      <property name="defaultTarget" ref="application" />
-      <property name="hosts">
-         <list>
-            <ref bean="virtualHost" />
-         </list>
-      </property>
-   </bean>
-   <bean id="server" class="org.restlet.ext.spring.SpringServer">
-      <constructor-arg value="http" />
-      <constructor-arg value="8182" />
-      <property name="parameters">
-         <props>
-            <prop key="key1">value1</prop>
-            <prop key="key2">value2</prop>
-         </props>
-      </property>
-   </bean>
-   <bean id="virtualHost" class="org.restlet.ext.spring.SpringHost">
-      <constructor-arg ref="component" />
-      <property name="hostDomain" value="mydomain.com|www.mydomain.com" />
-      <property name="attachments">
-         <map>
-            <entry key="/">
-               <ref bean="application" />
-            </entry>
-         </map>
-      </property>
-   </bean>
-   <!-- Create a child context of the component's one. -->
-   <bean id="componentChildContext" class="org.restlet.Context">
-      <lookup-method name="createChildContext" bean="component.context" />
-   </bean>
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
+	<bean id="component" class="org.restlet.ext.spring.SpringComponent">
+		<property name="clientsList">
+			<list>
+				<value>file</value>
+			</list>
+		</property>
+		<property name="server" ref="server" />
+		<property name="defaultTarget" ref="application" />
+		<property name="hosts">
+			<list>
+				<ref bean="virtualHost" />
+			</list>
+		</property>
+	</bean>
+	<bean id="server" class="org.restlet.ext.spring.SpringServer">
+		<constructor-arg value="http" />
+		<constructor-arg>
+			<bean id="org.restlet.test.RestletTestSuite.PORT"
+				class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean" />
+		</constructor-arg>
 
-   <bean id="application" class="org.restlet.Application">
-      <constructor-arg ref="componentChildContext" />
-      <property name="root">
-         <bean class="org.restlet.ext.spring.SpringRouter">
-            <constructor-arg ref="application" />
-            <property name="attachments">
-               <map>
-                  <entry key="/users/{user}"
-                     value="org.restlet.example.tutorial.UserResource" />
-                  <entry key="/users/{user}/orders"
-                     value="org.restlet.example.tutorial.OrdersResource" />
-                  <entry key="/users/{user}/orders/{order}"
-                     value="org.restlet.example.tutorial.OrderResource" />
-               </map>
-            </property>
-         </bean>
-      </property>
-   </bean>
+		<property name="parameters">
+			<props>
+				<prop key="key1">value1</prop>
+				<prop key="key2">value2</prop>
+			</props>
+		</property>
+	</bean>
+	<bean id="virtualHost" class="org.restlet.ext.spring.SpringHost">
+		<constructor-arg ref="component" />
+		<property name="hostDomain" value="mydomain.com|www.mydomain.com" />
+		<property name="attachments">
+			<map>
+				<entry key="/">
+					<ref bean="application" />
+				</entry>
+			</map>
+		</property>
+	</bean>
+	<!-- Create a child context of the component's one. -->
+	<bean id="componentChildContext" class="org.restlet.Context">
+		<lookup-method name="createChildContext" bean="component.context" />
+	</bean>
+
+	<bean id="application" class="org.restlet.Application">
+		<constructor-arg ref="componentChildContext" />
+		<property name="root">
+			<bean class="org.restlet.ext.spring.SpringRouter">
+				<constructor-arg ref="application" />
+				<property name="attachments">
+					<map>
+						<entry key="/users/{user}" value="org.restlet.example.tutorial.UserResource" />
+						<entry key="/users/{user}/orders" value="org.restlet.example.tutorial.OrdersResource" />
+						<entry key="/users/{user}/orders/{order}" value="org.restlet.example.tutorial.OrderResource" />
+					</map>
+				</property>
+			</bean>
+		</property>
+	</bean>
 </beans>
