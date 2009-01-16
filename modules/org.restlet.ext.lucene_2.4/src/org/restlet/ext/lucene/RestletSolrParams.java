@@ -27,20 +27,22 @@
 
 package org.restlet.ext.lucene;
 
-import java.util.LinkedHashMap;
+import java.util.Iterator;
 
-import org.apache.solr.common.params.MultiMapSolrParams;
+import org.apache.solr.common.params.SolrParams;
 import org.restlet.data.Form;
 import org.restlet.data.Request;
 
 /**
- * Reads a Restlet query parameters and adds them to the Solr params map.
+ * Wrap Restlet query parameters as Solr params.
  * 
  * @author Rémi Dewitte <remi@gide.net>
  */
-public class RestletSolrParams extends MultiMapSolrParams {
+public class RestletSolrParams extends SolrParams {
 
     private static final long serialVersionUID = 1L;
+	
+    private final Request request;
 
     /**
      * Constructor.
@@ -49,20 +51,43 @@ public class RestletSolrParams extends MultiMapSolrParams {
      *            The wrapped Restlet request.
      */
     public RestletSolrParams(Request request) {
-        super(new LinkedHashMap<String, String[]>());
-        formToMultiMap(request.getResourceRef().getQueryAsForm());
-        // formToMultiMap(request.getEntityAsForm());
+       this.request = request;
     }
 
     /**
-     * Reads a Restlet form and adds its parameters to the Solr params map.
-     * 
-     * @param form
-     *            The Restlet form to read.
+     * Returns the request query form.
+     * @return
      */
-    protected void formToMultiMap(Form form) {
-        for (String name : form.getNames()) {
-            map.put(name, form.getValuesArray(name));
-        }
+    protected Form getForm(){
+    	return request.getResourceRef().getQueryAsForm();
     }
+    
+    /**
+     * Reads parameter from the form returned {@link #getForm()}.
+     * 
+     */
+	@Override
+	public String get(String param) {
+		return getForm().getFirstValue(param);
+	}
+
+	/**
+     * Reads parameter names from the form returned {@link #getForm()}.
+     * 
+     */
+	@Override
+	public Iterator<String> getParameterNamesIterator() {
+		return getForm().getNames().iterator();
+	}
+
+	/**
+     * Reads parameter values from the form returned {@link #getForm()}.
+     * 
+     */
+	@Override
+	public String[] getParams(String param) {
+		return getForm().getValuesArray(param);
+	}
+    
+    
 }

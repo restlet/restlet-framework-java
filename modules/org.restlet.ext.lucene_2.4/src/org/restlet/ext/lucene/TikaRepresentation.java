@@ -64,7 +64,7 @@ public class TikaRepresentation extends SaxRepresentation {
     private TikaConfig tikaConfig;
 
     /** The optional Tika parser. */
-    private Parser tikeParser;
+    private Parser tikaParser;
 
     /**
      * Constructor.
@@ -130,8 +130,8 @@ public class TikaRepresentation extends SaxRepresentation {
      * 
      * @return The Tika parser or null.
      */
-    public Parser getTikeParser() {
-        return tikeParser;
+    public Parser getTikaParser() {
+        return tikaParser;
     }
 
     /**
@@ -170,7 +170,7 @@ public class TikaRepresentation extends SaxRepresentation {
                 }
 
                 // Prepare the Tika parser
-                Parser parser = (getTikeParser() != null) ? getTikeParser()
+                Parser parser = (getTikaParser() != null) ? getTikaParser()
                         : (getTikaConfig() != null) ? new AutoDetectParser(
                                 getTikaConfig()) : new AutoDetectParser();
 
@@ -212,10 +212,10 @@ public class TikaRepresentation extends SaxRepresentation {
     /**
      * Sets the optional Tika parser.
      * 
-     * @param tikeParser
+     * @param tikaParser
      *            The Tika parser.
      */
-    public void setTikeParser(Parser tikeParser) {
-        this.tikeParser = tikeParser;
+    public void setTikaParser(Parser tikeParser) {
+        this.tikaParser = tikeParser;
     }
 }
