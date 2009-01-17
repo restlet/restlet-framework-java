@@ -32,7 +32,6 @@ package org.restlet.ext.jaxrs;
  * providers yourself and register it by
  * {@link JaxRsApplication#setObjectFactory(ObjectFactory)}.
  * </p>
- * 
  * <p>
  * When using a ObjectFactory, no JAX-RS constructor dependency injection will
  * be performed, but instance variable and bean setter injection will still be

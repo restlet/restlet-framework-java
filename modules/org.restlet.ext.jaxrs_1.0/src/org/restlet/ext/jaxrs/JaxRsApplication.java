@@ -53,13 +53,6 @@ import org.restlet.Restlet;
  * </ul>
  * At least add the JaxRsApplication to a {@link Component}.
  * </p>
- * <p>
- * <i>The JAX-RS extension as well as the JAX-RS specification are currently
- * under development. You should use this extension only for experimental
- * purpose.</i> <br>
- * For further information see <a href="https://jsr311.dev.java.net/">Java
- * Service Request 311</a>.
- * </p>
  * 
  * Concurrency note: instances of this class or its subclasses can be invoked by
  * several threads at the same time and therefore must be thread-safe. You

@@ -63,13 +63,6 @@ import org.restlet.Guard;
  * <p>
  * To check if the user is authenticated, use any Restlet {@link Guard}.
  * </p>
- * <p>
- * <i>The JAX-RS extension as well as the JAX-RS specification are currently
- * under development. You should use this extension only for experimental
- * purpose.</i> <br>
- * For further information see <a href="https://jsr311.dev.java.net/">Java
- * Service Request 311</a>.
- * </p>
  * 
  * @author Stephan Koops
  * @see SecurityContext
