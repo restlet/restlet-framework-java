@@ -57,332 +57,336 @@ import org.restlet.util.WrapperRepresentation;
  */
 public class StreamClientCall extends HttpClientCall {
 
-    /**
-     * Wrapper representation to close the associated socket when the
-     * representation is released
-     */
-    private static class SocketWrapperRepresentation extends
-            WrapperRepresentation {
+	/**
+	 * Wrapper representation to close the associated socket when the
+	 * representation is released.
+	 */
+	private static class SocketWrapperRepresentation extends
+			WrapperRepresentation {
 
-        private final Logger log;
+		private final Logger log;
 
-        private final Socket socket;
+		private final Socket socket;
 
-        public SocketWrapperRepresentation(
-                Representation wrappedRepresentation, Socket socket, Logger log) {
-            super(wrappedRepresentation);
-            this.socket = socket;
-            this.log = log;
-        }
+		public SocketWrapperRepresentation(
+				Representation wrappedRepresentation, Socket socket, Logger log) {
+			super(wrappedRepresentation);
+			this.socket = socket;
+			this.log = log;
+		}
 
-        @Override
-        public void release() {
-            try {
-                if (!this.socket.isClosed()) {
-                    if (!(this.socket instanceof SSLSocket)) {
-                        this.socket.shutdownOutput();
-                    }
-                    this.socket.close();
-                }
-            } catch (IOException ex) {
-                this.log.log(Level.WARNING,
-                        "An error occured closing the client socket", ex);
-            }
+		@Override
+		public void release() {
+			try {
+				if (!this.socket.isClosed()) {
+					if (!(this.socket instanceof SSLSocket)) {
+						this.socket.shutdownOutput();
+					}
+					this.socket.close();
+				}
+			} catch (IOException ex) {
+				this.log.log(Level.WARNING,
+						"An error occured closing the client socket", ex);
+			}
 
-            super.release();
-        }
-    }
+			super.release();
+		}
+	}
 
-    /**
-     * Returns the absolute request URI.
-     * 
-     * @param resourceRef
-     *            The resource reference.
-     * @return The absolute request URI.
-     */
-    private static String getRequestUri(Reference resourceRef) {
-        Reference absoluteRef = resourceRef.isAbsolute() ? resourceRef
-                : resourceRef.getTargetRef();
-        return absoluteRef.getPath();
-    }
+	/**
+	 * Returns the absolute request URI.
+	 * 
+	 * @param resourceRef
+	 *            The resource reference.
+	 * @return The absolute request URI.
+	 */
+	private static String getRequestUri(Reference resourceRef) {
+		Reference absoluteRef = resourceRef.isAbsolute() ? resourceRef
+				: resourceRef.getTargetRef();
+		if (absoluteRef.hasQuery()) {
+			return absoluteRef.getPath() + "?" + absoluteRef.getQuery();
+		} else {
+			return absoluteRef.getPath();
+		}
+	}
 
-    /** The socket factory. */
-    private final SocketFactory factory;
+	/** The socket factory. */
+	private final SocketFactory factory;
 
-    /** The request entity output stream. */
-    private volatile OutputStream requestEntityStream;
+	/** The request entity output stream. */
+	private volatile OutputStream requestEntityStream;
 
-    /** The request output stream. */
-    private volatile OutputStream requestStream;
+	/** The request output stream. */
+	private volatile OutputStream requestStream;
 
-    /** The response input stream. */
-    private volatile InputStream responseStream;
+	/** The response input stream. */
+	private volatile InputStream responseStream;
 
-    /** The request socket */
-    private volatile Socket socket;
+	/** The request socket */
+	private volatile Socket socket;
 
-    /**
-     * Constructor.
-     * 
-     * @param helper
-     *            The client connector helper.
-     * @param request
-     *            The request to send.
-     */
-    public StreamClientCall(StreamClientHelper helper, Request request,
-            SocketFactory factory) {
-        // The path of the request uri must not be empty.
-        super(helper, request.getMethod().toString(), getRequestUri(request
-                .getResourceRef()));
+	/**
+	 * Constructor.
+	 * 
+	 * @param helper
+	 *            The client connector helper.
+	 * @param request
+	 *            The request to send.
+	 */
+	public StreamClientCall(StreamClientHelper helper, Request request,
+			SocketFactory factory) {
+		// The path of the request uri must not be empty.
+		super(helper, request.getMethod().toString(), getRequestUri(request
+				.getResourceRef()));
 
-        // Set the HTTP version
-        setVersion("HTTP/1.1");
-        this.factory = factory;
-    }
+		// Set the HTTP version
+		setVersion("HTTP/1.1");
+		this.factory = factory;
+	}
 
-    /**
-     * Creates the socket that will be used to send the request and get the
-     * response.
-     * 
-     * @param hostDomain
-     *            The target host domain name.
-     * @param hostPort
-     *            The target host port.
-     * @return The created socket.
-     * @throws UnknownHostException
-     * @throws IOException
-     */
-    public Socket createSocket(String hostDomain, int hostPort)
-            throws UnknownHostException, IOException {
-        return factory.createSocket(hostDomain, hostPort);
-    }
+	/**
+	 * Creates the socket that will be used to send the request and get the
+	 * response.
+	 * 
+	 * @param hostDomain
+	 *            The target host domain name.
+	 * @param hostPort
+	 *            The target host port.
+	 * @return The created socket.
+	 * @throws UnknownHostException
+	 * @throws IOException
+	 */
+	public Socket createSocket(String hostDomain, int hostPort)
+			throws UnknownHostException, IOException {
+		return factory.createSocket(hostDomain, hostPort);
+	}
 
-    @Override
-    public StreamClientHelper getHelper() {
-        return (StreamClientHelper) super.getHelper();
-    }
+	@Override
+	public StreamClientHelper getHelper() {
+		return (StreamClientHelper) super.getHelper();
+	}
 
-    @Override
-    protected Representation getRepresentation(InputStream stream) {
-        final Representation result = super.getRepresentation(stream);
-        return new SocketWrapperRepresentation(result, this.socket, getHelper()
-                .getLogger());
-    }
+	@Override
+	protected Representation getRepresentation(InputStream stream) {
+		final Representation result = super.getRepresentation(stream);
+		return new SocketWrapperRepresentation(result, this.socket, getHelper()
+				.getLogger());
+	}
 
-    @Override
-    public WritableByteChannel getRequestEntityChannel() {
-        return null;
-    }
+	@Override
+	public WritableByteChannel getRequestEntityChannel() {
+		return null;
+	}
 
-    @Override
-    public OutputStream getRequestEntityStream() {
-        if (this.requestEntityStream == null) {
-            if (isRequestChunked()) {
-                if (isKeepAlive()) {
-                    this.requestEntityStream = new ChunkedOutputStream(
-                            new KeepAliveOutputStream(getRequestHeadStream()));
-                } else {
-                    this.requestEntityStream = new ChunkedOutputStream(
-                            getRequestHeadStream());
-                }
-            } else {
-                this.requestEntityStream = new KeepAliveOutputStream(
-                        getRequestHeadStream());
-            }
-        }
+	@Override
+	public OutputStream getRequestEntityStream() {
+		if (this.requestEntityStream == null) {
+			if (isRequestChunked()) {
+				if (isKeepAlive()) {
+					this.requestEntityStream = new ChunkedOutputStream(
+							new KeepAliveOutputStream(getRequestHeadStream()));
+				} else {
+					this.requestEntityStream = new ChunkedOutputStream(
+							getRequestHeadStream());
+				}
+			} else {
+				this.requestEntityStream = new KeepAliveOutputStream(
+						getRequestHeadStream());
+			}
+		}
 
-        return this.requestEntityStream;
-    }
+		return this.requestEntityStream;
+	}
 
-    @Override
-    public OutputStream getRequestHeadStream() {
-        return this.requestStream;
-    }
+	@Override
+	public OutputStream getRequestHeadStream() {
+		return this.requestStream;
+	}
 
-    @Override
-    public ReadableByteChannel getResponseEntityChannel(long size) {
-        return null;
-    }
+	@Override
+	public ReadableByteChannel getResponseEntityChannel(long size) {
+		return null;
+	}
 
-    @Override
-    public InputStream getResponseEntityStream(long size) {
-        if (isResponseChunked()) {
-            return new ChunkedInputStream(getResponseStream());
-        } else if (size >= 0) {
-            return new InputEntityStream(getResponseStream(), size);
-        } else {
-            return getResponseStream();
-        }
-    }
+	@Override
+	public InputStream getResponseEntityStream(long size) {
+		if (isResponseChunked()) {
+			return new ChunkedInputStream(getResponseStream());
+		} else if (size >= 0) {
+			return new InputEntityStream(getResponseStream(), size);
+		} else {
+			return getResponseStream();
+		}
+	}
 
-    /**
-     * Returns the underlying HTTP response stream.
-     * 
-     * @return The underlying HTTP response stream.
-     */
-    private InputStream getResponseStream() {
-        return this.responseStream;
-    }
+	/**
+	 * Returns the underlying HTTP response stream.
+	 * 
+	 * @return The underlying HTTP response stream.
+	 */
+	private InputStream getResponseStream() {
+		return this.responseStream;
+	}
 
-    @Override
-    protected boolean isClientKeepAlive() {
-        return false;
-    }
+	@Override
+	protected boolean isClientKeepAlive() {
+		return false;
+	}
 
-    /**
-     * Parses the HTTP response.
-     * 
-     * @throws IOException
-     */
-    protected void parseResponse() throws IOException {
-        final StringBuilder sb = new StringBuilder();
+	/**
+	 * Parses the HTTP response.
+	 * 
+	 * @throws IOException
+	 */
+	protected void parseResponse() throws IOException {
+		final StringBuilder sb = new StringBuilder();
 
-        // Parse the HTTP version
-        int next = getResponseStream().read();
-        while ((next != -1) && !HttpUtils.isSpace(next)) {
-            sb.append((char) next);
-            next = getResponseStream().read();
-        }
+		// Parse the HTTP version
+		int next = getResponseStream().read();
+		while ((next != -1) && !HttpUtils.isSpace(next)) {
+			sb.append((char) next);
+			next = getResponseStream().read();
+		}
 
-        if (next == -1) {
-            throw new IOException(
-                    "Unable to parse the response HTTP version. End of stream reached too early.");
-        } else {
-            setVersion(sb.toString());
-            sb.delete(0, sb.length());
+		if (next == -1) {
+			throw new IOException(
+					"Unable to parse the response HTTP version. End of stream reached too early.");
+		} else {
+			setVersion(sb.toString());
+			sb.delete(0, sb.length());
 
-            // Parse the status code
-            next = getResponseStream().read();
-            while ((next != -1) && !HttpUtils.isSpace(next)) {
-                sb.append((char) next);
-                next = getResponseStream().read();
-            }
+			// Parse the status code
+			next = getResponseStream().read();
+			while ((next != -1) && !HttpUtils.isSpace(next)) {
+				sb.append((char) next);
+				next = getResponseStream().read();
+			}
 
-            if (next == -1) {
-                throw new IOException(
-                        "Unable to parse the response status. End of stream reached too early.");
-            } else {
-                setStatusCode(Integer.parseInt(sb.toString()));
-                sb.delete(0, sb.length());
+			if (next == -1) {
+				throw new IOException(
+						"Unable to parse the response status. End of stream reached too early.");
+			} else {
+				setStatusCode(Integer.parseInt(sb.toString()));
+				sb.delete(0, sb.length());
 
-                // Parse the reason phrase
-                next = getResponseStream().read();
-                while ((next != -1) && !HttpUtils.isCarriageReturn(next)) {
-                    sb.append((char) next);
-                    next = getResponseStream().read();
-                }
+				// Parse the reason phrase
+				next = getResponseStream().read();
+				while ((next != -1) && !HttpUtils.isCarriageReturn(next)) {
+					sb.append((char) next);
+					next = getResponseStream().read();
+				}
 
-                if (next == -1) {
-                    throw new IOException(
-                            "Unable to parse the reason phrase. End of stream reached too early.");
-                } else {
-                    next = getResponseStream().read();
+				if (next == -1) {
+					throw new IOException(
+							"Unable to parse the reason phrase. End of stream reached too early.");
+				} else {
+					next = getResponseStream().read();
 
-                    if (HttpUtils.isLineFeed(next)) {
-                        setReasonPhrase(sb.toString());
-                        sb.delete(0, sb.length());
+					if (HttpUtils.isLineFeed(next)) {
+						setReasonPhrase(sb.toString());
+						sb.delete(0, sb.length());
 
-                        // Parse the headers
-                        Parameter header = HttpUtils.readHeader(
-                                getResponseStream(), sb);
-                        while (header != null) {
-                            getResponseHeaders().add(header);
-                            header = HttpUtils.readHeader(getResponseStream(),
-                                    sb);
-                        }
-                    } else {
-                        throw new IOException(
-                                "Unable to parse the reason phrase. The carriage return must be followed by a line feed.");
-                    }
-                }
-            }
-        }
-    }
+						// Parse the headers
+						Parameter header = HttpUtils.readHeader(
+								getResponseStream(), sb);
+						while (header != null) {
+							getResponseHeaders().add(header);
+							header = HttpUtils.readHeader(getResponseStream(),
+									sb);
+						}
+					} else {
+						throw new IOException(
+								"Unable to parse the reason phrase. The carriage return must be followed by a line feed.");
+					}
+				}
+			}
+		}
+	}
 
-    @Override
-    public Status sendRequest(Request request) {
-        Status result = null;
+	@Override
+	public Status sendRequest(Request request) {
+		Status result = null;
 
-        try {
-            // Resolve relative references
-            Reference resourceRef = request.getResourceRef().isRelative() ? request
-                    .getResourceRef().getTargetRef()
-                    : request.getResourceRef();
+		try {
+			// Resolve relative references
+			Reference resourceRef = request.getResourceRef().isRelative() ? request
+					.getResourceRef().getTargetRef()
+					: request.getResourceRef();
 
-            // Extract the host info
-            final String hostDomain = resourceRef.getHostDomain();
-            int hostPort = resourceRef.getHostPort();
-            if (hostPort == -1) {
-                if (resourceRef.getSchemeProtocol() != null) {
-                    hostPort = resourceRef.getSchemeProtocol().getDefaultPort();
-                } else {
-                    hostPort = getProtocol().getDefaultPort();
-                }
-            }
+			// Extract the host info
+			final String hostDomain = resourceRef.getHostDomain();
+			int hostPort = resourceRef.getHostPort();
+			if (hostPort == -1) {
+				if (resourceRef.getSchemeProtocol() != null) {
+					hostPort = resourceRef.getSchemeProtocol().getDefaultPort();
+				} else {
+					hostPort = getProtocol().getDefaultPort();
+				}
+			}
 
-            // Create the client socket
-            this.socket = createSocket(hostDomain, hostPort);
-            this.socket.setTcpNoDelay(getHelper().getTcpNoDelay());
-            this.requestStream = new BufferedOutputStream(this.socket
-                    .getOutputStream());
-            this.responseStream = new BufferedInputStream(this.socket
-                    .getInputStream());
+			// Create the client socket
+			this.socket = createSocket(hostDomain, hostPort);
+			this.socket.setTcpNoDelay(getHelper().getTcpNoDelay());
+			this.requestStream = new BufferedOutputStream(this.socket
+					.getOutputStream());
+			this.responseStream = new BufferedInputStream(this.socket
+					.getInputStream());
 
-            // Write the request line
-            getRequestHeadStream().write(getMethod().getBytes());
-            getRequestHeadStream().write(' ');
-            getRequestHeadStream().write(getRequestUri().getBytes());
-            getRequestHeadStream().write(' ');
-            getRequestHeadStream().write(getVersion().getBytes());
-            HttpUtils.writeCRLF(getRequestHeadStream());
+			// Write the request line
+			getRequestHeadStream().write(getMethod().getBytes());
+			getRequestHeadStream().write(' ');
+			getRequestHeadStream().write(getRequestUri().getBytes());
+			getRequestHeadStream().write(' ');
+			getRequestHeadStream().write(getVersion().getBytes());
+			HttpUtils.writeCRLF(getRequestHeadStream());
 
-            if (shouldRequestBeChunked(request)) {
-                getRequestHeaders().set(HttpConstants.HEADER_TRANSFER_ENCODING,
-                        "chunked", true);
-            }
+			if (shouldRequestBeChunked(request)) {
+				getRequestHeaders().set(HttpConstants.HEADER_TRANSFER_ENCODING,
+						"chunked", true);
+			}
 
-            // We don't support persistent connections yet
-            getRequestHeaders().set(HttpConstants.HEADER_CONNECTION, "close",
-                    isClientKeepAlive());
+			// We don't support persistent connections yet
+			getRequestHeaders().set(HttpConstants.HEADER_CONNECTION, "close",
+					isClientKeepAlive());
 
-            // Prepare the host header
-            String host = hostDomain;
-            if (resourceRef.getHostPort() != -1) {
-                host += ":" + resourceRef.getHostPort();
-            }
-            getRequestHeaders().set(HttpConstants.HEADER_HOST, host, true);
+			// Prepare the host header
+			String host = hostDomain;
+			if (resourceRef.getHostPort() != -1) {
+				host += ":" + resourceRef.getHostPort();
+			}
+			getRequestHeaders().set(HttpConstants.HEADER_HOST, host, true);
 
-            // Write the request headers
-            for (final Parameter header : getRequestHeaders()) {
-                HttpUtils.writeHeader(header, getRequestHeadStream());
-            }
+			// Write the request headers
+			for (final Parameter header : getRequestHeaders()) {
+				HttpUtils.writeHeader(header, getRequestHeadStream());
+			}
 
-            // Write the end of the headers section
-            HttpUtils.writeCRLF(getRequestHeadStream());
-            getRequestHeadStream().flush();
+			// Write the end of the headers section
+			HttpUtils.writeCRLF(getRequestHeadStream());
+			getRequestHeadStream().flush();
 
-            // Write the request body
-            result = super.sendRequest(request);
+			// Write the request body
+			result = super.sendRequest(request);
 
-            if (result.equals(Status.CONNECTOR_ERROR_COMMUNICATION)) {
-                return result;
-            }
+			if (result.equals(Status.CONNECTOR_ERROR_COMMUNICATION)) {
+				return result;
+			}
 
-            // Parse the response
-            parseResponse();
+			// Parse the response
+			parseResponse();
 
-            // Build the result
-            result = new Status(getStatusCode(), null, getReasonPhrase(), null);
-        } catch (IOException ioe) {
-            getHelper()
-                    .getLogger()
-                    .log(
-                            Level.WARNING,
-                            "An error occured during the communication with the remote HTTP server.",
-                            ioe);
-            result = new Status(Status.CONNECTOR_ERROR_COMMUNICATION, ioe);
-        }
+			// Build the result
+			result = new Status(getStatusCode(), null, getReasonPhrase(), null);
+		} catch (IOException ioe) {
+			getHelper()
+					.getLogger()
+					.log(
+							Level.WARNING,
+							"An error occured during the communication with the remote HTTP server.",
+							ioe);
+			result = new Status(Status.CONNECTOR_ERROR_COMMUNICATION, ioe);
+		}
 
-        return result;
-    }
+		return result;
+	}
 }
