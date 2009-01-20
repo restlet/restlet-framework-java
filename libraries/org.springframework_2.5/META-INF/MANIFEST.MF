@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Spring Framework
 Bundle-SymbolicName: org.springframework
-Bundle-Version: 2.5.2
+Bundle-Version: 2.5.6
 Bundle-ClassPath: org.springframework.context.jar,
  org.springframework.core.jar,
  org.springframework.beans.jar,
@@ -85,6 +85,7 @@ Export-Package:
    org.springframework.jndi",
  org.springframework.context.annotation;
   uses:="org.w3c.dom,
+   org.apache.commons.logging,
    org.springframework.context,
    org.springframework.beans.factory.support,
    org.springframework.core.type.filter,
@@ -259,17 +260,21 @@ Export-Package:
    javax.xml.namespace,
    org.springframework.beans.factory",
  org.springframework.remoting.jaxws;
-  uses:="javax.xml.ws.soap,
-   javax.xml.ws.handler,
+  uses:="javax.xml.ws.handler,
+   javax.xml.ws.soap,
    javax.xml.namespace,
+   org.apache.commons.logging,
    org.aopalliance.intercept,
    javax.xml.soap,
+   com.sun.net.httpserver,
+   javax.jws,
    org.springframework.core.task,
    javax.xml.ws,
    org.springframework.beans.factory,
    org.springframework.remoting.soap",
  org.springframework.remoting.rmi;
   uses:="org.springframework.remoting.support,
+   org.springframework.core,
    org.apache.commons.logging,
    org.omg.CORBA_2_3.portable,
    org.omg.CORBA.portable,
@@ -280,7 +285,8 @@ Export-Package:
    org.springframework.beans.factory",
  org.springframework.remoting.soap;uses:="org.springframework.remoting,javax.xml.namespace",
  org.springframework.remoting.support;
-  uses:="org.springframework.core.task,
+  uses:="com.sun.net.httpserver,
+   org.springframework.core.task,
    org.apache.commons.logging,
    org.springframework.beans.factory,
    org.aopalliance.intercept",
@@ -347,6 +353,7 @@ Export-Package:
    org.apache.commons.logging,
    org.springframework.beans,
    org.springframework.context.support",
+ org.springframework.validation.support;uses:="org.springframework.ui",
  org.springframework.web;uses:="javax.servlet.http,javax.servlet",
  org.springframework.web.bind;
   uses:="javax.servlet.http,
@@ -500,7 +507,7 @@ Export-Package:
    org.springframework.web.bind.support,
    org.springframework.util,
    org.springframework.beans.factory",
- org.springframework.web.servlet.mvc.support;uses:="org.springframework.web.servlet.handler,org.springframework.web.servlet",
+ org.springframework.web.servlet.mvc.support;uses:="org.springframework.web.servlet.handler",
  org.springframework.web.servlet.mvc.throwaway;uses:="javax.servlet.http,org.springframework.web.bind,org.springframework.web.servlet",
  org.springframework.web.servlet.support;
   uses:="javax.servlet.http,
@@ -579,11 +586,13 @@ Export-Package:
  org.springframework.web.servlet.view.velocity;
   uses:="org.springframework.web.servlet.view,
    javax.servlet.http,
+   org.springframework.web.context,
+   org.springframework.context,
+   javax.servlet,
    org.springframework.ui.velocity,
    org.apache.velocity.app,
-   org.apache.velocity,
    org.apache.velocity.context,
-   org.springframework.context,
+   org.apache.velocity,
    org.springframework.beans.factory",
  org.springframework.web.servlet.view.xslt;
   uses:="org.springframework.web.servlet.view,
