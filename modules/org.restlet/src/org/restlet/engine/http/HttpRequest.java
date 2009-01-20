@@ -224,7 +224,8 @@ public class HttpRequest extends Request {
                     if (header != null) {
                         final String[] addresses = header.split(",");
                         for (int i = addresses.length - 1; i >= 0; i--) {
-                            result.getAddresses().add(addresses[i].trim());
+                            String address = addresses[i].trim();
+                            result.getForwardedAddresses().add(address);
                         }
                     }
                 }

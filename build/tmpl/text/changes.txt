@@ -82,7 +82,12 @@ Changes log
           Also added a "detectVariants" property to turn off this
           behavior if necessary.
         - Added a getAllMetadata(String extension) method on the
-          MetadataService class. 		 
+          MetadataService class. 
+        - Deprecated the ClientInfo#addresses property and replaced it
+          by a more explicit "forwardedAddresses" property. Also, added
+          a new getUpstreamAddress() method. Adjusted the Resolver 
+          class to add a new "ciua" variable. Change suggested by 
+          John D. Mitchell. Initial patch provided by Remi Dewitte. 		 
      - Misc
         - JAX-RS extension:
             - added class ExendedUriBuilder with "file" extensions for

@@ -140,20 +140,23 @@ public final class ClientInfo {
     /** The media preferences. */
     private volatile List<Preference<MediaType>> acceptedMediaTypes;
 
-    /** The IP addresses. */
-    private volatile List<String> addresses;
+    /** The immediate IP addresses. */
+    private volatile String address;
 
     /** The agent name. */
     private volatile String agent;
 
-    /** The main product data taken from the agent name. */
-    private volatile Product agentMainProduct;
-
     /** The attributes data taken from the agent name. */
     private volatile Map<String, String> agentAttributes;
 
+    /** The main product data taken from the agent name. */
+    private volatile Product agentMainProduct;
+
     /** The list of product tokens taken from the agent name. */
     private volatile List<Product> agentProducts;
+
+    /** The forwarded IP addresses. */
+    private volatile List<String> forwardedAddresses;
 
     /** The port number. */
     private volatile int port;
@@ -162,7 +165,7 @@ public final class ClientInfo {
      * Constructor.
      */
     public ClientInfo() {
-        this.addresses = null;
+        this.address = null;
         this.agent = null;
         this.port = -1;
         this.acceptedCharacterSets = null;
@@ -170,6 +173,7 @@ public final class ClientInfo {
         this.acceptedLanguages = null;
         this.acceptedMediaTypes = null;
         this.agentProducts = null;
+        this.forwardedAddresses = null;
     }
 
     /**
@@ -253,18 +257,20 @@ public final class ClientInfo {
     }
 
     /**
-     * Returns the client's IP address which is the first address in the list of
-     * client addresses, if this list exists and isn't empty.
+     * Returns the immediate client's IP address. If the real client is
+     * separated from the server by a proxy server, this will return the IP
+     * address of the proxy.
      * 
-     * @return The client's IP address.
+     * @return The immediate client's IP address.
+     * @see #getUpstreamAddress()
+     * @see #getForwardedAddresses()
      */
     public String getAddress() {
-        return (this.addresses == null) ? null
-                : (this.addresses.isEmpty() ? null : this.addresses.get(0));
+        return this.address;
     }
 
     /**
-     * Returns the modifiable list of client IP addresses.<br>
+     * Returns the list of client IP addresses.<br>
      * <br>
      * The first address is the one of the immediate client component as
      * returned by the getClientAdress() method and the last address should
@@ -275,19 +281,11 @@ public final class ClientInfo {
      * been set.
      * 
      * @return The client IP addresses.
+     * @deprecated Use the {@link #getForwardedAddresses()} method instead.
      */
+    @Deprecated
     public List<String> getAddresses() {
-        // Lazy initialization with double-check.
-        List<String> a = this.addresses;
-        if (a == null) {
-            synchronized (this) {
-                a = this.addresses;
-                if (a == null) {
-                    this.addresses = a = new ArrayList<String>();
-                }
-            }
-        }
-        return a;
+        return getForwardedAddresses();
     }
 
     /**
@@ -416,6 +414,40 @@ public final class ClientInfo {
     }
 
     /**
+     * Returns the list of forwarded IP addresses.<br>
+     * <br>
+     * This is useful when the user agent is separated from the origin server by
+     * a chain of intermediary components. Creates a new instance if no one has
+     * been set. <br>
+     * <br>
+     * The first address is the one of the immediate client component and the
+     * last address should correspond to the origin client (frequently a user
+     * agent).<br>
+     * <br>
+     * Note that these addresses might be altered by those intermediary
+     * components and might not always reflect the actual chain followed by the
+     * request from the initial client. Therefore, this should be used with
+     * great caution in security aspects.
+     * 
+     * @return The list of forwarded IP addresses.
+     * @see <a href="http://en.wikipedia.org/wiki/X-Forwarded-For">Wikipedia
+     *      page for the "X-Forwarded-For" HTTP header</a>
+     */
+    public List<String> getForwardedAddresses() {
+        // Lazy initialization with double-check.
+        List<String> a = this.forwardedAddresses;
+        if (a == null) {
+            synchronized (this) {
+                a = this.forwardedAddresses;
+                if (a == null) {
+                    this.forwardedAddresses = a = new ArrayList<String>();
+                }
+            }
+        }
+        return a;
+    }
+
+    /**
      * Returns a Product object based on the name of the user agent.
      * 
      * @return A Product object based on name of the user agent.
@@ -486,6 +518,26 @@ public final class ClientInfo {
     }
 
     /**
+     * Returns the IP address of the upstream client component. In general this
+     * will correspond the the user agent IP address. This is useful if there
+     * are intermediary components like proxies and load balancers.
+     * 
+     * If the supporting {@link #getForwardedAddresses()} method returns a non
+     * empty list, the IP address will be the first element. Otherwise, the
+     * value of {@link #getAddress()} will be returned.
+     * 
+     * @return The most upstream IP address.
+     */
+    public String getUpstreamAddress() {
+        if (this.forwardedAddresses == null
+                || this.forwardedAddresses.isEmpty()) {
+            return getAddress();
+        }
+
+        return this.forwardedAddresses.get(0);
+    }
+
+    /**
      * Sets the character set preferences.
      * 
      * @param acceptedCharacterSets
@@ -536,11 +588,7 @@ public final class ClientInfo {
      *            The client's IP address.
      */
     public void setAddress(String address) {
-        if (getAddresses().isEmpty()) {
-            getAddresses().add(address);
-        } else {
-            getAddresses().set(0, address);
-        }
+        this.address = address;
     }
 
     /**
@@ -548,9 +596,11 @@ public final class ClientInfo {
      * 
      * @param addresses
      *            The list of client IP addresses.
+     * @deprecated See the {@link #setForwardedAddresses(List)} method instead.
      */
+    @Deprecated
     public void setAddresses(List<String> addresses) {
-        this.addresses = addresses;
+        setForwardedAddresses(addresses);
     }
 
     /**
@@ -561,6 +611,16 @@ public final class ClientInfo {
      */
     public void setAgent(String agent) {
         this.agent = agent;
+    }
+
+    /**
+     * Sets the list of forwarded IP addresses.
+     * 
+     * @param forwardedAddresses
+     *            The list of forwarded IP addresses.
+     */
+    public void setForwardedAddresses(List<String> forwardedAddresses) {
+        this.forwardedAddresses = forwardedAddresses;
     }
 
     /**

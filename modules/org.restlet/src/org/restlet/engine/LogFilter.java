@@ -170,14 +170,14 @@ public class LogFilter extends Filter {
         sb.append('\t');
 
         // Append the client IP address
-        final String clientAddress = request.getClientInfo().getAddress();
+        final String clientAddress = request.getClientInfo().getUpstreamAddress();
         sb.append((clientAddress == null) ? "-" : clientAddress);
         sb.append('\t');
 
         // Append the user name (via IDENT protocol)
         if (this.logService.isIdentityCheck()) {
             final IdentClient ic = new IdentClient(request.getClientInfo()
-                    .getAddress(), request.getClientInfo().getPort(), response
+                    .getUpstreamAddress(), request.getClientInfo().getPort(), response
                     .getServerInfo().getPort());
             sb.append((ic.getUserIdentifier() == null) ? "-" : ic
                     .getUserIdentifier());

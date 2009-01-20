@@ -38,7 +38,6 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.engine.http.HttpCall;
 
-
 /**
  * Test {@link org.restlet.Call}.
  * 
@@ -127,38 +126,23 @@ public class CallTestCase extends RestletTestCase {
         String address = "127.0.0.1";
         client.setAddress(address);
         assertEquals(address, client.getAddress());
-        assertEquals(1, client.getAddresses().size());
-        assertEquals(address, client.getAddresses().get(0));
-        address = "192.168.99.10";
-        client.setAddress(address);
-        assertEquals(address, client.getAddress());
-        assertEquals(1, client.getAddresses().size());
-        assertEquals(address, client.getAddresses().get(0));
+        assertEquals(0, client.getForwardedAddresses().size());
     }
 
     /**
      * Tests client addresses getting/setting.
      */
-    public void testClientAddresses() throws Exception {
+    public void testClientForwardedAddresses() throws Exception {
         final ClientInfo client = getRequest().getClientInfo();
         String firstAddress = "127.0.0.1";
         final String secondAddress = "192.168.99.10";
         List<String> addresses = Arrays.asList(new String[] { firstAddress,
                 secondAddress });
-        client.getAddresses().addAll(addresses);
-        assertEquals(addresses, client.getAddresses());
-        assertEquals(firstAddress, client.getAddress());
-        firstAddress = "192.168.99.20";
-        client.setAddress(firstAddress);
-        assertEquals(firstAddress, client.getAddress());
-        assertEquals(firstAddress, client.getAddresses().get(0));
-        assertEquals(secondAddress, client.getAddresses().get(1));
-        firstAddress = "127.0.0.1";
-        addresses = Arrays.asList(new String[] { firstAddress, secondAddress });
-        client.getAddresses().clear();
-        client.getAddresses().addAll(addresses);
-        assertEquals(addresses, client.getAddresses());
-        assertEquals(firstAddress, client.getAddress());
+        client.getForwardedAddresses().addAll(addresses);
+        assertEquals(addresses, client.getForwardedAddresses());
+        client.getForwardedAddresses().clear();
+        client.getForwardedAddresses().addAll(addresses);
+        assertEquals(addresses, client.getForwardedAddresses());
     }
 
     /**
