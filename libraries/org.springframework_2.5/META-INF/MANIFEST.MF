@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Spring Framework
 Bundle-SymbolicName: org.springframework
-Bundle-Version: 2.5.2
+Bundle-Version: 2.5.6
 Bundle-ClassPath: org.springframework.context.jar,
  org.springframework.core.jar,
  org.springframework.beans.jar,
