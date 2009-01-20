@@ -91,8 +91,10 @@ public class ServletWarEntity extends Entity {
                 this.children = new ArrayList<Entity>();
 
                 for (Object childPath : childPaths) {
-                    this.children.add(new ServletWarEntity(this.servletContext,
-                            (String) childPath));
+                    if (!childPath.equals(this.path)) {
+                        this.children.add(new ServletWarEntity(
+                                this.servletContext, (String) childPath));
+                    }
                 }
             }
         } else {
@@ -104,8 +106,10 @@ public class ServletWarEntity extends Entity {
                 this.children = new ArrayList<Entity>();
 
                 for (Object childPath : childPaths) {
-                    this.children.add(new ServletWarEntity(this.servletContext,
-                            (String) childPath));
+                    if (!childPath.equals(this.path)) {
+                        this.children.add(new ServletWarEntity(
+                                this.servletContext, (String) childPath));
+                    }
                 }
             } else {
                 this.directory = false;

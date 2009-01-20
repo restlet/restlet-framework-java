@@ -56,7 +56,9 @@ Changes log
           to prevent issues with Tomcat 5.0 and "Content-Length: 0" 
           headers sending the response immediately. This also fixes 
           a similar issue with GWT that forced to return an empty
-          representation. Reported by Eirik Bjorsnos. 
+          representation. Reported by Eirik Bjorsnos.
+        - Fixed potential recursion in ServletWarClientEntity.
+          Reported by Nicholas Brown. 
     - Misc
         - Fully moved org.restlet.gwt.internal content into 
           org.restlet.gwt.engine package.
