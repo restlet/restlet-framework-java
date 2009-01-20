@@ -214,16 +214,11 @@ public class HttpRequest extends Request {
                 if (useForwardedForHeader) {
                     // Lookup the "X-Forwarded-For" header supported by popular
                     // proxies and caches.
-                    // This information is only safe for intermediary components
-                    // within your local network.
-                    // Other addresses could easily be changed by setting a fake
-                    // header and should not be trusted for serious security
-                    // checks.
                     final String header = getHttpCall().getRequestHeaders()
                             .getValues(HttpConstants.HEADER_X_FORWARDED_FOR);
                     if (header != null) {
                         final String[] addresses = header.split(",");
-                        for (int i = addresses.length - 1; i >= 0; i--) {
+                        for (int i = 0; i < addresses.length; i++) {
                             String address = addresses[i].trim();
                             result.getForwardedAddresses().add(address);
                         }

@@ -424,10 +424,9 @@ public final class ClientInfo {
      * last address should correspond to the origin client (frequently a user
      * agent).<br>
      * <br>
-     * Note that these addresses might be altered by those intermediary
-     * components and might not always reflect the actual chain followed by the
-     * request from the initial client. Therefore, this should be used with
-     * great caution in security aspects.
+     * This information is only safe for intermediary components within your
+     * local network. Other addresses could easily be changed by setting a fake
+     * header and should not be trusted for serious security checks.
      * 
      * @return The list of forwarded IP addresses.
      * @see <a href="http://en.wikipedia.org/wiki/X-Forwarded-For">Wikipedia
