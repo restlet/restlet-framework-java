@@ -42,7 +42,6 @@ import org.restlet.engine.local.Entity;
 import org.restlet.resource.InputRepresentation;
 import org.restlet.resource.Representation;
 
-
 /**
  * Local entity based on a Servlet context's resource file.
  * 
@@ -91,8 +90,10 @@ public class ServletWarEntity extends Entity {
                 this.children = new ArrayList<Entity>();
 
                 for (Object childPath : childPaths) {
-                    this.children.add(new ServletWarEntity(this.servletContext,
-                            (String) childPath));
+                    if (!childPath.equals(this.path)) {
+                        this.children.add(new ServletWarEntity(
+                                this.servletContext, (String) childPath));
+                    }
                 }
             }
         } else {
@@ -104,8 +105,10 @@ public class ServletWarEntity extends Entity {
                 this.children = new ArrayList<Entity>();
 
                 for (Object childPath : childPaths) {
-                    this.children.add(new ServletWarEntity(this.servletContext,
-                            (String) childPath));
+                    if (!childPath.equals(this.path)) {
+                        this.children.add(new ServletWarEntity(
+                                this.servletContext, (String) childPath));
+                    }
                 }
             } else {
                 this.directory = false;
