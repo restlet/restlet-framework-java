@@ -30,7 +30,7 @@ package org.restlet.security;
 import org.restlet.data.Request;
 
 /**
- * Abstract class able to authorize Restlet requests.
+ * Interface able to authorize Restlet requests.
  * 
  * @author Jerome Louvel
  */

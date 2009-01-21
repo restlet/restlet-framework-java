@@ -30,8 +30,8 @@ package org.restlet.security;
 import org.restlet.data.Request;
 
 /**
- * Abstract class able to authenticate Restlet requests providing a specific
- * type of credentials.
+ * Interface able to authenticate Restlet requests providing a specific type of
+ * credentials.
  * 
  * @author Jerome Louvel
  */
