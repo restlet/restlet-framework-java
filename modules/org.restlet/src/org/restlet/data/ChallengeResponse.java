@@ -27,9 +27,7 @@
 
 package org.restlet.data;
 
-import java.io.Serializable;
-import java.security.Principal;
-
+import org.restlet.security.Principal;
 import org.restlet.util.Engine;
 import org.restlet.util.Series;
 
@@ -44,52 +42,6 @@ import org.restlet.util.Series;
  * @author Jerome Louvel
  */
 public final class ChallengeResponse {
-    /**
-     * Implementation of the Principal interface.
-     * 
-     * @author Stephan Koops
-     */
-    private final class PrincipalImpl implements Principal, Serializable {
-
-        private static final long serialVersionUID = -1842197948591956691L;
-
-        /**
-         * Constructor for deserialization.
-         */
-        private PrincipalImpl() {
-        }
-
-        @Override
-        public boolean equals(Object another) {
-            if (another == this) {
-                return true;
-            }
-            if (!(another instanceof Principal)) {
-                return false;
-            }
-            final Principal otherPrinc = (Principal) another;
-            return getName().equals(otherPrinc.getName());
-        }
-
-        /**
-         * Returns the name of this principal.
-         * 
-         * @return the name of this principal.
-         */
-        public String getName() {
-            return getIdentifier();
-        }
-
-        @Override
-        public int hashCode() {
-            return getName().hashCode();
-        }
-
-        @Override
-        public String toString() {
-            return getName();
-        }
-    }
 
     /**
      * Indicates if the identifier or principal has been authenticated. The
@@ -280,9 +232,11 @@ public final class ChallengeResponse {
      * Gets the principal associated to the identifier property.
      * 
      * @return The {@link Principal}.
+     * @deprecated Use the {@link ClientInfo#getSubject()} method instead.
      */
+    @Deprecated
     public Principal getPrincipal() {
-        return new PrincipalImpl();
+        return new Principal(getIdentifier());
     }
 
     /**

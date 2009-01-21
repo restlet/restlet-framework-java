@@ -36,6 +36,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.security.auth.Subject;
+
 import org.restlet.resource.Resource;
 import org.restlet.resource.Variant;
 import org.restlet.util.Engine;
@@ -160,6 +162,9 @@ public final class ClientInfo {
 
     /** The port number. */
     private volatile int port;
+
+    /** The subject containing security related information. */
+    private volatile Subject subject;
 
     /**
      * Constructor.
@@ -517,6 +522,16 @@ public final class ClientInfo {
     }
 
     /**
+     * Returns the subject containing security related information. Typically,
+     * it contains principals and credentials.
+     * 
+     * @return The subject containing security related information.
+     */
+    public Subject getSubject() {
+        return subject;
+    }
+
+    /**
      * Returns the IP address of the upstream client component. In general this
      * will correspond the the user agent IP address. This is useful if there
      * are intermediary components like proxies and load balancers.
@@ -630,6 +645,16 @@ public final class ClientInfo {
      */
     public void setPort(int port) {
         this.port = port;
+    }
+
+    /**
+     * Sets the subject containing security related information.
+     * 
+     * @param subject
+     *            The subject containing security related information.
+     */
+    public void setSubject(Subject subject) {
+        this.subject = subject;
     }
 
 }

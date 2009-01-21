@@ -87,7 +87,10 @@ Changes log
           by a more explicit "forwardedAddresses" property. Also, added
           a new getUpstreamAddress() method. Adjusted the Resolver 
           class to add a new "ciua" variable. Change suggested by 
-          John D. Mitchell. Initial patch provided by Remi Dewitte. 		 
+          John D. Mitchell. Initial patch provided by Remi Dewitte. 	
+        - Added ClientInfo#subject property returning a JAAS Subject.
+          Can contain several principals and credentials. Deprecated 
+          the ChallengeResponse#getPrincipal() method.	 
      - Misc
         - JAX-RS extension:
             - added class ExendedUriBuilder with "file" extensions for
