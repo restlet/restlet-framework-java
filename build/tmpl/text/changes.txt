@@ -71,9 +71,9 @@ Changes log
         - Added static Series#unmodifiableSeries() method.
         - Added DateUtils.format(Date) method which uses HTTP default
           format.
-        - Added a proposal "org.restlet.security" package with a
-          potential replacement for current Guard mechanism. This is
-          an alpha level package not intended for Restlet users yey.
+        - Added a new "org.restlet.security" package with a full
+          replacement for current Guard mechanism. This is
+          an alpha level package not intended for Restlet users yet.
         - Made the SpringBeanRouter implement ApplicationContextAware
           to enable AOP on target resources. Suggested by Daniel Woo.
         - Resource subclasses can now declared variants and match them

@@ -27,17 +27,12 @@
 
 package org.restlet.security;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.engine.Engine;
 import org.restlet.engine.authentication.ChallengeAuthenticatorHelper;
-import org.restlet.util.Resolver;
 
 /**
  * Authenticator based on a challenge scheme like HTTP Basic or HTTP Digest.
@@ -45,8 +40,6 @@ import org.restlet.util.Resolver;
  * @author Jerome Louvel
  */
 public class ChallengeAuthenticator extends Authenticator {
-
-    private final ChallengeScheme scheme;
 
     private final ChallengeAuthenticatorHelper helper;
 
@@ -56,10 +49,10 @@ public class ChallengeAuthenticator extends Authenticator {
      */
     private volatile boolean rechallengeEnabled;
 
-    private volatile Resolver<char[]> secretResolver;
+    private final ChallengeScheme scheme;
 
-    /** Map of secrets (login/password combinations). */
-    private final ConcurrentMap<String, char[]> secrets;
+    /** The secrets verifier (login/password combinations). */
+    private Verifier verifier;
 
     /**
      * Constructor.
@@ -68,13 +61,7 @@ public class ChallengeAuthenticator extends Authenticator {
      */
     public ChallengeAuthenticator(ChallengeScheme challengeScheme) {
         this.scheme = challengeScheme;
-        this.secrets = new ConcurrentHashMap<String, char[]>();
-        this.secretResolver = new Resolver<char[]>() {
-            @Override
-            public char[] resolve(String identifier) {
-                return getSecrets().get(identifier);
-            }
-        };
+        this.verifier = null;
 
         if (this.scheme != null) {
             this.helper = Engine.getInstance().findHelper(challengeScheme,
@@ -106,50 +93,12 @@ public class ChallengeAuthenticator extends Authenticator {
     }
 
     /**
-     * Indicates if the secret is valid for the given identifier. By default,
-     * this returns true given the correct login/password couple as verified via
-     * the findSecret() method.
+     * Returns the private helper.
      * 
-     * @param request
-     *            The Request
-     * @param identifier
-     *            the identifier
-     * @param secret
-     *            the identifier's secret
-     * @return true if the secret is valid for the given identifier
+     * @return The private helper.
      */
-    public boolean checkSecret(Request request, String identifier, char[] secret) {
-        boolean result = false;
-        final char[] secret2 = findSecret(identifier);
-
-        if ((secret == null) || (secret2 == null)) {
-            // check if both are null
-            result = (secret == secret2);
-        } else {
-            if (secret.length == secret2.length) {
-                boolean equals = true;
-                for (int i = 0; (i < secret.length) && equals; i++) {
-                    equals = (secret[i] == secret2[i]);
-                }
-                result = equals;
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     * Finds the secret associated to a given identifier. By default it looks up
-     * into the secrets map, but this behavior can be overriden by setting a
-     * custom secret resolver using the {@link #setSecretResolver(Resolver)}
-     * method.
-     * 
-     * @param identifier
-     *            The identifier to lookup.
-     * @return The secret associated to the identifier or null.
-     */
-    public char[] findSecret(String identifier) {
-        return getSecretResolver().resolve(identifier);
+    private ChallengeAuthenticatorHelper getHelper() {
+        return helper;
     }
 
     /**
@@ -162,30 +111,12 @@ public class ChallengeAuthenticator extends Authenticator {
     }
 
     /**
-     * Returns the private helper.
+     * Returns the secrets verifier.
      * 
-     * @return The private helper.
+     * @return The secrets verifier.
      */
-    private ChallengeAuthenticatorHelper getHelper() {
-        return helper;
-    }
-
-    /**
-     * Returns the secret resolver.
-     * 
-     * @return The secret resolver.
-     */
-    public Resolver<char[]> getSecretResolver() {
-        return secretResolver;
-    }
-
-    /**
-     * Returns the modifiable map of identifiers and secrets.
-     * 
-     * @return The map of identifiers and secrets.
-     */
-    public Map<String, char[]> getSecrets() {
-        return secrets;
+    public Verifier getVerifier() {
+        return verifier;
     }
 
     /**
@@ -213,13 +144,13 @@ public class ChallengeAuthenticator extends Authenticator {
     }
 
     /**
-     * Sets the secret resolver.
+     * Sets the secrets verifier.
      * 
-     * @param secretResolver
-     *            The secret resolver.
+     * @param verifier
+     *            The secrets verifier.
      */
-    public void setSecretResolver(Resolver<char[]> secretResolver) {
-        this.secretResolver = secretResolver;
+    public void setVerifier(Verifier verifier) {
+        this.verifier = verifier;
     }
 
 }

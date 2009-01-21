@@ -39,6 +39,8 @@ import java.util.Vector;
  * {@link Vector} instance.
  * 
  * @author Jerome Louvel
+ * @see <a href="http://c2.com/cgi/wiki?DecoratorPattern">The decorator (aka
+ *      wrapper) pattern</a>
  * @see java.util.Collections
  * @see java.util.List
  */

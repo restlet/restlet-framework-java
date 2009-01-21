@@ -13,6 +13,8 @@ import org.restlet.data.Response;
  * instance.
  * 
  * @author Thierry Boileau
+ * @see <a href="http://c2.com/cgi/wiki?DecoratorPattern">The decorator (aka
+ *      wrapper) pattern</a>
  */
 public class WrapperRestlet extends Restlet {
 

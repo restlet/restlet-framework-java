@@ -37,18 +37,6 @@ import java.util.Arrays;
  */
 public class Digest {
 
-    @Override
-    public boolean equals(Object obj) {
-        boolean result = (obj instanceof Digest);
-
-        if (result) {
-            Digest d = (Digest) obj;
-            result = getAlgorithm().equals(d.getAlgorithm());
-            result = result && Arrays.equals(getValue(), d.getValue());
-        }
-        return result;
-    }
-
     /** Digest algorightm defined in RFC 1319. */
     public static final String ALGORITHM_MD2 = "MD2";
 
@@ -93,11 +81,24 @@ public class Digest {
      */
     public Digest(String algorithm, byte[] value) {
         this.algorithm = algorithm;
-        // in JSE6, use Arrays.copyOf.
+
+        // In Java 6, use Arrays.copyOf.
         this.value = new byte[value.length];
         for (int i = 0; i < value.length; i++) {
             this.value[i] = value[i];
         }
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        boolean result = (obj instanceof Digest);
+
+        if (result) {
+            Digest d = (Digest) obj;
+            result = getAlgorithm().equals(d.getAlgorithm());
+            result = result && Arrays.equals(getValue(), d.getValue());
+        }
+        return result;
     }
 
     /**
@@ -115,7 +116,7 @@ public class Digest {
      * @return The digest value.
      */
     public byte[] getValue() {
-        // in JSE6, use Arrays.copyOf.
+        // In Java 6, use Arrays.copyOf.
         byte[] result = new byte[this.value.length];
         for (int i = 0; i < this.value.length; i++) {
             result[i] = this.value[i];
