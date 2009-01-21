@@ -35,7 +35,7 @@ import org.restlet.data.Request;
  * 
  * @author Jerome Louvel
  */
-public abstract class Authenticator {
+public interface Authenticator {
 
     /** Invalid credentials provided. */
     public static int RESULT_INVALID = -1;
@@ -62,6 +62,6 @@ public abstract class Authenticator {
      *            The request to authenticate.
      * @return The authentication result. See RESULT_* constants.
      */
-    public abstract int authenticate(Request request);
+    public int authenticate(Request request);
 
 }

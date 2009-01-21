@@ -39,7 +39,7 @@ import org.restlet.engine.authentication.ChallengeAuthenticatorHelper;
  * 
  * @author Jerome Louvel
  */
-public class ChallengeAuthenticator extends Authenticator {
+public class ChallengeAuthenticator implements Authenticator {
 
     private final ChallengeAuthenticatorHelper helper;
 
@@ -74,7 +74,6 @@ public class ChallengeAuthenticator extends Authenticator {
     /**
      * 
      */
-    @Override
     public int authenticate(Request request) {
         return getHelper().authenticate(request.getChallengeResponse(),
                 request, null);

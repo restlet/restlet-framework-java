@@ -36,7 +36,7 @@ import org.restlet.security.Verifier;
  * @see <a href="http://c2.com/cgi/wiki?DecoratorPattern">The decorator (aka
  *      wrapper) pattern</a>
  */
-public class WrapperVerifier extends Verifier {
+public class WrapperVerifier implements Verifier {
 
     /** The wrapped verifier. */
     private volatile Verifier wrappedVerifier;
@@ -79,7 +79,6 @@ public class WrapperVerifier extends Verifier {
      *            The proposed secret.
      * @return True if the proposed secret is correct.
      */
-    @Override
     public boolean verify(String identifier, char[] secret) {
         return getWrappedVerifier().verify(identifier, secret);
     }

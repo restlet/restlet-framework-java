@@ -32,7 +32,7 @@ package org.restlet.security;
  * 
  * @author Jerome Louvel
  */
-public abstract class LocalVerifier extends Verifier {
+public abstract class LocalVerifier implements Verifier {
 
     /**
      * Returns the secret associated to a given identifier.
@@ -43,7 +43,6 @@ public abstract class LocalVerifier extends Verifier {
      */
     protected abstract char[] getSecret(String identifier);
 
-    @Override
     public boolean verify(String identifier, char[] inputSecret) {
         boolean result = false;
         final char[] outputSecret = getSecret(identifier);

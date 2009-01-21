@@ -37,7 +37,8 @@ import org.restlet.util.WrapperList;
  * 
  * @author Jerome Louvel
  */
-public class AuthenticatorList extends Authenticator {
+public class AuthenticatorList extends WrapperList<Authenticator> implements
+        Authenticator {
 
     public static final int MODE_ALL_AVAILABLE_REQUIRED = 1;
 
@@ -67,7 +68,6 @@ public class AuthenticatorList extends Authenticator {
         this.authenticators = null;
     }
 
-    @Override
     public int authenticate(Request request) {
         switch (getMode()) {
         case MODE_ALL_AVAILABLE_REQUIRED:

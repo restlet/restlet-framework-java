@@ -34,12 +34,11 @@ import org.restlet.data.Request;
  * 
  * @author Jerome Louvel
  */
-public abstract class Authorizer {
+public interface Authorizer {
 
     /** Authorizer returning true all the time. */
     public static final Authorizer ALWAYS = new Authorizer() {
 
-        @Override
         public boolean authorize(Request request) {
             return true;
         }
@@ -49,7 +48,6 @@ public abstract class Authorizer {
     /** Authorizer returning false all the time. */
     public static final Authorizer NEVER = new Authorizer() {
 
-        @Override
         public boolean authorize(Request request) {
             return false;
         }
@@ -63,6 +61,6 @@ public abstract class Authorizer {
      *            The request to authorize.
      * @return True if the request is authorized.
      */
-    public abstract boolean authorize(Request request);
+    public boolean authorize(Request request);
 
 }

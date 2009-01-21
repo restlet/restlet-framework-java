@@ -33,7 +33,7 @@ package org.restlet.security;
  * 
  * @author Jerome Louvel
  */
-public abstract class Verifier {
+public interface Verifier {
 
     /**
      * Verifies that the proposed secret is correct for the specified
@@ -46,6 +46,6 @@ public abstract class Verifier {
      *            The proposed secret.
      * @return True if the proposed secret is correct.
      */
-    public abstract boolean verify(String identifier, char[] secret);
+    public boolean verify(String identifier, char[] secret);
 
 }
