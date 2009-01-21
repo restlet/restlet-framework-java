@@ -30,11 +30,31 @@ package org.restlet.security;
 import org.restlet.data.Request;
 
 /**
- * Interface able to authorize Restlet requests.
+ * Abstract class able to authorize Restlet requests.
  * 
  * @author Jerome Louvel
  */
-public interface Authorizer {
+public abstract class Authorizer {
+
+    /** Authorizer returning true all the time. */
+    public static final Authorizer ALWAYS = new Authorizer() {
+
+        @Override
+        public boolean authorize(Request request) {
+            return true;
+        }
+
+    };
+
+    /** Authorizer returning false all the time. */
+    public static final Authorizer NEVER = new Authorizer() {
+
+        @Override
+        public boolean authorize(Request request) {
+            return false;
+        }
+
+    };
 
     /**
      * Indicates if the request is authorized.
@@ -43,6 +63,6 @@ public interface Authorizer {
      *            The request to authorize.
      * @return True if the request is authorized.
      */
-    public boolean authorize(Request request);
+    public abstract boolean authorize(Request request);
 
 }

@@ -28,7 +28,6 @@
 package org.restlet.security;
 
 import org.restlet.data.Request;
-import org.restlet.data.Response;
 import org.restlet.util.WrapperList;
 
 /**
@@ -38,8 +37,7 @@ import org.restlet.util.WrapperList;
  * 
  * @author Jerome Louvel
  */
-public class AuthenticatorList extends WrapperList<Authenticator> implements
-        Authenticator {
+public class AuthenticatorList extends Authenticator {
 
     public static final int MODE_ALL_AVAILABLE_REQUIRED = 1;
 
@@ -57,6 +55,8 @@ public class AuthenticatorList extends WrapperList<Authenticator> implements
 
     public static final int MODE_TWO_AVAILABLE_REQUIRED = 8;
 
+    private WrapperList<Authenticator> authenticators;
+
     private int mode;
 
     /**
@@ -64,11 +64,10 @@ public class AuthenticatorList extends WrapperList<Authenticator> implements
      */
     public AuthenticatorList() {
         this.mode = MODE_ONE_AVAILABLE_REQUIRED;
+        this.authenticators = null;
     }
 
-    /**
-     * 
-     */
+    @Override
     public int authenticate(Request request) {
         switch (getMode()) {
         case MODE_ALL_AVAILABLE_REQUIRED:
@@ -113,11 +112,16 @@ public class AuthenticatorList extends WrapperList<Authenticator> implements
         return 0;
     }
 
-    public void challenge(Response response, boolean stale) {
+    public WrapperList<Authenticator> getAuthenticators() {
+        return authenticators;
     }
 
     public int getMode() {
         return mode;
+    }
+
+    public void setAuthenticators(WrapperList<Authenticator> authenticators) {
+        this.authenticators = authenticators;
     }
 
     public void setMode(int require) {

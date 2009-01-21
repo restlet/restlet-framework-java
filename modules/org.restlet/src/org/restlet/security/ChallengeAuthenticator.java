@@ -44,7 +44,7 @@ import org.restlet.util.Resolver;
  * 
  * @author Jerome Louvel
  */
-public class ChallengeAuthenticator implements Authenticator {
+public class ChallengeAuthenticator extends Authenticator {
 
     private final ChallengeScheme scheme;
 
@@ -87,11 +87,21 @@ public class ChallengeAuthenticator implements Authenticator {
     /**
      * 
      */
+    @Override
     public int authenticate(Request request) {
         return getHelper().authenticate(request.getChallengeResponse(),
                 request, null);
     }
 
+    /**
+     * Challenges the client by adding a challenge request to the response and
+     * by setting the status to CLIENT_ERROR_UNAUTHORIZED.
+     * 
+     * @param response
+     *            The response to update.
+     * @param stale
+     *            Indicates if the new challenge is due to a stale response.
+     */
     public void challenge(Response response, boolean stale) {
     }
 

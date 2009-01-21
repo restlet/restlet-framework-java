@@ -50,7 +50,7 @@ public class ChallengeGuard extends Guard {
      *            The challenge scheme.
      */
     public ChallengeGuard(Context context, ChallengeScheme scheme) {
-        this(context, scheme, new AllAuthorizer());
+        this(context, scheme, Authorizer.ALWAYS);
     }
 
     /**

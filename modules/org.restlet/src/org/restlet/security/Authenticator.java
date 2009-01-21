@@ -28,15 +28,14 @@
 package org.restlet.security;
 
 import org.restlet.data.Request;
-import org.restlet.data.Response;
 
 /**
- * Interface able to authenticate Restlet requests providing a specific type of
- * credentials.
+ * Abstract class able to authenticate Restlet requests providing a specific
+ * type of credentials.
  * 
  * @author Jerome Louvel
  */
-public interface Authenticator {
+public abstract class Authenticator {
 
     /** Invalid credentials provided. */
     public static int RESULT_INVALID = -1;
@@ -63,17 +62,6 @@ public interface Authenticator {
      *            The request to authenticate.
      * @return The authentication result. See RESULT_* constants.
      */
-    public int authenticate(Request request);
-
-    /**
-     * Challenges the client by adding a challenge request to the response and
-     * by setting the status to CLIENT_ERROR_UNAUTHORIZED.
-     * 
-     * @param response
-     *            The response to update.
-     * @param stale
-     *            Indicates if the new challenge is due to a stale response.
-     */
-    public void challenge(Response response, boolean stale);
+    public abstract int authenticate(Request request);
 
 }
