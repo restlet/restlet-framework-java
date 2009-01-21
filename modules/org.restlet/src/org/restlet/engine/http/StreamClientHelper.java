@@ -46,7 +46,6 @@ import javax.net.ssl.TrustManagerFactory;
 import org.restlet.Client;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
-import org.restlet.engine.Engine;
 
 /**
  * HTTP client helper based on BIO sockets. Here is the list of parameters that
@@ -148,7 +147,6 @@ public class StreamClientHelper extends HttpClientHelper {
 
     @Override
     public HttpClientCall create(Request request) {
-        request.getClientInfo().setAgent(Engine.VERSION_HEADER);
         return new StreamClientCall(this, request, createSocketFactory(request
                 .isConfidential()));
     }
