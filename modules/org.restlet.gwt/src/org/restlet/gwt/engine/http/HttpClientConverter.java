@@ -395,41 +395,52 @@ public class HttpClientConverter extends HttpConverter {
      *            The source HTTP client call.
      */
     public void updateResponse(Response response, HttpClientCall httpCall) {
-        // Now we can access the status code
-        response.setStatus(new Status(httpCall.getStatusCode(), null, httpCall
-                .getReasonPhrase(), null));
+        try {
+            // Now we can access the status code
+            response.setStatus(new Status(httpCall.getStatusCode(), null,
+                    httpCall.getReasonPhrase(), null));
 
-        // Get the server address
-        response.getServerInfo().setAddress(httpCall.getServerAddress());
-        response.getServerInfo().setPort(httpCall.getServerPort());
+            // Get the server address
+            response.getServerInfo().setAddress(httpCall.getServerAddress());
+            response.getServerInfo().setPort(httpCall.getServerPort());
 
-        // Read the response headers
-        readResponseHeaders(httpCall, response);
+            // Read the response headers
+            readResponseHeaders(httpCall, response);
 
-        // Set the entity
-        response.setEntity(httpCall.getResponseEntity(response));
-        // Release the representation's content for some obvious cases
-        if (response.getEntity() != null) {
-            if (response.getEntity().getSize() == 0) {
-                response.getEntity().release();
-            } else if (response.getRequest().getMethod().equals(Method.HEAD)) {
-                response.getEntity().release();
-            } else if (response.getStatus().equals(Status.SUCCESS_NO_CONTENT)) {
-                response.getEntity().release();
-            } else if (response.getStatus()
-                    .equals(Status.SUCCESS_RESET_CONTENT)) {
-                response.getEntity().release();
-                response.setEntity(null);
-            } else if (response.getStatus().equals(
-                    Status.SUCCESS_PARTIAL_CONTENT)) {
-                response.getEntity().release();
-                response.setEntity(null);
-            } else if (response.getStatus().equals(
-                    Status.REDIRECTION_NOT_MODIFIED)) {
-                response.getEntity().release();
-            } else if (response.getStatus().isInformational()) {
-                response.getEntity().release();
-                response.setEntity(null);
+            // Set the entity
+            response.setEntity(httpCall.getResponseEntity(response));
+
+            // Release the representation's content for some obvious cases
+            if (response.getEntity() != null) {
+                if (response.getEntity().getSize() == 0) {
+                    response.getEntity().release();
+                } else if (response.getRequest().getMethod()
+                        .equals(Method.HEAD)) {
+                    response.getEntity().release();
+                } else if (response.getStatus().equals(
+                        Status.SUCCESS_NO_CONTENT)) {
+                    response.getEntity().release();
+                } else if (response.getStatus().equals(
+                        Status.SUCCESS_RESET_CONTENT)) {
+                    response.getEntity().release();
+                    response.setEntity(null);
+                } else if (response.getStatus().equals(
+                        Status.SUCCESS_PARTIAL_CONTENT)) {
+                    response.getEntity().release();
+                    response.setEntity(null);
+                } else if (response.getStatus().equals(
+                        Status.REDIRECTION_NOT_MODIFIED)) {
+                    response.getEntity().release();
+                } else if (response.getStatus().isInformational()) {
+                    response.getEntity().release();
+                    response.setEntity(null);
+                }
+            }
+        } catch (Exception e) {
+            // Unexpected exception occurred
+            if ((response.getStatus() == null)
+                    || !response.getStatus().isError()) {
+                response.setStatus(Status.CONNECTOR_ERROR_INTERNAL, e);
             }
         }
     }

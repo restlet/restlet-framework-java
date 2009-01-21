@@ -58,7 +58,9 @@ Changes log
           a similar issue with GWT that forced to return an empty
           representation. Reported by Eirik Bjorsnos.
         - Fixed potential recursion in ServletWarClientEntity.
-          Reported by Nicholas Brown. 
+          Reported by Nicholas Brown.
+        - Fixed bug in Restlet-GWT preventing the callback to work 
+          with broken connections. Reported by Bill Greenseth.
     - Misc
         - Fully moved org.restlet.gwt.internal content into 
           org.restlet.gwt.engine package.
