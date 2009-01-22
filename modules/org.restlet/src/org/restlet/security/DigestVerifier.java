@@ -27,11 +27,13 @@
 
 package org.restlet.security;
 
+import javax.security.auth.Subject;
+
 import org.restlet.util.WrapperVerifier;
 
 /**
- * Wrapper verifier that can handle digested secrets. If the input secret is 
- * a digest, then the target secret must be a digest of the same algorithm.<br>
+ * Wrapper verifier that can handle digested secrets. If the input secret is a
+ * digest, then the target secret must be a digest of the same algorithm.<br>
  * <br>
  * If the input secret is a regular secret, then the target secret can be in any
  * digest algorithm or a regular secret.
@@ -131,7 +133,7 @@ public class DigestVerifier extends WrapperVerifier {
     }
 
     @Override
-    public boolean verify(String identifier, char[] inputSecret) {
+    public boolean verify(Subject subject, String identifier, char[] inputSecret) {
         char[] inputSecretDigest = inputSecret;
 
         if (getInputAlgorithm() == null) {
@@ -144,7 +146,7 @@ public class DigestVerifier extends WrapperVerifier {
             // The input secret is already digested
         }
 
-        return super.verify(identifier, inputSecretDigest);
+        return super.verify(subject, identifier, inputSecretDigest);
     }
 
 }

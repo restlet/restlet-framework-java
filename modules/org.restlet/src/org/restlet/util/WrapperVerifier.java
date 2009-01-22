@@ -27,6 +27,8 @@
 
 package org.restlet.util;
 
+import javax.security.auth.Subject;
+
 import org.restlet.security.Verifier;
 
 /**
@@ -73,14 +75,16 @@ public class WrapperVerifier implements Verifier {
     /**
      * Delegates the verification to the wrapped verifier.
      * 
+     * @param subject
+     *            The subject to update with principals.
      * @param identifier
      *            The user identifier.
      * @param secret
      *            The proposed secret.
-     * @return True if the proposed secret is correct.
+     * @return True if the proposed secret was correct and the subject updated.
      */
-    public boolean verify(String identifier, char[] secret) {
-        return getWrappedVerifier().verify(identifier, secret);
+    public boolean verify(Subject subject, String identifier, char[] secret) {
+        return getWrappedVerifier().verify(subject, identifier, secret);
     }
 
 }

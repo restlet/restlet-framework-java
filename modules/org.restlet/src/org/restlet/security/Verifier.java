@@ -27,6 +27,8 @@
 
 package org.restlet.security;
 
+import javax.security.auth.Subject;
+
 /**
  * Generic verifier of secrets. Frequently, the secret will correspond to a
  * passwords.
@@ -40,12 +42,14 @@ public interface Verifier {
      * identifier. Frequently, the identifier will correspond to a user login
      * and the secret to a password, but this isn't always the case.
      * 
+     * @param subject
+     *            The subject to update with principals.
      * @param identifier
      *            The user identifier.
      * @param secret
      *            The proposed secret.
-     * @return True if the proposed secret is correct.
+     * @return True if the proposed secret was correct and the subject updated.
      */
-    public boolean verify(String identifier, char[] secret);
+    public boolean verify(Subject subject, String identifier, char[] secret);
 
 }
