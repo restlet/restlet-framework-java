@@ -38,6 +38,7 @@ import java.util.Map;
 
 import javax.security.auth.Subject;
 
+import org.restlet.engine.http.UserAgentUtils;
 import org.restlet.resource.Resource;
 import org.restlet.resource.Variant;
 import org.restlet.util.Engine;
@@ -398,8 +399,7 @@ public final class ClientInfo {
      */
     public List<Product> getAgentProducts() {
         if (this.agentProducts == null) {
-            this.agentProducts = Engine.getInstance()
-                    .parseUserAgent(getAgent());
+            this.agentProducts = UserAgentUtils.parse(getAgent());
         }
         return this.agentProducts;
     }

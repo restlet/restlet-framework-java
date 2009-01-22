@@ -36,58 +36,39 @@ import java.net.URLConnection;
 import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 
-import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
 import org.restlet.Context;
-import org.restlet.Guard;
 import org.restlet.Restlet;
 import org.restlet.Server;
 import org.restlet.data.ChallengeScheme;
-import org.restlet.data.CharacterSet;
 import org.restlet.data.ClientInfo;
-import org.restlet.data.Cookie;
-import org.restlet.data.CookieSetting;
-import org.restlet.data.Dimension;
-import org.restlet.data.Form;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
-import org.restlet.data.Product;
 import org.restlet.data.Protocol;
-import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.engine.application.ApplicationHelper;
 import org.restlet.engine.authentication.ChallengeAuthenticatorHelper;
-import org.restlet.engine.authentication.AuthenticationUtils;
 import org.restlet.engine.authentication.HttpAmazonS3Helper;
 import org.restlet.engine.authentication.HttpBasicHelper;
 import org.restlet.engine.authentication.HttpDigestHelper;
 import org.restlet.engine.authentication.SmtpPlainHelper;
 import org.restlet.engine.component.ChildContext;
 import org.restlet.engine.component.ComponentContext;
-import org.restlet.engine.component.ComponentHelper;
-import org.restlet.engine.http.CookieReader;
-import org.restlet.engine.http.CookieUtils;
 import org.restlet.engine.http.HttpClientCall;
 import org.restlet.engine.http.HttpClientConverter;
 import org.restlet.engine.http.HttpServerConverter;
-import org.restlet.engine.http.HttpUtils;
 import org.restlet.engine.http.StreamClientHelper;
 import org.restlet.engine.http.StreamServerHelper;
 import org.restlet.engine.local.ClapClientHelper;
 import org.restlet.engine.local.FileClientHelper;
-import org.restlet.engine.util.Base64;
-import org.restlet.engine.util.FormUtils;
-import org.restlet.engine.util.SecurityUtils;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Variant;
 import org.restlet.util.Series;
@@ -262,16 +243,6 @@ public class Engine extends org.restlet.util.Engine {
         }
     }
 
-    @Override
-    public int authenticate(Request request, Guard guard) {
-        return AuthenticationUtils.authenticate(request, guard);
-    }
-
-    @Override
-    public void challenge(Response response, boolean stale, Guard guard) {
-        AuthenticationUtils.challenge(response, stale, guard);
-    }
-
     /**
      * Copies the given header parameters into the given {@link Response}.
      * 
@@ -308,11 +279,6 @@ public class Engine extends org.restlet.util.Engine {
     public void copyResponseHeaders(Response response, Series<Parameter> headers) {
         HttpServerConverter.addResponseHeaders(response, headers);
         HttpServerConverter.addEntityHeaders(response.getEntity(), headers);
-    }
-
-    @Override
-    public ApplicationHelper createHelper(Application application) {
-        return new ApplicationHelper(application);
     }
 
     @Override
@@ -362,11 +328,6 @@ public class Engine extends org.restlet.util.Engine {
         }
 
         return result;
-    }
-
-    @Override
-    public ComponentHelper createHelper(Component component) {
-        return new ComponentHelper(component);
     }
 
     @Override
@@ -499,8 +460,9 @@ public class Engine extends org.restlet.util.Engine {
      *            Indicates if server side support is required.
      * @return The authentication helper or null.
      */
-    public ChallengeAuthenticatorHelper findHelper(ChallengeScheme challengeScheme,
-            boolean clientSide, boolean serverSide) {
+    public ChallengeAuthenticatorHelper findHelper(
+            ChallengeScheme challengeScheme, boolean clientSide,
+            boolean serverSide) {
         ChallengeAuthenticatorHelper result = null;
         final List<ChallengeAuthenticatorHelper> helpers = getRegisteredAuthentications();
         ChallengeAuthenticatorHelper current;
@@ -544,52 +506,6 @@ public class Engine extends org.restlet.util.Engine {
                                         + restlet.getClass());
             }
         }
-    }
-
-    @Override
-    public String formatCookie(Cookie cookie) throws IllegalArgumentException {
-        return CookieUtils.format(cookie);
-    }
-
-    @Override
-    public String formatCookieSetting(CookieSetting cookieSetting)
-            throws IllegalArgumentException {
-        return CookieUtils.format(cookieSetting);
-    }
-
-    @Override
-    public String formatDimensions(Collection<Dimension> dimensions) {
-        return HttpUtils.createVaryHeader(dimensions);
-    }
-
-    @Override
-    public String formatUserAgent(List<Product> products)
-            throws IllegalArgumentException {
-        final StringBuilder builder = new StringBuilder();
-
-        for (final Iterator<Product> iterator = products.iterator(); iterator
-                .hasNext();) {
-            final Product product = iterator.next();
-            if ((product.getName() == null)
-                    || (product.getName().length() == 0)) {
-                throw new IllegalArgumentException(
-                        "Product name cannot be null.");
-            }
-
-            builder.append(product.getName());
-            if (product.getVersion() != null) {
-                builder.append("/").append(product.getVersion());
-            }
-            if (product.getComment() != null) {
-                builder.append(" (").append(product.getComment()).append(")");
-            }
-
-            if (iterator.hasNext()) {
-                builder.append(" ");
-            }
-        }
-
-        return builder.toString();
     }
 
     @Override
@@ -962,133 +878,6 @@ public class Engine extends org.restlet.util.Engine {
         return result;
     }
 
-    @Override
-    public void parse(Form form, Representation webForm) {
-        if (webForm != null) {
-            FormUtils.parse(form, webForm);
-        }
-    }
-
-    @Override
-    public void parse(Form form, String queryString, CharacterSet characterSet,
-            boolean decode, char separator) {
-        if ((queryString != null) && !queryString.equals("")) {
-            FormUtils.parse(form, queryString, characterSet, decode, separator);
-        }
-    }
-
-    @Override
-    public Cookie parseCookie(String cookie) throws IllegalArgumentException {
-        final CookieReader cr = new CookieReader(cookie);
-        try {
-            return cr.readCookie();
-        } catch (IOException e) {
-            throw new IllegalArgumentException("Could not read the cookie", e);
-        }
-    }
-
-    @Override
-    public CookieSetting parseCookieSetting(String cookieSetting)
-            throws IllegalArgumentException {
-        final CookieReader cr = new CookieReader(cookieSetting);
-        try {
-            return cr.readCookieSetting();
-        } catch (IOException e) {
-            throw new IllegalArgumentException(
-                    "Could not read the cookie setting", e);
-        }
-    }
-
-    @Override
-    public List<Product> parseUserAgent(String userAgent)
-            throws IllegalArgumentException {
-        final List<Product> result = new ArrayList<Product>();
-
-        if (userAgent != null) {
-            String token = null;
-            String version = null;
-            String comment = null;
-            final char[] tab = userAgent.trim().toCharArray();
-            StringBuilder tokenBuilder = new StringBuilder();
-            StringBuilder versionBuilder = null;
-            StringBuilder commentBuilder = null;
-            int index = 0;
-            boolean insideToken = true;
-            boolean insideVersion = false;
-            boolean insideComment = false;
-
-            for (index = 0; index < tab.length; index++) {
-                final char c = tab[index];
-                if (insideToken) {
-                    if (((c >= 'a') && (c <= 'z'))
-                            || ((c >= 'A') && (c <= 'Z')) || (c == ' ')) {
-                        tokenBuilder.append(c);
-                    } else {
-                        token = tokenBuilder.toString().trim();
-                        insideToken = false;
-                        if (c == '/') {
-                            insideVersion = true;
-                            versionBuilder = new StringBuilder();
-                        } else if (c == '(') {
-                            insideComment = true;
-                            commentBuilder = new StringBuilder();
-                        }
-                    }
-                } else {
-                    if (insideVersion) {
-                        if (c != ' ') {
-                            versionBuilder.append(c);
-                        } else {
-                            insideVersion = false;
-                            version = versionBuilder.toString();
-                        }
-                    } else {
-                        if (c == '(') {
-                            insideComment = true;
-                            commentBuilder = new StringBuilder();
-                        } else {
-                            if (insideComment) {
-                                if (c == ')') {
-                                    insideComment = false;
-                                    comment = commentBuilder.toString();
-                                    result.add(new Product(token, version,
-                                            comment));
-                                    insideToken = true;
-                                    tokenBuilder = new StringBuilder();
-                                } else {
-                                    commentBuilder.append(c);
-                                }
-                            } else {
-                                result.add(new Product(token, version, null));
-                                insideToken = true;
-                                tokenBuilder = new StringBuilder();
-                                tokenBuilder.append(c);
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (insideComment) {
-                comment = commentBuilder.toString();
-                result.add(new Product(token, version, comment));
-            } else {
-                if (insideVersion) {
-                    version = versionBuilder.toString();
-                    result.add(new Product(token, version, null));
-                } else {
-                    if (insideToken && (tokenBuilder.length() > 0)) {
-                        token = tokenBuilder.toString();
-                        result.add(new Product(token, null, null));
-                    }
-                }
-            }
-        }
-
-        return result;
-
-    }
-
     /**
      * Registers the default authentication helpers.
      */
@@ -1252,16 +1041,6 @@ public class Engine extends org.restlet.util.Engine {
             }
 
         });
-    }
-
-    @Override
-    public String toBase64(byte[] target) {
-        return Base64.encode(target, false);
-    }
-
-    @Override
-    public String toMd5(String target) {
-        return SecurityUtils.toMd5(target);
     }
 
 }

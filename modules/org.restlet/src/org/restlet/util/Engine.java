@@ -27,26 +27,15 @@
 
 package org.restlet.util;
 
-import java.util.Collection;
 import java.util.List;
 
-import org.restlet.Application;
 import org.restlet.Client;
-import org.restlet.Component;
 import org.restlet.Context;
-import org.restlet.Guard;
 import org.restlet.Restlet;
 import org.restlet.Server;
-import org.restlet.data.CharacterSet;
 import org.restlet.data.ClientInfo;
-import org.restlet.data.Cookie;
-import org.restlet.data.CookieSetting;
-import org.restlet.data.Dimension;
-import org.restlet.data.Form;
 import org.restlet.data.Language;
 import org.restlet.data.Parameter;
-import org.restlet.data.Product;
-import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.engine.Helper;
 import org.restlet.resource.Representation;
@@ -238,33 +227,6 @@ public abstract class Engine {
     }
 
     /**
-     * Indicates if the call is properly authenticated. By default, this
-     * delegates credential checking to checkSecret().
-     * 
-     * @param request
-     *            The request to authenticate.
-     * @param guard
-     *            The associated guard to callback.
-     * @return -1 if the given credentials were invalid, 0 if no credentials
-     *         were found and 1 otherwise.
-     * @see Guard#checkSecret(Request, String, char[])
-     */
-    public abstract int authenticate(Request request, Guard guard);
-
-    /**
-     * Challenges the client by adding a challenge request to the response and
-     * by setting the status to CLIENT_ERROR_UNAUTHORIZED.
-     * 
-     * @param response
-     *            The response to update.
-     * @param stale
-     *            Indicates if the new challenge is due to a stale response.
-     * @param guard
-     *            The associated guard to callback.
-     */
-    public abstract void challenge(Response response, boolean stale, Guard guard);
-
-    /**
      * Copies the given header parameters into the given {@link Response}.
      * 
      * @param headers
@@ -291,15 +253,6 @@ public abstract class Engine {
             Series<Parameter> headers);
 
     /**
-     * Creates a new helper for a given component.
-     * 
-     * @param application
-     *            The application to help.
-     * @return The new helper.
-     */
-    public abstract Helper<Application> createHelper(Application application);
-
-    /**
      * Creates a new helper for a given client connector.
      * 
      * @param client
@@ -310,15 +263,6 @@ public abstract class Engine {
      */
     public abstract Helper<Client> createHelper(Client client,
             String helperClass);
-
-    /**
-     * Creates a new helper for a given component.
-     * 
-     * @param component
-     *            The component to help.
-     * @return The new helper.
-     */
-    public abstract Helper<Component> createHelper(Component component);
 
     /**
      * Creates a new helper for a given server connector.
@@ -343,49 +287,6 @@ public abstract class Engine {
     public abstract void fireContextChanged(Restlet restlet, Context context);
 
     /**
-     * Formats the given Cookie to a String
-     * 
-     * @param cookie
-     * @return the Cookie as String
-     * @throws IllegalArgumentException
-     *             Thrown if the Cookie contains illegal values
-     */
-    public abstract String formatCookie(Cookie cookie)
-            throws IllegalArgumentException;
-
-    /**
-     * Formats the given CookieSetting to a String
-     * 
-     * @param cookieSetting
-     * @return the CookieSetting as String
-     * @throws IllegalArgumentException
-     *             Thrown if the CookieSetting contains illegal values
-     */
-    public abstract String formatCookieSetting(CookieSetting cookieSetting)
-            throws IllegalArgumentException;
-
-    /**
-     * Formats the given Set of Dimensions to a String for the HTTP Vary header.
-     * 
-     * @param dimensions
-     *            the dimensions to format.
-     * @return the Vary header or null, if dimensions is null or empty.
-     */
-    public abstract String formatDimensions(Collection<Dimension> dimensions);
-
-    /**
-     * Formats the given List of Products to a String.
-     * 
-     * @param products
-     *            The list of products to format.
-     * @return the List of Products as String.
-     * @throws IllegalArgumentException
-     *             Thrown if the List of Products contains illegal values
-     */
-    public abstract String formatUserAgent(List<Product> products)
-            throws IllegalArgumentException;
-
-    /**
      * Returns the best variant representation for a given resource according
      * the the client preferences.<br>
      * A default language is provided in case the variants don't match the
@@ -402,88 +303,5 @@ public abstract class Engine {
      */
     public abstract Variant getPreferredVariant(ClientInfo client,
             List<Variant> variants, Language defaultLanguage);
-
-    /**
-     * Parses a representation into a form.
-     * 
-     * @param form
-     *            The target form.
-     * @param representation
-     *            The representation to parse.
-     */
-    public abstract void parse(Form form, Representation representation);
-
-    /**
-     * Parses a parameters string to parse into a given form.
-     * 
-     * @param form
-     *            The target form.
-     * @param parametersString
-     *            The parameters string to parse.
-     * @param characterSet
-     *            The supported character encoding.
-     * @param decode
-     *            Indicates if the parameters should be decoded using the given
-     *            character set.
-     * @param separator
-     *            The separator character to append between parameters.
-     */
-    public abstract void parse(Form form, String parametersString,
-            CharacterSet characterSet, boolean decode, char separator);
-
-    /**
-     * Parses the given String to a Cookie
-     * 
-     * @param cookie
-     * @return the Cookie parsed from the String
-     * @throws IllegalArgumentException
-     *             Thrown if the String can not be parsed as Cookie.
-     */
-    public abstract Cookie parseCookie(String cookie)
-            throws IllegalArgumentException;
-
-    /**
-     * Parses the given String to a CookieSetting
-     * 
-     * @param cookieSetting
-     * @return the CookieSetting parsed from the String
-     * @throws IllegalArgumentException
-     *             Thrown if the String can not be parsed as CookieSetting.
-     */
-    public abstract CookieSetting parseCookieSetting(String cookieSetting)
-            throws IllegalArgumentException;
-
-    /**
-     * Parses the given user agent String to a list of Product instances.
-     * 
-     * @param userAgent
-     * @return the List of Product objects parsed from the String
-     * @throws IllegalArgumentException
-     *             Thrown if the String can not be parsed as a list of Product
-     *             instances.
-     */
-    public abstract List<Product> parseUserAgent(String userAgent)
-            throws IllegalArgumentException;
-
-    /**
-     * Converts the given bytes array into a Base64 String.
-     * 
-     * @param target
-     *            The bytes array to encode.
-     * @return The Base64 String.
-     */
-    public abstract String toBase64(byte[] target);
-
-    /**
-     * Returns the MD5 digest of the target string. Target is decoded to bytes
-     * using the US-ASCII charset. The returned hexidecimal String always
-     * contains 32 lowercase alphanumeric characters. For example, if target is
-     * "HelloWorld", this method returns "68e109f0f40ca72a15e05cc22786f8e6".
-     * 
-     * @param target
-     *            The string to encode.
-     * @return The MD5 digest of the target string.
-     */
-    public abstract String toMd5(String target);
 
 }

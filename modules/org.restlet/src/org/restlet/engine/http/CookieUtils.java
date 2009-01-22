@@ -308,4 +308,42 @@ public class CookieUtils {
             }
         }
     }
+
+    /**
+     * Parses the given String to a Cookie
+     * 
+     * @param cookie
+     * @return the Cookie parsed from the String
+     * @throws IllegalArgumentException
+     *             Thrown if the String can not be parsed as Cookie.
+     */
+    public static Cookie parse(String cookie)
+            throws IllegalArgumentException {
+        final CookieReader cr = new CookieReader(cookie);
+        try {
+            return cr.readCookie();
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Could not read the cookie", e);
+        }
+    }
+
+    /**
+     * Parses the given String to a CookieSetting
+     * 
+     * @param cookieSetting
+     * @return the CookieSetting parsed from the String
+     * @throws IllegalArgumentException
+     *             Thrown if the String can not be parsed as CookieSetting.
+     */
+    public static CookieSetting parseSetting(String cookieSetting)
+            throws IllegalArgumentException {
+        final CookieReader cr = new CookieReader(cookieSetting);
+        try {
+            return cr.readCookieSetting();
+        } catch (IOException e) {
+            throw new IllegalArgumentException(
+                    "Could not read the cookie setting", e);
+        }
+    }
+
 }

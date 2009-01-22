@@ -39,7 +39,6 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.engine.util.Base64;
 import org.restlet.engine.util.SecurityUtils;
-import org.restlet.util.Engine;
 import org.restlet.util.Series;
 
 /**
@@ -64,7 +63,7 @@ public class HttpDigestHelper extends ChallengeAuthenticatorHelper {
     private static String getHashedSecret(String identifier, Guard guard) {
         char[] result = guard.getSecretResolver().resolve(identifier);
         if (result != null) {
-            return Engine.getInstance().toMd5(
+            return SecurityUtils.toMd5(
                     identifier + ":" + guard.getRealm() + ":"
                             + new String(result));
         } else {
@@ -150,7 +149,7 @@ public class HttpDigestHelper extends ChallengeAuthenticatorHelper {
             if (uri.equals(requestUri)) {
                 final String a1 = getHashedSecret(username, guard);
                 if (a1 != null) {
-                    final String a2 = Engine.getInstance().toMd5(
+                    final String a2 = SecurityUtils.toMd5(
                             request.getMethod() + ":" + requestUri);
 
                     final StringBuffer expectedResponse = new StringBuffer(a1)
@@ -161,7 +160,7 @@ public class HttpDigestHelper extends ChallengeAuthenticatorHelper {
                     }
                     expectedResponse.append(':').append(a2);
 
-                    if (response.equals(Engine.getInstance().toMd5(
+                    if (response.equals(SecurityUtils.toMd5(
                             expectedResponse.toString()))) {
                         return Guard.AUTHENTICATION_VALID;
                     }

@@ -38,7 +38,7 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.util.Engine;
+import org.restlet.engine.authentication.AuthenticationUtils;
 import org.restlet.util.Resolver;
 
 /**
@@ -212,7 +212,7 @@ public class Guard extends Filter {
      */
     public int authenticate(Request request) {
         // Delegate processing to the Engine
-        return Engine.getInstance().authenticate(request, this);
+        return AuthenticationUtils.authenticate(request, this);
     }
 
     /**
@@ -241,7 +241,7 @@ public class Guard extends Filter {
      */
     public void challenge(Response response, boolean stale) {
         // Delegate processing to the Engine
-        Engine.getInstance().challenge(response, stale, this);
+        AuthenticationUtils.challenge(response, stale, this);
     }
 
     /**

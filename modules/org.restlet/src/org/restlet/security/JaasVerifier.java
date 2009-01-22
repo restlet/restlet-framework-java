@@ -48,6 +48,7 @@ import org.restlet.engine.authentication.JaasCallbackHandler;
  */
 public class JaasVerifier implements Verifier {
 
+    /** The JAAS ... */
     private volatile Configuration configuration;
 
     /** The JAAS login context name. */

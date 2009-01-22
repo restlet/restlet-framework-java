@@ -30,9 +30,9 @@ package org.restlet.data;
 import java.io.IOException;
 import java.util.List;
 
+import org.restlet.engine.util.FormUtils;
 import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
-import org.restlet.util.Engine;
 import org.restlet.util.Series;
 
 /**
@@ -76,7 +76,7 @@ public class Form extends Series<Parameter> {
      * @throws IOException
      */
     public Form(Representation webForm) {
-        Engine.getInstance().parse(this, webForm);
+        FormUtils.parse(this, webForm);
     }
 
     /**
@@ -131,8 +131,7 @@ public class Form extends Series<Parameter> {
      */
     public Form(String parametersString, CharacterSet characterSet,
             char separator) {
-        Engine.getInstance().parse(this, parametersString, characterSet, true,
-                separator);
+        FormUtils.parse(this, parametersString, characterSet, true, separator);
     }
 
     @Override

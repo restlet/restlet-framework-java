@@ -30,6 +30,7 @@ package org.restlet;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.engine.Helper;
+import org.restlet.engine.application.ApplicationHelper;
 import org.restlet.service.ConnectorService;
 import org.restlet.service.DecoderService;
 import org.restlet.service.MetadataService;
@@ -156,7 +157,7 @@ public class Application extends Restlet {
         super(context);
 
         if (Engine.getInstance() != null) {
-            this.helper = Engine.getInstance().createHelper(this);
+            this.helper = new ApplicationHelper(this);
         }
 
         this.name = null;

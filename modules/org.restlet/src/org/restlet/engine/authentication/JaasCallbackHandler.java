@@ -37,7 +37,8 @@ import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.callback.UnsupportedCallbackException;
 
 /**
- * 
+ * JAAS callback handler that automatically provides the identifier and secret
+ * when asked by login modules.
  * 
  * @author Jerome Louvel
  */
@@ -49,6 +50,13 @@ public class JaasCallbackHandler implements CallbackHandler {
 
     private volatile Subject subject;
 
+    /**
+     * Constructor.
+     * 
+     * @param subject
+     * @param identifier
+     * @param secret
+     */
     public JaasCallbackHandler(Subject subject, String identifier, char[] secret) {
         this.setSubject(subject);
         this.setIdentifier(identifier);

@@ -223,25 +223,24 @@ public class FormUtils {
      *            The posted form.
      */
     public static void parse(Form form, Representation post) {
-        if (post.isAvailable()) {
-            FormReader fr = null;
-            try {
-                fr = new FormReader(post);
-            } catch (IOException ioe) {
-                Context
-                        .getCurrentLogger()
-                        .log(
-                                Level.WARNING,
-                                "Unable to create a form reader. Parsing aborted.",
-                                ioe);
-            }
+        if (post != null) {
+            if (post.isAvailable()) {
+                FormReader fr = null;
+                try {
+                    fr = new FormReader(post);
+                } catch (IOException ioe) {
+                    Context.getCurrentLogger().log(Level.WARNING,
+                            "Unable to create a form reader. Parsing aborted.",
+                            ioe);
+                }
 
-            if (fr != null) {
-                fr.addParameters(form);
+                if (fr != null) {
+                    fr.addParameters(form);
+                }
+            } else {
+                throw new IllegalStateException(
+                        "The Web form cannot be parsed as no fresh content is available. If this entity has been already read once, caching of the entity is required");
             }
-        } else {
-            throw new IllegalStateException(
-                    "The Web form cannot be parsed as no fresh content is available. If this entity has been already read once, caching of the entity is required");
         }
     }
 
@@ -262,14 +261,16 @@ public class FormUtils {
      */
     public static void parse(Form form, String parametersString,
             CharacterSet characterSet, boolean decode, char separator) {
-        FormReader fr = null;
+        if ((parametersString != null) && !parametersString.equals("")) {
+            FormReader fr = null;
 
-        if (decode) {
-            fr = new FormReader(parametersString, characterSet, separator);
-        } else {
-            fr = new FormReader(parametersString, separator);
+            if (decode) {
+                fr = new FormReader(parametersString, characterSet, separator);
+            } else {
+                fr = new FormReader(parametersString, separator);
+            }
+
+            fr.addParameters(form);
         }
-
-        fr.addParameters(form);
     }
 }

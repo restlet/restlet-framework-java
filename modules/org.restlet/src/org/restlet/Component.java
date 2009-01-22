@@ -43,6 +43,7 @@ import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.engine.Helper;
+import org.restlet.engine.component.ComponentHelper;
 import org.restlet.resource.FileRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
@@ -174,7 +175,7 @@ public class Component extends Restlet {
         this.servers = new ServerList(null, this);
 
         if (Engine.getInstance() != null) {
-            this.helper = Engine.getInstance().createHelper(this);
+            this.helper = new ComponentHelper(this);
 
             if (this.helper != null) {
                 this.defaultHost = new VirtualHost(getContext());

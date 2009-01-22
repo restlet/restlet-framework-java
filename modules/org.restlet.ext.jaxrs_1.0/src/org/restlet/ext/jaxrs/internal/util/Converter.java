@@ -47,7 +47,7 @@ import org.restlet.data.Form;
 import org.restlet.data.Language;
 import org.restlet.data.Parameter;
 import org.restlet.data.Tag;
-import org.restlet.util.Engine;
+import org.restlet.engine.util.FormUtils;
 import org.restlet.util.Series;
 
 /**
@@ -159,7 +159,7 @@ public class Converter {
      */
     public static Form toFormEncoded(String queryString) {
         final Form form = new Form();
-        Engine.getInstance().parse(form, queryString, null, false, '&');
+        FormUtils.parse(form, queryString, null, false, '&');
         return form;
     }
 
