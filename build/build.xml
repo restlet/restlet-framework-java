@@ -980,11 +980,8 @@
 	<macrodef name="maven2Module">
 		<attribute name="name" />
 		<sequential>
-			<condition property="mod-@{name}-version-maven"
-		               value="${version-minor}-${maven-snapshot-timestamp}-${svn.revision}"
-		               else="${version-maven}">
-				<istrue value="${is.snapshot}" />
-			</condition>
+			<property name="mod-@{name}-version-maven"
+		                  value="${version-maven}" />
 			<propertyregex property="mod-dir-@{name}-maven-groupId"
 			               input="${mod-@{name}-maven-groupId}"
 			               regexp="\."
@@ -1819,6 +1816,8 @@
 		<condition property="is.snapshot" else="false">
 			<contains string="${version-maven}" substring="-SNAPSHOT" />
 		</condition>
+		<echo message="maven-timestamp:${maven-snapshot-timestamp}${line.separator}" file="${temp}/snapshot.properties" append="false" />
+		<echo message="svn-revision:${svn.revision}${line.separator}" file="${temp}/snapshot.properties" append="true" />
 	</target>
 
 	<target name="stage-maven"
