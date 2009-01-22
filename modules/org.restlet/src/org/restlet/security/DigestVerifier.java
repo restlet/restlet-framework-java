@@ -30,10 +30,8 @@ package org.restlet.security;
 import org.restlet.util.WrapperVerifier;
 
 /**
- * Wrapper verifier that can handle digested secrets.<br>
- * <br>
- * If the input secret is a digest, then the target secret must be a digest of
- * the same algorithm.<br>
+ * Wrapper verifier that can handle digested secrets. If the input secret is 
+ * a digest, then the target secret must be a digest of the same algorithm.<br>
  * <br>
  * If the input secret is a regular secret, then the target secret can be in any
  * digest algorithm or a regular secret.
