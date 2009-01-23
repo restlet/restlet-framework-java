@@ -69,9 +69,9 @@ Changes log
           by Taras Puchko.
 		- Fixed Javadocs of Reference regarding invalid URI characters.
 		- Upgraded jSSLutils to version 0.5.1.
-		- Upgraded Grizzly to version 1.9.0.
-      - Upgraded JSON library to latest version.
-      - Upgraded FreeMarker to 2.3.15.
+		- Upgraded Grizzly to version 1.9.4.
+        - Upgraded JSON library to latest version.
+        - Upgraded FreeMarker to 2.3.15.
 		- Upgraded Spring to 2.5.6.
 		
 - 1.1.1 (2008-10-31)
