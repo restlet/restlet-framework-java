@@ -55,7 +55,7 @@ public abstract class LocalVerifier implements Verifier {
      *            The subject to update with principals.
      * @param identifier
      *            The user identifier.
-     * @param secret
+     * @param inputSecret
      *            The proposed secret.
      * @return True if the proposed secret was correct and the subject updated.
      */

@@ -215,7 +215,7 @@ public class TikaRepresentation extends SaxRepresentation {
      * @param tikaParser
      *            The Tika parser.
      */
-    public void setTikaParser(Parser tikeParser) {
-        this.tikaParser = tikeParser;
+    public void setTikaParser(Parser tikaParser) {
+        this.tikaParser = tikaParser;
     }
 }

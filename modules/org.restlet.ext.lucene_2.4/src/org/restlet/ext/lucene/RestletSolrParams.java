@@ -40,54 +40,54 @@ import org.restlet.data.Request;
  */
 public class RestletSolrParams extends SolrParams {
 
-    private static final long serialVersionUID = 1L;
-	
-    private final Request request;
+	private static final long serialVersionUID = 1L;
 
-    /**
-     * Constructor.
-     * 
-     * @param request
-     *            The wrapped Restlet request.
-     */
-    public RestletSolrParams(Request request) {
-       this.request = request;
-    }
+	private final Request request;
 
-    /**
-     * Returns the request query form.
-     * @return
-     */
-    protected Form getForm(){
-    	return request.getResourceRef().getQueryAsForm();
-    }
-    
-    /**
-     * Reads parameter from the form returned {@link #getForm()}.
-     * 
-     */
+	/**
+	 * Constructor.
+	 * 
+	 * @param request
+	 *            The wrapped Restlet request.
+	 */
+	public RestletSolrParams(Request request) {
+		this.request = request;
+	}
+
+	/**
+	 * Returns the request query form.
+	 * 
+	 * @return The request query form.
+	 */
+	protected Form getForm() {
+		return request.getResourceRef().getQueryAsForm();
+	}
+
+	/**
+	 * Reads parameter from the form returned {@link #getForm()}.
+	 * 
+	 */
 	@Override
 	public String get(String param) {
 		return getForm().getFirstValue(param);
 	}
 
 	/**
-     * Reads parameter names from the form returned {@link #getForm()}.
-     * 
-     */
+	 * Reads parameter names from the form returned {@link #getForm()}.
+	 * 
+	 */
 	@Override
 	public Iterator<String> getParameterNamesIterator() {
 		return getForm().getNames().iterator();
 	}
 
 	/**
-     * Reads parameter values from the form returned {@link #getForm()}.
-     * 
-     */
+	 * Reads parameter values from the form returned {@link #getForm()}.
+	 * 
+	 */
 	@Override
 	public String[] getParams(String param) {
 		return getForm().getValuesArray(param);
 	}
-    
-    
+
 }

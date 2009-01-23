@@ -549,7 +549,7 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
      * Set a schema representation to be compiled and used when parsing and
      * validating this type of XML representations.
      * 
-     * @param schema
+     * @param schemaRepresentation
      *            The schema representation to set.
      */
     public void setSchema(Representation schemaRepresentation) {
