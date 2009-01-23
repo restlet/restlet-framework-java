@@ -74,7 +74,7 @@ public class ChallengeAuthenticator implements Authenticator {
     /**
      * 
      */
-    public int authenticate(Request request) {
+    public int authenticate(Request request, Response response) {
         return getHelper().authenticate(request.getChallengeResponse(),
                 request, null);
     }

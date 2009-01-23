@@ -28,6 +28,7 @@
 package org.restlet.security;
 
 import org.restlet.data.Request;
+import org.restlet.data.Response;
 
 /**
  * Interface able to authenticate Restlet requests providing a specific type of
@@ -60,8 +61,10 @@ public interface Authenticator {
      * 
      * @param request
      *            The request to authenticate.
+     * @param response
+     *            The related response.
      * @return The authentication result. See RESULT_* constants.
      */
-    public int authenticate(Request request);
+    public int authenticate(Request request, Response response);
 
 }

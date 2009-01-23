@@ -28,6 +28,7 @@
 package org.restlet.security;
 
 import org.restlet.data.Request;
+import org.restlet.data.Response;
 import org.restlet.util.WrapperList;
 
 /**
@@ -68,7 +69,7 @@ public class AuthenticatorList extends WrapperList<Authenticator> implements
         this.authenticators = null;
     }
 
-    public int authenticate(Request request) {
+    public int authenticate(Request request, Response response) {
         switch (getMode()) {
         case MODE_ALL_AVAILABLE_REQUIRED:
             // for (Authenticator authenticator : this) {
