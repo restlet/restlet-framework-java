@@ -37,7 +37,7 @@ import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleListener;
 import org.restlet.Client;
 import org.restlet.Server;
-import org.restlet.engine.Engine;
+import org.restlet.util.Engine;
 
 
 /**

@@ -42,11 +42,10 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Response;
 import org.restlet.engine.ClientHelper;
-import org.restlet.engine.Engine;
 import org.restlet.engine.ServerHelper;
 import org.restlet.engine.local.ClapClientHelper;
+import org.restlet.util.Engine;
 import org.restlet.util.Series;
-
 
 /**
  * Base test case that will call an abstract method for several client/server
@@ -171,17 +170,14 @@ public abstract class SslBaseConnectorsTestCase extends TestCase {
 
     public void testSslGrizzlyAndApache() throws Exception {
         if (this.enableGrizzlyServer && this.enableApacheClient) {
-            runTest(
-                    new org.restlet.ext.grizzly.HttpsServerHelper(null),
-                    new org.restlet.ext.httpclient.HttpClientHelper(
-                            null));
+            runTest(new org.restlet.ext.grizzly.HttpsServerHelper(null),
+                    new org.restlet.ext.httpclient.HttpClientHelper(null));
         }
     }
 
     public void testSslGrizzlyAndJdkNet() throws Exception {
         if (this.enableGrizzlyServer && this.enableJdkNetClient) {
-            runTest(
-                    new org.restlet.ext.grizzly.HttpsServerHelper(null),
+            runTest(new org.restlet.ext.grizzly.HttpsServerHelper(null),
                     new org.restlet.ext.net.HttpClientHelper(null));
         }
     }
@@ -189,8 +185,7 @@ public abstract class SslBaseConnectorsTestCase extends TestCase {
     public void testSslJettyAndApache() throws Exception {
         if (this.enableJettyServer && this.enableApacheClient) {
             runTest(new org.restlet.ext.jetty.HttpsServerHelper(null),
-                    new org.restlet.ext.httpclient.HttpClientHelper(
-                            null));
+                    new org.restlet.ext.httpclient.HttpClientHelper(null));
         }
     }
 
@@ -204,8 +199,7 @@ public abstract class SslBaseConnectorsTestCase extends TestCase {
     public void testSslSimpleAndApache() throws Exception {
         if (this.enableSimpleServer && this.enableApacheClient) {
             runTest(new org.restlet.ext.simple.HttpsServerHelper(null),
-                    new org.restlet.ext.httpclient.HttpClientHelper(
-                            null));
+                    new org.restlet.ext.httpclient.HttpClientHelper(null));
         }
     }
 

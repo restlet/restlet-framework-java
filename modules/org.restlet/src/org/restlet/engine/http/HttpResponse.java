@@ -31,7 +31,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.ServerInfo;
 import org.restlet.data.Status;
-import org.restlet.engine.Engine;
+import org.restlet.util.Engine;
 
 
 /**

@@ -29,7 +29,7 @@ package org.restlet.engine.util;
 
 import java.util.logging.Handler;
 
-import org.restlet.engine.Engine;
+import org.restlet.util.Engine;
 
 
 /**

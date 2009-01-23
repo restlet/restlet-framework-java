@@ -31,8 +31,8 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.engine.Engine;
 import org.restlet.engine.authentication.ChallengeAuthenticatorHelper;
+import org.restlet.util.Engine;
 
 /**
  * Authenticator based on a challenge scheme like HTTP Basic or HTTP Digest.

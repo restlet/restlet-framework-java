@@ -45,13 +45,12 @@ import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.engine.Engine;
 import org.restlet.engine.authentication.AuthenticationUtils;
-import org.restlet.util.DateUtils;
-import org.restlet.util.Series;
-
 import org.restlet.engine.util.Base64;
 import org.restlet.engine.util.RangeUtils;
+import org.restlet.util.DateUtils;
+import org.restlet.util.Engine;
+import org.restlet.util.Series;
 
 /**
  * Converter of high-level uniform calls into low-level HTTP client calls.

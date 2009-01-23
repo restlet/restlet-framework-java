@@ -38,7 +38,7 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Parameter;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.engine.Engine;
+import org.restlet.util.Engine;
 import org.restlet.util.Series;
 
 
