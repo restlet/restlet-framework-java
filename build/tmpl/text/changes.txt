@@ -4,6 +4,8 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+
+- 1.1.2 (2009-01-23)
     - Bugs fixed
         - org.restlet.util.Engine#getClassLoader() didn't return
           the system classloader when all other were null. Fixed by
