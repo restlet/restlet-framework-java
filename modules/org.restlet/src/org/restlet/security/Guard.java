@@ -48,15 +48,21 @@ import org.restlet.Filter;
  */
 public class Guard extends Filter {
 
+    /** The authenticator. */
     private Authenticator authenticator;
 
+    /** The authorizer. */
     private Authorizer authorizer;
 
     /**
+     * Constructor.
      * 
      * @param context
+     *            The context.
      * @param authenticator
+     *            The authenticator.
      * @param authorizer
+     *            The authorizer.
      */
     public Guard(Context context, Authenticator authenticator,
             Authorizer authorizer) {
@@ -65,10 +71,20 @@ public class Guard extends Filter {
         this.authorizer = authorizer;
     }
 
+    /**
+     * Returns the authenticator.
+     * 
+     * @return The authenticator.
+     */
     public Authenticator getAuthenticator() {
         return authenticator;
     }
 
+    /**
+     * Returns the authorizer.
+     * 
+     * @return The authorizer.
+     */
     public Authorizer getAuthorizer() {
         return authorizer;
     }

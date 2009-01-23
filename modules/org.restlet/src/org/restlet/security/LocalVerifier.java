@@ -45,6 +45,20 @@ public abstract class LocalVerifier implements Verifier {
      */
     protected abstract char[] getSecret(String identifier);
 
+    /**
+     * Verifies that the proposed secret is correct for the specified
+     * identifier. By default, it compares the inputSecret with the one obtain
+     * by the {@link #getSecret(String)} method and adds a new {@link Principal}
+     * instance to the subject if successful.
+     * 
+     * @param subject
+     *            The subject to update with principals.
+     * @param identifier
+     *            The user identifier.
+     * @param secret
+     *            The proposed secret.
+     * @return True if the proposed secret was correct and the subject updated.
+     */
     public boolean verify(Subject subject, String identifier, char[] inputSecret) {
         boolean result = false;
         final char[] outputSecret = getSecret(identifier);

@@ -44,18 +44,24 @@ import javax.security.auth.callback.UnsupportedCallbackException;
  */
 public class JaasCallbackHandler implements CallbackHandler {
 
+    /** The identifier such as user login. */
     private volatile String identifier;
 
+    /** The secret such as password. */
     private char[] secret;
 
+    /** The subject containing identity information. */
     private volatile Subject subject;
 
     /**
      * Constructor.
      * 
      * @param subject
+     *            The subject containing identity information.
      * @param identifier
+     *            The identifier such as user login.
      * @param secret
+     *            The secret such as password.
      */
     public JaasCallbackHandler(Subject subject, String identifier, char[] secret) {
         this.setSubject(subject);
@@ -63,14 +69,29 @@ public class JaasCallbackHandler implements CallbackHandler {
         this.setSecret(secret);
     }
 
+    /**
+     * Returns the identifier such as user login.
+     * 
+     * @return The identifier such as user login.
+     */
     public String getIdentifier() {
         return identifier;
     }
 
+    /**
+     * Returns the secret such as password.
+     * 
+     * @return The secret such as password.
+     */
     public char[] getSecret() {
         return secret;
     }
 
+    /**
+     * Returns the subject containing identity information.
+     * 
+     * @return The subject containing identity information.
+     */
     public Subject getSubject() {
         return subject;
     }
@@ -81,6 +102,7 @@ public class JaasCallbackHandler implements CallbackHandler {
      * {@link PasswordCallback}.
      * 
      * @param callback
+     *            The callback to handle.
      * @throws UnsupportedCallbackException
      */
     protected void handle(Callback callback)
@@ -102,7 +124,7 @@ public class JaasCallbackHandler implements CallbackHandler {
      * to the {@link #handle(Callback)} method.
      * 
      * @param callbacks
-     *            The callbacks to handle
+     *            The callbacks to handle.
      */
     public void handle(Callback[] callbacks) throws IOException,
             UnsupportedCallbackException {
@@ -114,14 +136,32 @@ public class JaasCallbackHandler implements CallbackHandler {
         }
     }
 
+    /**
+     * Sets the identifier such as user login.
+     * 
+     * @param identifier
+     *            The identifier such as user login.
+     */
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
     }
 
+    /**
+     * Sets the secret such as password.
+     * 
+     * @param secret
+     *            The secret such as password.
+     */
     public void setSecret(char[] secret) {
         this.secret = secret;
     }
 
+    /**
+     * Sets the subject containing identity information.
+     * 
+     * @param subject
+     *            The subject containing identity information.
+     */
     public void setSubject(Subject subject) {
         this.subject = subject;
     }

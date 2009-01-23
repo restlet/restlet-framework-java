@@ -48,7 +48,7 @@ import org.restlet.engine.authentication.JaasCallbackHandler;
  */
 public class JaasVerifier implements Verifier {
 
-    /** The JAAS ... */
+    /** The optional JAAS login configuration. */
     private volatile Configuration configuration;
 
     /** The JAAS login context name. */
@@ -65,17 +65,27 @@ public class JaasVerifier implements Verifier {
     }
 
     /**
+     * Creates a callback handler for the given parameters. By default it
+     * returns one handler that handles name and password JAAS callbacks.
      * 
      * @param subject
+     *            The subject to verify and update.
      * @param identifier
+     *            The identifier such as user login.
      * @param secret
-     * @return
+     *            The secret such as password.
+     * @return The callback handler created.
      */
     protected CallbackHandler createCallbackHandler(Subject subject,
             String identifier, char[] secret) {
         return new JaasCallbackHandler(subject, identifier, secret);
     }
 
+    /**
+     * Returns the optional JAAS login configuration.
+     * 
+     * @return The optional JAAS login configuration.
+     */
     public Configuration getConfiguration() {
         return configuration;
     }
@@ -89,6 +99,12 @@ public class JaasVerifier implements Verifier {
         return name;
     }
 
+    /**
+     * Sets the optional JAAS login configuration.
+     * 
+     * @param configuration
+     *            The optional JAAS login configuration.
+     */
     public void setConfiguration(Configuration configuration) {
         this.configuration = configuration;
     }
@@ -104,7 +120,19 @@ public class JaasVerifier implements Verifier {
     }
 
     /**
+     * Verifies that the proposed secret is correct for the specified
+     * identifier. By default, it creates a JAAS login context with the callback
+     * handler obtained by
+     * {@link #createCallbackHandler(Subject, String, char[])} and calls the
+     * {@link LoginContext#login()} method on it.
      * 
+     * @param subject
+     *            The subject to update with principals.
+     * @param identifier
+     *            The user identifier.
+     * @param secret
+     *            The proposed secret.
+     * @return True if the proposed secret was correct and the subject updated.
      */
     public boolean verify(Subject subject, String identifier, char[] secret) {
         boolean result = true;
@@ -113,8 +141,6 @@ public class JaasVerifier implements Verifier {
             LoginContext loginContext = new LoginContext(getName(), subject,
                     createCallbackHandler(subject, identifier, secret),
                     getConfiguration());
-
-            // TODO
             loginContext.login();
         } catch (LoginException le) {
             result = false;
