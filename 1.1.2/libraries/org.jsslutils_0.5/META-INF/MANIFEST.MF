@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Java SSL utilities
+Bundle-SymbolicName: org.jsslutils
+Bundle-Version: 0.5.1
+Bundle-ClassPath: org.jsslutils.jar
+Bundle-Vendor: http://www.jsslutils.org/
+Export-Package: org.jsslutils.keystores,
+ org.jsslutils.sslcontext,
+ org.jsslutils.sslcontext.keymanagers,
+ org.jsslutils.sslcontext.trustmanagers
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

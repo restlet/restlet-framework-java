@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Apache Commons Codec
+Bundle-SymbolicName: org.apache.commons.codec
+Bundle-Version: 1.3
+Bundle-ClassPath: org.apache.commons.codec.jar
+Bundle-Vendor: Apache Software Foundation
+Export-Package: org.apache.commons.codec,
+ org.apache.commons.codec.binary;uses:="org.apache.commons.codec",
+ org.apache.commons.codec.digest,
+ org.apache.commons.codec.language;uses:="org.apache.commons.codec",
+ org.apache.commons.codec.net;uses:="org.apache.commons.codec"
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

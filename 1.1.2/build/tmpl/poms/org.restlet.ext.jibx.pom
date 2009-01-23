@@ -1,0 +1,33 @@
+<project>
+   <modelVersion>4.0.0</modelVersion>
+   <groupId>@group-id@</groupId>
+   <artifactId>@artifact-id@</artifactId>
+   <version>@version@</version>
+   <dependencies>
+      <dependency>
+         <groupId>org.restlet</groupId>
+         <artifactId>org.restlet</artifactId>
+         <version>@version@</version>
+      </dependency>
+      <dependency>
+         <groupId>org.jibx</groupId>
+         <artifactId>jibx-run</artifactId>
+         <version>@lib-jibx-version@</version>
+      </dependency>
+   </dependencies>
+
+   <name>JiBX representation</name>
+   <description>Integration with JiBX.</description>
+   <licenses>
+      <license>
+         <name>CDDL license</name>
+         <url>http://www.opensource.org/licenses/cddl1.php</url>
+      </license>
+      <license>
+         <name>LGPL license</name>
+         <url>
+            http://www.opensource.org/licenses/lgpl-license.php
+         </url>
+      </license>
+   </licenses>
+</project>

@@ -1,0 +1,33 @@
+<project>
+   <modelVersion>4.0.0</modelVersion>
+   <groupId>@group-id@</groupId>
+   <artifactId>@artifact-id@</artifactId>
+   <version>@version@</version>
+   <dependencies>
+      <dependency>
+         <groupId>com.noelios.restlet</groupId>
+         <artifactId>com.noelios.restlet</artifactId>
+         <version>@version@</version>
+      </dependency>
+      <dependency>
+         <groupId>com.noelios.restlet</groupId>
+         <artifactId>com.noelios.restlet.ext.servlet</artifactId>
+         <version>@version@</version>
+      </dependency>
+   </dependencies>
+
+   <name>HTTP server connector</name>
+   <description>Integration within OracleJVM via the Oracle XML DB feature.</description>
+   <licenses>
+      <license>
+         <name>CDDL license</name>
+         <url>http://www.opensource.org/licenses/cddl1.php</url>
+      </license>
+      <license>
+         <name>LGPL license</name>
+         <url>
+            http://www.opensource.org/licenses/lgpl-license.php
+         </url>
+      </license>
+   </licenses>
+</project>
