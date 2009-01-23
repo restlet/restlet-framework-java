@@ -33,7 +33,7 @@ import java.io.InputStream;
 import junit.framework.TestCase;
 
 import org.restlet.engine.http.InputEntityStream;
-import org.restlet.util.ByteUtils;
+import org.restlet.engine.io.ByteUtils;
 
 
 /**

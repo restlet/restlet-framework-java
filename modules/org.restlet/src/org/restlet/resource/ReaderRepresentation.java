@@ -34,7 +34,7 @@ import java.util.logging.Level;
 
 import org.restlet.Context;
 import org.restlet.data.MediaType;
-import org.restlet.util.ByteUtils;
+import org.restlet.engine.io.ByteUtils;
 
 /**
  * Transient representation based on a BIO characters reader.

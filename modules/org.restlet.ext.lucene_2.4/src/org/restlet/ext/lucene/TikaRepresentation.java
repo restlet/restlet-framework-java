@@ -36,9 +36,9 @@ import org.apache.tika.metadata.Metadata;
 import org.apache.tika.metadata.TikaMetadataKeys;
 import org.apache.tika.parser.AutoDetectParser;
 import org.apache.tika.parser.Parser;
+import org.restlet.engine.util.DateUtils;
 import org.restlet.resource.Representation;
 import org.restlet.resource.SaxRepresentation;
-import org.restlet.util.DateUtils;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.SAXException;
 

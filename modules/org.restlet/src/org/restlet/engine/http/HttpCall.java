@@ -37,9 +37,9 @@ import org.restlet.data.Form;
 import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
+import org.restlet.engine.util.DateUtils;
 import org.restlet.resource.Representation;
 import org.restlet.service.ConnectorService;
-import org.restlet.util.DateUtils;
 import org.restlet.util.Series;
 
 /**

@@ -45,7 +45,7 @@ import org.restlet.resource.Representation;
 import org.restlet.resource.StringRepresentation;
 
 /**
- * Test {@link org.restlet.util.DateUtils}.
+ * Test {@link org.restlet.engine.util.DateUtils}.
  * 
  * @author Thierry Boileau
  */

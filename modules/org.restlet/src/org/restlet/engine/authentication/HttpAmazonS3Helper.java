@@ -42,9 +42,9 @@ import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.engine.http.HttpConstants;
 import org.restlet.engine.util.Base64;
+import org.restlet.engine.util.DateUtils;
 import org.restlet.engine.util.SecurityUtils;
 import org.restlet.engine.util.SystemUtils;
-import org.restlet.util.DateUtils;
 import org.restlet.util.Series;
 
 /**

@@ -52,10 +52,10 @@ import org.restlet.data.Range;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.engine.io.ByteUtils;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Variant;
 import org.restlet.service.MetadataService;
-import org.restlet.util.ByteUtils;
 
 /**
  * Connector to the file resources accessible. Here is the list of parameters

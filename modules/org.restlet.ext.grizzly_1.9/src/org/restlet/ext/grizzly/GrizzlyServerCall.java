@@ -52,7 +52,7 @@ import org.restlet.engine.http.ChunkedInputStream;
 import org.restlet.engine.http.ChunkedOutputStream;
 import org.restlet.engine.http.HttpServerCall;
 import org.restlet.engine.http.ReadableEntityChannel;
-import org.restlet.util.ByteUtils;
+import org.restlet.engine.io.ByteUtils;
 
 import com.sun.grizzly.util.InputReader;
 import com.sun.grizzly.util.OutputWriter;

@@ -41,8 +41,8 @@ import java.util.zip.InflaterInputStream;
 import java.util.zip.ZipInputStream;
 
 import org.restlet.data.Encoding;
+import org.restlet.engine.io.ByteUtils;
 import org.restlet.resource.Representation;
-import org.restlet.util.ByteUtils;
 import org.restlet.util.WrapperRepresentation;
 
 /**

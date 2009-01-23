@@ -77,6 +77,7 @@ import org.restlet.engine.http.HttpClientCall;
 import org.restlet.engine.http.HttpClientConverter;
 import org.restlet.engine.http.HttpServerConverter;
 import org.restlet.engine.http.HttpUtils;
+import org.restlet.engine.util.DateUtils;
 import org.restlet.ext.jaxrs.internal.core.UnmodifiableMultivaluedMap;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathException;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathOnClassException;
@@ -88,7 +89,6 @@ import org.restlet.ext.jaxrs.internal.exceptions.MethodInvokeException;
 import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.provider.JaxbElementProvider;
 import org.restlet.resource.Representation;
-import org.restlet.util.DateUtils;
 import org.restlet.util.Series;
 
 /**

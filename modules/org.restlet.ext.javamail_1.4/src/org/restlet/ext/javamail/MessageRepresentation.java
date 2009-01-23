@@ -38,10 +38,10 @@ import javax.mail.internet.MimeBodyPart;
 
 import org.restlet.data.MediaType;
 import org.restlet.engine.http.ContentType;
+import org.restlet.engine.util.DateUtils;
 import org.restlet.resource.DomRepresentation;
 import org.restlet.resource.InputRepresentation;
 import org.restlet.resource.Representation;
-import org.restlet.util.DateUtils;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;

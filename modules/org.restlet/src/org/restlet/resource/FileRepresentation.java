@@ -41,7 +41,7 @@ import java.util.Date;
 
 import org.restlet.data.LocalReference;
 import org.restlet.data.MediaType;
-import org.restlet.util.ByteUtils;
+import org.restlet.engine.io.ByteUtils;
 
 /**
  * Representation based on a static file. Note that in order for Web clients to

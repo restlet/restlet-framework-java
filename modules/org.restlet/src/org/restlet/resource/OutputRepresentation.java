@@ -31,7 +31,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.restlet.data.MediaType;
-import org.restlet.util.ByteUtils;
+import org.restlet.engine.io.ByteUtils;
 
 /**
  * Representation based on a BIO output stream. This class is a good basis to

@@ -38,7 +38,7 @@ import org.restlet.data.Cookie;
 import org.restlet.data.CookieSetting;
 import org.restlet.engine.http.CookieReader;
 import org.restlet.engine.http.CookieUtils;
-import org.restlet.util.DateUtils;
+import org.restlet.engine.util.DateUtils;
 
 
 /**

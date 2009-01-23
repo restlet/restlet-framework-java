@@ -59,6 +59,7 @@ Import-Package: org.apache.commons.io,
  org.restlet,
  org.restlet.data,
  org.restlet.engine,
+ org.restlet.engine.util,
  org.restlet.resource,
  org.restlet.service,
  org.restlet.util

@@ -33,7 +33,7 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 
 import org.restlet.data.MediaType;
-import org.restlet.util.ByteUtils;
+import org.restlet.engine.io.ByteUtils;
 
 /**
  * Representation based on a BIO characters writer. This class is a good basis

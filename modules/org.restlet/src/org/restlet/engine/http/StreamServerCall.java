@@ -39,8 +39,8 @@ import javax.net.ssl.SSLSocket;
 
 import org.restlet.Server;
 import org.restlet.data.Response;
+import org.restlet.engine.io.ByteUtils;
 import org.restlet.engine.io.KeepAliveOutputStream;
-import org.restlet.util.ByteUtils;
 
 /**
  * HTTP server call based on streams.

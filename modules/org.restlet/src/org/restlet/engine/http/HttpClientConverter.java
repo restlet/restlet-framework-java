@@ -48,8 +48,8 @@ import org.restlet.data.Status;
 import org.restlet.engine.Engine;
 import org.restlet.engine.authentication.AuthenticationUtils;
 import org.restlet.engine.util.Base64;
+import org.restlet.engine.util.DateUtils;
 import org.restlet.engine.util.RangeUtils;
-import org.restlet.util.DateUtils;
 import org.restlet.util.Series;
 
 /**

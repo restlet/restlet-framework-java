@@ -34,7 +34,7 @@ import java.io.Reader;
 import java.io.Writer;
 
 import org.restlet.data.MediaType;
-import org.restlet.util.ByteUtils;
+import org.restlet.engine.io.ByteUtils;
 
 /**
  * Representation based on a NIO byte channel.

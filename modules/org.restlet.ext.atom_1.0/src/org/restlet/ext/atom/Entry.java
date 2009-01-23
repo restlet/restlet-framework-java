@@ -34,7 +34,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import org.restlet.util.DateUtils;
+import org.restlet.engine.util.DateUtils;
 import org.restlet.util.XmlWriter;
 import org.xml.sax.SAXException;
 

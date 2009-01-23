@@ -33,7 +33,7 @@ import java.io.StringWriter;
 
 import junit.framework.TestCase;
 
-import org.restlet.util.ByteUtils;
+import org.restlet.engine.io.ByteUtils;
 
 /**
  * Test case for the ByteUtils class.

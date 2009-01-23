@@ -11,6 +11,8 @@ Changes log
           packages.
         - The com.noelios.restlet.ext.spring extension has been merged
           with org.restlet.ext.spring.
+        - Moved org.restlet.util.DateUtils, ByteUtils and Engine 
+          classes to org.restlet.engine.* packages.
     - Enhancements
         - Internal HTTP connector now supports HTTPS connections.
           Contributed by Kevin Conaway.

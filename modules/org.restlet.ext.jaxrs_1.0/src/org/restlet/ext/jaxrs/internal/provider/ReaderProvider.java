@@ -44,9 +44,9 @@ import javax.ws.rs.ext.Provider;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.engine.io.ByteUtils;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.resource.Representation;
-import org.restlet.util.ByteUtils;
 
 /**
  * This ProviderWrapper is used to read directly from a {@link Reader}.

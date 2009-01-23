@@ -46,8 +46,8 @@ import org.restlet.data.Digest;
 import org.restlet.data.MediaType;
 import org.restlet.data.Range;
 import org.restlet.data.Tag;
-import org.restlet.util.ByteUtils;
-import org.restlet.util.DateUtils;
+import org.restlet.engine.io.ByteUtils;
+import org.restlet.engine.util.DateUtils;
 
 /**
  * Current or intended state of a resource. The content of a representation can

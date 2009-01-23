@@ -31,10 +31,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import org.restlet.util.DateUtils;
+import org.restlet.engine.util.DateUtils;
 
 /**
- * Test {@link org.restlet.util.DateUtils}.
+ * Test {@link org.restlet.engine.util.DateUtils}.
  * 
  * @author Thierry Boileau
  */

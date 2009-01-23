@@ -36,7 +36,7 @@ import org.restlet.data.Encoding;
 import org.restlet.data.MediaType;
 import org.restlet.engine.http.HeaderReader;
 import org.restlet.engine.http.PreferenceUtils;
-import org.restlet.util.DateUtils;
+import org.restlet.engine.util.DateUtils;
 
 
 /**

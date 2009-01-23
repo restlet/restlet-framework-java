@@ -40,7 +40,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 import org.restlet.data.Digest;
-import org.restlet.util.ByteUtils;
+import org.restlet.engine.io.ByteUtils;
 import org.restlet.util.WrapperRepresentation;
 
 /**

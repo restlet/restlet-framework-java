@@ -33,8 +33,8 @@ import java.io.OutputStream;
 import java.nio.channels.WritableByteChannel;
 
 import org.restlet.data.Range;
+import org.restlet.engine.io.ByteUtils;
 import org.restlet.resource.Representation;
-import org.restlet.util.ByteUtils;
 import org.restlet.util.WrapperRepresentation;
 
 /**

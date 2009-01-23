@@ -35,7 +35,7 @@ import java.util.Map;
 
 import org.restlet.data.Cookie;
 import org.restlet.data.CookieSetting;
-import org.restlet.util.DateUtils;
+import org.restlet.engine.util.DateUtils;
 
 /**
  * Cookie manipulation utilities.
