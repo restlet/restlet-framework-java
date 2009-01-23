@@ -36,13 +36,21 @@ import net.jxta.socket.JxtaSocket;
 import org.restlet.data.Request;
 import org.restlet.engine.http.StreamClientCall;
 
-
 /**
+ * JXTA HTTP client call.
  * 
  * @author Jerome Louvel
  */
 public class JxtaClientCall extends StreamClientCall {
 
+    /**
+     * Constructor.
+     * 
+     * @param helper
+     *            The JXTA client helper.
+     * @param request
+     *            The Restlet request.
+     */
     public JxtaClientCall(JxtaClientHelper helper, Request request) {
         super(helper, request, null);
     }

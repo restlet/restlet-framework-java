@@ -142,6 +142,12 @@ public class HttpServerHelper extends JxtaServerHelper {
         }
     }
 
+    /**
+     * Constructor.
+     * 
+     * @param server
+     *            The helped server.
+     */
     public HttpServerHelper(Server server) {
         super(server);
         getProtocols().add(Protocol.HTTP);

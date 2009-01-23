@@ -37,6 +37,12 @@ import org.restlet.data.Protocol;
  */
 public class HttpClientHelper extends JxtaClientHelper {
 
+    /**
+     * Constructor.
+     * 
+     * @param client
+     *            The helped client.
+     */
     public HttpClientHelper(Client client) {
         super(client);
         getProtocols().add(Protocol.HTTP);

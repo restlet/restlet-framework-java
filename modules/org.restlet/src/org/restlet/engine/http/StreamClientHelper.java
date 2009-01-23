@@ -165,6 +165,7 @@ public class StreamClientHelper extends HttpClientHelper {
         String keystorePath = getKeystorePath();
         String keystorePassword = getKeystorePassword();
         String keyPassword = getKeyPassword();
+        String truststoreType = getTruststoreType();
         String truststorePath = getTruststorePath();
         String truststorePassword = getTruststorePassword();
         String secureRandomAlgorithm = getSecureRandomAlgorithm();
@@ -176,16 +177,29 @@ public class StreamClientHelper extends HttpClientHelper {
             keystoreInputStream = new FileInputStream(keystorePath);
         }
 
-        KeyStore keyStore = KeyStore.getInstance(getKeystoreType());
-        keyStore.load(keystoreInputStream, keystorePassword == null ? null
-                : keystorePassword.toCharArray());
+        KeyStore keystore = KeyStore.getInstance(getKeystoreType());
 
-        // Initialize a key manager
-        KeyManagerFactory keyManagerFactory = KeyManagerFactory
-                .getInstance(certAlgorithm);
-        keyManagerFactory.init(keyStore, keyPassword == null ? null
-                : keyPassword.toCharArray());
-        KeyManager[] keyManagers = keyManagerFactory.getKeyManagers();
+        if (keystoreInputStream != null) {
+            try {
+                keystore.load(keystoreInputStream,
+                        keystorePassword == null ? null : keystorePassword
+                                .toCharArray());
+            } catch (IOException ioe) {
+                getLogger().log(Level.WARNING, "Unable to load the keystore",
+                        ioe);
+                keystore = null;
+            }
+        }
+
+        KeyManager[] keyManagers = null;
+        if (keystore != null) {
+            // Initialize a key manager
+            KeyManagerFactory keyManagerFactory = KeyManagerFactory
+                    .getInstance(certAlgorithm);
+            keyManagerFactory.init(keystore, keyPassword == null ? null
+                    : keyPassword.toCharArray());
+            keyManagers = keyManagerFactory.getKeyManagers();
+        }
 
         // Initialize the trust store
         InputStream truststoreInputStream = null;
@@ -193,16 +207,22 @@ public class StreamClientHelper extends HttpClientHelper {
             truststoreInputStream = new FileInputStream(truststorePath);
         }
 
-        KeyStore trustStore = KeyStore.getInstance(getTruststoreType());
-        trustStore.load(truststoreInputStream,
-                truststorePassword == null ? null : truststorePassword
-                        .toCharArray());
+        KeyStore truststore = null;
+        if (truststoreType != null) {
+            truststore = KeyStore.getInstance(truststoreType);
+            truststore.load(truststoreInputStream,
+                    truststorePassword == null ? null : truststorePassword
+                            .toCharArray());
+        }
 
-        // Initialize the trust manager
-        TrustManagerFactory trustManagerFactory = TrustManagerFactory
-                .getInstance(certAlgorithm);
-        trustManagerFactory.init(trustStore);
-        TrustManager[] trustManagers = trustManagerFactory.getTrustManagers();
+        TrustManager[] trustManagers = null;
+        if (truststore != null) {
+            // Initialize the trust manager
+            TrustManagerFactory trustManagerFactory = TrustManagerFactory
+                    .getInstance(certAlgorithm);
+            trustManagerFactory.init(truststore);
+            trustManagers = trustManagerFactory.getTrustManagers();
+        }
 
         // Initialize the SSL context
         SecureRandom secureRandom = secureRandomAlgorithm == null ? null

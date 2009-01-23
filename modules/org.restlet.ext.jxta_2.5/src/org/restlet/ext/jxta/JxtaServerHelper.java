@@ -34,7 +34,6 @@ import net.jxta.protocol.PipeAdvertisement;
 import org.restlet.Server;
 import org.restlet.engine.http.StreamServerHelper;
 
-
 /**
  * Base JXTA connector.
  * 
