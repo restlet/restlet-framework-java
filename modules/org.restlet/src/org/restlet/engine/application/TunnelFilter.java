@@ -47,11 +47,11 @@ import org.restlet.data.Preference;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.engine.Engine;
 import org.restlet.engine.http.HttpConstants;
 import org.restlet.engine.http.PreferenceUtils;
 import org.restlet.service.MetadataService;
 import org.restlet.service.TunnelService;
-import org.restlet.util.Engine;
 
 /**
  * Filter tunnelling browser calls into full REST calls. The request method can

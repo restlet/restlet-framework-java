@@ -42,9 +42,9 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Response;
 import org.restlet.engine.ClientHelper;
+import org.restlet.engine.Engine;
 import org.restlet.engine.ServerHelper;
 import org.restlet.engine.local.ClapClientHelper;
-import org.restlet.util.Engine;
 import org.restlet.util.Series;
 
 /**
@@ -94,7 +94,7 @@ public abstract class SslBaseConnectorsTestCase extends TestCase {
         nre.getRegisteredClients().add(new ClapClientHelper(null));
         nre.getRegisteredServers().add(server);
         nre.getRegisteredClients().add(client);
-        org.restlet.util.Engine.setInstance(nre);
+        org.restlet.engine.Engine.setInstance(nre);
 
         final String uri = start();
         try {
@@ -107,7 +107,7 @@ public abstract class SslBaseConnectorsTestCase extends TestCase {
     @Override
     public void setUp() {
         // Restore a clean engine
-        org.restlet.util.Engine.setInstance(new Engine());
+        org.restlet.engine.Engine.setInstance(new Engine());
 
         try {
             if (!testKeystoreFile.exists()) {
@@ -165,7 +165,7 @@ public abstract class SslBaseConnectorsTestCase extends TestCase {
         this.testDir.delete();
 
         // Restore a clean engine
-        org.restlet.util.Engine.setInstance(new Engine());
+        org.restlet.engine.Engine.setInstance(new Engine());
     }
 
     public void testSslGrizzlyAndApache() throws Exception {

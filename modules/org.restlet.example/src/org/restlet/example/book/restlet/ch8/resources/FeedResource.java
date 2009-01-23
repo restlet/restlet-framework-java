@@ -41,6 +41,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.engine.Engine;
 import org.restlet.example.book.restlet.ch8.objects.Contact;
 import org.restlet.example.book.restlet.ch8.objects.Feed;
 import org.restlet.example.book.restlet.ch8.objects.Mail;
@@ -57,7 +58,6 @@ import org.restlet.resource.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.StringRepresentation;
 import org.restlet.resource.Variant;
-import org.restlet.util.Engine;
 
 
 /**

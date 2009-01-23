@@ -40,11 +40,11 @@ import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
+import org.restlet.engine.Engine;
 import org.restlet.engine.http.HttpConstants;
 import org.restlet.engine.util.Base64;
 import org.restlet.engine.util.SecurityUtils;
 import org.restlet.util.DateUtils;
-import org.restlet.util.Engine;
 import org.restlet.util.Series;
 
 /**

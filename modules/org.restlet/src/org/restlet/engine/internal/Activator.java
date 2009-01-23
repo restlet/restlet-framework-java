@@ -37,7 +37,7 @@ import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleListener;
 import org.restlet.Client;
 import org.restlet.Server;
-import org.restlet.util.Engine;
+import org.restlet.engine.Engine;
 
 
 /**
@@ -128,7 +128,7 @@ public class Activator implements BundleActivator {
      *            The bundle context.
      */
     public void start(BundleContext context) throws Exception {
-        org.restlet.util.Engine.setInstance(new Engine(false));
+        org.restlet.engine.Engine.setInstance(new Engine(false));
 
         // Discover helpers in installed bundles and start
         // the bundle if necessary
@@ -162,7 +162,7 @@ public class Activator implements BundleActivator {
      *            The bundle context.
      */
     public void stop(BundleContext context) throws Exception {
-        org.restlet.util.Engine.setInstance(null);
+        org.restlet.engine.Engine.setInstance(null);
     }
 
 }

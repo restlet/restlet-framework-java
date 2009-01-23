@@ -56,9 +56,9 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Status;
+import org.restlet.engine.Engine;
 import org.restlet.engine.http.HttpClientCall;
 import org.restlet.resource.Representation;
-import org.restlet.util.Engine;
 import org.restlet.util.Series;
 
 

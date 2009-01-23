@@ -72,6 +72,7 @@ import org.restlet.data.Metadata;
 import org.restlet.data.Parameter;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.engine.Engine;
 import org.restlet.engine.http.ContentType;
 import org.restlet.engine.http.HttpUtils;
 import org.restlet.ext.jaxrs.internal.core.UnmodifiableMultivaluedMap;
@@ -86,7 +87,6 @@ import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.provider.JaxbElementProvider;
 import org.restlet.resource.Representation;
 import org.restlet.util.DateUtils;
-import org.restlet.util.Engine;
 import org.restlet.util.Series;
 
 /**

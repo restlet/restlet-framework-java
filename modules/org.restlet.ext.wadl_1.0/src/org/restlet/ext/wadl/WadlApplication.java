@@ -54,10 +54,10 @@ import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.engine.Engine;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
 import org.restlet.resource.Variant;
-import org.restlet.util.Engine;
 
 /**
  * WADL configured application. Can automatically configure itself given a WADL

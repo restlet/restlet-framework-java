@@ -29,7 +29,7 @@ package org.restlet.data;
 
 import java.io.IOException;
 
-import org.restlet.util.Engine;
+import org.restlet.engine.Engine;
 
 /**
  * Multi-usage parameter. Note that the name and value properties are thread

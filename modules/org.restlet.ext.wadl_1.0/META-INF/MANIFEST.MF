@@ -7,6 +7,7 @@ Bundle-Vendor: Noelios Technologies
 Export-Package: org.restlet.ext.wadl;uses:="org.restlet,org.restlet.resource,org.restlet.data"
 Import-Package: org.restlet,
  org.restlet.data,
+ org.restlet.engine,
  org.restlet.resource,
  org.restlet.service,
  org.restlet.util

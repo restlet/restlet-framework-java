@@ -29,6 +29,7 @@ package org.restlet;
 
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.engine.Engine;
 import org.restlet.engine.Helper;
 import org.restlet.engine.application.ApplicationHelper;
 import org.restlet.service.ConnectorService;
@@ -38,7 +39,6 @@ import org.restlet.service.RangeService;
 import org.restlet.service.StatusService;
 import org.restlet.service.TaskService;
 import org.restlet.service.TunnelService;
-import org.restlet.util.Engine;
 
 /**
  * Restlet that can be attached to one or more VirtualHosts. Applications are

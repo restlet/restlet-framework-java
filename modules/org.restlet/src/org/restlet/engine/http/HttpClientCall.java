@@ -73,7 +73,7 @@ public abstract class HttpClientCall extends HttpCall {
      *         if no representation has been provided and the response has not
      *         sent any entity header.
      * @throws NumberFormatException
-     * @see org.restlet.util.Engine#copyResponseHeaders(Response, Series)
+     * @see org.restlet.engine.Engine#copyResponseHeaders(Response, Series)
      * @see HttpClientConverter#copyResponseTransportHeaders(Iterable, Response)
      */
     public static Representation copyResponseEntityHeaders(

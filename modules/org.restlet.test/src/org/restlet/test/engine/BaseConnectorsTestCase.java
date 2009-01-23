@@ -34,10 +34,10 @@ import org.restlet.Component;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.engine.ClientHelper;
+import org.restlet.engine.Engine;
 import org.restlet.engine.ServerHelper;
 import org.restlet.engine.http.StreamClientHelper;
 import org.restlet.engine.http.StreamServerHelper;
-import org.restlet.util.Engine;
 
 /**
  * Base test case that will call an abstract method for several client/server
@@ -73,7 +73,7 @@ public abstract class BaseConnectorsTestCase extends TestCase {
         final Engine nre = new Engine(false);
         nre.getRegisteredServers().add(server);
         nre.getRegisteredClients().add(client);
-        org.restlet.util.Engine.setInstance(nre);
+        org.restlet.engine.Engine.setInstance(nre);
 
         final String uri = start();
         try {
@@ -86,7 +86,7 @@ public abstract class BaseConnectorsTestCase extends TestCase {
     @Override
     public void setUp() {
         // Restore a clean engine
-        org.restlet.util.Engine.setInstance(new Engine());
+        org.restlet.engine.Engine.setInstance(new Engine());
     }
 
     private String start() throws Exception {
@@ -111,7 +111,7 @@ public abstract class BaseConnectorsTestCase extends TestCase {
         super.tearDown();
 
         // Restore a clean engine
-        org.restlet.util.Engine.setInstance(new Engine());
+        org.restlet.engine.Engine.setInstance(new Engine());
     }
 
     public void testGrizzlyAndApache() throws Exception {

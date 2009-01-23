@@ -27,7 +27,7 @@
 
 package org.restlet.data;
 
-import org.restlet.util.Engine;
+import org.restlet.engine.Engine;
 
 /**
  * Cookie setting provided by a server. This allows a server side application to

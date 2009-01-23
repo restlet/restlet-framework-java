@@ -27,7 +27,7 @@
 
 package org.restlet.data;
 
-import org.restlet.util.Engine;
+import org.restlet.engine.Engine;
 
 /**
  * Cookie provided by a client. To get the list of all cookies sent by a client,

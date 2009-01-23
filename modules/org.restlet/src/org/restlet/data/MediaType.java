@@ -30,7 +30,7 @@ package org.restlet.data;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.restlet.util.Engine;
+import org.restlet.engine.Engine;
 import org.restlet.util.Series;
 
 /**

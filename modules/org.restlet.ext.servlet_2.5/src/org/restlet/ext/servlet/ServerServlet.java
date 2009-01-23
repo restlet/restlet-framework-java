@@ -47,10 +47,10 @@ import org.restlet.Server;
 import org.restlet.VirtualHost;
 import org.restlet.data.Protocol;
 import org.restlet.data.Response;
+import org.restlet.engine.Engine;
 import org.restlet.engine.component.ComponentContext;
 import org.restlet.engine.http.HttpServerCall;
 import org.restlet.engine.http.HttpServerHelper;
-import org.restlet.util.Engine;
 
 /**
  * Servlet acting like an HTTP server connector. See <a

@@ -51,10 +51,10 @@ import org.restlet.Component;
 import org.restlet.Context;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
+import org.restlet.engine.Engine;
 import org.restlet.engine.http.HttpServerCall;
 import org.restlet.engine.http.HttpServerHelper;
 import org.restlet.ext.servlet.ServerServlet;
-import org.restlet.util.Engine;
 
 
 /**

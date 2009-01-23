@@ -27,8 +27,8 @@
 
 package org.restlet.data;
 
+import org.restlet.engine.Engine;
 import org.restlet.security.Principal;
-import org.restlet.util.Engine;
 import org.restlet.util.Series;
 
 /**

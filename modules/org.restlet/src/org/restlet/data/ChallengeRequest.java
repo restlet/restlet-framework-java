@@ -27,7 +27,7 @@
 
 package org.restlet.data;
 
-import org.restlet.util.Engine;
+import org.restlet.engine.Engine;
 import org.restlet.util.Series;
 
 /**

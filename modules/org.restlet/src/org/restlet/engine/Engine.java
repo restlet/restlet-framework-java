@@ -25,7 +25,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.util;
+package org.restlet.engine;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -55,8 +55,6 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
 import org.restlet.data.Protocol;
 import org.restlet.data.Response;
-import org.restlet.engine.ClientHelper;
-import org.restlet.engine.ServerHelper;
 import org.restlet.engine.authentication.ChallengeAuthenticatorHelper;
 import org.restlet.engine.authentication.HttpAmazonS3Helper;
 import org.restlet.engine.authentication.HttpBasicHelper;
@@ -73,6 +71,7 @@ import org.restlet.engine.local.ClapClientHelper;
 import org.restlet.engine.local.FileClientHelper;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Variant;
+import org.restlet.util.Series;
 
 /**
  * Facade to the engine implementating the Restlet API. Note that this is an SPI
@@ -372,7 +371,7 @@ public class Engine {
      */
     public static Engine register(boolean discoverConnectors) {
         final Engine result = new Engine(discoverConnectors);
-        org.restlet.util.Engine.setInstance(result);
+        org.restlet.engine.Engine.setInstance(result);
         return result;
     }
 
@@ -564,7 +563,7 @@ public class Engine {
      */
     private void discoverAuthentications() throws IOException {
         // Find the factory class name
-        final ClassLoader classLoader = org.restlet.util.Engine
+        final ClassLoader classLoader = org.restlet.engine.Engine
                 .getClassLoader();
 
         registerHelpers(classLoader, classLoader
@@ -598,7 +597,7 @@ public class Engine {
      */
     private void discoverConnectors() throws IOException {
         // Find the factory class name
-        final ClassLoader classLoader = org.restlet.util.Engine
+        final ClassLoader classLoader = org.restlet.engine.Engine
                 .getClassLoader();
 
         // Register the client connector providers

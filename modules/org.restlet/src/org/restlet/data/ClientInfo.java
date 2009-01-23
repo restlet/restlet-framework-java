@@ -38,10 +38,10 @@ import java.util.Map;
 
 import javax.security.auth.Subject;
 
+import org.restlet.engine.Engine;
 import org.restlet.engine.http.UserAgentUtils;
 import org.restlet.resource.Resource;
 import org.restlet.resource.Variant;
-import org.restlet.util.Engine;
 import org.restlet.util.Template;
 import org.restlet.util.Variable;
 
