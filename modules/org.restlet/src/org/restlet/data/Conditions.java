@@ -134,6 +134,26 @@ public final class Conditions {
      *         response otherwise.
      */
     public Status getStatus(Method method, Representation representation) {
+        return getStatus(method, representation != null, representation
+                .getTag(), representation.getModificationDate());
+    }
+
+    /**
+     * Returns the conditional status of a variant using a given method.
+     * 
+     * @param method
+     *            The request method.
+     * @param entityExists
+     *            Indicates if the entity exists.
+     * @param tag
+     *            The tag.
+     * @param modificationDate
+     *            The modification date.
+     * @return Null if the requested method can be performed, the status of the
+     *         response otherwise.
+     */
+    public Status getStatus(Method method, boolean entityExists, Tag tag,
+            Date modificationDate) {
         Status result = null;
 
         // Is the "if-Match" rule followed or not?
@@ -142,17 +162,17 @@ public final class Conditions {
             boolean failed = false;
             final boolean all = getMatch().get(0).equals(Tag.ALL);
 
-            if (representation != null) {
+            if (entityExists) {
                 // If a tag exists
-                if (!all && (representation.getTag() != null)) {
+                if (!all && (tag != null)) {
                     // Check if it matches one of the representations already
                     // cached by the client
-                    Tag tag;
+                    Tag matchTag;
 
                     for (final Iterator<Tag> iter = getMatch().iterator(); !matched
                             && iter.hasNext();) {
-                        tag = iter.next();
-                        matched = tag.equals(representation.getTag(), false);
+                        matchTag = iter.next();
+                        matched = matchTag.equals(tag, false);
                     }
                 } else {
                     matched = all;
@@ -178,19 +198,18 @@ public final class Conditions {
                 && !this.noneMatch.isEmpty()) {
             boolean matched = false;
 
-            if (representation != null) {
+            if (entityExists) {
                 // If a tag exists
-                if (representation.getTag() != null) {
+                if (tag != null) {
                     // Check if it matches one of the representations
                     // already cached by the client
-                    Tag tag;
+                    Tag noneMatchTag;
 
                     for (final Iterator<Tag> iter = getNoneMatch().iterator(); !matched
                             && iter.hasNext();) {
-                        tag = iter.next();
-                        matched = tag.equals(representation.getTag(),
-                                (Method.GET.equals(method) || Method.HEAD
-                                        .equals(method)));
+                        noneMatchTag = iter.next();
+                        matched = noneMatchTag.equals(tag, (Method.GET
+                                .equals(method) || Method.HEAD.equals(method)));
                     }
 
                     // The current representation matches one of those already
@@ -202,10 +221,8 @@ public final class Conditions {
                         final Date modifiedSince = getModifiedSince();
                         final boolean isModifiedSince = (modifiedSince != null)
                                 && (DateUtils.after(new Date(), modifiedSince)
-                                        || (representation
-                                                .getModificationDate() == null) || DateUtils
-                                        .after(modifiedSince, representation
-                                                .getModificationDate()));
+                                        || (modificationDate == null) || DateUtils
+                                        .after(modifiedSince, modificationDate));
                         matched = !isModifiedSince;
                     }
                 }
@@ -224,36 +241,30 @@ public final class Conditions {
 
         // Is the "if-Modified-Since" rule followed or not?
         if ((result == null) && (getModifiedSince() != null)) {
-            if (representation != null) {
-                final Date modifiedSince = getModifiedSince();
-                final boolean isModifiedSince = (DateUtils.after(new Date(),
-                        modifiedSince)
-                        || (representation.getModificationDate() == null) || DateUtils
-                        .after(modifiedSince, representation
-                                .getModificationDate()));
+            final Date modifiedSince = getModifiedSince();
+            final boolean isModifiedSince = (DateUtils.after(new Date(),
+                    modifiedSince)
+                    || (modificationDate == null) || DateUtils.after(
+                    modifiedSince, modificationDate));
 
-                if (!isModifiedSince) {
-                    if (Method.GET.equals(method) || Method.HEAD.equals(method)) {
-                        result = Status.REDIRECTION_NOT_MODIFIED;
-                    } else {
-                        result = Status.CLIENT_ERROR_PRECONDITION_FAILED;
-                    }
+            if (!isModifiedSince) {
+                if (Method.GET.equals(method) || Method.HEAD.equals(method)) {
+                    result = Status.REDIRECTION_NOT_MODIFIED;
+                } else {
+                    result = Status.CLIENT_ERROR_PRECONDITION_FAILED;
                 }
             }
         }
 
         // Is the "if-Unmodified-Since" rule followed or not?
         if ((result == null) && (getUnmodifiedSince() != null)) {
-            if (representation != null) {
-                final Date unModifiedSince = getUnmodifiedSince();
-                final boolean isUnModifiedSince = ((unModifiedSince == null)
-                        || (representation.getModificationDate() == null) || DateUtils
-                        .after(representation.getModificationDate(),
-                                unModifiedSince));
+            final Date unModifiedSince = getUnmodifiedSince();
+            final boolean isUnModifiedSince = ((unModifiedSince == null)
+                    || (modificationDate == null) || DateUtils.after(
+                    modificationDate, unModifiedSince));
 
-                if (!isUnModifiedSince) {
-                    result = Status.CLIENT_ERROR_PRECONDITION_FAILED;
-                }
+            if (!isUnModifiedSince) {
+                result = Status.CLIENT_ERROR_PRECONDITION_FAILED;
             }
         }
 

@@ -92,7 +92,9 @@ Changes log
           John D. Mitchell. Initial patch provided by Remi Dewitte. 	
         - Added ClientInfo#subject property returning a JAAS Subject.
           Can contain several principals and credentials. Deprecated 
-          the ChallengeResponse#getPrincipal() method.	 
+          the ChallengeResponse#getPrincipal() method.
+        - Added new Conditions.getStatus() method signature for usage
+          by the JAX-RS extension. Suggested by Stephan Koops.
      - Misc
         - JAX-RS extension:
             - added class ExendedUriBuilder with "file" extensions for
