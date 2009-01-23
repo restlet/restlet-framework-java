@@ -4,6 +4,8 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+
+- 1.2 Milestone 1 (2009-01-23)
     - Breaking changes
         - The engine has been moved from "com.noelios.restlet" to
           the "org.restlet.engine" package, simplifying the packaging.
