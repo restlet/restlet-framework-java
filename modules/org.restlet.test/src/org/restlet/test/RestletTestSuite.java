@@ -31,8 +31,11 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 import org.restlet.test.engine.EngineTestSuite;
+import org.restlet.test.ext.atom.AtomTestCase;
+import org.restlet.test.ext.freemarker.FreeMarkerTestCase;
+import org.restlet.test.ext.spring.AllSpringTests;
+import org.restlet.test.ext.wadl.WadlTestCase;
 import org.restlet.test.jaxrs.AllJaxRsTests;
-import org.restlet.test.spring.AllSpringTests;
 
 /**
  * Suite of unit tests for the Restlet RI.
@@ -57,6 +60,7 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(AtomTestCase.class);
         addTestSuite(ByteUtilsTestCase.class);
         addTestSuite(CallTestCase.class);
+        addTestSuite(ComponentXmlConfigTestCase.class);
         addTestSuite(ComponentXmlTestCase.class);
         addTestSuite(CookieTestCase.class);
         addTestSuite(DigestTestCase.class);
@@ -78,6 +82,7 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(ResolvingTransformerTestCase.class);
         addTestSuite(ResourceTestCase.class);
         addTestSuite(RestartTestCase.class);
+        addTestSuite(RestletXmlTestCase.class);
         addTestSuite(RiapTestCase.class);
         addTestSuite(RouteListTestCase.class);
         addTestSuite(SpringTestCase.class);

@@ -33,11 +33,9 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.restlet.data.LocalReference;
 import org.restlet.data.MediaType;
+import org.restlet.data.Parameter;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
@@ -45,6 +43,8 @@ import org.restlet.data.Response;
 import org.restlet.engine.Engine;
 import org.restlet.engine.Helper;
 import org.restlet.engine.component.ComponentHelper;
+import org.restlet.engine.util.SaxDefaultHandler;
+import org.restlet.resource.DomRepresentation;
 import org.restlet.resource.FileRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
@@ -84,9 +84,7 @@ import org.w3c.dom.NodeList;
  * 
  * <pre>
  * &lt;?xml version=&quot;1.0&quot;?&gt;
- * &lt;component xmlns=&quot;http://www.restlet.org/schemas/1.1/Component&quot;
- *               xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;
- *               xsi:schemaLocation=&quot;http://www.restlet.org/schemas/1.1/Component&quot;&gt;
+ * &lt;component xmlns=&quot;http://www.restlet.org/schemas/1.2/Component&quot;&gt;
  *    &lt;client protocol=&quot;CLAP&quot; /&gt;
  *    &lt;client protocol=&quot;FILE&quot; /&gt;
  *    &lt;client protocols=&quot;HTTP HTTPS&quot; /&gt;
@@ -139,6 +137,42 @@ public class Component extends Restlet {
         }
     }
 
+    /**
+     * Indicates if the DOM node is a "parameter" element.
+     * 
+     * @param domNode
+     *            The DOM node to test.
+     * @return True if the DOM node is a "parameter" element.
+     */
+    private static boolean isParameter(Node domNode) {
+        return domNode != null && "parameter".equals(domNode.getNodeName());
+    }
+
+    /**
+     * Parses the DOM node into a {@link Parameter} instance.
+     * 
+     * @param domNode
+     *            The DOM node to parse.
+     * @return The {@link Parameter} instance.
+     */
+    private static Parameter parseParameter(Node domNode) {
+        Parameter result = null;
+
+        if (!isParameter(domNode)) {
+            return null;
+        }
+
+        Node nameNode = domNode.getAttributes().getNamedItem("name");
+        Node valueNode = domNode.getAttributes().getNamedItem("value");
+
+        if ((nameNode != null) && (valueNode != null)) {
+            result = new Parameter(nameNode.getNodeValue(), valueNode
+                    .getNodeValue());
+        }
+
+        return result;
+    }
+
     /** The modifiable list of client connectors. */
     private final ClientList clients;
 
@@ -178,7 +212,8 @@ public class Component extends Restlet {
             this.helper = new ComponentHelper(this);
 
             if (this.helper != null) {
-                this.defaultHost = new VirtualHost(getContext());
+                this.defaultHost = new VirtualHost(getContext()
+                        .createChildContext());
                 this.internalRouter = new Router(getContext()
                         .createChildContext()) {
 
@@ -333,8 +368,8 @@ public class Component extends Restlet {
                         getLogger()
                                 .log(
                                         Level.FINE,
-                                        "Couldn't invoke the constructor of the target class. Please check this class has a constructor with a single parameter of type Context. The empty constructor and the context setter will be used instead.",
-                                        e);
+                                        "Couldn't invoke the constructor of the target class. Please check this class has a constructor with a single parameter of type Context. The empty constructor and the context setter will be used instead: "
+                                                + targetClassName, e);
 
                         // The constructor with the Context parameter does not
                         // exist. Instantiate an application with the default
@@ -357,7 +392,6 @@ public class Component extends Restlet {
                         Level.WARNING,
                         "Couldn't find the target class. Please check that your classpath includes "
                                 + targetClassName, e);
-
             } catch (InstantiationException e) {
                 getLogger()
                         .log(
@@ -684,7 +718,7 @@ public class Component extends Restlet {
      *            the DOM node.
      */
     private void parseHost(VirtualHost host, Node hostNode) {
-        // Update the "Router" attributes.
+        // Parse the "RouterType" attributes and elements.
         parseRouter(host, hostNode);
 
         Node item = hostNode.getAttributes().getNamedItem("hostDomain");
@@ -723,8 +757,6 @@ public class Component extends Restlet {
         if ((item != null) && (item.getNodeValue() != null)) {
             host.setServerPort(item.getNodeValue());
         }
-        // Loops the list of "attach" instructions
-        setAttach(host, hostNode);
     }
 
     /**
@@ -739,44 +771,42 @@ public class Component extends Restlet {
         Node item = routerNode.getAttributes().getNamedItem(
                 "defaultMatchingMode");
         if (item != null) {
-            getInternalRouter().setDefaultMatchingMode(
-                    getInt(item, getInternalRouter().getDefaultMatchingMode()));
+            router.setDefaultMatchingMode(getInt(item, getInternalRouter()
+                    .getDefaultMatchingMode()));
         }
 
         item = routerNode.getAttributes().getNamedItem("defaultMatchingQuery");
         if (item != null) {
-            getInternalRouter()
-                    .setDefaultMatchQuery(
-                            getBoolean(item, getInternalRouter()
-                                    .getDefaultMatchQuery()));
+            router.setDefaultMatchQuery(getBoolean(item, getInternalRouter()
+                    .getDefaultMatchQuery()));
         }
 
         item = routerNode.getAttributes().getNamedItem("maxAttempts");
         if (item != null) {
-            getInternalRouter().setMaxAttempts(
-                    getInt(item, getInternalRouter().getMaxAttempts()));
+            router.setMaxAttempts(getInt(item, getInternalRouter()
+                    .getMaxAttempts()));
         }
 
         item = routerNode.getAttributes().getNamedItem("routingMode");
         if (item != null) {
-            getInternalRouter().setRoutingMode(
-                    getInt(item, getInternalRouter().getRoutingMode()));
+            router.setRoutingMode(getInt(item, getInternalRouter()
+                    .getRoutingMode()));
         }
 
         item = routerNode.getAttributes().getNamedItem("requiredScore");
         if (item != null) {
-            getInternalRouter().setRequiredScore(
-                    getFloat(item, getInternalRouter().getRequiredScore()));
+            router.setRequiredScore(getFloat(item, getInternalRouter()
+                    .getRequiredScore()));
         }
 
         item = routerNode.getAttributes().getNamedItem("retryDelay");
         if (item != null) {
-            getInternalRouter().setRetryDelay(
-                    getLong(item, getInternalRouter().getRetryDelay()));
+            router.setRetryDelay(getLong(item, getInternalRouter()
+                    .getRetryDelay()));
         }
 
-        // Loops the list of "attach" instructions
-        setAttach(getInternalRouter(), routerNode);
+        // Loops the list of "parameter" and "attach" elements
+        setAttach(router, routerNode);
     }
 
     /**
@@ -787,13 +817,31 @@ public class Component extends Restlet {
      */
     private void parseXmlConfiguration(Representation xmlConfigRepresentation) {
         try {
-            final DocumentBuilderFactory dbf = DocumentBuilderFactory
-                    .newInstance();
-            dbf.setNamespaceAware(false);
-            dbf.setValidating(false);
-            final DocumentBuilder db = dbf.newDocumentBuilder();
-            final Document document = db.parse(xmlConfigRepresentation
-                    .getStream());
+            // Parse and validate the XML configuration
+            DomRepresentation dom = new DomRepresentation(
+                    xmlConfigRepresentation);
+            SaxDefaultHandler handler = new SaxDefaultHandler();
+            dom.setErrorHandler(handler);
+            dom.setEntityResolver(handler);
+            dom.setNamespaceAware(true);
+            dom.setValidating(true);
+            dom.setXIncludeAware(true);
+
+            try {
+                Client client = new Client(Protocol.CLAP);
+                Representation xsd = client.get(
+                        "clap://class/org/restlet/Component.xsd").getEntity();
+                dom.setSchema(xsd);
+            } catch (Exception x) {
+                Context
+                        .getCurrentLogger()
+                        .log(
+                                Level.CONFIG,
+                                "Unable to acquire a compiled instance of Component.xsd "
+                                        + "to check the given restlet.xml. Ignore and continue");
+            }
+
+            final Document document = dom.getDocument();
 
             // Check root node
             if ("component".equals(document.getFirstChild().getNodeName())) {
@@ -804,7 +852,6 @@ public class Component extends Restlet {
 
                 for (int i = 0; i < childNodes.getLength(); i++) {
                     childNode = childNodes.item(i);
-
                     if ("client".equals(childNode.getNodeName())) {
                         Node item = childNode.getAttributes().getNamedItem(
                                 "protocol");
@@ -840,24 +887,11 @@ public class Component extends Restlet {
                                 final Node childNode2 = childNode
                                         .getChildNodes().item(j);
 
-                                if ("parameter"
-                                        .equals(childNode2.getNodeName())) {
-                                    final Node nameNode = childNode2
-                                            .getAttributes().getNamedItem(
-                                                    "name");
-                                    final Node valueNode = childNode2
-                                            .getAttributes().getNamedItem(
-                                                    "value");
-
-                                    if ((nameNode != null)
-                                            && (valueNode != null)) {
-                                        client
-                                                .getContext()
-                                                .getParameters()
-                                                .add(
-                                                        nameNode.getNodeValue(),
-                                                        valueNode
-                                                                .getNodeValue());
+                                if (isParameter(childNode2)) {
+                                    Parameter p = parseParameter(childNode2);
+                                    if (p != null) {
+                                        client.getContext().getParameters()
+                                                .add(p);
                                     }
                                 }
                             }
@@ -923,29 +957,21 @@ public class Component extends Restlet {
                                 final Node childNode2 = childNode
                                         .getChildNodes().item(j);
 
-                                if ("parameter"
-                                        .equals(childNode2.getNodeName())) {
-                                    final Node nameNode = childNode2
-                                            .getAttributes().getNamedItem(
-                                                    "name");
-                                    final Node valueNode = childNode2
-                                            .getAttributes().getNamedItem(
-                                                    "value");
-
-                                    if ((nameNode != null)
-                                            && (valueNode != null)) {
-                                        server
-                                                .getContext()
-                                                .getParameters()
-                                                .add(
-                                                        nameNode.getNodeValue(),
-                                                        valueNode
-                                                                .getNodeValue());
+                                if (isParameter(childNode2)) {
+                                    Parameter p = parseParameter(childNode2);
+                                    if (p != null) {
+                                        server.getContext().getParameters()
+                                                .add(p);
                                     }
                                 }
                             }
 
                             getServers().add(server);
+                        }
+                    } else if (isParameter(childNode)) {
+                        Parameter p = parseParameter(childNode);
+                        if (p != null) {
+                            getContext().getParameters().add(p);
                         }
                     } else if ("defaultHost".equals(childNode.getNodeName())) {
                         parseHost(getDefaultHost(), childNode);
@@ -953,17 +979,6 @@ public class Component extends Restlet {
                         final VirtualHost host = new VirtualHost(getContext());
                         parseHost(host, childNode);
                         getHosts().add(host);
-                    } else if ("parameter".equals(childNode.getNodeName())) {
-                        final Node nameNode = childNode.getAttributes()
-                                .getNamedItem("name");
-                        final Node valueNode = childNode.getAttributes()
-                                .getNamedItem("value");
-
-                        if ((nameNode != null) && (valueNode != null)) {
-                            getContext().getParameters().add(
-                                    nameNode.getNodeValue(),
-                                    valueNode.getNodeValue());
-                        }
                     } else if ("internalRouter".equals(childNode.getNodeName())) {
                         parseRouter(getInternalRouter(), childNode);
                     } else if ("logService".equals(childNode.getNodeName())) {
@@ -1040,11 +1055,25 @@ public class Component extends Restlet {
         }
     }
 
+    /**
+     * Attaches Restlet to a router.
+     * 
+     * @param router
+     *            The router to attach to.
+     * @param node
+     *            The node describing the Restlets to attach.
+     */
     private void setAttach(Router router, Node node) {
         final NodeList childNodes = node.getChildNodes();
+
         for (int i = 0; i < childNodes.getLength(); i++) {
             final Node childNode = childNodes.item(i);
-            if ("attach".equals(childNode.getNodeName())) {
+            if (isParameter(childNode)) {
+                Parameter p = parseParameter(childNode);
+                if (p != null) {
+                    router.getContext().getParameters().add(p);
+                }
+            } else if ("attach".equals(childNode.getNodeName())) {
                 String uriPattern = null;
                 Node item = childNode.getAttributes()
                         .getNamedItem("uriPattern");
@@ -1058,6 +1087,10 @@ public class Component extends Restlet {
                 final boolean bDefault = getBoolean(item, false);
 
                 // Attaches a new route.
+                // save the old router context so new routes do not inherit it
+                final Context oldContext = router.getContext();
+                router.setContext(new Context());
+
                 Route route = null;
                 item = childNode.getAttributes().getNamedItem("targetClass");
                 if (item != null) {
@@ -1087,7 +1120,22 @@ public class Component extends Restlet {
                             "defaultVariableType");
                     template.getDefaultVariable().setType(
                             getInt(item, Variable.TYPE_URI_SEGMENT));
+
+                    // Parse possible parameters specific to this AttachType
+                    final NodeList childNodes2 = childNode.getChildNodes();
+                    for (int j = 0; j < childNodes2.getLength(); j++) {
+                        Node aNode = childNodes2.item(j);
+                        if (isParameter(aNode)) {
+                            Parameter p = parseParameter(aNode);
+                            if (p != null) {
+                                route.getContext().getParameters().add(p);
+                            }
+                        }
+                    }
                 }
+
+                // Restore the router's old context
+                router.setContext(oldContext);
             }
         }
     }

@@ -21,6 +21,13 @@ Changes log
           TikaRepresentation to extract metadata from a representation
           using Lucene Tika parsing and analysis library. Suggested by
           Ben Johnson.
+        - The Atom Service class now supports getting documents from
+          other protocols than HTTP.
+        - Updated org.restlet.Component to support validating parsing. 
+          Contributed by Raif S. Naffah.
+        - XmlRepresentation now has "entityResolver", "errorHandler", 
+          "schema", "xIncludeAware" and "validating" properties. 
+          Contributed by Raif S. Naffah.
     - API changes
         - A response with a 200 (Ok) status should have an entity. Now,
           we make sure that a warning is logged. 

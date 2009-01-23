@@ -25,7 +25,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.test;
+package org.restlet.test.ext.atom;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -76,7 +76,7 @@ public class AtomTestCase extends TestCase {
 
         try {
             final Service atomService = new Service(
-                    "http://bitworking.org/projects/apptestsite/app.cgi/service/;service_document");
+                    "clap://class/org/restlet/test/ext/atom/service.xml");
             final Feed atomFeed = atomService.getWorkspaces().get(0)
                     .getCollections().get(0).getFeed();
 

@@ -28,12 +28,21 @@
 package org.restlet.test;
 
 import org.restlet.Application;
+import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
 public class HelloWorldApplication extends Application {
+
+    public HelloWorldApplication() {
+        super();
+    }
+
+    public HelloWorldApplication(Context ctx) {
+        super(ctx);
+    }
 
     @Override
     public synchronized Restlet createRoot() {

@@ -25,7 +25,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.test.spring;
+package org.restlet.test.ext.spring;
 
 import java.util.HashSet;
 import java.util.Set;

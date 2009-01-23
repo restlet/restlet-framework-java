@@ -52,6 +52,7 @@ import org.restlet.Context;
 import org.restlet.data.CharacterSet;
 import org.restlet.resource.Representation;
 import org.restlet.resource.WriterRepresentation;
+import org.restlet.service.TaskService;
 
 /**
  * Byte manipulation utilities.
@@ -251,7 +252,9 @@ public final class ByteUtils {
 
         // Creates a thread that will handle the task of continuously
         // writing the representation into the input side of the pipe
-        application.getTaskService().execute(new Runnable() {
+        TaskService taskService = (application == null) ? new TaskService()
+                : application.getTaskService();
+        taskService.execute(new Runnable() {
             public void run() {
                 try {
                     final OutputStream os = pipe.getOutputStream();

@@ -35,6 +35,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
@@ -50,10 +51,13 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.xpath.XPathConstants;
 
+import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.util.NodeSet;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.ErrorHandler;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -123,8 +127,8 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
         String result = null;
 
         if (schemaRepresentation != null) {
-            if (MediaType.APPLICATION_W3C_SCHEMA
-                    .equals(schemaRepresentation.getMediaType())) {
+            if (MediaType.APPLICATION_W3C_SCHEMA.equals(schemaRepresentation
+                    .getMediaType())) {
                 result = XMLConstants.W3C_XML_SCHEMA_NS_URI;
             } else if (MediaType.APPLICATION_RELAXNG_COMPACT
                     .equals(schemaRepresentation.getMediaType())) {
@@ -138,11 +142,51 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
         return result;
     }
 
+    /**
+     * A SAX {@link EntityResolver} to use when resolving external entity
+     * references while parsing this type of XML representations.
+     * 
+     * @see DocumentBuilder#setEntityResolver(EntityResolver)
+     */
+    private volatile EntityResolver entityResolver;
+
+    /**
+     * A SAX {@link ErrorHandler} to use for signaling SAX exceptions while
+     * parsing this type of XML representations.
+     * 
+     * @see DocumentBuilder#setErrorHandler(ErrorHandler)
+     */
+    private volatile ErrorHandler errorHandler;
+
     /** Indicates if processing is namespace aware. */
     private volatile boolean namespaceAware;
 
     /** Internal map of namespaces. */
     private volatile Map<String, String> namespaces;
+
+    /**
+     * A (compiled) {@link Schema} to use when validating this type of XML
+     * representations.
+     * 
+     * @see DocumentBuilderFactory#setSchema(Schema)
+     */
+    private volatile Schema schema;
+
+    /**
+     * Indicates the desire for validating this type of XML representations
+     * against an XML schema if one is referenced within the contents.
+     * 
+     * @see DocumentBuilderFactory#setValidating(boolean)
+     */
+    private volatile boolean validating;
+
+    /**
+     * Indicates the desire for processing <em>XInclude</em> if found in this
+     * type of XML representations.
+     * 
+     * @see DocumentBuilderFactory#setXIncludeAware(boolean)
+     */
+    private volatile boolean xIncludeAware;
 
     /**
      * Constructor.
@@ -199,16 +243,29 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
      * @return A document builder properly configured.
      */
     protected DocumentBuilder getDocumentBuilder() throws IOException {
+        DocumentBuilder result = null;
+
         try {
             final DocumentBuilderFactory dbf = DocumentBuilderFactory
                     .newInstance();
             dbf.setNamespaceAware(isNamespaceAware());
-            dbf.setValidating(false);
-            return dbf.newDocumentBuilder();
+            dbf.setValidating(isValidating());
+            dbf.setXIncludeAware(isXIncludeAware());
+            Schema xsd = getSchema();
+
+            if (xsd != null) {
+                dbf.setSchema(xsd);
+            }
+
+            result = dbf.newDocumentBuilder();
+            result.setEntityResolver(getEntityResolver());
+            result.setErrorHandler(getErrorHandler());
         } catch (ParserConfigurationException pce) {
             throw new IOException("Couldn't create the empty document: "
                     + pce.getMessage());
         }
+
+        return result;
     }
 
     /**
@@ -237,6 +294,24 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
         }
 
         return result;
+    }
+
+    /**
+     * Return the possibly null current SAX {@link EntityResolver}.
+     * 
+     * @return The possibly null current SAX {@link EntityResolver}.
+     */
+    public EntityResolver getEntityResolver() {
+        return entityResolver;
+    }
+
+    /**
+     * Return the possibly null current SAX {@link ErrorHandler}.
+     * 
+     * @return The possibly null current SAX {@link ErrorHandler}.
+     */
+    public ErrorHandler getErrorHandler() {
+        return errorHandler;
     }
 
     /**
@@ -334,6 +409,16 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
     }
 
     /**
+     * Return the possibly null {@link Schema} to use for this type of XML
+     * representations.
+     * 
+     * @return the {@link Schema} object of this type of XML representations.
+     */
+    public Schema getSchema() {
+        return schema;
+    }
+
+    /**
      * Returns a stream of XML markup.
      * 
      * @return A stream of XML markup.
@@ -386,6 +471,26 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
     }
 
     /**
+     * Indicates the desire for validating this type of XML representations
+     * against an XML schema if one is referenced within the contents.
+     * 
+     * @return True if the schema-based validation is enabled.
+     */
+    public boolean isValidating() {
+        return validating;
+    }
+
+    /**
+     * Indicates the desire for processing <em>XInclude</em> if found in this
+     * type of XML representations.
+     * 
+     * @return The current value of the xIncludeAware flag.
+     */
+    public boolean isXIncludeAware() {
+        return xIncludeAware;
+    }
+
+    /**
      * Puts a new mapping between a prefix and a namespace URI.
      * 
      * @param prefix
@@ -410,6 +515,27 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
     }
 
     /**
+     * Set the {@link EntityResolver} to use when resolving external entity
+     * references encountered in this type of XML representations.
+     * 
+     * @param entityResolver
+     *            the {@link EntityResolver} to set.
+     */
+    public void setEntityResolver(EntityResolver entityResolver) {
+        this.entityResolver = entityResolver;
+    }
+
+    /**
+     * Set the {@link ErrorHandler} to use when signaling SAX event exceptions.
+     * 
+     * @param errorHandler
+     *            the {@link ErrorHandler} to set.
+     */
+    public void setErrorHandler(ErrorHandler errorHandler) {
+        this.errorHandler = errorHandler;
+    }
+
+    /**
      * Indicates if processing is namespace aware.
      * 
      * @param namespaceAware
@@ -417,6 +543,55 @@ public abstract class XmlRepresentation extends OutputRepresentation implements
      */
     public void setNamespaceAware(boolean namespaceAware) {
         this.namespaceAware = namespaceAware;
+    }
+
+    /**
+     * Set a schema representation to be compiled and used when parsing and
+     * validating this type of XML representations.
+     * 
+     * @param schema
+     *            The schema representation to set.
+     */
+    public void setSchema(Representation schemaRepresentation) {
+        try {
+            this.schema = getSchema(schemaRepresentation);
+        } catch (Exception e) {
+            Context.getCurrentLogger().log(Level.WARNING,
+                    "Unable to compile the schema representation", e);
+        }
+    }
+
+    /**
+     * Set a (compiled) {@link Schema} to use when parsing and validating this
+     * type of XML representations.
+     * 
+     * @param schema
+     *            The (compiled) {@link Schema} object to set.
+     */
+    public void setSchema(Schema schema) {
+        this.schema = schema;
+    }
+
+    /**
+     * Indicates the desire for validating this type of XML representations
+     * against an XML schema if one is referenced within the contents.
+     * 
+     * @param validating
+     *            The new validation flag to set.
+     */
+    public void setValidating(boolean validating) {
+        this.validating = validating;
+    }
+
+    /**
+     * Indicates the desire for processing <em>XInclude</em> if found in this
+     * type of XML representations.
+     * 
+     * @param includeAware
+     *            The new value of the xIncludeAware flag.
+     */
+    public void setXIncludeAware(boolean includeAware) {
+        xIncludeAware = includeAware;
     }
 
     /**

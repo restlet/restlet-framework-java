@@ -25,26 +25,29 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.test.spring;
+package org.restlet.test.ext.wadl;
 
-import junit.framework.Test;
 import junit.framework.TestCase;
-import junit.framework.TestSuite;
 
-import org.restlet.test.SpringTestCase;
+import org.restlet.ext.wadl.WadlApplication;
+import org.restlet.ext.wadl.WadlComponent;
 
 /**
- * Suite with all Spring unit tests.
+ * Unit test case for the WADL extension.
  * 
- * @author Rhett Sutphin
+ * @author Jerome Louvel
  */
-public class AllSpringTests extends TestCase {
-    public static Test suite() {
-        final TestSuite suite = new TestSuite();
-        suite.setName("all spring-ext tests");
-        suite.addTestSuite(SpringTestCase.class);
-        suite.addTestSuite(SpringBeanFinderTest.class);
-        suite.addTestSuite(BeanNameRouterTest.class);
-        return suite;
+public class WadlTestCase extends TestCase {
+
+    public void testWadl() throws Exception {
+        final WadlComponent comp = new WadlComponent(
+                "clap://class/org/restlet/test/YahooSearch.wadl");
+
+        final WadlApplication app = (WadlApplication) comp.getHosts().get(0)
+                .getRoutes().get(0).getNext();
+        assertNotNull(app);
+        assertEquals(app.getRoot(), app.getRouter());
+        assertNotNull(app.getRoot());
     }
+
 }

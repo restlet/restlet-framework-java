@@ -37,7 +37,6 @@ import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.Uniform;
 import org.restlet.data.MediaType;
-import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
@@ -257,7 +256,8 @@ public class Service extends SaxRepresentation {
      * @throws IOException
      */
     public Service(String serviceUri) throws IOException {
-        this(new Client(Protocol.HTTP), serviceUri);
+        this(new Client(new Reference(serviceUri).getSchemeProtocol()),
+                serviceUri);
     }
 
     /**
@@ -271,7 +271,8 @@ public class Service extends SaxRepresentation {
      */
     public Service(String serviceUri, Representation xmlService)
             throws IOException {
-        this(new Client(Protocol.HTTP), serviceUri, xmlService);
+        this(new Client(new Reference(serviceUri).getSchemeProtocol()),
+                serviceUri, xmlService);
     }
 
     /**
