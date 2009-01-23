@@ -1,0 +1,141 @@
+   
+===========
+Changes log  
+===========
+
+- @version-full@ (@release-date@)
+    - Breaking changes
+        - The engine has been moved from "com.noelios.restlet" to
+          the "org.restlet.engine" package, simplifying the packaging.
+        - All engine extensions have been moved to "org.restlet.ext"
+          packages.
+        - The com.noelios.restlet.ext.spring extension has been merged
+          with org.restlet.ext.spring.
+        - Moved org.restlet.util.DateUtils, ByteUtils and Engine 
+          classes to org.restlet.engine.* packages.
+    - Enhancements
+        - Internal HTTP connector now supports HTTPS connections.
+          Contributed by Kevin Conaway.
+        - Added a Lucene extension including a Solr client connector
+          contributed by Remi Dewitte. Also contains a useful 
+          TikaRepresentation to extract metadata from a representation
+          using Lucene Tika parsing and analysis library. Suggested by
+          Ben Johnson.
+        - The Atom Service class now supports getting documents from
+          other protocols than HTTP.
+        - Updated org.restlet.Component to support validating parsing. 
+          Contributed by Raif S. Naffah.
+        - XmlRepresentation now has "entityResolver", "errorHandler", 
+          "schema", "xIncludeAware" and "validating" properties. 
+          Contributed by Raif S. Naffah.
+    - API changes
+        - A response with a 200 (Ok) status should have an entity. Now,
+          we make sure that a warning is logged. 
+          Reported by Rob Heittman.
+        - Removed all code deprecated in the Restlet 1.1 release.
+        - Added org.restlet.data.Literal to represent RDF
+          literals with an optional datatype. 
+        - Added org.restlet.data.Link to represent RDF links (aka 
+          triples, statements or relationships).
+        - Moved o.r.u.Helper class, used privately by API classes to 
+          the o.r.engine package.
+        - Added MediaType constants APPLICATION_RDF_TRIG, 
+          APPLICATION_RDF_TRIX, APPLICATION_RDF_TURTLE, 
+          APPLICATION_SPARQL_RESULTS_XML and
+          APPLICATION_SPARQL_RESULTS_JSON for RDF and SPARQL.
+        - Added LinkReference and LinkSet classes to support RDF 
+          reference manipulation (blank nodes for example) and RDF 
+          graphs or models.
+        - Added CharacterSet#DEFAULT constant, new constructor for 
+          Charset instances and a toCharset() method. Suggested by
+          Charles Gay.
+        - Added Reference#toUri(), toUrl() and constructors from 
+          java.net.URI and URL instances. Suggested by Cliff Binstock.
+        - Added APPLICATION_ATOM media type constant and 
+          deprecated APPLICATION_ATOM_XML.          
+        - Added APPLICATION_ATOM_SERVICE_XML media type constant and 
+          deprecated APPLICATION_ATOMPUB_SERVICE.
+        - Added APPLICATION_ATOMPUB_CATEGORY media type constant.
+        - Added APPLICATION_KML and APPLICATION_KMZ media type 
+          constants. Suggested by Frank Hellwig.          
+        - Added APPLICATION_MATHML_XML media type constant and 
+          deprecated APPLICATION_MATHML.
+        - Added APPLICATION_RSS_XML media type constant and 
+          deprecated APPLICATION_RSS.
+        - Added APPLICATION_W3C_SCHEMA_XML media type constant and 
+          deprecated APPLICATION_W3C_SCHEMA.
+        - Added APPLICATION_WADL_XML media type constant and 
+          deprecated APPLICATION_WADL.
+        - Added APPLICATION_XHTML_XML media type constant and 
+          deprecated APPLICATION_XHTML.
+        - MediaType constructor now normalizes the main and sub parts.
+          If invalid characters are detected, an IllegalArgumentExcept
+          is thrown. Spaces are also trimmed and empty parts are 
+          converted to '*'. Contributed by Nicolas Rinaudo.
+        - Method#setUri() has been deprecated as Method instances 
+          shouldn't be modifiable.
+        - Language.getSubTags() now returns an unmodifiable list.
+        - MediaType.parameters property is now unmodifiable. Initial
+          issue reported by Nicolas Rinaudo. 
+        - Added static Series#unmodifiableSeries() method.
+        - Added DateUtils.format(Date) method which uses HTTP default
+          format.
+        - Added a new "org.restlet.security" package with a full
+          replacement for current Guard mechanism. This is
+          an alpha level package not intended for Restlet users yet.
+        - Made the SpringBeanRouter implement ApplicationContextAware
+          to enable AOP on target resources. Suggested by Daniel Woo.
+        - Resource subclasses can now declared variants and match them
+          more easily using an automatic detection mechanism based on
+          represent*() methods where '*' is a series of extensions. 
+          Also added a "detectVariants" property to turn off this
+          behavior if necessary.
+        - Added a getAllMetadata(String extension) method on the
+          MetadataService class. 
+        - Deprecated the ClientInfo#addresses property and replaced it
+          by a more explicit "forwardedAddresses" property. Also, added
+          a new getUpstreamAddress() method. Adjusted the Resolver 
+          class to add a new "ciua" variable. Change suggested by 
+          John D. Mitchell. Initial patch provided by Remi Dewitte. 	
+        - Added ClientInfo#subject property returning a JAAS Subject.
+          Can contain several principals and credentials. Deprecated 
+          the ChallengeResponse#getPrincipal() method.
+        - Added new Conditions.getStatus() method signature for usage
+          by the JAX-RS extension. Suggested by Stephan Koops.
+     - Misc
+        - JAX-RS extension:
+            - added class ExendedUriBuilder with "file" extensions for
+              content negotiation and an ExtendedUriInfo to get it.
+            - Supports per-request-providers now.
+            - JaxRsApplication will not clear the MetadataService (as
+              before; was required to not use other extensions as given
+              in the JAX-RS ApplicationConfig class).
+        - The Directory class doesn't override the findTarget() method
+          but uses the defaut Finder mechanism based on the 
+          "targetClass" property. Therefore, it is easier to specify a
+          subclass of org.restlet.engine.local.DirectoryResource in
+          order to customize the default behavior. 
+          Suggested by Cliff Binstock.
+        - Upgraded db4o to version 7.7.67.
+		- Refactored engine support for the StatusService. Removed
+		  ApplicationStatusFilter and ComponentStatusFilter.
+		- Extracted all internal classes of ByteUtils into the new
+		  org.restlet.engine.io package for easier reuse and 
+		  maintenance.
+		- Clarified Javadocs in Reference#getPath() methods.
+        - Fixed potential NPE in Reference#decode() method.
+        - Clarified Javadocs in FileRepresentation and methods 
+          Representation#getDownloadName(), setDownloadName() in order
+          to explain that setDownloadable(true) must be called first.
+          Issue reported by Kevin Conaway.
+        - The internal HTTP client doesn't send absolute request URIs
+          anymore. It now sends them as relative URIs according to the
+          HTTP 1.1 specification. Reported by Jonas Maturana Larsen.
+        - Upgraded Apache Commons IO to version 1.4.
+        - The ServerServlet now sets the HTTP headers after the status
+          to prevent issues with Tomcat 5.0 and "Content-Length: 0" 
+          headers sending the response immediately. 
+          Reported by Eirik Bjorsnos. 
+		- The internal HTTP client no longer forces the user agent name
+		  if one has already been specified by the user. Contributed by
+		  Kevin Conaway.

@@ -1,0 +1,42 @@
+<project>
+   <modelVersion>4.0.0</modelVersion>
+   <groupId>@group-id@</groupId>
+   <artifactId>@artifact-id@</artifactId>
+   <version>@version@</version>
+
+   <repositories>
+       <repository>
+          <id>oauth-repo</id>
+          <name>OAuth repository</name>
+          <url>http://oauth.googlecode.com/svn/code/maven</url>
+       </repository>
+   </repositories>
+
+   <dependencies>
+      <dependency>
+         <groupId>org.restlet</groupId>
+         <artifactId>org.restlet</artifactId>
+         <version>@version@</version>
+      </dependency>
+      <dependency>
+         <groupId>net.oauth</groupId>
+         <artifactId>core</artifactId>
+         <version>20080229</version>
+      </dependency>
+   </dependencies>
+
+   <name>OAuth Authentication</name>
+   <description>OAuth Authentication</description>
+   <licenses>
+      <license>
+         <name>CDDL license</name>
+         <url>http://www.opensource.org/licenses/cddl1.php</url>
+      </license>
+      <license>
+         <name>LGPL license</name>
+         <url>
+            http://www.opensource.org/licenses/lgpl-license.php
+         </url>
+      </license>
+   </licenses>
+</project>

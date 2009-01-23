@@ -1,0 +1,32 @@
+Manifest-Version: 1.0
+Main-Class: org.restlet.Component
+Bundle-ManifestVersion: 2
+Bundle-Name: Restlet API
+Bundle-SymbolicName: org.restlet
+Bundle-Version: 1.2
+Bundle-Vendor: Noelios Technologies
+Export-Package: org.restlet,
+ org.restlet.data,
+ org.restlet.engine,
+ org.restlet.engine.application,
+ org.restlet.engine.authentication,
+ org.restlet.engine.component,
+ org.restlet.engine.http,
+ org.restlet.engine.io,
+ org.restlet.engine.local,
+ org.restlet.engine.util,
+ org.restlet.resource,
+ org.restlet.service,
+ org.restlet.util
+Import-Package: javax.xml.namespace,
+ javax.xml.parsers,
+ javax.xml.transform,
+ javax.xml.transform.dom,
+ javax.xml.transform.sax,
+ javax.xml.transform.stream,
+ javax.xml.validation,
+ org.osgi.framework,
+ org.w3c.dom,
+ org.xml.sax,
+ org.xml.sax.helpers
+Bundle-RequiredExecutionEnvironment: J2SE-1.5

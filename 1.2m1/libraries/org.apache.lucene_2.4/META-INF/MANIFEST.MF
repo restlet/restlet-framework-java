@@ -1,0 +1,38 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Apache Lucene
+Bundle-SymbolicName: org.apache.lucene
+Bundle-Version: 2.4
+Bundle-ClassPath: org.apache.lucene.jar
+Bundle-Vendor: Apache Software Foundation
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Export-Package: org.apache.lucene,
+ org.apache.lucene.analysis;uses:="org.apache.lucene.index",
+ org.apache.lucene.analysis.standard;uses:="org.apache.lucene.analysis",
+ org.apache.lucene.document;uses:="org.apache.lucene.analysis,org.apache.lucene.util",
+ org.apache.lucene.index;
+  uses:="org.apache.lucene.document,
+   org.apache.lucene.analysis,
+   org.apache.lucene.util,
+   org.apache.lucene.search,
+   org.apache.lucene.store",
+ org.apache.lucene.queryParser;
+  uses:="org.apache.lucene.document,
+   org.apache.lucene.analysis,
+   org.apache.lucene.index,
+   org.apache.lucene.util,
+   org.apache.lucene.search",
+ org.apache.lucene.search;
+  uses:="org.apache.lucene.document,
+   org.apache.lucene.analysis,
+   new org.apache.lucene.search,
+   org.apache.lucene.index,
+   org.apache.lucene.util,
+   org.apache.lucene.store,
+   org.apache.lucene.search.spans",
+ org.apache.lucene.search.function;uses:="org.apache.lucene.index,org.apache.lucene.search",
+ org.apache.lucene.search.payloads;uses:="org.apache.lucene.search.spans,org.apache.lucene.index,org.apache.lucene.search",
+ org.apache.lucene.search.spans;uses:="org.apache.lucene.index,org.apache.lucene.search",
+ org.apache.lucene.store,
+ org.apache.lucene.util;uses:="org.apache.lucene.search,org.apache.lucene.store",
+ org.apache.lucene.util.cache
