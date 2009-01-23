@@ -45,8 +45,8 @@ import javax.net.ssl.HttpsURLConnection;
 import org.restlet.data.Parameter;
 import org.restlet.data.Request;
 import org.restlet.data.Status;
-import org.restlet.engine.Engine;
 import org.restlet.engine.http.HttpClientCall;
+import org.restlet.engine.util.SystemUtils;
 import org.restlet.resource.Representation;
 import org.restlet.util.Series;
 import org.restlet.util.WrapperRepresentation;
@@ -124,8 +124,8 @@ public class HttpUrlConnectionCall extends HttpClientCall {
 
             // These properties can only be used with Java 1.5 and upper
             // releases
-            final int majorVersionNumber = Engine.getJavaMajorVersion();
-            final int minorVersionNumber = Engine.getJavaMinorVersion();
+            final int majorVersionNumber = SystemUtils.getJavaMajorVersion();
+            final int minorVersionNumber = SystemUtils.getJavaMinorVersion();
             if ((majorVersionNumber > 1)
                     || ((majorVersionNumber == 1) && (minorVersionNumber >= 5))) {
                 this.connection.setConnectTimeout(getHelper()
@@ -314,8 +314,8 @@ public class HttpUrlConnectionCall extends HttpClientCall {
 
                 // These properties can only be used with Java 1.5 and upper
                 // releases
-                final int majorVersionNumber = Engine.getJavaMajorVersion();
-                final int minorVersionNumber = Engine.getJavaMinorVersion();
+                final int majorVersionNumber = SystemUtils.getJavaMajorVersion();
+                final int minorVersionNumber = SystemUtils.getJavaMinorVersion();
                 if ((majorVersionNumber > 1)
                         || ((majorVersionNumber == 1) && (minorVersionNumber >= 5))) {
                     // Adjust the streaming mode

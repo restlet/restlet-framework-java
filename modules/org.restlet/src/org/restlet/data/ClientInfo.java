@@ -40,6 +40,7 @@ import javax.security.auth.Subject;
 
 import org.restlet.engine.Engine;
 import org.restlet.engine.http.UserAgentUtils;
+import org.restlet.engine.util.ConnegUtils;
 import org.restlet.resource.Resource;
 import org.restlet.resource.Variant;
 import org.restlet.util.Template;
@@ -496,8 +497,7 @@ public final class ClientInfo {
      */
     public Variant getPreferredVariant(List<Variant> variants,
             Language defaultLanguage) {
-        return Engine.getInstance().getPreferredVariant(this, variants,
-                defaultLanguage);
+        return ConnegUtils.getPreferredVariant(this, variants, defaultLanguage);
     }
 
     /**

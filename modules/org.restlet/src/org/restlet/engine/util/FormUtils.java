@@ -28,12 +28,14 @@
 package org.restlet.engine.util;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
 
 import org.restlet.Context;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Form;
+import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.resource.Representation;
@@ -44,6 +46,30 @@ import org.restlet.resource.Representation;
  * @author Jerome Louvel
  */
 public class FormUtils {
+
+    /**
+     * Indicates if the searched parameter is specified in the given media
+     * range.
+     * 
+     * @param searchedParam
+     *            The searched parameter.
+     * @param mediaRange
+     *            The media range to inspect.
+     * @return True if the searched parameter is specified in the given media
+     *         range.
+     */
+    public static boolean isParameterFound(Parameter searchedParam,
+            MediaType mediaRange) {
+        boolean result = false;
+
+        for (final Iterator<Parameter> iter = mediaRange.getParameters()
+                .iterator(); !result && iter.hasNext();) {
+            result = searchedParam.equals(iter.next());
+        }
+
+        return result;
+    }
+
     /**
      * Creates a parameter.
      * 

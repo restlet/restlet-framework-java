@@ -40,10 +40,10 @@ import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
-import org.restlet.engine.Engine;
 import org.restlet.engine.http.HttpConstants;
 import org.restlet.engine.util.Base64;
 import org.restlet.engine.util.SecurityUtils;
+import org.restlet.engine.util.SystemUtils;
 import org.restlet.util.DateUtils;
 import org.restlet.util.Series;
 
@@ -158,15 +158,15 @@ public class HttpAmazonS3Helper extends ChallengeAuthenticatorHelper {
             final String jvmVendor = System.getProperty("java.vm.vendor");
             if ((jvmVendor != null)
                     && (jvmVendor.toLowerCase()).startsWith("sun")) {
-                final int majorVersionNumber = Engine.getJavaMajorVersion();
-                final int minorVersionNumber = Engine.getJavaMinorVersion();
+                final int majorVersionNumber = SystemUtils.getJavaMajorVersion();
+                final int minorVersionNumber = SystemUtils.getJavaMinorVersion();
 
                 if (majorVersionNumber == 1) {
                     if (minorVersionNumber < 5) {
                         applyPatch = true;
                     } else if (minorVersionNumber == 5) {
                         // Sun fixed the bug in update 10
-                        applyPatch = (Engine.getJavaUpdateVersion() < 10);
+                        applyPatch = (SystemUtils.getJavaUpdateVersion() < 10);
                     }
                 }
             }

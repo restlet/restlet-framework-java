@@ -27,6 +27,7 @@
 
 package org.restlet.engine.component;
 
+import org.restlet.Component;
 import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.Uniform;
@@ -38,6 +39,51 @@ import org.restlet.Uniform;
  * @author Jerome Louvel
  */
 public class ChildContext extends Context {
+
+    /**
+     * Indicates that a Restlet's context has changed.
+     * 
+     * @param restlet
+     *            The Restlet with a changed context.
+     * @param context
+     *            The new context.
+     */
+    public static void fireContextChanged(Restlet restlet, Context context) {
+        if (context != null) {
+            if (context instanceof ChildContext) {
+                ChildContext childContext = (ChildContext) context;
+
+                if (childContext.getChild() == null) {
+                    childContext.setChild(restlet);
+                }
+            } else if (!(restlet instanceof Component)
+                    && (context instanceof ComponentContext)) {
+                context
+                        .getLogger()
+                        .severe(
+                                "For security reasons, don't pass the component context to child Restlets anymore. Use the Context#createChildContext() method instead."
+                                        + restlet.getClass());
+            }
+        }
+    }
+
+    /**
+     * Return the best class name. If the class is anonymous, then it returns
+     * the super class name.
+     * 
+     * @param clazz
+     *            The class to name.
+     * @return The class name.
+     */
+    public static String getBestClassName(Class<?> clazz) {
+        String result = clazz.getSimpleName();
+
+        if ((result == null) || (result.equals(""))) {
+            result = getBestClassName(clazz.getSuperclass());
+        }
+
+        return result;
+    }
 
     /**
      * Returns a non-null logger name. It is composed by the canonical class
@@ -54,24 +100,6 @@ public class ChildContext extends Context {
 
         if ((owner != null) && (owner.getClass().getSimpleName() != null)) {
             result += "." + getBestClassName(owner.getClass());
-        }
-
-        return result;
-    }
-
-    /**
-     * Return the best class name. If the class is anonymous, then it returns
-     * the super class name.
-     * 
-     * @param clazz
-     *            The class to name.
-     * @return The class name.
-     */
-    public static String getBestClassName(Class<?> clazz) {
-        String result = clazz.getSimpleName();
-
-        if ((result == null) || (result.equals(""))) {
-            result = getBestClassName(clazz.getSuperclass());
         }
 
         return result;

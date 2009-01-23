@@ -72,8 +72,10 @@ import org.restlet.data.Metadata;
 import org.restlet.data.Parameter;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.engine.Engine;
 import org.restlet.engine.http.ContentType;
+import org.restlet.engine.http.HttpClientCall;
+import org.restlet.engine.http.HttpClientConverter;
+import org.restlet.engine.http.HttpServerConverter;
 import org.restlet.engine.http.HttpUtils;
 import org.restlet.ext.jaxrs.internal.core.UnmodifiableMultivaluedMap;
 import org.restlet.ext.jaxrs.internal.exceptions.IllegalPathException;
@@ -298,7 +300,11 @@ public class Util {
         if (restletResponse.getEntity() == null) {
             restletResponse.setEntity(Representation.createEmpty());
         }
-        Engine.getInstance().copyResponseHeaders(headers, restletResponse);
+
+        HttpClientConverter.copyResponseTransportHeaders(headers,
+                restletResponse);
+        HttpClientCall.copyResponseEntityHeaders(headers, restletResponse
+                .getEntity());
     }
 
     /**
@@ -313,8 +319,9 @@ public class Util {
      */
     public static Series<Parameter> copyResponseHeaders(Response restletResponse) {
         final Series<Parameter> headers = new Form();
-        final Engine engine = Engine.getInstance();
-        engine.copyResponseHeaders(restletResponse, headers);
+        HttpServerConverter.addResponseHeaders(restletResponse, headers);
+        HttpServerConverter.addEntityHeaders(restletResponse.getEntity(),
+                headers);
         return headers;
     }
 

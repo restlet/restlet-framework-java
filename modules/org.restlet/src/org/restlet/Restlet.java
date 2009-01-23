@@ -34,6 +34,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.engine.Engine;
+import org.restlet.engine.component.ChildContext;
 
 /**
  * Uniform class that provides a context and life cycle support. It has many
@@ -87,7 +88,7 @@ public class Restlet extends Uniform {
             throw new RuntimeException(
                     "Unable to fully initialize the Restlet. No Restlet engine available.");
         } else {
-            Engine.getInstance().fireContextChanged(this, context);
+            ChildContext.fireContextChanged(this, context);
         }
     }
 
@@ -207,7 +208,7 @@ public class Restlet extends Uniform {
      */
     public void setContext(Context context) {
         this.context = context;
-        Engine.getInstance().fireContextChanged(this, context);
+        ChildContext.fireContextChanged(this, context);
     }
 
     /** Starts the Restlet. */
