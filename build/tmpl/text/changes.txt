@@ -106,13 +106,12 @@ Changes log
           order to customize the default behavior. 
           Suggested by Cliff Binstock.
         - Upgraded db4o to version 7.7.67.
-		  - Upgraded Grizzly to version 1.9.0.
-		  - Refactored engine support for the StatusService. Removed
-		    ApplicationStatusFilter and ComponentStatusFilter.
-		  - Extracted all internal classes of ByteUtils into the new
-		    org.restlet.engine.io package for easier reuse and 
-		    maintenance.
-		  - Clarified Javadocs in Reference#getPath() methods.
+		- Refactored engine support for the StatusService. Removed
+		  ApplicationStatusFilter and ComponentStatusFilter.
+		- Extracted all internal classes of ByteUtils into the new
+		  org.restlet.engine.io package for easier reuse and 
+		  maintenance.
+		- Clarified Javadocs in Reference#getPath() methods.
         - Fixed potential NPE in Reference#decode() method.
         - Clarified Javadocs in FileRepresentation and methods 
           Representation#getDownloadName(), setDownloadName() in order
@@ -126,6 +125,6 @@ Changes log
           to prevent issues with Tomcat 5.0 and "Content-Length: 0" 
           headers sending the response immediately. 
           Reported by Eirik Bjorsnos. 
-		  - The internal HTTP client no longer forces the user agent name
-		    if one has already been specified by the user. Contributed by
-			 Kevin Conaway.
+		- The internal HTTP client no longer forces the user agent name
+		  if one has already been specified by the user. Contributed by
+		  Kevin Conaway.
