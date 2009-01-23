@@ -44,7 +44,7 @@ import junit.framework.TestCase;
 
 import org.junit.Before;
 import org.restlet.data.MediaType;
-import org.restlet.engine.util.SaxDefaultHandler;
+import org.restlet.engine.util.DefaultSaxHandler;
 import org.restlet.resource.DomRepresentation;
 import org.restlet.resource.InputRepresentation;
 import org.restlet.resource.Representation;
@@ -105,7 +105,7 @@ public class RestletXmlTestCase extends TestCase {
 
         SchemaFactory schemaFactory = SchemaFactory
                 .newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        SaxDefaultHandler handler = new SaxDefaultHandler();
+        DefaultSaxHandler handler = new DefaultSaxHandler();
         schemaFactory.setErrorHandler(handler);
         schemaFactory.setResourceResolver(handler);
         InputStream is = getClass().getResourceAsStream(

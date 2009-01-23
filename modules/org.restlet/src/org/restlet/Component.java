@@ -43,7 +43,7 @@ import org.restlet.data.Response;
 import org.restlet.engine.Engine;
 import org.restlet.engine.Helper;
 import org.restlet.engine.component.ComponentHelper;
-import org.restlet.engine.util.SaxDefaultHandler;
+import org.restlet.engine.util.DefaultSaxHandler;
 import org.restlet.resource.DomRepresentation;
 import org.restlet.resource.FileRepresentation;
 import org.restlet.resource.Representation;
@@ -820,7 +820,7 @@ public class Component extends Restlet {
             // Parse and validate the XML configuration
             DomRepresentation dom = new DomRepresentation(
                     xmlConfigRepresentation);
-            SaxDefaultHandler handler = new SaxDefaultHandler();
+            DefaultSaxHandler handler = new DefaultSaxHandler();
             dom.setErrorHandler(handler);
             dom.setEntityResolver(handler);
             dom.setNamespaceAware(true);
