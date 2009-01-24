@@ -27,6 +27,11 @@
 
 package org.restlet;
 
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import javax.management.relation.Role;
+
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.engine.Engine;
@@ -121,6 +126,9 @@ public class Application extends Restlet {
     /** The range service. */
     private volatile RangeService rangeService;
 
+    /** The modifiable list of roles. */
+    private List<Role> roles;
+
     /** The root Restlet. */
     private volatile Restlet root;
 
@@ -169,6 +177,7 @@ public class Application extends Restlet {
         this.decoderService = new DecoderService();
         this.metadataService = new MetadataService();
         this.rangeService = new RangeService();
+        this.roles = new CopyOnWriteArrayList<Role>();
         this.statusService = new StatusService();
         this.taskService = new TaskService();
         this.tunnelService = new TunnelService(true, true);
@@ -265,6 +274,15 @@ public class Application extends Restlet {
      */
     public RangeService getRangeService() {
         return rangeService;
+    }
+
+    /**
+     * Returns the modifiable list of roles.
+     * 
+     * @return The modifiable list of roles.
+     */
+    public List<Role> getRoles() {
+        return roles;
     }
 
     /**
@@ -396,6 +414,20 @@ public class Application extends Restlet {
      */
     public void setRangeService(RangeService rangeService) {
         this.rangeService = rangeService;
+    }
+
+    /**
+     * Sets the list of roles.
+     * 
+     * @param roles
+     *            The list of roles.
+     */
+    public void setRoles(List<Role> roles) {
+        this.roles.clear();
+
+        if (roles != null) {
+            this.roles.addAll(roles);
+        }
     }
 
     /**

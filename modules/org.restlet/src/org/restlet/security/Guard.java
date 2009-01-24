@@ -29,6 +29,9 @@ package org.restlet.security;
 
 import org.restlet.Context;
 import org.restlet.Filter;
+import org.restlet.Restlet;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 
 /**
  * Filter guarding the access to an attached Restlet. More concretely, it guards
@@ -42,17 +45,17 @@ import org.restlet.Filter;
  * should be especially careful when storing state in member variables.
  * 
  * @see <a
- *      href="http://www.restlet.org/documentation/1.1/tutorial#part09">Tutorial:
+ *      href="http://www.restlet.org/documentation/1.2/tutorial#part09">Tutorial:
  *      Guarding access to sensitive resources</a>
  * @author Jerome Louvel
  */
 public class Guard extends Filter {
 
     /** The authenticator. */
-    private Authenticator authenticator;
+    private Restlet authenticator;
 
     /** The authorizer. */
-    private Authorizer authorizer;
+    private Restlet authorizer;
 
     /**
      * Constructor.
@@ -64,29 +67,85 @@ public class Guard extends Filter {
      * @param authorizer
      *            The authorizer.
      */
-    public Guard(Context context, Authenticator authenticator,
-            Authorizer authorizer) {
+    public Guard(Context context, Restlet authenticator, Restlet authorizer) {
         super(context);
         this.authenticator = authenticator;
         this.authorizer = authorizer;
     }
 
     /**
-     * Returns the authenticator.
+     * Authentication and Authorization Enforcement Point. If an authenticator
+     * is set, then it asks it to handle the request. If an authorizer is set,
+     * then it asks it to handle the request. If after those two optional steps,
+     * the response is still not in error, then it asks the Restlet attached to
+     * this filter to handle the call.<br>
+     * <br>
+     * Note that by default, if no authenticator and no authorizer is set, and
+     * the response is not in error, then the request goes directly to the
+     * attached Restlet.
      * 
-     * @return The authenticator.
+     * @param request
+     *            The request to handle.
+     * @param response
+     *            The response to update.
      */
-    public Authenticator getAuthenticator() {
+    @Override
+    protected int beforeHandle(Request request, Response response) {
+        int result = CONTINUE;
+
+        if (response.getStatus().isError()) {
+            result = STOP;
+        } else if (getAuthenticator() != null) {
+            // Authentication phase
+            getAuthenticator().handle(request, response);
+        }
+
+        if (response.getStatus().isError()) {
+            result = STOP;
+        } else if (getAuthorizer() != null) {
+            // Authorization phase
+            getAuthorizer().handle(request, response);
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the authenticator Restlet.
+     * 
+     * @return The authenticator Restlet.
+     */
+    public Restlet getAuthenticator() {
         return authenticator;
     }
 
     /**
-     * Returns the authorizer.
+     * Returns the authorizer Restlet.
      * 
-     * @return The authorizer.
+     * @return The authorizer Restlet.
      */
-    public Authorizer getAuthorizer() {
+    public Restlet getAuthorizer() {
         return authorizer;
+    }
+
+    /**
+     * Sets the authenticator Restlet.
+     * 
+     * @param authenticator
+     *            The authenticator Restlet.
+     */
+    public void setAuthenticator(Restlet authenticator) {
+        this.authenticator = authenticator;
+    }
+
+    /**
+     * Sets the authorizer Restlet.
+     * 
+     * @param authorizer
+     *            The authorizer Restlet.
+     */
+    public void setAuthorizer(Restlet authorizer) {
+        this.authorizer = authorizer;
     }
 
 }

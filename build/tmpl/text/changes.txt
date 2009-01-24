@@ -12,9 +12,14 @@ Changes log
         - The default SAX handler has been implemented to log 
           validation information. Contributed by Raif S. Naffah. 
     - API changes
-        - 
+        - Added organization description classes 
+          (org.restlet.security.Organization, User, Group). Added 
+          "organizations" property to Component.
+        - Added Role class and "roles" property to Application.
+        - Refactored the security package introduce in 1.2 M1 based on
+          community feed-back.
      - Misc
-        -       
+        - 
 
 - 1.2 Milestone 1 (2009-01-23)
     - Breaking changes

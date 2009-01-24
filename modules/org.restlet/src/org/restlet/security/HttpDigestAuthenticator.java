@@ -30,6 +30,7 @@ package org.restlet.security;
 import java.util.Collection;
 import java.util.Collections;
 
+import org.restlet.Context;
 import org.restlet.data.ChallengeScheme;
 
 /**
@@ -66,9 +67,9 @@ public class HttpDigestAuthenticator extends ChallengeAuthenticator {
      * @param serverKey
      *            secret key known only to server
      */
-    public HttpDigestAuthenticator(String realm, Collection<String> baseUris,
-            String serverKey) {
-        super(ChallengeScheme.HTTP_DIGEST);
+    public HttpDigestAuthenticator(Context context, int mode, String realm,
+            Collection<String> baseUris, String serverKey) {
+        super(context, mode, ChallengeScheme.HTTP_DIGEST);
         this.realm = realm;
         this.domainUris = baseUris;
         this.serverKey = serverKey;

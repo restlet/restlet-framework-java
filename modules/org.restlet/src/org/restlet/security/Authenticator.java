@@ -27,44 +27,123 @@
 
 package org.restlet.security;
 
+import org.restlet.Context;
+import org.restlet.Filter;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
 /**
- * Interface able to authenticate Restlet requests providing a specific type of
- * credentials.
+ * Filter authenticating the subjects sending requests.
  * 
  * @author Jerome Louvel
  */
-public interface Authenticator {
-
-    /** Invalid credentials provided. */
-    public static int RESULT_INVALID = -1;
-
-    /** No credentials provided. */
-    public static int RESULT_MISSING = 0;
-
-    /** Valid credentials provided. */
-    public static int RESULT_VALID = 1;
-
-    /** Stale credentials provided. */
-    public static int RESULT_STALE = 2;
-
-    /** Unsupported credentials. */
-    public static int RESULT_UNSUPPORTED = 3;
-
-    /** Authenticator unavailable. */
-    public static int RESULT_UNAVAILABLE = 4;
+public abstract class Authenticator extends Filter {
+    /**
+     * The authenticator is not required to succeed. In all cases, the attached
+     * Restlet is invoked.
+     */
+    public static final int MODE_OPTIONAL = 1;
 
     /**
-     * Attempts to authenticate a request.
+     * The authenticator is required to succeed. The attached Restlet is only
+     * invoked if it succeeds.
+     */
+    public static final int MODE_REQUIRED = 2;
+
+    /**
+     * The authenticator is not required to succeed. The attached Restlet is
+     * only invoked if it fails.
+     */
+    public static final int MODE_SUFFICIENT = 3;
+
+    /**
+     * The authentication mode.
+     */
+    private volatile int mode;
+
+    /**
+     * Default constructor setting the mode to {@link #MODE_REQUIRED}.
+     */
+    public Authenticator(Context context) {
+        this(context, MODE_REQUIRED);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param mode
+     *            The authentication mode.
+     */
+    public Authenticator(Context context, int mode) {
+        super(context);
+        this.mode = mode;
+    }
+
+    /**
+     * Attempts to authenticate the subject sending the request.
      * 
      * @param request
-     *            The request to authenticate.
+     *            The request sent.
      * @param response
-     *            The related response.
-     * @return The authentication result. See RESULT_* constants.
+     *            The response to update.
+     * @return True if the authentication succeeded.
      */
-    public int authenticate(Request request, Response response);
+    protected abstract boolean authenticate(Request request, Response response);
+
+    /**
+     * Handles the authentication by first invoking the
+     * {@link #authenticate(Request, Response)} method. Then, depending on the
+     * result and the mode set, it either skips or invoke the (optionally)
+     * attached Restlet.
+     */
+    @Override
+    protected int beforeHandle(Request request, Response response) {
+        int result = CONTINUE;
+
+        boolean success = authenticate(request, response);
+
+        switch (getMode()) {
+        case MODE_OPTIONAL:
+            // We try to continue in all cases
+            break;
+
+        case MODE_REQUIRED:
+            // We only continue if the authentication succeeded
+            if (!success)
+                result = SKIP;
+            break;
+
+        case MODE_SUFFICIENT:
+            // We don't need to continue if the authentication succeeded
+            if (success)
+                result = SKIP;
+            break;
+
+        default:
+            result = SKIP;
+            break;
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the authentication mode.
+     * 
+     * @return The authentication mode.
+     */
+    public int getMode() {
+        return mode;
+    }
+
+    /**
+     * Sets the authentication mode.
+     * 
+     * @param mode
+     *            The authentication mode.
+     */
+    public void setMode(int mode) {
+        this.mode = mode;
+    }
 
 }

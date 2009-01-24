@@ -27,40 +27,42 @@
 
 package org.restlet.security;
 
+import org.restlet.Filter;
 import org.restlet.data.Request;
+import org.restlet.data.Response;
 
 /**
- * Interface able to authorize Restlet requests.
+ * Filter authorizing requests.
  * 
  * @author Jerome Louvel
  */
-public interface Authorizer {
+public abstract class Authorizer extends Filter {
 
     /** Authorizer returning true all the time. */
     public static final Authorizer ALWAYS = new Authorizer() {
-
-        public boolean authorize(Request request) {
+        @Override
+        public boolean authorize(Request request, Response response) {
             return true;
         }
-
     };
 
     /** Authorizer returning false all the time. */
     public static final Authorizer NEVER = new Authorizer() {
-
-        public boolean authorize(Request request) {
+        @Override
+        public boolean authorize(Request request, Response response) {
             return false;
         }
-
     };
 
     /**
-     * Indicates if the request is authorized.
+     * Attempts to authorize the request.
      * 
      * @param request
-     *            The request to authorize.
-     * @return True if the request is authorized.
+     *            The request sent.
+     * @param response
+     *            The response to update.
+     * @return True if the authorization succeeded.
      */
-    public boolean authorize(Request request);
+    public abstract boolean authorize(Request request, Response response);
 
 }

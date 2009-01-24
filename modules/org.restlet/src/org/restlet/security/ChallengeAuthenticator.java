@@ -27,21 +27,18 @@
 
 package org.restlet.security;
 
+import org.restlet.Context;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.engine.Engine;
-import org.restlet.engine.authentication.ChallengeAuthenticatorHelper;
 
 /**
- * Authenticator based on a challenge scheme like HTTP Basic or HTTP Digest.
+ * Authenticator based on a challenge scheme such as HTTP Basic.
  * 
  * @author Jerome Louvel
  */
-public class ChallengeAuthenticator implements Authenticator {
-
-    private final ChallengeAuthenticatorHelper helper;
+public class ChallengeAuthenticator extends Authenticator {
 
     /**
      * Indicates if a new challenge should be sent when invalid credentials are
@@ -59,24 +56,16 @@ public class ChallengeAuthenticator implements Authenticator {
      * 
      * @param challengeScheme
      */
-    public ChallengeAuthenticator(ChallengeScheme challengeScheme) {
+    public ChallengeAuthenticator(Context context, int mode,
+            ChallengeScheme challengeScheme) {
+        super(context, mode);
         this.scheme = challengeScheme;
         this.verifier = null;
-
-        if (this.scheme != null) {
-            this.helper = Engine.getInstance().findHelper(challengeScheme,
-                    false, true);
-        } else {
-            this.helper = null;
-        }
     }
 
-    /**
-     * 
-     */
-    public int authenticate(Request request, Response response) {
-        return getHelper().authenticate(request.getChallengeResponse(),
-                request, null);
+    @Override
+    protected boolean authenticate(Request request, Response response) {
+        return false;
     }
 
     /**
@@ -89,15 +78,6 @@ public class ChallengeAuthenticator implements Authenticator {
      *            Indicates if the new challenge is due to a stale response.
      */
     public void challenge(Response response, boolean stale) {
-    }
-
-    /**
-     * Returns the private helper.
-     * 
-     * @return The private helper.
-     */
-    private ChallengeAuthenticatorHelper getHelper() {
-        return helper;
     }
 
     /**

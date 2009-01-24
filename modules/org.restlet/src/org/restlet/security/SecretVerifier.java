@@ -27,42 +27,42 @@
 
 package org.restlet.security;
 
-import org.restlet.Filter;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
 /**
- * Filter verifying the credentials provided by a subject sending a request.
+ * Verifier of identifier/secret couples.
  * 
  * @author Jerome Louvel
  */
-public abstract class Verifier extends Filter {
+public abstract class SecretVerifier extends Verifier {
 
-    /** Invalid credentials provided. */
-    public static int RESULT_INVALID = -1;
+    @Override
+    public int verify(Request request, Response response) {
+        int result = RESULT_VALID;
 
-    /** No credentials provided. */
-    public static int RESULT_MISSING = 0;
+        if (request.getChallengeResponse() == null) {
+            result = RESULT_MISSING;
+        } else if (verify(request.getChallengeResponse().getIdentifier(),
+                request.getChallengeResponse().getSecret())) {
+            // Add a principal for this identifier
+            request.getClientInfo().getSubject().getPrincipals().add(
+                    new Principal(request.getChallengeResponse()
+                            .getIdentifier()));
+        } else {
+            result = RESULT_INVALID;
+        }
 
-    /** Stale credentials provided. */
-    public static int RESULT_STALE = 1;
-
-    /** Unsupported credentials. */
-    public static int RESULT_UNSUPPORTED = 3;
-
-    /** Valid credentials provided. */
-    public static int RESULT_VALID = 4;
+        return result;
+    }
 
     /**
-     * Attempts to verify the credentials provided by the subject sending the
-     * request.
+     * Verifies that the identifier/secret couple is valid.
      * 
-     * @param request
-     *            The request sent.
-     * @param response
-     *            The response to update.
-     * @return Result of the verification based on the RESULT_* constants.
+     * @param identifier
+     * @param inputSecret
+     * @return
      */
-    public abstract int verify(Request request, Response response);
+    public abstract boolean verify(String identifier, char[] inputSecret);
 
 }

@@ -29,12 +29,14 @@ package org.restlet.engine.authentication;
 
 import java.io.IOException;
 
-import javax.security.auth.Subject;
 import javax.security.auth.callback.Callback;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.callback.NameCallback;
 import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.callback.UnsupportedCallbackException;
+
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 
 /**
  * JAAS callback handler that automatically provides the identifier and secret
@@ -42,58 +44,30 @@ import javax.security.auth.callback.UnsupportedCallbackException;
  * 
  * @author Jerome Louvel
  */
-public class JaasCallbackHandler implements CallbackHandler {
+public class DefaultJaasCallbackHandler implements CallbackHandler {
 
-    /** The identifier such as user login. */
-    private volatile String identifier;
+    /** . */
+    private volatile Request request;
 
-    /** The secret such as password. */
-    private char[] secret;
-
-    /** The subject containing identity information. */
-    private volatile Subject subject;
+    /** . */
+    private volatile Response response;
 
     /**
-     * Constructor.
      * 
-     * @param subject
-     *            The subject containing identity information.
-     * @param identifier
-     *            The identifier such as user login.
-     * @param secret
-     *            The secret such as password.
+     * @param request
+     * @param response
      */
-    public JaasCallbackHandler(Subject subject, String identifier, char[] secret) {
-        this.setSubject(subject);
-        this.setIdentifier(identifier);
-        this.setSecret(secret);
+    public DefaultJaasCallbackHandler(Request request, Response response) {
+        this.request = request;
+        this.response = response;
     }
 
-    /**
-     * Returns the identifier such as user login.
-     * 
-     * @return The identifier such as user login.
-     */
-    public String getIdentifier() {
-        return identifier;
+    public Request getRequest() {
+        return request;
     }
 
-    /**
-     * Returns the secret such as password.
-     * 
-     * @return The secret such as password.
-     */
-    public char[] getSecret() {
-        return secret;
-    }
-
-    /**
-     * Returns the subject containing identity information.
-     * 
-     * @return The subject containing identity information.
-     */
-    public Subject getSubject() {
-        return subject;
+    public Response getResponse() {
+        return response;
     }
 
     /**
@@ -109,10 +83,10 @@ public class JaasCallbackHandler implements CallbackHandler {
             throws UnsupportedCallbackException {
         if (callback instanceof NameCallback) {
             NameCallback nc = (NameCallback) callback;
-            nc.setName(getIdentifier());
+            nc.setName(getRequest().getChallengeResponse().getIdentifier());
         } else if (callback instanceof PasswordCallback) {
             PasswordCallback pc = (PasswordCallback) callback;
-            pc.setPassword(getSecret());
+            pc.setPassword(getRequest().getChallengeResponse().getSecret());
         } else {
             throw new UnsupportedCallbackException(callback,
                     "Unrecognized Callback");
@@ -136,34 +110,12 @@ public class JaasCallbackHandler implements CallbackHandler {
         }
     }
 
-    /**
-     * Sets the identifier such as user login.
-     * 
-     * @param identifier
-     *            The identifier such as user login.
-     */
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
+    public void setRequest(Request request) {
+        this.request = request;
     }
 
-    /**
-     * Sets the secret such as password.
-     * 
-     * @param secret
-     *            The secret such as password.
-     */
-    public void setSecret(char[] secret) {
-        this.secret = secret;
-    }
-
-    /**
-     * Sets the subject containing identity information.
-     * 
-     * @param subject
-     *            The subject containing identity information.
-     */
-    public void setSubject(Subject subject) {
-        this.subject = subject;
+    public void setResponse(Response response) {
+        this.response = response;
     }
 
 }

@@ -33,7 +33,9 @@ import javax.security.auth.login.Configuration;
 import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
-import org.restlet.engine.authentication.JaasCallbackHandler;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
+import org.restlet.engine.authentication.DefaultJaasCallbackHandler;
 
 /**
  * Verifier that leverages the JAAS pluggable authentication mechanism.
@@ -46,7 +48,7 @@ import org.restlet.engine.authentication.JaasCallbackHandler;
  *      href="http://java.sun.com/j2se/1.5.0/docs/guide/security/jaas/JAASRefGuide.html">JAAS
  *      Reference Guide</a>
  */
-public class JaasVerifier implements Verifier {
+public class JaasVerifier extends Verifier {
 
     /** The optional JAAS login configuration. */
     private volatile Configuration configuration;
@@ -68,17 +70,11 @@ public class JaasVerifier implements Verifier {
      * Creates a callback handler for the given parameters. By default it
      * returns one handler that handles name and password JAAS callbacks.
      * 
-     * @param subject
-     *            The subject to verify and update.
-     * @param identifier
-     *            The identifier such as user login.
-     * @param secret
-     *            The secret such as password.
      * @return The callback handler created.
      */
-    protected CallbackHandler createCallbackHandler(Subject subject,
-            String identifier, char[] secret) {
-        return new JaasCallbackHandler(subject, identifier, secret);
+    protected CallbackHandler createCallbackHandler(Request request,
+            Response response) {
+        return new DefaultJaasCallbackHandler(request, response);
     }
 
     /**
@@ -126,24 +122,18 @@ public class JaasVerifier implements Verifier {
      * {@link #createCallbackHandler(Subject, String, char[])} and calls the
      * {@link LoginContext#login()} method on it.
      * 
-     * @param subject
-     *            The subject to update with principals.
-     * @param identifier
-     *            The user identifier.
-     * @param secret
-     *            The proposed secret.
-     * @return True if the proposed secret was correct and the subject updated.
      */
-    public boolean verify(Subject subject, String identifier, char[] secret) {
-        boolean result = true;
+    @Override
+    public int verify(Request request, Response response) {
+        int result = RESULT_VALID;
 
         try {
-            LoginContext loginContext = new LoginContext(getName(), subject,
-                    createCallbackHandler(subject, identifier, secret),
-                    getConfiguration());
+            LoginContext loginContext = new LoginContext(getName(), request
+                    .getClientInfo().getSubject(), createCallbackHandler(
+                    request, response), getConfiguration());
             loginContext.login();
         } catch (LoginException le) {
-            result = false;
+            result = RESULT_INVALID;
         }
 
         return result;

@@ -48,6 +48,7 @@ import org.restlet.resource.DomRepresentation;
 import org.restlet.resource.FileRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
+import org.restlet.security.Organization;
 import org.restlet.service.LogService;
 import org.restlet.service.StatusService;
 import org.restlet.util.ClientList;
@@ -112,6 +113,17 @@ import org.w3c.dom.NodeList;
 public class Component extends Restlet {
 
     /**
+     * Indicates if the DOM node is a "parameter" element.
+     * 
+     * @param domNode
+     *            The DOM node to test.
+     * @return True if the DOM node is a "parameter" element.
+     */
+    private static boolean isParameter(Node domNode) {
+        return domNode != null && "parameter".equals(domNode.getNodeName());
+    }
+
+    /**
      * Used as bootstrap for configuring and running a component in command
      * line. Just provide as first and unique parameter the path to the XML
      * file.
@@ -135,17 +147,6 @@ public class Component extends Restlet {
                     .println("Can't launch the component.\nAn unexpected exception occurred:");
             e.printStackTrace(System.err);
         }
-    }
-
-    /**
-     * Indicates if the DOM node is a "parameter" element.
-     * 
-     * @param domNode
-     *            The DOM node to test.
-     * @return True if the DOM node is a "parameter" element.
-     */
-    private static boolean isParameter(Node domNode) {
-        return domNode != null && "parameter".equals(domNode.getNodeName());
     }
 
     /**
@@ -194,6 +195,9 @@ public class Component extends Restlet {
     /** The log service. */
     private volatile LogService logService;
 
+    /** The modifiable list of organizations. */
+    private List<Organization> organizations;
+
     /** The modifiable list of server connectors. */
     private final ServerList servers;
 
@@ -207,6 +211,7 @@ public class Component extends Restlet {
         this.hosts = new CopyOnWriteArrayList<VirtualHost>();
         this.clients = new ClientList(null);
         this.servers = new ServerList(null, this);
+        this.organizations = new CopyOnWriteArrayList<Organization>();
 
         if (Engine.getInstance() != null) {
             this.helper = new ComponentHelper(this);
@@ -662,6 +667,15 @@ public class Component extends Restlet {
             }
         }
         return value;
+    }
+
+    /**
+     * Returns the modifiable list of organizations.
+     * 
+     * @return The modifiable list of organizations.
+     */
+    public List<Organization> getOrganizations() {
+        return organizations;
     }
 
     /**
@@ -1200,6 +1214,20 @@ public class Component extends Restlet {
      */
     public void setLogService(LogService logService) {
         this.logService = logService;
+    }
+
+    /**
+     * Sets the list of organizations.
+     * 
+     * @param organizations
+     *            The list of organizations.
+     */
+    public synchronized void setOrganizations(List<Organization> organizations) {
+        this.organizations.clear();
+
+        if (organizations != null) {
+            this.organizations.addAll(organizations);
+        }
     }
 
     /**

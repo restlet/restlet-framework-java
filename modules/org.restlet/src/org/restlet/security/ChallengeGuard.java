@@ -28,6 +28,7 @@
 package org.restlet.security;
 
 import org.restlet.Context;
+import org.restlet.Restlet;
 import org.restlet.data.ChallengeScheme;
 
 /**
@@ -65,8 +66,9 @@ public class ChallengeGuard extends Guard {
      *            The custom authorizer.
      */
     public ChallengeGuard(Context context, ChallengeScheme scheme,
-            Authorizer authorizer) {
-        super(context, new ChallengeAuthenticator(scheme), authorizer);
+            Restlet authorizer) {
+        super(context, new ChallengeAuthenticator(context,
+                Authenticator.MODE_REQUIRED, scheme), authorizer);
     }
 
     @Override

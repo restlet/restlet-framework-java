@@ -27,8 +27,6 @@
 
 package org.restlet.security;
 
-import javax.security.auth.Subject;
-
 import org.restlet.util.WrapperVerifier;
 
 /**
@@ -132,8 +130,7 @@ public class DigestVerifier extends WrapperVerifier {
         checkCompatibility();
     }
 
-    @Override
-    public boolean verify(Subject subject, String identifier, char[] inputSecret) {
+    public boolean verify(String identifier, char[] inputSecret) {
         char[] inputSecretDigest = inputSecret;
 
         if (getInputAlgorithm() == null) {
@@ -146,7 +143,7 @@ public class DigestVerifier extends WrapperVerifier {
             // The input secret is already digested
         }
 
-        return super.verify(subject, identifier, inputSecretDigest);
+        return true; // super.verify(subject, identifier, inputSecretDigest);
     }
 
 }

@@ -27,14 +27,13 @@
 
 package org.restlet.security;
 
-import javax.security.auth.Subject;
 
 /**
  * Verifier that stores its secrets in a map indexed by the identifier.
  * 
  * @author Jerome Louvel
  */
-public abstract class LocalVerifier implements Verifier {
+public abstract class LocalVerifier extends SecretVerifier {
 
     /**
      * Returns the secret associated to a given identifier.
@@ -51,15 +50,14 @@ public abstract class LocalVerifier implements Verifier {
      * by the {@link #getSecret(String)} method and adds a new {@link Principal}
      * instance to the subject if successful.
      * 
-     * @param subject
-     *            The subject to update with principals.
      * @param identifier
      *            The user identifier.
      * @param inputSecret
      *            The proposed secret.
      * @return True if the proposed secret was correct and the subject updated.
      */
-    public boolean verify(Subject subject, String identifier, char[] inputSecret) {
+    @Override
+    public boolean verify(String identifier, char[] inputSecret) {
         boolean result = false;
         final char[] outputSecret = getSecret(identifier);
 
@@ -77,10 +75,6 @@ public abstract class LocalVerifier implements Verifier {
 
                 result = equals;
             }
-        }
-
-        if (result) {
-            subject.getPrincipals().add(new Principal(identifier));
         }
 
         return result;

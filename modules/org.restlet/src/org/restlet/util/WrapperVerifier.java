@@ -27,8 +27,8 @@
 
 package org.restlet.util;
 
-import javax.security.auth.Subject;
-
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 import org.restlet.security.Verifier;
 
 /**
@@ -38,7 +38,7 @@ import org.restlet.security.Verifier;
  * @see <a href="http://c2.com/cgi/wiki?DecoratorPattern">The decorator (aka
  *      wrapper) pattern</a>
  */
-public class WrapperVerifier implements Verifier {
+public class WrapperVerifier extends Verifier {
 
     /** The wrapped verifier. */
     private volatile Verifier wrappedVerifier;
@@ -75,16 +75,15 @@ public class WrapperVerifier implements Verifier {
     /**
      * Delegates the verification to the wrapped verifier.
      * 
-     * @param subject
-     *            The subject to update with principals.
-     * @param identifier
-     *            The user identifier.
-     * @param secret
-     *            The proposed secret.
-     * @return True if the proposed secret was correct and the subject updated.
+     * @param request
+     *            The request sent.
+     * @param response
+     *            The response to update.
+     * @return Result of the verification based on the RESULT_* constants.
      */
-    public boolean verify(Subject subject, String identifier, char[] secret) {
-        return getWrappedVerifier().verify(subject, identifier, secret);
+    @Override
+    public int verify(Request request, Response response) {
+        return getWrappedVerifier().verify(request, response);
     }
 
 }
