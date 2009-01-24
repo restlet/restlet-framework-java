@@ -27,10 +27,12 @@
 
 package org.restlet.ext.fileupload;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
+import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileUpload;
 import org.apache.commons.fileupload.FileUploadException;
 import org.restlet.data.Request;
@@ -77,7 +79,27 @@ public class RestletFileUpload extends FileUpload {
 
     /**
      * Processes an <a href="http://www.ietf.org/rfc/rfc1867.txt">RFC 1867</a>
-     * compliant <code>multipart/form-data</code> input representation.
+     * compliant <code>multipart/form-data</code> input representation. Note
+     * that this will not result in the writing of the parts on the disk but
+     * will instead allow you to use stream access.
+     * 
+     * @param multipartForm
+     * @return
+     * @throws FileUploadException
+     * @throws IOException
+     * @see <a
+     *      href="http://commons.apache.org/fileupload/streaming.html">FileUpload
+     *      Streaming API</a>
+     */
+    public FileItemIterator getItemIterator(Representation multipartForm)
+            throws FileUploadException, IOException {
+        return getItemIterator(new RepresentationContext(multipartForm));
+    }
+
+    /**
+     * Processes an <a href="http://www.ietf.org/rfc/rfc1867.txt">RFC 1867</a>
+     * compliant <code>multipart/form-data</code> input representation. Note
+     * that this will result in the writing of the parts on the disk.
      * 
      * @param multipartForm
      *            The multipart representation to be parsed.
@@ -95,7 +117,8 @@ public class RestletFileUpload extends FileUpload {
 
     /**
      * Processes an <a href="http://www.ietf.org/rfc/rfc1867.txt">RFC 1867</a>
-     * compliant <code>multipart/form-data</code> input representation.
+     * compliant <code>multipart/form-data</code> input representation. Note
+     * that this will result in the writing of the parts on the disk.
      * 
      * @param request
      *            The request containing the entity to be parsed.

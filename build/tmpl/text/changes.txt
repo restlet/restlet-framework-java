@@ -4,6 +4,15 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - Breaking changes
+        - 
+    - Enhancements
+        - Added a getItemIterator() on RestletFileUpload to facilitate
+          access to parts in streaming mode. Suggested by Paul Austin.
+    - API changes
+        - 
+     - Misc
+        -       
 
 - 1.2 Milestone 1 (2009-01-23)
     - Breaking changes
