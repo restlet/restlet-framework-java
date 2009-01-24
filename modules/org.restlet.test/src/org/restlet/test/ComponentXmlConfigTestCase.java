@@ -1,5 +1,5 @@
 /**
- * Copyright 2005-2008 Noelios Technologies.
+ * Copyright 2005-2009 Noelios Technologies.
  * 
  * The contents of this file are subject to the terms of the following open
  * source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 (the "Licenses"). You can
@@ -18,9 +18,9 @@
  * See the Licenses for the specific language governing permissions and
  * limitations under the Licenses.
  * 
- * Alternatively, you can obtain a royaltee free commercial license with less
+ * Alternatively, you can obtain a royalty free commercial license with less
  * limitations, transferable or non-transferable, directly at
- * http://www.noelios.com/products/restlet-engine/.
+ * http://www.noelios.com/products/restlet-engine
  * 
  * Restlet is a registered trademark of Noelios Technologies.
  */
@@ -327,7 +327,6 @@ public class ComponentXmlConfigTestCase extends TestCase {
         assertNotNull("Default Host MUST NOT be null", dh);
         final String msg = "[" + HOST + ":" + dh.getHostPort() + "] ";
         final Context ctx = dh.getContext();
-        System.out.println("*** Context parameters = " + ctx.getParameters());
 
         checkNegativeParam(msg, ctx, CON_NAME + "1");
         checkNegativeParam(msg, ctx, CON_NAME + "2");

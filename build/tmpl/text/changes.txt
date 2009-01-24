@@ -9,6 +9,8 @@ Changes log
     - Enhancements
         - Added a getItemIterator() on RestletFileUpload to facilitate
           access to parts in streaming mode. Suggested by Paul Austin.
+        - The default SAX handler has been implemented to log 
+          validation information. Contributed by Raif S. Naffah. 
     - API changes
         - 
      - Misc
