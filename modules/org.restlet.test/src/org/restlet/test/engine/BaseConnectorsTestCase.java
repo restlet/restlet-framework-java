@@ -61,7 +61,7 @@ public abstract class BaseConnectorsTestCase extends TestCase {
 
     private final boolean enableJettyServer = true;
 
-    private final boolean enableSimpleServer = true;
+    private final boolean enableSimpleServer = false;
 
     protected abstract void call(String uri) throws Exception;
 

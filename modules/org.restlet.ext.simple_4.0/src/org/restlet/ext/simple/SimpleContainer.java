@@ -27,20 +27,18 @@
 
 package org.restlet.ext.simple;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.logging.Level;
 
-import simple.http.ProtocolHandler;
-import simple.http.Request;
-import simple.http.Response;
+import org.simpleframework.http.Request;
+import org.simpleframework.http.Response;
+import org.simpleframework.http.core.Container;
 
 /**
- * Simple protocol handler delegating the calls to the Restlet server helper.
+ * Simple container delegating the calls to the Restlet server helper.
  * 
  * @author Jerome Louvel
  */
-public class SimpleProtocolHandler implements ProtocolHandler {
+public class SimpleContainer implements Container {
     /** The delegate Restlet server helper. */
     private volatile SimpleServerHelper helper;
 
@@ -50,7 +48,7 @@ public class SimpleProtocolHandler implements ProtocolHandler {
      * @param helper
      *            The delegate Restlet server helper.
      */
-    public SimpleProtocolHandler(SimpleServerHelper helper) {
+    public SimpleContainer(SimpleServerHelper helper) {
         this.helper = helper;
     }
 
@@ -77,30 +75,8 @@ public class SimpleProtocolHandler implements ProtocolHandler {
                         getHelper().isConfidential()));
 
         try {
-            // Once the request is handled, the request input stream must be
-            // entirely consumed. Not doing so blocks invariably the transaction
-            // managed by the SimpleWeb connector.
-            final InputStream in = request.getInputStream();
-            if (in != null) {
-                while (in.read() != -1) {
-                    // just consume the stream
-                }
-            }
-        } catch (IOException e) {
-            // This is probably ok, the stream was certainly already
-            // closed by the Representation.release() method for
-            // example.
-            getHelper()
-                    .getLogger()
-                    .log(
-                            Level.FINE,
-                            "Exception while consuming the Simple request's input stream",
-                            e);
-        }
-
-        try {
-            response.getOutputStream().close();
-        } catch (IOException e) {
+            response.close();
+        } catch (Exception e) {
             getHelper()
                     .getLogger()
                     .log(

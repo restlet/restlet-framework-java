@@ -66,7 +66,7 @@ public abstract class SslBaseConnectorsTestCase extends TestCase {
 
     private final boolean enableJettyServer = true;
 
-    private final boolean enableSimpleServer = true;
+    private final boolean enableSimpleServer = false;
 
     private final File testDir = new File(System.getProperty("java.io.tmpdir"),
             "SslBaseConnectorsTestCase");

@@ -27,11 +27,13 @@
 
 package org.restlet.ext.simple;
 
-import java.io.IOException;
-import java.net.Socket;
+import java.nio.channels.SocketChannel;
+import java.util.Map;
 
-import simple.http.BufferedPipelineFactory;
-import simple.http.Pipeline;
+import javax.net.ssl.SSLEngine;
+
+import org.simpleframework.transport.Server;
+import org.simpleframework.transport.Socket;
 
 /**
  * A subclass of BufferedPipelineFactory that sets the connection socket on each
@@ -39,30 +41,46 @@ import simple.http.Pipeline;
  * 
  * @author Jerome Louvel
  */
-public class SimplePipelineFactory extends BufferedPipelineFactory {
+public class SimpleServer implements Server {
     public static final String PROPERTY_SOCKET = "org.restlet.ext.simple.socket";
 
+    public static final String PROPERTY_ENGINE = "org.restlet.ext.simple.engine";
+
     /**
-     * Constructor.
+     * This is the server to be used.
      */
-    public SimplePipelineFactory() {
-        super();
-    }
+    private final Server server;
 
     /**
      * Constructor.
+     */
+    public SimpleServer(Server server) {
+        this.server = server;
+    }
+
+    /**
+     * Pass in the default pipeline and add the engine to the pipeline
+     * attributes.
      * 
-     * @param size
-     *            The size of the output buffer used
+     * @param pipeline
+     *            the pipeline
      */
-    public SimplePipelineFactory(int size) {
-        super(size);
+    @SuppressWarnings("unchecked")
+    public void process(Socket socket) throws Exception {
+        final Map map = socket.getAttributes();
+        final SSLEngine engine = socket.getEngine();
+        final SocketChannel channel = socket.getChannel();
+
+        map.put(PROPERTY_ENGINE, engine);
+        map.put(PROPERTY_SOCKET, channel);
+
+        server.process(socket);
     }
 
-    @Override
-    public Pipeline getInstance(Socket sock) throws IOException {
-        final Pipeline result = super.getInstance(sock);
-        result.put(PROPERTY_SOCKET, sock);
-        return result;
+    /**
+     * This is used to stop the internal server.
+     */
+    public void stop() throws Exception {
+        server.stop();
     }
 }

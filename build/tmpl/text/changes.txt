@@ -19,7 +19,9 @@ Changes log
         - Refactored the security package introduce in 1.2 M1 based on
           community feed-back.
      - Misc
-        - 
+        - Upgraded Simple server to version 4.0.7. 
+          Contributed by Niall Gallagher.
+          
 
 - 1.2 Milestone 1 (2009-01-23)
     - Breaking changes

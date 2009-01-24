@@ -30,24 +30,21 @@ package org.restlet.ext.simple;
 import java.io.File;
 import java.io.FileInputStream;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.security.KeyStore;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.TrustManagerFactory;
 
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.engine.http.HttpsUtils;
 import org.restlet.engine.util.SslContextFactory;
-
-import simple.http.PipelineHandlerFactory;
-import simple.http.connect.ConnectionFactory;
-
+import org.simpleframework.transport.connect.Connection;
+import org.simpleframework.transport.connect.SocketConnection;
+import org.simpleframework.http.core.Container;
+import org.simpleframework.http.core.ContainerServer;
 
 /**
  * Simple HTTP server connector. Here is the list of additional parameters that
@@ -143,7 +140,13 @@ import simple.http.connect.ConnectionFactory;
  * @author Jerome Louvel
  */
 public class HttpsServerHelper extends SimpleServerHelper {
-    /**
+	
+	/**
+	 * This is the SSL context.
+	 */
+	private SSLContext sslContext;
+    
+	/**
      * Constructor.
      * 
      * @param server
@@ -228,7 +231,25 @@ public class HttpsServerHelper extends SimpleServerHelper {
         return Boolean.parseBoolean(getHelpedParameters().getFirstValue(
                 "wantClientAuthentication", "false"));
     }
+    
+    /**
+     * Gets the SSL context used by this server.
+     * 
+     * @return this returns the SSL context.
+     */
+    public SSLContext getSslContext() {
+    	return sslContext;
+    }
 
+    /**
+     * Sets the SSL context for the server.
+     * 
+     * @param sslContext the SSL context
+     */
+    public void setSslContext(SSLContext sslContext) {
+    	this.sslContext = sslContext;
+    }
+    
     /** Starts the Restlet. */
     @Override
     public void start() throws Exception {
@@ -267,66 +288,31 @@ public class HttpsServerHelper extends SimpleServerHelper {
             sslContext = sslContextFactory.createSslContext();
         }
 
-        // Initialize the socket
-        SSLServerSocket serverSocket = null;
         final String addr = getHelped().getAddress();
         if (addr != null) {
-            // this call may throw UnknownHostException and otherwise always
-            // returns an instance of INetAddress
+            // This call may throw UnknownHostException and otherwise always
+            // returns an instance of INetAddress.
             // Note: textual representation of inet addresses are supported
             final InetAddress iaddr = InetAddress.getByName(addr);
+
             // Note: the backlog of 50 is the default
-            serverSocket = (SSLServerSocket) sslContext
-                    .getServerSocketFactory().createServerSocket(
-                            getHelped().getPort(), 50, iaddr);
+            setAddress(new InetSocketAddress(iaddr, getHelped().getPort()));
         } else {
-            serverSocket = (SSLServerSocket) sslContext
-                    .getServerSocketFactory().createServerSocket(
-                            getHelped().getPort());
+            setAddress(new InetSocketAddress(getHelped().getPort()));
         }
-
-        if (isNeedClientAuthentication()) {
-            serverSocket.setNeedClientAuth(true);
-        } else if (isWantClientAuthentication()) {
-            serverSocket.setWantClientAuth(true);
-        }
-
-        /*
-         * Gets the list of enabled and excluded cipher suites. If excluded
-         * cipher suites are specified, they are removed from the list of
-         * enabled cipher suites (which is the default one if none is
-         * specified).
-         */
-        String[] enabledCipherSuites = HttpsUtils.getEnabledCipherSuites(this);
-        String[] excludedCipherSuites = HttpsUtils
-                .getDisabledCipherSuites(this);
-        if (excludedCipherSuites != null) {
-            if (enabledCipherSuites == null) {
-                enabledCipherSuites = serverSocket.getEnabledCipherSuites();
-            }
-            List<String> enabledCipherSuitesList = new ArrayList<String>(Arrays
-                    .asList(enabledCipherSuites));
-            for (String excludedCipherSuite : excludedCipherSuites) {
-                enabledCipherSuitesList.remove(excludedCipherSuite);
-            }
-            enabledCipherSuites = enabledCipherSuitesList
-                    .toArray(enabledCipherSuites);
-        }
-        if (enabledCipherSuites != null) {
-            serverSocket.setEnabledCipherSuites(enabledCipherSuites);
-        }
-
-        serverSocket.setSoTimeout(60000);
-        setSocket(serverSocket);
 
         // Complete initialization
+        final Container container = new SimpleContainer(this);
+        final ContainerServer server = new ContainerServer(container, getDefaultThreads());
+        final SimpleServer filter = new SimpleServer(server);
+        final Connection connection = new SocketConnection(filter);
+        
+        setSslContext(sslContext);
         setConfidential(true);
-        setHandler(PipelineHandlerFactory.getInstance(
-                new SimpleProtocolHandler(this), getDefaultThreads(),
-                getMaxWaitTimeMs()));
-        setConnection(ConnectionFactory.getConnection(getHandler(),
-                new SimplePipelineFactory()));
-        getConnection().connect(getSocket());
+        setContainer(server);
+        setConnection(connection);
+        
+        getConnection().connect(getAddress(), getSslContext());
         super.start();
     }
 

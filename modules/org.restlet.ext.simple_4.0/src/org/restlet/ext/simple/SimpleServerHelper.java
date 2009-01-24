@@ -27,14 +27,12 @@
 
 package org.restlet.ext.simple;
 
-import java.net.ServerSocket;
+import java.net.InetSocketAddress;
 
 import org.restlet.Server;
 import org.restlet.engine.http.HttpServerHelper;
-
-import simple.http.PipelineHandler;
-import simple.http.connect.Connection;
-
+import org.simpleframework.transport.connect.Connection;
+import org.simpleframework.http.core.ContainerServer;
 
 /**
  * Abstract Simple Web server connector. Here is the list of parameters that are
@@ -94,12 +92,12 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
     /**
      * Simple pipeline handler.
      */
-    private volatile PipelineHandler handler;
+    private volatile ContainerServer container;
 
     /**
-     * Server socket this server is listening to.
+     * Socket this server is listening to.
      */
-    private volatile ServerSocket socket;
+    private volatile InetSocketAddress address;
 
     /**
      * Constructor.
@@ -127,35 +125,25 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
      */
     public int getDefaultThreads() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "defaultThreads", "20"));
+                "defaultThreads", "10"));
     }
 
     /**
-     * Returns the Simple pipeline handler.
+     * Returns the Simple server.
      * 
-     * @return The Simple pipeline handler.
+     * @return The Simple container server.
      */
-    protected PipelineHandler getHandler() {
-        return this.handler;
+    protected ContainerServer getContainer() {
+        return this.container;
     }
-
+    
     /**
-     * Returns the maximum waiting time between polls of the input.
+     * Returns the socket address this server is listening to.
      * 
-     * @return The maximum waiting time between polls of the input.
+     * @return The socket address this server is listening to.
      */
-    public int getMaxWaitTimeMs() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "maxWaitTimeMs", "200"));
-    }
-
-    /**
-     * Returns the server socket this server is listening to.
-     * 
-     * @return The server socket this server is listening to.
-     */
-    protected ServerSocket getSocket() {
-        return this.socket;
+    protected InetSocketAddress getAddress() {
+        return this.address;
     }
 
     /**
@@ -188,23 +176,23 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
     }
 
     /**
-     * Sets the Simple pipeline handler.
+     * Sets the Simple container.
      * 
      * @param handler
      *            The Simple pipeline handler.
      */
-    protected void setHandler(PipelineHandler handler) {
-        this.handler = handler;
+    protected void setContainer(ContainerServer container) {
+        this.container = container;
     }
 
     /**
-     * Sets the server socket this server is listening to.
+     * Sets the socket address this server is listening to.
      * 
      * @param socket
-     *            The server socket this server is listening to.
+     *            The socket address this server is listening to.
      */
-    protected void setSocket(ServerSocket socket) {
-        this.socket = socket;
+    protected void setAddress(InetSocketAddress address) {
+        this.address = address;
     }
 
     @Override
@@ -213,17 +201,15 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
         getLogger().info("Starting the Simple server");
 
         // Sets the ephemeral port is necessary
-        setEphemeralPort(getSocket());
+        setEphemeralPort(getAddress().getPort());
     }
 
     @Override
     public synchronized void stop() throws Exception {
         getLogger().info("Stopping the Simple server");
-
-        getSocket().close();
-        setSocket(null);
-        setHandler(null);
-        setConnection(null);
+        
+       	getConnection().close();
+      	getContainer().stop();
 
         // For further information on how to shutdown a Simple
         // server, see

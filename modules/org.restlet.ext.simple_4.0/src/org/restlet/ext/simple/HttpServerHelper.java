@@ -28,13 +28,15 @@
 package org.restlet.ext.simple;
 
 import java.net.InetAddress;
-import java.net.ServerSocket;
+import java.net.InetSocketAddress;
 
 import org.restlet.Server;
 import org.restlet.data.Protocol;
+import org.simpleframework.transport.connect.Connection;
+import org.simpleframework.transport.connect.SocketConnection;
+import org.simpleframework.http.core.Container;
+import org.simpleframework.http.core.ContainerServer;
 
-import simple.http.PipelineHandlerFactory;
-import simple.http.connect.ConnectionFactory;
 
 /**
  * Simple HTTPS server connector.
@@ -65,19 +67,19 @@ public class HttpServerHelper extends SimpleServerHelper {
             final InetAddress iaddr = InetAddress.getByName(addr);
 
             // Note: the backlog of 50 is the default
-            setSocket(new ServerSocket(getHelped().getPort(), 50, iaddr));
+            setAddress(new InetSocketAddress(iaddr, getHelped().getPort()));
         } else {
-            setSocket(new ServerSocket(getHelped().getPort()));
+            setAddress(new InetSocketAddress(getHelped().getPort()));
         }
-
+        final Container container = new SimpleContainer(this);
+        final ContainerServer server = new ContainerServer(container, getDefaultThreads());
+        final Connection connection = new SocketConnection(server);
+        
         setConfidential(false);
-        setHandler(PipelineHandlerFactory.getInstance(
-                new SimpleProtocolHandler(this), getDefaultThreads(),
-                getMaxWaitTimeMs()));
-        setConnection(ConnectionFactory.getConnection(getHandler(),
-                new SimplePipelineFactory()));
-        getConnection().connect(getSocket());
+        setContainer(server);
+        setConnection(connection);
+        
+        getConnection().connect(getAddress());
         super.start();
     }
-
 }

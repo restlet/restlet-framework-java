@@ -30,27 +30,24 @@ package org.restlet.ext.simple;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.Socket;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.SocketChannel;
 import java.nio.channels.WritableByteChannel;
 import java.security.cert.Certificate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 
+import javax.net.ssl.SSLEngine;
 import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocket;
 
 import org.restlet.Server;
 import org.restlet.data.Parameter;
 import org.restlet.engine.http.HttpServerCall;
-import org.restlet.engine.io.KeepAliveInputStream;
 import org.restlet.util.Series;
-
-import simple.http.Request;
-import simple.http.Response;
-
+import org.simpleframework.http.Request;
+import org.simpleframework.http.Response;
 
 /**
  * Call that is used by the Simple HTTP server.
@@ -72,6 +69,11 @@ public class SimpleCall extends HttpServerCall {
 
     /** Indicates if the request headers were parsed and added. */
     private volatile boolean requestHeadersAdded;
+    
+    /**
+     * The version of the request;
+     */
+    private final String version;
 
     /**
      * Constructs this class with the specified {@link simple.http.Request} and
@@ -89,10 +91,21 @@ public class SimpleCall extends HttpServerCall {
     SimpleCall(Server server, Request request, Response response,
             boolean confidential) {
         super(server);
+        this.version = request.getMajor() + "." + request.getMinor();
         this.request = request;
         this.response = response;
         setConfidential(confidential);
         this.requestHeadersAdded = false;
+    }
+    
+    @Override
+    protected boolean isClientKeepAlive() {
+       return request.isKeepAlive();
+    }
+    
+    @Override
+    protected long getContentLength() {
+       return request.getContentLength();
     }
 
     @Override
@@ -100,20 +113,25 @@ public class SimpleCall extends HttpServerCall {
         try {
             // Commit the response
             this.response.commit();
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             getLogger().log(Level.WARNING, "Unable to commit the response", ex);
         }
     }
 
     @Override
+    public String getHostDomain() {
+       return super.getHostDomain(); // FIXME
+    }
+    
+    @Override
     public String getClientAddress() {
-        return this.request.getInetAddress().getHostAddress();
+        return this.request.getClientAddress().getHostName();
     }
 
     @Override
     public int getClientPort() {
-        final Socket socket = getSocket();
-        return (socket != null) ? socket.getPort() : -1;
+        final SocketChannel socket = getSocket();
+        return (socket != null) ? socket.socket().getPort() : -1;
     }
 
     /**
@@ -135,8 +153,8 @@ public class SimpleCall extends HttpServerCall {
     @Override
     public InputStream getRequestEntityStream(long size) {
         try {
-            return new KeepAliveInputStream(this.request.getInputStream());
-        } catch (IOException ex) {
+            return this.request.getInputStream();
+        } catch (Exception ex) {
             return null;
         }
     }
@@ -157,12 +175,11 @@ public class SimpleCall extends HttpServerCall {
         final Series<Parameter> result = super.getRequestHeaders();
 
         if (!this.requestHeadersAdded) {
-            final int headerCount = this.request.headerCount();
-            for (int i = 0; i < headerCount; i++) {
-                result.add(new Parameter(this.request.getName(i), this.request
-                        .getValue(i)));
-            }
-
+        	final List<String> names = this.request.getNames();
+        	
+        	for(String name : names) {
+        		result.add(new Parameter(name, this.request.getValue(name)));
+        	}
             this.requestHeadersAdded = true;
         }
 
@@ -182,7 +199,7 @@ public class SimpleCall extends HttpServerCall {
      */
     @Override
     public String getRequestUri() {
-        return this.request.getURI();
+        return this.request.getTarget();
     }
 
     /**
@@ -205,7 +222,7 @@ public class SimpleCall extends HttpServerCall {
     public OutputStream getResponseEntityStream() {
         try {
             return this.response.getOutputStream();
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             return null;
         }
     }
@@ -215,17 +232,26 @@ public class SimpleCall extends HttpServerCall {
      * 
      * @return The request socket.
      */
-    private Socket getSocket() {
-        return (Socket) this.request
-                .getAttribute(SimplePipelineFactory.PROPERTY_SOCKET);
+    private SocketChannel getSocket() {
+        return (SocketChannel) this.request
+                .getAttribute(SimpleServer.PROPERTY_SOCKET);
+    }
+    
+    /**
+     * Returns the SSL engine.
+     * 
+     * @return the SSL engine
+     */
+    private SSLEngine getSslEngine() {
+        return (SSLEngine) this.request
+                .getAttribute(SimpleServer.PROPERTY_ENGINE);
     }
 
     @Override
     public String getSslCipherSuite() {
-        final Socket socket = getSocket();
-        if (socket instanceof SSLSocket) {
-            final SSLSocket sslSocket = (SSLSocket) socket;
-            final SSLSession sslSession = sslSocket.getSession();
+        final SSLEngine sslEngine = getSslEngine();
+        if (sslEngine != null) {
+            final SSLSession sslSession = sslEngine.getSession();
             if (sslSession != null) {
                 return sslSession.getCipherSuite();
             }
@@ -235,10 +261,9 @@ public class SimpleCall extends HttpServerCall {
 
     @Override
     public List<Certificate> getSslClientCertificates() {
-        final Socket socket = getSocket();
-        if (socket instanceof SSLSocket) {
-            final SSLSocket sslSocket = (SSLSocket) socket;
-            final SSLSession sslSession = sslSocket.getSession();
+        final SSLEngine sslEngine = getSslEngine();
+        if (sslEngine != null) {
+            final SSLSession sslSession = sslEngine.getSession();
             if (sslSession != null) {
                 try {
                     final List<Certificate> clientCertificates = Arrays
@@ -256,13 +281,13 @@ public class SimpleCall extends HttpServerCall {
 
     @Override
     public String getVersion() {
-        return this.request.getMajor() + "." + this.request.getMinor();
+        return version;
     }
 
     @Override
     public void writeResponseHead(org.restlet.data.Response restletResponse)
             throws IOException {
-        this.response.clear();
+        //this.response.clear();
         for (final Parameter header : getResponseHeaders()) {
             this.response.add(header.getName(), header.getValue());
         }
