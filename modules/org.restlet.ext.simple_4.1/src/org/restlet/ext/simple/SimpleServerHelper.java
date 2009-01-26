@@ -125,7 +125,7 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
      */
     public int getDefaultThreads() {
         return Integer.parseInt(getHelpedParameters().getFirstValue(
-                "defaultThreads", "10"));
+                "defaultThreads", "5"));
     }
 
     /**
@@ -201,7 +201,7 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
         getLogger().info("Starting the Simple server");
 
         // Sets the ephemeral port is necessary
-        setEphemeralPort(getAddress().getPort());
+        //setEphemeralPort(getAddress().getPort());
     }
 
     @Override

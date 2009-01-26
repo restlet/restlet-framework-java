@@ -298,7 +298,12 @@ public class HttpsServerHelper extends SimpleServerHelper {
             // Note: the backlog of 50 is the default
             setAddress(new InetSocketAddress(iaddr, getHelped().getPort()));
         } else {
-            setAddress(new InetSocketAddress(getHelped().getPort()));
+        	int port = getHelped().getPort();
+        	
+        	// Use ephemeral port
+        	if(port > 0) {
+        		setAddress(new InetSocketAddress(getHelped().getPort()));
+        	}
         }
 
         // Complete initialization
@@ -312,7 +317,8 @@ public class HttpsServerHelper extends SimpleServerHelper {
         setContainer(server);
         setConnection(connection);
         
-        getConnection().connect(getAddress(), getSslContext());
+        InetSocketAddress address = (InetSocketAddress)getConnection().connect(getAddress(), getSslContext());
+        setEphemeralPort(address.getPort());
         super.start();
     }
 
