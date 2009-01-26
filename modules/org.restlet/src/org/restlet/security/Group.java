@@ -38,17 +38,23 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class Group {
 
+    /** The description. */
+    private volatile String description;
+
     /**
-     * Indicates if the permissions (granted or denied) of the parent group
-     * should be inherited.
+     * Indicates if the roles (ie. indirectly the granted or denied permissions)
+     * of the parent group should be inherited.
      */
-    private volatile boolean inheritPermissions;
+    private volatile boolean inheritRoles;
 
     /** The modifiable list of child groups. */
     private final List<Group> memberGroups;
 
     /** The modifiable list of members user references. */
     private final List<User> memberUsers;
+
+    /** The display name. */
+    private volatile String name;
 
     /**
      * Indicates if the permissions (granted or denied) of this group should be
@@ -65,6 +71,15 @@ public class Group {
     }
 
     /**
+     * Returns the description.
+     * 
+     * @return The description
+     */
+    public String getDescription() {
+        return this.description;
+    }
+
+    /**
      * Returns the modifiable list of member groups.
      * 
      * @return The modifiable list of member groups.
@@ -77,16 +92,35 @@ public class Group {
         return memberUsers;
     }
 
-    public boolean isInheritPermissions() {
-        return inheritPermissions;
+    /**
+     * Returns the display name.
+     * 
+     * @return The display name.
+     */
+    public String getName() {
+        return this.name;
+    }
+
+    public boolean isInheritRoles() {
+        return inheritRoles;
     }
 
     public boolean isTransmitPermissions() {
         return transmitPermissions;
     }
 
-    public void setInheritPermissions(boolean inheritPermissions) {
-        this.inheritPermissions = inheritPermissions;
+    /**
+     * Sets the description.
+     * 
+     * @param description
+     *            The description.
+     */
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setInheritRoles(boolean inheritPermissions) {
+        this.inheritRoles = inheritPermissions;
     }
 
     /**
@@ -115,6 +149,16 @@ public class Group {
         if (memberUsers != null) {
             this.memberUsers.addAll(memberUsers);
         }
+    }
+
+    /**
+     * Sets the display name.
+     * 
+     * @param name
+     *            The display name.
+     */
+    public void setName(String name) {
+        this.name = name;
     }
 
     public void setTransmitPermissions(boolean transmitPermissions) {

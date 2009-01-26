@@ -18,10 +18,10 @@ Changes log
         - Added Role class and "roles" property to Application.
         - Refactored the security package introduce in 1.2 M1 based on
           community feed-back.
+        - Added "roleMappings" property to Context.                             
      - Misc
-        - Upgraded Simple server to version 4.0.7. 
+        - Upgraded Simple server to version 4.1.1. 
           Contributed by Niall Gallagher.
-          
 
 - 1.2 Milestone 1 (2009-01-23)
     - Breaking changes

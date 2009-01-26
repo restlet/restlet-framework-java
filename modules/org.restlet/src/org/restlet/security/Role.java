@@ -27,12 +27,36 @@
 
 package org.restlet.security;
 
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 /**
  * Application specific role.
  * 
  * @author Jerome Louvel
  */
 public class Role {
+
+    /**
+     * Unmodifiable role that covers all existing roles. Its name is "*" by
+     * convention.
+     */
+    public static final Role ALL = new Role("*",
+            "Role that covers all existing roles.") {
+        @Override
+        public void setDescription(String description) {
+            throw new IllegalStateException("Unmodifiable role");
+        }
+
+        @Override
+        public void setName(String name) {
+            throw new IllegalStateException("Unmodifiable role");
+        }
+
+    };
+
+    /** The modifiable list of child roles. */
+    private List<Role> children;
 
     /** The description. */
     private volatile String description;
@@ -58,6 +82,16 @@ public class Role {
     public Role(String name, String description) {
         this.name = name;
         this.description = description;
+        this.children = new CopyOnWriteArrayList<Role>();
+    }
+
+    /**
+     * Returns the modifiable list of child roles.
+     * 
+     * @return The modifiable list of child roles.
+     */
+    public List<Role> getChildren() {
+        return children;
     }
 
     /**
@@ -76,6 +110,20 @@ public class Role {
      */
     public String getName() {
         return name;
+    }
+
+    /**
+     * Sets the list of child roles.
+     * 
+     * @param children
+     *            The list of child roles.
+     */
+    public void setChildren(List<Role> children) {
+        this.children.clear();
+
+        if (children != null) {
+            this.children.addAll(children);
+        }
     }
 
     /**

@@ -37,6 +37,12 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class Organization {
 
+    /** The description. */
+    private volatile String description;
+
+    /** The display name. */
+    private volatile String name;
+
     /** The modifiable list of root groups. */
     private final List<Group> rootGroups;
 
@@ -49,6 +55,44 @@ public class Organization {
     public Organization() {
         this.rootGroups = new CopyOnWriteArrayList<Group>();
         this.users = new CopyOnWriteArrayList<User>();
+    }
+
+    /**
+     * Returns the description.
+     * 
+     * @return The description
+     */
+    public String getDescription() {
+        return this.description;
+    }
+
+    /**
+     * Returns the display name.
+     * 
+     * @return The display name.
+     */
+    public String getName() {
+        return this.name;
+    }
+
+    /**
+     * Sets the description.
+     * 
+     * @param description
+     *            The description.
+     */
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    /**
+     * Sets the display name.
+     * 
+     * @param name
+     *            The display name.
+     */
+    public void setName(String name) {
+        this.name = name;
     }
 
     /**

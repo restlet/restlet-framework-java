@@ -41,8 +41,14 @@ public class User {
     /** The first name. */
     private volatile String firstName;
 
+    /** The identifier. */
+    private volatile String identifier;
+
     /** The last name. */
     private volatile String lastName;
+
+    /** The secret. */
+    private volatile char[] secret;
 
     /** The title. */
     private volatile String title;
@@ -92,12 +98,30 @@ public class User {
     }
 
     /**
+     * Returns the identifier.
+     * 
+     * @return The identifier.
+     */
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    /**
      * Returns the last name.
      * 
      * @return The last name.
      */
     public String getLastName() {
         return lastName;
+    }
+
+    /**
+     * Returns the secret.
+     * 
+     * @return The secret.
+     */
+    public char[] getSecret() {
+        return secret;
     }
 
     /**
@@ -130,6 +154,16 @@ public class User {
     }
 
     /**
+     * Sets the identifier.
+     * 
+     * @param identifier
+     *            The identifier.
+     */
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
+
+    /**
      * Sets the last name.
      * 
      * @param lastName
@@ -137,6 +171,16 @@ public class User {
      */
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    /**
+     * Sets the secret.
+     * 
+     * @param secret
+     *            The secret.
+     */
+    public void setSecret(char[] secret) {
+        this.secret = secret;
     }
 
     /**

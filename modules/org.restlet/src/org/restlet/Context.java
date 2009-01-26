@@ -27,6 +27,7 @@
 
 package org.restlet;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -35,6 +36,7 @@ import java.util.logging.Logger;
 
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
+import org.restlet.security.RoleMapping;
 import org.restlet.util.Series;
 
 /**
@@ -104,6 +106,9 @@ public class Context {
     /** The modifiable series of parameters. */
     private final Series<Parameter> parameters;
 
+    /** The modifiable list of role mappings. */
+    private List<RoleMapping> roleMappings;
+
     /**
      * Constructor. Writes log messages to "org.restlet".
      */
@@ -121,6 +126,7 @@ public class Context {
         this.attributes = new ConcurrentHashMap<String, Object>();
         this.logger = logger;
         this.parameters = new Form(new CopyOnWriteArrayList<Parameter>());
+        this.roleMappings = new CopyOnWriteArrayList<RoleMapping>();
     }
 
     /**
@@ -212,6 +218,15 @@ public class Context {
     }
 
     /**
+     * Returns the modifiable list of role mappings.
+     * 
+     * @return The modifiable list of role mappings.
+     */
+    public List<RoleMapping> getRoleMappings() {
+        return roleMappings;
+    }
+
+    /**
      * Returns a request dispatcher to component's virtual hosts. This is mostly
      * useful for application that want to optimize calls to other applications
      * hosted in the same component or to the application itself.<br>
@@ -266,7 +281,24 @@ public class Context {
      */
     public synchronized void setParameters(Series<Parameter> parameters) {
         this.parameters.clear();
-        this.parameters.addAll(parameters);
+
+        if (parameters != null) {
+            this.parameters.addAll(parameters);
+        }
+    }
+
+    /**
+     * Sets the modifiable list of role mappings.
+     * 
+     * @param roleMappings
+     *            The modifiable list of role mappings.
+     */
+    public void setRoleMappings(List<RoleMapping> roleMappings) {
+        this.roleMappings.clear();
+
+        if (roleMappings != null) {
+            this.roleMappings.addAll(roleMappings);
+        }
     }
 
 }
