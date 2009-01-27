@@ -4,6 +4,8 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - Misc
+	     - Upgraded JAXB to version 2.1.9.
 
 - 1.1.2 (2009-01-23)
     - Bugs fixed
