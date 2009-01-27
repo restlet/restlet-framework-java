@@ -133,7 +133,7 @@ public class Template {
         String result = null;
 
         if (variable.isFixed()) {
-            result = Pattern.quote(variable.getDefaultValue());
+            result = "(" + Pattern.quote(variable.getDefaultValue()) + ")";
         } else {
             // Expressions to create character classes
             final String ALL = ".";

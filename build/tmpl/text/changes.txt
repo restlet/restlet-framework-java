@@ -4,6 +4,9 @@ Changes log
 ===========
 
 - @version-full@ (@release-date@)
+    - Bugs fixed
+	     - Fixed Regex issue in Template with fixed variables. 
+		    Contributed by Bruno Dumon.
     - Misc
 	     - Upgraded JAXB to version 2.1.9.
 
