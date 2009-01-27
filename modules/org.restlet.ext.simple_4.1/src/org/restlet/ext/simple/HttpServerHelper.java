@@ -78,7 +78,8 @@ public class HttpServerHelper extends SimpleServerHelper {
         }
         final Container container = new SimpleContainer(this);
         final ContainerServer server = new ContainerServer(container, getDefaultThreads());
-        final Connection connection = new SocketConnection(server);
+        final SimpleServer filter = new SimpleServer(server);
+        final Connection connection = new SocketConnection(filter);
         
         setConfidential(false);
         setContainer(server);

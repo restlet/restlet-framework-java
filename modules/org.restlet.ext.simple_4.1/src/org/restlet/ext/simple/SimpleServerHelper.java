@@ -28,6 +28,7 @@
 package org.restlet.ext.simple;
 
 import java.net.InetSocketAddress;
+import java.util.logging.Level;
 
 import org.restlet.Server;
 import org.restlet.engine.http.HttpServerHelper;
@@ -136,7 +137,7 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
     protected ContainerServer getContainer() {
         return this.container;
     }
-    
+
     /**
      * Returns the socket address this server is listening to.
      * 
@@ -201,21 +202,24 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
         getLogger().info("Starting the Simple server");
 
         // Sets the ephemeral port is necessary
-        //setEphemeralPort(getAddress().getPort());
+        // setEphemeralPort(getAddress().getPort());
     }
 
     @Override
     public synchronized void stop() throws Exception {
         getLogger().info("Stopping the Simple server");
-        
-       	getConnection().close();
-      	getContainer().stop();
 
-        // For further information on how to shutdown a Simple
-        // server, see
-        // http://sourceforge.net/mailarchive/forum.php?thread_id=10138257&
-        // forum_id=38791
-        // There seems to be place for improvement in this method.
+        try {
+            getConnection().close();
+        } catch (Exception e) {
+            getLogger()
+                    .log(
+                            Level.FINE,
+                            "Exception while closing the server socket. Can probably be safely ignored.",
+                            e);
+        }
+
+        getContainer().stop();
     }
 
 }
