@@ -27,25 +27,19 @@
 
 package org.restlet.resource;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Handler;
-import org.restlet.data.CharacterSet;
 import org.restlet.data.Dimension;
-import org.restlet.data.Encoding;
 import org.restlet.data.Language;
-import org.restlet.data.MediaType;
-import org.restlet.data.Metadata;
 import org.restlet.data.Parameter;
 import org.restlet.data.ReferenceList;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.service.MetadataService;
 import org.restlet.util.Series;
 
 /**
@@ -80,24 +74,8 @@ import org.restlet.util.Series;
  * The common GET method is supported by the modifiable "variants" list property
  * and the {@link #represent(Variant)} method. This allows an easy and cheap
  * declaration of the available variants, in the constructor for example. Then
- * the creation of more costly representations is delegated to the
+ * the creation of costly representations is delegated to the
  * {@link #represent(Variant)} method when actually needed.<br>
- * <br>
- * In addition, there is a simpler way to declare your variants and return the
- * matching representations. For this, you just need to add public represent*()
- * methods, where the '*' is replaced by a list of extensions in camel case. For
- * example "representXmlFr()" would declare two variants: one with the
- * "text/xml" media type and another with the "application/xml" media type. Both
- * would declare a {@link Language#FRENCH} language. In addition, those methods
- * must return a {@link Representation} instance and accept optional input
- * parameter of the following classes: {@link MediaType}, {@link Variant},
- * {@link CharacterSet}. Their value is provided from the selected variant to
- * represent. Note that if several media type or character set extensions are
- * detected, they will produce separate variants. However, several languages or
- * encodings will produce only one list for each defined variant. The list of
- * supported extensions and their matching metadata is provided by the
- * application's {@link MetadataService}. If needed, this feature can be turned
- * off by calling {@link #setDetectVariants(boolean)}.<br>
  * <br>
  * Concurrency note: typically created by Routers, Resource instances are the
  * final handlers of requests. Unlike the other processors in the Restlet chain,
@@ -118,47 +96,8 @@ import org.restlet.util.Series;
  */
 public class Resource extends Handler {
 
-    /**
-     * Structure containing the list of variants supported by a represent*()
-     * method.
-     */
-    private class MethodInfo {
-        private java.lang.reflect.Method method;
-
-        private List<Variant> methodVariants;
-
-        public MethodInfo(java.lang.reflect.Method method,
-                List<Variant> variants) {
-            super();
-            this.method = method;
-            this.methodVariants = variants;
-        }
-
-        public java.lang.reflect.Method getMethod() {
-            return method;
-        }
-
-        public List<Variant> getMethodVariants() {
-            return methodVariants;
-        }
-
-        public void setMethod(java.lang.reflect.Method method) {
-            this.method = method;
-        }
-
-        public void setMethodVariants(List<Variant> variants) {
-            this.methodVariants = variants;
-        }
-    }
-
     /** Indicates if the resource is actually available. */
     private boolean available;
-
-    /**
-     * Indicates if the variants and the supporting represent*() methods should
-     * be detected and used.
-     */
-    private boolean detectVariants;
 
     /**
      * Indicates if the representations can be modified via the
@@ -176,9 +115,6 @@ public class Resource extends Handler {
      */
     private boolean readable;
 
-    /** The list of represent*() methods and their supported variants. */
-    private volatile List<MethodInfo> representMethods;
-
     /** The modifiable list of variants. */
     private volatile List<Variant> variants;
 
@@ -188,7 +124,6 @@ public class Resource extends Handler {
      */
     {
         this.available = true;
-        this.detectVariants = true;
         this.modifiable = false;
         this.negotiateContent = true;
         this.readable = true;
@@ -277,194 +212,6 @@ public class Resource extends Handler {
     }
 
     /**
-     * Detects the list of method variants. It first introspects all the class
-     * methods and selects those matching the "represent*():Representation"
-     * pattern. It populates the list of variants and caches information about
-     * the methods matching the variants.
-     */
-    private void detectVariants() {
-
-        // Iterate over all resource class methods
-        for (java.lang.reflect.Method method : getClass().getMethods()) {
-
-            // Verify that the method parameters are all supported.
-            // First, the return type which must be a Representation subclass
-            boolean compatibleParameters = Representation.class
-                    .isAssignableFrom(method.getReturnType());
-
-            if (compatibleParameters) {
-                // Verify all input parameters
-                for (Class<?> parameter : method.getParameterTypes()) {
-                    compatibleParameters = compatibleParameters
-                            && (Variant.class.isAssignableFrom(parameter)
-                                    || MediaType.class
-                                            .isAssignableFrom(parameter) || CharacterSet.class
-                                    .isAssignableFrom(parameter));
-                }
-            }
-
-            if (compatibleParameters) {
-
-                // Detect methods representing the resource
-                if (method.getName().startsWith("represent")) {
-
-                    // Extract a variant if possible
-                    String extensionPart = method.getName().substring(9);
-                    List<String> extensions = null;
-                    StringBuilder sb = null;
-
-                    // Extract all extensions
-                    for (int i = 0; i < extensionPart.length(); i++) {
-
-                        // Detect extension delimiters
-                        if (Character.isUpperCase(extensionPart.charAt(i))) {
-
-                            // First add the previous extension
-                            if (sb != null) {
-                                if (extensions == null) {
-                                    extensions = new ArrayList<String>();
-                                }
-
-                                extensions.add(sb.toString().toLowerCase());
-                                sb = null;
-                            }
-
-                            // Start a new extension
-                            sb = new StringBuilder();
-                            sb.append(extensionPart.charAt(i));
-
-                        } else if (sb != null) {
-
-                            // Append lower case characters
-                            sb.append(extensionPart.charAt(i));
-
-                        } else {
-
-                            // This method name doesn't match the required
-                            // pattern based on camel case. Ignore it
-                            continue;
-
-                        }
-                    }
-
-                    // Add the last extension
-                    if (sb != null) {
-                        if (extensions == null) {
-                            extensions = new ArrayList<String>();
-                        }
-
-                        extensions.add(sb.toString().toLowerCase());
-                        sb = null;
-                    }
-
-                    // Add the variant based on the extensions
-                    if (extensions != null) {
-                        MetadataService ms = getApplication()
-                                .getMetadataService();
-                        List<CharacterSet> characterSets = null;
-                        List<Encoding> encodings = null;
-                        List<Language> languages = null;
-                        List<MediaType> mediaTypes = null;
-
-                        // Extract the list of metadata from the extensions
-                        for (String extension : extensions) {
-                            List<Metadata> extensionMetadata = ms
-                                    .getAllMetadata(extension);
-
-                            for (Metadata metadata : extensionMetadata) {
-                                if (metadata instanceof CharacterSet) {
-                                    if (characterSets == null) {
-                                        characterSets = new ArrayList<CharacterSet>();
-                                    }
-
-                                    characterSets.add((CharacterSet) metadata);
-                                } else if (metadata instanceof Encoding) {
-                                    if (encodings == null) {
-                                        encodings = new ArrayList<Encoding>();
-                                    }
-
-                                    encodings.add((Encoding) metadata);
-                                } else if (metadata instanceof Language) {
-                                    if (languages == null) {
-                                        languages = new ArrayList<Language>();
-                                    }
-
-                                    languages.add((Language) metadata);
-                                } else if (metadata instanceof MediaType) {
-                                    if (mediaTypes == null) {
-                                        mediaTypes = new ArrayList<MediaType>();
-                                    }
-
-                                    mediaTypes.add((MediaType) metadata);
-                                }
-                            }
-                        }
-
-                        // Build the list of variants from the lists of
-                        // supported metadata
-                        List<Variant> variants = new ArrayList<Variant>();
-                        Variant variant;
-
-                        if (mediaTypes != null) {
-                            for (MediaType mediaType : mediaTypes) {
-                                if (characterSets != null) {
-                                    for (CharacterSet characterSet : characterSets) {
-                                        variant = new Variant();
-                                        variant.setMediaType(mediaType);
-                                        variant.setCharacterSet(characterSet);
-                                        variant.setEncodings(encodings);
-                                        variant.setLanguages(languages);
-                                        getVariants().add(variant);
-                                        variants.add(variant);
-                                    }
-                                } else {
-                                    variant = new Variant();
-                                    variant.setMediaType(mediaType);
-                                    variant.setEncodings(encodings);
-                                    variant.setLanguages(languages);
-                                    getVariants().add(variant);
-                                    variants.add(variant);
-                                }
-                            }
-                        } else {
-                            MediaType mediaType = ms.getDefaultMediaType();
-
-                            if (characterSets != null) {
-                                for (CharacterSet characterSet : characterSets) {
-                                    variant = new Variant();
-                                    variant.setMediaType(mediaType);
-                                    variant.setCharacterSet(characterSet);
-                                    variant.setEncodings(encodings);
-                                    variant.setLanguages(languages);
-                                    getVariants().add(variant);
-                                    variants.add(variant);
-                                }
-                            } else {
-                                variant = new Variant();
-                                variant.setMediaType(mediaType);
-                                variant.setEncodings(encodings);
-                                variant.setLanguages(languages);
-                                getVariants().add(variant);
-                                variants.add(variant);
-                            }
-                        }
-
-                        if (variants.size() > 0) {
-                            // Update the detection data cache
-                            if (this.representMethods == null) {
-                                this.representMethods = new ArrayList<MethodInfo>();
-                            }
-
-                            this.representMethods.add(new MethodInfo(method,
-                                    variants));
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    /**
      * Returns the preferred variant according to the client preferences
      * specified in the request.
      * 
@@ -493,60 +240,6 @@ public class Resource extends Handler {
     }
 
     /**
-     * Returns a full representation of the given variant using a specific
-     * represent*() method.
-     * 
-     * @param method
-     *            The speficic represent*() method to use.
-     * @param variant
-     *            The variant to represent.
-     * @return The full representation.
-     */
-    private Representation getRepresentation(java.lang.reflect.Method method,
-            Variant variant) {
-        Representation result = null;
-        List<Object> args = null;
-
-        for (Class<?> parameter : method.getParameterTypes()) {
-            if (Variant.class.isAssignableFrom(parameter)) {
-                if (args == null) {
-                    args = new ArrayList<Object>();
-                }
-
-                args.add(variant);
-            } else if (MediaType.class.isAssignableFrom(parameter)) {
-                if (args == null) {
-                    args = new ArrayList<Object>();
-                }
-
-                args.add(variant.getMediaType());
-            } else if (CharacterSet.class.isAssignableFrom(parameter)) {
-                if (args == null) {
-                    args = new ArrayList<Object>();
-                }
-
-                args.add(variant.getCharacterSet());
-            }
-        }
-
-        try {
-            if (args != null) {
-                result = (Representation) method.invoke(this, args);
-            } else {
-                result = (Representation) method.invoke(this);
-            }
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        }
-
-        return result;
-    }
-
-    /**
      * Returns a full representation for a given variant previously returned via
      * the getVariants() method. The default implementation directly returns the
      * variant in case the variants are already full representations. In all
@@ -569,28 +262,6 @@ public class Resource extends Handler {
 
         try {
             result = represent(variant);
-
-            if ((result == null) && isDetectVariants()
-                    && (this.representMethods != null)) {
-                for (Resource.MethodInfo rm : this.representMethods) {
-                    if (result == null) {
-                        for (Variant rmVariant : rm.getMethodVariants()) {
-                            if (rmVariant.equals(variant)) {
-                                result = getRepresentation(rm.getMethod(),
-                                        rmVariant);
-                                continue;
-                            }
-                        }
-                    }
-                }
-            }
-
-            if ((result == null) && (variant instanceof Representation)) {
-                result = (Representation) variant;
-            }
-
-            return result;
-
         } catch (ResourceException re) {
             getResponse().setStatus(re.getStatus(), re);
         }
@@ -721,11 +392,6 @@ public class Resource extends Handler {
         } else {
             // The variant that may need to meet the request conditions
             Representation selectedRepresentation = null;
-
-            // Optionally detect the variants and matching represent*() methods.
-            if (isDetectVariants()) {
-                detectVariants();
-            }
 
             final List<Variant> variants = getVariants();
             if ((variants == null) || (variants.isEmpty())) {
@@ -951,16 +617,6 @@ public class Resource extends Handler {
     }
 
     /**
-     * Indicates if the variants and the supporting represent*() methods should
-     * be detected and used.
-     * 
-     * @return True if the variants should be detected.
-     */
-    public boolean isDetectVariants() {
-        return detectVariants;
-    }
-
-    /**
      * Indicates if the representations can be modified via the
      * {@link #handlePost()}, the {@link #handlePut()} or the
      * {@link #handleDelete()} methods.
@@ -1019,14 +675,16 @@ public class Resource extends Handler {
 
     /**
      * Returns a full representation for a given variant previously returned via
-     * the getVariants() method. The default implementation returns null.<br>
+     * the getVariants() method. The default implementation directly returns the
+     * variant in case the variants are already full representations. In all
+     * other cases, you will need to override this method in order to provide
+     * your own implementation. <br>
      * <br>
      * 
-     * This method is very useful for fine grained control of content
-     * negotiation when it is too costly to initialize all the potential
-     * representations. It allows a resource to simply expose the available
-     * variants via the getVariants() method and to actually server the one
-     * selected via this method.
+     * This method is very useful for content negotiation when it is too costly
+     * to initialize all the potential representations. It allows a resource to
+     * simply expose the available variants via the getVariants() method and to
+     * actually server the one selected via this method.
      * 
      * @param variant
      *            The variant whose full representation must be returned.
@@ -1035,7 +693,13 @@ public class Resource extends Handler {
      */
     @SuppressWarnings("unused")
     public Representation represent(Variant variant) throws ResourceException {
-        return null;
+        Representation result = null;
+
+        if (variant instanceof Representation) {
+            result = (Representation) variant;
+        }
+
+        return result;
     }
 
     /**
@@ -1050,17 +714,6 @@ public class Resource extends Handler {
      */
     public void setAvailable(boolean available) {
         this.available = available;
-    }
-
-    /**
-     * Indicates if the variants and the supporting represent*() methods should
-     * be detected and used.
-     * 
-     * @param detectVariants
-     *            True if the variants should be detected.
-     */
-    public void setDetectVariants(boolean detectVariants) {
-        this.detectVariants = detectVariants;
     }
 
     /**
@@ -1123,4 +776,5 @@ public class Resource extends Handler {
             throws ResourceException {
         getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
     }
+
 }
