@@ -192,15 +192,16 @@ public class Router extends Restlet {
      * pattern. A new route will be added routing to the target when calls with
      * a URI matching the pattern will be received.
      * 
-     * @param uriPattern
-     *            The URI pattern that must match the relative part of the
+     * @param pathTemplate
+     *            The URI path template that must match the relative part of the
      *            resource URI.
      * @param targetClass
      *            The target Resource class to attach.
      * @return The created route.
      */
-    public Route attach(String uriPattern, Class<? extends Resource> targetClass) {
-        return attach(uriPattern, createFinder(targetClass));
+    public Route attach(String pathTemplate,
+            Class<? extends Resource> targetClass) {
+        return attach(pathTemplate, createFinder(targetClass));
     }
 
     /**
@@ -208,15 +209,15 @@ public class Router extends Restlet {
      * new route will be added routing to the target when calls with a URI
      * matching the pattern will be received.
      * 
-     * @param uriPattern
-     *            The URI pattern that must match the relative part of the
+     * @param pathTemplate
+     *            The URI path template that must match the relative part of the
      *            resource URI.
      * @param target
      *            The target Restlet to attach.
      * @return The created route.
      */
-    public Route attach(String uriPattern, Restlet target) {
-        final Route result = createRoute(uriPattern, target);
+    public Route attach(String pathTemplate, Restlet target) {
+        final Route result = createRoute(pathTemplate, target);
         getRoutes().add(result);
         return result;
     }
