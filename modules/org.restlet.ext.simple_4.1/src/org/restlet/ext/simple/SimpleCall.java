@@ -69,7 +69,7 @@ public class SimpleCall extends HttpServerCall {
 
     /** Indicates if the request headers were parsed and added. */
     private volatile boolean requestHeadersAdded;
-    
+
     /**
      * The version of the request;
      */
@@ -97,15 +97,15 @@ public class SimpleCall extends HttpServerCall {
         setConfidential(confidential);
         this.requestHeadersAdded = false;
     }
-    
+
     @Override
     protected boolean isClientKeepAlive() {
-       return request.isKeepAlive();
+        return request.isKeepAlive();
     }
-    
+
     @Override
     protected long getContentLength() {
-       return request.getContentLength();
+        return request.getContentLength();
     }
 
     @Override
@@ -120,12 +120,12 @@ public class SimpleCall extends HttpServerCall {
 
     @Override
     public String getHostDomain() {
-       return super.getHostDomain(); // FIXME
+        return super.getHostDomain(); // FIXME
     }
-    
+
     @Override
     public String getClientAddress() {
-        return this.request.getClientAddress().getHostName();
+        return this.request.getClientAddress().getAddress().getHostAddress();
     }
 
     @Override
@@ -175,11 +175,11 @@ public class SimpleCall extends HttpServerCall {
         final Series<Parameter> result = super.getRequestHeaders();
 
         if (!this.requestHeadersAdded) {
-        	final List<String> names = this.request.getNames();
-        	
-        	for(String name : names) {
-        		result.add(new Parameter(name, this.request.getValue(name)));
-        	}
+            final List<String> names = this.request.getNames();
+
+            for (String name : names) {
+                result.add(new Parameter(name, this.request.getValue(name)));
+            }
             this.requestHeadersAdded = true;
         }
 
@@ -236,7 +236,7 @@ public class SimpleCall extends HttpServerCall {
         return (SocketChannel) this.request
                 .getAttribute(SimpleServer.PROPERTY_SOCKET);
     }
-    
+
     /**
      * Returns the SSL engine.
      * 
@@ -287,7 +287,7 @@ public class SimpleCall extends HttpServerCall {
     @Override
     public void writeResponseHead(org.restlet.data.Response restletResponse)
             throws IOException {
-        //this.response.clear();
+        // this.response.clear();
         for (final Parameter header : getResponseHeaders()) {
             this.response.add(header.getName(), header.getValue());
         }
