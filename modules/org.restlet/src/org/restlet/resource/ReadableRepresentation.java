@@ -81,7 +81,6 @@ public class ReadableRepresentation extends ChannelRepresentation {
     @Override
     public ReadableByteChannel getChannel() throws IOException {
         final ReadableByteChannel result = this.channel;
-        this.channel = null;
         setAvailable(false);
         return result;
     }

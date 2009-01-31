@@ -7,9 +7,11 @@ Changes log
     - Bugs fixed
 	     - Fixed Regex issue in Template with fixed variables. 
 		    Contributed by Bruno Dumon.
+		 - Fixed bug in ReadableRepresentation preventing channel from
+		   closing. Reported by Janne Husberg.
     - Misc
-	     - Upgraded JAXB to version 2.1.9.
-        - Upgraded Grizzly to version 1.9.5.
+         - Upgraded JAXB to version 2.1.9.
+         - Upgraded Grizzly to version 1.9.5.
 
 - 1.1.2 (2009-01-23)
     - Bugs fixed
