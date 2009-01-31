@@ -66,7 +66,7 @@ public class Application extends org.restlet.Application {
         /** Open and keep the db4o object container. */
         final Configuration config = Db4o.newConfiguration();
         config.updateDepth(2);
-        this.container = Db4o.openFile(System.getProperty("user.home")
+        this.container = Db4o.openFile(config, System.getProperty("user.home")
                 + File.separator + "restbook.dbo");
     }
 

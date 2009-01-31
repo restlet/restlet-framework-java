@@ -66,7 +66,7 @@ public class Db4oFacade extends DataFacade {
         config.updateDepth(2);
         config.activationDepth(10);
 
-        this.objectContainer = Db4o.openFile(db4oFilePath);
+        this.objectContainer = Db4o.openFile(config, db4oFilePath);
     }
 
     @Override
