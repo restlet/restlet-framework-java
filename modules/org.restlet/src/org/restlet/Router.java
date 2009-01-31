@@ -108,7 +108,7 @@ public class Router extends Restlet {
      * Each call will be randomly routed to one of the routes that reached the
      * required score. If the random route selected is not a match then the
      * immediate next route is evaluated until one matching route is found. If
-     * we get back to the inital random route selected with no match, then we
+     * we get back to the initial random route selected with no match, then we
      * return null.
      */
     public static final int RANDOM = 5;
@@ -312,8 +312,8 @@ public class Router extends Restlet {
 
     /**
      * Returns the matched route according to a custom algorithm. To use in
-     * combination of the RouterMode.CUSTOM enumeration. The default
-     * implementation (to be overriden), returns null.
+     * combination of the {@link #CUSTOM} option. The default implementation (to
+     * be overridden), returns null.
      * 
      * @param request
      *            The request to handle.
@@ -348,7 +348,7 @@ public class Router extends Restlet {
 
     /**
      * Returns the default route to test if no other one was available after
-     * retrying the maximum number of attemps.
+     * retrying the maximum number of attempts.
      * 
      * @return The default route tested if no other one was available.
      */
@@ -460,10 +460,10 @@ public class Router extends Restlet {
     }
 
     /**
-     * Returns the delay (in seconds) before a new attempt. The default value is
-     * 500 ms.
+     * Returns the delay in milliseconds before a new attempt is made. The
+     * default value is {@code 500}.
      * 
-     * @return The delay (in seconds) before a new attempt.
+     * @return The delay in milliseconds before a new attempt is made.
      */
     public long getRetryDelay() {
         return this.retryDelay;
@@ -574,10 +574,10 @@ public class Router extends Restlet {
     }
 
     /**
-     * Sets the delay (in seconds) before a new attempt.
+     * Sets the delay in milliseconds before a new attempt is made.
      * 
      * @param retryDelay
-     *            The delay (in seconds) before a new attempt.
+     *            The delay in milliseconds before a new attempt is made.
      */
     public void setRetryDelay(long retryDelay) {
         this.retryDelay = retryDelay;

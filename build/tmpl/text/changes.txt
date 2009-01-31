@@ -24,6 +24,8 @@ Changes log
      - Misc
         - Upgraded Simple server to version 4.1.2. 
           Contributed by Niall Gallagher.
+        - Fixed Javadocs typos in Router and Resource. Contributed by
+          Raif S. Naffah.
 
 - 1.2 Milestone 1 (2009-01-23)
     - Breaking changes

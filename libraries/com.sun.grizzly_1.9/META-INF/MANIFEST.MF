@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Grizzly NIO Framework
 Bundle-SymbolicName: com.sun.grizzly
-Bundle-Version: 1.9.4
+Bundle-Version: 1.9.5
 Bundle-ClassPath: com.sun.grizzly.jar,
  com.sun.grizzly.util.jar
 Bundle-Vendor: Sun Microsystems Inc.
