@@ -5,10 +5,12 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Bugs fixed
-	     - Fixed Regex issue in Template with fixed variables. 
-		    Contributed by Bruno Dumon.
-		 - Fixed bug in ReadableRepresentation preventing channel from
-		   closing. Reported by Janne Husberg.
+       - Fixed Regex issue in Template with fixed variables. 
+         Contributed by Bruno Dumon.
+       - Fixed bug in ReadableRepresentation preventing channel from
+         closing. Reported by Janne Husberg.
+       - Fixed bug with jSSLutils integration. Reported by Dan Noble 
+         and fixed by Bruno Harbulot. 
     - Misc
          - Upgraded JAXB to version 2.1.9.
          - Upgraded Grizzly to version 1.9.5.
