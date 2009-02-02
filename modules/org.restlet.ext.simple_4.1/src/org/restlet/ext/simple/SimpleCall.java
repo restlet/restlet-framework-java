@@ -146,8 +146,13 @@ public class SimpleCall extends HttpServerCall {
 
     @Override
     public ReadableByteChannel getRequestEntityChannel(long size) {
-        // Unsupported.
-        return null;
+    	// No performance benefit getting request channel
+        //try {
+        //    return this.request.getByteChannel();
+        //} catch (Exception ex) {
+        //    return null;
+        //}
+    	return null;
     }
 
     @Override
@@ -161,8 +166,13 @@ public class SimpleCall extends HttpServerCall {
 
     @Override
     public ReadableByteChannel getRequestHeadChannel() {
-        // Not available
-        return null;
+    	// No performance benefit getting request channel
+        //try {
+        //    return this.request.getByteChannel();
+        //} catch (Exception ex) {
+        //    return null;
+        //}
+    	return null;
     }
 
     /**
@@ -188,8 +198,12 @@ public class SimpleCall extends HttpServerCall {
 
     @Override
     public InputStream getRequestHeadStream() {
-        // Not available
-        return null;
+        //try {
+        //    return this.request.getInputStream();
+        //} catch (Exception ex) {
+        //    return null;
+        //}
+    	return null;
     }
 
     /**
@@ -209,8 +223,11 @@ public class SimpleCall extends HttpServerCall {
      */
     @Override
     public WritableByteChannel getResponseEntityChannel() {
-        // Unsupported.
-        return null;
+        try {
+            return this.response.getByteChannel();
+        } catch (Exception ex) {
+            return null;
+        }
     }
 
     /**
@@ -296,7 +313,7 @@ public class SimpleCall extends HttpServerCall {
         this.response.setCode(getStatusCode());
         this.response.setText(getReasonPhrase());
 
-        // To ensure that Simple doesn't switch to chunked encoding
+        // Is this really required
         if (restletResponse.getEntity() == null) {
             this.response.setContentLength(0);
         }
