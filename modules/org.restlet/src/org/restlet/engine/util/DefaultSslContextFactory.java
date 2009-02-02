@@ -1,4 +1,4 @@
-/*/**
+/**
  * Copyright 2005-2009 Noelios Technologies.
  * 
  * The contents of this file are subject to the terms of the following open
@@ -101,8 +101,8 @@ public class DefaultSslContextFactory extends SslContextFactory {
     /**
      * KeyStore type of the keystore.
      */
-    private String keyStoreType = System.getProperty(
-            "javax.net.ssl.keyStoreType", KeyStore.getDefaultType());
+    private String keyStoreType = System
+            .getProperty("javax.net.ssl.keyStoreType");
 
     /**
      * Name of the SecureRandom algorithm.
@@ -144,8 +144,8 @@ public class DefaultSslContextFactory extends SslContextFactory {
     /**
      * KeyStore type of the trust store.
      */
-    private String trustStoreType = System.getProperty(
-            "javax.net.ssl.trustStoreType", KeyStore.getDefaultType());
+    private String trustStoreType = System
+            .getProperty("javax.net.ssl.trustStoreType");
 
     /**
      * This class is likely to contain sensitive information; cloning is
@@ -180,8 +180,13 @@ public class DefaultSslContextFactory extends SslContextFactory {
              * Loads the key store.
              */
             final KeyStore keyStore = (this.keyStoreProvider != null) ? KeyStore
-                    .getInstance(this.keyStoreType, this.keyStoreProvider)
-                    : KeyStore.getInstance(this.keyStoreType);
+                    .getInstance(
+                            (this.keyStoreType != null) ? this.keyStoreType
+                                    : KeyStore.getDefaultType(),
+                            this.keyStoreProvider)
+                    : KeyStore
+                            .getInstance((this.keyStoreType != null) ? this.keyStoreType
+                                    : KeyStore.getDefaultType());
             FileInputStream keyStoreInputStream = null;
             try {
                 keyStoreInputStream = ((this.keyStorePath != null) && (!"NONE"
@@ -208,8 +213,13 @@ public class DefaultSslContextFactory extends SslContextFactory {
              * Loads the trust store.
              */
             final KeyStore trustStore = (this.trustStoreProvider != null) ? KeyStore
-                    .getInstance(this.trustStoreType, this.trustStoreProvider)
-                    : KeyStore.getInstance(this.trustStoreType);
+                    .getInstance(
+                            (this.trustStoreType != null) ? this.trustStoreType
+                                    : KeyStore.getDefaultType(),
+                            this.trustStoreProvider)
+                    : KeyStore
+                            .getInstance((this.trustStoreType != null) ? this.trustStoreType
+                                    : KeyStore.getDefaultType());
 
             FileInputStream trustStoreInputStream = null;
             try {
@@ -323,10 +333,18 @@ public class DefaultSslContextFactory extends SslContextFactory {
         setKeyStorePassword(helperParameters.getFirstValue("keystorePassword",
                 System.getProperty("javax.net.ssl.keyStorePassword", "")));
         setKeyStoreType(helperParameters.getFirstValue("keystoreType", System
-                .getProperty("javax.net.ssl.keyStoreType", KeyStore
-                        .getDefaultType())));
+                .getProperty("javax.net.ssl.keyStoreType")));
         setKeyStoreKeyPassword(helperParameters.getFirstValue("keyPassword",
                 System.getProperty("javax.net.ssl.keyPassword", "")));
+
+        setTrustStorePath(helperParameters.getFirstValue("truststorePath",
+                System.getProperty("javax.net.ssl.trustStore")));
+        setTrustStorePassword(helperParameters.getFirstValue(
+                "truststorePassword", System
+                        .getProperty("javax.net.ssl.trustStorePassword")));
+        setTrustStoreType(helperParameters.getFirstValue("truststoreType",
+                System.getProperty("javax.net.ssl.trustStoreType")));
+
         setKeyManagerAlgorithm(helperParameters.getFirstValue("certAlgorithm",
                 "SunX509"));
         setSecureSocketProtocol(helperParameters.getFirstValue("sslProtocol",

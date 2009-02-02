@@ -171,7 +171,7 @@ public class HttpsUtils extends HttpUtils {
      */
     public static SslContextFactory getSslContextFactory(Helper<?> helper) {
         SslContextFactory result = (SslContextFactory) ((helper.getContext() == null) ? null
-                : helper.getContext()).getAttributes().get("sslContextFactory");
+                : helper.getContext().getAttributes().get("sslContextFactory"));
 
         if (result == null) {
             String[] sslContextFactoryNames = helper.getHelpedParameters()

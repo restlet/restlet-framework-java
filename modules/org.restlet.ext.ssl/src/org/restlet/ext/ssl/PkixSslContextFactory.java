@@ -193,7 +193,7 @@ public class PkixSslContextFactory extends SslContextFactory {
         }
 
         KeyStoreLoader trustStoreLoader = KeyStoreLoader
-                .getKeyStoreDefaultLoader();
+                .getTrustStoreDefaultLoader();
         String trustStorePath = parameters.getFirstValue("truststorePath");
         if (trustStorePath != null) {
             trustStoreLoader.setKeyStorePath(trustStorePath);
