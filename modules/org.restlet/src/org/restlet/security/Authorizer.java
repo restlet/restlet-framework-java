@@ -54,6 +54,24 @@ public abstract class Authorizer extends Filter {
         }
     };
 
+    /** The identifier unique within an application. */
+    private volatile String identifier;
+
+    /**
+     * Default constructor.
+     */
+    private Authorizer() {
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param identifier
+     */
+    public Authorizer(String identifier) {
+        this.identifier = identifier;
+    }
+
     /**
      * Attempts to authorize the request.
      * 
@@ -64,5 +82,24 @@ public abstract class Authorizer extends Filter {
      * @return True if the authorization succeeded.
      */
     public abstract boolean authorize(Request request, Response response);
+
+    /**
+     * Returns the identifier unique within an application.
+     * 
+     * @return The identifier unique within an application.
+     */
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    /**
+     * Sets the identifier unique within an application.
+     * 
+     * @param identifier
+     *            The identifier unique within an application.
+     */
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
 
 }
