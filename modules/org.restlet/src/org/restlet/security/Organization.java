@@ -27,7 +27,10 @@
 
 package org.restlet.security;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -58,6 +61,79 @@ public class Organization {
     public Organization() {
         this.rootGroups = new CopyOnWriteArrayList<Group>();
         this.users = new CopyOnWriteArrayList<User>();
+    }
+
+    /**
+     * Recursively adds groups where a given user is a member.
+     * 
+     * @param user
+     *            The member user.
+     * @param userGroups
+     *            The set of user groups to update.
+     * @param currentGroup
+     *            The current group to inspect.
+     * @param stack
+     *            The stack of ancestor groups.
+     * @param inheritOnly
+     *            Indicates if only the ancestors groups that have their
+     *            "inheritRoles" property enabled should be added.
+     */
+    private void addGroups(User user, Set<Group> userGroups,
+            Group currentGroup, List<Group> stack, boolean inheritOnly) {
+        if ((currentGroup != null) && !stack.contains(currentGroup)) {
+            stack.add(currentGroup);
+
+            if (currentGroup.getMemberUsers().contains(user)) {
+                userGroups.add(currentGroup);
+
+                // Add the ancestor groups as well
+                boolean inherit = !inheritOnly || currentGroup.isInheritRoles();
+                Group group;
+
+                for (int i = stack.size() - 1; inherit && (i >= 0); i--) {
+                    group = stack.get(i);
+                    userGroups.add(group);
+                    inherit = !inheritOnly || group.isInheritRoles();
+                }
+            }
+
+            for (Group group : currentGroup.getMemberGroups()) {
+                addGroups(user, userGroups, group, stack, inheritOnly);
+            }
+        }
+    }
+
+    /**
+     * Finds the set of groups where a given user is a member.
+     * 
+     * @param user
+     *            The member user.
+     * @return The set of groups.
+     */
+    public Set<Group> findGroups(User user) {
+        return findGroups(user, true);
+    }
+
+    /**
+     * Finds the set of groups where a given user is a member.
+     * 
+     * @param user
+     *            The member user.
+     * @param inheritOnly
+     *            Indicates if only the ancestors groups that have their
+     *            "inheritRoles" property enabled should be added.
+     * @return The set of groups.
+     */
+    public Set<Group> findGroups(User user, boolean inheritOnly) {
+        Set<Group> result = new HashSet<Group>();
+        List<Group> stack = new ArrayList<Group>();
+
+        // Recursively find user groups
+        for (Group group : getRootGroups()) {
+            addGroups(user, result, group, stack, inheritOnly);
+        }
+
+        return result;
     }
 
     /**

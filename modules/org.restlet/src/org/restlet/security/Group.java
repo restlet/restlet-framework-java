@@ -42,8 +42,8 @@ public class Group {
     private volatile String description;
 
     /**
-     * Indicates if the roles (ie. indirectly the granted or denied permissions)
-     * of the parent group should be inherited.
+     * Indicates if the roles of the parent group should be inherited. Those
+     * roles indirectly cover the granted or denied permissions.
      */
     private volatile boolean inheritRoles;
 
@@ -55,12 +55,6 @@ public class Group {
 
     /** The display name. */
     private volatile String name;
-
-    /**
-     * Indicates if the permissions (granted or denied) of this group should be
-     * transmitted to member groups.
-     */
-    private volatile boolean transmitPermissions;
 
     /**
      * Constructor.
@@ -101,12 +95,14 @@ public class Group {
         return this.name;
     }
 
+    /**
+     * Indicates if the roles of the parent group should be inherited. Those
+     * roles indirectly cover the granted or denied permissions.
+     * 
+     * @return True if the roles of the parent group should be inherited.
+     */
     public boolean isInheritRoles() {
         return inheritRoles;
-    }
-
-    public boolean isTransmitPermissions() {
-        return transmitPermissions;
     }
 
     /**
@@ -119,6 +115,13 @@ public class Group {
         this.description = description;
     }
 
+    /**
+     * Indicates if the roles of the parent group should be inherited. Those
+     * roles indirectly cover the granted or denied permissions.
+     * 
+     * @param inheritPermissions
+     *            True if the roles of the parent group should be inherited.
+     */
     public void setInheritRoles(boolean inheritPermissions) {
         this.inheritRoles = inheritPermissions;
     }
@@ -159,10 +162,6 @@ public class Group {
      */
     public void setName(String name) {
         this.name = name;
-    }
-
-    public void setTransmitPermissions(boolean transmitPermissions) {
-        this.transmitPermissions = transmitPermissions;
     }
 
 }
