@@ -25,31 +25,27 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.test;
+package org.restlet.test.data;
 
-import org.restlet.data.Language;
+import junit.framework.TestCase;
+
+import org.restlet.data.LocalReference;
 
 /**
- * Test {@link org.restlet.data.Language}.
+ * Unit test case for the File Reference parsing.
  * 
  * @author Jerome Louvel
  */
-public class LanguageTestCase extends RestletTestCase {
+public class FileReferenceTestCase extends TestCase {
 
-    /**
-     * Testing {@link Language#valueOf(String)}
-     */
-    public void testValueOf() {
-        assertSame(Language.FRENCH_FRANCE, Language.valueOf("fr-fr"));
-        assertSame(Language.ALL, Language.valueOf("*"));
+    public void testCreation() {
+        final String path = "D:\\Restlet\\build.xml";
+        final LocalReference fr = LocalReference.createFileReference(path);
+        fr.getFile();
+
+        assertEquals("file", fr.getScheme());
+        assertEquals("", fr.getAuthority());
+        assertEquals("/D:/Restlet/build.xml", fr.getPath());
     }
 
-    public void testUnmodifiable() {
-        try {
-            Language.FRENCH_FRANCE.getSubTags().add("foo");
-            fail("The subtags shouldn't be modifiable");
-        } catch (UnsupportedOperationException uoe) {
-            // As expected
-        }
-    }
 }

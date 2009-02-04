@@ -30,12 +30,23 @@ package org.restlet.test;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.restlet.test.data.CookieTestCase;
+import org.restlet.test.data.FileReferenceTestCase;
+import org.restlet.test.data.LanguageTestCase;
+import org.restlet.test.data.MediaTypeTestCase;
+import org.restlet.test.data.ProductTokenTestCase;
+import org.restlet.test.data.ReferenceTestCase;
+import org.restlet.test.data.StatusTestCase;
 import org.restlet.test.engine.EngineTestSuite;
 import org.restlet.test.ext.atom.AtomTestCase;
 import org.restlet.test.ext.freemarker.FreeMarkerTestCase;
 import org.restlet.test.ext.spring.AllSpringTests;
+import org.restlet.test.ext.velocity.VelocityTestCase;
 import org.restlet.test.ext.wadl.WadlTestCase;
 import org.restlet.test.jaxrs.AllJaxRsTests;
+import org.restlet.test.resource.FileRepresentationTestCase;
+import org.restlet.test.resource.ResourceTestCase;
+import org.restlet.test.util.TemplateTestCase;
 
 /**
  * Suite of unit tests for the Restlet RI.
@@ -58,7 +69,6 @@ public class RestletTestSuite extends TestSuite {
     /** Constructor. */
     public RestletTestSuite() {
         addTestSuite(AtomTestCase.class);
-        addTestSuite(ByteUtilsTestCase.class);
         addTestSuite(CallTestCase.class);
         addTestSuite(ComponentXmlConfigTestCase.class);
         addTestSuite(ComponentXmlTestCase.class);
@@ -72,7 +82,6 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(FreeMarkerTestCase.class);
         addTestSuite(HeaderTestCase.class);
         addTestSuite(HttpBasicTestCase.class);
-        addTestSuite(ImmutableDateTestCase.class);
         addTestSuite(LanguageTestCase.class);
         addTestSuite(MediaTypeTestCase.class);
         addTestSuite(ProductTokenTestCase.class);
@@ -85,7 +94,6 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(RestletXmlTestCase.class);
         addTestSuite(RiapTestCase.class);
         addTestSuite(RouteListTestCase.class);
-        addTestSuite(SpringTestCase.class);
         addTestSuite(StatusTestCase.class);
         addTestSuite(TemplateFilterTestCase.class);
         addTestSuite(TemplateTestCase.class);

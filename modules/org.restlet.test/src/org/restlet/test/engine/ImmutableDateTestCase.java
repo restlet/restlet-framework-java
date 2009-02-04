@@ -25,13 +25,14 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.test;
+package org.restlet.test.engine;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
 import org.restlet.engine.util.DateUtils;
+import org.restlet.test.RestletTestCase;
 
 /**
  * Test {@link org.restlet.engine.util.DateUtils}.

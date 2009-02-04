@@ -262,7 +262,7 @@ public class Context {
      * 
      * @return A local verifier.
      */
-    public LocalVerifier getSecretVerifier() {
+    public LocalVerifier getVerifier() {
         return new LocalVerifier() {
 
             @Override

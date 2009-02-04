@@ -31,8 +31,6 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import org.restlet.test.SpringTestCase;
-
 /**
  * Suite with all Spring unit tests.
  * 
@@ -42,9 +40,9 @@ public class AllSpringTests extends TestCase {
     public static Test suite() {
         final TestSuite suite = new TestSuite();
         suite.setName("all spring-ext tests");
-        suite.addTestSuite(SpringTestCase.class);
-        suite.addTestSuite(SpringBeanFinderTest.class);
         suite.addTestSuite(BeanNameRouterTest.class);
+        suite.addTestSuite(SpringBeanFinderTest.class);
+        suite.addTestSuite(SpringTestCase.class);
         return suite;
     }
 }

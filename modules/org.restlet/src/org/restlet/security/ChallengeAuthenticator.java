@@ -28,10 +28,14 @@
 package org.restlet.security;
 
 import org.restlet.Context;
+import org.restlet.Guard;
+import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.engine.Engine;
+import org.restlet.engine.authentication.ChallengeAuthenticatorHelper;
 
 /**
  * Authenticator based on a challenge scheme such as HTTP Basic.
@@ -60,12 +64,58 @@ public class ChallengeAuthenticator extends Authenticator {
             ChallengeScheme challengeScheme) {
         super(context, mode);
         this.scheme = challengeScheme;
-        this.verifier = null;
+        this.verifier = context.getVerifier();
     }
 
     @Override
     protected boolean authenticate(Request request, Response response) {
-        return false;
+        int result = Guard.AUTHENTICATION_MISSING;
+
+        if (getScheme() != null) {
+            // An authentication scheme has been defined,
+            // the request must be authenticated
+            final ChallengeResponse cr = request.getChallengeResponse();
+
+            if (cr != null) {
+                if (getScheme().equals(cr.getScheme())) {
+                    final ChallengeAuthenticatorHelper helper = Engine
+                            .getInstance().findHelper(cr.getScheme(), false,
+                                    true);
+
+                    if (helper != null) {
+                        result = Guard.AUTHENTICATION_MISSING;
+
+                        // The challenge schemes are compatible
+                        final String identifier = cr.getIdentifier();
+                        final char[] secret = cr.getSecret();
+
+                        // Check the credentials
+                        if ((identifier != null) && (secret != null)) {
+                            // result = getVerifier().verify(request, response)
+                            // ? Guard.AUTHENTICATION_VALID
+                            // : Guard.AUTHENTICATION_INVALID;
+                        }
+                    } else {
+                        throw new IllegalArgumentException("Challenge scheme "
+                                + getScheme()
+                                + " not supported by the Restlet engine.");
+                    }
+                } else {
+                    // The challenge schemes are incompatible, we need to
+                    // challenge the client
+                }
+            } else {
+                // No challenge response found, we need to challenge the client
+            }
+        }
+
+        if (request.getChallengeResponse() != null) {
+            // Update the challenge response accordingly
+            request.getChallengeResponse().setAuthenticated(
+                    result == Guard.AUTHENTICATION_VALID);
+        }
+
+        return true; // result;
     }
 
     /**

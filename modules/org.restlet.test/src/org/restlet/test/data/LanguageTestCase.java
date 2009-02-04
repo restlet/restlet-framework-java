@@ -25,32 +25,32 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.test;
+package org.restlet.test.data;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.StringWriter;
-
-import junit.framework.TestCase;
-
-import org.restlet.engine.io.ByteUtils;
+import org.restlet.data.Language;
+import org.restlet.test.RestletTestCase;
 
 /**
- * Test case for the ByteUtils class.
+ * Test {@link org.restlet.data.Language}.
  * 
- * @author Kevin Conaway
+ * @author Jerome Louvel
  */
-public class ByteUtilsTestCase extends TestCase {
+public class LanguageTestCase extends RestletTestCase {
 
-    public void testGetStream() throws IOException {
-        final StringWriter writer = new StringWriter();
-
-        final OutputStream out = ByteUtils.getStream(writer);
-
-        out.write("test".getBytes());
-        out.flush();
-        out.close();
-        assertEquals("test", writer.toString());
+    /**
+     * Testing {@link Language#valueOf(String)}
+     */
+    public void testValueOf() {
+        assertSame(Language.FRENCH_FRANCE, Language.valueOf("fr-fr"));
+        assertSame(Language.ALL, Language.valueOf("*"));
     }
 
+    public void testUnmodifiable() {
+        try {
+            Language.FRENCH_FRANCE.getSubTags().add("foo");
+            fail("The subtags shouldn't be modifiable");
+        } catch (UnsupportedOperationException uoe) {
+            // As expected
+        }
+    }
 }

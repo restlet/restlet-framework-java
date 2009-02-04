@@ -25,27 +25,32 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.test;
+package org.restlet.test.engine;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.StringWriter;
 
 import junit.framework.TestCase;
 
-import org.restlet.data.LocalReference;
+import org.restlet.engine.io.ByteUtils;
 
 /**
- * Unit test case for the File Reference parsing.
+ * Test case for the ByteUtils class.
  * 
- * @author Jerome Louvel
+ * @author Kevin Conaway
  */
-public class FileReferenceTestCase extends TestCase {
+public class ByteUtilsTestCase extends TestCase {
 
-    public void testCreation() {
-        final String path = "D:\\Restlet\\build.xml";
-        final LocalReference fr = LocalReference.createFileReference(path);
-        fr.getFile();
+    public void testGetStream() throws IOException {
+        final StringWriter writer = new StringWriter();
 
-        assertEquals("file", fr.getScheme());
-        assertEquals("", fr.getAuthority());
-        assertEquals("/D:/Restlet/build.xml", fr.getPath());
+        final OutputStream out = ByteUtils.getStream(writer);
+
+        out.write("test".getBytes());
+        out.flush();
+        out.close();
+        assertEquals("test", writer.toString());
     }
 
 }

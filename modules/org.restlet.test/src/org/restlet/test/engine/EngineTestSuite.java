@@ -50,6 +50,7 @@ public class EngineTestSuite extends TestSuite {
     public EngineTestSuite() {
         addTestSuite(AuthenticationTestCase.class);
         addTestSuite(Base64TestCase.class);
+        addTestSuite(ByteUtilsTestCase.class);
         addTestSuite(ChunkedEncodingPutTestCase.class);
         addTestSuite(ChunkedEncodingTestCase.class);
         addTestSuite(ChunkedInputStreamTestCase.class);
@@ -60,6 +61,7 @@ public class EngineTestSuite extends TestSuite {
         addTestSuite(GetChunkedTestCase.class);
         addTestSuite(HeaderTestCase.class);
         addTestSuite(HttpCallTestCase.class);
+        addTestSuite(ImmutableDateTestCase.class);
         addTestSuite(InputEntityStreamTestCase.class);
         addTestSuite(KeepAliveInputStreamTestCase.class);
         addTestSuite(KeepAliveOutputStreamTestCase.class);
