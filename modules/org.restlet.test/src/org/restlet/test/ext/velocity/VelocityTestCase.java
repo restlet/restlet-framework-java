@@ -32,8 +32,6 @@ import java.io.FileWriter;
 import java.util.Map;
 import java.util.TreeMap;
 
-import junit.framework.TestCase;
-
 import org.restlet.Client;
 import org.restlet.data.LocalReference;
 import org.restlet.data.MediaType;
@@ -41,13 +39,14 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.ext.velocity.TemplateRepresentation;
 import org.restlet.resource.Representation;
+import org.restlet.test.RestletTestCase;
 
 /**
  * Test case for the Velocity extension.
  * 
  * @author Jerome Louvel
  */
-public class VelocityTestCase extends TestCase {
+public class VelocityTestCase extends RestletTestCase {
 
     public void testRepresentationTemplate() throws Exception {
         // Create a temporary directory for the tests

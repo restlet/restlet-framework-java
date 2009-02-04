@@ -31,16 +31,15 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
 
-import junit.framework.TestCase;
-
 import org.restlet.engine.io.ByteUtils;
+import org.restlet.test.RestletTestCase;
 
 /**
  * Test case for the ByteUtils class.
  * 
  * @author Kevin Conaway
  */
-public class ByteUtilsTestCase extends TestCase {
+public class ByteUtilsTestCase extends RestletTestCase {
 
     public void testGetStream() throws IOException {
         final StringWriter writer = new StringWriter();

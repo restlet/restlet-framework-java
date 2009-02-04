@@ -27,8 +27,6 @@
 
 package org.restlet.test.engine;
 
-import junit.framework.TestCase;
-
 import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Server;
@@ -38,6 +36,7 @@ import org.restlet.engine.Engine;
 import org.restlet.engine.ServerHelper;
 import org.restlet.engine.http.StreamClientHelper;
 import org.restlet.engine.http.StreamServerHelper;
+import org.restlet.test.RestletTestCase;
 
 /**
  * Base test case that will call an abstract method for several client/server
@@ -45,7 +44,7 @@ import org.restlet.engine.http.StreamServerHelper;
  * 
  * @author Kevin Conaway
  */
-public abstract class BaseConnectorsTestCase extends TestCase {
+public abstract class BaseConnectorsTestCase extends RestletTestCase {
 
     private Component component;
 

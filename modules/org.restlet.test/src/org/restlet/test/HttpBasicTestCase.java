@@ -30,8 +30,6 @@ package org.restlet.test;
 import java.io.IOException;
 import java.util.Arrays;
 
-import junit.framework.TestCase;
-
 import org.junit.After;
 import org.junit.Before;
 import org.restlet.Application;
@@ -56,7 +54,7 @@ import org.restlet.data.Status;
  * 
  * @author Stian Soiland
  */
-public class HttpBasicTestCase extends TestCase {
+public class HttpBasicTestCase extends RestletTestCase {
 
     public class AuthenticatedRestlet extends Restlet {
         @Override
@@ -91,8 +89,6 @@ public class HttpBasicTestCase extends TestCase {
         }
     }
 
-    private static final String RESTLET_TEST_PORT = "restlet.test.port";
-
     public static final String WRONG_USERNAME = "wrongUser";
 
     public static final String SHORT_USERNAME = "user13";
@@ -104,8 +100,6 @@ public class HttpBasicTestCase extends TestCase {
     public static final String LONG_PASSWORD = "thisLongPasswordIsExtremelySecure";
 
     public static final String AUTHENTICATED_MSG = "You are authenticated";
-
-    public static final int DEFAULT_PORT = 1337;
 
     public static void main(String[] args) {
         new HttpBasicTestCase().testHTTPBasic();
@@ -229,13 +223,7 @@ public class HttpBasicTestCase extends TestCase {
 
     @Before
     public void makeServer() throws Exception {
-        int port;
-
-        if (System.getProperties().containsKey(RESTLET_TEST_PORT)) {
-            port = Integer.parseInt(System.getProperty(RESTLET_TEST_PORT));
-        }
-
-        port = DEFAULT_PORT;
+        int port = getTestPort();
         this.component = new Component();
         this.component.getServers().add(Protocol.HTTP, port);
         this.uri = "http://localhost:" + port + "/";

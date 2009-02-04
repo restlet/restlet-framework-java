@@ -32,10 +32,9 @@ import java.io.FileWriter;
 import java.util.Map;
 import java.util.TreeMap;
 
-import junit.framework.TestCase;
-
 import org.restlet.data.MediaType;
 import org.restlet.ext.freemarker.TemplateRepresentation;
+import org.restlet.test.RestletTestCase;
 
 import freemarker.template.Configuration;
 
@@ -44,7 +43,7 @@ import freemarker.template.Configuration;
  * 
  * @author Jerome Louvel
  */
-public class FreeMarkerTestCase extends TestCase {
+public class FreeMarkerTestCase extends RestletTestCase {
     public static void main(String[] args) {
         try {
             new FreeMarkerTestCase().testTemplate();

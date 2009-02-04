@@ -29,11 +29,10 @@ package org.restlet.test.engine;
 
 import java.io.IOException;
 
-import junit.framework.TestCase;
-
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Form;
 import org.restlet.engine.util.FormReader;
+import org.restlet.test.RestletTestCase;
 
 
 /**
@@ -41,7 +40,7 @@ import org.restlet.engine.util.FormReader;
  * 
  * @author Jerome Louvel
  */
-public class FormTestCase extends TestCase {
+public class FormTestCase extends RestletTestCase {
     /**
      * Tests the cookies parsing.
      */

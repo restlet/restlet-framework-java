@@ -29,8 +29,7 @@ package org.restlet.test.engine;
 
 import org.restlet.engine.http.HttpClientCall;
 import org.restlet.engine.http.HttpServerCall;
-
-import junit.framework.TestCase;
+import org.restlet.test.RestletTestCase;
 
 
 /**
@@ -38,7 +37,7 @@ import junit.framework.TestCase;
  * 
  * @author Kevin Conaway
  */
-public class HttpCallTestCase extends TestCase {
+public class HttpCallTestCase extends RestletTestCase {
 
     public void testFormatContentDisposition() {
         assertEquals("attachment; filename=\"\"", HttpServerCall

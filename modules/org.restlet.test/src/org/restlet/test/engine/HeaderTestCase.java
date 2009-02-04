@@ -29,14 +29,13 @@ package org.restlet.test.engine;
 
 import java.util.Date;
 
-import junit.framework.TestCase;
-
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Encoding;
 import org.restlet.data.MediaType;
 import org.restlet.engine.http.HeaderReader;
 import org.restlet.engine.http.PreferenceUtils;
 import org.restlet.engine.util.DateUtils;
+import org.restlet.test.RestletTestCase;
 
 
 /**
@@ -44,7 +43,7 @@ import org.restlet.engine.util.DateUtils;
  * 
  * @author Jerome Louvel
  */
-public class HeaderTestCase extends TestCase {
+public class HeaderTestCase extends RestletTestCase {
     public void testInvalidDate() {
         final String headerValue = "-1";
         final Date date = DateUtils.parse(headerValue,

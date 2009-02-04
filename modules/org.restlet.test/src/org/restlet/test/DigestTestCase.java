@@ -85,7 +85,7 @@ public class DigestTestCase extends RestletTestCase {
     @Override
     protected void setUp() throws Exception {
         component = new Component();
-        component.getServers().add(Protocol.HTTP, RestletTestSuite.PORT);
+        component.getServers().add(Protocol.HTTP, getTestPort());
         component.getDefaultHost().attach(new TestDigestApplication());
         component.start();
     }
@@ -106,7 +106,7 @@ public class DigestTestCase extends RestletTestCase {
         Client client = new Client(Protocol.HTTP);
         // Test partial Get.
         Request request = new Request(Method.PUT, "http://localhost:"
-                + RestletTestSuite.PORT + "/");
+                + getTestPort() + "/");
         StringRepresentation rep = new StringRepresentation("0123456789");
         rep.setDigest(rep.computeDigest(Digest.ALGORITHM_MD5));
         request.setEntity(rep);

@@ -30,13 +30,12 @@ package org.restlet.test.ext.spring;
 import java.util.HashSet;
 import java.util.Set;
 
-import junit.framework.TestCase;
-
 import org.restlet.Restlet;
 import org.restlet.Route;
 import org.restlet.ext.spring.SpringBeanFinder;
 import org.restlet.ext.spring.SpringBeanRouter;
 import org.restlet.resource.Resource;
+import org.restlet.test.RestletTestCase;
 import org.restlet.util.RouteList;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -45,7 +44,7 @@ import org.springframework.beans.factory.support.RootBeanDefinition;
 /**
  * @author Rhett Sutphin
  */
-public class BeanNameRouterTest extends TestCase {
+public class SpringBeanRouterTestCase extends RestletTestCase {
     private static final String ORE_URI = "/non-renewable/ore/{ore_type}";
 
     private static final String FISH_URI = "/renewable/fish/{fish_name}";

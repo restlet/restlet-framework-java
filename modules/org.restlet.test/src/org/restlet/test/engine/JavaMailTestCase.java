@@ -30,8 +30,6 @@ package org.restlet.test.engine;
 import java.io.File;
 import java.io.IOException;
 
-import junit.framework.TestCase;
-
 import org.restlet.Client;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
@@ -42,6 +40,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.DomRepresentation;
+import org.restlet.test.RestletTestCase;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -51,7 +50,7 @@ import org.w3c.dom.NodeList;
  * 
  * @author Jerome Louvel
  */
-public class JavaMailTestCase extends TestCase {
+public class JavaMailTestCase extends RestletTestCase {
 
     private static final String _TRUSTSTORE = "d:/temp/certificats/myClientKeystore";
 

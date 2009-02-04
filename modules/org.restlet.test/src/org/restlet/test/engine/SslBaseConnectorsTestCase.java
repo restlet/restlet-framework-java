@@ -31,8 +31,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 
-import junit.framework.TestCase;
-
 import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
@@ -45,6 +43,7 @@ import org.restlet.engine.ClientHelper;
 import org.restlet.engine.Engine;
 import org.restlet.engine.ServerHelper;
 import org.restlet.engine.local.ClapClientHelper;
+import org.restlet.test.RestletTestCase;
 import org.restlet.util.Series;
 
 /**
@@ -54,7 +53,7 @@ import org.restlet.util.Series;
  * @author Kevin Conaway
  * @author Bruno Harbulot (Bruno.Harbulot@manchester.ac.uk)
  */
-public abstract class SslBaseConnectorsTestCase extends TestCase {
+public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
 
     private Component component;
 

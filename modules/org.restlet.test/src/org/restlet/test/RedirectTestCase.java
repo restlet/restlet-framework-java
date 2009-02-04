@@ -27,8 +27,6 @@
 
 package org.restlet.test;
 
-import junit.framework.TestCase;
-
 import org.restlet.Component;
 import org.restlet.Context;
 import org.restlet.Redirector;
@@ -45,7 +43,7 @@ import org.restlet.resource.StringRepresentation;
  * 
  * @author Jerome Louvel
  */
-public class RedirectTestCase extends TestCase {
+public class RedirectTestCase extends RestletTestCase {
     private void testCall(Context context, Method method, String uri)
             throws Exception {
         final Response response = context.getClientDispatcher().handle(
@@ -68,7 +66,8 @@ public class RedirectTestCase extends TestCase {
         proxyComponent.getClients().add(Protocol.HTTP);
 
         // Create the proxy Restlet
-        final String target = "http://localhost:9090{rr}";
+        final String target = "http://localhost:" + (getTestPort() + 1)
+                + "{rr}";
         final Redirector proxy = new Redirector(proxyComponent.getContext()
                 .createChildContext(), target, Redirector.MODE_DISPATCHER);
 
@@ -94,8 +93,8 @@ public class RedirectTestCase extends TestCase {
         originComponent.getDefaultHost().attach("", trace);
 
         // Create the server connectors
-        proxyComponent.getServers().add(Protocol.HTTP, RestletTestSuite.PORT);
-        originComponent.getServers().add(Protocol.HTTP, 9090);
+        proxyComponent.getServers().add(Protocol.HTTP, getTestPort());
+        originComponent.getServers().add(Protocol.HTTP, getTestPort() + 1);
 
         // Now, let's start the components!
         originComponent.start();
@@ -104,16 +103,16 @@ public class RedirectTestCase extends TestCase {
 
         // Tests
         final Context context = clientComponent.getContext();
-        String uri = "http://localhost:" + RestletTestSuite.PORT + "/?foo=bar";
+        String uri = "http://localhost:" + getTestPort() + "/?foo=bar";
         testCall(context, Method.GET, uri);
         testCall(context, Method.DELETE, uri);
 
-        uri = "http://localhost:" + RestletTestSuite.PORT
+        uri = "http://localhost:" + getTestPort()
                 + "/abcd/efgh/ijkl?foo=bar&foo=beer";
         testCall(context, Method.GET, uri);
         testCall(context, Method.DELETE, uri);
 
-        uri = "http://localhost:" + RestletTestSuite.PORT
+        uri = "http://localhost:" + getTestPort()
                 + "/v1/client/kwse/CnJlNUQV9%252BNNqbUf7Lhs2BYEK2Y%253D"
                 + "/user/johnm/uVGYTDK4kK4zsu96VHGeTCzfwso%253D/";
         testCall(context, Method.GET, uri);

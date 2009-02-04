@@ -32,8 +32,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import org.restlet.engine.http.ChunkedOutputStream;
-
-import junit.framework.TestCase;
+import org.restlet.test.RestletTestCase;
 
 
 /**
@@ -41,7 +40,7 @@ import junit.framework.TestCase;
  * 
  * @author <a href="mailto:kevin.a.conaway@gmail.com">Kevin Conaway</a>
  */
-public class ChunkedOutputStreamTestCase extends TestCase {
+public class ChunkedOutputStreamTestCase extends RestletTestCase {
 
     public void testCallCloseTwice() throws IOException {
         final String data = "test data";

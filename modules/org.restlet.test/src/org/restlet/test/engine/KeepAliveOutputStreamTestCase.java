@@ -32,8 +32,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import org.restlet.engine.io.KeepAliveOutputStream;
-
-import junit.framework.TestCase;
+import org.restlet.test.RestletTestCase;
 
 
 /**
@@ -41,7 +40,7 @@ import junit.framework.TestCase;
  * 
  * @author Kevin Conaway
  */
-public class KeepAliveOutputStreamTestCase extends TestCase {
+public class KeepAliveOutputStreamTestCase extends RestletTestCase {
 
     static class MockOutputStream extends OutputStream {
         boolean closed = false;

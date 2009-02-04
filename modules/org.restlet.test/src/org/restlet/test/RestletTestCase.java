@@ -36,16 +36,18 @@ import junit.framework.TestCase;
  *         href="http://www.semagia.com/">Semagia</a>
  */
 public abstract class RestletTestCase extends TestCase {
-    
-    public static final String RESTLET_TEST_PORT = "restlet.test.port";
-    
-    public static final int DEFAULT_PORT = 1337;
-    
-    protected int getPort() {
 
-        if (System.getProperties().containsKey(RESTLET_TEST_PORT)) {
-            return Integer.parseInt(System.getProperty(RESTLET_TEST_PORT));
+    public static final int DEFAULT_TEST_PORT = 1337;
+
+    public static int TEST_PORT = getTestPort();
+
+    private static final String PROPERTY_TEST_PORT = "org.restlet.test.port";
+
+    public static int getTestPort() {
+        if (System.getProperties().containsKey(PROPERTY_TEST_PORT)) {
+            return Integer.parseInt(System.getProperty(PROPERTY_TEST_PORT));
         }
-        return DEFAULT_PORT;
+
+        return DEFAULT_TEST_PORT;
     }
 }

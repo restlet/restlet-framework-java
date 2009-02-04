@@ -33,6 +33,7 @@ import org.restlet.data.Protocol;
 import org.restlet.security.Group;
 import org.restlet.security.Organization;
 import org.restlet.security.User;
+import org.restlet.test.RestletTestCase;
 
 /**
  * Sample SAAS component with declared organizations.
@@ -53,7 +54,7 @@ public class SaasComponent extends Component {
         SaasApplication app1 = new SaasApplication(context1);
 
         getDefaultHost().attach(app1);
-        getServers().add(Protocol.HTTP, 8080);
+        getServers().add(Protocol.HTTP, RestletTestCase.getTestPort());
     }
 
     private Organization createOrganization1() {

@@ -32,19 +32,18 @@ import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 
-import junit.framework.TestCase;
-
 import org.apache.tika.parser.rtf.RTFParser;
 import org.restlet.Client;
 import org.restlet.ext.lucene.TikaRepresentation;
 import org.restlet.resource.Representation;
+import org.restlet.test.RestletTestCase;
 
 /**
  * Unit tests for the Lucene extension.
  * 
  * @author Jerome Louvel
  */
-public class LuceneTestCase extends TestCase {
+public class LuceneTestCase extends RestletTestCase {
 
     public void testTika() throws Exception {
 

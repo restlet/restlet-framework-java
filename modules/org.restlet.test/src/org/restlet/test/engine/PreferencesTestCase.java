@@ -31,12 +31,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.restlet.data.MediaType;
 import org.restlet.data.Preference;
 import org.restlet.engine.http.PreferenceReader;
 import org.restlet.engine.http.PreferenceUtils;
+import org.restlet.test.RestletTestCase;
 
 
 /**
@@ -44,7 +43,7 @@ import org.restlet.engine.http.PreferenceUtils;
  * 
  * @author Jerome Louvel
  */
-public class PreferencesTestCase extends TestCase {
+public class PreferencesTestCase extends RestletTestCase {
     /**
      * Tests the parsing of a single preference header.
      * 

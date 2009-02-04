@@ -31,19 +31,18 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 
-import junit.framework.TestCase;
-
 import org.restlet.data.MediaType;
 import org.restlet.ext.atom.Feed;
 import org.restlet.ext.atom.Service;
 import org.restlet.resource.FileRepresentation;
+import org.restlet.test.RestletTestCase;
 
 /**
  * Unit test case for the Atom extension.
  * 
  * @author Jerome Louvel
  */
-public class AtomTestCase extends TestCase {
+public class AtomTestCase extends RestletTestCase {
 
     /**
      * Recursively delete a directory.

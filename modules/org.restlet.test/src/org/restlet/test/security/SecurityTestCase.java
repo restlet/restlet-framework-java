@@ -25,39 +25,41 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.test.engine;
+package org.restlet.test.security;
 
-import org.restlet.Context;
-import org.restlet.Restlet;
-import org.restlet.data.MediaType;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
+import org.junit.After;
+import org.junit.Before;
+import org.restlet.Component;
+import org.restlet.test.RestletTestCase;
 
 /**
- * Trace Restlet.
+ * Restlet unit tests for HTTP Basic authentication client/server. By default,
+ * runs server on localhost on port {@value #DEFAULT_PORT}, which can be
+ * overriden by setting system property {@value #RESTLET_TEST_PORT}
  * 
- * @author Jerome Louvel
+ * @author Stian Soiland
  */
-public class TraceRestlet extends Restlet {
-    public TraceRestlet(Context context) {
-        super(context);
+public class SecurityTestCase extends RestletTestCase {
+
+    private Component component;
+
+    @Before
+    public void makeServer() throws Exception {
     }
 
-    /**
-     * Handles a uniform call.
-     * 
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response to update.
-     */
-    @Override
-    public void handle(Request request, Response response) {
-        final String message = "Hello World!" + "\nYour IP address is "
-                + request.getClientInfo().getAddress()
-                + "\nYour request URI is: "
-                + request.getResourceRef().toString();
-        response.setEntity(message, MediaType.TEXT_PLAIN);
+    @After
+    public void stopServer() throws Exception {
+        if ((this.component != null) && this.component.isStarted()) {
+            this.component.stop();
+        }
     }
 
+    public void testHttpBasic() {
+        try {
+            makeServer();
+            stopServer();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

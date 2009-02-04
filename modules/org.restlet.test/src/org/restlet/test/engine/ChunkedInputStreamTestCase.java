@@ -35,8 +35,7 @@ import java.io.OutputStream;
 
 import org.restlet.engine.http.ChunkedInputStream;
 import org.restlet.engine.http.ChunkedOutputStream;
-
-import junit.framework.TestCase;
+import org.restlet.test.RestletTestCase;
 
 
 /**
@@ -44,7 +43,7 @@ import junit.framework.TestCase;
  * 
  * @author <a href="mailto:kevin.a.conaway@gmail.com">Kevin Conaway</a>
  */
-public class ChunkedInputStreamTestCase extends TestCase {
+public class ChunkedInputStreamTestCase extends RestletTestCase {
 
     private String read(InputStream input) throws IOException {
         final byte[] buffer = new byte[1024];

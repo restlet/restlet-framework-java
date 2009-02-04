@@ -32,13 +32,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.restlet.data.Cookie;
 import org.restlet.data.CookieSetting;
 import org.restlet.engine.http.CookieReader;
 import org.restlet.engine.http.CookieUtils;
 import org.restlet.engine.util.DateUtils;
+import org.restlet.test.RestletTestCase;
 
 
 /**
@@ -46,7 +45,7 @@ import org.restlet.engine.util.DateUtils;
  * 
  * @author Jerome Louvel
  */
-public class CookiesTestCase extends TestCase {
+public class CookiesTestCase extends RestletTestCase {
     /**
      * Test one cookie header.
      * 

@@ -27,8 +27,6 @@
 
 package org.restlet.test;
 
-import junit.framework.TestCase;
-
 import org.restlet.Client;
 import org.restlet.Component;
 import org.restlet.data.Protocol;
@@ -40,9 +38,9 @@ import org.restlet.resource.StringRepresentation;
  * 
  * @author Thierry Boileau
  */
-public class ComponentXmlTestCase extends TestCase {
+public class ComponentXmlTestCase extends RestletTestCase {
 
-    private final int port = RestletTestSuite.PORT;
+    private final int port = getTestPort();
 
     private final int port2 = port + 1;
 

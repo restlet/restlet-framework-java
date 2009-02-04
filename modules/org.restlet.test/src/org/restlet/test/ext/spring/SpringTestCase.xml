@@ -19,7 +19,7 @@
 	<bean id="server" class="org.restlet.ext.spring.SpringServer">
 		<constructor-arg value="http" />
 		<constructor-arg>
-			<bean id="org.restlet.test.RestletTestSuite.PORT"
+			<bean id="org.restlet.test.RestletTestCase.TEST_PORT"
 				class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean" />
 		</constructor-arg>
 

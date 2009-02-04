@@ -27,17 +27,16 @@
 
 package org.restlet.test.ext.wadl;
 
-import junit.framework.TestCase;
-
 import org.restlet.ext.wadl.WadlApplication;
 import org.restlet.ext.wadl.WadlComponent;
+import org.restlet.test.RestletTestCase;
 
 /**
  * Unit test case for the WADL extension.
  * 
  * @author Jerome Louvel
  */
-public class WadlTestCase extends TestCase {
+public class WadlTestCase extends RestletTestCase {
 
     public void testWadl() throws Exception {
         final WadlComponent comp = new WadlComponent(

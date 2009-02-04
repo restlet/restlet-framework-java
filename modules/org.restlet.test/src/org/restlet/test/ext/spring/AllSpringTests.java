@@ -40,8 +40,8 @@ public class AllSpringTests extends TestCase {
     public static Test suite() {
         final TestSuite suite = new TestSuite();
         suite.setName("all spring-ext tests");
-        suite.addTestSuite(BeanNameRouterTest.class);
-        suite.addTestSuite(SpringBeanFinderTest.class);
+        suite.addTestSuite(SpringBeanRouterTestCase.class);
+        suite.addTestSuite(SpringBeanFinderTestCase.class);
         suite.addTestSuite(SpringTestCase.class);
         return suite;
     }

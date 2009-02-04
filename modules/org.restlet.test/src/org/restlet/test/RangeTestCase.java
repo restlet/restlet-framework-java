@@ -32,8 +32,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.junit.Test;
 import org.restlet.Application;
 import org.restlet.Client;
@@ -57,7 +55,7 @@ import org.restlet.resource.StringRepresentation;
  * 
  * @author Jerome Louvel
  */
-public class RangeTestCase extends TestCase {
+public class RangeTestCase extends RestletTestCase {
 
     /**
      * Internal class used for test purpose.
@@ -178,7 +176,7 @@ public class RangeTestCase extends TestCase {
     @Override
     protected void setUp() throws Exception {
         component = new Component();
-        component.getServers().add(Protocol.HTTP, RestletTestSuite.PORT);
+        component.getServers().add(Protocol.HTTP, getTestPort());
         component.getClients().add(Protocol.FILE);
         component.getDefaultHost().attach(new TestRangeApplication());
         component.start();
@@ -198,15 +196,15 @@ public class RangeTestCase extends TestCase {
     public void testGet() throws IOException {
         Client client = new Client(Protocol.HTTP);
         // Test partial Get.
-        Request request = new Request(Method.GET,
-                "http://localhost:" + RestletTestSuite.PORT + "/testGet");
+        Request request = new Request(Method.GET, "http://localhost:"
+                + getTestPort() + "/testGet");
         Response response = client.handle(request);
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("1234567890", response.getEntity().getText());
         assertEquals(10, response.getEntity().getSize());
 
-        request = new Request(Method.GET, "http://localhost:"
-                + RestletTestSuite.PORT +"/testGet");
+        request = new Request(Method.GET, "http://localhost:" + getTestPort()
+                + "/testGet");
         request.setRanges(Arrays.asList(new Range(0, 10)));
         response = client.handle(request);
         assertEquals(Status.SUCCESS_PARTIAL_CONTENT, response.getStatus());
@@ -268,8 +266,8 @@ public class RangeTestCase extends TestCase {
         Client client = new Client(Protocol.HTTP);
 
         // PUT on a file that does not exist
-        Request request = new Request(Method.PUT,
-                "http://localhost:" + RestletTestSuite.PORT +"/testPut/essai.txt");
+        Request request = new Request(Method.PUT, "http://localhost:"
+                + getTestPort() + "/testPut/essai.txt");
         request.setEntity(new StringRepresentation("1234567890"));
         request.setRanges(Arrays.asList(new Range(0, 10)));
         Response response = client.handle(request);
@@ -280,8 +278,8 @@ public class RangeTestCase extends TestCase {
 
         // Partial PUT on a file, the provided representation overflowed the
         // existing file
-        request = new Request(Method.PUT,
-                "http://localhost:" + RestletTestSuite.PORT +"/testPut/essai.txt");
+        request = new Request(Method.PUT, "http://localhost:" + getTestPort()
+                + "/testPut/essai.txt");
         request.setEntity(new StringRepresentation("0000000000"));
         request.setRanges(Arrays.asList(new Range(1, 10)));
         response = client.handle(request);
@@ -292,8 +290,8 @@ public class RangeTestCase extends TestCase {
 
         // Partial PUT on a file that does not exists, the provided range
         // does not start at the 0 index.
-        request = new Request(Method.PUT,
-                "http://localhost:" + RestletTestSuite.PORT+ "/testPut/essai2.txt");
+        request = new Request(Method.PUT, "http://localhost:" + getTestPort()
+                + "/testPut/essai2.txt");
         request.setEntity(new StringRepresentation("0000000000"));
         request.setRanges(Arrays.asList(new Range(1, 10)));
         response = client.handle(request);
@@ -304,8 +302,8 @@ public class RangeTestCase extends TestCase {
         assertEquals("0000000000", response.getEntity().getText());
 
         // Partial PUT on a file, simple range
-        request = new Request(Method.PUT,
-                "http://localhost:" + RestletTestSuite.PORT + "/testPut/essai.txt");
+        request = new Request(Method.PUT, "http://localhost:" + getTestPort()
+                + "/testPut/essai.txt");
         request.setEntity(new StringRepresentation("22"));
         request.setRanges(Arrays.asList(new Range(2, 2)));
         response = client.handle(request);
@@ -316,8 +314,8 @@ public class RangeTestCase extends TestCase {
 
         // Partial PUT on a file, the provided representation will be padded
         // at the very end of the file.
-        request = new Request(Method.PUT,
-                "http://localhost:" + RestletTestSuite.PORT + "/testPut/essai.txt");
+        request = new Request(Method.PUT, "http://localhost:" + getTestPort()
+                + "/testPut/essai.txt");
         request.setEntity(new StringRepresentation("888"));
         request.setRanges(Arrays.asList(new Range(8, Range.SIZE_MAX)));
         response = client.handle(request);
@@ -328,8 +326,8 @@ public class RangeTestCase extends TestCase {
 
         // Partial PUT on a file that does not exist, the range does not
         // specify the range size.
-        request = new Request(Method.PUT,
-                "http://localhost:" + RestletTestSuite.PORT + "/testPut/essai3.txt");
+        request = new Request(Method.PUT, "http://localhost:" + getTestPort()
+                + "/testPut/essai3.txt");
         request.setEntity(new StringRepresentation("888"));
         request.setRanges(Arrays.asList(new Range(8, Range.SIZE_MAX)));
         response = client.handle(request);
@@ -341,8 +339,8 @@ public class RangeTestCase extends TestCase {
 
         // Partial PUT on a file, the provided representation will be padded
         // just before the end of the file.
-        request = new Request(Method.PUT,
-                "http://localhost:" + RestletTestSuite.PORT + "/testPut/essai.txt");
+        request = new Request(Method.PUT, "http://localhost:" + getTestPort()
+                + "/testPut/essai.txt");
         request.setEntity(new StringRepresentation("99"));
         request.setRanges(Arrays.asList(new Range(8, Range.SIZE_MAX)));
         response = client.handle(request);
@@ -351,8 +349,8 @@ public class RangeTestCase extends TestCase {
         assertEquals(Status.SUCCESS_OK, response.getStatus());
         assertEquals("10220000998", response.getEntity().getText());
 
-        request = new Request(Method.GET,
-                "http://localhost:" + RestletTestSuite.PORT + "/testPut/essai.txt");
+        request = new Request(Method.GET, "http://localhost:" + getTestPort()
+                + "/testPut/essai.txt");
         request.setRanges(Arrays.asList(new Range(3, Range.SIZE_MAX)));
         response = client.handle(request);
         assertEquals(Status.SUCCESS_PARTIAL_CONTENT, response.getStatus());
@@ -370,28 +368,28 @@ public class RangeTestCase extends TestCase {
         Client client = new Client(Protocol.HTTP);
 
         // Test "range" header.
-        Request request = new Request(Method.GET,
-                "http://localhost:" + RestletTestSuite.PORT + "/test?range=0-500");
+        Request request = new Request(Method.GET, "http://localhost:"
+                + getTestPort() + "/test?range=0-500");
         request.setRanges(Arrays.asList(new Range(0, 500)));
         assertEquals(Status.SUCCESS_OK, client.handle(request).getStatus());
 
-        request = new Request(Method.GET,
-                "http://localhost:" + RestletTestSuite.PORT + "/test?range=-500");
+        request = new Request(Method.GET, "http://localhost:" + getTestPort()
+                + "/test?range=-500");
         request.setRanges(Arrays.asList(new Range(Range.INDEX_LAST, 500)));
         assertEquals(Status.SUCCESS_OK, client.handle(request).getStatus());
 
-        request = new Request(Method.GET,
-                "http://localhost:" + RestletTestSuite.PORT + "/test?range=500-");
+        request = new Request(Method.GET, "http://localhost:" + getTestPort()
+                + "/test?range=500-");
         request.setRanges(Arrays.asList(new Range(500, Range.SIZE_MAX)));
         assertEquals(Status.SUCCESS_OK, client.handle(request).getStatus());
 
-        request = new Request(Method.GET,
-                "http://localhost:" + RestletTestSuite.PORT + "/test?range=500-1000");
+        request = new Request(Method.GET, "http://localhost:" + getTestPort()
+                + "/test?range=500-1000");
         request.setRanges(Arrays.asList(new Range(500, 500)));
         assertEquals(Status.SUCCESS_OK, client.handle(request).getStatus());
 
-        request = new Request(Method.GET,
-                "http://localhost:" + RestletTestSuite.PORT + "/test?range=500-1000&range=500-");
+        request = new Request(Method.GET, "http://localhost:" + getTestPort()
+                + "/test?range=500-1000&range=500-");
         request.setRanges(Arrays.asList(new Range(500, 500), new Range(500,
                 Range.SIZE_MAX)));
         assertEquals(Status.SUCCESS_OK, client.handle(request).getStatus());

@@ -29,8 +29,6 @@ package org.restlet.test;
 
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.restlet.Client;
 import org.restlet.Component;
 import org.restlet.Context;
@@ -69,8 +67,8 @@ import org.restlet.util.ServerList;
  *     &quot;http://www.restlet.org/schemas/1.2/Component&quot;:statusService}' is expected.
  * </pre>
  */
-public class ComponentXmlConfigTestCase extends TestCase {
-    private static final int PORT1 = RestletTestSuite.PORT;
+public class ComponentXmlConfigTestCase extends RestletTestCase {
+    private static final int PORT1 = getTestPort();
 
     private static final int PORT2 = PORT1 + 1;
 

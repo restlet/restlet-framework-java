@@ -46,7 +46,6 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.engine.application.TunnelFilter;
 
-
 /**
  * Tests cases for the tunnel filter.
  */

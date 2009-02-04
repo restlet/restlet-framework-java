@@ -27,12 +27,11 @@
 
 package org.restlet.test.resource;
 
-import junit.framework.TestCase;
-
 import org.restlet.data.MediaType;
 import org.restlet.resource.Representation;
 import org.restlet.resource.Resource;
 import org.restlet.resource.StringRepresentation;
+import org.restlet.test.RestletTestCase;
 
 /**
  * Resource test case.
@@ -41,7 +40,7 @@ import org.restlet.resource.StringRepresentation;
  * @author Konstantin Laufer (laufer@cs.luc.edu)
  * @author Jerome Louvel
  */
-public class ResourceTestCase extends TestCase {
+public class ResourceTestCase extends RestletTestCase {
 
     public class AutoDetectResource extends Resource {
 

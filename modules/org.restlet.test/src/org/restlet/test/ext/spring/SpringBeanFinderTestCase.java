@@ -27,17 +27,16 @@
 
 package org.restlet.test.ext.spring;
 
-import junit.framework.TestCase;
-
 import org.restlet.ext.spring.SpringBeanFinder;
 import org.restlet.resource.Resource;
+import org.restlet.test.RestletTestCase;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 
 /**
  * @author Rhett Sutphin
  */
-public class SpringBeanFinderTest extends TestCase {
+public class SpringBeanFinderTestCase extends RestletTestCase {
     private static class SomeResource extends Resource {
     }
 

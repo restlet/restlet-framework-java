@@ -27,16 +27,15 @@
 
 package org.restlet.test.data;
 
-import junit.framework.TestCase;
-
 import org.restlet.data.LocalReference;
+import org.restlet.test.RestletTestCase;
 
 /**
  * Unit test case for the File Reference parsing.
  * 
  * @author Jerome Louvel
  */
-public class FileReferenceTestCase extends TestCase {
+public class FileReferenceTestCase extends RestletTestCase {
 
     public void testCreation() {
         final String path = "D:\\Restlet\\build.xml";

@@ -41,8 +41,6 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.URIResolver;
 import javax.xml.transform.stream.StreamSource;
 
-import junit.framework.TestCase;
-
 import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Restlet;
@@ -63,7 +61,7 @@ import org.restlet.resource.TransformRepresentation;
  * 
  * @author Marc Portier (mpo@outerthought.org)
  */
-public class ResolvingTransformerTestCase extends TestCase {
+public class ResolvingTransformerTestCase extends RestletTestCase {
 
     class AssertResolvingHelper {
 

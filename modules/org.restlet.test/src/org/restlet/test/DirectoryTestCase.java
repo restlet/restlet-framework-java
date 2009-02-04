@@ -30,8 +30,6 @@ package org.restlet.test;
 import java.io.File;
 import java.io.IOException;
 
-import junit.framework.TestCase;
-
 import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Directory;
@@ -51,7 +49,7 @@ import org.restlet.resource.StringRepresentation;
  * 
  * @author Thierry Boileau
  */
-public class DirectoryTestCase extends TestCase {
+public class DirectoryTestCase extends RestletTestCase {
     /**
      * Internal class used for test purpose
      * 
@@ -246,7 +244,7 @@ public class DirectoryTestCase extends TestCase {
         final File testDirectory = new File(this.testDir, "dir/subDir");
         testDirectory.mkdirs();
         final File testFile = File
-        .createTempFile("test", ".txt", testDirectory);
+                .createTempFile("test", ".txt", testDirectory);
 
         directory.setDeeplyAccessible(true);
         Response response = handle(application, this.webSiteURL,

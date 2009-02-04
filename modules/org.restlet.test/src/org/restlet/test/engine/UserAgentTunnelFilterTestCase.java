@@ -27,8 +27,6 @@
 
 package org.restlet.test.engine;
 
-import junit.framework.TestCase;
-
 import org.restlet.Application;
 import org.restlet.Restlet;
 import org.restlet.Router;
@@ -38,16 +36,15 @@ import org.restlet.data.Preference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.test.RestletTestSuite;
+import org.restlet.test.RestletTestCase;
 
 /**
  * Tests cases for the tunneling of preferences based on user agent.
  */
-public class UserAgentTunnelFilterTestCase extends TestCase {
+public class UserAgentTunnelFilterTestCase extends RestletTestCase {
 
     /** . */
-    private static final String URL = "http://localhost:"
-        + RestletTestSuite.PORT +"/test";
+    private static final String URL = "http://localhost:" + getTestPort() + "/test";
 
     private Application application;
 

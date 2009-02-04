@@ -29,20 +29,14 @@ package org.restlet.test.engine;
 import java.util.Arrays;
 
 import org.restlet.engine.util.Base64;
-
-import junit.framework.TestCase;
-
+import org.restlet.test.RestletTestCase;
 
 /**
  * Base64 test case.
  * 
  * @author Ray Waldin.
  */
-public class Base64TestCase extends TestCase {
-
-    public Base64TestCase(String name) {
-        super(name);
-    }
+public class Base64TestCase extends RestletTestCase {
 
     public void roundTrip(byte[] bytes, boolean newlines) throws Exception {
         assert (Arrays.equals(Base64.decode(Base64.encode(bytes, newlines)),

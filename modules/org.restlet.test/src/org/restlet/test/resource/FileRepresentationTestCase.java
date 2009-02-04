@@ -62,10 +62,10 @@ public class FileRepresentationTestCase extends RestletTestCase {
     public void setUp() throws Exception {
         super.setUp();
 
-        uri = "http://localhost:" + getPort() + "/";
+        uri = "http://localhost:" + getTestPort() + "/";
 
         component = new Component();
-        component.getServers().add(Protocol.HTTP, getPort());
+        component.getServers().add(Protocol.HTTP, getTestPort());
         component.start();
 
         file = new File(getClass().getName());

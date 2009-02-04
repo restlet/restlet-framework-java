@@ -30,8 +30,6 @@ package org.restlet.test;
 import java.io.File;
 import java.io.FileWriter;
 
-import junit.framework.TestCase;
-
 import org.restlet.Application;
 import org.restlet.Client;
 import org.restlet.Component;
@@ -46,7 +44,7 @@ import org.restlet.data.Response;
  * 
  * @author Thierry Boileau
  */
-public class TemplateFilterTestCase extends TestCase {
+public class TemplateFilterTestCase extends RestletTestCase {
 
     /**
      * Internal class used for test purpose
@@ -198,7 +196,7 @@ public class TemplateFilterTestCase extends TestCase {
 
             // Create a new component
             final Component component = new Component();
-            component.getServers().add(Protocol.HTTP, RestletTestSuite.PORT);
+            component.getServers().add(Protocol.HTTP, getTestPort());
             component.getClients().add(Protocol.FILE);
 
             // Create an application filtered with Freemarker
@@ -221,12 +219,12 @@ public class TemplateFilterTestCase extends TestCase {
             velocityApplication.getTunnelService().setExtensionsTunnel(true);
             final Client client = new Client(Protocol.HTTP);
             Response response = client.get("http://localhost:"
-                    + RestletTestSuite.PORT +"/freemarker/" + testFileFm1.getName());
+                    + getTestPort() +"/freemarker/" + testFileFm1.getName());
             if (response.isEntityAvailable()) {
                 assertEquals(response.getEntity().getText(),
-                        "Method=GET/Authority=localhost:" + RestletTestSuite.PORT);
+                        "Method=GET/Authority=localhost:" + getTestPort());
             }
-            response = client.get("http://localhost:" + RestletTestSuite.PORT
+            response = client.get("http://localhost:" + getTestPort()
                     + "/freemarker/" + testFileFm2.getName());
             assertTrue(response.getStatus().isSuccess());
             if (response.isEntityAvailable()) {
@@ -234,13 +232,13 @@ public class TemplateFilterTestCase extends TestCase {
                         "Method=${m}/Authority=${ra}");
             }
 
-            response = client.get("http://localhost:" + RestletTestSuite.PORT
+            response = client.get("http://localhost:" + getTestPort()
                     + "/velocity/" + testFileVl1.getName());
             if (response.isEntityAvailable()) {
                 assertEquals(response.getEntity().getText(),
                         "Method=GET/Path=/velocity/testVl1");
             }
-            response = client.get("http://localhost:" + RestletTestSuite.PORT
+            response = client.get("http://localhost:" + getTestPort()
                     + "/velocity/" + testFileVl2.getName());
             assertTrue(response.getStatus().isSuccess());
             if (response.isEntityAvailable()) {

@@ -30,10 +30,9 @@ package org.restlet.test.engine;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-import junit.framework.TestCase;
-
 import org.restlet.engine.http.InputEntityStream;
 import org.restlet.engine.io.ByteUtils;
+import org.restlet.test.RestletTestCase;
 
 
 /**
@@ -41,7 +40,7 @@ import org.restlet.engine.io.ByteUtils;
  * 
  * @author <a href="mailto:kevin.a.conaway@gmail.com">Kevin Conaway</a>
  */
-public class InputEntityStreamTestCase extends TestCase {
+public class InputEntityStreamTestCase extends RestletTestCase {
 
     public void testRead() {
         final String data = "test data";

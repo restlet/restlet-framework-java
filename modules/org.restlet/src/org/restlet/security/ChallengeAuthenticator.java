@@ -60,6 +60,18 @@ public class ChallengeAuthenticator extends Authenticator {
      * 
      * @param challengeScheme
      */
+    public ChallengeAuthenticator(Context context,
+            ChallengeScheme challengeScheme) {
+        super(context);
+        this.scheme = challengeScheme;
+        this.verifier = context.getVerifier();
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param challengeScheme
+     */
     public ChallengeAuthenticator(Context context, int mode,
             ChallengeScheme challengeScheme) {
         super(context, mode);

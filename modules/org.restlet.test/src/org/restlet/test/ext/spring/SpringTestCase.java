@@ -27,10 +27,9 @@
 
 package org.restlet.test.ext.spring;
 
-import junit.framework.TestCase;
-
 import org.restlet.Component;
 import org.restlet.Server;
+import org.restlet.test.RestletTestCase;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.xml.XmlBeanFactory;
 import org.springframework.core.io.ClassPathResource;
@@ -40,12 +39,12 @@ import org.springframework.core.io.ClassPathResource;
  * 
  * @author Jerome Louvel
  */
-public class SpringTestCase extends TestCase {
+public class SpringTestCase extends RestletTestCase {
 
     public void testSpring() throws Exception {
         // Load the Spring container
         final ClassPathResource resource = new ClassPathResource(
-                "org/restlet/test/SpringTestCase.xml");
+                "org/restlet/test/ext/spring/SpringTestCase.xml");
         final BeanFactory factory = new XmlBeanFactory(resource);
 
         // Start the Restlet component
@@ -57,7 +56,7 @@ public class SpringTestCase extends TestCase {
 
     public void testSpringServerProperties() {
         final ClassPathResource resource = new ClassPathResource(
-                "org/restlet/test/SpringTestCase.xml");
+                "org/restlet/test/ext/spring/SpringTestCase.xml");
         final BeanFactory factory = new XmlBeanFactory(resource);
 
         final Server server = (Server) factory.getBean("server");

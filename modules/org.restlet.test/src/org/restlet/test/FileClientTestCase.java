@@ -30,8 +30,6 @@ package org.restlet.test;
 import java.io.File;
 import java.io.IOException;
 
-import junit.framework.TestCase;
-
 import org.restlet.Client;
 import org.restlet.data.LocalReference;
 import org.restlet.data.Protocol;
@@ -44,7 +42,7 @@ import org.restlet.resource.StringRepresentation;
  * 
  * @author Jerome Louvel
  */
-public class FileClientTestCase extends TestCase {
+public class FileClientTestCase extends RestletTestCase {
 
     public void testFileClient() throws IOException {
         final String text = "Test content\r\nLine 2\r\nLine2";

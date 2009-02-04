@@ -27,19 +27,17 @@
 
 package org.restlet.test.engine;
 
-import junit.framework.TestCase;
-
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.engine.authentication.AuthenticationUtils;
-
+import org.restlet.test.RestletTestCase;
 
 /**
  * Unit tests for the SecurityData related classes.
  * 
  * @author Jerome Louvel
  */
-public class AuthenticationTestCase extends TestCase {
+public class AuthenticationTestCase extends RestletTestCase {
 
     @Override
     protected void setUp() throws Exception {

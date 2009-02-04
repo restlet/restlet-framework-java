@@ -32,8 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import junit.framework.TestCase;
-
+import org.restlet.test.RestletTestCase;
 import org.restlet.util.Template;
 import org.restlet.util.Variable;
 
@@ -42,7 +41,7 @@ import org.restlet.util.Variable;
  * 
  * @author Jerome Louvel
  */
-public class TemplateTestCase extends TestCase {
+public class TemplateTestCase extends RestletTestCase {
 
     private static String TEMPLATE1 = "http://{userId}.noelios.com/invoices/{invoiceId}";
 
