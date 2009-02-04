@@ -31,7 +31,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.restlet.Client;
 import org.restlet.Component;
+import org.restlet.data.ChallengeResponse;
+import org.restlet.data.ChallengeScheme;
+import org.restlet.data.Method;
 import org.restlet.data.Protocol;
+import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.test.RestletTestCase;
@@ -64,14 +68,21 @@ public class SecurityTestCase extends RestletTestCase {
 
             String uri = "http://localhost:" + TEST_PORT;
             Client client = new Client(Protocol.HTTP);
-            Response response = client.get(uri);
 
+            // Try without authentication
+            Response response = client.get(uri);
             assertEquals(Status.CLIENT_ERROR_UNAUTHORIZED, response.getStatus());
+
+            // Try with authentication
+            Request request = new Request(Method.GET, uri);
+            request.setChallengeResponse(new ChallengeResponse(
+                    ChallengeScheme.HTTP_BASIC, "stiger", "pwd"));
+            response = client.handle(request);
+            assertEquals(Status.SUCCESS_OK, response.getStatus());
 
             stopServer();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
 }

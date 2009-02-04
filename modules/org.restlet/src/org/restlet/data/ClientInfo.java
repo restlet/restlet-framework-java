@@ -181,6 +181,7 @@ public final class ClientInfo {
         this.acceptedMediaTypes = null;
         this.agentProducts = null;
         this.forwardedAddresses = null;
+        this.subject = new Subject();
     }
 
     /**

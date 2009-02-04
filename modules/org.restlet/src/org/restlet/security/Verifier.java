@@ -39,19 +39,19 @@ import org.restlet.data.Response;
 public abstract class Verifier extends Filter {
 
     /** Invalid credentials provided. */
-    public static int RESULT_INVALID = -1;
+    public final static int RESULT_INVALID = -1;
 
     /** No credentials provided. */
-    public static int RESULT_MISSING = 0;
+    public final static int RESULT_MISSING = 0;
 
     /** Stale credentials provided. */
-    public static int RESULT_STALE = 1;
+    public final static int RESULT_STALE = 1;
 
     /** Unsupported credentials. */
-    public static int RESULT_UNSUPPORTED = 3;
+    public final static int RESULT_UNSUPPORTED = 3;
 
     /** Valid credentials provided. */
-    public static int RESULT_VALID = 4;
+    public final static int RESULT_VALID = 4;
 
     /**
      * Attempts to verify the credentials provided by the subject sending the

@@ -30,15 +30,12 @@ package org.restlet.security;
 import java.util.logging.Level;
 
 import org.restlet.Context;
-import org.restlet.Guard;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.engine.Engine;
-import org.restlet.engine.authentication.AuthenticationHelper;
 
 /**
  * Authenticator based on a challenge scheme such as HTTP Basic.
@@ -46,18 +43,6 @@ import org.restlet.engine.authentication.AuthenticationHelper;
  * @author Jerome Louvel
  */
 public class ChallengeAuthenticator extends Authenticator {
-
-    /** Indicates that an authentication response is considered invalid. */
-    public static final int AUTHENTICATION_INVALID = -1;
-
-    /** Indicates that an authentication response couldn't be found. */
-    public static final int AUTHENTICATION_MISSING = 0;
-
-    /** Indicates that an authentication response is stale. */
-    public static final int AUTHENTICATION_STALE = 2;
-
-    /** Indicates that an authentication response is valid. */
-    public static final int AUTHENTICATION_VALID = 1;
 
     /** The authentication realm. */
     private volatile String realm;
@@ -108,106 +93,71 @@ public class ChallengeAuthenticator extends Authenticator {
         this.verifier = context.getVerifier();
     }
 
-    /**
-     * Indicates if the request is properly authenticated. By default, this
-     * delegates credential checking to checkSecret().
-     * 
-     * @param request
-     *            The request to authenticate.
-     * @return -1 if the given credentials were invalid, 0 if no credentials
-     *         were found and 1 otherwise.
-     * @see Guard#checkSecret(Request, String, char[])
-     */
-    protected int authenticate(ChallengeResponse cr) {
-        int result = Guard.AUTHENTICATION_MISSING;
-
-        if (getScheme() != null) {
-            // An authentication scheme has been defined,
-            // the request must be authenticated
-            if (cr != null) {
-                if (getScheme().equals(cr.getScheme())) {
-                    final AuthenticationHelper helper = Engine.getInstance()
-                            .findHelper(cr.getScheme(), false, true);
-
-                    if (helper != null) {
-                        // result = helper.authenticate(cr, request, guard);
-                    } else {
-                        throw new IllegalArgumentException("Challenge scheme "
-                                + getScheme()
-                                + " not supported by the Restlet engine.");
-                    }
-                } else {
-                    // The challenge schemes are incompatible, we need to
-                    // challenge the client
-                }
-            } else {
-                // No challenge response found, we need to challenge the client
-            }
-        }
-
-        if (cr != null) {
-            // Update the challenge response accordingly
-            cr.setAuthenticated(result == Guard.AUTHENTICATION_VALID);
-        }
-
-        return result;
-    }
-
     @Override
     protected boolean authenticate(Request request, Response response) {
         boolean result = false;
         final boolean loggable = getLogger().isLoggable(Level.FINE);
+        ChallengeResponse challengeResponse = request.getChallengeResponse();
 
-        switch (authenticate(request.getChallengeResponse())) {
-        case AUTHENTICATION_VALID:
-            // Valid credentials provided
-            ChallengeResponse challengeResponse = request
-                    .getChallengeResponse();
-            result = true;
+        if (getVerifier() != null) {
+            switch (getVerifier().verify(request, response)) {
+            case Verifier.RESULT_VALID:
+                // Valid credentials provided
+                result = true;
 
-            if (loggable) {
-                if (challengeResponse != null) {
+                if (loggable) {
+                    if (challengeResponse != null) {
+                        getLogger().fine(
+                                "Authentication succeeded. Valid credentials provided for identifier: "
+                                        + request.getChallengeResponse()
+                                                .getIdentifier() + ".");
+                    } else {
+                        getLogger()
+                                .fine(
+                                        "Authentication succeeded. Valid credentials provided.");
+                    }
+                }
+                break;
+            case Verifier.RESULT_MISSING:
+                // No credentials provided
+                if (loggable) {
                     getLogger().fine(
-                            "Authentication succeeded. Valid credentials provided for identifier: "
-                                    + request.getChallengeResponse()
-                                            .getIdentifier() + ".");
-                } else {
+                            "Authentication failed. No credentials provided.");
+                }
+
+                challenge(response, false);
+                break;
+            case Verifier.RESULT_INVALID:
+                // Invalid credentials provided
+                if (loggable) {
                     getLogger()
                             .fine(
-                                    "Authentication succeeded. Valid credentials provided.");
+                                    "Authentication failed. Invalid credentials provided.");
                 }
-            }
-            break;
-        case AUTHENTICATION_MISSING:
-            // No credentials provided
-            if (loggable) {
-                getLogger().fine(
-                        "Authentication failed. No credentials provided.");
-            }
 
-            challenge(response, false);
-            break;
-        case AUTHENTICATION_INVALID:
-            // Invalid credentials provided
-            if (loggable) {
-                getLogger().fine(
-                        "Authentication failed. Invalid credentials provided.");
-            }
+                if (isRechallengeEnabled()) {
+                    challenge(response, false);
+                } else {
+                    forbid(response);
+                }
+                break;
+            case Verifier.RESULT_STALE:
+                if (loggable) {
+                    getLogger()
+                            .fine(
+                                    "Authentication failed. Stale credentials provided.");
+                }
 
-            if (isRechallengeEnabled()) {
-                challenge(response, false);
-            } else {
-                forbid(response);
+                challenge(response, true);
+                break;
             }
-            break;
-        case AUTHENTICATION_STALE:
-            if (loggable) {
-                getLogger().fine(
-                        "Authentication failed. Stale credentials provided.");
-            }
+        } else {
+            getLogger().warning("Authentication failed. No verifier provided.");
+        }
 
-            challenge(response, true);
-            break;
+        // Update this special property
+        if (challengeResponse != null) {
+            challengeResponse.setAuthenticated(result);
         }
 
         return result;
