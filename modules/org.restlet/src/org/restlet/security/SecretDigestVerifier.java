@@ -27,7 +27,6 @@
 
 package org.restlet.security;
 
-import org.restlet.util.WrapperVerifier;
 
 /**
  * Wrapper verifier that can handle digested secrets. If the input secret is a
@@ -38,7 +37,7 @@ import org.restlet.util.WrapperVerifier;
  * 
  * @author Jerome Louvel
  */
-public class DigestVerifier extends WrapperVerifier {
+public class SecretDigestVerifier extends SecretVerifier {
 
     /** The digest algorithm of input secrets. */
     private String inputAlgorithm;
@@ -54,11 +53,10 @@ public class DigestVerifier extends WrapperVerifier {
      * @param outputAlgorithm
      *            The digest algorithm of output secrets.
      * @param wrappedVerifier
-     *            The wrapped verifier.
+     *            The wrapped secret verifier.
      */
-    public DigestVerifier(String inputAlgorithm, String outputAlgorithm,
-            Verifier wrappedVerifier) {
-        super(wrappedVerifier);
+    public SecretDigestVerifier(String inputAlgorithm, String outputAlgorithm,
+            SecretVerifier wrappedVerifier) {
         this.inputAlgorithm = inputAlgorithm;
         this.outputAlgorithm = outputAlgorithm;
         checkCompatibility();
@@ -130,12 +128,14 @@ public class DigestVerifier extends WrapperVerifier {
         checkCompatibility();
     }
 
+    @Override
     public boolean verify(String identifier, char[] inputSecret) {
-        char[] inputSecretDigest = inputSecret;
+        // char[] inputSecretDigest = inputSecret;
 
         if (getInputAlgorithm() == null) {
             if (getOutputAlgorithm() != null) {
-                inputSecretDigest = digest(inputSecret, getOutputAlgorithm());
+                // inputSecretDigest = digest(inputSecret,
+                // getOutputAlgorithm());
             } else {
                 // The input secret should be a regular secret
             }

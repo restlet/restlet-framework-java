@@ -40,6 +40,9 @@ public class Organization {
     /** The description. */
     private volatile String description;
 
+    /** The domain name (ex: "noelios.com"). */
+    private volatile String domainName;
+
     /** The display name. */
     private volatile String name;
 
@@ -67,32 +70,21 @@ public class Organization {
     }
 
     /**
+     * Returns the domain name (ex: "noelios.com").
+     * 
+     * @return The domain name.
+     */
+    public String getDomainName() {
+        return domainName;
+    }
+
+    /**
      * Returns the display name.
      * 
      * @return The display name.
      */
     public String getName() {
         return this.name;
-    }
-
-    /**
-     * Sets the description.
-     * 
-     * @param description
-     *            The description.
-     */
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    /**
-     * Sets the display name.
-     * 
-     * @param name
-     *            The display name.
-     */
-    public void setName(String name) {
-        this.name = name;
     }
 
     /**
@@ -111,6 +103,36 @@ public class Organization {
      */
     public List<User> getUsers() {
         return users;
+    }
+
+    /**
+     * Sets the description.
+     * 
+     * @param description
+     *            The description.
+     */
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    /**
+     * Sets the domain name (ex: "noelios.com").
+     * 
+     * @param domainName
+     *            The domain name.
+     */
+    public void setDomainName(String domainName) {
+        this.domainName = domainName;
+    }
+
+    /**
+     * Sets the display name.
+     * 
+     * @param name
+     *            The display name.
+     */
+    public void setName(String name) {
+        this.name = name;
     }
 
     /**
