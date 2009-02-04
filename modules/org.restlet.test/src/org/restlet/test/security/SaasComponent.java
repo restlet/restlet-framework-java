@@ -54,7 +54,7 @@ public class SaasComponent extends Component {
         SaasApplication app1 = new SaasApplication(context1);
 
         getDefaultHost().attach(app1);
-        getServers().add(Protocol.HTTP, RestletTestCase.getTestPort());
+        getServers().add(Protocol.HTTP, RestletTestCase.TEST_PORT);
     }
 
     private Organization createOrganization1() {

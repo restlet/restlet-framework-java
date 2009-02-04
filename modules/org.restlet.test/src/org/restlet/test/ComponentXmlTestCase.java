@@ -40,7 +40,7 @@ import org.restlet.resource.StringRepresentation;
  */
 public class ComponentXmlTestCase extends RestletTestCase {
 
-    private final int port = getTestPort();
+    private final int port = TEST_PORT;
 
     private final int port2 = port + 1;
 

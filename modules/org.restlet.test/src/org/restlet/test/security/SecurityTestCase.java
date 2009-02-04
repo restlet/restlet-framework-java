@@ -27,24 +27,28 @@
 
 package org.restlet.test.security;
 
+import javax.ws.rs.core.Response.Status;
+
 import org.junit.After;
 import org.junit.Before;
+import org.restlet.Client;
 import org.restlet.Component;
+import org.restlet.data.Protocol;
+import org.restlet.data.Response;
 import org.restlet.test.RestletTestCase;
 
 /**
- * Restlet unit tests for HTTP Basic authentication client/server. By default,
- * runs server on localhost on port {@value #DEFAULT_PORT}, which can be
- * overriden by setting system property {@value #RESTLET_TEST_PORT}
+ * Restlet unit tests for the security package.
  * 
- * @author Stian Soiland
+ * @author Jerome Louvel
  */
 public class SecurityTestCase extends RestletTestCase {
 
     private Component component;
 
     @Before
-    public void makeServer() throws Exception {
+    public void startComponent() throws Exception {
+        this.component = new SaasComponent();
     }
 
     @After
@@ -54,12 +58,20 @@ public class SecurityTestCase extends RestletTestCase {
         }
     }
 
-    public void testHttpBasic() {
+    public void testSecurity() {
         try {
-            makeServer();
+            startComponent();
+
+            String uri = "http://localhost:" + TEST_PORT;
+            Client client = new Client(Protocol.HTTP);
+            Response response = client.get(uri);
+
+            assertEquals(Status.FORBIDDEN, response.getStatus());
+
             stopServer();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
 }

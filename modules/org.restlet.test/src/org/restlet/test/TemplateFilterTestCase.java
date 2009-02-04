@@ -196,7 +196,7 @@ public class TemplateFilterTestCase extends RestletTestCase {
 
             // Create a new component
             final Component component = new Component();
-            component.getServers().add(Protocol.HTTP, getTestPort());
+            component.getServers().add(Protocol.HTTP, TEST_PORT);
             component.getClients().add(Protocol.FILE);
 
             // Create an application filtered with Freemarker
@@ -218,13 +218,13 @@ public class TemplateFilterTestCase extends RestletTestCase {
             freemarkerApplication.getTunnelService().setExtensionsTunnel(true);
             velocityApplication.getTunnelService().setExtensionsTunnel(true);
             final Client client = new Client(Protocol.HTTP);
-            Response response = client.get("http://localhost:"
-                    + getTestPort() +"/freemarker/" + testFileFm1.getName());
+            Response response = client.get("http://localhost:" + TEST_PORT
+                    + "/freemarker/" + testFileFm1.getName());
             if (response.isEntityAvailable()) {
                 assertEquals(response.getEntity().getText(),
-                        "Method=GET/Authority=localhost:" + getTestPort());
+                        "Method=GET/Authority=localhost:" + TEST_PORT);
             }
-            response = client.get("http://localhost:" + getTestPort()
+            response = client.get("http://localhost:" + TEST_PORT
                     + "/freemarker/" + testFileFm2.getName());
             assertTrue(response.getStatus().isSuccess());
             if (response.isEntityAvailable()) {
@@ -232,13 +232,13 @@ public class TemplateFilterTestCase extends RestletTestCase {
                         "Method=${m}/Authority=${ra}");
             }
 
-            response = client.get("http://localhost:" + getTestPort()
+            response = client.get("http://localhost:" + TEST_PORT
                     + "/velocity/" + testFileVl1.getName());
             if (response.isEntityAvailable()) {
                 assertEquals(response.getEntity().getText(),
                         "Method=GET/Path=/velocity/testVl1");
             }
-            response = client.get("http://localhost:" + getTestPort()
+            response = client.get("http://localhost:" + TEST_PORT
                     + "/velocity/" + testFileVl2.getName());
             assertTrue(response.getStatus().isSuccess());
             if (response.isEntityAvailable()) {

@@ -73,6 +73,9 @@ public class Organization {
      *            The domain name (ex: "noelios.com").
      */
     public Organization(String name, String description, String domainName) {
+        this.name = name;
+        this.description = description;
+        this.domainName = domainName;
         this.rootGroups = new CopyOnWriteArrayList<Group>();
         this.users = new CopyOnWriteArrayList<User>();
     }

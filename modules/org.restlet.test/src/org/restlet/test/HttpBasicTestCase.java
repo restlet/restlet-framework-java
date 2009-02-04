@@ -223,7 +223,7 @@ public class HttpBasicTestCase extends RestletTestCase {
 
     @Before
     public void makeServer() throws Exception {
-        int port = getTestPort();
+        int port = TEST_PORT;
         this.component = new Component();
         this.component.getServers().add(Protocol.HTTP, port);
         this.uri = "http://localhost:" + port + "/";

@@ -68,7 +68,7 @@ import org.restlet.util.ServerList;
  * </pre>
  */
 public class ComponentXmlConfigTestCase extends RestletTestCase {
-    private static final int PORT1 = getTestPort();
+    private static final int PORT1 = TEST_PORT;
 
     private static final int PORT2 = PORT1 + 1;
 

@@ -43,7 +43,7 @@ public abstract class RestletTestCase extends TestCase {
 
     private static final String PROPERTY_TEST_PORT = "org.restlet.test.port";
 
-    public static int getTestPort() {
+    private static int getTestPort() {
         if (System.getProperties().containsKey(PROPERTY_TEST_PORT)) {
             return Integer.parseInt(System.getProperty(PROPERTY_TEST_PORT));
         }

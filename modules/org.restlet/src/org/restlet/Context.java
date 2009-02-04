@@ -134,6 +134,7 @@ public class Context {
         this.attributes = new ConcurrentHashMap<String, Object>();
         this.logger = logger;
         this.parameters = new Form(new CopyOnWriteArrayList<Parameter>());
+        this.organizations = new ConcurrentHashMap<String, Organization>();
         this.roleMappings = new CopyOnWriteArrayList<RoleMapping>();
     }
 

@@ -99,7 +99,7 @@ public class HeaderTestCase extends RestletTestCase {
     private Response getWithParams(Parameter... parameters) {
         final Client client = new Client(Protocol.HTTP);
         final Request request = new Request(Method.GET, "http://localhost:"
-                + getTestPort());
+                + TEST_PORT);
         final Form headers = getHttpHeaders(request);
         for (final Parameter p : parameters) {
             headers.add(p);
@@ -113,7 +113,7 @@ public class HeaderTestCase extends RestletTestCase {
     public void setUp() throws Exception {
         if (this.component == null) {
             this.component = new Component();
-            this.component.getServers().add(Protocol.HTTP, getTestPort());
+            this.component.getServers().add(Protocol.HTTP, TEST_PORT);
             this.component.getDefaultHost().attachDefault(
                     new TestHeaderRestlet());
         }

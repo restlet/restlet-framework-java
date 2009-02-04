@@ -40,7 +40,7 @@ public class RestartTestCase extends RestletTestCase {
     public void testRestart() throws Exception {
         final int waitTime = 100;
 
-        final Server connector = new Server(Protocol.HTTP, getTestPort(), null);
+        final Server connector = new Server(Protocol.HTTP, TEST_PORT, null);
 
         System.out.print("Starting connector... ");
         connector.start();

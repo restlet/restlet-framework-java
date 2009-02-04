@@ -44,7 +44,7 @@ import org.restlet.test.RestletTestCase;
 public class UserAgentTunnelFilterTestCase extends RestletTestCase {
 
     /** . */
-    private static final String URL = "http://localhost:" + getTestPort() + "/test";
+    private static final String URL = "http://localhost:" + TEST_PORT + "/test";
 
     private Application application;
 
