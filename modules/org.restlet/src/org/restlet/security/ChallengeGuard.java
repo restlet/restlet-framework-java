@@ -49,9 +49,11 @@ public class ChallengeGuard extends Guard {
      *            The current context.
      * @param scheme
      *            The challenge scheme.
+     * @param realm
+     *            The authentication realm.
      */
-    public ChallengeGuard(Context context, ChallengeScheme scheme) {
-        this(context, scheme, Authorizer.ALWAYS);
+    public ChallengeGuard(Context context, ChallengeScheme scheme, String realm) {
+        this(context, scheme, Authorizer.ALWAYS, realm);
     }
 
     /**
@@ -64,11 +66,13 @@ public class ChallengeGuard extends Guard {
      *            The challenge scheme.
      * @param authorizer
      *            The custom authorizer.
+     * @param realm
+     *            The authentication realm.
      */
     public ChallengeGuard(Context context, ChallengeScheme scheme,
-            Restlet authorizer) {
-        super(context, new ChallengeAuthenticator(context,
-                Authenticator.MODE_REQUIRED, scheme), authorizer);
+            Restlet authorizer, String realm) {
+        super(context, new ChallengeAuthenticator(context, scheme, realm),
+                authorizer);
     }
 
     @Override

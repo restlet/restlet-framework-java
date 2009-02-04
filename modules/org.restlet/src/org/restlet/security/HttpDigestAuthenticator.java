@@ -49,9 +49,6 @@ public class HttpDigestAuthenticator extends ChallengeAuthenticator {
     /** Lifespan of nonce in milliseconds */
     private volatile long nonceLifespan = DEFAULT_NONCE_LIFESPAN_MILLIS;
 
-    /** The authentication realm. */
-    private volatile String realm;
-
     /**
      * The secret key known only to server (use for HTTP DIGEST authentication).
      */
@@ -69,8 +66,7 @@ public class HttpDigestAuthenticator extends ChallengeAuthenticator {
      */
     public HttpDigestAuthenticator(Context context, int mode, String realm,
             Collection<String> baseUris, String serverKey) {
-        super(context, mode, ChallengeScheme.HTTP_DIGEST);
-        this.realm = realm;
+        super(context, mode, ChallengeScheme.HTTP_DIGEST, realm);
         this.domainUris = baseUris;
         this.serverKey = serverKey;
     }
@@ -92,15 +88,6 @@ public class HttpDigestAuthenticator extends ChallengeAuthenticator {
      */
     public long getNonceLifespan() {
         return this.nonceLifespan;
-    }
-
-    /**
-     * Returns the authentication realm.
-     * 
-     * @return The authentication realm.
-     */
-    public String getRealm() {
-        return this.realm;
     }
 
     /**
@@ -132,16 +119,6 @@ public class HttpDigestAuthenticator extends ChallengeAuthenticator {
      */
     public void setNonceLifespan(long lifespan) {
         this.nonceLifespan = lifespan;
-    }
-
-    /**
-     * Sets the authentication realm.
-     * 
-     * @param realm
-     *            The authentication realm.
-     */
-    public void setRealm(String realm) {
-        this.realm = realm;
     }
 
     /**

@@ -27,15 +27,18 @@
 
 package org.restlet.security;
 
+import java.util.logging.Level;
+
 import org.restlet.Context;
 import org.restlet.Guard;
+import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.engine.Engine;
-import org.restlet.engine.authentication.ChallengeAuthenticatorHelper;
+import org.restlet.engine.authentication.AuthenticationHelper;
 
 /**
  * Authenticator based on a challenge scheme such as HTTP Basic.
@@ -43,6 +46,21 @@ import org.restlet.engine.authentication.ChallengeAuthenticatorHelper;
  * @author Jerome Louvel
  */
 public class ChallengeAuthenticator extends Authenticator {
+
+    /** Indicates that an authentication response is considered invalid. */
+    public static final int AUTHENTICATION_INVALID = -1;
+
+    /** Indicates that an authentication response couldn't be found. */
+    public static final int AUTHENTICATION_MISSING = 0;
+
+    /** Indicates that an authentication response is stale. */
+    public static final int AUTHENTICATION_STALE = 2;
+
+    /** Indicates that an authentication response is valid. */
+    public static final int AUTHENTICATION_VALID = 1;
+
+    /** The authentication realm. */
+    private volatile String realm;
 
     /**
      * Indicates if a new challenge should be sent when invalid credentials are
@@ -58,55 +76,61 @@ public class ChallengeAuthenticator extends Authenticator {
     /**
      * Constructor.
      * 
+     * @param context
+     *            The context.
      * @param challengeScheme
+     *            The authentication scheme to use.
+     * @param realm
+     *            The authentication realm.
      */
     public ChallengeAuthenticator(Context context,
-            ChallengeScheme challengeScheme) {
-        super(context);
-        this.scheme = challengeScheme;
-        this.verifier = context.getVerifier();
+            ChallengeScheme challengeScheme, String realm) {
+        this(context, MODE_REQUIRED, challengeScheme, realm);
     }
 
     /**
      * Constructor.
      * 
+     * @param context
+     *            The context.
+     * @param mode
+     *            The authentication mode. See MODE_* constants.
      * @param challengeScheme
+     *            The authentication scheme to use.
+     * @param realm
+     *            The authentication realm.
      */
     public ChallengeAuthenticator(Context context, int mode,
-            ChallengeScheme challengeScheme) {
+            ChallengeScheme challengeScheme, String realm) {
         super(context, mode);
+        this.realm = realm;
         this.scheme = challengeScheme;
         this.verifier = context.getVerifier();
     }
 
-    @Override
-    protected boolean authenticate(Request request, Response response) {
+    /**
+     * Indicates if the request is properly authenticated. By default, this
+     * delegates credential checking to checkSecret().
+     * 
+     * @param request
+     *            The request to authenticate.
+     * @return -1 if the given credentials were invalid, 0 if no credentials
+     *         were found and 1 otherwise.
+     * @see Guard#checkSecret(Request, String, char[])
+     */
+    protected int authenticate(ChallengeResponse cr) {
         int result = Guard.AUTHENTICATION_MISSING;
 
         if (getScheme() != null) {
             // An authentication scheme has been defined,
             // the request must be authenticated
-            final ChallengeResponse cr = request.getChallengeResponse();
-
             if (cr != null) {
                 if (getScheme().equals(cr.getScheme())) {
-                    final ChallengeAuthenticatorHelper helper = Engine
-                            .getInstance().findHelper(cr.getScheme(), false,
-                                    true);
+                    final AuthenticationHelper helper = Engine.getInstance()
+                            .findHelper(cr.getScheme(), false, true);
 
                     if (helper != null) {
-                        result = Guard.AUTHENTICATION_MISSING;
-
-                        // The challenge schemes are compatible
-                        final String identifier = cr.getIdentifier();
-                        final char[] secret = cr.getSecret();
-
-                        // Check the credentials
-                        if ((identifier != null) && (secret != null)) {
-                            // result = getVerifier().verify(request, response)
-                            // ? Guard.AUTHENTICATION_VALID
-                            // : Guard.AUTHENTICATION_INVALID;
-                        }
+                        // result = helper.authenticate(cr, request, guard);
                     } else {
                         throw new IllegalArgumentException("Challenge scheme "
                                 + getScheme()
@@ -121,13 +145,72 @@ public class ChallengeAuthenticator extends Authenticator {
             }
         }
 
-        if (request.getChallengeResponse() != null) {
+        if (cr != null) {
             // Update the challenge response accordingly
-            request.getChallengeResponse().setAuthenticated(
-                    result == Guard.AUTHENTICATION_VALID);
+            cr.setAuthenticated(result == Guard.AUTHENTICATION_VALID);
         }
 
-        return true; // result;
+        return result;
+    }
+
+    @Override
+    protected boolean authenticate(Request request, Response response) {
+        boolean result = false;
+        final boolean loggable = getLogger().isLoggable(Level.FINE);
+
+        switch (authenticate(request.getChallengeResponse())) {
+        case AUTHENTICATION_VALID:
+            // Valid credentials provided
+            ChallengeResponse challengeResponse = request
+                    .getChallengeResponse();
+            result = true;
+
+            if (loggable) {
+                if (challengeResponse != null) {
+                    getLogger().fine(
+                            "Authentication succeeded. Valid credentials provided for identifier: "
+                                    + request.getChallengeResponse()
+                                            .getIdentifier() + ".");
+                } else {
+                    getLogger()
+                            .fine(
+                                    "Authentication succeeded. Valid credentials provided.");
+                }
+            }
+            break;
+        case AUTHENTICATION_MISSING:
+            // No credentials provided
+            if (loggable) {
+                getLogger().fine(
+                        "Authentication failed. No credentials provided.");
+            }
+
+            challenge(response, false);
+            break;
+        case AUTHENTICATION_INVALID:
+            // Invalid credentials provided
+            if (loggable) {
+                getLogger().fine(
+                        "Authentication failed. Invalid credentials provided.");
+            }
+
+            if (isRechallengeEnabled()) {
+                challenge(response, false);
+            } else {
+                forbid(response);
+            }
+            break;
+        case AUTHENTICATION_STALE:
+            if (loggable) {
+                getLogger().fine(
+                        "Authentication failed. Stale credentials provided.");
+            }
+
+            challenge(response, true);
+            break;
+        }
+
+        return result;
     }
 
     /**
@@ -140,6 +223,32 @@ public class ChallengeAuthenticator extends Authenticator {
      *            Indicates if the new challenge is due to a stale response.
      */
     public void challenge(Response response, boolean stale) {
+        response.setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
+        response.setChallengeRequest(new ChallengeRequest(getScheme(),
+                getRealm()));
+    }
+
+    /**
+     * Rejects the call due to a failed authentication or authorization. This
+     * can be overriden to change the defaut behavior, for example to display an
+     * error page. By default, if authentication is required, the challenge
+     * method is invoked, otherwise the call status is set to
+     * CLIENT_ERROR_FORBIDDEN.
+     * 
+     * @param response
+     *            The reject response.
+     */
+    public void forbid(Response response) {
+        response.setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+    }
+
+    /**
+     * Returns the authentication realm.
+     * 
+     * @return The authentication realm.
+     */
+    public String getRealm() {
+        return this.realm;
     }
 
     /**
@@ -170,6 +279,16 @@ public class ChallengeAuthenticator extends Authenticator {
      */
     public boolean isRechallengeEnabled() {
         return this.rechallengeEnabled;
+    }
+
+    /**
+     * Sets the authentication realm.
+     * 
+     * @param realm
+     *            The authentication realm.
+     */
+    public void setRealm(String realm) {
+        this.realm = realm;
     }
 
     /**

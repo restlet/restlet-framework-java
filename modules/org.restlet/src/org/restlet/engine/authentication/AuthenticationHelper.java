@@ -45,7 +45,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-public abstract class ChallengeAuthenticatorHelper {
+public abstract class AuthenticationHelper {
 
     /** The supported challenge scheme. */
     private volatile ChallengeScheme challengeScheme;
@@ -66,7 +66,7 @@ public abstract class ChallengeAuthenticatorHelper {
      * @param serverSide
      *            Indicates if server side authentication is supported.
      */
-    public ChallengeAuthenticatorHelper(ChallengeScheme challengeScheme,
+    public AuthenticationHelper(ChallengeScheme challengeScheme,
             boolean clientSide, boolean serverSide) {
         this.challengeScheme = challengeScheme;
         this.clientSide = clientSide;

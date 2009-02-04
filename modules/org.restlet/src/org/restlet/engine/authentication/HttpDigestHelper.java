@@ -46,7 +46,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-public class HttpDigestHelper extends ChallengeAuthenticatorHelper {
+public class HttpDigestHelper extends AuthenticationHelper {
 
     /**
      * Return the hashed secret.

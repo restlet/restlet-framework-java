@@ -60,9 +60,8 @@ public class SaasApplication extends Application {
     @Override
     public Restlet createRoot() {
         ChallengeAuthenticator authenticator = new ChallengeAuthenticator(
-                getContext(), ChallengeScheme.HTTP_BASIC);
+                getContext(), ChallengeScheme.HTTP_BASIC, "saas");
         authenticator.setNext(new HelloWorldRestlet());
-
-        return super.createRoot();
+        return authenticator;
     }
 }

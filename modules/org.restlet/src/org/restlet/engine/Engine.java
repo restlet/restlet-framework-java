@@ -47,7 +47,7 @@ import org.restlet.Server;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
 import org.restlet.data.Response;
-import org.restlet.engine.authentication.ChallengeAuthenticatorHelper;
+import org.restlet.engine.authentication.AuthenticationHelper;
 import org.restlet.engine.authentication.HttpAmazonS3Helper;
 import org.restlet.engine.authentication.HttpBasicHelper;
 import org.restlet.engine.authentication.HttpDigestHelper;
@@ -263,7 +263,7 @@ public class Engine {
     }
 
     /** List of available authentication helpers. */
-    private volatile List<ChallengeAuthenticatorHelper> registeredAuthentications;
+    private volatile List<AuthenticationHelper> registeredAuthentications;
 
     /** List of available client connectors. */
     private volatile List<ClientHelper> registeredClients;
@@ -309,7 +309,7 @@ public class Engine {
     public Engine(boolean discoverHelpers) {
         this.registeredClients = new CopyOnWriteArrayList<ClientHelper>();
         this.registeredServers = new CopyOnWriteArrayList<ServerHelper>();
-        this.registeredAuthentications = new CopyOnWriteArrayList<ChallengeAuthenticatorHelper>();
+        this.registeredAuthentications = new CopyOnWriteArrayList<AuthenticationHelper>();
 
         if (discoverHelpers) {
             try {
@@ -521,12 +521,12 @@ public class Engine {
      *            Indicates if server side support is required.
      * @return The authentication helper or null.
      */
-    public ChallengeAuthenticatorHelper findHelper(
+    public AuthenticationHelper findHelper(
             ChallengeScheme challengeScheme, boolean clientSide,
             boolean serverSide) {
-        ChallengeAuthenticatorHelper result = null;
-        final List<ChallengeAuthenticatorHelper> helpers = getRegisteredAuthentications();
-        ChallengeAuthenticatorHelper current;
+        AuthenticationHelper result = null;
+        final List<AuthenticationHelper> helpers = getRegisteredAuthentications();
+        AuthenticationHelper current;
 
         for (int i = 0; (result == null) && (i < helpers.size()); i++) {
             current = helpers.get(i);
@@ -561,7 +561,7 @@ public class Engine {
      * 
      * @return The list of available authentication helpers.
      */
-    public List<ChallengeAuthenticatorHelper> getRegisteredAuthentications() {
+    public List<AuthenticationHelper> getRegisteredAuthentications() {
         return this.registeredAuthentications;
     }
 

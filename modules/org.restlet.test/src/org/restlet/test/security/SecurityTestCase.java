@@ -27,14 +27,13 @@
 
 package org.restlet.test.security;
 
-import javax.ws.rs.core.Response.Status;
-
 import org.junit.After;
 import org.junit.Before;
 import org.restlet.Client;
 import org.restlet.Component;
 import org.restlet.data.Protocol;
 import org.restlet.data.Response;
+import org.restlet.data.Status;
 import org.restlet.test.RestletTestCase;
 
 /**
@@ -49,6 +48,7 @@ public class SecurityTestCase extends RestletTestCase {
     @Before
     public void startComponent() throws Exception {
         this.component = new SaasComponent();
+        this.component.start();
     }
 
     @After
@@ -66,7 +66,7 @@ public class SecurityTestCase extends RestletTestCase {
             Client client = new Client(Protocol.HTTP);
             Response response = client.get(uri);
 
-            assertEquals(Status.FORBIDDEN, response.getStatus());
+            assertEquals(Status.CLIENT_ERROR_UNAUTHORIZED, response.getStatus());
 
             stopServer();
         } catch (Exception e) {
