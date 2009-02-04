@@ -28,7 +28,8 @@
 package org.restlet.data;
 
 import org.restlet.engine.Engine;
-import org.restlet.security.Principal;
+import org.restlet.security.User;
+import org.restlet.security.UserPrincipal;
 import org.restlet.util.Series;
 
 /**
@@ -231,12 +232,12 @@ public final class ChallengeResponse {
     /**
      * Gets the principal associated to the identifier property.
      * 
-     * @return The {@link Principal}.
+     * @return The {@link UserPrincipal}.
      * @deprecated Use the {@link ClientInfo#getSubject()} method instead.
      */
     @Deprecated
-    public Principal getPrincipal() {
-        return new Principal(getIdentifier());
+    public UserPrincipal getPrincipal() {
+        return new UserPrincipal(new User(getIdentifier()));
     }
 
     /**

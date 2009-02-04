@@ -36,7 +36,12 @@ import java.util.logging.Logger;
 
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
+import org.restlet.security.Group;
+import org.restlet.security.LocalVerifier;
+import org.restlet.security.Organization;
+import org.restlet.security.Role;
 import org.restlet.security.RoleMapping;
+import org.restlet.security.User;
 import org.restlet.util.Series;
 
 /**
@@ -222,8 +227,18 @@ public class Context {
      * 
      * @return The modifiable list of role mappings.
      */
-    public List<RoleMapping> getRoleMappings() {
+    private List<RoleMapping> getRoleMappings() {
         return roleMappings;
+    }
+
+    /**
+     * Returns a local verifier that can check the validity of user/secret
+     * couples based on Restlet default authorization model.
+     * 
+     * @return A local verifier.
+     */
+    public LocalVerifier getSecretVerifier() {
+        return null;
     }
 
     /**
@@ -240,6 +255,59 @@ public class Context {
      */
     public Uniform getServerDispatcher() {
         return null;
+    }
+
+    /**
+     * Indicates if a user has been granted a specific role in the current
+     * context. The context contains a mapping between user and groups defined
+     * in a component, and roles defined in an application.
+     * 
+     * @param user
+     *            The user to test.
+     * @param role
+     *            The role that should have been granted.
+     * @return True if the user has been granted the specific role.
+     */
+    public boolean isUserInRole(User user, Role role) {
+        // TODO
+        return false;
+    }
+
+    /**
+     * Maps a group defined in a component to a role defined in the application.
+     * 
+     * @param group
+     *            The source group.
+     * @param role
+     *            The target role.
+     */
+    public void map(Group group, Role role) {
+        getRoleMappings().add(new RoleMapping(group, role));
+    }
+
+    /**
+     * Maps an organization defined in a component to a role defined in the
+     * application.
+     * 
+     * @param organization
+     *            The source organization.
+     * @param role
+     *            The target role.
+     */
+    public void map(Organization organization, Role role) {
+        getRoleMappings().add(new RoleMapping(organization, role));
+    }
+
+    /**
+     * Maps a user defined in a component to a role defined in the application.
+     * 
+     * @param user
+     *            The source user.
+     * @param role
+     *            The target role.
+     */
+    public void map(User user, Role role) {
+        getRoleMappings().add(new RoleMapping(user, role));
     }
 
     /**
@@ -299,6 +367,66 @@ public class Context {
         if (roleMappings != null) {
             this.roleMappings.addAll(roleMappings);
         }
+    }
+
+    /**
+     * Unmaps a group defined in a component from a role defined in the
+     * application.
+     * 
+     * @param group
+     *            The source group.
+     * @param role
+     *            The target role.
+     */
+    public void unmap(Group group, Role role) {
+        unmap((Object) group, role);
+    }
+
+    /**
+     * Unmaps an element (user, group or organization) defined in a component
+     * from a role defined in the application.
+     * 
+     * @param group
+     *            The source group.
+     * @param role
+     *            The target role.
+     */
+    private void unmap(Object source, Role role) {
+        RoleMapping mapping;
+        for (int i = getRoleMappings().size(); i >= 0; i--) {
+            mapping = getRoleMappings().get(i);
+
+            if (mapping.getSource().equals(source)
+                    && mapping.getTarget().equals(role)) {
+                getRoleMappings().remove(i);
+            }
+        }
+    }
+
+    /**
+     * Unmaps an organization defined in a component from a role defined in the
+     * application.
+     * 
+     * @param organization
+     *            The source organization.
+     * @param role
+     *            The target role.
+     */
+    public void unmap(Organization organization, Role role) {
+        unmap((Object) organization, role);
+    }
+
+    /**
+     * Unmaps a user defined in a component from a role defined in the
+     * application.
+     * 
+     * @param user
+     *            The source user.
+     * @param role
+     *            The target role.
+     */
+    public void unmap(User user, Role role) {
+        unmap((Object) user, role);
     }
 
 }

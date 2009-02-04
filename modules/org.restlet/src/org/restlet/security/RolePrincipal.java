@@ -30,16 +30,15 @@ package org.restlet.security;
 import java.io.Serializable;
 
 /**
- * Common class for all Restlet principals. Can be specialized to represent
- * users, roles, groups, etc.
+ * Principal corresponding to an application role granted.
  * 
  * @author Jerome Louvel
  */
-public class Principal implements java.security.Principal, Serializable {
+public class RolePrincipal implements java.security.Principal, Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    /** The name. */
+    /** The role name. */
     private final String name;
 
     /**
@@ -48,7 +47,7 @@ public class Principal implements java.security.Principal, Serializable {
      * @param name
      *            The name.
      */
-    public Principal(String name) {
+    public RolePrincipal(String name) {
         this.name = name;
     }
 
@@ -57,10 +56,10 @@ public class Principal implements java.security.Principal, Serializable {
         if (another == this) {
             return true;
         }
-        if (!(another instanceof Principal)) {
+        if (!(another instanceof RolePrincipal)) {
             return false;
         }
-        final Principal otherPrinc = (Principal) another;
+        final RolePrincipal otherPrinc = (RolePrincipal) another;
         return getName().equals(otherPrinc.getName());
     }
 
@@ -75,7 +74,7 @@ public class Principal implements java.security.Principal, Serializable {
 
     @Override
     public String toString() {
-        return "Restlet Principal: " + getName();
+        return "Role principal: " + getName();
     }
 
 }

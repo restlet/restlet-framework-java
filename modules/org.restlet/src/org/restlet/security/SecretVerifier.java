@@ -37,6 +37,29 @@ import org.restlet.data.Response;
  */
 public abstract class SecretVerifier extends Verifier {
 
+    /**
+     * Creates a user principal for the given user identifier.
+     * 
+     * @param identifier
+     *            The user identifier.
+     * @return A user principal.
+     */
+    protected UserPrincipal createUserPrincipal(String identifier) {
+        return new UserPrincipal(new User(identifier));
+    }
+
+    /**
+     * Verifies that the proposed secret is correct for the specified
+     * identifier. By default, it compares the inputSecret with the one obtain
+     * by the {@link #getSecret(String)} method and adds a new
+     * {@link RolePrincipal} instance to the subject if successful.
+     * 
+     * @param identifier
+     *            The user identifier.
+     * @param inputSecret
+     *            The proposed secret.
+     * @return True if the proposed secret was correct and the subject updated.
+     */
     @Override
     public int verify(Request request, Response response) {
         int result = RESULT_VALID;
@@ -47,7 +70,7 @@ public abstract class SecretVerifier extends Verifier {
                 request.getChallengeResponse().getSecret())) {
             // Add a principal for this identifier
             request.getClientInfo().getSubject().getPrincipals().add(
-                    new Principal(request.getChallengeResponse()
+                    createUserPrincipal(request.getChallengeResponse()
                             .getIdentifier()));
         } else {
             result = RESULT_INVALID;

@@ -57,12 +57,24 @@ public class User {
      * Default constructor.
      */
     public User() {
-        this(null, null, null, null);
+        this(null, null, null, null, null);
     }
 
     /**
      * Constructor.
      * 
+     * @param identifier
+     *            The identifier (login).
+     */
+    public User(String identifier) {
+        this(identifier, null, null, null, null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param identifier
+     *            The identifier (login).
      * @param firstName
      *            The first name.
      * @param lastName
@@ -72,7 +84,9 @@ public class User {
      * @param email
      *            The email.
      */
-    public User(String firstName, String lastName, String title, String email) {
+    public User(String identifier, String firstName, String lastName,
+            String title, String email) {
+        this.identifier = identifier;
         this.firstName = firstName;
         this.lastName = lastName;
         this.title = title;
