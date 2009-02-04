@@ -30,13 +30,12 @@ package org.restlet;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import javax.management.relation.Role;
-
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.engine.Engine;
 import org.restlet.engine.Helper;
 import org.restlet.engine.application.ApplicationHelper;
+import org.restlet.security.Role;
 import org.restlet.service.ConnectorService;
 import org.restlet.service.DecoderService;
 import org.restlet.service.MetadataService;

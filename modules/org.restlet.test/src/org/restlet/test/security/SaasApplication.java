@@ -25,15 +25,47 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.test;
+package org.restlet.test.security;
 
 import org.restlet.Application;
+import org.restlet.Context;
 import org.restlet.Restlet;
+import org.restlet.data.ChallengeScheme;
+import org.restlet.security.ChallengeAuthenticator;
+import org.restlet.security.Role;
+import org.restlet.test.HelloWorldRestlet;
 
-public class HelloWorldApplication extends Application {
+/**
+ * Sample SAAS application with a Basic authenticator guarding a hello world
+ * Restlet.
+ * 
+ * @author Jerome Louvel
+ */
+public class SaasApplication extends Application {
+
+    public SaasApplication() {
+        this(null);
+
+    }
+
+    public SaasApplication(Context context) {
+        super(context);
+
+        Role admin = new Role("admin", "Application administrators");
+        getRoles().add(admin);
+
+        Role user = new Role("user", "Application users");
+        getRoles().add(user);
+    }
 
     @Override
-    public synchronized Restlet createRoot() {
-        return new HelloWorldRestlet();
+    public Restlet createRoot() {
+
+        ChallengeAuthenticator authenticator = new ChallengeAuthenticator(
+                getContext(), 0, ChallengeScheme.HTTP_BASIC);
+
+        authenticator.setNext(new HelloWorldRestlet());
+
+        return super.createRoot();
     }
 }

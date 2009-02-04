@@ -28,23 +28,38 @@
 package org.restlet.test.security;
 
 import org.restlet.Component;
+import org.restlet.Context;
+import org.restlet.data.Protocol;
 import org.restlet.security.Group;
 import org.restlet.security.Organization;
 import org.restlet.security.User;
 
 /**
- * Sample component with declared organizations.
+ * Sample SAAS component with declared organizations.
  * 
  * @author Jerome Louvel
  */
-public class HostingProviderComponent extends Component {
+public class SaasComponent extends Component {
 
-    public HostingProviderComponent() {
+    public SaasComponent() {
+        Organization customer1 = createOrganization1();
+        getOrganizations().add(customer1);
 
+        Organization customer2 = createOrganization2();
+        getOrganizations().add(customer2);
+
+        Context context1 = getContext().createChildContext();
+        context1.bind(customer1);
+        SaasApplication app1 = new SaasApplication(context1);
+
+        getDefaultHost().attach(app1);
+        getServers().add(Protocol.HTTP, 8080);
+    }
+
+    private Organization createOrganization1() {
         // Declare the FooBar organization
         Organization customer1 = new Organization("FooBar Inc.",
                 "Customer contract : #14680", "foobar.com");
-        getOrganizations().add(customer1);
 
         // Add users
         User stiger = new User("stiger", "pwd", "Scott", "Tiger",
@@ -78,10 +93,13 @@ public class HostingProviderComponent extends Component {
         engineers.getMemberUsers().add(stiger);
         developers.getMemberGroups().add(engineers);
 
+        return customer1;
+    }
+
+    private Organization createOrganization2() {
         // Declare the FooBar organization
         Organization customer2 = new Organization("PetStory Inc.",
                 "Customer contract : #13471", "petstory.com");
-        getOrganizations().add(customer1);
 
         // Add users
         User lbird = new User("lbird", "pwd", "Louis", "Bird",
@@ -100,5 +118,7 @@ public class HostingProviderComponent extends Component {
         Group marketing = new Group("marketing", "Marketing department");
         marketing.getMemberUsers().add(glanglois);
         customer2.getRootGroups().add(marketing);
+
+        return customer2;
     }
 }

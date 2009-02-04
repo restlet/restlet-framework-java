@@ -27,13 +27,21 @@
 
 package org.restlet.test;
 
-import org.restlet.Application;
 import org.restlet.Restlet;
+import org.restlet.data.MediaType;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
 
-public class HelloWorldApplication extends Application {
+/**
+ * Reusable hello world Restlet.
+ * 
+ * @author Jerome Louvel
+ */
+public class HelloWorldRestlet extends Restlet {
 
     @Override
-    public synchronized Restlet createRoot() {
-        return new HelloWorldRestlet();
+    public void handle(Request request, Response response) {
+        response.setEntity("hello, world", MediaType.TEXT_PLAIN);
     }
+
 }
