@@ -87,7 +87,9 @@ public abstract class ChallengeAuthenticatorHelper {
      * @return -1 if the given credentials were invalid, 0 if no credentials
      *         were found and 1 otherwise.
      * @see Guard#checkSecret(Request, String, char[])
+     * @deprecated See new org.restlet.security package.
      */
+    @Deprecated
     public int authenticate(ChallengeResponse cr, Request request, Guard guard) {
         int result = Guard.AUTHENTICATION_MISSING;
 
@@ -114,7 +116,9 @@ public abstract class ChallengeAuthenticatorHelper {
      *            Indicates if the new challenge is due to a stale response.
      * @param guard
      *            The associated guard to callback.
+     * @deprecated See new org.restlet.security package.
      */
+    @Deprecated
     public void challenge(Response response, boolean stale, Guard guard) {
         response.setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
         response.setChallengeRequest(new ChallengeRequest(guard.getScheme(),

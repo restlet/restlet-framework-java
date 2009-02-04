@@ -41,7 +41,6 @@ import org.restlet.data.Response;
 import org.restlet.engine.Engine;
 import org.restlet.util.Series;
 
-
 /**
  * Authentication utilities.
  * 
@@ -87,7 +86,9 @@ public class AuthenticationUtils {
      * @return -1 if the given credentials were invalid, 0 if no credentials
      *         were found and 1 otherwise.
      * @see Guard#checkSecret(Request, String, char[])
+     * @deprecated See new org.restlet.security package.
      */
+    @Deprecated
     public static int authenticate(Request request, Guard guard) {
         int result = Guard.AUTHENTICATION_MISSING;
 
@@ -98,8 +99,9 @@ public class AuthenticationUtils {
 
             if (cr != null) {
                 if (guard.getScheme().equals(cr.getScheme())) {
-                    final ChallengeAuthenticatorHelper helper = Engine.getInstance()
-                            .findHelper(cr.getScheme(), false, true);
+                    final ChallengeAuthenticatorHelper helper = Engine
+                            .getInstance().findHelper(cr.getScheme(), false,
+                                    true);
 
                     if (helper != null) {
                         result = helper.authenticate(cr, request, guard);
@@ -136,10 +138,12 @@ public class AuthenticationUtils {
      *            Indicates if the new challenge is due to a stale response.
      * @param guard
      *            The associated guard to callback.
+     * @deprecated See new org.restlet.security package.
      */
+    @Deprecated
     public static void challenge(Response response, boolean stale, Guard guard) {
-        final ChallengeAuthenticatorHelper helper = Engine.getInstance().findHelper(
-                guard.getScheme(), false, true);
+        final ChallengeAuthenticatorHelper helper = Engine.getInstance()
+                .findHelper(guard.getScheme(), false, true);
 
         if (helper != null) {
             helper.challenge(response, stale, guard);
@@ -191,8 +195,8 @@ public class AuthenticationUtils {
     public static String format(ChallengeResponse challenge, Request request,
             Series<Parameter> httpHeaders) {
         String result = null;
-        final ChallengeAuthenticatorHelper helper = Engine.getInstance().findHelper(
-                challenge.getScheme(), true, false);
+        final ChallengeAuthenticatorHelper helper = Engine.getInstance()
+                .findHelper(challenge.getScheme(), true, false);
 
         if (helper != null) {
             result = helper.format(challenge, request, httpHeaders);
@@ -236,8 +240,8 @@ public class AuthenticationUtils {
         }
 
         // Give a chance to the authentication helper to do further parsing
-        final ChallengeAuthenticatorHelper helper = Engine.getInstance().findHelper(
-                result.getScheme(), true, false);
+        final ChallengeAuthenticatorHelper helper = Engine.getInstance()
+                .findHelper(result.getScheme(), true, false);
 
         if (helper != null) {
             helper.parseRequest(result, header);
@@ -274,8 +278,9 @@ public class AuthenticationUtils {
 
                 // Give a chance to the authentication helper to do further
                 // parsing
-                final ChallengeAuthenticatorHelper helper = Engine.getInstance()
-                        .findHelper(result.getScheme(), true, false);
+                final ChallengeAuthenticatorHelper helper = Engine
+                        .getInstance().findHelper(result.getScheme(), true,
+                                false);
 
                 if (helper != null) {
                     helper.parseResponse(result, request);

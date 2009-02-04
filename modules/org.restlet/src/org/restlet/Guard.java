@@ -210,6 +210,7 @@ public class Guard extends Filter {
      *         were found and 1 otherwise.
      * @see #checkSecret(Request, String, char[])
      */
+    @SuppressWarnings("deprecation")
     public int authenticate(Request request) {
         // Delegate processing to the Engine
         return AuthenticationUtils.authenticate(request, this);
@@ -239,6 +240,7 @@ public class Guard extends Filter {
      * @param stale
      *            Indicates if the new challenge is due to a stale response.
      */
+    @SuppressWarnings("deprecation")
     public void challenge(Response response, boolean stale) {
         // Delegate processing to the Engine
         AuthenticationUtils.challenge(response, stale, this);

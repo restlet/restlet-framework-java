@@ -173,6 +173,7 @@ public class HttpDigestHelper extends ChallengeAuthenticatorHelper {
         return Guard.AUTHENTICATION_MISSING;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void challenge(Response response, boolean stale, Guard guard) {
         super.challenge(response, stale, guard);
