@@ -108,6 +108,9 @@ public class Context {
     /** The logger instance to use. */
     private volatile Logger logger;
 
+    /** The modifiable map of bounded organizations. */
+    private Map<String, Organization> organizations;
+
     /** The modifiable series of parameters. */
     private final Series<Parameter> parameters;
 
@@ -142,6 +145,19 @@ public class Context {
      */
     public Context(String loggerName) {
         this(Logger.getLogger(loggerName));
+    }
+
+    /**
+     * Bind an organization and all its users to this context to support the
+     * authentication of users. Note that if you bind several organizations, the
+     * users must authenticate themselves using a fully qualified identifier
+     * (ex: mylogin@mycompany.com).
+     * 
+     * @param organization
+     *            The organization to bind.
+     */
+    public void bind(Organization organization) {
+        getOrganizations().put(organization.getDomainName(), organization);
     }
 
     /**
@@ -210,6 +226,15 @@ public class Context {
     }
 
     /**
+     * Returns the modifiable map of bounded organizations.
+     * 
+     * @return The modifiable map of bounded organizations.
+     */
+    private Map<String, Organization> getOrganizations() {
+        return organizations;
+    }
+
+    /**
      * Returns the modifiable series of parameters. Creates a new instance if no
      * one has been set. A parameter is a pair composed of a name and a value
      * and is typically used for configuration purpose, like Java properties.
@@ -238,7 +263,52 @@ public class Context {
      * @return A local verifier.
      */
     public LocalVerifier getSecretVerifier() {
-        return null;
+        return new LocalVerifier() {
+
+            @Override
+            protected char[] getSecret(String identifier) {
+                char[] result = null;
+
+                // Parse qualified identifiers
+                int at = identifier.indexOf('@');
+                String domainName = (at == -1) ? null : identifier
+                        .substring(at + 1);
+                String userIdentifier = (at == -1) ? identifier : identifier
+                        .substring(0, at);
+
+                // Lookup the organization
+                Organization orga = null;
+
+                if (domainName == null) {
+                    if (getOrganizations().size() == 1) {
+                        orga = getOrganizations().entrySet().iterator().next()
+                                .getValue();
+                    } else {
+                        getLogger()
+                                .info(
+                                        "Unable to identify an unqualified user. Multiple organizations were bounded.");
+                    }
+                } else {
+                    orga = getOrganizations().get(domainName);
+                }
+
+                // Lookup the user
+                if (orga != null) {
+                    User user;
+                    for (int i = 0; (result == null)
+                            && (i < orga.getUsers().size()); i++) {
+                        user = orga.getUsers().get(i);
+
+                        if (user.getIdentifier().equals(userIdentifier)) {
+                            result = user.getSecret();
+                        }
+                    }
+                }
+
+                return result;
+            }
+
+        };
     }
 
     /**
@@ -367,6 +437,16 @@ public class Context {
         if (roleMappings != null) {
             this.roleMappings.addAll(roleMappings);
         }
+    }
+
+    /**
+     * Unbind an organization and all its users from this context.
+     * 
+     * @param organization
+     *            The organization to unbind.
+     */
+    public void unbind(Organization organization) {
+        getOrganizations().remove(organization);
     }
 
     /**
