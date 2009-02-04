@@ -44,8 +44,8 @@ public abstract class SecretVerifier extends Verifier {
      *            The user identifier.
      * @return A user principal.
      */
-    protected UserPrincipal createUserPrincipal(String identifier) {
-        return new UserPrincipal(new User(identifier));
+    protected UserPrincipal createUserPrincipal(String identifier, char[] secret) {
+        return new UserPrincipal(new User(identifier, secret));
     }
 
     /**
@@ -71,7 +71,8 @@ public abstract class SecretVerifier extends Verifier {
             // Add a principal for this identifier
             request.getClientInfo().getSubject().getPrincipals().add(
                     createUserPrincipal(request.getChallengeResponse()
-                            .getIdentifier()));
+                            .getIdentifier(), request.getChallengeResponse()
+                            .getSecret()));
         } else {
             result = RESULT_INVALID;
         }

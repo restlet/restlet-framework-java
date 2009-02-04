@@ -57,7 +57,7 @@ public class User {
      * Default constructor.
      */
     public User() {
-        this(null, null, null, null, null);
+        this(null, (char[]) null, null, null, null, null);
     }
 
     /**
@@ -65,9 +65,11 @@ public class User {
      * 
      * @param identifier
      *            The identifier (login).
+     * @param secret
+     *            The identification secret.
      */
-    public User(String identifier) {
-        this(identifier, null, null, null, null);
+    public User(String identifier, char[] secret) {
+        this(identifier, secret, null, null, null, null);
     }
 
     /**
@@ -75,6 +77,8 @@ public class User {
      * 
      * @param identifier
      *            The identifier (login).
+     * @param secret
+     *            The identification secret.
      * @param firstName
      *            The first name.
      * @param lastName
@@ -84,13 +88,48 @@ public class User {
      * @param email
      *            The email.
      */
-    public User(String identifier, String firstName, String lastName,
-            String title, String email) {
+    public User(String identifier, char[] secret, String firstName,
+            String lastName, String title, String email) {
         this.identifier = identifier;
+        this.secret = secret;
         this.firstName = firstName;
         this.lastName = lastName;
         this.title = title;
         this.email = email;
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param identifier
+     *            The identifier (login).
+     * @param secret
+     *            The identification secret.
+     */
+    public User(String identifier, String secret) {
+        this(identifier, secret.toCharArray());
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param identifier
+     *            The identifier (login).
+     * @param secret
+     *            The identification secret.
+     * @param firstName
+     *            The first name.
+     * @param lastName
+     *            The last name.
+     * @param title
+     *            The title.
+     * @param email
+     *            The email.
+     */
+    public User(String identifier, String secret, String firstName,
+            String lastName, String title, String email) {
+        this(identifier, secret.toCharArray(), firstName, lastName, title,
+                email);
     }
 
     /**

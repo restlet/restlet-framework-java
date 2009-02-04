@@ -16,6 +16,7 @@ Export-Package: org.restlet,
  org.restlet.engine.local,
  org.restlet.engine.util,
  org.restlet.resource,
+ org.restlet.security,
  org.restlet.service,
  org.restlet.util
 Import-Package: javax.xml.namespace,

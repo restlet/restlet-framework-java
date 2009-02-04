@@ -57,9 +57,36 @@ public class Group {
     private volatile String name;
 
     /**
-     * Constructor.
+     * Default constructor. Note that roles are inherited by default.
      */
     public Group() {
+        this(null, null);
+    }
+
+    /**
+     * Constructor. Note that roles are inherited by default.
+     * 
+     * @param name
+     *            The display name.
+     * @param description
+     *            The description.
+     */
+    public Group(String name, String description) {
+        this(name, description, true);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param name
+     *            The display name.
+     * @param description
+     *            The description.
+     * @param inheritRoles
+     *            Indicates if the roles of the parent group should be
+     *            inherited.
+     */
+    public Group(String name, String description, boolean inheritRoles) {
         this.memberGroups = new CopyOnWriteArrayList<Group>();
         this.memberUsers = new CopyOnWriteArrayList<User>();
     }

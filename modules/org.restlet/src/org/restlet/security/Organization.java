@@ -59,6 +59,20 @@ public class Organization {
      * Constructor.
      */
     public Organization() {
+        this(null, null, null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param name
+     *            The display name.
+     * @param description
+     *            The description.
+     * @param domainName
+     *            The domain name (ex: "noelios.com").
+     */
+    public Organization(String name, String description, String domainName) {
         this.rootGroups = new CopyOnWriteArrayList<Group>();
         this.users = new CopyOnWriteArrayList<User>();
     }

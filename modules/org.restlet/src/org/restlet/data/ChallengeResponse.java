@@ -237,7 +237,7 @@ public final class ChallengeResponse {
      */
     @Deprecated
     public UserPrincipal getPrincipal() {
-        return new UserPrincipal(new User(getIdentifier()));
+        return new UserPrincipal(new User(getIdentifier(), getSecret()));
     }
 
     /**
