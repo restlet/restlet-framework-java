@@ -20,7 +20,9 @@ Changes log
           community feed-back.
         - Added "roleMappings" property to Context.
         - Reverted represent*() auto-matching support for further 
-          discussions. Suggested by Tim Peierls.                       
+          discussions. Suggested by Tim Peierls.
+        - Added constuctors with feed URI in the Feed class of the Atom 
+          extension.
      - Misc
         - Upgraded Simple server to version 4.1.2. 
           Contributed by Niall Gallagher.

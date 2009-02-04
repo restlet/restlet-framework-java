@@ -32,8 +32,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.restlet.Client;
+import org.restlet.Context;
+import org.restlet.Uniform;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
+import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.resource.Representation;
@@ -532,6 +536,20 @@ public class Feed extends SaxRepresentation {
 	/**
 	 * Constructor.
 	 * 
+	 * @param context
+	 *            The context from which the client dispatcher will be
+	 *            retrieved.
+	 * @param feedUri
+	 *            The feed URI.
+	 * @throws IOException
+	 */
+	public Feed(Context context, String feedUri) throws IOException {
+		this(context.getClientDispatcher().get(feedUri).getEntity());
+	}
+
+	/**
+	 * Constructor.
+	 * 
 	 * @param xmlFeed
 	 *            The XML feed document.
 	 * @throws IOException
@@ -539,6 +557,30 @@ public class Feed extends SaxRepresentation {
 	public Feed(Representation xmlFeed) throws IOException {
 		super(xmlFeed);
 		parse(new ContentReader(this));
+	}
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param feedUri
+	 *            The feed URI.
+	 * @throws IOException
+	 */
+	public Feed(String feedUri) throws IOException {
+		this(new Client(Protocol.HTTP), feedUri);
+	}
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param clientDispatcher
+	 *            The client HTTP dispatcher.
+	 * @param feedUri
+	 *            The feed URI.
+	 * @throws IOException
+	 */
+	public Feed(Uniform clientDispatcher, String feedUri) throws IOException {
+		this(clientDispatcher.get(feedUri).getEntity());
 	}
 
 	/**
