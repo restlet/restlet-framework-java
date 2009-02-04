@@ -56,10 +56,19 @@ public class Role {
     };
 
     /** The modifiable list of child roles. */
-    private List<Role> children;
+    private List<Role> childRoles;
+
+    /** The modifiable list of denied permissions. */
+    private List<Permission> deniedPermissions;
 
     /** The description. */
     private volatile String description;
+
+    /** The modifiable list of granted permissions. */
+    private List<Permission> grantedPermissions;
+
+    /** Indicates if the permissions are inherited from the parent role. */
+    private boolean inheritPermissions;
 
     /** The name. */
     private volatile String name;
@@ -82,7 +91,7 @@ public class Role {
     public Role(String name, String description) {
         this.name = name;
         this.description = description;
-        this.children = new CopyOnWriteArrayList<Role>();
+        this.childRoles = new CopyOnWriteArrayList<Role>();
     }
 
     /**
@@ -90,8 +99,17 @@ public class Role {
      * 
      * @return The modifiable list of child roles.
      */
-    public List<Role> getChildren() {
-        return children;
+    public List<Role> getChildRoles() {
+        return childRoles;
+    }
+
+    /**
+     * Returns the modifiable list of denied permissions.
+     * 
+     * @return The modifiable list of denied permissions.
+     */
+    public List<Permission> getDeniedPermissions() {
+        return deniedPermissions;
     }
 
     /**
@@ -104,6 +122,15 @@ public class Role {
     }
 
     /**
+     * Returns the modifiable list of granted permissions.
+     * 
+     * @return The modifiable list of granted permissions.
+     */
+    public List<Permission> getGrantedPermissions() {
+        return grantedPermissions;
+    }
+
+    /**
      * Returns the name.
      * 
      * @return The name.
@@ -113,17 +140,36 @@ public class Role {
     }
 
     /**
+     * Indicates if the permissions are inherited from the parent role.
+     * 
+     * @return True if the permissions are inherited
+     */
+    public boolean isInheritPermissions() {
+        return inheritPermissions;
+    }
+
+    /**
      * Sets the list of child roles.
      * 
      * @param children
      *            The list of child roles.
      */
-    public void setChildren(List<Role> children) {
-        this.children.clear();
+    public void setChildRoles(List<Role> children) {
+        this.childRoles.clear();
 
         if (children != null) {
-            this.children.addAll(children);
+            this.childRoles.addAll(children);
         }
+    }
+
+    /**
+     * Sets the modifiable list of denied permissions.
+     * 
+     * @param deniedPermissions
+     *            The modifiable list of denied permissions.
+     */
+    public void setDeniedPermissions(List<Permission> deniedPermissions) {
+        this.deniedPermissions = deniedPermissions;
     }
 
     /**
@@ -134,6 +180,26 @@ public class Role {
      */
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    /**
+     * Sets the modifiable list of granted permissions.
+     * 
+     * @param grantedPermissions
+     *            The modifiable list of granted permissions.
+     */
+    public void setGrantedPermissions(List<Permission> grantedPermissions) {
+        this.grantedPermissions = grantedPermissions;
+    }
+
+    /**
+     * Indicates if the permissions are inherited from the parent role.
+     * 
+     * @param inheritPermissions
+     *            True if the permissions are inherited.
+     */
+    public void setInheritPermissions(boolean inheritPermissions) {
+        this.inheritPermissions = inheritPermissions;
     }
 
     /**

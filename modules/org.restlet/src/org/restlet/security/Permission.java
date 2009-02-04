@@ -30,16 +30,16 @@ package org.restlet.security;
 import java.security.BasicPermission;
 
 /**
- * Permission that gives access rights beyond a specific authorizer for a list
- * of uniform methods.
+ * Generic Restlet permission that gives fine grained rights to its owner,
+ * typically a role granted to the authenticated user.
  * 
  * @author Jerome Louvel
  */
-public class AuthorizerPermission extends BasicPermission {
+public class Permission extends BasicPermission {
 
     private static final long serialVersionUID = 1L;
 
-    /** The list of authorized method names. */
+    /** The list of authorized actions. */
     private volatile String actions;
 
     /**
@@ -48,13 +48,19 @@ public class AuthorizerPermission extends BasicPermission {
      * @param name
      *            The {@link Authorizer} identifier.
      * @param actions
-     *            The list of authorized method names.
+     *            The list of authorized actions.
      */
-    public AuthorizerPermission(String name, String actions) {
+    public Permission(String name, String actions) {
         super(name);
         this.actions = actions;
     }
 
+    /**
+     * Returns the canonical string representation of the actions. The actions
+     * are seperated by a comma and sorted alphabetically.
+     * 
+     * @return The list of authorized uniform methods.
+     */
     @Override
     public String getActions() {
         return this.actions;
