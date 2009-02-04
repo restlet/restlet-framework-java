@@ -1097,6 +1097,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      *         authenticated
      * @see SecurityContext#getUserPrincipal()
      */
+    @SuppressWarnings("deprecation")
     public Principal getUserPrincipal() {
         if (this.request.getChallengeResponse() != null) {
             return this.request.getChallengeResponse().getPrincipal();
@@ -1149,6 +1150,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      *         has not been authenticated
      * @see SecurityContext#isUserInRole(String)
      */
+    @SuppressWarnings("deprecation")
     public boolean isUserInRole(String role) {
         // LATER here ServletRequest.isUserInRole(role)
         final Principal principal = (this.request.getChallengeResponse() == null) ? null
