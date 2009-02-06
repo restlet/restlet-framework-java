@@ -35,7 +35,7 @@ import javax.security.auth.login.LoginException;
 
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.engine.authentication.DefaultJaasCallbackHandler;
+import org.restlet.engine.security.DefaultJaasCallbackHandler;
 
 /**
  * Verifier that leverages the JAAS pluggable authentication mechanism.

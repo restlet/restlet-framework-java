@@ -25,10 +25,9 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.authentication;
+package org.restlet.engine.security;
 
 import java.io.UnsupportedEncodingException;
-import java.util.logging.Level;
 
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
@@ -38,17 +37,17 @@ import org.restlet.engine.util.Base64;
 import org.restlet.util.Series;
 
 /**
- * Implements the HTTP BASIC authentication.
+ * Implements the SMTP PLAIN authentication.
  * 
  * @author Jerome Louvel
  */
-public class HttpBasicHelper extends AuthenticationHelper {
+public class SmtpPlainHelper extends AuthenticationHelper {
 
     /**
      * Constructor.
      */
-    public HttpBasicHelper() {
-        super(ChallengeScheme.HTTP_BASIC, true, true);
+    public SmtpPlainHelper() {
+        super(ChallengeScheme.SMTP_PLAIN, true, false);
     }
 
     @Override
@@ -56,41 +55,12 @@ public class HttpBasicHelper extends AuthenticationHelper {
             ChallengeResponse challenge, Request request,
             Series<Parameter> httpHeaders) {
         try {
-            final String credentials = challenge.getIdentifier() + ':'
+            final String credentials = "^@" + challenge.getIdentifier() + "^@"
                     + new String(challenge.getSecret());
             sb.append(Base64.encode(credentials.getBytes("US-ASCII"), false));
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(
                     "Unsupported encoding, unable to encode credentials");
-        }
-    }
-
-    @Override
-    public void parseResponse(ChallengeResponse cr, Request request) {
-        try {
-            final byte[] credentialsEncoded = Base64
-                    .decode(cr.getCredentials());
-            if (credentialsEncoded == null) {
-                getLogger().warning(
-                        "Cannot decode credentials: " + cr.getCredentials());
-            }
-
-            final String credentials = new String(credentialsEncoded,
-                    "US-ASCII");
-            final int separator = credentials.indexOf(':');
-
-            if (separator == -1) {
-                // Log the blocking
-                getLogger().warning(
-                        "Invalid credentials given by client with IP: "
-                                + ((request != null) ? request.getClientInfo()
-                                        .getAddress() : "?"));
-            } else {
-                cr.setIdentifier(credentials.substring(0, separator));
-                cr.setSecret(credentials.substring(separator + 1));
-            }
-        } catch (UnsupportedEncodingException e) {
-            getLogger().log(Level.WARNING, "Unsupported encoding error", e);
         }
     }
 

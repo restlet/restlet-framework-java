@@ -25,7 +25,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.authentication;
+package org.restlet.engine.security;
 
 import java.util.Date;
 
@@ -39,7 +39,7 @@ import org.restlet.data.Request;
 import org.restlet.engine.http.HttpConstants;
 import org.restlet.engine.util.Base64;
 import org.restlet.engine.util.DateUtils;
-import org.restlet.engine.util.SecurityUtils;
+import org.restlet.engine.util.DigestUtils;
 import org.restlet.util.Series;
 
 /**
@@ -88,6 +88,9 @@ public class HttpMsSharedKeyLiteHelper extends AuthenticationHelper {
             ChallengeResponse challenge, Request request,
             Series<Parameter> httpHeaders) {
 
+        // Setup the method name
+        final String methodName = request.getMethod().getName();
+
         // Setup the Date header
         String date = "";
 
@@ -100,8 +103,6 @@ public class HttpMsSharedKeyLiteHelper extends AuthenticationHelper {
                         .get(0));
                 httpHeaders.add(HttpConstants.HEADER_DATE, date);
             }
-        } else {
-            date = httpHeaders.getFirstValue("x-ms-date", true);
         }
 
         // Setup the canonicalized path
@@ -110,12 +111,12 @@ public class HttpMsSharedKeyLiteHelper extends AuthenticationHelper {
 
         // Setup the message part
         final StringBuilder rest = new StringBuilder();
-        rest.append(date).append('\n').append('/').append(
-                challenge.getIdentifier()).append(canonicalizedResource);
+        rest.append(methodName).append(date).append('\n').append(
+                canonicalizedResource);
 
         // Append the SharedKey credentials
         sb.append(challenge.getIdentifier()).append(':').append(
-                Base64.encode(SecurityUtils.toHMac256(rest.toString(), Base64
+                Base64.encode(DigestUtils.toHMac256(rest.toString(), Base64
                         .decode(new String(challenge.getSecret()))), true));
     }
 }

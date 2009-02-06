@@ -25,7 +25,12 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.security;
+package org.restlet.engine.security;
+
+import org.restlet.security.Group;
+import org.restlet.security.Organization;
+import org.restlet.security.Role;
+import org.restlet.security.User;
 
 /**
  * Mapping from an organization or a user or a group to a role.

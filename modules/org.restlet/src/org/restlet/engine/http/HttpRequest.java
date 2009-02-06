@@ -43,7 +43,7 @@ import org.restlet.data.Range;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Tag;
-import org.restlet.engine.authentication.AuthenticationUtils;
+import org.restlet.engine.security.AuthenticationUtils;
 import org.restlet.engine.util.RangeUtils;
 import org.restlet.resource.Representation;
 import org.restlet.util.Series;

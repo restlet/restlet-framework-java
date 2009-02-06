@@ -25,7 +25,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.authentication;
+package org.restlet.engine.security;
 
 import java.util.Date;
 import java.util.SortedMap;
@@ -43,7 +43,7 @@ import org.restlet.data.Request;
 import org.restlet.engine.http.HttpConstants;
 import org.restlet.engine.util.Base64;
 import org.restlet.engine.util.DateUtils;
-import org.restlet.engine.util.SecurityUtils;
+import org.restlet.engine.util.DigestUtils;
 import org.restlet.engine.util.SystemUtils;
 import org.restlet.util.Series;
 
@@ -193,7 +193,7 @@ public class HttpAwsS3Helper extends AuthenticationHelper {
 
         // Append the AWS credentials
         sb.append(challenge.getIdentifier()).append(':').append(
-                Base64.encode(SecurityUtils.toHMac(rest.toString(), new String(
+                Base64.encode(DigestUtils.toHMac(rest.toString(), new String(
                         challenge.getSecret())), false));
 
     }

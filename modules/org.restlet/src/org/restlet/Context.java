@@ -36,11 +36,11 @@ import java.util.logging.Logger;
 
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
+import org.restlet.engine.security.RoleMapping;
 import org.restlet.security.Group;
 import org.restlet.security.LocalVerifier;
 import org.restlet.security.Organization;
 import org.restlet.security.Role;
-import org.restlet.security.RoleMapping;
 import org.restlet.security.User;
 import org.restlet.util.Series;
 

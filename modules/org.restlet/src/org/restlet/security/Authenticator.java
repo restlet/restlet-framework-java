@@ -33,7 +33,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 
 /**
- * Filter authenticating the subjects sending requests.
+ * Filter authenticating the subject sending the request.
  * 
  * @author Jerome Louvel
  */
@@ -110,17 +110,19 @@ public abstract class Authenticator extends Filter {
         case MODE_REQUIRED:
             // We only continue if the authentication succeeded
             if (!success)
-                result = SKIP;
+                result = STOP;
+
+            request.getClientInfo().setAuthenticated(success);
             break;
 
         case MODE_SUFFICIENT:
             // We don't need to continue if the authentication succeeded
             if (success)
-                result = SKIP;
+                result = STOP;
             break;
 
         default:
-            result = SKIP;
+            result = STOP;
             break;
         }
 

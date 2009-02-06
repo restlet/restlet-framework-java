@@ -35,12 +35,13 @@ import java.security.NoSuchAlgorithmException;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
+
 /**
  * Security data manipulation utilities.
  * 
  * @author Jerome Louvel
  */
-public class SecurityUtils {
+public class DigestUtils {
     /**
      * General regex pattern to extract comma separated name-value components.
      * This pattern captures one name and value per match(), and is repeatedly

@@ -25,7 +25,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.authentication;
+package org.restlet.engine.security;
 
 import javax.security.auth.login.CredentialException;
 
@@ -38,7 +38,7 @@ import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.engine.util.Base64;
-import org.restlet.engine.util.SecurityUtils;
+import org.restlet.engine.util.DigestUtils;
 import org.restlet.util.Series;
 
 /**
@@ -63,7 +63,7 @@ public class HttpDigestHelper extends AuthenticationHelper {
     private static String getHashedSecret(String identifier, Guard guard) {
         char[] result = guard.getSecretResolver().resolve(identifier);
         if (result != null) {
-            return SecurityUtils.toMd5(
+            return DigestUtils.toMd5(
                     identifier + ":" + guard.getRealm() + ":"
                             + new String(result));
         } else {
@@ -96,7 +96,7 @@ public class HttpDigestHelper extends AuthenticationHelper {
             final long nonceTimeMS = Long.parseLong(decodedNonce.substring(0,
                     decodedNonce.indexOf(':')));
             if (decodedNonce.equals(nonceTimeMS + ":"
-                    + SecurityUtils.toMd5(nonceTimeMS + ":" + secretKey))) {
+                    + DigestUtils.toMd5(nonceTimeMS + ":" + secretKey))) {
                 // valid wrt secretKey, now check lifespan
                 return lifespanMS > (System.currentTimeMillis() - nonceTimeMS);
             }
@@ -149,7 +149,7 @@ public class HttpDigestHelper extends AuthenticationHelper {
             if (uri.equals(requestUri)) {
                 final String a1 = getHashedSecret(username, guard);
                 if (a1 != null) {
-                    final String a2 = SecurityUtils.toMd5(
+                    final String a2 = DigestUtils.toMd5(
                             request.getMethod() + ":" + requestUri);
 
                     final StringBuffer expectedResponse = new StringBuffer(a1)
@@ -160,7 +160,7 @@ public class HttpDigestHelper extends AuthenticationHelper {
                     }
                     expectedResponse.append(':').append(a2);
 
-                    if (response.equals(SecurityUtils.toMd5(
+                    if (response.equals(DigestUtils.toMd5(
                             expectedResponse.toString()))) {
                         return Guard.AUTHENTICATION_VALID;
                     }
@@ -206,7 +206,7 @@ public class HttpDigestHelper extends AuthenticationHelper {
             parameters.add("domain", domain.toString());
         }
 
-        parameters.add("nonce", SecurityUtils.makeNonce(guard.getServerKey()));
+        parameters.add("nonce", DigestUtils.makeNonce(guard.getServerKey()));
 
         if (response.getAttributes().containsKey("stale")) {
             // indicate stale nonce was found in challenge response

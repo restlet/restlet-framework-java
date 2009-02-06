@@ -27,7 +27,6 @@
 
 package org.restlet.security;
 
-import org.restlet.Filter;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
@@ -36,7 +35,7 @@ import org.restlet.data.Response;
  * 
  * @author Jerome Louvel
  */
-public abstract class Verifier extends Filter {
+public abstract class Verifier {
 
     /** Invalid credentials provided. */
     public final static int RESULT_INVALID = -1;

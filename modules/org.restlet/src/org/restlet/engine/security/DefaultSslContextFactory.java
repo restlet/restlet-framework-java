@@ -25,7 +25,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.engine.util;
+package org.restlet.engine.security;
 
 import java.io.File;
 import java.io.FileInputStream;

@@ -47,17 +47,17 @@ import org.restlet.Server;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
 import org.restlet.data.Response;
-import org.restlet.engine.authentication.AuthenticationHelper;
-import org.restlet.engine.authentication.HttpAwsS3Helper;
-import org.restlet.engine.authentication.HttpBasicHelper;
-import org.restlet.engine.authentication.HttpDigestHelper;
-import org.restlet.engine.authentication.HttpMsSharedKeyLiteHelper;
-import org.restlet.engine.authentication.HttpMsSharedKeyHelper;
-import org.restlet.engine.authentication.SmtpPlainHelper;
 import org.restlet.engine.http.StreamClientHelper;
 import org.restlet.engine.http.StreamServerHelper;
 import org.restlet.engine.local.ClapClientHelper;
 import org.restlet.engine.local.FileClientHelper;
+import org.restlet.engine.security.AuthenticationHelper;
+import org.restlet.engine.security.HttpAwsS3Helper;
+import org.restlet.engine.security.HttpBasicHelper;
+import org.restlet.engine.security.HttpDigestHelper;
+import org.restlet.engine.security.HttpMsSharedKeyHelper;
+import org.restlet.engine.security.HttpMsSharedKeyLiteHelper;
+import org.restlet.engine.security.SmtpPlainHelper;
 
 /**
  * Engine supporting the Restlet API.
