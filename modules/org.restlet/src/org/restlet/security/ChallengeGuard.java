@@ -28,7 +28,6 @@
 package org.restlet.security;
 
 import org.restlet.Context;
-import org.restlet.Restlet;
 import org.restlet.data.ChallengeScheme;
 
 /**
@@ -70,7 +69,7 @@ public class ChallengeGuard extends Guard {
      *            The authentication realm.
      */
     public ChallengeGuard(Context context, ChallengeScheme scheme,
-            Restlet authorizer, String realm) {
+            Authorizer authorizer, String realm) {
         super(context, new ChallengeAuthenticator(context, scheme, realm),
                 authorizer);
     }

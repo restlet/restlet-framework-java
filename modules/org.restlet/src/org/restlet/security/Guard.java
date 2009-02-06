@@ -29,7 +29,6 @@ package org.restlet.security;
 
 import org.restlet.Context;
 import org.restlet.Filter;
-import org.restlet.Restlet;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
@@ -52,10 +51,10 @@ import org.restlet.data.Response;
 public class Guard extends Filter {
 
     /** The authenticator. */
-    private Restlet authenticator;
+    private Authenticator authenticator;
 
     /** The authorizer. */
-    private Restlet authorizer;
+    private Authorizer authorizer;
 
     /**
      * Constructor.
@@ -67,7 +66,8 @@ public class Guard extends Filter {
      * @param authorizer
      *            The authorizer.
      */
-    public Guard(Context context, Restlet authenticator, Restlet authorizer) {
+    public Guard(Context context, Authenticator authenticator,
+            Authorizer authorizer) {
         super(context);
         this.authenticator = authenticator;
         this.authorizer = authorizer;
@@ -115,7 +115,7 @@ public class Guard extends Filter {
      * 
      * @return The authenticator Restlet.
      */
-    public Restlet getAuthenticator() {
+    public Authenticator getAuthenticator() {
         return authenticator;
     }
 
@@ -124,7 +124,7 @@ public class Guard extends Filter {
      * 
      * @return The authorizer Restlet.
      */
-    public Restlet getAuthorizer() {
+    public Authorizer getAuthorizer() {
         return authorizer;
     }
 
@@ -134,8 +134,15 @@ public class Guard extends Filter {
      * @param authenticator
      *            The authenticator Restlet.
      */
-    public void setAuthenticator(Restlet authenticator) {
+    public void setAuthenticator(Authenticator authenticator) {
         this.authenticator = authenticator;
+
+        // Restlet next = (getAuthorizer() != null) ? getAuthorizer() :
+        // getNext();
+        //
+        // if (authenticator != null) {
+        // authenticator.setNext(next);
+        // }
     }
 
     /**
@@ -144,7 +151,7 @@ public class Guard extends Filter {
      * @param authorizer
      *            The authorizer Restlet.
      */
-    public void setAuthorizer(Restlet authorizer) {
+    public void setAuthorizer(Authorizer authorizer) {
         this.authorizer = authorizer;
     }
 

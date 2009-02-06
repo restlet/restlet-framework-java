@@ -23,6 +23,8 @@ Changes log
           discussions. Suggested by Tim Peierls.
         - Added constuctors with feed URI in the Feed class of the Atom 
           extension.
+        - Added "indent" property to DomRepresentation. Suggested by
+          Cliff Binstock.
      - Misc
         - Upgraded Simple server to version 4.1.2. 
           Contributed by Niall Gallagher.

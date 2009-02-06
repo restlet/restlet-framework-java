@@ -56,6 +56,9 @@ public class DomRepresentation extends XmlRepresentation {
     /** The wrapped DOM document. */
     private volatile Document dom;
 
+    /** Indicates if the XML serialization should be indented. */
+    private volatile boolean indent = true;
+
     /** The source XML representation. */
     private volatile Representation xmlRepresentation;
 
@@ -113,6 +116,8 @@ public class DomRepresentation extends XmlRepresentation {
                         getDocument().getDoctype().getSystemId());
                 transformer.setOutputProperty(OutputKeys.DOCTYPE_PUBLIC,
                         getDocument().getDoctype().getPublicId());
+                transformer.setOutputProperty(OutputKeys.INDENT, Boolean
+                        .toString(isIndent()));
             }
 
             return transformer;
@@ -167,6 +172,15 @@ public class DomRepresentation extends XmlRepresentation {
     }
 
     /**
+     * Indicates if the XML serialization should be indented. True by default.
+     * 
+     * @return True if the XML serialization should be indented.
+     */
+    public boolean isIndent() {
+        return indent;
+    }
+
+    /**
      * Releases the wrapped DOM document and the source XML representation if
      * they have been defined.
      */
@@ -189,6 +203,16 @@ public class DomRepresentation extends XmlRepresentation {
      */
     public void setDocument(Document dom) {
         this.dom = dom;
+    }
+
+    /**
+     * Indicates if the XML serialization should be indented.
+     * 
+     * @param indent
+     *            True if the XML serialization should be indented.
+     */
+    public void setIndent(boolean indent) {
+        this.indent = indent;
     }
 
     @Override
