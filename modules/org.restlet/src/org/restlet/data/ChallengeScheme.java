@@ -70,6 +70,16 @@ public final class ChallengeScheme extends Metadata {
     public static final ChallengeScheme SMTP_PLAIN = new ChallengeScheme(
             "SMTP_PLAIN", "PLAIN", "Plain SMTP authentication");
 
+    /** Microsoft Shared Key scheme. */
+    public static final ChallengeScheme SHARED_KEY = new ChallengeScheme(
+            "SHARED_KEY", "SharedKey",
+            "Microsoft Shared Key authorization (authentication)");
+
+    /** Microsoft Shared Key lite scheme. */
+    public static final ChallengeScheme SHARED_KEY_LITE = new ChallengeScheme(
+            "SHARED_KEY_LITE", "SharedKeyLite",
+            "Microsoft Shared Key lite authorization (authentication)");
+
     /**
      * Returns the challenge scheme associated to a scheme name. If an existing
      * constant exists then it is returned, otherwise a new instance is created.
@@ -102,6 +112,10 @@ public final class ChallengeScheme extends Metadata {
                 result = POP_BASIC;
             } else if (name.equalsIgnoreCase(POP_DIGEST.getName())) {
                 result = POP_DIGEST;
+            } else if (name.equalsIgnoreCase(SHARED_KEY.getName())) {
+                result = SHARED_KEY;
+            } else if (name.equalsIgnoreCase(SHARED_KEY_LITE.getName())) {
+                result = SHARED_KEY_LITE;
             } else {
                 result = new ChallengeScheme(name, null, null);
             }

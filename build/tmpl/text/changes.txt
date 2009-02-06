@@ -25,6 +25,8 @@ Changes log
           extension.
         - Added "indent" property to DomRepresentation. Suggested by
           Cliff Binstock.
+        - Added support of Shared Key and Shared Key Lite authentication 
+          schemes developped by Microsoft. Suggested by Steve Sfartz.
      - Misc
         - Upgraded Simple server to version 4.1.2. 
           Contributed by Niall Gallagher.

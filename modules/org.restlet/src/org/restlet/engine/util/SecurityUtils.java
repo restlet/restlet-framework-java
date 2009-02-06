@@ -105,6 +105,62 @@ public class SecurityUtils {
     }
 
     /**
+     * Converts a source string to its HMAC/SHA256 value.
+     * 
+     * @param source
+     *            The source string to convert.
+     * @param secretKey
+     *            The secret key to use for conversion.
+     * @return The HMac value of the source string.
+     */
+    public static byte[] toHMac256(String source, byte[] secretKey) {
+        byte[] result = null;
+
+        try {
+            // Create the HMAC/SHA256 key
+            final SecretKeySpec signingKey = new SecretKeySpec(secretKey,
+                    "HmacSHA256");
+
+            // Create the message authentication code (MAC)
+            final Mac mac = Mac.getInstance("HmacSHA256");
+            mac.init(signingKey);
+
+            // Compute the HMAC value
+            result = mac.doFinal(source.getBytes("UTF-8"));
+        } catch (NoSuchAlgorithmException nsae) {
+            throw new RuntimeException(
+                    "Could not find the SHA256 algorithm. HMac conversion failed.",
+                    nsae);
+        } catch (InvalidKeyException ike) {
+            throw new RuntimeException(
+                    "Invalid key exception detected. HMac conversion failed.",
+                    ike);
+        } catch (IllegalStateException ise) {
+            throw new RuntimeException(
+                    "IIllegal state exception detected. HMac conversion failed.",
+                    ise);
+        } catch (UnsupportedEncodingException uee) {
+            throw new RuntimeException(
+                    "Unsuported encoding UTF-8. HMac conversion failed.", uee);
+        }
+
+        return result;
+    }
+
+    /**
+     * Converts a source string to its HMAC/SHA256 value.
+     * 
+     * @param source
+     *            The source string to convert.
+     * @param secretKey
+     *            The secret key to use for conversion.
+     * @return The HMac value of the source string.
+     */
+    public static byte[] toHMac256(String source, String secretKey) {
+        return toHMac256(source, secretKey.getBytes());
+    }
+
+    /**
      * Returns the MD5 digest of the target string. Target is decoded to bytes
      * using the US-ASCII charset. The returned hexadecimal String always
      * contains 32 lowercase alphanumeric characters. For example, if target is

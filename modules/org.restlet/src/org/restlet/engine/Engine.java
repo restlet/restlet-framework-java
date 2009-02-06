@@ -51,6 +51,8 @@ import org.restlet.engine.authentication.AuthenticationHelper;
 import org.restlet.engine.authentication.HttpAmazonS3Helper;
 import org.restlet.engine.authentication.HttpBasicHelper;
 import org.restlet.engine.authentication.HttpDigestHelper;
+import org.restlet.engine.authentication.SharedKeyLiteMicrosoftHelper;
+import org.restlet.engine.authentication.SharedKeyMicrosoftHelper;
 import org.restlet.engine.authentication.SmtpPlainHelper;
 import org.restlet.engine.http.StreamClientHelper;
 import org.restlet.engine.http.StreamServerHelper;
@@ -521,9 +523,8 @@ public class Engine {
      *            Indicates if server side support is required.
      * @return The authentication helper or null.
      */
-    public AuthenticationHelper findHelper(
-            ChallengeScheme challengeScheme, boolean clientSide,
-            boolean serverSide) {
+    public AuthenticationHelper findHelper(ChallengeScheme challengeScheme,
+            boolean clientSide, boolean serverSide) {
         AuthenticationHelper result = null;
         final List<AuthenticationHelper> helpers = getRegisteredAuthentications();
         AuthenticationHelper current;
@@ -591,6 +592,8 @@ public class Engine {
         getRegisteredAuthentications().add(new HttpDigestHelper());
         getRegisteredAuthentications().add(new SmtpPlainHelper());
         getRegisteredAuthentications().add(new HttpAmazonS3Helper());
+        getRegisteredAuthentications().add(new SharedKeyMicrosoftHelper());
+        getRegisteredAuthentications().add(new SharedKeyLiteMicrosoftHelper());
     }
 
     /**
