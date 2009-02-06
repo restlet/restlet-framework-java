@@ -30,6 +30,7 @@ package org.restlet.security;
 import org.restlet.Filter;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.data.Status;
 
 /**
  * Filter authorizing requests.
@@ -82,6 +83,19 @@ public abstract class Authorizer extends Filter {
      * @return True if the authorization succeeded.
      */
     public abstract boolean authorize(Request request, Response response);
+
+    @Override
+    protected int beforeHandle(Request request, Response response) {
+        int result = STOP;
+
+        if (authorize(request, response)) {
+            result = CONTINUE;
+        } else {
+            response.setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+        }
+
+        return result;
+    }
 
     /**
      * Returns the identifier unique within an application.

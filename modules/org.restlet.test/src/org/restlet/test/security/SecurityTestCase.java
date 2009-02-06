@@ -66,11 +66,14 @@ public class SecurityTestCase extends RestletTestCase {
         try {
             startComponent();
 
-            String uri = "http://localhost:" + TEST_PORT;
+            String uri = "http://localhost:" + TEST_PORT + "/test1";
             Client client = new Client(Protocol.HTTP);
+
+            // TEST SERIES 1
 
             // Try without authentication
             Response response = client.get(uri);
+            response.release();
             assertEquals(Status.CLIENT_ERROR_UNAUTHORIZED, response.getStatus());
 
             // Try with authentication
@@ -78,7 +81,19 @@ public class SecurityTestCase extends RestletTestCase {
             request.setChallengeResponse(new ChallengeResponse(
                     ChallengeScheme.HTTP_BASIC, "stiger", "pwd"));
             response = client.handle(request);
+            response.release();
             assertEquals(Status.SUCCESS_OK, response.getStatus());
+
+            // TEST SERIES 2
+            uri = "http://localhost:" + TEST_PORT + "/test2";
+            response = client.get(uri);
+            response.release();
+            assertEquals(Status.SUCCESS_OK, response.getStatus());
+
+            uri = "http://localhost:" + TEST_PORT + "/test3";
+            response = client.get(uri);
+            response.release();
+            assertEquals(Status.CLIENT_ERROR_FORBIDDEN, response.getStatus());
 
             stopServer();
         } catch (Exception e) {

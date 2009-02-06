@@ -30,7 +30,9 @@ package org.restlet.test.security;
 import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.Restlet;
+import org.restlet.Router;
 import org.restlet.data.ChallengeScheme;
+import org.restlet.security.Authorizer;
 import org.restlet.security.ChallengeAuthenticator;
 import org.restlet.security.Role;
 import org.restlet.test.HelloWorldRestlet;
@@ -59,9 +61,24 @@ public class SaasApplication extends Application {
 
     @Override
     public Restlet createRoot() {
+        Router root = new Router();
+
+        // Attach test 1
         ChallengeAuthenticator authenticator = new ChallengeAuthenticator(
                 getContext(), ChallengeScheme.HTTP_BASIC, "saas");
         authenticator.setNext(new HelloWorldRestlet());
-        return authenticator;
+        root.attach("/test1", authenticator);
+
+        // Attach test 2
+        Authorizer authorizer = Authorizer.ALWAYS;
+        authorizer.setNext(new HelloWorldRestlet());
+        root.attach("/test2", authorizer);
+
+        // Attach test 3
+        authorizer = Authorizer.NEVER;
+        authorizer.setNext(new HelloWorldRestlet());
+        root.attach("/test3", authorizer);
+
+        return root;
     }
 }
