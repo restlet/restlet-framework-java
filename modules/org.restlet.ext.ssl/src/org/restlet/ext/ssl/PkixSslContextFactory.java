@@ -43,8 +43,8 @@ import org.jsslutils.sslcontext.X509SSLContextFactory.LockedSettingsException;
 import org.jsslutils.sslcontext.keymanagers.FixedServerAliasKeyManager;
 
 import org.restlet.data.Parameter;
-import org.restlet.engine.util.DefaultSslContextFactory;
-import org.restlet.engine.util.SslContextFactory;
+import org.restlet.engine.security.DefaultSslContextFactory;
+import org.restlet.engine.security.SslContextFactory;
 import org.restlet.util.Series;
 
 

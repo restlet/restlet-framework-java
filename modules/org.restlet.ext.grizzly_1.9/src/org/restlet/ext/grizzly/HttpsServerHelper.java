@@ -38,7 +38,7 @@ import javax.net.ssl.SSLContext;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.engine.http.HttpsUtils;
-import org.restlet.engine.util.SslContextFactory;
+import org.restlet.engine.security.SslContextFactory;
 
 import com.sun.grizzly.Controller;
 import com.sun.grizzly.DefaultProtocolChain;

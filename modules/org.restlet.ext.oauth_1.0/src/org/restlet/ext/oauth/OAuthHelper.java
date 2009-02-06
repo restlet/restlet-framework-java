@@ -44,7 +44,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Request;
-import org.restlet.engine.authentication.AuthenticationHelper;
+import org.restlet.engine.security.AuthenticationHelper;
 import org.restlet.util.Series;
 
 

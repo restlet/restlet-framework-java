@@ -29,7 +29,7 @@ package org.restlet.test.engine;
 
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
-import org.restlet.engine.authentication.AuthenticationUtils;
+import org.restlet.engine.security.AuthenticationUtils;
 import org.restlet.test.RestletTestCase;
 
 /**

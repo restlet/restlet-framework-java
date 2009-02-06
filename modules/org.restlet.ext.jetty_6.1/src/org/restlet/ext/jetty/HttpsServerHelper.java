@@ -38,7 +38,7 @@ import org.mortbay.jetty.security.SslSocketConnector;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.engine.http.HttpsUtils;
-import org.restlet.engine.util.SslContextFactory;
+import org.restlet.engine.security.SslContextFactory;
 
 
 /**
