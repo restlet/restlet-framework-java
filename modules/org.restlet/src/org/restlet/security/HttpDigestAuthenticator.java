@@ -57,6 +57,10 @@ public class HttpDigestAuthenticator extends ChallengeAuthenticator {
     /**
      * Alternate Constructor for HTTP DIGEST authentication scheme.
      * 
+     * @param context
+     *            The context.
+     * @param optional
+     *            Indicates if the authentication success is optional.
      * @param realm
      *            authentication realm
      * @param baseUris
@@ -64,9 +68,9 @@ public class HttpDigestAuthenticator extends ChallengeAuthenticator {
      * @param serverKey
      *            secret key known only to server
      */
-    public HttpDigestAuthenticator(Context context, int mode, String realm,
-            Collection<String> baseUris, String serverKey) {
-        super(context, mode, ChallengeScheme.HTTP_DIGEST, realm);
+    public HttpDigestAuthenticator(Context context, boolean optional,
+            String realm, Collection<String> baseUris, String serverKey) {
+        super(context, optional, ChallengeScheme.HTTP_DIGEST, realm);
         this.domainUris = baseUris;
         this.serverKey = serverKey;
     }

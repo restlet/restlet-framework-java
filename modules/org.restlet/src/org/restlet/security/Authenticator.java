@@ -38,45 +38,29 @@ import org.restlet.data.Response;
  * @author Jerome Louvel
  */
 public abstract class Authenticator extends Filter {
-    /**
-     * The authenticator is not required to succeed. In all cases, the attached
-     * Restlet is invoked.
-     */
-    public static final int MODE_OPTIONAL = 1;
 
     /**
-     * The authenticator is required to succeed. The attached Restlet is only
-     * invoked if it succeeds.
+     * Indicates if the authenticator is not required to succeed. In those
+     * cases, the attached Restlet is invoked.
      */
-    public static final int MODE_REQUIRED = 2;
-
-    /**
-     * The authenticator is not required to succeed. The attached Restlet is
-     * only invoked if it fails.
-     */
-    public static final int MODE_SUFFICIENT = 3;
-
-    /**
-     * The authentication mode.
-     */
-    private volatile int mode;
+    private volatile boolean optional;
 
     /**
      * Default constructor setting the mode to {@link #MODE_REQUIRED}.
      */
     public Authenticator(Context context) {
-        this(context, MODE_REQUIRED);
+        this(context, false);
     }
 
     /**
      * Constructor.
      * 
-     * @param mode
+     * @param optional
      *            The authentication mode.
      */
-    public Authenticator(Context context, int mode) {
+    public Authenticator(Context context, boolean optional) {
         super(context);
-        this.mode = mode;
+        this.optional = optional;
     }
 
     /**
@@ -99,53 +83,37 @@ public abstract class Authenticator extends Filter {
     @Override
     protected int beforeHandle(Request request, Response response) {
         int result = CONTINUE;
-
         boolean success = authenticate(request, response);
 
-        switch (getMode()) {
-        case MODE_OPTIONAL:
-            // We try to continue in all cases
-            break;
-
-        case MODE_REQUIRED:
-            // We only continue if the authentication succeeded
+        if (!isOptional()) {
             if (!success)
                 result = STOP;
 
             request.getClientInfo().setAuthenticated(success);
-            break;
-
-        case MODE_SUFFICIENT:
-            // We don't need to continue if the authentication succeeded
-            if (success)
-                result = STOP;
-            break;
-
-        default:
-            result = STOP;
-            break;
         }
 
         return result;
     }
 
     /**
-     * Returns the authentication mode.
+     * Indicates if the authenticator is not required to succeed. In those
+     * cases, the attached Restlet is invoked.
      * 
-     * @return The authentication mode.
+     * @return True if the authentication success is optional.
      */
-    public int getMode() {
-        return mode;
+    public boolean isOptional() {
+        return optional;
     }
 
     /**
-     * Sets the authentication mode.
+     * Indicates if the authenticator is not required to succeed. In those
+     * cases, the attached Restlet is invoked.
      * 
-     * @param mode
-     *            The authentication mode.
+     * @param optional
+     *            True if the authentication success is optional.
      */
-    public void setMode(int mode) {
-        this.mode = mode;
+    public void setOptional(boolean optional) {
+        this.optional = optional;
     }
 
 }

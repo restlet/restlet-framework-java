@@ -64,14 +64,19 @@ public class ChallengeAuthenticator extends Authenticator {
      * 
      * @param context
      *            The context.
+     * @param optional
+     *            Indicates if the authentication success is optional.
      * @param challengeScheme
      *            The authentication scheme to use.
      * @param realm
      *            The authentication realm.
      */
-    public ChallengeAuthenticator(Context context,
+    public ChallengeAuthenticator(Context context, boolean optional,
             ChallengeScheme challengeScheme, String realm) {
-        this(context, MODE_REQUIRED, challengeScheme, realm);
+        super(context, optional);
+        this.realm = realm;
+        this.scheme = challengeScheme;
+        this.verifier = context.getVerifier();
     }
 
     /**
@@ -79,19 +84,14 @@ public class ChallengeAuthenticator extends Authenticator {
      * 
      * @param context
      *            The context.
-     * @param mode
-     *            The authentication mode. See MODE_* constants.
      * @param challengeScheme
      *            The authentication scheme to use.
      * @param realm
      *            The authentication realm.
      */
-    public ChallengeAuthenticator(Context context, int mode,
+    public ChallengeAuthenticator(Context context,
             ChallengeScheme challengeScheme, String realm) {
-        super(context, mode);
-        this.realm = realm;
-        this.scheme = challengeScheme;
-        this.verifier = context.getVerifier();
+        this(context, false, challengeScheme, realm);
     }
 
     /**
