@@ -40,7 +40,7 @@ import javax.net.ssl.TrustManagerFactory;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.engine.http.HttpsUtils;
-import org.restlet.engine.util.SslContextFactory;
+import org.restlet.engine.security.SslContextFactory;
 import org.simpleframework.transport.connect.Connection;
 import org.simpleframework.transport.connect.SocketConnection;
 import org.simpleframework.http.core.Container;
