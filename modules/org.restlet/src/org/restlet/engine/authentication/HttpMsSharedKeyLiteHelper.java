@@ -88,9 +88,6 @@ public class HttpMsSharedKeyLiteHelper extends AuthenticationHelper {
             ChallengeResponse challenge, Request request,
             Series<Parameter> httpHeaders) {
 
-        // Setup the method name
-        final String methodName = request.getMethod().getName();
-
         // Setup the Date header
         String date = "";
 
@@ -103,6 +100,8 @@ public class HttpMsSharedKeyLiteHelper extends AuthenticationHelper {
                         .get(0));
                 httpHeaders.add(HttpConstants.HEADER_DATE, date);
             }
+        } else {
+            date = httpHeaders.getFirstValue("x-ms-date", true);
         }
 
         // Setup the canonicalized path
@@ -111,8 +110,8 @@ public class HttpMsSharedKeyLiteHelper extends AuthenticationHelper {
 
         // Setup the message part
         final StringBuilder rest = new StringBuilder();
-        rest.append(methodName).append(date).append('\n').append(
-                canonicalizedResource);
+        rest.append(date).append('\n').append('/').append(
+                challenge.getIdentifier()).append(canonicalizedResource);
 
         // Append the SharedKey credentials
         sb.append(challenge.getIdentifier()).append(':').append(
