@@ -12,7 +12,7 @@ Import-Package: org.jsslutils.keystores,
  org.restlet,
  org.restlet.data,
  org.restlet.engine,
- org.restlet.engine.util,
+ org.restlet.engine.security,
  org.restlet.resource,
  org.restlet.service,
  org.restlet.util
