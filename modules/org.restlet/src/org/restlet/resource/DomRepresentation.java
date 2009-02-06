@@ -57,7 +57,7 @@ public class DomRepresentation extends XmlRepresentation {
     private volatile Document dom;
 
     /** Indicates if the XML serialization should be indented. */
-    private volatile boolean indent = true;
+    private volatile boolean indent;
 
     /** The source XML representation. */
     private volatile Representation xmlRepresentation;
@@ -172,7 +172,7 @@ public class DomRepresentation extends XmlRepresentation {
     }
 
     /**
-     * Indicates if the XML serialization should be indented. True by default.
+     * Indicates if the XML serialization should be indented. False by default.
      * 
      * @return True if the XML serialization should be indented.
      */
