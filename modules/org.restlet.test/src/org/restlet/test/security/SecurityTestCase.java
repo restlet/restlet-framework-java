@@ -90,6 +90,7 @@ public class SecurityTestCase extends RestletTestCase {
             response.release();
             assertEquals(Status.SUCCESS_OK, response.getStatus());
 
+            // TEST SERIES 3
             uri = "http://localhost:" + TEST_PORT + "/test3";
             response = client.get(uri);
             response.release();

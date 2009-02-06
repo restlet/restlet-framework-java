@@ -25,7 +25,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.test;
+package org.restlet.test.security;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -46,6 +46,7 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.test.RestletTestCase;
 
 /**
  * Restlet unit tests for HTTP Basic authentication client/server. By default,

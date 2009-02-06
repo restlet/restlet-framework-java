@@ -51,8 +51,9 @@ public class ChallengeAuthenticator extends Authenticator {
      * Indicates if a new challenge should be sent when invalid credentials are
      * received (true by default to conform to HTTP recommendations).
      */
-    private volatile boolean rechallengeEnabled;
+    private volatile boolean rechallenge;
 
+    /** The expected challenge scheme. */
     private final ChallengeScheme scheme;
 
     /** The secrets verifier (login/password combinations). */
@@ -93,6 +94,30 @@ public class ChallengeAuthenticator extends Authenticator {
         this.verifier = context.getVerifier();
     }
 
+    /**
+     * Authenticates the call, relying on the verifier to check the credentials
+     * provided (in general an identifier + secret couple).<br>
+     * <br>
+     * If the credentials are valid, the next Restlet attached is invoked.<br>
+     * <br>
+     * If the credentials are missing, then
+     * {@link #challenge(Response, boolean)} is invoked.<br>
+     * <br>
+     * If the credentials are invalid and if the "rechallenge" property is true
+     * then {@link #challenge(Response, boolean)} is invoked. Otherwise,
+     * {@link #forbid(Response)} is invoked.<br>
+     * <br>
+     * If the credentials are stale, then {@link #challenge(Response, boolean)}
+     * is invoked with the "stale" parameter to true.<br>
+     * <br>
+     * At the end of the process, the
+     * {@link ChallengeResponse#setAuthenticated(boolean)} method is invoked.
+     * 
+     * @param request
+     *            The request sent.
+     * @param response
+     *            The response to update.
+     */
     @Override
     protected boolean authenticate(Request request, Response response) {
         boolean result = false;
@@ -135,7 +160,7 @@ public class ChallengeAuthenticator extends Authenticator {
                                     "Authentication failed. Invalid credentials provided.");
                 }
 
-                if (isRechallengeEnabled()) {
+                if (isRechallenge()) {
                     challenge(response, false);
                 } else {
                     forbid(response);
@@ -153,11 +178,6 @@ public class ChallengeAuthenticator extends Authenticator {
             }
         } else {
             getLogger().warning("Authentication failed. No verifier provided.");
-        }
-
-        // Update this special property
-        if (challengeResponse != null) {
-            challengeResponse.setAuthenticated(result);
         }
 
         return result;
@@ -227,8 +247,8 @@ public class ChallengeAuthenticator extends Authenticator {
      * 
      * @return True if invalid credentials result in a new challenge.
      */
-    public boolean isRechallengeEnabled() {
-        return this.rechallengeEnabled;
+    public boolean isRechallenge() {
+        return this.rechallenge;
     }
 
     /**
@@ -247,10 +267,10 @@ public class ChallengeAuthenticator extends Authenticator {
      * 
      * @param rechallengeEnabled
      *            True if invalid credentials result in a new challenge.
-     * @see #isRechallengeEnabled()
+     * @see #isRechallenge()
      */
-    public void setRechallengeEnabled(boolean rechallengeEnabled) {
-        this.rechallengeEnabled = rechallengeEnabled;
+    public void setRechallenge(boolean rechallengeEnabled) {
+        this.rechallenge = rechallengeEnabled;
     }
 
     /**

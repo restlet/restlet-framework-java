@@ -50,7 +50,7 @@ import org.restlet.util.Series;
  * 
  * @author Thierry Boileau
  */
-public class SharedKeyLiteMicrosoftHelper extends AuthenticationHelper {
+public class HttpMsSharedKeyLiteHelper extends AuthenticationHelper {
 
     /**
      * Returns the canonicalized resource name.
@@ -74,8 +74,8 @@ public class SharedKeyLiteMicrosoftHelper extends AuthenticationHelper {
     /**
      * Constructor.
      */
-    public SharedKeyLiteMicrosoftHelper() {
-        super(ChallengeScheme.SHARED_KEY_LITE, true, false);
+    public HttpMsSharedKeyLiteHelper() {
+        super(ChallengeScheme.HTTP_MS_SHAREDKEY_LITE, true, false);
     }
 
     @Override

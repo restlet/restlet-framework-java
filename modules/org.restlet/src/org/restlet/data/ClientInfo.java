@@ -159,6 +159,13 @@ public final class ClientInfo {
     /** The list of product tokens taken from the agent name. */
     private volatile List<Product> agentProducts;
 
+    /**
+     * Indicates if the subject has been authenticated. The application is
+     * responsible for updating this property, relying on
+     * {@link org.restlet.security.Authenticator} or manually.
+     */
+    private volatile boolean authenticated;
+
     /** The forwarded IP addresses. */
     private volatile List<String> forwardedAddresses;
 
@@ -492,9 +499,9 @@ public final class ClientInfo {
      * @param defaultLanguage
      *            The default language.
      * @return The best variant.
-     * @see <a href=
-     *      "http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm"
-     *      >Apache content negotiation algorithm</a>
+     * @see <a
+     *      href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache
+     *      content negotiation algorithm</a>
      */
     public Variant getPreferredVariant(List<Variant> variants,
             Language defaultLanguage) {
@@ -513,9 +520,9 @@ public final class ClientInfo {
      * @param defaultLanguage
      *            The default language.
      * @return The best variant.
-     * @see <a href=
-     *      "http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm"
-     *      >Apache content negotiation algorithm</a>
+     * @see <a
+     *      href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache
+     *      content negotiation algorithm</a>
      */
     public Variant getPreferredVariant(Resource resource,
             Language defaultLanguage) {
@@ -550,6 +557,17 @@ public final class ClientInfo {
         }
 
         return this.forwardedAddresses.get(0);
+    }
+
+    /**
+     * Indicates if the identifier or principal has been authenticated. The
+     * application is responsible for updating this property, relying on a
+     * {@link org.restlet.Guard} or manually.
+     * 
+     * @return True if the identifier or principal has been authenticated.
+     */
+    public boolean isAuthenticated() {
+        return this.authenticated;
     }
 
     /**
@@ -626,6 +644,18 @@ public final class ClientInfo {
      */
     public void setAgent(String agent) {
         this.agent = agent;
+    }
+
+    /**
+     * Indicates if the identifier or principal has been authenticated. The
+     * application is responsible for updating this property, relying on a
+     * {@link org.restlet.Guard} or manually.
+     * 
+     * @param authenticated
+     *            True if the identifier or principal has been authenticated.
+     */
+    public void setAuthenticated(boolean authenticated) {
+        this.authenticated = authenticated;
     }
 
     /**

@@ -52,7 +52,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-public class HttpAmazonS3Helper extends AuthenticationHelper {
+public class HttpAwsS3Helper extends AuthenticationHelper {
 
     /**
      * Returns the canonicalized AMZ headers.
@@ -110,7 +110,7 @@ public class HttpAmazonS3Helper extends AuthenticationHelper {
     /**
      * Constructor.
      */
-    public HttpAmazonS3Helper() {
+    public HttpAwsS3Helper() {
         super(ChallengeScheme.HTTP_AWS_S3, true, false);
     }
 

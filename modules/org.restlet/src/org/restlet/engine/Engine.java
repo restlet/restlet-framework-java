@@ -48,11 +48,11 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
 import org.restlet.data.Response;
 import org.restlet.engine.authentication.AuthenticationHelper;
-import org.restlet.engine.authentication.HttpAmazonS3Helper;
+import org.restlet.engine.authentication.HttpAwsS3Helper;
 import org.restlet.engine.authentication.HttpBasicHelper;
 import org.restlet.engine.authentication.HttpDigestHelper;
-import org.restlet.engine.authentication.SharedKeyLiteMicrosoftHelper;
-import org.restlet.engine.authentication.SharedKeyMicrosoftHelper;
+import org.restlet.engine.authentication.HttpMsSharedKeyLiteHelper;
+import org.restlet.engine.authentication.HttpMsSharedKeyHelper;
 import org.restlet.engine.authentication.SmtpPlainHelper;
 import org.restlet.engine.http.StreamClientHelper;
 import org.restlet.engine.http.StreamServerHelper;
@@ -591,9 +591,9 @@ public class Engine {
         getRegisteredAuthentications().add(new HttpBasicHelper());
         getRegisteredAuthentications().add(new HttpDigestHelper());
         getRegisteredAuthentications().add(new SmtpPlainHelper());
-        getRegisteredAuthentications().add(new HttpAmazonS3Helper());
-        getRegisteredAuthentications().add(new SharedKeyMicrosoftHelper());
-        getRegisteredAuthentications().add(new SharedKeyLiteMicrosoftHelper());
+        getRegisteredAuthentications().add(new HttpAwsS3Helper());
+        getRegisteredAuthentications().add(new HttpMsSharedKeyHelper());
+        getRegisteredAuthentications().add(new HttpMsSharedKeyLiteHelper());
     }
 
     /**

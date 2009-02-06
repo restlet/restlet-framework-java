@@ -46,6 +46,7 @@ import org.restlet.test.ext.wadl.WadlTestCase;
 import org.restlet.test.jaxrs.AllJaxRsTests;
 import org.restlet.test.resource.FileRepresentationTestCase;
 import org.restlet.test.resource.ResourceTestCase;
+import org.restlet.test.security.HttpBasicTestCase;
 import org.restlet.test.util.TemplateTestCase;
 
 /**

@@ -272,7 +272,9 @@ public final class ChallengeResponse {
      * {@link org.restlet.Guard} or manually.
      * 
      * @return True if the identifier or principal has been authenticated.
+     * @deprecated Use {@link ClientInfo#isAuthenticated()} instead.
      */
+    @Deprecated
     public boolean isAuthenticated() {
         return this.authenticated;
     }
@@ -284,7 +286,9 @@ public final class ChallengeResponse {
      * 
      * @param authenticated
      *            True if the identifier or principal has been authenticated.
+     * @deprecated Use {@link ClientInfo#setAuthenticated(boolean)} instead.
      */
+    @Deprecated
     public void setAuthenticated(boolean authenticated) {
         this.authenticated = authenticated;
     }
