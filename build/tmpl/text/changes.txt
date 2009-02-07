@@ -5,7 +5,8 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Breaking changes
-        - 
+        - Finder#createTarget() methods are now all protected. The 
+          findTarget() method is now public. Suggested by Leigh Klotz. 
     - Enhancements
         - Added a getItemIterator() on RestletFileUpload to facilitate
           access to parts in streaming mode. Suggested by Paul Austin.
@@ -27,6 +28,9 @@ Changes log
           Cliff Binstock.
         - Added support of Shared Key and Shared Key Lite authentication 
           schemes developped by Microsoft. Suggested by Steve Sfartz.
+        - WadlApplication now invokes the findTarget() method on Finder 
+          instances instead of the createTarget() one. 
+          Suggested by Leigh Klotz. 
      - Misc
         - Upgraded Simple server to version 4.1.2. 
           Contributed by Niall Gallagher.

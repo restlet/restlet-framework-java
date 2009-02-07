@@ -465,8 +465,7 @@ public class WadlApplication extends Application {
         // Save the current application
         Application.setCurrent(this);
         // The handler instance targeted by this finder.
-        final Handler handler = finder.createTarget(finder.getTargetClass(),
-                request, response);
+        final Handler handler = finder.findTarget(request, response);
 
         if (handler instanceof WadlResource) {
             // This kind of resource gives more information

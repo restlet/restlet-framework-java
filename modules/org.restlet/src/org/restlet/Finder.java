@@ -148,7 +148,7 @@ public class Finder extends Restlet {
      *            The response to update.
      * @return The created handler or null.
      */
-    public Handler createTarget(Class<? extends Handler> targetClass,
+    protected Handler createTarget(Class<? extends Handler> targetClass,
             Request request, Response response) {
         Handler result = null;
 
@@ -218,7 +218,7 @@ public class Finder extends Restlet {
      *            The response to update.
      * @return The target handler if available or null.
      */
-    protected Handler findTarget(Request request, Response response) {
+    public Handler findTarget(Request request, Response response) {
         return createTarget(request, response);
     }
 
