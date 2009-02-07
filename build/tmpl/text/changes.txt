@@ -10,7 +10,9 @@ Changes log
        - Fixed bug in ReadableRepresentation preventing channel from
          closing. Reported by Janne Husberg.
        - Fixed bug with jSSLutils integration. Reported by Dan Noble 
-         and fixed by Bruno Harbulot. 
+         and fixed by Bruno Harbulot.
+       - Handler is now capable of discovering allowed methods, even
+         in protected Handler subclasses. Reported by Leigh Klotz. 
     - Misc
          - Upgraded JAXB to version 2.1.9.
          - Upgraded Grizzly to version 1.9.5.

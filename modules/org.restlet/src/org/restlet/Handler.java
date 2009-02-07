@@ -76,6 +76,30 @@ import org.restlet.util.Template;
  * @author Jerome Louvel
  */
 public abstract class Handler {
+    /**
+     * Workaround limitation in Java reflection.
+     * 
+     * @param method
+     *            The method to invoke, potentially in a protected class
+     * @return The equivalent method in a public ancestor class.
+     * @see <a
+     *      href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4071957">Bug
+     *      #4071957</a>
+     */
+    private static java.lang.reflect.Method getAncestorMethod(
+            java.lang.reflect.Method method) {
+        while (!java.lang.reflect.Modifier.isPublic(method.getDeclaringClass()
+                .getModifiers())) {
+            try {
+                method = method.getDeclaringClass().getSuperclass().getMethod(
+                        method.getName(), method.getParameterTypes());
+            } catch (NoSuchMethodException e) {
+                throw new IllegalStateException(e);
+            }
+        }
+        return method;
+    }
+
     /** The parent context. */
     private Context context;
 
@@ -400,8 +424,10 @@ public abstract class Handler {
      *            The set to update.
      */
     private void updateAllowedMethods(Set<Method> allowedMethods) {
-        for (final java.lang.reflect.Method classMethod : getClass()
+        for (final java.lang.reflect.Method orig_classMethod : getClass()
                 .getMethods()) {
+            final java.lang.reflect.Method classMethod = getAncestorMethod(orig_classMethod);
+
             if (classMethod.getName().startsWith("allow")
                     && (classMethod.getParameterTypes().length == 0)) {
                 if ((Boolean) invoke(classMethod)) {
