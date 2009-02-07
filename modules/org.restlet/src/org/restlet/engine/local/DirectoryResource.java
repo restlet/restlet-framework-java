@@ -398,6 +398,15 @@ public class DirectoryResource extends Resource {
     }
 
     /**
+     * If the resource is a directory, this returns its content.
+     * 
+     * @return The directory content.
+     */
+    protected ReferenceList getDirectoryContent() {
+        return directoryContent;
+    }
+
+    /**
      * Returns the context's directory URI (file, clap URI).
      * 
      * @return The context's directory URI (file, clap URI).

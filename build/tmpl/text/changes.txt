@@ -11,7 +11,9 @@ Changes log
         - Added a getItemIterator() on RestletFileUpload to facilitate
           access to parts in streaming mode. Suggested by Paul Austin.
         - The default SAX handler has been implemented to log 
-          validation information. Contributed by Raif S. Naffah. 
+          validation information. Contributed by Raif S. Naffah.
+        - DirectoryResource class in engine now has a protected
+          getDirectoryContent() method. Suggested by Gordon Mohr.
     - API changes
         - Added organization description classes 
           (org.restlet.security.Organization, User, Group). Added 
