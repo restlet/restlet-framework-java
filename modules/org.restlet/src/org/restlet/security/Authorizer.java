@@ -61,13 +61,14 @@ public abstract class Authorizer extends Filter {
     /**
      * Default constructor.
      */
-    private Authorizer() {
+    public Authorizer() {
     }
 
     /**
      * Constructor.
      * 
      * @param identifier
+     *            The identifier unique within an application.
      */
     public Authorizer(String identifier) {
         this.identifier = identifier;
