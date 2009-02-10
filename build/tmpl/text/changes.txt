@@ -34,6 +34,9 @@ Changes log
         - WadlApplication now invokes the findTarget() method on Finder 
           instances instead of the createTarget() one. 
           Suggested by Leigh Klotz.
+        - Added Delete, Options, Post, Put and Represent annotations
+          to the org.restlet.resource package. Based on community 
+          feed-back and suggestions by Tim Peierls.
      - Misc
         - Upgraded Simple server to version 4.1.2. 
           Contributed by Niall Gallagher.
