@@ -73,16 +73,18 @@ public abstract class SecretVerifier extends Verifier {
     public int verify(Request request, Response response) {
         int result = RESULT_VALID;
 
-        String identifier = request.getChallengeResponse().getIdentifier();
-        char[] inputSecret = request.getChallengeResponse().getSecret();
-
         if (request.getChallengeResponse() == null) {
             result = RESULT_MISSING;
-        } else if (verify(identifier, inputSecret)) {
-            updateSubject(request.getClientInfo().getSubject(), identifier,
-                    inputSecret);
         } else {
-            result = RESULT_INVALID;
+            String identifier = request.getChallengeResponse().getIdentifier();
+            char[] inputSecret = request.getChallengeResponse().getSecret();
+
+            if (verify(identifier, inputSecret)) {
+                updateSubject(request.getClientInfo().getSubject(), identifier,
+                        inputSecret);
+            } else {
+                result = RESULT_INVALID;
+            }
         }
 
         return result;
