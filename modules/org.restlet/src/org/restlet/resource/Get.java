@@ -34,14 +34,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotates method that represents a resource. Used for GET and HEAD handling.
+ * Annotates method that represents a resource.
  * 
  * @author Jerome Louvel
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface Represent {
+public @interface Get {
 
     /**
      * Representable media types specified either via extension names or full
