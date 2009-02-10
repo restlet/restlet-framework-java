@@ -140,6 +140,11 @@ public class Text {
         this.type = type;
     }
 
+    @Override
+    public String toString() {
+        return getContent();
+    }
+
     /**
      * Writes the current object as an XML element using the given SAX writer.
      * 

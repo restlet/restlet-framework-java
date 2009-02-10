@@ -14,6 +14,7 @@ Changes log
           validation information. Contributed by Raif S. Naffah.
         - DirectoryResource class in engine now has a protected
           getDirectoryContent() method. Suggested by Gordon Mohr.
+        - Implemented Text#toString() in the Atom extension.
     - API changes
         - Added organization description classes 
           (org.restlet.security.Organization, User, Group). Added 
@@ -24,15 +25,15 @@ Changes log
         - Added "roleMappings" property to Context.
         - Reverted represent*() auto-matching support for further 
           discussions. Suggested by Tim Peierls.
-        - Added constuctors with feed URI in the Feed class of the Atom 
+        - Added constructors with feed URI in the Feed class of the Atom 
           extension.
         - Added "indent" property to DomRepresentation. Suggested by
           Cliff Binstock.
         - Added support of Shared Key and Shared Key Lite authentication 
-          schemes developped by Microsoft. Suggested by Steve Sfartz.
+          schemes developed by Microsoft. Suggested by Steve Sfartz.
         - WadlApplication now invokes the findTarget() method on Finder 
           instances instead of the createTarget() one. 
-          Suggested by Leigh Klotz. 
+          Suggested by Leigh Klotz.
      - Misc
         - Upgraded Simple server to version 4.1.2. 
           Contributed by Niall Gallagher.
@@ -147,7 +148,7 @@ Changes log
               before; was required to not use other extensions as given
               in the JAX-RS ApplicationConfig class).
         - The Directory class doesn't override the findTarget() method
-          but uses the defaut Finder mechanism based on the 
+          but uses the default Finder mechanism based on the 
           "targetClass" property. Therefore, it is easier to specify a
           subclass of org.restlet.engine.local.DirectoryResource in
           order to customize the default behavior. 
