@@ -96,6 +96,38 @@ public class SecurityTestCase extends RestletTestCase {
             response.release();
             assertEquals(Status.CLIENT_ERROR_FORBIDDEN, response.getStatus());
 
+            // TEST SERIES 4
+            uri = "http://localhost:" + TEST_PORT + "/test4";
+            request = new Request(Method.GET, uri);
+            request.setChallengeResponse(new ChallengeResponse(
+                    ChallengeScheme.HTTP_BASIC, "stiger", "pwd"));
+            response = client.handle(request);
+            response.release();
+            assertEquals(Status.CLIENT_ERROR_FORBIDDEN, response.getStatus());
+
+            // Try again with another user
+            request.setChallengeResponse(new ChallengeResponse(
+                    ChallengeScheme.HTTP_BASIC, "larmstrong", "pwd"));
+            response = client.handle(request);
+            response.release();
+            assertEquals(Status.SUCCESS_OK, response.getStatus());
+
+            // TEST SERIES 5
+            uri = "http://localhost:" + TEST_PORT + "/test5";
+            request = new Request(Method.GET, uri);
+            request.setChallengeResponse(new ChallengeResponse(
+                    ChallengeScheme.HTTP_BASIC, "stiger", "pwd"));
+            response = client.handle(request);
+            response.release();
+            assertEquals(Status.SUCCESS_OK, response.getStatus());
+
+            // Try again with another user
+            request.setChallengeResponse(new ChallengeResponse(
+                    ChallengeScheme.HTTP_BASIC, "larmstrong", "pwd"));
+            response = client.handle(request);
+            response.release();
+            assertEquals(Status.CLIENT_ERROR_FORBIDDEN, response.getStatus());
+
             stopServer();
         } catch (Exception e) {
             e.printStackTrace();

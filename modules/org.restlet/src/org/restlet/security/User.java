@@ -246,4 +246,8 @@ public class User {
         this.title = title;
     }
 
+    @Override
+    public String toString() {
+        return getIdentifier();
+    }
 }

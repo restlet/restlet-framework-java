@@ -107,7 +107,7 @@ public class Organization {
                 boolean inherit = !inheritOnly || currentGroup.isInheritRoles();
                 Group group;
 
-                for (int i = stack.size() - 1; inherit && (i >= 0); i--) {
+                for (int i = stack.size() - 2; inherit && (i >= 0); i--) {
                     group = stack.get(i);
                     userGroups.add(group);
                     inherit = !inheritOnly || group.isInheritRoles();
@@ -144,10 +144,11 @@ public class Organization {
      */
     public Set<Group> findGroups(User user, boolean inheritOnly) {
         Set<Group> result = new HashSet<Group>();
-        List<Group> stack = new ArrayList<Group>();
+        List<Group> stack;
 
         // Recursively find user groups
         for (Group group : getRootGroups()) {
+            stack = new ArrayList<Group>();
             addGroups(user, result, group, stack, inheritOnly);
         }
 
@@ -277,6 +278,11 @@ public class Organization {
         if (users != null) {
             this.users.addAll(users);
         }
+    }
+
+    @Override
+    public String toString() {
+        return getName();
     }
 
 }

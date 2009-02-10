@@ -29,6 +29,7 @@ package org.restlet.security;
 
 import org.restlet.Context;
 import org.restlet.Filter;
+import org.restlet.Restlet;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
@@ -69,8 +70,8 @@ public class Guard extends Filter {
     public Guard(Context context, Authenticator authenticator,
             Authorizer authorizer) {
         super(context);
-        this.authenticator = authenticator;
-        this.authorizer = authorizer;
+        setAuthenticator(authenticator);
+        setAuthorizer(authorizer);
     }
 
     /**
@@ -131,12 +132,19 @@ public class Guard extends Filter {
     public void setAuthenticator(Authenticator authenticator) {
         this.authenticator = authenticator;
 
-        // Restlet next = (getAuthorizer() != null) ? getAuthorizer() :
-        // getNext();
-        //
-        // if (authenticator != null) {
-        // authenticator.setNext(next);
-        // }
+        Filter next = authenticator;
+        while (next != null) {
+            if (next.getNext() == null) {
+                next.setNext(new Restlet() {
+                    // Empty Restlet to prevent changes on the response status
+                });
+                next = null;
+            } else if (next.getNext() instanceof Filter) {
+                next = (Filter) next.getNext();
+            } else {
+                next = null;
+            }
+        }
     }
 
     /**
@@ -147,6 +155,20 @@ public class Guard extends Filter {
      */
     public void setAuthorizer(Authorizer authorizer) {
         this.authorizer = authorizer;
+
+        Filter next = authorizer;
+        while (next != null) {
+            if (next.getNext() == null) {
+                next.setNext(new Restlet() {
+                    // Empty Restlet to prevent changes on the response status
+                });
+                next = null;
+            } else if (next.getNext() instanceof Filter) {
+                next = (Filter) next.getNext();
+            } else {
+                next = null;
+            }
+        }
     }
 
 }
