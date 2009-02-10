@@ -43,21 +43,19 @@ import org.restlet.test.RestletTestCase;
 public class SaasComponent extends Component {
 
     public SaasComponent() {
-        Organization customer1 = createOrganization1();
+        Context context = getContext().createChildContext();
+        Organization customer1 = createOrganization1(context);
         getOrganizations().add(customer1);
 
-        Organization customer2 = createOrganization2();
+        Organization customer2 = createOrganization2(context);
         getOrganizations().add(customer2);
 
-        Context context1 = getContext().createChildContext();
-        context1.bind(customer1);
-        SaasApplication app1 = new SaasApplication(context1);
-
-        getDefaultHost().attach(app1);
+        SaasApplication app = new SaasApplication(context);
+        getDefaultHost().attach(app);
         getServers().add(Protocol.HTTP, RestletTestCase.TEST_PORT);
     }
 
-    private Organization createOrganization1() {
+    private Organization createOrganization1(Context context) {
         // Declare the FooBar organization
         Organization customer1 = new Organization("FooBar Inc.",
                 "Customer contract : #14680", "foobar.com");
@@ -94,10 +92,12 @@ public class SaasComponent extends Component {
         engineers.getMemberUsers().add(stiger);
         developers.getMemberGroups().add(engineers);
 
+        context.bind(customer1);
         return customer1;
     }
 
-    private Organization createOrganization2() {
+    private Organization createOrganization2(
+            @SuppressWarnings("unused") Context context) {
         // Declare the FooBar organization
         Organization customer2 = new Organization("PetStory Inc.",
                 "Customer contract : #13471", "petstory.com");
@@ -120,6 +120,7 @@ public class SaasComponent extends Component {
         marketing.getMemberUsers().add(glanglois);
         customer2.getRootGroups().add(marketing);
 
+        // context.bind(customer2);
         return customer2;
     }
 }

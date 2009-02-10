@@ -27,6 +27,8 @@
 
 package org.restlet.security;
 
+import javax.security.auth.Subject;
+
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
@@ -38,14 +40,21 @@ import org.restlet.data.Response;
 public abstract class SecretVerifier extends Verifier {
 
     /**
-     * Creates a user principal for the given user identifier.
+     * When the verification succeeds, we need to update the {@link Subject}
+     * associated to the request. By default, it adds a {@link UserPrincipal}.
      * 
+     * @param subject
+     *            The subject to update.
      * @param identifier
      *            The user identifier.
-     * @return A user principal.
+     * @param inputSecret
+     *            The proposed secret.
      */
-    protected UserPrincipal createUserPrincipal(String identifier, char[] secret) {
-        return new UserPrincipal(new User(identifier, secret));
+    protected void updateSubject(Subject subject, String identifier,
+            char[] inputSecret) {
+        // Add a principal for this identifier
+        subject.getPrincipals().add(
+                new UserPrincipal(new User(identifier, inputSecret)));
     }
 
     /**
@@ -64,15 +73,14 @@ public abstract class SecretVerifier extends Verifier {
     public int verify(Request request, Response response) {
         int result = RESULT_VALID;
 
+        String identifier = request.getChallengeResponse().getIdentifier();
+        char[] inputSecret = request.getChallengeResponse().getSecret();
+
         if (request.getChallengeResponse() == null) {
             result = RESULT_MISSING;
-        } else if (verify(request.getChallengeResponse().getIdentifier(),
-                request.getChallengeResponse().getSecret())) {
-            // Add a principal for this identifier
-            request.getClientInfo().getSubject().getPrincipals().add(
-                    createUserPrincipal(request.getChallengeResponse()
-                            .getIdentifier(), request.getChallengeResponse()
-                            .getSecret()));
+        } else if (verify(identifier, inputSecret)) {
+            updateSubject(request.getClientInfo().getSubject(), identifier,
+                    inputSecret);
         } else {
             result = RESULT_INVALID;
         }

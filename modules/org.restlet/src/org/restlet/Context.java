@@ -27,12 +27,16 @@
 
 package org.restlet;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
+
+import javax.security.auth.Subject;
 
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
@@ -41,7 +45,9 @@ import org.restlet.security.Group;
 import org.restlet.security.LocalVerifier;
 import org.restlet.security.Organization;
 import org.restlet.security.Role;
+import org.restlet.security.RolePrincipal;
 import org.restlet.security.User;
+import org.restlet.security.UserPrincipal;
 import org.restlet.util.Series;
 
 /**
@@ -174,6 +180,34 @@ public class Context {
     }
 
     /**
+     * Finds the roles mapped to a specific user/groups/organization triple.
+     * 
+     * @param userOrganization
+     *            The user organization.
+     * @param userGroups
+     *            The user groups.
+     * @param user
+     *            The user.
+     * @return
+     */
+    private Set<Role> findRoles(Organization userOrganization,
+            Set<Group> userGroups, User user) {
+        Set<Role> result = new HashSet<Role>();
+
+        Object source;
+        for (RoleMapping mapping : getRoleMappings()) {
+            source = mapping.getSource();
+
+            if (userOrganization.equals(source) || user.equals(source)
+                    || userGroups.contains(source)) {
+                result.add(mapping.getTarget());
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * Returns a modifiable attributes map that can be used by developers to
      * save information relative to the context. Creates a new instance if no
      * one has been set. This is a convenient mean to provide common objects to
@@ -258,6 +292,22 @@ public class Context {
     }
 
     /**
+     * Returns a request dispatcher to component's virtual hosts. This is mostly
+     * useful for application that want to optimize calls to other applications
+     * hosted in the same component or to the application itself.<br>
+     * <br>
+     * The processing is the same as what would have been done if the request
+     * came from one of the component's server connectors. It first must match
+     * one of the registered virtual hosts. Then it can be routed to one of the
+     * attaced Restlets, typically an Application.
+     * 
+     * @return A request dispatcher to the server connectors' router.
+     */
+    public Uniform getServerDispatcher() {
+        return null;
+    }
+
+    /**
      * Returns a local verifier that can check the validity of user/secret
      * couples based on Restlet default authorization model.
      * 
@@ -295,53 +345,63 @@ public class Context {
 
                 // Lookup the user
                 if (orga != null) {
-                    User user;
-                    for (int i = 0; (result == null)
-                            && (i < orga.getUsers().size()); i++) {
-                        user = orga.getUsers().get(i);
+                    User user = orga.findUser(userIdentifier);
 
-                        if (user.getIdentifier().equals(userIdentifier)) {
-                            result = user.getSecret();
-                        }
+                    if (user != null) {
+                        result = user.getSecret();
                     }
                 }
 
                 return result;
             }
 
+            @Override
+            protected void updateSubject(Subject subject, String identifier,
+                    char[] inputSecret) {
+                // Parse qualified identifiers
+                int at = identifier.indexOf('@');
+                String domainName = (at == -1) ? null : identifier
+                        .substring(at + 1);
+                String userIdentifier = (at == -1) ? identifier : identifier
+                        .substring(0, at);
+
+                // Lookup the organization
+                Organization orga = null;
+
+                if (domainName == null) {
+                    if (getOrganizations().size() == 1) {
+                        orga = getOrganizations().entrySet().iterator().next()
+                                .getValue();
+                    } else {
+                        getLogger()
+                                .info(
+                                        "Unable to identify an unqualified user. Multiple organizations were bounded.");
+                    }
+                } else {
+                    orga = getOrganizations().get(domainName);
+                }
+
+                // Lookup the user
+                if (orga != null) {
+                    User user = orga.findUser(userIdentifier);
+
+                    if (user != null) {
+                        // Add a principal for this identifier
+                        subject.getPrincipals().add(new UserPrincipal(user));
+
+                        // Add a principal for the user roles
+                        Set<Group> userGroups = orga.findGroups(user);
+                        Set<Role> userRoles = findRoles(orga, userGroups, user);
+
+                        for (Role role : userRoles) {
+                            subject.getPrincipals()
+                                    .add(new RolePrincipal(role));
+                        }
+                    }
+                }
+            }
+
         };
-    }
-
-    /**
-     * Returns a request dispatcher to component's virtual hosts. This is mostly
-     * useful for application that want to optimize calls to other applications
-     * hosted in the same component or to the application itself.<br>
-     * <br>
-     * The processing is the same as what would have been done if the request
-     * came from one of the component's server connectors. It first must match
-     * one of the registered virtual hosts. Then it can be routed to one of the
-     * attaced Restlets, typically an Application.
-     * 
-     * @return A request dispatcher to the server connectors' router.
-     */
-    public Uniform getServerDispatcher() {
-        return null;
-    }
-
-    /**
-     * Indicates if a user has been granted a specific role in the current
-     * context. The context contains a mapping between user and groups defined
-     * in a component, and roles defined in an application.
-     * 
-     * @param user
-     *            The user to test.
-     * @param role
-     *            The role that should have been granted.
-     * @return True if the user has been granted the specific role.
-     */
-    public boolean isUserInRole(User user, Role role) {
-        // TODO
-        return false;
     }
 
     /**

@@ -29,8 +29,6 @@ package org.restlet.security;
 
 import java.io.Serializable;
 
-import org.restlet.Context;
-
 /**
  * Principal corresponding to an authenticated user.
  * 
@@ -81,22 +79,6 @@ public class UserPrincipal implements java.security.Principal, Serializable {
      */
     private User getUser() {
         return user;
-    }
-
-    /**
-     * Indicates if the user represented by this principal has been granted a
-     * specific role in the given context. The context contains a mapping
-     * between user and groups defined in a component, and roles defined in an
-     * application.
-     * 
-     * @param context
-     *            The mapping context.
-     * @param role
-     *            The role.
-     * @return True if the user has been granted the specific role.
-     */
-    public boolean isInRole(Context context, Role role) {
-        return context.isUserInRole(getUser(), role);
     }
 
     @Override

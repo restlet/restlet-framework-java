@@ -31,6 +31,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -43,6 +44,8 @@ import org.restlet.engine.http.UserAgentUtils;
 import org.restlet.engine.util.ConnegUtils;
 import org.restlet.resource.Resource;
 import org.restlet.resource.Variant;
+import org.restlet.security.Role;
+import org.restlet.security.RolePrincipal;
 import org.restlet.util.Template;
 import org.restlet.util.Variable;
 
@@ -568,6 +571,31 @@ public final class ClientInfo {
      */
     public boolean isAuthenticated() {
         return this.authenticated;
+    }
+
+    /**
+     * Indicates if the subject has been granted a specific role in the current
+     * context. The context contains a mapping between user and groups defined
+     * in a component, and roles defined in an application.
+     * 
+     * @param role
+     *            The role that should have been granted.
+     * @return True if the user has been granted the specific role.
+     */
+    public boolean isInRole(Role role) {
+        RolePrincipal rolePrincipal;
+
+        for (Principal principal : getSubject().getPrincipals()) {
+            if (principal instanceof RolePrincipal) {
+                rolePrincipal = (RolePrincipal) principal;
+
+                if (rolePrincipal.matches(role)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     /**

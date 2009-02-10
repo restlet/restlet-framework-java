@@ -91,23 +91,17 @@ public class Guard extends Filter {
      */
     @Override
     protected int beforeHandle(Request request, Response response) {
-        int result = CONTINUE;
-
-        if (response.getStatus().isError()) {
-            result = STOP;
-        } else if (getAuthenticator() != null) {
+        if (response.getStatus().isSuccess() && (getAuthenticator() != null)) {
             // Authentication phase
             getAuthenticator().handle(request, response);
         }
 
-        if (response.getStatus().isError()) {
-            result = STOP;
-        } else if (getAuthorizer() != null) {
+        if (response.getStatus().isSuccess() && (getAuthorizer() != null)) {
             // Authorization phase
             getAuthorizer().handle(request, response);
         }
 
-        return result;
+        return response.getStatus().isError() ? STOP : CONTINUE;
     }
 
     /**

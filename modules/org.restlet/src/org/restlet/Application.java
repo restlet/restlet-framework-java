@@ -195,6 +195,23 @@ public class Application extends Restlet {
     }
 
     /**
+     * Finds the role associated to the given name.
+     * 
+     * @param name
+     *            The name of the role to find.
+     * @return The role matched or null.
+     */
+    public Role findRole(String name) {
+        for (Role role : getRoles()) {
+            if (role.getName().equals(name)) {
+                return role;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Returns the author(s).
      * 
      * @return The author(s).

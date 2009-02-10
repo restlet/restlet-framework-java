@@ -30,7 +30,7 @@ package org.restlet.security;
 import java.io.Serializable;
 
 /**
- * Principal corresponding to an application role granted.
+ * Principal corresponding to an application role.
  * 
  * @author Jerome Louvel
  */
@@ -38,17 +38,17 @@ public class RolePrincipal implements java.security.Principal, Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    /** The role name. */
-    private final String name;
+    /** The underlying role. */
+    private final Role role;
 
     /**
      * Constructor.
      * 
-     * @param name
-     *            The name.
+     * @param role
+     *            The underlying role.
      */
-    public RolePrincipal(String name) {
-        this.name = name;
+    public RolePrincipal(Role role) {
+        this.role = role;
     }
 
     @Override
@@ -60,7 +60,7 @@ public class RolePrincipal implements java.security.Principal, Serializable {
             return false;
         }
         final RolePrincipal otherPrinc = (RolePrincipal) another;
-        return getName().equals(otherPrinc.getName());
+        return getRole().equals(otherPrinc.getRole());
     }
 
     /**
@@ -69,7 +69,29 @@ public class RolePrincipal implements java.security.Principal, Serializable {
      * @return The name.
      */
     public String getName() {
-        return this.name;
+        return getRole().getName();
+    }
+
+    /**
+     * Returns the underlying role.
+     * 
+     * @return The underlying role.
+     */
+    private Role getRole() {
+        return role;
+    }
+
+    /**
+     * Indicates if the given role matches the underlying role of this
+     * principal.
+     * 
+     * @param role
+     *            The given role to test.
+     * @return True if the given role matches the underlying role of this
+     *         principal.
+     */
+    public boolean matches(Role role) {
+        return getRole().equals(role);
     }
 
     @Override

@@ -121,7 +121,8 @@ public class Organization {
     }
 
     /**
-     * Finds the set of groups where a given user is a member.
+     * Finds the set of groups where a given user is a member. Note that
+     * inheritable ancestors groups are also returned.
      * 
      * @param user
      *            The member user.
@@ -148,6 +149,28 @@ public class Organization {
         // Recursively find user groups
         for (Group group : getRootGroups()) {
             addGroups(user, result, group, stack, inheritOnly);
+        }
+
+        return result;
+    }
+
+    /**
+     * Finds a user in the organization based on its identifier.
+     * 
+     * @param userIdentifier
+     *            The identifier to match.
+     * @return The matched user or null.
+     */
+    public User findUser(String userIdentifier) {
+        User result = null;
+        User user;
+
+        for (int i = 0; (result == null) && (i < getUsers().size()); i++) {
+            user = getUsers().get(i);
+
+            if (user.getIdentifier().equals(userIdentifier)) {
+                result = user;
+            }
         }
 
         return result;
