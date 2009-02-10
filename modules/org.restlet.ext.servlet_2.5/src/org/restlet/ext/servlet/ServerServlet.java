@@ -284,8 +284,7 @@ public class ServerServlet extends HttpServlet {
                             .newInstance();
 
                     // Set the context based on the Servlet's context
-                    application.setContext(new ServletContextAdapter(this,
-                            parentContext));
+                    application.setContext(parentContext.createChildContext());
                 } catch (NoSuchMethodException e) {
                     log("[Noelios Restlet Engine] - The ServerServlet couldn't invoke the constructor of the target class. Please check this class has a constructor without parameter. The constructor with a parameter of type Context will be used instead.");
                     // The constructor with the Context parameter does not
@@ -293,7 +292,7 @@ public class ServerServlet extends HttpServlet {
                     // invoking the constructor with the Context parameter.
                     application = (Application) targetClass.getConstructor(
                             Context.class).newInstance(
-                            new ServletContextAdapter(this, parentContext));
+                            parentContext.createChildContext());
                 }
             } catch (ClassNotFoundException e) {
                 log(
