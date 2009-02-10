@@ -87,6 +87,9 @@ public class Group {
      *            inherited.
      */
     public Group(String name, String description, boolean inheritRoles) {
+        this.name = name;
+        this.description = description;
+        this.inheritRoles = inheritRoles;
         this.memberGroups = new CopyOnWriteArrayList<Group>();
         this.memberUsers = new CopyOnWriteArrayList<User>();
     }

@@ -27,6 +27,7 @@
 
 package org.restlet.test.security;
 
+import org.restlet.Application;
 import org.restlet.Component;
 import org.restlet.Context;
 import org.restlet.data.Protocol;
@@ -44,18 +45,19 @@ public class SaasComponent extends Component {
 
     public SaasComponent() {
         Context context = getContext().createChildContext();
-        Organization customer1 = createOrganization1(context);
+        SaasApplication app = new SaasApplication(context);
+
+        Organization customer1 = createOrganization1(context, app);
         getOrganizations().add(customer1);
 
-        Organization customer2 = createOrganization2(context);
+        Organization customer2 = createOrganization2(context, app);
         getOrganizations().add(customer2);
 
-        SaasApplication app = new SaasApplication(context);
         getDefaultHost().attach(app);
         getServers().add(Protocol.HTTP, RestletTestCase.TEST_PORT);
     }
 
-    private Organization createOrganization1(Context context) {
+    private Organization createOrganization1(Context context, Application app) {
         // Declare the FooBar organization
         Organization customer1 = new Organization("FooBar Inc.",
                 "Customer contract : #14680", "foobar.com");
@@ -92,12 +94,14 @@ public class SaasComponent extends Component {
         engineers.getMemberUsers().add(stiger);
         developers.getMemberGroups().add(engineers);
 
+        context.map(customer1, app.findRole("user"));
+        context.map(managers, app.findRole("admin"));
         context.bind(customer1);
         return customer1;
     }
 
-    private Organization createOrganization2(
-            @SuppressWarnings("unused") Context context) {
+    @SuppressWarnings("unused")
+    private Organization createOrganization2(Context context, Application app) {
         // Declare the FooBar organization
         Organization customer2 = new Organization("PetStory Inc.",
                 "Customer contract : #13471", "petstory.com");

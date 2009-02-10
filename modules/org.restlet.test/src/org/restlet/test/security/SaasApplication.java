@@ -35,6 +35,7 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.security.Authorizer;
 import org.restlet.security.ChallengeAuthenticator;
 import org.restlet.security.Role;
+import org.restlet.security.RoleAuthorizer;
 import org.restlet.test.HelloWorldRestlet;
 
 /**
@@ -78,6 +79,18 @@ public class SaasApplication extends Application {
         authorizer = Authorizer.NEVER;
         authorizer.setNext(new HelloWorldRestlet());
         root.attach("/test3", authorizer);
+
+        // Attach test 4
+        RoleAuthorizer roleAuthorizer = new RoleAuthorizer();
+        roleAuthorizer.getAuthorizedRoles().add(findRole("admin"));
+        authorizer.setNext(new HelloWorldRestlet());
+        root.attach("/test4", roleAuthorizer);
+
+        // Attach test 5
+        roleAuthorizer = new RoleAuthorizer();
+        roleAuthorizer.getForbiddenRoles().add(findRole("user"));
+        authorizer.setNext(new HelloWorldRestlet());
+        root.attach("/test5", roleAuthorizer);
 
         return root;
     }

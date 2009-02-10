@@ -34,7 +34,9 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 
 /**
- * Authorizer based on authorized and forbidden roles.
+ * Authorizer based on authorized and forbidden roles. Note that if no role is
+ * added to the "authorizedRoles" list, then only the "forbiddenRoles" list is
+ * considered.
  * 
  * @author Jerome Louvel
  */
@@ -82,9 +84,13 @@ public class RoleAuthorizer extends Authorizer {
         boolean forbidden = false;
 
         // Verify if the subject is in one of the authorized roles
-        for (Role authorizedRole : getAuthorizedRoles()) {
-            authorized = authorized
-                    || request.getClientInfo().isInRole(authorizedRole);
+        if (getAuthorizedRoles().isEmpty()) {
+            authorized = true;
+        } else {
+            for (Role authorizedRole : getAuthorizedRoles()) {
+                authorized = authorized
+                        || request.getClientInfo().isInRole(authorizedRole);
+            }
         }
 
         // Verify if the subject is in one of the forbidden roles
@@ -101,7 +107,7 @@ public class RoleAuthorizer extends Authorizer {
      * 
      * @return The modifiable list of authorized roles.
      */
-    protected List<Role> getAuthorizedRoles() {
+    public List<Role> getAuthorizedRoles() {
         return authorizedRoles;
     }
 
@@ -110,7 +116,7 @@ public class RoleAuthorizer extends Authorizer {
      * 
      * @return The modifiable list of forbidden roles.
      */
-    protected List<Role> getForbiddenRoles() {
+    public List<Role> getForbiddenRoles() {
         return forbiddenRoles;
     }
 
