@@ -46,26 +46,39 @@ import org.restlet.data.Response;
  */
 public class DefaultJaasCallbackHandler implements CallbackHandler {
 
-    /** . */
+    /** The handled request. */
     private volatile Request request;
 
-    /** . */
+    /** The handled response. */
     private volatile Response response;
 
     /**
+     * Constructor.
      * 
      * @param request
+     *            The handled request.
      * @param response
+     *            The handled response.
      */
     public DefaultJaasCallbackHandler(Request request, Response response) {
         this.request = request;
         this.response = response;
     }
 
+    /**
+     * Returns the handled request.
+     * 
+     * @return The handled request.
+     */
     public Request getRequest() {
         return request;
     }
 
+    /**
+     * Returns the handled response.
+     * 
+     * @return The handled response.
+     */
     public Response getResponse() {
         return response;
     }
@@ -110,10 +123,22 @@ public class DefaultJaasCallbackHandler implements CallbackHandler {
         }
     }
 
+    /**
+     * Sets the handled request.
+     * 
+     * @param request
+     *            The handled request.
+     */
     public void setRequest(Request request) {
         this.request = request;
     }
 
+    /**
+     * Sets the handled response.
+     * 
+     * @param response
+     *            The handled response.
+     */
     public void setResponse(Response response) {
         this.response = response;
     }

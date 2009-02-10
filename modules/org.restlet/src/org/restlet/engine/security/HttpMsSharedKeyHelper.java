@@ -49,9 +49,11 @@ import org.restlet.util.Series;
 
 /**
  * Implements the Microsoft Shared Key authentication for Azure services.<br>
+ * <br>
  * This concerns Blob and Queues on Azure Storage.<br>
+ * <br>
  * More documentation is available <a
- * href="http://msdn.microsoft.com/en-us/library/dd179428.aspx" >here</a>
+ * href="http://msdn.microsoft.com/en-us/library/dd179428.aspx">here</a>
  * 
  * @author Thierry Boileau
  */
