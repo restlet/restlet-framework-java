@@ -32,9 +32,11 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.restlet.data.CharacterSet;
+import org.restlet.data.ClientInfo;
 import org.restlet.data.Encoding;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
+import org.restlet.data.Preference;
 import org.restlet.data.Reference;
 import org.restlet.util.WrapperList;
 
@@ -83,6 +85,42 @@ public class Variant {
         this.languages = null;
         this.mediaType = mediaType;
         this.identifier = null;
+    }
+
+    /**
+     * Creates a {@link ClientInfo} instance with preferences matching exactly
+     * the current variant.
+     * 
+     * @return The new {@link ClientInfo} instance.
+     */
+    public ClientInfo createClientInfo() {
+        ClientInfo result = new ClientInfo();
+
+        if (getCharacterSet() != null) {
+            result.getAcceptedCharacterSets().add(
+                    new Preference<CharacterSet>(getCharacterSet()));
+        }
+
+        if (getEncodings() != null) {
+            for (Encoding encoding : getEncodings()) {
+                result.getAcceptedEncodings().add(
+                        new Preference<Encoding>(encoding));
+            }
+        }
+
+        if (getLanguages() != null) {
+            for (Language language : getLanguages()) {
+                result.getAcceptedLanguages().add(
+                        new Preference<Language>(language));
+            }
+        }
+
+        if (getMediaType() != null) {
+            result.getAcceptedMediaTypes().add(
+                    new Preference<MediaType>(getMediaType()));
+        }
+
+        return result;
     }
 
     /**

@@ -63,15 +63,15 @@ import org.restlet.util.Series;
  * <br>
  * Concurrency note: contrary to the {@link org.restlet.Uniform} class and its
  * main {@link Restlet} subclass where a single instance can handle several
- * calls concurrently, one instance of {@link Uniform} is created for each call
- * handled and accessed by only one thread at a time.
+ * calls concurrently, one instance of {@link UniformResource} is created for
+ * each call handled and accessed by only one thread at a time.
  * 
  * @see <a
  *      href="http://roy.gbiv.com/pubs/dissertation/rest_arch_style.htm#sec_5_1_5">Source
  *      dissertation</a>
  * @author Jerome Louvel
  */
-public abstract class Uniform {
+public abstract class UniformResource {
 
     /** The current context. */
     private volatile Context context;
@@ -85,7 +85,7 @@ public abstract class Uniform {
     /**
      * Default constructor.
      */
-    public Uniform() {
+    public UniformResource() {
         this(null, null, null);
     }
 
@@ -99,7 +99,7 @@ public abstract class Uniform {
      * @param response
      *            The handled response.
      */
-    public Uniform(Context context, Request request, Response response) {
+    public UniformResource(Context context, Request request, Response response) {
         init(context, request, response);
     }
 
@@ -111,7 +111,7 @@ public abstract class Uniform {
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.7">HTTP
      *      DELETE method</a>
      */
-    public abstract void delete() throws ResourceException;
+    public abstract Representation delete() throws ResourceException;
 
     /**
      * Represents the resource using content negotiation to select the best
@@ -129,7 +129,8 @@ public abstract class Uniform {
      * Represents the resource using a given variant.
      * 
      * @param variant
-     * @return
+     *            The variant representation to retrieve.
+     * @return The representation matching the given variant.
      * @throws ResourceException
      * @see <a
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.3">HTTP
@@ -400,8 +401,11 @@ public abstract class Uniform {
 
     /**
      * Handles the call composed of the current context, request and response.
+     * 
+     * @return The optional response entity.
+     * @throws ResourceException
      */
-    public abstract void handle();
+    public abstract Representation handle() throws ResourceException;
 
     /**
      * Represents the resource using content negotiation to select the best
@@ -423,7 +427,8 @@ public abstract class Uniform {
      * representation, only its metadata.
      * 
      * @param variant
-     * @return
+     *            The variant representation to retrieve.
+     * @return The representation matching the given variant.
      * @throws ResourceException
      * @see <a
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.4">HTTP
@@ -456,7 +461,7 @@ public abstract class Uniform {
      * example via a SSL-secured connection.
      * 
      * @return True if the message is confidential.
-     * @see Message#isConfidential()
+     * @see Request#isConfidential()
      */
     public boolean isConfidential() {
         return getRequest().isConfidential();
@@ -466,7 +471,7 @@ public abstract class Uniform {
      * Describes the resource using content negotiation to select the best
      * variant based on the client preferences.
      * 
-     * @return The best representation.
+     * @return The best description.
      * @throws ResourceException
      * @see <a
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.2">HTTP
@@ -478,7 +483,8 @@ public abstract class Uniform {
      * Describes the resource using a given variant.
      * 
      * @param variant
-     * @return
+     *            The description variant to match.
+     * @return The matched description or null.
      * @throws ResourceException
      * @see <a
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.2">HTTP
