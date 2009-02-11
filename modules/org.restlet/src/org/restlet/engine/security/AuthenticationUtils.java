@@ -99,7 +99,7 @@ public class AuthenticationUtils {
 
             if (cr != null) {
                 if (guard.getScheme().equals(cr.getScheme())) {
-                    final AuthenticationHelper helper = Engine
+                    final AuthenticatorHelper helper = Engine
                             .getInstance().findHelper(cr.getScheme(), false,
                                     true);
 
@@ -142,7 +142,7 @@ public class AuthenticationUtils {
      */
     @Deprecated
     public static void challenge(Response response, boolean stale, Guard guard) {
-        final AuthenticationHelper helper = Engine.getInstance()
+        final AuthenticatorHelper helper = Engine.getInstance()
                 .findHelper(guard.getScheme(), false, true);
 
         if (helper != null) {
@@ -165,7 +165,7 @@ public class AuthenticationUtils {
         String result = null;
 
         if (request != null) {
-            final AuthenticationHelper helper = Engine.getInstance()
+            final AuthenticatorHelper helper = Engine.getInstance()
                     .findHelper(request.getScheme(), false, true);
 
             if (helper != null) {
@@ -195,7 +195,7 @@ public class AuthenticationUtils {
     public static String format(ChallengeResponse challenge, Request request,
             Series<Parameter> httpHeaders) {
         String result = null;
-        final AuthenticationHelper helper = Engine.getInstance()
+        final AuthenticatorHelper helper = Engine.getInstance()
                 .findHelper(challenge.getScheme(), true, false);
 
         if (helper != null) {
@@ -240,7 +240,7 @@ public class AuthenticationUtils {
         }
 
         // Give a chance to the authentication helper to do further parsing
-        final AuthenticationHelper helper = Engine.getInstance()
+        final AuthenticatorHelper helper = Engine.getInstance()
                 .findHelper(result.getScheme(), true, false);
 
         if (helper != null) {
@@ -278,7 +278,7 @@ public class AuthenticationUtils {
 
                 // Give a chance to the authentication helper to do further
                 // parsing
-                final AuthenticationHelper helper = Engine
+                final AuthenticatorHelper helper = Engine
                         .getInstance().findHelper(result.getScheme(), true,
                                 false);
 

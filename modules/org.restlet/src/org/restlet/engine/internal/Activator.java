@@ -116,8 +116,8 @@ public class Activator implements BundleActivator {
 
         // Register authentication helpers
         registerHelper(bundle, Engine.getInstance()
-                .getRegisteredAuthentications(), null,
-                Engine.DESCRIPTOR_AUTHENTICATION_PATH);
+                .getRegisteredAuthenticators(), null,
+                Engine.DESCRIPTOR_AUTHENTICATOR_PATH);
     }
 
     /**

@@ -47,11 +47,13 @@ import org.restlet.Server;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
 import org.restlet.data.Response;
+import org.restlet.engine.converter.ConverterHelper;
+import org.restlet.engine.converter.DomConverter;
 import org.restlet.engine.http.StreamClientHelper;
 import org.restlet.engine.http.StreamServerHelper;
 import org.restlet.engine.local.ClapClientHelper;
 import org.restlet.engine.local.FileClientHelper;
-import org.restlet.engine.security.AuthenticationHelper;
+import org.restlet.engine.security.AuthenticatorHelper;
 import org.restlet.engine.security.HttpAwsS3Helper;
 import org.restlet.engine.security.HttpBasicHelper;
 import org.restlet.engine.security.HttpDigestHelper;
@@ -66,21 +68,26 @@ import org.restlet.engine.security.SmtpPlainHelper;
  */
 public class Engine {
 
-    public static final String DESCRIPTOR_AUTHENTICATION = "org.restlet.engine.AuthenticationHelper";
+    public static final String DESCRIPTOR = "META-INF/services";
 
-    public static final String DESCRIPTOR_PATH = "META-INF/services";
+    public static final String DESCRIPTOR_AUTHENTICATOR = "org.restlet.engine.Authenticatorelper";
 
-    public static final String DESCRIPTOR_AUTHENTICATION_PATH = DESCRIPTOR_PATH
-            + "/" + DESCRIPTOR_AUTHENTICATION;
+    public static final String DESCRIPTOR_AUTHENTICATOR_PATH = DESCRIPTOR + "/"
+            + DESCRIPTOR_AUTHENTICATOR;
 
     public static final String DESCRIPTOR_CLIENT = "org.restlet.engine.ClientHelper";
 
-    public static final String DESCRIPTOR_CLIENT_PATH = DESCRIPTOR_PATH + "/"
+    public static final String DESCRIPTOR_CLIENT_PATH = DESCRIPTOR + "/"
             + DESCRIPTOR_CLIENT;
+
+    public static final String DESCRIPTOR_CONVERTER = "org.restlet.engine.ConverterHelper";
+
+    public static final String DESCRIPTOR_CONVERTER_PATH = DESCRIPTOR + "/"
+            + DESCRIPTOR_CONVERTER;
 
     public static final String DESCRIPTOR_SERVER = "org.restlet.engine.ServerHelper";
 
-    public static final String DESCRIPTOR_SERVER_PATH = DESCRIPTOR_PATH + "/"
+    public static final String DESCRIPTOR_SERVER_PATH = DESCRIPTOR + "/"
             + DESCRIPTOR_SERVER;
 
     /** The registered engine. */
@@ -245,6 +252,28 @@ public class Engine {
     }
 
     /**
+     * Registers a new Restlet Engine.
+     * 
+     * @return The registered engine.
+     */
+    public static Engine register() {
+        return register(true);
+    }
+
+    /**
+     * Registers a new Restlet Engine.
+     * 
+     * @param discoverPlugins
+     *            True if plug-ins should be automatically discovered.
+     * @return The registered engine.
+     */
+    public static Engine register(boolean discoverPlugins) {
+        final Engine result = new Engine(discoverPlugins);
+        org.restlet.engine.Engine.setInstance(result);
+        return result;
+    }
+
+    /**
      * Sets the registered Restlet engine.
      * 
      * @param engine
@@ -264,36 +293,17 @@ public class Engine {
         userClassLoader = newClassLoader;
     }
 
-    /** List of available authentication helpers. */
-    private volatile List<AuthenticationHelper> registeredAuthentications;
+    /** List of available authenticator helpers. */
+    private volatile List<AuthenticatorHelper> registeredAuthenticators;
 
     /** List of available client connectors. */
     private volatile List<ClientHelper> registeredClients;
 
+    /** List of available converter helpers. */
+    private volatile List<ConverterHelper> registeredConverters;
+
     /** List of available server connectors. */
     private volatile List<ServerHelper> registeredServers;
-
-    /**
-     * Registers a new Noelios Restlet Engine.
-     * 
-     * @return The registered engine.
-     */
-    public static Engine register() {
-        return register(true);
-    }
-
-    /**
-     * Registers a new Noelios Restlet Engine.
-     * 
-     * @param discoverConnectors
-     *            True if connectors should be automatically discovered.
-     * @return The registered engine.
-     */
-    public static Engine register(boolean discoverConnectors) {
-        final Engine result = new Engine(discoverConnectors);
-        org.restlet.engine.Engine.setInstance(result);
-        return result;
-    }
 
     /**
      * Constructor that will automatically attempt to discover connectors.
@@ -311,12 +321,14 @@ public class Engine {
     public Engine(boolean discoverHelpers) {
         this.registeredClients = new CopyOnWriteArrayList<ClientHelper>();
         this.registeredServers = new CopyOnWriteArrayList<ServerHelper>();
-        this.registeredAuthentications = new CopyOnWriteArrayList<AuthenticationHelper>();
+        this.registeredAuthenticators = new CopyOnWriteArrayList<AuthenticatorHelper>();
+        this.registeredConverters = new CopyOnWriteArrayList<ConverterHelper>();
 
         if (discoverHelpers) {
             try {
                 discoverConnectors();
-                discoverAuthentications();
+                discoverAuthenticators();
+                discoverConverters();
             } catch (IOException e) {
                 Context
                         .getCurrentLogger()
@@ -444,36 +456,14 @@ public class Engine {
     }
 
     /**
-     * Discovers the authentication helpers and register the default helpers.
+     * Discovers the authenticator helpers and register the default helpers.
      * 
      * @throws IOException
      */
-    private void discoverAuthentications() throws IOException {
-        // Find the factory class name
-        final ClassLoader classLoader = org.restlet.engine.Engine
-                .getClassLoader();
-
-        registerHelpers(classLoader, classLoader
-                .getResources(DESCRIPTOR_AUTHENTICATION_PATH),
-                getRegisteredAuthentications(), null);
-
-        // Register the default helpers that will be used if no
-        // other helper has been found
+    private void discoverAuthenticators() throws IOException {
+        registerHelpers(DESCRIPTOR_AUTHENTICATOR_PATH,
+                getRegisteredAuthenticators(), null);
         registerDefaultAuthentications();
-    }
-
-    /**
-     * Discovers client connectors in the classpath.
-     * 
-     * @param classLoader
-     *            Classloader to search.
-     * @throws IOException
-     */
-    private void discoverClientConnectors(ClassLoader classLoader)
-            throws IOException {
-        registerHelpers(classLoader, classLoader
-                .getResources(DESCRIPTOR_CLIENT_PATH), getRegisteredClients(),
-                Client.class);
     }
 
     /**
@@ -483,37 +473,36 @@ public class Engine {
      * @throws IOException
      */
     private void discoverConnectors() throws IOException {
-        // Find the factory class name
-        final ClassLoader classLoader = org.restlet.engine.Engine
-                .getClassLoader();
-
-        // Register the client connector providers
-        discoverClientConnectors(classLoader);
-
-        // Register the server connector providers
-        discoverServerConnectors(classLoader);
-
-        // Register the default connectors that will be used if no
-        // other connector has been found
+        registerHelpers(DESCRIPTOR_CLIENT_PATH, getRegisteredClients(),
+                Client.class);
+        registerHelpers(DESCRIPTOR_SERVER_PATH, getRegisteredServers(),
+                Server.class);
         registerDefaultConnectors();
     }
 
     /**
-     * Discovers server connectors in the classpath.
+     * Discovers the converter helpers and register the default helpers.
      * 
-     * @param classLoader
-     *            Classloader to search.
      * @throws IOException
      */
-    private void discoverServerConnectors(ClassLoader classLoader)
-            throws IOException {
-        registerHelpers(classLoader, classLoader
-                .getResources(DESCRIPTOR_SERVER_PATH), getRegisteredServers(),
-                Server.class);
+    private void discoverConverters() throws IOException {
+        registerHelpers(DESCRIPTOR_CONVERTER_PATH, getRegisteredConverters(),
+                null);
+        registerDefaultConverters();
     }
 
     /**
-     * Finds the authentication helper supporting the given scheme.
+     * Finds the converter helper supporting the given conversion.
+     * 
+     * @return The authenticator helper or null.
+     */
+    public ConverterHelper findHelper() {
+
+        return null;
+    }
+
+    /**
+     * Finds the authenticator helper supporting the given scheme.
      * 
      * @param challengeScheme
      *            The challenge scheme to match.
@@ -521,13 +510,13 @@ public class Engine {
      *            Indicates if client side support is required.
      * @param serverSide
      *            Indicates if server side support is required.
-     * @return The authentication helper or null.
+     * @return The authenticator helper or null.
      */
-    public AuthenticationHelper findHelper(ChallengeScheme challengeScheme,
+    public AuthenticatorHelper findHelper(ChallengeScheme challengeScheme,
             boolean clientSide, boolean serverSide) {
-        AuthenticationHelper result = null;
-        final List<AuthenticationHelper> helpers = getRegisteredAuthentications();
-        AuthenticationHelper current;
+        AuthenticatorHelper result = null;
+        final List<AuthenticatorHelper> helpers = getRegisteredAuthenticators();
+        AuthenticatorHelper current;
 
         for (int i = 0; (result == null) && (i < helpers.size()); i++) {
             current = helpers.get(i);
@@ -562,8 +551,8 @@ public class Engine {
      * 
      * @return The list of available authentication helpers.
      */
-    public List<AuthenticationHelper> getRegisteredAuthentications() {
-        return this.registeredAuthentications;
+    public List<AuthenticatorHelper> getRegisteredAuthenticators() {
+        return this.registeredAuthenticators;
     }
 
     /**
@@ -573,6 +562,15 @@ public class Engine {
      */
     public List<ClientHelper> getRegisteredClients() {
         return this.registeredClients;
+    }
+
+    /**
+     * Returns the list of available converters.
+     * 
+     * @return The list of available converters.
+     */
+    public List<ConverterHelper> getRegisteredConverters() {
+        return registeredConverters;
     }
 
     /**
@@ -588,12 +586,12 @@ public class Engine {
      * Registers the default authentication helpers.
      */
     public void registerDefaultAuthentications() {
-        getRegisteredAuthentications().add(new HttpBasicHelper());
-        getRegisteredAuthentications().add(new HttpDigestHelper());
-        getRegisteredAuthentications().add(new SmtpPlainHelper());
-        getRegisteredAuthentications().add(new HttpAwsS3Helper());
-        getRegisteredAuthentications().add(new HttpMsSharedKeyHelper());
-        getRegisteredAuthentications().add(new HttpMsSharedKeyLiteHelper());
+        getRegisteredAuthenticators().add(new HttpBasicHelper());
+        getRegisteredAuthenticators().add(new HttpDigestHelper());
+        getRegisteredAuthenticators().add(new SmtpPlainHelper());
+        getRegisteredAuthenticators().add(new HttpAwsS3Helper());
+        getRegisteredAuthenticators().add(new HttpMsSharedKeyHelper());
+        getRegisteredAuthenticators().add(new HttpMsSharedKeyLiteHelper());
     }
 
     /**
@@ -604,6 +602,13 @@ public class Engine {
         getRegisteredClients().add(new ClapClientHelper(null));
         getRegisteredClients().add(new FileClientHelper(null));
         getRegisteredServers().add(new StreamServerHelper(null));
+    }
+
+    /**
+     * Registers the default converters.
+     */
+    public void registerDefaultConverters() {
+        getRegisteredConverters().add(new DomConverter());
     }
 
     /**
@@ -674,18 +679,21 @@ public class Engine {
     /**
      * Registers a list of helpers.
      * 
-     * @param classLoader
-     *            The classloader to use.
-     * @param configUrls
-     *            Configuration URLs to parse
+     * @param descriptorPath
+     *            Classpath to the descriptor file.
      * @param helpers
      *            The list of helpers to update.
      * @param constructorClass
      *            The constructor parameter class to look for.
+     * @throws IOException
      */
     @SuppressWarnings("unchecked")
-    public void registerHelpers(ClassLoader classLoader,
-            Enumeration<URL> configUrls, List helpers, Class constructorClass) {
+    public void registerHelpers(String descriptorPath, List helpers,
+            Class constructorClass) throws IOException {
+        final ClassLoader classLoader = org.restlet.engine.Engine
+                .getClassLoader();
+        Enumeration<URL> configUrls = classLoader.getResources(descriptorPath);
+
         if (configUrls != null) {
             for (final Enumeration<URL> configEnum = configUrls; configEnum
                     .hasMoreElements();) {

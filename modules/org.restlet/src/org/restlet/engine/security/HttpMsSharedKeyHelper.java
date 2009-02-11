@@ -57,7 +57,7 @@ import org.restlet.util.Series;
  * 
  * @author Thierry Boileau
  */
-public class HttpMsSharedKeyHelper extends AuthenticationHelper {
+public class HttpMsSharedKeyHelper extends AuthenticatorHelper {
 
     /**
      * Returns the canonicalized Azure headers.

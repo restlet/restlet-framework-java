@@ -52,7 +52,7 @@ import org.restlet.util.Series;
  * 
  * @author Thierry Boileau
  */
-public class HttpMsSharedKeyLiteHelper extends AuthenticationHelper {
+public class HttpMsSharedKeyLiteHelper extends AuthenticatorHelper {
 
     /**
      * Returns the canonicalized resource name.

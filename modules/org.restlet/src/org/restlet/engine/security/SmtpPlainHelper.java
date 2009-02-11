@@ -41,7 +41,7 @@ import org.restlet.util.Series;
  * 
  * @author Jerome Louvel
  */
-public class SmtpPlainHelper extends AuthenticationHelper {
+public class SmtpPlainHelper extends AuthenticatorHelper {
 
     /**
      * Constructor.

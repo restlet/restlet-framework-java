@@ -44,7 +44,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Request;
-import org.restlet.engine.security.AuthenticationHelper;
+import org.restlet.engine.security.AuthenticatorHelper;
 import org.restlet.util.Series;
 
 
@@ -53,7 +53,7 @@ import org.restlet.util.Series;
  * 
  * @author Adam Rosien
  */
-public class OAuthHelper extends AuthenticationHelper {
+public class OAuthHelper extends AuthenticatorHelper {
 
     /**
      * Extract the parts of the given request that are relevant to OAuth.
