@@ -140,13 +140,11 @@ public abstract class UniformResource {
             throws ResourceException;
 
     /**
-     * Returns the modifiable set of methods allowed for the current client by
-     * the resource. Creates a new instance if no one has been set. The result
-     * can vary based on the client's user agent, authentification and
-     * authorization data provided by the client.
+     * Returns the set of methods allowed for the current client by the
+     * resource. The result can vary based on the client's user agent,
+     * authentification and authorization data provided by the client.
      * 
      * @return The set of allowed methods.
-     * @see Response#getAllowedMethods()
      */
     public abstract Set<Method> getAllowedMethods();
 
@@ -275,7 +273,7 @@ public abstract class UniformResource {
      * @return The logger.
      */
     public Logger getLogger() {
-        return (getContext() == null) ? getContext().getLogger() : Context
+        return (getContext() != null) ? getContext().getLogger() : Context
                 .getCurrentLogger();
     }
 

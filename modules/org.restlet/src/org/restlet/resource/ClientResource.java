@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 
+import org.restlet.Client;
 import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.Uniform;
@@ -40,6 +41,7 @@ import org.restlet.data.ClientInfo;
 import org.restlet.data.Conditions;
 import org.restlet.data.Cookie;
 import org.restlet.data.Method;
+import org.restlet.data.Protocol;
 import org.restlet.data.Range;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
@@ -321,6 +323,15 @@ public class ClientResource extends UniformResource {
     @Override
     public Representation handle() throws ResourceException {
         Representation result = null;
+
+        if (!hasNext()) {
+            Protocol protocol = (getReference() == null) ? null
+                    : getReference().getSchemeProtocol();
+
+            if (protocol != null) {
+                setNext(new Client(protocol));
+            }
+        }
 
         if (hasNext()) {
             getNext().handle(getRequest(), getResponse());
