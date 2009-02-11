@@ -53,7 +53,8 @@ import org.restlet.resource.Representation;
  */
 public abstract class Uniform {
     /**
-     * Deletes the identified resource.
+     * Deletes the resource and all its representations at the target URI
+     * reference.
      * 
      * @param resourceRef
      *            The reference of the resource to delete.
@@ -64,7 +65,7 @@ public abstract class Uniform {
     }
 
     /**
-     * Deletes the identified resource.
+     * Deletes the resource and all its representations at the target URI.
      * 
      * @param resourceUri
      *            The URI of the resource to delete.
@@ -80,6 +81,9 @@ public abstract class Uniform {
      * @param resourceRef
      *            The reference of the resource to get.
      * @return The response.
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.3">HTTP
+     *      GET method</a>
      */
     public final Response get(Reference resourceRef) {
         return handle(new Request(Method.GET, resourceRef));
@@ -91,6 +95,9 @@ public abstract class Uniform {
      * @param resourceUri
      *            The URI of the resource to get.
      * @return The response.
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.3">HTTP
+     *      GET method</a>
      */
     public final Response get(String resourceUri) {
         return handle(new Request(Method.GET, resourceUri));
@@ -125,6 +132,9 @@ public abstract class Uniform {
      * @param resourceRef
      *            The reference of the resource to get.
      * @return The response.
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.4">HTTP
+     *      HEAD method</a>
      */
     public final Response head(Reference resourceRef) {
         return handle(new Request(Method.HEAD, resourceRef));
@@ -136,6 +146,9 @@ public abstract class Uniform {
      * @param resourceUri
      *            The URI of the resource to get.
      * @return The response.
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.4">HTTP
+     *      HEAD method</a>
      */
     public final Response head(String resourceUri) {
         return handle(new Request(Method.HEAD, resourceUri));
@@ -147,6 +160,9 @@ public abstract class Uniform {
      * @param resourceRef
      *            The reference of the resource to get.
      * @return The response.
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.2">HTTP
+     *      OPTIONS method</a>
      */
     public final Response options(Reference resourceRef) {
         return handle(new Request(Method.OPTIONS, resourceRef));
@@ -158,61 +174,79 @@ public abstract class Uniform {
      * @param resourceUri
      *            The URI of the resource to get.
      * @return The response.
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.2">HTTP
+     *      OPTIONS method</a>
      */
     public final Response options(String resourceUri) {
         return handle(new Request(Method.OPTIONS, resourceUri));
     }
 
     /**
-     * Posts a representation to the identified resource.
+     * Posts a representation to the resource at the target URI reference.
      * 
      * @param resourceRef
      *            The reference of the resource to post to.
      * @param entity
-     *            The entity to post.
+     *            The posted entity.
      * @return The response.
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.5">HTTP
+     *      POST method</a>
      */
     public final Response post(Reference resourceRef, Representation entity) {
         return handle(new Request(Method.POST, resourceRef, entity));
     }
 
     /**
-     * Posts a representation to the identified resource.
+     * Posts a representation to the resource at the target URI.
      * 
      * @param resourceUri
      *            The URI of the resource to post to.
      * @param entity
      *            The entity to post.
      * @return The response.
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.5">HTTP
+     *      POST method</a>
      */
     public final Response post(String resourceUri, Representation entity) {
         return handle(new Request(Method.POST, resourceUri, entity));
     }
 
     /**
-     * Puts a representation in the identified resource.
+     * Creates or updates a resource at the target URI reference with the given
+     * representation as new state to be stored.
      * 
      * @param resourceRef
      *            The reference of the resource to modify.
-     * @param entity
-     *            The entity to put.
+     * @param representation
+     *            The representation to store.
      * @return The response.
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6">HTTP
+     *      PUT method</a>
      */
-    public final Response put(Reference resourceRef, Representation entity) {
-        return handle(new Request(Method.PUT, resourceRef, entity));
+    public final Response put(Reference resourceRef,
+            Representation representation) {
+        return handle(new Request(Method.PUT, resourceRef, representation));
     }
 
     /**
-     * Puts a representation in the identified resource.
+     * Creates or updates a resource at the target URI with the given
+     * representation as new state to be stored.
      * 
      * @param resourceUri
      *            The URI of the resource to modify.
-     * @param entity
-     *            The entity to put.
+     * @param representation
+     *            The representation to store.
      * @return The response.
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6">HTTP
+     *      PUT method</a>
      */
-    public final Response put(String resourceUri, Representation entity) {
-        return handle(new Request(Method.PUT, resourceUri, entity));
+    public final Response put(String resourceUri, Representation representation) {
+        return handle(new Request(Method.PUT, resourceUri, representation));
     }
 
 }

@@ -37,6 +37,8 @@ Changes log
         - Added Delete, Get, Options, Post and Put annotations
           to the org.restlet.resource package. Based on community 
           feed-back and suggestions by Tim Peierls.
+        - Added an org.restlet.resource.Uniform class as the basis of our new 
+          Resource API.
      - Misc
         - Upgraded Simple server to version 4.1.2. 
           Contributed by Niall Gallagher.

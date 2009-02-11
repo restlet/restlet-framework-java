@@ -123,7 +123,7 @@ public class Response extends Message {
      * CLIENT_ERROR_METHOD_NOT_ALLOWED is set. Creates a new instance if no one
      * has been set.
      * 
-     * @return The list of allowed methods.
+     * @return The set of allowed methods.
      */
     public Set<Method> getAllowedMethods() {
         // Lazy initialization with double-check.
@@ -141,7 +141,7 @@ public class Response extends Message {
 
     /**
      * Returns the list of authentication requests sent by an origin server to a
-     * client. If none is found, an empty list is returned.
+     * client. If none is available, an empty list is returned.
      * 
      * @return The list of authentication requests.
      */
