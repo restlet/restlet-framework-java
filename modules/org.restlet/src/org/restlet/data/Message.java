@@ -27,9 +27,12 @@
 
 package org.restlet.data;
 
+import java.io.IOException;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.logging.Level;
 
+import org.restlet.Context;
 import org.restlet.resource.DomRepresentation;
 import org.restlet.resource.Representation;
 import org.restlet.resource.SaxRepresentation;
@@ -44,20 +47,23 @@ public abstract class Message {
     /** The modifiable attributes map. */
     private volatile Map<String, Object> attributes;
 
-    /** The optional cached DOM representation. */
-    private volatile DomRepresentation domRepresentation;
-
     /** The payload of the message. */
     private volatile Representation entity;
 
+    /** The optional cached DOM representation. */
+    private volatile DomRepresentation entityDom;
+
     /** The optional cached Form. */
-    private volatile Form form;
+    private volatile Form entityForm;
 
     /** The optional cached LinkSet. */
-    private volatile LinkSet linkSet;
+    private volatile LinkSet entityLinkSet;
 
     /** The optional cached SAX representation. */
-    private volatile SaxRepresentation saxRepresentation;
+    private volatile SaxRepresentation entitySax;
+
+    /** The optional cached text. */
+    private volatile String entityText;
 
     /**
      * Constructor.
@@ -75,10 +81,11 @@ public abstract class Message {
     public Message(Representation entity) {
         this.attributes = null;
         this.entity = entity;
-        this.domRepresentation = null;
-        this.form = null;
-        this.linkSet = null;
-        this.saxRepresentation = null;
+        this.entityDom = null;
+        this.entityForm = null;
+        this.entityLinkSet = null;
+        this.entitySax = null;
+        this.entityText = null;
     }
 
     /**
@@ -152,12 +159,12 @@ public abstract class Message {
      * @return The entity as a DOM representation.
      */
     public DomRepresentation getEntityAsDom() {
-        if (this.domRepresentation == null) {
-            this.domRepresentation = (getEntity() == null) ? null
+        if (this.entityDom == null) {
+            this.entityDom = (getEntity() == null) ? null
                     : new DomRepresentation(getEntity());
         }
 
-        return this.domRepresentation;
+        return this.entityDom;
     }
 
     /**
@@ -169,11 +176,11 @@ public abstract class Message {
      * @return The entity as a form.
      */
     public Form getEntityAsForm() {
-        if (this.form == null) {
-            this.form = new Form(getEntity());
+        if (this.entityForm == null) {
+            this.entityForm = new Form(getEntity());
         }
 
-        return this.form;
+        return this.entityForm;
     }
 
     /**
@@ -185,11 +192,11 @@ public abstract class Message {
      * @return The entity as a link set.
      */
     public LinkSet getEntityAsLinkSet() {
-        if (this.linkSet == null) {
-            this.linkSet = new LinkSet(getEntity());
+        if (this.entityLinkSet == null) {
+            this.entityLinkSet = new LinkSet(getEntity());
         }
 
-        return this.linkSet;
+        return this.entityLinkSet;
     }
 
     /**
@@ -203,12 +210,33 @@ public abstract class Message {
      * @return The entity as a SAX representation.
      */
     public SaxRepresentation getEntityAsSax() {
-        if (this.saxRepresentation == null) {
-            this.saxRepresentation = (getEntity() == null) ? null
+        if (this.entitySax == null) {
+            this.entitySax = (getEntity() == null) ? null
                     : new SaxRepresentation(getEntity());
         }
 
-        return this.saxRepresentation;
+        return this.entitySax;
+    }
+
+    /**
+     * Returns the entity as text.<br>
+     * This method can be called several times and will always return the same
+     * text. Note that if the entity is large this method can result in
+     * important memory consumption.
+     * 
+     * @return The entity as text.
+     */
+    public String getEntityAsText() {
+        if (this.entityText == null) {
+            try {
+                this.entityText = getEntity().getText();
+            } catch (IOException e) {
+                Context.getCurrentLogger().log(Level.FINE,
+                        "Unable to get the entity text.", e);
+            }
+        }
+
+        return this.entityText;
     }
 
     /**

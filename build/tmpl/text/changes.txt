@@ -40,6 +40,8 @@ Changes log
         - Added org.restlet.resource.UniformResource and ClientResource
           classes as part of our new Resource API.
         - Added createClientInfo() method on Variant.
+        - Added a Message#getEntityAsText() method caching the text
+          content to allow several reads along a chain of filters.
      - Misc
         - Upgraded Simple server to version 4.1.2. 
           Contributed by Niall Gallagher.
