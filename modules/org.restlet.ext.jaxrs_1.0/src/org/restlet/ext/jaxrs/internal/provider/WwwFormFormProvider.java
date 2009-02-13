@@ -126,7 +126,7 @@ public class WwwFormFormProvider extends AbstractProvider<Form> {
      */
     private static void saveToThreadsRequest(Form form) {
         try {
-            Field formField = Message.class.getDeclaredField("form");
+            Field formField = Message.class.getDeclaredField("entityForm");
             formField.setAccessible(true);
             formField.set(Request.getCurrent(), form);
         } catch (SecurityException e) {
