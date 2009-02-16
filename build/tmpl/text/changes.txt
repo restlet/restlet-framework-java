@@ -12,7 +12,9 @@ Changes log
        - Fixed bug with jSSLutils integration. Reported by Dan Noble 
          and fixed by Bruno Harbulot.
        - Handler is now capable of discovering allowed methods, even
-         in protected Handler subclasses. Reported by Leigh Klotz. 
+         in protected Handler subclasses. Reported by Leigh Klotz.
+       - Fixed the inclusion test of media types when one contains a 
+         "*+".
     - Misc
          - Upgraded JAXB to version 2.1.9.
          - Upgraded Grizzly to version 1.9.5.

@@ -590,7 +590,7 @@ public final class MediaType extends Metadata {
                     result = true;
                 } else if (getSubType().startsWith("*+")
                         && included.getSubType().endsWith(
-                                getSubType().substring(1))) {
+                                getSubType().substring(2))) {
                     result = true;
                 }
             }
