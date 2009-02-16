@@ -119,7 +119,7 @@ public class JaasVerifier extends Verifier {
      * Verifies that the proposed secret is correct for the specified
      * identifier. By default, it creates a JAAS login context with the callback
      * handler obtained by
-     * {@link #createCallbackHandler(Subject, String, char[])} and calls the
+     * {@link #createCallbackHandler(Request, Response)} and calls the
      * {@link LoginContext#login()} method on it.
      * 
      */

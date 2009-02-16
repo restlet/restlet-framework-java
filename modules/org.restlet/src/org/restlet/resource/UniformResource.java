@@ -289,8 +289,7 @@ public abstract class UniformResource {
 
     /**
      * Returns the original reference as requested by the client. Note that this
-     * property is not used during request routing. See the
-     * {@link #getResourceRef()} method for details.
+     * property is not used during request routing.
      * 
      * @return The original reference.
      * @see Request#getOriginalRef()

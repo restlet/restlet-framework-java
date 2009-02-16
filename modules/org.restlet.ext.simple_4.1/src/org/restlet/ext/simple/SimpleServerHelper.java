@@ -179,8 +179,8 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
     /**
      * Sets the Simple container.
      * 
-     * @param handler
-     *            The Simple pipeline handler.
+     * @param container
+     *            The Simple container.
      */
     protected void setContainer(ContainerServer container) {
         this.container = container;
@@ -189,7 +189,7 @@ public abstract class SimpleServerHelper extends HttpServerHelper {
     /**
      * Sets the socket address this server is listening to.
      * 
-     * @param socket
+     * @param address
      *            The socket address this server is listening to.
      */
     protected void setAddress(InetSocketAddress address) {

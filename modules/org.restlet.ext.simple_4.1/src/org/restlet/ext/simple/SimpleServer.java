@@ -59,10 +59,10 @@ public class SimpleServer implements Server {
     }
 
     /**
-     * Pass in the default pipeline and add the engine to the pipeline
+     * Pass in the connection socket and add the engine to the pipeline
      * attributes.
      * 
-     * @param pipeline
+     * @param socket
      *            the pipeline
      */
     @SuppressWarnings("unchecked")

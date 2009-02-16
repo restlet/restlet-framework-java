@@ -1631,8 +1631,12 @@
 			</classpath>
 			<formatter type="plain" />
 			<test name="org.restlet.test.RestletTestSuite"
+			      todir="${temp}/test"/>
+<!--
+			<test name="org.restlet.test.RestletTestSuite"
 			      todir="${temp}/test"
 			      failureproperty="restlet.test.suite.error"/>
+-->
 		</junit>
 		<echo>
                    See the JUnit log file for more details: ${temp}/test/TEST-org.restlet.test.RestletTestSuite.txt.

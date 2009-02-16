@@ -170,7 +170,7 @@ public class ServerResource extends UniformResource {
      * @param requests
      *            The list of authentication requests sent by an origin server
      *            to a client.
-     * @see Response#setChallengeRequests(List<ChallengeRequest>)
+     * @see Response#setChallengeRequests(List)
      */
     public void setChallengeRequests(List<ChallengeRequest> requests) {
         getResponse().setChallengeRequests(requests);
@@ -181,7 +181,7 @@ public class ServerResource extends UniformResource {
      * 
      * @param cookieSettings
      *            The cookie settings provided by the server.
-     * @see Response#setCookieSettings(Series<CookieSetting>)
+     * @see Response#setCookieSettings(Series)
      */
     public void setCookieSettings(Series<CookieSetting> cookieSettings) {
         getResponse().setCookieSettings(cookieSettings);
@@ -194,7 +194,7 @@ public class ServerResource extends UniformResource {
      * 
      * @param dimensions
      *            The set of dimensions on which the response entity may vary.
-     * @see Response#setDimensions(Set<Dimension>)
+     * @see Response#setDimensions(Set)
      */
     public void setDimensions(Set<Dimension> dimensions) {
         getResponse().setDimensions(dimensions);

@@ -84,7 +84,9 @@ public class RestletFileUpload extends FileUpload {
      * will instead allow you to use stream access.
      * 
      * @param multipartForm
-     * @return
+     *            The input representation.
+     * @return An iterator to instances of FileItemStream parsed from the
+     *         request.
      * @throws FileUploadException
      * @throws IOException
      * @see <a

@@ -46,7 +46,7 @@ public abstract class Authenticator extends Filter {
     private volatile boolean optional;
 
     /**
-     * Default constructor setting the mode to {@link #MODE_REQUIRED}.
+     * Default constructor setting the mode to "required".
      */
     public Authenticator(Context context) {
         this(context, false);

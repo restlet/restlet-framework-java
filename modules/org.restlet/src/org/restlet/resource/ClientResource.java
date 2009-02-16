@@ -540,7 +540,7 @@ public class ClientResource extends UniformResource {
      * 
      * @param cookies
      *            The cookies provided by the client.
-     * @see Request#setCookies(Series<Cookie>)
+     * @see Request#setCookies(Series)
      */
     public void setCookies(Series<Cookie> cookies) {
         getRequest().setCookies(cookies);
@@ -605,7 +605,7 @@ public class ClientResource extends UniformResource {
      * 
      * @param ranges
      *            The ranges.
-     * @see Request#setRanges(List<Range>)
+     * @see Request#setRanges(List)
      */
     public void setRanges(List<Range> ranges) {
         getRequest().setRanges(ranges);
@@ -619,7 +619,7 @@ public class ClientResource extends UniformResource {
      * 
      * @param resourceRef
      *            The resource reference.
-     * @see Request#setReference(Reference)
+     * @see Request#setResourceRef(Reference)
      */
     public void setReference(Reference resourceRef) {
         getRequest().setResourceRef(resourceRef);

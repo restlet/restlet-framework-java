@@ -29,6 +29,7 @@ package org.restlet.security;
 
 import javax.security.auth.Subject;
 
+import org.restlet.data.ChallengeResponse;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 
@@ -58,10 +59,11 @@ public abstract class SecretVerifier extends Verifier {
     }
 
     /**
-     * Verifies that the proposed secret is correct for the specified
-     * identifier. By default, it compares the inputSecret with the one obtain
-     * by the {@link #getSecret(String)} method and adds a new
-     * {@link RolePrincipal} instance to the subject if successful.
+     * Verifies that the proposed secret is correct for the specified request.
+     * By default, it compares the inputSecret of the request's authentication
+     * response with the one obtain by the {@link ChallengeResponse#getSecret()}
+     * method and adds a new {@link RolePrincipal} instance to the subject if
+     * successful.
      * 
      * @param request
      *            The request to handle.
