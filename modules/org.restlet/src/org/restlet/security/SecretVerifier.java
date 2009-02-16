@@ -63,10 +63,10 @@ public abstract class SecretVerifier extends Verifier {
      * by the {@link #getSecret(String)} method and adds a new
      * {@link RolePrincipal} instance to the subject if successful.
      * 
-     * @param identifier
-     *            The user identifier.
-     * @param inputSecret
-     *            The proposed secret.
+     * @param request
+     *            The request to handle.
+     * @param response
+     *            The response to handle.
      * @return True if the proposed secret was correct and the subject updated.
      */
     @Override
@@ -95,7 +95,7 @@ public abstract class SecretVerifier extends Verifier {
      * 
      * @param identifier
      * @param inputSecret
-     * @return
+     * @return true if the identifier/secret couple is valid.
      */
     public abstract boolean verify(String identifier, char[] inputSecret);
 
