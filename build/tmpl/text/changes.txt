@@ -15,6 +15,9 @@ Changes log
          in protected Handler subclasses. Reported by Leigh Klotz.
        - Fixed the inclusion test of media types when one contains a 
          "*+".
+       - Fixed wrong computed "content-length" header when encoding 
+         representations using the Encoder. Reported by Tamas 
+         Cservenak.
     - Misc
          - Upgraded JAXB to version 2.1.9.
          - Upgraded Grizzly to version 1.9.5.
