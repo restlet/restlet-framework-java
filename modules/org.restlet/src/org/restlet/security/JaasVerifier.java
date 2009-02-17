@@ -27,7 +27,6 @@
 
 package org.restlet.security;
 
-import javax.security.auth.Subject;
 import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.login.Configuration;
 import javax.security.auth.login.LoginContext;
