@@ -98,6 +98,28 @@ public class EncodeRepresentation extends WrapperRepresentation {
     }
 
     /**
+     * Returns the available size in bytes of the encoded representation if
+     * known, UNKNOWN_SIZE (-1) otherwise.
+     * 
+     * @return The available size in bytes if known, UNKNOWN_SIZE (-1)
+     *         otherwise.
+     */
+    @Override
+    public long getAvailableSize() {
+        long result = UNKNOWN_SIZE;
+
+        if (canEncode()) {
+            if (this.encoding.equals(Encoding.IDENTITY)) {
+                result = getWrappedRepresentation().getAvailableSize();
+            }
+        } else {
+            result = getWrappedRepresentation().getAvailableSize();
+        }
+
+        return result;
+    }
+
+    /**
      * Returns a readable byte channel. If it is supported by a file a read-only
      * instance of FileChannel is returned.
      * 
