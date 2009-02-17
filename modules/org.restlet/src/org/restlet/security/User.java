@@ -27,6 +27,9 @@
 
 package org.restlet.security;
 
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+
 /**
  * User part of an organization. Note the same user can be member of any number
  * of groups.
@@ -34,6 +37,9 @@ package org.restlet.security;
  * @author Jerome Louvel
  */
 public class User {
+
+    /** The modifiable attributes map. */
+    private final ConcurrentMap<String, Object> attributes;
 
     /** The email. */
     private volatile String email;
@@ -50,14 +56,11 @@ public class User {
     /** The secret. */
     private volatile char[] secret;
 
-    /** The title. */
-    private volatile String title;
-
     /**
      * Default constructor.
      */
     public User() {
-        this(null, (char[]) null, null, null, null, null);
+        this(null, (char[]) null, null, null, null);
     }
 
     /**
@@ -69,7 +72,7 @@ public class User {
      *            The identification secret.
      */
     public User(String identifier, char[] secret) {
-        this(identifier, secret, null, null, null, null);
+        this(identifier, secret, null, null, null);
     }
 
     /**
@@ -89,12 +92,12 @@ public class User {
      *            The email.
      */
     public User(String identifier, char[] secret, String firstName,
-            String lastName, String title, String email) {
+            String lastName, String email) {
         this.identifier = identifier;
         this.secret = secret;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.title = title;
+        this.attributes = new ConcurrentHashMap<String, Object>();
         this.email = email;
     }
 
@@ -127,9 +130,18 @@ public class User {
      *            The email.
      */
     public User(String identifier, String secret, String firstName,
-            String lastName, String title, String email) {
-        this(identifier, secret.toCharArray(), firstName, lastName, title,
-                email);
+            String lastName, String email) {
+        this(identifier, secret.toCharArray(), firstName, lastName, email);
+    }
+
+    /**
+     * Returns a modifiable attributes map that can be used to save information
+     * relative to the user.
+     * 
+     * @return The modifiable attributes map.
+     */
+    public ConcurrentMap<String, Object> getAttributes() {
+        return this.attributes;
     }
 
     /**
@@ -175,15 +187,6 @@ public class User {
      */
     public char[] getSecret() {
         return secret;
-    }
-
-    /**
-     * Returns the title.
-     * 
-     * @return The title.
-     */
-    public String getTitle() {
-        return title;
     }
 
     /**
@@ -234,16 +237,6 @@ public class User {
      */
     public void setSecret(char[] secret) {
         this.secret = secret;
-    }
-
-    /**
-     * Sets the title.
-     * 
-     * @param title
-     *            The title.
-     */
-    public void setTitle(String title) {
-        this.title = title;
     }
 
     @Override

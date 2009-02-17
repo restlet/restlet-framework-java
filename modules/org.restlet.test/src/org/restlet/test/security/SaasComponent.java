@@ -64,11 +64,11 @@ public class SaasComponent extends Component {
 
         // Add users
         User stiger = new User("stiger", "pwd", "Scott", "Tiger",
-                "Senior Consultant", "scott.tiger@foobar.com");
+                "scott.tiger@foobar.com");
         customer1.getUsers().add(stiger);
 
         User larmstrong = new User("larmstrong", "pwd", "Louis", "Armstrong",
-                "CEO", "la@foobar.com");
+                "la@foobar.com");
         customer1.getUsers().add(larmstrong);
 
         // Add groups
@@ -108,11 +108,11 @@ public class SaasComponent extends Component {
 
         // Add users
         User lbird = new User("lbird", "pwd", "Louis", "Bird",
-                "Senior Sales Rep.", "lbird@gmail.com");
+                "lbird@gmail.com");
         customer2.getUsers().add(lbird);
 
         User glanglois = new User("glanglois", "pwd", "Gerard", "Langlois",
-                "Marketing wizard", "gl@yahoo.com");
+                "gl@yahoo.com");
         customer2.getUsers().add(glanglois);
 
         // Add groups
