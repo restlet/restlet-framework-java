@@ -49,6 +49,7 @@ Changes log
           such as "xml". Suggested by Paul Austin. 
         - Renamed LinkSet to Graph and added support for N3 formulae.
           Graph can be source or target in Link instances.
+        - Removed Link.identifier and Graph.identifier properties.
      - Misc
         - Upgraded Simple server to version 4.1.2. 
           Contributed by Niall Gallagher.

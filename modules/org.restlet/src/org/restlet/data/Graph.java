@@ -45,9 +45,6 @@ public class Graph extends CopyOnWriteArraySet<Link> {
     /** The default link that is used to complete new links. */
     private Link defaultLink;
 
-    /** The optional self identifier. */
-    private Reference identifier;
-
     /**
      * Default constructor.
      */
@@ -124,15 +121,6 @@ public class Graph extends CopyOnWriteArraySet<Link> {
      */
     public Link getDefaultLink() {
         return defaultLink;
-    }
-
-    /**
-     * Returns the optional self identifier.
-     * 
-     * @return The optional self identifier.
-     */
-    public Reference getIdentifier() {
-        return identifier;
     }
 
     /**
@@ -248,16 +236,6 @@ public class Graph extends CopyOnWriteArraySet<Link> {
      */
     public void setDefaultLink(Link defaultLink) {
         this.defaultLink = defaultLink;
-    }
-
-    /**
-     * Sets the optional self identifier.
-     * 
-     * @param identifier
-     *            The optional self identifier.
-     */
-    public void setIdentifier(Reference identifier) {
-        this.identifier = identifier;
     }
 
 }

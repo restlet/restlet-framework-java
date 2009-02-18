@@ -42,9 +42,6 @@ import org.restlet.resource.Resource;
  */
 public class Link {
 
-    /** The optional self identifier. */
-    private Reference identifier;
-
     /** The source or subject. */
     private Object source;
 
@@ -75,24 +72,6 @@ public class Link {
      *            The target.
      */
     private Link(Object source, Reference typeRef, Object target) {
-        this(source, typeRef, target, null);
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param source
-     *            The source.
-     * @param typeRef
-     *            The type reference.
-     * @param target
-     *            The target.
-     * @param identifier
-     *            The optional self identifier.
-     */
-    private Link(Object source, Reference typeRef, Object target,
-            Reference identifier) {
-        this.identifier = identifier;
         this.source = source;
         this.target = target;
         this.typeRef = typeRef;
@@ -133,10 +112,8 @@ public class Link {
         if (object instanceof Link) {
             Link link = (Link) object;
 
-            result = ((getIdentifier() == null) || (getIdentifier().equals(link
-                    .getIdentifier())))
-                    && ((getSourceAsReference() == null) || (getSourceAsReference()
-                            .equals(link.getSourceAsReference())))
+            result = ((getSourceAsReference() == null) || (getSourceAsReference()
+                    .equals(link.getSourceAsReference())))
                     && ((getTarget() == null) || (getTarget().equals(link
                             .getTarget())))
                     && ((getTypeRef() == null) || (getTypeRef().equals(link
@@ -147,25 +124,31 @@ public class Link {
     }
 
     /**
-     * Returns the optional self identifier.
+     * Returns the source which can be either a reference or a link or a graph
+     * or null.
      * 
-     * @return The optional self identifier.
+     * @return The source.
      */
-    public Reference getIdentifier() {
-        return identifier;
-    }
-
     public Object getSource() {
         return source;
     }
 
     /**
-     * Returns the source graph.
+     * Returns the source graph. Supports RDF reification or N3 formulae.
      * 
      * @return The source graph.
      */
     public Graph getSourceAsGraph() {
         return hasGraphSource() ? (Graph) getSource() : null;
+    }
+
+    /**
+     * Returns the source link. Supports RDF reification.
+     * 
+     * @return The source link.
+     */
+    public Link getSourceAsLink() {
+        return hasLinkSource() ? (Link) getSource() : null;
     }
 
     /**
@@ -242,6 +225,24 @@ public class Link {
     }
 
     /**
+     * Indicates if the source is a link.
+     * 
+     * @return True if the source is a link.
+     */
+    public boolean hasLinkSource() {
+        return getSource() instanceof Link;
+    }
+
+    /**
+     * Indicates if the target is a link.
+     * 
+     * @return True if the target is a link.
+     */
+    public boolean hasLinkTarget() {
+        return getTarget() instanceof Link;
+    }
+
+    /**
      * Indicates if the target is a literal.
      * 
      * @return True if the target is a literal.
@@ -269,13 +270,23 @@ public class Link {
     }
 
     /**
-     * Sets the optional self identifier.
+     * Sets the source as a graph.
      * 
-     * @param identifier
-     *            The optional self identifier.
+     * @param sourceGraph
+     *            The source graph.
      */
-    public void setIdentifier(Reference identifier) {
-        this.identifier = identifier;
+    public void setSource(Graph sourceGraph) {
+        this.source = sourceGraph;
+    }
+
+    /**
+     * Sets the source as a link.
+     * 
+     * @param sourceLink
+     *            The source link.
+     */
+    public void setSource(Link sourceLink) {
+        this.source = sourceLink;
     }
 
     /**
@@ -284,7 +295,7 @@ public class Link {
      * @param sourceRef
      *            The source resource reference.
      */
-    public void setSourceRef(Reference sourceRef) {
+    public void setSource(Reference sourceRef) {
         this.source = sourceRef;
     }
 
@@ -296,6 +307,16 @@ public class Link {
      */
     public void setTarget(Graph targetGraph) {
         this.target = targetGraph;
+    }
+
+    /**
+     * Sets the target as a link.
+     * 
+     * @param targetLink
+     *            The target link.
+     */
+    public void setTarget(Link targetLink) {
+        this.target = targetLink;
     }
 
     /**
