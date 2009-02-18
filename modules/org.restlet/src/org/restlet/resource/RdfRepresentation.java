@@ -30,21 +30,21 @@ package org.restlet.resource;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.restlet.data.LinkSet;
+import org.restlet.data.Graph;
 
 /**
  * Base of all RDF representation classes. It knows how to serialize and
- * deserialize a {@link LinkSet}.
+ * deserialize a {@link Graph}.
  * 
  * @author Jerome Louvel
  */
 public abstract class RdfRepresentation extends OutputRepresentation {
 
-    private LinkSet linkSet;
+    private Graph graph;
 
-    public RdfRepresentation(LinkSet linkSet) {
+    public RdfRepresentation(Graph linkSet) {
         super(null);
-        this.linkSet = linkSet;
+        this.graph = linkSet;
     }
 
     /**
@@ -55,17 +55,17 @@ public abstract class RdfRepresentation extends OutputRepresentation {
      * @param linkSet
      *            The link set to update.
      */
-    public RdfRepresentation(Representation rdfRepresentation, LinkSet linkSet) {
+    public RdfRepresentation(Representation rdfRepresentation, Graph linkSet) {
         // Parsing goes here.
         this(linkSet);
     }
 
-    public LinkSet getLinkSet() {
-        return linkSet;
+    public Graph getGraph() {
+        return graph;
     }
 
-    public void setLinkSet(LinkSet linkSet) {
-        this.linkSet = linkSet;
+    public void setGraph(Graph linkSet) {
+        this.graph = linkSet;
     }
 
     @Override

@@ -45,10 +45,10 @@ public class Link {
     /** The optional self identifier. */
     private Reference identifier;
 
-    /** The source resource reference. */
-    private Reference sourceRef;
+    /** The source or subject. */
+    private Object source;
 
-    /** The target. */
+    /** The target or object. */
     private Object target;
 
     /** The type reference. */
@@ -61,7 +61,41 @@ public class Link {
      *            The link to copy from.
      */
     public Link(Link from) {
-        this(from.sourceRef, from.typeRef, from.target);
+        this(from.source, from.typeRef, from.target);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param source
+     *            The source.
+     * @param typeRef
+     *            The type reference.
+     * @param target
+     *            The target.
+     */
+    private Link(Object source, Reference typeRef, Object target) {
+        this(source, typeRef, target, null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param source
+     *            The source.
+     * @param typeRef
+     *            The type reference.
+     * @param target
+     *            The target.
+     * @param identifier
+     *            The optional self identifier.
+     */
+    private Link(Object source, Reference typeRef, Object target,
+            Reference identifier) {
+        this.identifier = identifier;
+        this.source = source;
+        this.target = target;
+        this.typeRef = typeRef;
     }
 
     /**
@@ -76,40 +110,6 @@ public class Link {
      */
     public Link(Reference sourceRef, Reference typeRef, Literal targetLit) {
         this(sourceRef, typeRef, (Object) targetLit);
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param sourceRef
-     *            The source resource reference.
-     * @param typeRef
-     *            The type reference.
-     * @param target
-     *            The target.
-     */
-    private Link(Reference sourceRef, Reference typeRef, Object target) {
-        this(sourceRef, typeRef, target, null);
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param sourceRef
-     *            The source resource reference.
-     * @param typeRef
-     *            The type reference.
-     * @param target
-     *            The target.
-     * @param identifier
-     *            The optional self identifier.
-     */
-    private Link(Reference sourceRef, Reference typeRef, Object target,
-            Reference identifier) {
-        this.identifier = identifier;
-        this.sourceRef = sourceRef;
-        this.target = target;
-        this.typeRef = typeRef;
     }
 
     /**
@@ -135,8 +135,8 @@ public class Link {
 
             result = ((getIdentifier() == null) || (getIdentifier().equals(link
                     .getIdentifier())))
-                    && ((getSourceRef() == null) || (getSourceRef().equals(link
-                            .getSourceRef())))
+                    && ((getSourceAsReference() == null) || (getSourceAsReference()
+                            .equals(link.getSourceAsReference())))
                     && ((getTarget() == null) || (getTarget().equals(link
                             .getTarget())))
                     && ((getTypeRef() == null) || (getTypeRef().equals(link
@@ -155,13 +155,26 @@ public class Link {
         return identifier;
     }
 
+    public Object getSource() {
+        return source;
+    }
+
+    /**
+     * Returns the source graph.
+     * 
+     * @return The source graph.
+     */
+    public Graph getSourceAsGraph() {
+        return hasGraphSource() ? (Graph) getSource() : null;
+    }
+
     /**
      * Returns the source resource reference.
      * 
      * @return The source resource reference.
      */
-    public Reference getSourceRef() {
-        return sourceRef;
+    public Reference getSourceAsReference() {
+        return hasReferenceSource() ? (Reference) getSource() : null;
     }
 
     /**
@@ -172,6 +185,15 @@ public class Link {
      */
     public Object getTarget() {
         return this.target;
+    }
+
+    /**
+     * Returns the target graph.
+     * 
+     * @return The target literal.
+     */
+    public Literal getTargetAsGraph() {
+        return hasLiteralTarget() ? (Literal) getTarget() : null;
     }
 
     /**
@@ -202,12 +224,39 @@ public class Link {
     }
 
     /**
+     * Indicates if the source is a graph.
+     * 
+     * @return True if the source is a graph.
+     */
+    public boolean hasGraphSource() {
+        return getSource() instanceof Graph;
+    }
+
+    /**
+     * Indicates if the target is a graph.
+     * 
+     * @return True if the target is a graph.
+     */
+    public boolean hasGraphTarget() {
+        return getTarget() instanceof Graph;
+    }
+
+    /**
      * Indicates if the target is a literal.
      * 
      * @return True if the target is a literal.
      */
     public boolean hasLiteralTarget() {
         return getTarget() instanceof Literal;
+    }
+
+    /**
+     * Indicates if the source is a reference.
+     * 
+     * @return True if the source is a reference.
+     */
+    public boolean hasReferenceSource() {
+        return getSource() instanceof Reference;
     }
 
     /**
@@ -236,7 +285,17 @@ public class Link {
      *            The source resource reference.
      */
     public void setSourceRef(Reference sourceRef) {
-        this.sourceRef = sourceRef;
+        this.source = sourceRef;
+    }
+
+    /**
+     * Sets the target as a graph.
+     * 
+     * @param targetGraph
+     *            The target graph.
+     */
+    public void setTarget(Graph targetGraph) {
+        this.target = targetGraph;
     }
 
     /**

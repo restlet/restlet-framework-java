@@ -57,7 +57,7 @@ public abstract class Message {
     private volatile Form entityForm;
 
     /** The optional cached LinkSet. */
-    private volatile LinkSet entityLinkSet;
+    private volatile Graph entityGraph;
 
     /** The optional cached SAX representation. */
     private volatile SaxRepresentation entitySax;
@@ -83,7 +83,7 @@ public abstract class Message {
         this.entity = entity;
         this.entityDom = null;
         this.entityForm = null;
-        this.entityLinkSet = null;
+        this.entityGraph = null;
         this.entitySax = null;
         this.entityText = null;
     }
@@ -184,19 +184,19 @@ public abstract class Message {
     }
 
     /**
-     * Returns the entity as a link set.<br>
+     * Returns the entity as a graph.<br>
      * This method can be called several times and will always return the same
      * instance. Note that if the entity is large this method can result in
      * important memory consumption.
      * 
-     * @return The entity as a link set.
+     * @return The entity as a graph.
      */
-    public LinkSet getEntityAsLinkSet() {
-        if (this.entityLinkSet == null) {
-            this.entityLinkSet = new LinkSet(getEntity());
+    public Graph getEntityAsGraph() {
+        if (this.entityGraph == null) {
+            this.entityGraph = new Graph(getEntity());
         }
 
-        return this.entityLinkSet;
+        return this.entityGraph;
     }
 
     /**

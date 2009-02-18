@@ -32,11 +32,12 @@ import java.util.concurrent.CopyOnWriteArraySet;
 import org.restlet.resource.Representation;
 
 /**
- * Set of links. This is often called a RDF graph or a RDF model.
+ * Graph composed of links. This also called a set of RDF statements or a RDF
+ * model.
  * 
  * @author Jerome Louvel
  */
-public class LinkSet extends CopyOnWriteArraySet<Link> {
+public class Graph extends CopyOnWriteArraySet<Link> {
 
     /** The serialization unique identifier. */
     private static final long serialVersionUID = 1L;
@@ -50,7 +51,7 @@ public class LinkSet extends CopyOnWriteArraySet<Link> {
     /**
      * Default constructor.
      */
-    public LinkSet() {
+    public Graph() {
         this((Link) null);
     }
 
@@ -60,7 +61,7 @@ public class LinkSet extends CopyOnWriteArraySet<Link> {
      * @param defaultLink
      *            The link to use when adding links with missing properties.
      */
-    public LinkSet(Link defaultLink) {
+    public Graph(Link defaultLink) {
         this.defaultLink = defaultLink;
     }
 
@@ -74,7 +75,7 @@ public class LinkSet extends CopyOnWriteArraySet<Link> {
      * @param rdfRepresentation
      *            The RDF representation to parse.
      */
-    public LinkSet(Representation rdfRepresentation) {
+    public Graph(Representation rdfRepresentation) {
         // TODO : call the engine for parsing
     }
 
@@ -91,8 +92,8 @@ public class LinkSet extends CopyOnWriteArraySet<Link> {
      * @return The created link.
      */
     public Link add(Reference sourceRef, Reference typeRef, Literal targetLit) {
-        Link result = new Link(getSourceRef(sourceRef), getTypeRef(typeRef),
-                getTargetAsLiteral(targetLit));
+        Link result = new Link(getSourceAsReference(sourceRef),
+                getTypeRef(typeRef), getTargetAsLiteral(targetLit));
         add(result);
         return result;
     }
@@ -110,8 +111,8 @@ public class LinkSet extends CopyOnWriteArraySet<Link> {
      * @return The created link.
      */
     public Link add(Reference sourceRef, Reference typeRef, Reference targetRef) {
-        Link result = new Link(getSourceRef(sourceRef), getTypeRef(typeRef),
-                getTargetAsReference(targetRef));
+        Link result = new Link(getSourceAsReference(sourceRef),
+                getTypeRef(typeRef), getTargetAsReference(targetRef));
         add(result);
         return result;
     }
@@ -175,11 +176,11 @@ public class LinkSet extends CopyOnWriteArraySet<Link> {
      *            The source reference to check.
      * @return The source reference.
      */
-    private Reference getSourceRef(Reference sourceRef) {
+    private Reference getSourceAsReference(Reference sourceRef) {
         Reference result = sourceRef;
 
         if ((result == null) && (getDefaultLink() != null)) {
-            result = getDefaultLink().getSourceRef();
+            result = getDefaultLink().getSourceAsReference();
         }
 
         return result;
