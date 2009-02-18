@@ -32,8 +32,8 @@ import org.restlet.data.Request;
 
 /**
  * Service tunneling request method or client preferences. The tunneling can use
- * query parameters and file-like extensions. This is particularly useful for browser-based applications that can't fully
- * control the HTTP requests sent.<br>
+ * query parameters and file-like extensions. This is particularly useful for
+ * browser-based applications that can't fully control the HTTP requests sent.<br>
  * <br>
  * Here is the list of the default parameter names supported:
  * <table>
@@ -48,32 +48,37 @@ import org.restlet.data.Request;
  * <td>methodParameter</td>
  * <td>method</td>
  * <td>See values in {@link org.restlet.data.Method}</td>
- * <td>For POST requests, let you specify the actual method to use (DELETE, PUT, MOVE, etc.).</td>
+ * <td>For POST requests, let you specify the actual method to use (DELETE, PUT,
+ * MOVE, etc.).</td>
  * <td>For GET requests, let you specify OPTIONS as the actual method to use.</td>
  * </tr>
  * <tr>
  * <td>characterSetParameter</td>
  * <td>charset</td>
- * <td>Use extension names defined in {@link MetadataService}</td>
+ * <td>Use extension names defined in {@link MetadataService} or the full
+ * character set name</td>
  * <td>For GET requests, replaces the accepted character set by the given value.
  * </td>
  * </tr>
  * <tr>
  * <td>encodingParameter</td>
  * <td>encoding</td>
- * <td>Use extension names defined in {@link MetadataService}</td>
+ * <td>Use extension names defined in {@link MetadataService} or the full
+ * encoding name</td>
  * <td>For GET requests, replaces the accepted encoding by the given value.</td>
  * </tr>
  * <tr>
  * <td>languageParameter</td>
  * <td>language</td>
- * <td>Use extension names defined in {@link MetadataService}</td>
+ * <td>Use extension names defined in {@link MetadataService} or the full
+ * language name</td>
  * <td>For GET requests, replaces the accepted language by the given value.</td>
  * </tr>
  * <tr>
  * <td>mediaTypeParameter</td>
  * <td>media</td>
- * <td>Use extension names defined in {@link MetadataService}</td>
+ * <td>Use extension names defined in {@link MetadataService} or the full media
+ * type name</td>
  * <td>For GET requests, replaces the accepted media type set by the given
  * value.</td>
  * </tr>

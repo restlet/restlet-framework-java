@@ -44,6 +44,9 @@ Changes log
           content to allow several reads along a chain of filters.
         - Added a Server#setTarget() method taking a Resource class as a
           parameter. This is useful very minimalistic examples.
+        - TunnelService now accepts query parameter values such as
+          "application/xml" and now just registered extension names 
+          such as "xml". Suggested by Paul Austin. 
      - Misc
         - Upgraded Simple server to version 4.1.2. 
           Contributed by Niall Gallagher.

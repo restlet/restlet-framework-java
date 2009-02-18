@@ -258,6 +258,11 @@ public class TunnelFilter extends Filter {
                 // Updates the client preferences
                 final ClientInfo clientInfo = request.getClientInfo();
                 Metadata metadata = getMetadata(acceptedCharSet);
+
+                if ((metadata == null) && (acceptedCharSet != null)) {
+                    metadata = CharacterSet.valueOf(acceptedCharSet);
+                }
+
                 if (metadata instanceof CharacterSet) {
                     updateMetadata(clientInfo, metadata);
                     query.removeFirst(charSetParameter);
@@ -265,6 +270,11 @@ public class TunnelFilter extends Filter {
                 }
 
                 metadata = getMetadata(acceptedEncoding);
+
+                if ((metadata == null) && (acceptedEncoding != null)) {
+                    metadata = Encoding.valueOf(acceptedEncoding);
+                }
+
                 if (metadata instanceof Encoding) {
                     updateMetadata(clientInfo, metadata);
                     query.removeFirst(encodingParameter);
@@ -272,6 +282,11 @@ public class TunnelFilter extends Filter {
                 }
 
                 metadata = getMetadata(acceptedLanguage);
+
+                if ((metadata == null) && (acceptedLanguage != null)) {
+                    metadata = Language.valueOf(acceptedLanguage);
+                }
+
                 if (metadata instanceof Language) {
                     updateMetadata(clientInfo, metadata);
                     query.removeFirst(languageParameter);
@@ -279,6 +294,11 @@ public class TunnelFilter extends Filter {
                 }
 
                 metadata = getMetadata(acceptedMediaType);
+
+                if ((metadata == null) && (acceptedMediaType != null)) {
+                    metadata = MediaType.valueOf(acceptedMediaType);
+                }
+
                 if (metadata instanceof MediaType) {
                     updateMetadata(clientInfo, metadata);
                     query.removeFirst(mediaTypeParameter);
