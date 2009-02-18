@@ -42,7 +42,7 @@ public class LinkReference extends Reference {
      *            The blank node identifier.
      * @return A reference to a blank node.
      */
-    public static Reference createBlankReference(String identifier) {
+    public static Reference createBlank(String identifier) {
         return new Reference("_:" + identifier);
     }
 

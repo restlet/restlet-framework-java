@@ -47,6 +47,8 @@ Changes log
         - TunnelService now accepts query parameter values such as
           "application/xml" and now just registered extension names 
           such as "xml". Suggested by Paul Austin. 
+        - Renamed LinkSet to Graph and added support for N3 formulae.
+          Graph can be source or target in Link instances.
      - Misc
         - Upgraded Simple server to version 4.1.2. 
           Contributed by Niall Gallagher.
