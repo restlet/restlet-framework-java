@@ -28,42 +28,65 @@
 package org.restlet.gwt.engine.util;
 
 /**
- * Line reader.
+ * Buffered reader.
  * 
  * @author Jerome Louvel
  */
-public class LineReader extends CharacterReader {
+public class BufferedReader {
 
+    /** The next saved character. */
     private int savedNextChar;
+
+    private StringReader source;
 
     /**
      * Constructor.
      * 
-     * @param text
-     *            The source text to read.
+     * @param source
+     *            The source reader.
      */
-    public LineReader(String text) {
-        super(text);
+    public BufferedReader(StringReader source) {
+        this.source = source;
         this.savedNextChar = -2;
     }
 
-    private int getNextChar() {
+    /**
+     * Returns the source reader.
+     * 
+     * @return The source reader.
+     */
+    private StringReader getSource() {
+        return source;
+    }
+
+    /**
+     * Returns the next character, either the saved one or the next one from the
+     * source reader.
+     * 
+     * @return The next character.
+     */
+    private int read() {
         int result = -1;
 
         if (this.savedNextChar != -2) {
             result = this.savedNextChar;
             this.savedNextChar = -2;
         } else {
-            result = read();
+            result = getSource().read();
         }
 
         return result;
     }
 
+    /**
+     * Reads the next line of characters.
+     * 
+     * @return The next line.
+     */
     public String readLine() {
         StringBuilder sb = null;
         boolean eol = false;
-        int nextChar = getNextChar();
+        int nextChar = read();
 
         while (!eol && (nextChar != -1)) {
             if (nextChar == 10) {
@@ -72,9 +95,9 @@ public class LineReader extends CharacterReader {
                 eol = true;
 
                 // Check if there is a immediate LF following the CR
-                nextChar = getNextChar();
+                nextChar = read();
                 if (nextChar != 10) {
-                    setSavedNextChar(nextChar);
+                    this.savedNextChar = nextChar;
                 }
             }
 
@@ -84,16 +107,12 @@ public class LineReader extends CharacterReader {
                 }
 
                 sb.append((char) nextChar);
-                nextChar = getNextChar();
+                nextChar = read();
             }
 
         }
 
         return (sb == null) ? null : sb.toString();
-    }
-
-    private void setSavedNextChar(int nextChar) {
-        this.savedNextChar = nextChar;
     }
 
 }

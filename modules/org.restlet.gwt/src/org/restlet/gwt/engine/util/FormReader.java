@@ -193,7 +193,7 @@ public class FormReader {
         final StringBuilder nameBuffer = new StringBuilder();
         final StringBuilder valueBuffer = new StringBuilder();
 
-        final CharacterReader cr = new CharacterReader(this.text);
+        final StringReader cr = new StringReader(this.text);
         int nextChar = 0;
         while ((result == null) && (nextChar != -1)) {
             nextChar = cr.read();

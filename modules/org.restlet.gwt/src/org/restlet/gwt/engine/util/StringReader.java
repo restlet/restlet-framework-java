@@ -28,11 +28,11 @@
 package org.restlet.gwt.engine.util;
 
 /**
- * Character reader.
+ * String reader.
  * 
  * @author Jerome Louvel
  */
-public class CharacterReader {
+public class StringReader {
 
     /** The text to read. */
     private final String text;
@@ -46,7 +46,7 @@ public class CharacterReader {
      * @param text
      *            The source text to read.
      */
-    public CharacterReader(String text) {
+    public StringReader(String text) {
         this.text = text;
         this.position = 0;
     }
