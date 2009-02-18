@@ -42,6 +42,8 @@ Changes log
         - Added createClientInfo() method on Variant.
         - Added a Message#getEntityAsText() method caching the text
           content to allow several reads along a chain of filters.
+        - Added a Server#setTarget() method taking a Resource class as a
+          parameter. This is useful very minimalistic examples.
      - Misc
         - Upgraded Simple server to version 4.1.2. 
           Contributed by Niall Gallagher.
