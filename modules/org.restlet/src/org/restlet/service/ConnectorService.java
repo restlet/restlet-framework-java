@@ -30,13 +30,18 @@ package org.restlet.service;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.restlet.Application;
 import org.restlet.data.Protocol;
 import org.restlet.resource.Representation;
 
 /**
  * Service declaring client and server connectors. This is useful at deployment
- * time to know which connectors an application expects to be able to use.
- * 
+ * time to know which connectors an application expects to be able to use.<br>
+ * <br>
+ * If you need to override the {@link #afterSend(Representation)} method for
+ * example, just create a subclass and set it on your application with the
+ * {@link Application#setConnectorService(ConnectorService)} method.<br>
+ * <br>
  * Implementation note: the parent component will ensure that client connectors
  * won't automatically follow redirections. This will ensure a consistent
  * behavior and portability of applications.
