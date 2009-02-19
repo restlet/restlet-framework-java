@@ -50,6 +50,9 @@ Changes log
         - Renamed LinkSet to Graph and added support for N3 formulae.
           Graph can be source or target in Link instances.
         - Removed Link.identifier and Graph.identifier properties.
+        - Series#getFirstValue() now returns the default value if the
+          parameter exists but has a null value. 
+          Suggested by Jonathan Hall
      - Misc
         - Upgraded Simple server to version 4.1.2. 
           Contributed by Niall Gallagher.

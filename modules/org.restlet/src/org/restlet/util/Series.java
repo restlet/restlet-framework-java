@@ -271,7 +271,8 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      * @param ignoreCase
      *            Indicates if the name comparison is case sensitive.
      * @param defaultValue
-     *            The default value to return if no matching parameter found.
+     *            The default value to return if no matching parameter found or
+     *            if the parameter has a null value.
      * @return The value of the first parameter found with the given name or the
      *         default value.
      */
@@ -280,7 +281,7 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
         String result = defaultValue;
         final Parameter param = getFirst(name, ignoreCase);
 
-        if (param != null) {
+        if ((param != null) && (param.getValue() != null)) {
             result = param.getValue();
         }
 
@@ -293,7 +294,8 @@ public abstract class Series<E extends Parameter> extends WrapperList<E> {
      * @param name
      *            The parameter name (case sensitive).
      * @param defaultValue
-     *            The default value to return if no matching parameter found.
+     *            The default value to return if no matching parameter found or
+     *            if the parameter has a null value.
      * @return The value of the first parameter found with the given name or the
      *         default value.
      */
