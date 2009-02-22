@@ -43,8 +43,7 @@ import org.restlet.engine.util.DigestUtils;
 import org.restlet.util.Series;
 
 /**
- * Implements the Microsoft Shared Key Lite authentication for Azure services.<br>
- * <br>
+ * Implements the Microsoft Shared Key Lite authentication for Azure services.
  * This concerns Table storage on Azure Storage.<br>
  * <br>
  * More documentation is available <a
