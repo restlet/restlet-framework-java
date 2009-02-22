@@ -38,7 +38,7 @@ import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.engine.security.AuthenticationUtils;
+import org.restlet.engine.security.AuthenticatorUtils;
 import org.restlet.util.Resolver;
 
 /**
@@ -213,7 +213,7 @@ public class Guard extends Filter {
     @SuppressWarnings("deprecation")
     public int authenticate(Request request) {
         // Delegate processing to the Engine
-        return AuthenticationUtils.authenticate(request, this);
+        return AuthenticatorUtils.authenticate(request, this);
     }
 
     /**
@@ -243,7 +243,7 @@ public class Guard extends Filter {
     @SuppressWarnings("deprecation")
     public void challenge(Response response, boolean stale) {
         // Delegate processing to the Engine
-        AuthenticationUtils.challenge(response, stale, this);
+        AuthenticatorUtils.challenge(response, stale, this);
     }
 
     /**

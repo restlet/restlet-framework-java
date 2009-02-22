@@ -47,7 +47,7 @@ import org.restlet.util.Series;
  * @author Jerome Louvel
  * @author Ray Waldin (ray@waldin.net)
  */
-public class AuthenticationUtils {
+public class AuthenticatorUtils {
 
     /**
      * General regex pattern to extract comma separated name-value components.

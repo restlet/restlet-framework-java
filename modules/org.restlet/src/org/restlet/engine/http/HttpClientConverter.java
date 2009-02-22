@@ -46,7 +46,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.engine.Engine;
-import org.restlet.engine.security.AuthenticationUtils;
+import org.restlet.engine.security.AuthenticatorUtils;
 import org.restlet.engine.util.Base64;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.engine.util.RangeUtils;
@@ -90,7 +90,7 @@ public class HttpClientConverter extends HttpConverter {
                 }
             } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_WWW_AUTHENTICATE)) {
-                final ChallengeRequest request = AuthenticationUtils
+                final ChallengeRequest request = AuthenticatorUtils
                         .parseAuthenticateHeader(header.getValue());
                 response.setChallengeRequest(request);
             } else if (header.getName().equalsIgnoreCase(
@@ -390,7 +390,7 @@ public class HttpClientConverter extends HttpConverter {
                     .getChallengeResponse();
             if (challengeResponse != null) {
                 requestHeaders.add(HttpConstants.HEADER_AUTHORIZATION,
-                        AuthenticationUtils.format(challengeResponse, request,
+                        AuthenticatorUtils.format(challengeResponse, request,
                                 requestHeaders));
             }
         }

@@ -136,7 +136,7 @@ public class HttpDigestHelper extends AuthenticatorHelper {
             return Guard.AUTHENTICATION_INVALID;
         }
 
-        if (!AuthenticationUtils.anyNull(username, nonce, response, uri)) {
+        if (!AuthenticatorUtils.anyNull(username, nonce, response, uri)) {
             final Reference resourceRef = request.getResourceRef();
             String requestUri = resourceRef.getPath();
             if ((resourceRef.getQuery() != null) && (uri.indexOf('?') > -1)) {
@@ -154,7 +154,7 @@ public class HttpDigestHelper extends AuthenticatorHelper {
 
                     final StringBuffer expectedResponse = new StringBuffer(a1)
                             .append(':').append(nonce);
-                    if (!AuthenticationUtils.anyNull(qop, cnonce, nc)) {
+                    if (!AuthenticatorUtils.anyNull(qop, cnonce, nc)) {
                         expectedResponse.append(':').append(nc).append(':')
                                 .append(cnonce).append(':').append(qop);
                     }
@@ -256,7 +256,7 @@ public class HttpDigestHelper extends AuthenticatorHelper {
 
     @Override
     public void parseResponse(ChallengeResponse cr, Request request) {
-        AuthenticationUtils.parseParameters(cr.getCredentials(), cr
+        AuthenticatorUtils.parseParameters(cr.getCredentials(), cr
                 .getParameters());
     }
 

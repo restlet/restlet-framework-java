@@ -29,7 +29,7 @@ package org.restlet.test.engine;
 
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
-import org.restlet.engine.security.AuthenticationUtils;
+import org.restlet.engine.security.AuthenticatorUtils;
 import org.restlet.test.RestletTestCase;
 
 /**
@@ -52,11 +52,11 @@ public class AuthenticationTestCase extends RestletTestCase {
         final String authenticate1 = "Basic realm=\"Restlet tutorial\"";
         final String authorization1 = "Basic c2NvdHQ6dGlnZXI=";
 
-        assertEquals(authorization1, AuthenticationUtils.format(
-                AuthenticationUtils.parseAuthorizationHeader(null,
+        assertEquals(authorization1, AuthenticatorUtils.format(
+                AuthenticatorUtils.parseAuthorizationHeader(null,
                         authorization1), null, null));
-        assertEquals(authenticate1, AuthenticationUtils
-                .format(AuthenticationUtils
+        assertEquals(authenticate1, AuthenticatorUtils
+                .format(AuthenticatorUtils
                         .parseAuthenticateHeader(authenticate1)));
     }
 
@@ -67,14 +67,14 @@ public class AuthenticationTestCase extends RestletTestCase {
         final String authorization1 = "Digest cnonce=\"MTE3NzEwMzIwMjkwMDoxNmMzODFiYzRjNWRjMmMyOTVkMWFhNDdkMTQ4OGFlMw==\",qop=auth,uri=\"/protected/asdass\",username=\"admin\",nonce=\"MTE3NzEwMzIwMjg0Mjo2NzFjODQyMjAyOWRlNWQ1YjFjNmEzYzJmOWRlZmE2Mw==\",response=\"a891ebedebb2046b83a9b7540f4e9554\",nc=00000001";
         final String authenticate1 = "Digest realm=\"realm\", domain=\"/protected/ /alsoProtected/\", qop=\"auth\", algorithm=MD5, nonce=\"MTE3NzEwMzIwMjg0Mjo2NzFjODQyMjAyOWRlNWQ1YjFjNmEzYzJmOWRlZmE2Mw==\"";
 
-        final ChallengeResponse cres = AuthenticationUtils
+        final ChallengeResponse cres = AuthenticatorUtils
                 .parseAuthorizationHeader(null, authorization1);
         cres.setCredentials(null);
-        assertEquals(authorization1, AuthenticationUtils.format(cres, null,
+        assertEquals(authorization1, AuthenticatorUtils.format(cres, null,
                 null));
 
-        final ChallengeRequest creq = AuthenticationUtils
+        final ChallengeRequest creq = AuthenticatorUtils
                 .parseAuthenticateHeader(authenticate1);
-        assertEquals(authenticate1, AuthenticationUtils.format(creq));
+        assertEquals(authenticate1, AuthenticatorUtils.format(creq));
     }
 }

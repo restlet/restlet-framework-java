@@ -44,7 +44,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Parameter;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.engine.security.AuthenticationUtils;
+import org.restlet.engine.security.AuthenticatorUtils;
 import org.restlet.engine.util.Base64;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.engine.util.RangeUtils;
@@ -225,7 +225,7 @@ public class HttpServerConverter extends HttpConverter {
             for (final ChallengeRequest challengeRequest : response
                     .getChallengeRequests()) {
                 responseHeaders.add(HttpConstants.HEADER_WWW_AUTHENTICATE,
-                        AuthenticationUtils.format(challengeRequest));
+                        AuthenticatorUtils.format(challengeRequest));
             }
         }
 
