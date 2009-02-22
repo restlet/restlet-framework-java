@@ -51,7 +51,7 @@ import org.restlet.data.Status;
 import org.restlet.engine.http.ChunkedInputStream;
 import org.restlet.engine.http.ChunkedOutputStream;
 import org.restlet.engine.http.HttpServerCall;
-import org.restlet.engine.http.InputEntityStream;
+import org.restlet.engine.io.InputEntityStream;
 import org.restlet.util.Series;
 
 

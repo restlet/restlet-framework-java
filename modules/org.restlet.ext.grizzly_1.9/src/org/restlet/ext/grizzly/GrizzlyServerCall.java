@@ -51,8 +51,8 @@ import org.restlet.data.Response;
 import org.restlet.engine.http.ChunkedInputStream;
 import org.restlet.engine.http.ChunkedOutputStream;
 import org.restlet.engine.http.HttpServerCall;
-import org.restlet.engine.http.ReadableEntityChannel;
 import org.restlet.engine.io.ByteUtils;
+import org.restlet.engine.io.ReadableEntityChannel;
 
 import com.sun.grizzly.util.InputReader;
 import com.sun.grizzly.util.OutputWriter;

@@ -30,8 +30,8 @@ package org.restlet.test.engine;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-import org.restlet.engine.http.InputEntityStream;
 import org.restlet.engine.io.ByteUtils;
+import org.restlet.engine.io.InputEntityStream;
 import org.restlet.test.RestletTestCase;
 
 
