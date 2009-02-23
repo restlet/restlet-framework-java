@@ -140,13 +140,20 @@ public class SpringBeanRouter extends Router implements
      */
     protected String resolveUri(String resourceName,
             ConfigurableListableBeanFactory factory) {
+        if (isUri(resourceName)) {
+            return resourceName;
+        }
         for (final String alias : factory.getAliases(resourceName)) {
-            if (alias.startsWith("/")) {
+            if (isUri(alias)) {
                 return alias;
             }
         }
 
         return null;
+    }
+
+    private boolean isUri(String name) {
+        return name.startsWith("/");
     }
 
     /**

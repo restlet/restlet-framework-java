@@ -27,9 +27,6 @@
 
 package org.restlet.test.ext.spring;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.restlet.Restlet;
 import org.restlet.Route;
 import org.restlet.ext.spring.SpringBeanFinder;
@@ -41,12 +38,15 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.List;
+
 /**
  * @author Rhett Sutphin
  */
 public class SpringBeanRouterTestCase extends RestletTestCase {
     private static final String ORE_URI = "/non-renewable/ore/{ore_type}";
-
     private static final String FISH_URI = "/renewable/fish/{fish_name}";
 
     private DefaultListableBeanFactory factory;
@@ -68,42 +68,53 @@ public class SpringBeanRouterTestCase extends RestletTestCase {
         super.setUp();
         this.factory = new DefaultListableBeanFactory();
 
-        BeanDefinition bd = new RootBeanDefinition(Resource.class);
-        bd.setScope(BeanDefinition.SCOPE_PROTOTYPE);
-        this.factory.registerBeanDefinition("ore", bd);
-        this.factory.registerAlias("ore", ORE_URI);
+        registerResourceBeanDefinition("ore", ORE_URI);
+        registerResourceBeanDefinition("fish", FISH_URI);
 
-        bd = new RootBeanDefinition(Resource.class);
-        bd.setScope(BeanDefinition.SCOPE_PROTOTYPE);
-        this.factory.registerBeanDefinition("fish", bd);
-        this.factory.registerAlias("fish", FISH_URI);
-
-        bd = new RootBeanDefinition(String.class);
+        BeanDefinition bd = new RootBeanDefinition(String.class);
         bd.setScope(BeanDefinition.SCOPE_SINGLETON);
         this.factory.registerBeanDefinition("someOtherBean", bd);
 
         this.router = new SpringBeanRouter();
     }
 
-    public void testRoutesCreatedForUrlAliases() throws Exception {
-        this.router.postProcessBeanFactory(this.factory);
-
-        final RouteList actualRoutes = this.router.getRoutes();
-        assertEquals("Wrong number of routes", 2, actualRoutes.size());
-        final Set<String> actualUris = new HashSet<String>();
-        for (final Route actualRoute : actualRoutes) {
-            actualUris.add(actualRoute.getTemplate().getPattern());
+    private void registerResourceBeanDefinition(String id, String alias) {
+        BeanDefinition bd = new RootBeanDefinition(Resource.class);
+        bd.setScope(BeanDefinition.SCOPE_PROTOTYPE);
+        this.factory.registerBeanDefinition(id, bd);
+        if (alias != null) {
+            this.factory.registerAlias(id, alias);
         }
+    }
+
+    private Set<String> routeUris(List<Route> routes) {
+        final Set<String> uris = new HashSet<String>();
+        for (final Route actualRoute : routes) {
+            uris.add(actualRoute.getTemplate().getPattern());
+        }
+        return uris;
+    }
+
+    public void testRoutesCreatedForUrlAliases() throws Exception {
+        final Set<String> actualUris = routeUris(actualRoutes());
+        assertEquals("Wrong number of URIs", 2, actualUris.size());
         assertTrue("Missing ore URI: " + actualUris, actualUris
                 .contains(ORE_URI));
         assertTrue("Missing fish URI: " + actualUris, actualUris
                 .contains(FISH_URI));
     }
 
-    public void testRoutesPointToFindersForBeans() throws Exception {
-        this.router.postProcessBeanFactory(this.factory);
+    public void testRoutesCreatedForBeanIdsIfAppropriate() throws Exception {
+        String grain = "/renewable/grain/{grain_type}";
+        registerResourceBeanDefinition(grain, null);
+        
+        final Set<String> actualUris = routeUris(actualRoutes());
+        assertEquals("Wrong number of URIs", 3, actualUris.size());
+        assertTrue("Missing grain URI: " + actualUris, actualUris.contains(grain));
+    }
 
-        final RouteList actualRoutes = this.router.getRoutes();
+    public void testRoutesPointToFindersForBeans() throws Exception {
+        final RouteList actualRoutes = actualRoutes();
         assertEquals("Wrong number of routes", 2, actualRoutes.size());
         Route oreRoute = null, fishRoute = null;
         for (final Route actualRoute : actualRoutes) {
@@ -121,6 +132,13 @@ public class SpringBeanRouterTestCase extends RestletTestCase {
         assertFinderForBean("fish", fishRoute.getNext());
     }
 
+    private RouteList actualRoutes() {
+        this.router.postProcessBeanFactory(this.factory);
+
+        final RouteList actualRoutes = this.router.getRoutes();
+        return actualRoutes;
+    }
+
     public void testRoutingSkipsResourcesWithoutAppropriateAliases()
             throws Exception {
         final BeanDefinition bd = new RootBeanDefinition(Resource.class);
@@ -128,9 +146,7 @@ public class SpringBeanRouterTestCase extends RestletTestCase {
         this.factory.registerBeanDefinition("timber", bd);
         this.factory.registerAlias("timber", "no-slash");
 
-        this.router.postProcessBeanFactory(this.factory);
-
-        final RouteList actualRoutes = this.router.getRoutes();
+        final RouteList actualRoutes = actualRoutes();
         assertEquals("Timber resource should have been skipped", 2,
                 actualRoutes.size());
     }
