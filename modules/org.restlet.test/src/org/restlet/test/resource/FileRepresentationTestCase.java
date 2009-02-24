@@ -56,6 +56,7 @@ public class FileRepresentationTestCase extends RestletTestCase {
 
     private Component component;
 
+    private File testDir;
     private File file;
 
     @Override
@@ -68,7 +69,12 @@ public class FileRepresentationTestCase extends RestletTestCase {
         component.getServers().add(Protocol.HTTP, TEST_PORT);
         component.start();
 
-        file = new File(getClass().getName());
+        // Create a temporary directory for the tests
+        this.testDir = new File(System.getProperty("java.io.tmpdir"),
+                "FileRepresentationTestCase");
+        this.testDir.mkdirs();
+        
+        this.file = new File(this.testDir, getClass().getName());
         FileOutputStream os = new FileOutputStream(file);
         os.write("abc".getBytes());
         os.close();
@@ -78,6 +84,8 @@ public class FileRepresentationTestCase extends RestletTestCase {
     public void tearDown() throws Exception {
         super.tearDown();
         component.stop();
+        this.file.delete();
+        this.testDir.delete();
     }
 
     public void testConstructors() {
