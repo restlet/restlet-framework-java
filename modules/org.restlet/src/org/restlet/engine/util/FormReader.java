@@ -40,7 +40,7 @@ import org.restlet.Context;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 
 /**

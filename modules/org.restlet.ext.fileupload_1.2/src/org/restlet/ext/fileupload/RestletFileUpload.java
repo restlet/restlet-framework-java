@@ -36,7 +36,7 @@ import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileUpload;
 import org.apache.commons.fileupload.FileUploadException;
 import org.restlet.data.Request;
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
 
 /**
  * High level API for processing file uploads. This class handles multiple files

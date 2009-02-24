@@ -43,9 +43,8 @@ import org.restlet.util.Resolver;
 
 /**
  * Filter response's entity and wrap it with a Velocity's template
- * representation.<br>
- * By default, the template representation provides a data model based on the
- * request and response objects.<br>
+ * representation. By default, the template representation provides a data model
+ * based on the request and response objects.<br>
  * 
  * Concurrency note: instances of this class or its subclasses can be invoked by
  * several threads at the same time and therefore must be thread-safe. You

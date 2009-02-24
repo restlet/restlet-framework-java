@@ -11,6 +11,7 @@ Import-Package: javax.xml.bind;version="2.1.0",
  javax.xml.stream.util,
  org.restlet,
  org.restlet.data,
+ org.restlet.representation,
  org.restlet.resource,
  org.restlet.service,
  org.restlet.util

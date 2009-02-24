@@ -38,7 +38,7 @@ import javax.ws.rs.core.MultivaluedMap;
 
 import org.restlet.data.MediaType;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyWriter;
-import org.restlet.resource.OutputRepresentation;
+import org.restlet.representation.OutputRepresentation;
 
 /**
  * This representation is used to write the Representations with a
@@ -97,7 +97,7 @@ public class JaxRsOutputRepresentation<T> extends OutputRepresentation {
     }
 
     /**
-     * @see org.restlet.resource.Representation#write(java.io.OutputStream)
+     * @see org.restlet.representation.Representation#write(java.io.OutputStream)
      */
     @Override
     public void write(OutputStream outputStream) throws IOException {

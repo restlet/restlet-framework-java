@@ -31,11 +31,11 @@ import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
+import org.restlet.representation.SaxRepresentation;
+import org.restlet.representation.Variant;
 import org.restlet.resource.Resource;
 import org.restlet.resource.ResourceException;
-import org.restlet.resource.SaxRepresentation;
-import org.restlet.resource.Variant;
 import org.restlet.util.XmlWriter;
 import org.xml.sax.SAXException;
 

@@ -61,7 +61,7 @@ import org.restlet.ext.jaxrs.RoleChecker;
 import org.restlet.ext.jaxrs.internal.todo.NotYetImplementedException;
 import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.ext.jaxrs.internal.util.Util;
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
 import org.restlet.test.jaxrs.server.RestletServerTestCase;
 import org.restlet.test.jaxrs.util.OrderedReadonlySet;
 import org.restlet.test.jaxrs.util.TestUtils;

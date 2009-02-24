@@ -36,7 +36,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
 import org.restlet.data.Request;
 import org.restlet.engine.ClientHelper;
-import org.restlet.resource.Variant;
+import org.restlet.representation.Variant;
 import org.restlet.service.MetadataService;
 
 

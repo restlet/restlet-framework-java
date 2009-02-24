@@ -25,35 +25,32 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.resource;
+package org.restlet.representation;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Reader;
+import java.io.InputStream;
 
 import org.restlet.data.MediaType;
 import org.restlet.engine.io.ByteUtils;
 
 /**
- * Representation based on a BIO characters writer. This class is a good basis
- * to write your own representations, especially for the dynamic and large ones. <br>
+ * Representation based on a BIO output stream. This class is a good basis to
+ * write your own representations, especially for the dynamic and large ones.<br>
  * <br>
  * For this you just need to create a subclass and override the abstract
- * Representation.write(Writer) method. This method will later be called back by
- * the connectors when the actual representation's content is needed.
+ * Representation.write(OutputStream) method. This method will later be called
+ * back by the connectors when the actual representation's content is needed.
  * 
  * @author Jerome Louvel
  */
-public abstract class WriterRepresentation extends CharacterRepresentation {
-
+public abstract class OutputRepresentation extends StreamRepresentation {
     /**
      * Constructor.
      * 
      * @param mediaType
      *            The representation's mediaType.
      */
-    public WriterRepresentation(MediaType mediaType) {
+    public OutputRepresentation(MediaType mediaType) {
         super(mediaType);
     }
 
@@ -63,16 +60,22 @@ public abstract class WriterRepresentation extends CharacterRepresentation {
      * @param mediaType
      *            The representation's mediaType.
      * @param expectedSize
-     *            The expected writer size in bytes.
+     *            The expected input stream size.
      */
-    public WriterRepresentation(MediaType mediaType, long expectedSize) {
+    public OutputRepresentation(MediaType mediaType, long expectedSize) {
         super(mediaType);
         setSize(expectedSize);
     }
 
+    /**
+     * Returns a stream with the representation's content. Internally, it uses a
+     * writer thread and a pipe stream.
+     * 
+     * @return A stream with the representation's content.
+     */
     @Override
-    public Reader getReader() throws IOException {
-        return ByteUtils.getReader(this);
+    public InputStream getStream() throws IOException {
+        return ByteUtils.getStream(this);
     }
 
     /**
@@ -82,10 +85,4 @@ public abstract class WriterRepresentation extends CharacterRepresentation {
     public void release() {
         super.release();
     }
-
-    @Override
-    public void write(OutputStream outputStream) throws IOException {
-        write(new OutputStreamWriter(outputStream, getCharacterSet().getName()));
-    }
-
 }

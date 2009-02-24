@@ -79,7 +79,7 @@ import org.restlet.ext.jaxrs.internal.util.EmptyIterator;
 import org.restlet.ext.jaxrs.internal.util.SecurityUtil;
 import org.restlet.ext.jaxrs.internal.util.SortedMetadata;
 import org.restlet.ext.jaxrs.internal.util.Util;
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
 
 /**
  * Contains all request specific data of the interfaces injectable for &#64;
@@ -1215,9 +1215,9 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
         if ((variants == null) || variants.isEmpty()) {
             throw new IllegalArgumentException();
         }
-        final List<org.restlet.resource.Variant> restletVariants = Converter
+        final List<org.restlet.representation.Variant> restletVariants = Converter
                 .toRestletVariants(variants);
-        final org.restlet.resource.Variant bestRestlVar = this.request
+        final org.restlet.representation.Variant bestRestlVar = this.request
                 .getClientInfo().getPreferredVariant(restletVariants, null);
         final Variant bestVariant = Converter.toJaxRsVariant(bestRestlVar);
         final Set<Dimension> dimensions = this.response.getDimensions();

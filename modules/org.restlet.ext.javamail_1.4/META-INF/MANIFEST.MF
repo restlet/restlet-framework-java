@@ -25,6 +25,7 @@ Import-Package: com.sun.mail.handlers,
  org.restlet.engine.local,
  org.restlet.engine.security,
  org.restlet.engine.util,
+ org.restlet.representation,
  org.restlet.resource,
  org.restlet.service,
  org.restlet.util

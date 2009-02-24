@@ -50,9 +50,9 @@ import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.resource.Representation;
-import org.restlet.resource.StringRepresentation;
-import org.restlet.resource.TransformRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
+import org.restlet.representation.TransformRepresentation;
 
 /**
  * ResolvingTransformerTestCase tests the resolving aspects of the

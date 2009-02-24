@@ -43,7 +43,7 @@ import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.ext.jaxrs.internal.wrappers.params.ParameterList.ParamGetter;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyReader;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyReaderSet;
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
 
 /**
  * An EntityGetter converts the given entity from the request to the type

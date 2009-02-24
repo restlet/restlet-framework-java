@@ -37,8 +37,8 @@ import org.json.JSONStringer;
 import org.json.JSONTokener;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
-import org.restlet.resource.Representation;
-import org.restlet.resource.StringRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
 
 /**
  * Representation based on a JSON document. JSON stands for JavaScript Object

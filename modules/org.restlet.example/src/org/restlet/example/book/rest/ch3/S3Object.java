@@ -29,8 +29,8 @@ package org.restlet.example.book.rest.ch3;
 
 import org.restlet.data.Reference;
 import org.restlet.data.Status;
-import org.restlet.resource.Representation;
-import org.restlet.resource.Variant;
+import org.restlet.representation.Representation;
+import org.restlet.representation.Variant;
 
 /**
  * Amazon S3 object.

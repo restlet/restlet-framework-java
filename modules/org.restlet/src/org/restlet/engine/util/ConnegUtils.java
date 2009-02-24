@@ -36,7 +36,7 @@ import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
-import org.restlet.resource.Variant;
+import org.restlet.representation.Variant;
 
 /**
  * Content negotiation utilities.

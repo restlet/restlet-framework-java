@@ -37,8 +37,8 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import org.restlet.resource.DomRepresentation;
-import org.restlet.resource.Representation;
+import org.restlet.representation.DomRepresentation;
+import org.restlet.representation.Representation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;

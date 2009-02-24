@@ -36,8 +36,8 @@ import org.restlet.Route;
 import org.restlet.Server;
 import org.restlet.VirtualHost;
 import org.restlet.data.Parameter;
-import org.restlet.resource.Representation;
-import org.restlet.resource.StringRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
 import org.restlet.util.ClientList;
 import org.restlet.util.ServerList;
 

@@ -29,9 +29,9 @@ package org.restlet.engine.converter;
 
 import java.util.List;
 
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
+import org.restlet.representation.Variant;
 import org.restlet.resource.UniformResource;
-import org.restlet.resource.Variant;
 
 /**
  * Converter between the DOM API and Representation classes.

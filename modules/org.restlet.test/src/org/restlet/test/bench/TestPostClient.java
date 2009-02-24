@@ -31,7 +31,7 @@ import org.restlet.Client;
 import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
 import org.restlet.data.Response;
-import org.restlet.resource.FileRepresentation;
+import org.restlet.representation.FileRepresentation;
 
 public class TestPostClient {
 

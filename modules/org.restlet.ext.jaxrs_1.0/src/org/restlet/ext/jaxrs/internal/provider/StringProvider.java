@@ -43,7 +43,7 @@ import javax.ws.rs.ext.Provider;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Response;
 import org.restlet.ext.jaxrs.internal.util.Util;
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
 
 /**
  * ProviderWrapper for {@link String}s. Could also write other

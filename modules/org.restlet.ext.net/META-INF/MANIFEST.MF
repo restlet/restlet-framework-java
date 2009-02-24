@@ -20,6 +20,7 @@ Import-Package: org.restlet,
  org.restlet.engine.local,
  org.restlet.engine.security,
  org.restlet.engine.util,
+ org.restlet.representation,
  org.restlet.resource,
  org.restlet.service,
  org.restlet.util

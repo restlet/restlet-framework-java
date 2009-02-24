@@ -28,9 +28,9 @@
 package org.restlet.test.resource;
 
 import org.restlet.data.MediaType;
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Resource;
-import org.restlet.resource.StringRepresentation;
 import org.restlet.test.RestletTestCase;
 
 /**

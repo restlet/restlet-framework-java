@@ -10,6 +10,7 @@ Import-Package: javax.servlet;resolution:=optional,
  org.apache.commons.fileupload,
  org.restlet,
  org.restlet.data,
+ org.restlet.representation,
  org.restlet.resource,
  org.restlet.service,
  org.restlet.util

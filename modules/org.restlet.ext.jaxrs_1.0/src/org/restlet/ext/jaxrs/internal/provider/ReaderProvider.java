@@ -46,7 +46,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.engine.io.ByteUtils;
 import org.restlet.ext.jaxrs.internal.util.Util;
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
 
 /**
  * This ProviderWrapper is used to read directly from a {@link Reader}.

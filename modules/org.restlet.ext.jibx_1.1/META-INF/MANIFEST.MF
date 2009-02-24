@@ -8,6 +8,7 @@ Export-Package: org.restlet.ext.jibx;uses:="org.restlet.resource,javax.xml.names
 Import-Package: org.jibx.runtime,
  org.restlet,
  org.restlet.data,
+ org.restlet.representation,
  org.restlet.resource,
  org.restlet.service,
  org.restlet.util

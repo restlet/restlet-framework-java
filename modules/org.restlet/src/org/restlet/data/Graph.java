@@ -29,7 +29,7 @@ package org.restlet.data;
 
 import java.util.concurrent.CopyOnWriteArraySet;
 
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
 
 /**
  * Graph composed of links. This also called a set of RDF statements or a RDF

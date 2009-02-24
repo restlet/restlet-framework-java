@@ -30,8 +30,8 @@ package org.restlet.ext.javamail;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.restlet.resource.DomRepresentation;
-import org.restlet.resource.Representation;
+import org.restlet.representation.DomRepresentation;
+import org.restlet.representation.Representation;
 import org.restlet.util.Resolver;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;

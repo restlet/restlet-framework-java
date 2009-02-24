@@ -31,7 +31,7 @@ import org.restlet.Client;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Response;
-import org.restlet.resource.DomRepresentation;
+import org.restlet.representation.DomRepresentation;
 import org.w3c.dom.Node;
 
 /**

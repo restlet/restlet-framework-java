@@ -48,9 +48,9 @@ import javax.xml.xpath.XPathFactory;
 
 import org.restlet.Context;
 import org.restlet.data.MediaType;
-import org.restlet.resource.Representation;
-import org.restlet.resource.StringRepresentation;
-import org.restlet.resource.XmlRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
+import org.restlet.representation.XmlRepresentation;
 import org.w3c.dom.Document;
 
 /**

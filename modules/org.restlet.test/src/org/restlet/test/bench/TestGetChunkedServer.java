@@ -35,8 +35,8 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.resource.FileRepresentation;
-import org.restlet.resource.InputRepresentation;
+import org.restlet.representation.FileRepresentation;
+import org.restlet.representation.InputRepresentation;
 
 public class TestGetChunkedServer {
 

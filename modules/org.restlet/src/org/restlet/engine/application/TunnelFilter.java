@@ -54,7 +54,7 @@ import org.restlet.service.MetadataService;
 import org.restlet.service.TunnelService;
 
 /**
- * Filter tunnelling browser calls into full REST calls. The request method can
+ * Filter tunneling browser calls into full REST calls. The request method can
  * be changed (via POST requests only) as well as the accepted media types,
  * languages, encodings and character sets.
  * 

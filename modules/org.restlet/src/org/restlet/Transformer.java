@@ -36,12 +36,12 @@ import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.resource.Representation;
-import org.restlet.resource.TransformRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.representation.TransformRepresentation;
 
 /**
  * Filter that can transform XML representations by applying an XSLT transform
- * sheet. It uses the {@link org.restlet.resource.TransformRepresentation} to
+ * sheet. It uses the {@link org.restlet.representation.TransformRepresentation} to
  * actually transform the XML entities.<br>
  * <br>
  * Concurrency note: instances of this class or its subclasses can be invoked by

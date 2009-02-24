@@ -39,9 +39,9 @@ import org.restlet.data.LocalReference;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.resource.ObjectRepresentation;
-import org.restlet.resource.Representation;
-import org.restlet.resource.StringRepresentation;
+import org.restlet.representation.ObjectRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
 
 /**
  * Unit test case for the RIAP Internal routing protocol.

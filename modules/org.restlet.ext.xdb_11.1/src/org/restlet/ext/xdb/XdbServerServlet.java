@@ -59,8 +59,8 @@ import org.restlet.ext.servlet.ServerServlet;
 
 /**
  * Servlet acting like an HTTP server connector. See <a
- * href="/documentation/1.0/faq#02">Developper FAQ #2</a> for details on how to
- * integrate a Restlet application into a servlet container.<br/> Here is a
+ * href="/documentation/1.1/faq#02">Developper FAQ #2</a> for details on how to
+ * integrate a Restlet application into a Servlet container.<br/> Here is a
  * sample configuration for your Restlet webapp:
  * 
  * <pre>
@@ -232,7 +232,7 @@ public class XdbServerServlet extends ServerServlet {
             result = new HttpServerHelper(server);
 
             // Attach the application, do not use getServletContext here because
-            // XMLDB allways return null
+            // XMLDB always return null
             final String uriPattern = request.getServletPath();
             log("[Noelios Restlet Engine] - Attaching application: "
                     + application + " to URI: " + uriPattern);

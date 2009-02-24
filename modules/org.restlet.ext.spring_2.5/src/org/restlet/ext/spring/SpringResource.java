@@ -30,7 +30,7 @@ package org.restlet.ext.spring;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
 import org.springframework.core.io.AbstractResource;
 
 /**

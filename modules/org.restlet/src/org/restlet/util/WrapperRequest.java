@@ -39,9 +39,9 @@ import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
-import org.restlet.resource.DomRepresentation;
-import org.restlet.resource.Representation;
-import org.restlet.resource.SaxRepresentation;
+import org.restlet.representation.DomRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.representation.SaxRepresentation;
 
 /**
  * Request wrapper. Useful for application developer who need to enrich the

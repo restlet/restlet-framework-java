@@ -51,7 +51,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.engine.ClientHelper;
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
 import org.w3c.dom.DOMException;
 
 import com.sun.mail.pop3.POP3Folder;

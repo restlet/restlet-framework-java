@@ -54,7 +54,7 @@ import org.restlet.engine.http.HttpServerHelper;
 
 /**
  * Servlet acting like an HTTP server connector. See <a
- * href="/documentation/1.1/faq#02">Developper FAQ #2</a> for details on how to
+ * href="/documentation/1.1/faq#02">Developer FAQ #2</a> for details on how to
  * integrate a Restlet application into a servlet container.<br>
  * <br>
  * Initially designed to deploy a single Restlet Application, this Servlet can
@@ -93,7 +93,7 @@ import org.restlet.engine.http.HttpServerHelper;
  * </tr>
  * </table>
  * <br>
- * In deployment mode 3, you can also add an optionnal "org.restlet.clients"
+ * In deployment mode 3, you can also add an optional "org.restlet.clients"
  * context parameter that contains a space separated list of client protocols
  * supported by the underlying component. For each one, a new client connector
  * is added to the Component instance.<br>
@@ -149,19 +149,19 @@ import org.restlet.engine.http.HttpServerHelper;
  * you can pass additional initialization parameters to your application, and
  * maybe share them with other Servlets.<br>
  * <br>
- * An additionnal boolean parameter called "org.restlet.autoWire" allows you to
+ * An additional boolean parameter called "org.restlet.autoWire" allows you to
  * control the way your customized Component fits in the context of the wrapping
  * Servlet. The root cause is that both your Servlet Container and your Restlet
  * Component handle part of the URI routing, respectively to the right Servlet
  * and to the right virtual host and Restlets (most of the time Application
  * instances).<br>
  * <br>
- * When a request reaches the Servlet container, it is first routed acccording
- * to its web.xml configuration (i.e. declared virtual hosts and webapp context
- * path which is generally the name of the webapp war file). Once the incoming
+ * When a request reaches the Servlet container, it is first routed according to
+ * its web.xml configuration (i.e. declared virtual hosts and webapp context
+ * path which is generally the name of the webapp WAR file). Once the incoming
  * request reaches the ServerServlet and the wrapped Restlet Component, its URI
  * is, for the second time, entirely subject to a separate routing chain. It
- * begins with the virtual hosts, then continue to the URI pattern used when
+ * begins with the virtual hosts, then continues to the URI pattern used when
  * attaching Restlets to the host. The important conclusion is that both routing
  * configurations must be consistent in order to work fine.<br>
  * <br>

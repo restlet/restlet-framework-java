@@ -32,7 +32,7 @@ import java.io.InputStream;
 import java.io.Reader;
 
 import org.apache.solr.common.util.ContentStream;
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
 
 /**
  * Solr content stream wrapping a Restlet representation.

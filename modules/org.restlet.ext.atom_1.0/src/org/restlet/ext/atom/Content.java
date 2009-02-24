@@ -33,7 +33,7 @@ import java.io.IOException;
 
 import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
 import org.restlet.util.XmlWriter;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.AttributesImpl;

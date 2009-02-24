@@ -34,7 +34,7 @@ import java.io.FileOutputStream;
 import org.restlet.data.MediaType;
 import org.restlet.ext.atom.Feed;
 import org.restlet.ext.atom.Service;
-import org.restlet.resource.FileRepresentation;
+import org.restlet.representation.FileRepresentation;
 import org.restlet.test.RestletTestCase;
 
 /**

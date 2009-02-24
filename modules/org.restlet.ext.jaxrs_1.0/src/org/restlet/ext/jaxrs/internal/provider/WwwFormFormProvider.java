@@ -46,8 +46,8 @@ import org.restlet.data.Message;
 import org.restlet.data.Request;
 import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.ext.jaxrs.internal.util.Util;
-import org.restlet.resource.InputRepresentation;
-import org.restlet.resource.Representation;
+import org.restlet.representation.InputRepresentation;
+import org.restlet.representation.Representation;
 
 /**
  * This {@link ProviderWrapper} converts Restlet {@link Form}s to

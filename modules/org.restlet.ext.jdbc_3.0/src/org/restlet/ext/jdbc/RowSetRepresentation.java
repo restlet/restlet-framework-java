@@ -35,7 +35,7 @@ import java.sql.SQLException;
 import javax.sql.rowset.WebRowSet;
 
 import org.restlet.data.MediaType;
-import org.restlet.resource.OutputRepresentation;
+import org.restlet.representation.OutputRepresentation;
 
 import com.sun.rowset.WebRowSetImpl;
 

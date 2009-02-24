@@ -39,7 +39,7 @@ import org.restlet.example.book.restlet.ch8.RmepGuard;
 import org.restlet.example.book.restlet.ch8.objects.ObjectsFacade;
 import org.restlet.example.book.restlet.ch8.objects.User;
 import org.restlet.ext.freemarker.TemplateRepresentation;
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
 import org.restlet.resource.Resource;
 
 import freemarker.template.Configuration;

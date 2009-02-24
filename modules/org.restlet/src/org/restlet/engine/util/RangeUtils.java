@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.data.Range;
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
 
 /**
  * Range manipulation utilities.

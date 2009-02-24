@@ -32,7 +32,7 @@ import java.util.List;
 
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.resource.DomRepresentation;
+import org.restlet.representation.DomRepresentation;
 import org.w3c.dom.Node;
 
 /**

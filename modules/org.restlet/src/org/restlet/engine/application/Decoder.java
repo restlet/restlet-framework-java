@@ -34,7 +34,7 @@ import org.restlet.Filter;
 import org.restlet.data.Encoding;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
 
 /**
  * Filter decompressing entities.

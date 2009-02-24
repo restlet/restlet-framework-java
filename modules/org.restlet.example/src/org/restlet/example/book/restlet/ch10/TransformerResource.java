@@ -33,12 +33,12 @@ import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.resource.FileRepresentation;
-import org.restlet.resource.Representation;
+import org.restlet.representation.FileRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.representation.TransformRepresentation;
+import org.restlet.representation.Variant;
 import org.restlet.resource.Resource;
 import org.restlet.resource.ResourceException;
-import org.restlet.resource.TransformRepresentation;
-import org.restlet.resource.Variant;
 
 /**
  *

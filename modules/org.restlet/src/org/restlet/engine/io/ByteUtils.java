@@ -50,8 +50,8 @@ import java.util.logging.Level;
 import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.data.CharacterSet;
-import org.restlet.resource.Representation;
-import org.restlet.resource.WriterRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.representation.WriterRepresentation;
 import org.restlet.service.TaskService;
 
 /**

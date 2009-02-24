@@ -45,7 +45,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Tag;
 import org.restlet.engine.security.AuthenticatorUtils;
 import org.restlet.engine.util.RangeUtils;
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 
 /**

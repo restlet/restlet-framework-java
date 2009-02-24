@@ -32,8 +32,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.data.MediaType;
-import org.restlet.resource.FileRepresentation;
-import org.restlet.resource.Representation;
+import org.restlet.representation.FileRepresentation;
+import org.restlet.representation.Representation;
 
 /**
  * Local entity based on a regular {@link File}.

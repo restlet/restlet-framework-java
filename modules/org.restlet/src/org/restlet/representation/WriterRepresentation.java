@@ -25,41 +25,54 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.resource;
+package org.restlet.representation;
 
 import java.io.IOException;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.WritableByteChannel;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
 
 import org.restlet.data.MediaType;
 import org.restlet.engine.io.ByteUtils;
 
 /**
- * Representation based on a writable NIO byte channel. This class is a good
- * basis to write your own representations, especially for the dynamic and large
- * ones.<br>
+ * Representation based on a BIO characters writer. This class is a good basis
+ * to write your own representations, especially for the dynamic and large ones. <br>
  * <br>
  * For this you just need to create a subclass and override the abstract
- * Representation.write(WritableByteChannel) method. This method will later be
- * called back by the connectors when the actual representation's content is
- * needed.
+ * Representation.write(Writer) method. This method will later be called back by
+ * the connectors when the actual representation's content is needed.
  * 
  * @author Jerome Louvel
  */
-public abstract class WritableRepresentation extends ChannelRepresentation {
+public abstract class WriterRepresentation extends CharacterRepresentation {
+
     /**
      * Constructor.
      * 
      * @param mediaType
-     *            The representation's media type.
+     *            The representation's mediaType.
      */
-    public WritableRepresentation(MediaType mediaType) {
+    public WriterRepresentation(MediaType mediaType) {
         super(mediaType);
     }
 
+    /**
+     * Constructor.
+     * 
+     * @param mediaType
+     *            The representation's mediaType.
+     * @param expectedSize
+     *            The expected writer size in bytes.
+     */
+    public WriterRepresentation(MediaType mediaType, long expectedSize) {
+        super(mediaType);
+        setSize(expectedSize);
+    }
+
     @Override
-    public ReadableByteChannel getChannel() throws IOException {
-        return ByteUtils.getChannel(this);
+    public Reader getReader() throws IOException {
+        return ByteUtils.getReader(this);
     }
 
     /**
@@ -71,7 +84,8 @@ public abstract class WritableRepresentation extends ChannelRepresentation {
     }
 
     @Override
-    public abstract void write(WritableByteChannel writableChannel)
-            throws IOException;
+    public void write(OutputStream outputStream) throws IOException {
+        write(new OutputStreamWriter(outputStream, getCharacterSet().getName()));
+    }
 
 }

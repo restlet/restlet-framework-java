@@ -12,6 +12,7 @@ Export-Package: org.restlet.ext.freemarker;
 Import-Package: freemarker.template,
  org.restlet,
  org.restlet.data,
+ org.restlet.representation,
  org.restlet.resource,
  org.restlet.service,
  org.restlet.util

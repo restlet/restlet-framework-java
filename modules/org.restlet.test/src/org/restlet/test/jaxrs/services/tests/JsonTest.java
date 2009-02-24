@@ -42,8 +42,8 @@ import org.restlet.data.Status;
 import org.restlet.ext.jaxb.JaxbRepresentation;
 import org.restlet.ext.jaxrs.JaxRsApplication;
 import org.restlet.ext.jaxrs.internal.provider.JsonProvider;
-import org.restlet.resource.Representation;
-import org.restlet.resource.StringRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
 import org.restlet.test.jaxrs.services.others.Person;
 import org.restlet.test.jaxrs.services.resources.JsonTestService;
 

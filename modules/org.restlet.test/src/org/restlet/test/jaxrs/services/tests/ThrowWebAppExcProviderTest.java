@@ -32,7 +32,7 @@ import java.util.Set;
 import javax.ws.rs.core.Application;
 
 import org.restlet.data.Response;
-import org.restlet.resource.StringRepresentation;
+import org.restlet.representation.StringRepresentation;
 import org.restlet.test.jaxrs.services.providers.ThrowWebAppExcProvider;
 import org.restlet.test.jaxrs.services.resources.SimpleResource;
 import org.restlet.test.jaxrs.util.TestUtils;

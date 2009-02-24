@@ -28,8 +28,8 @@
 package org.restlet.example.book.restlet.ch10;
 
 import org.restlet.data.Status;
+import org.restlet.representation.StringRepresentation;
 import org.restlet.resource.Resource;
-import org.restlet.resource.StringRepresentation;
 
 /**
  *

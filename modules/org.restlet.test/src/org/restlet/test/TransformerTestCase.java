@@ -34,9 +34,9 @@ import junit.framework.TestCase;
 import org.restlet.Component;
 import org.restlet.Transformer;
 import org.restlet.data.MediaType;
-import org.restlet.resource.Representation;
-import org.restlet.resource.StringRepresentation;
-import org.restlet.resource.TransformRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
+import org.restlet.representation.TransformRepresentation;
 
 /**
  * Test case for the Transformer class.

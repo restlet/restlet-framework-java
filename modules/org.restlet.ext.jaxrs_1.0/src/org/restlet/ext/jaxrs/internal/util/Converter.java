@@ -261,7 +261,7 @@ public class Converter {
      *             and one
      */
     public static javax.ws.rs.core.Variant toJaxRsVariant(
-            org.restlet.resource.Variant restletVariant)
+            org.restlet.representation.Variant restletVariant)
             throws IllegalArgumentException {
         final MediaType mediaType = Converter.toJaxRsMediaType(restletVariant
                 .getMediaType(), restletVariant.getCharacterSet());
@@ -446,12 +446,12 @@ public class Converter {
      * @param jaxRsVariants
      * @return the List of Restlet Variants
      */
-    public static List<org.restlet.resource.Variant> toRestletVariants(
+    public static List<org.restlet.representation.Variant> toRestletVariants(
             Collection<javax.ws.rs.core.Variant> jaxRsVariants) {
-        final List<org.restlet.resource.Variant> restletVariants = new ArrayList<org.restlet.resource.Variant>(
+        final List<org.restlet.representation.Variant> restletVariants = new ArrayList<org.restlet.representation.Variant>(
                 jaxRsVariants.size());
         for (final javax.ws.rs.core.Variant jaxRsVariant : jaxRsVariants) {
-            final org.restlet.resource.Variant restletVariant = new org.restlet.resource.Variant();
+            final org.restlet.representation.Variant restletVariant = new org.restlet.representation.Variant();
             restletVariant.setCharacterSet(getRestletCharacterSet(jaxRsVariant
                     .getMediaType()));
             restletVariant.setEncodings(Util.createList(Encoding

@@ -39,8 +39,8 @@ import javax.servlet.ServletContext;
 import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.engine.local.Entity;
-import org.restlet.resource.InputRepresentation;
-import org.restlet.resource.Representation;
+import org.restlet.representation.InputRepresentation;
+import org.restlet.representation.Representation;
 
 /**
  * Local entity based on a Servlet context's resource file.

@@ -48,7 +48,7 @@ import org.restlet.engine.security.AuthenticatorUtils;
 import org.restlet.engine.util.Base64;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.engine.util.RangeUtils;
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 
 /**

@@ -38,7 +38,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
 import org.restlet.data.Reference;
 import org.restlet.ext.velocity.TemplateRepresentation;
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
 import org.restlet.test.RestletTestCase;
 
 /**

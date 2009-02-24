@@ -38,7 +38,7 @@ import org.apache.solr.request.SolrQueryResponse;
 import org.apache.solr.request.XMLResponseWriter;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
-import org.restlet.resource.OutputRepresentation;
+import org.restlet.representation.OutputRepresentation;
 
 /**
  * Representation wrapping a Solr query and exposing its response either as XML

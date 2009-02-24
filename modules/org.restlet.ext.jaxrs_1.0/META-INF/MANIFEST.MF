@@ -75,6 +75,7 @@ Import-Package: javax.activation;version="1.1.1",
  org.restlet.engine.local,
  org.restlet.engine.security,
  org.restlet.engine.util,
+ org.restlet.representation,
  org.restlet.resource,
  org.restlet.service,
  org.restlet.util

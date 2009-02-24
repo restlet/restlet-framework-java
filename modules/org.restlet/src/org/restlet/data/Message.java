@@ -33,10 +33,10 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 
 import org.restlet.Context;
-import org.restlet.resource.DomRepresentation;
-import org.restlet.resource.Representation;
-import org.restlet.resource.SaxRepresentation;
-import org.restlet.resource.StringRepresentation;
+import org.restlet.representation.DomRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.representation.SaxRepresentation;
+import org.restlet.representation.StringRepresentation;
 
 /**
  * Generic message exchanged between client and server connectors.

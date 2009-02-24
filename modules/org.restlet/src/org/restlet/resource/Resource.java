@@ -40,6 +40,8 @@ import org.restlet.data.ReferenceList;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.representation.Representation;
+import org.restlet.representation.Variant;
 import org.restlet.util.Series;
 
 /**
@@ -88,7 +90,7 @@ import org.restlet.util.Series;
  * @see <a
  *      href="http://www.restlet.org/documentation/1.1/tutorial#part12">Tutorial
  *      : Reaching target Resources</a>
- * @see org.restlet.resource.Representation
+ * @see org.restlet.representation.Representation
  * @see org.restlet.Finder
  * @author Jerome Louvel
  * @author Thierry Boileau

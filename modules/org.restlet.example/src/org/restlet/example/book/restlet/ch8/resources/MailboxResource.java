@@ -41,9 +41,9 @@ import org.restlet.data.Response;
 import org.restlet.example.book.restlet.ch8.objects.Contact;
 import org.restlet.example.book.restlet.ch8.objects.Mail;
 import org.restlet.example.book.restlet.ch8.objects.Mailbox;
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
+import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
-import org.restlet.resource.Variant;
 import org.restlet.util.Series;
 
 /**

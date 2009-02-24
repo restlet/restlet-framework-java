@@ -31,7 +31,7 @@ import org.restlet.Client;
 import org.restlet.Component;
 import org.restlet.data.Protocol;
 import org.restlet.data.Response;
-import org.restlet.resource.StringRepresentation;
+import org.restlet.representation.StringRepresentation;
 
 /**
  * Unit test case for the configuration of a component with an XML file.

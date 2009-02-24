@@ -35,7 +35,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.tika.parser.rtf.RTFParser;
 import org.restlet.Client;
 import org.restlet.ext.lucene.TikaRepresentation;
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
 import org.restlet.test.RestletTestCase;
 
 /**

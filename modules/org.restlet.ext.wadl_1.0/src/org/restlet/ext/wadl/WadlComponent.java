@@ -30,7 +30,7 @@ package org.restlet.ext.wadl;
 import org.restlet.Component;
 import org.restlet.data.Reference;
 import org.restlet.data.Response;
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
 
 /**
  * Component that can automatically configure itself given a list of WADL

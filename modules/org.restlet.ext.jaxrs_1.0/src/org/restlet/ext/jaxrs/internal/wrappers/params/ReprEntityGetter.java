@@ -37,7 +37,7 @@ import javax.ws.rs.WebApplicationException;
 import org.restlet.data.Request;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
 import org.restlet.ext.jaxrs.internal.wrappers.params.ParameterList.ParamGetter;
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
 
 /**
  * An {@link EntityGetter} for Restlet {@link Representation}s.

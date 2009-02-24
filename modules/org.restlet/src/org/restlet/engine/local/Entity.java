@@ -34,7 +34,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.restlet.data.MediaType;
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
 import org.restlet.service.MetadataService;
 
 /**

@@ -55,7 +55,7 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.engine.ClientHelper;
 import org.restlet.engine.Engine;
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;

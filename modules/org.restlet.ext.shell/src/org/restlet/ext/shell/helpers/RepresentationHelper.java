@@ -35,7 +35,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.StringWriter;
 
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
 
 /**
  * 

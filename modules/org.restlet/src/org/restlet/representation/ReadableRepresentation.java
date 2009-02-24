@@ -25,11 +25,11 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.resource;
+package org.restlet.representation;
 
 import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 import java.util.logging.Level;
 
 import org.restlet.Context;
@@ -37,88 +37,85 @@ import org.restlet.data.MediaType;
 import org.restlet.engine.io.ByteUtils;
 
 /**
- * Transient representation based on a BIO characters reader.
+ * Transient representation based on a readable NIO byte channel.
  * 
  * @author Jerome Louvel
  */
-public class ReaderRepresentation extends CharacterRepresentation {
+public class ReadableRepresentation extends ChannelRepresentation {
 
-    /** The representation's reader. */
-    private volatile Reader reader;
+    /** The representation's input stream. */
+    private volatile ReadableByteChannel channel;
 
     /**
      * Constructor.
      * 
-     * @param reader
-     *            The representation's stream.
+     * @param readableChannel
+     *            The representation's channel.
      * @param mediaType
      *            The representation's media type.
      */
-    public ReaderRepresentation(Reader reader, MediaType mediaType) {
-        this(reader, mediaType, UNKNOWN_SIZE);
+    public ReadableRepresentation(ReadableByteChannel readableChannel,
+            MediaType mediaType) {
+        this(readableChannel, mediaType, UNKNOWN_SIZE);
     }
 
     /**
      * Constructor.
      * 
-     * @param reader
-     *            The representation's stream.
+     * @param channel
+     *            The representation's channel.
      * @param mediaType
      *            The representation's media type.
      * @param expectedSize
-     *            The expected reader size in bytes.
+     *            The expected stream size.
      */
-    public ReaderRepresentation(Reader reader, MediaType mediaType,
-            long expectedSize) {
+    public ReadableRepresentation(ReadableByteChannel channel,
+            MediaType mediaType, long expectedSize) {
         super(mediaType);
         setSize(expectedSize);
+        this.channel = channel;
+        setAvailable(channel != null);
         setTransient(true);
-        setReader(reader);
     }
 
     @Override
-    public Reader getReader() throws IOException {
-        final Reader result = this.reader;
-        setReader(null);
+    public ReadableByteChannel getChannel() throws IOException {
+        final ReadableByteChannel result = this.channel;
+        setAvailable(false);
         return result;
     }
 
-    @Override
-    public String getText() throws IOException {
-        return ByteUtils.toString(getStream(), getCharacterSet());
-    }
-
     /**
-     * Closes and releases the input stream.
+     * Closes and releases the readable channel.
      */
     @Override
     public void release() {
-        if (this.reader != null) {
+        if (this.channel != null) {
             try {
-                this.reader.close();
+                this.channel.close();
             } catch (IOException e) {
                 Context.getCurrentLogger().log(Level.WARNING,
                         "Error while releasing the representation.", e);
             }
 
-            this.reader = null;
+            this.channel = null;
         }
         super.release();
     }
 
     /**
-     * Sets the reader to use.
+     * Sets the readable channel.
      * 
-     * @param reader
-     *            The reader to use.
+     * @param channel
+     *            The readable channel.
      */
-    public void setReader(Reader reader) {
-        this.reader = reader;
-        setAvailable(reader != null);
+    public void setChannel(ReadableByteChannel channel) {
+        this.channel = channel;
     }
 
     @Override
-    public void write(Writer writer) throws IOException {
-        ByteUtils.write(getReader(), writer);
+    public void write(WritableByteChannel writableChannel) throws IOException {
+        ByteUtils.write(getChannel(), writableChannel);
     }
+
 }

@@ -107,7 +107,7 @@ import org.restlet.ext.jaxrs.internal.wrappers.provider.ExtensionBackwardMapping
 import org.restlet.ext.jaxrs.internal.wrappers.provider.JaxRsProviders;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyWriter;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.MessageBodyWriterSubSet;
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
 import org.restlet.resource.ResourceException;
 import org.restlet.service.MetadataService;
 

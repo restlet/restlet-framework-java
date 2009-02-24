@@ -44,7 +44,7 @@ import org.restlet.data.Form;
 import org.restlet.ext.jaxrs.internal.core.UnmodifiableMultivaluedMap;
 import org.restlet.ext.jaxrs.internal.util.Converter;
 import org.restlet.ext.jaxrs.internal.util.Util;
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
 
 /**
  * This {@link ProviderWrapper} converts MultivaluedMap&lt;String,String&gt;

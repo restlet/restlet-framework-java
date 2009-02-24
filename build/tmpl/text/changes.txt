@@ -6,7 +6,11 @@ Changes log
 - @version-full@ (@release-date@)
     - Breaking changes
         - Finder#createTarget() methods are now all protected. The 
-          findTarget() method is now public. Suggested by Leigh Klotz. 
+          findTarget() method is now public. Suggested by Leigh Klotz.
+        - All core representation classes have been moved from the
+          "org.restlet.resource" package into a new 
+          "org.restlet.representation" package. Make sure to adjust your
+          import instructions.
     - Enhancements
         - Added a getItemIterator() on RestletFileUpload to facilitate
           access to parts in streaming mode. Suggested by Paul Austin.

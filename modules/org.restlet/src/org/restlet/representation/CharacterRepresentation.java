@@ -25,51 +25,51 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.resource;
+package org.restlet.representation;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 
-import org.restlet.data.Graph;
+import org.restlet.data.MediaType;
+import org.restlet.engine.io.ByteUtils;
 
 /**
- * Base of all RDF representation classes. It knows how to serialize and
- * deserialize a {@link Graph}.
+ * Representation based on a BIO character stream.
  * 
  * @author Jerome Louvel
  */
-public abstract class RdfRepresentation extends OutputRepresentation {
-
-    private Graph graph;
-
-    public RdfRepresentation(Graph linkSet) {
-        super(null);
-        this.graph = linkSet;
-    }
-
+public abstract class CharacterRepresentation extends Representation {
     /**
-     * Constructor that parsed a given RDF representation into a link set.
+     * Constructor.
      * 
-     * @param rdfRepresentation
-     *            The RDF representation to parse.
-     * @param linkSet
-     *            The link set to update.
+     * @param mediaType
+     *            The media type.
      */
-    public RdfRepresentation(Representation rdfRepresentation, Graph linkSet) {
-        // Parsing goes here.
-        this(linkSet);
+    public CharacterRepresentation(MediaType mediaType) {
+        super(mediaType);
     }
 
-    public Graph getGraph() {
-        return graph;
+    @Override
+    public ReadableByteChannel getChannel() throws IOException {
+        return ByteUtils.getChannel(getStream());
     }
 
-    public void setGraph(Graph linkSet) {
-        this.graph = linkSet;
+    @Override
+    public InputStream getStream() throws IOException {
+        return ByteUtils.getStream(getReader(), getCharacterSet());
     }
 
     @Override
     public void write(OutputStream outputStream) throws IOException {
+        ByteUtils.write(getStream(), outputStream);
+    }
+
+    @Override
+    public void write(WritableByteChannel writableChannel) throws IOException {
+        write(ByteUtils.getStream(writableChannel));
     }
 
 }

@@ -32,7 +32,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.restlet.Application;
 import org.restlet.data.Protocol;
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
 
 /**
  * Service declaring client and server connectors. This is useful at deployment

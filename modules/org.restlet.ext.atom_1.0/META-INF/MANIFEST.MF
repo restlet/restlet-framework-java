@@ -12,6 +12,7 @@ Export-Package: org.restlet.ext.atom;
 Import-Package: org.restlet,
  org.restlet.data,
  org.restlet.engine.util,
+ org.restlet.representation,
  org.restlet.resource,
  org.restlet.service,
  org.restlet.util

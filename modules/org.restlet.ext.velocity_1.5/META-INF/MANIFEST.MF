@@ -35,6 +35,7 @@ Import-Package: org.apache.commons.collections,
  org.apache.velocity.runtime.resource.loader,
  org.restlet,
  org.restlet.data,
+ org.restlet.representation,
  org.restlet.resource,
  org.restlet.service,
  org.restlet.util

@@ -36,7 +36,7 @@ import org.apache.commons.collections.ExtendedProperties;
 import org.apache.velocity.exception.ResourceNotFoundException;
 import org.apache.velocity.runtime.resource.Resource;
 import org.apache.velocity.runtime.resource.loader.ResourceLoader;
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
 
 /**
  * Velocity resource loader based on a static map of representations or on a

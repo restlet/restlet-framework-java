@@ -54,10 +54,10 @@ import org.restlet.ext.atom.Link;
 import org.restlet.ext.atom.Person;
 import org.restlet.ext.atom.Relation;
 import org.restlet.ext.atom.Text;
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
+import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
-import org.restlet.resource.StringRepresentation;
-import org.restlet.resource.Variant;
 
 
 /**

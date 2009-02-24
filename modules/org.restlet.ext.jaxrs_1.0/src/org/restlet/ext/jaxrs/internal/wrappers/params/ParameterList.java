@@ -83,7 +83,7 @@ import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.ext.jaxrs.internal.wrappers.WrapperUtil;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.JaxRsProviders;
 import org.restlet.ext.jaxrs.internal.wrappers.provider.ExtensionBackwardMapping;
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
 import org.restlet.util.Series;
 
 /**

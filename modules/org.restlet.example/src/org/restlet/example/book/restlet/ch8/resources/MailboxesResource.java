@@ -40,9 +40,9 @@ import org.restlet.data.Response;
 import org.restlet.example.book.restlet.ch8.objects.Mailbox;
 import org.restlet.example.book.restlet.ch8.objects.ObjectsException;
 import org.restlet.example.book.restlet.ch8.objects.User;
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
+import org.restlet.representation.Variant;
 import org.restlet.resource.ResourceException;
-import org.restlet.resource.Variant;
 
 /**
  * Resource for a list of mailboxes.

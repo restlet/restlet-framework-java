@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.restlet.Context;
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
 import org.restlet.service.TunnelService;
 import org.restlet.util.Series;
 

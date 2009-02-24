@@ -32,7 +32,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.restlet.data.Range;
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
 
 /**
  * Filters an input stream to expose only a given range.

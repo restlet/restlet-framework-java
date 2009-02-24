@@ -45,7 +45,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Range;
 import org.restlet.data.Reference;
 import org.restlet.data.Tag;
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
 
 /**
  * Representation wrapper. Useful for application developer who need to enrich

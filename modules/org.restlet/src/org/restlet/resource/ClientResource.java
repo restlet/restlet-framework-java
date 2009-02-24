@@ -46,6 +46,8 @@ import org.restlet.data.Range;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
+import org.restlet.representation.Representation;
+import org.restlet.representation.Variant;
 import org.restlet.util.Series;
 
 /**

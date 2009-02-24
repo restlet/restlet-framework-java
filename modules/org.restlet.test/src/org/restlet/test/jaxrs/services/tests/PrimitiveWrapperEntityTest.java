@@ -33,7 +33,7 @@ import javax.ws.rs.core.Application;
 
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.resource.StringRepresentation;
+import org.restlet.representation.StringRepresentation;
 import org.restlet.test.jaxrs.services.providers.BooleanEntityProvider;
 import org.restlet.test.jaxrs.services.providers.CharacterEntityProvider;
 import org.restlet.test.jaxrs.services.providers.IntegerEntityProvider;

@@ -48,7 +48,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Status;
 import org.restlet.engine.io.InputEntityStream;
 import org.restlet.engine.io.KeepAliveOutputStream;
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
 import org.restlet.util.WrapperRepresentation;
 
 /**

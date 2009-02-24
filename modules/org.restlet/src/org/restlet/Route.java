@@ -34,10 +34,12 @@ import java.util.regex.Pattern;
 
 import org.restlet.data.Cookie;
 import org.restlet.data.Form;
+import org.restlet.data.Message;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.resource.ServerResource;
 import org.restlet.util.Series;
 import org.restlet.util.Template;
 import org.restlet.util.Variable;
@@ -332,7 +334,9 @@ public class Route extends Filter {
      *            Indicates if only the first cookie should be set. Otherwise as
      *            a List instance might be set in the attribute value.
      * @return The current Filter.
+     * @deprecated Use the {@link ServerResource#getCookies()} method instead.
      */
+    @Deprecated
     public Route extractCookie(String attribute, String cookieName,
             boolean first) {
         getCookieExtracts().add(new ExtractInfo(attribute, cookieName, first));
@@ -350,7 +354,9 @@ public class Route extends Filter {
      *            Indicates if only the first cookie should be set. Otherwise as
      *            a List instance might be set in the attribute value.
      * @return The current Filter.
+     * @deprecated Use the {@link Message#getEntityAsForm()} method instead.
      */
+    @Deprecated
     public Route extractEntity(String attribute, String parameter, boolean first) {
         getEntityExtracts().add(new ExtractInfo(attribute, parameter, first));
         return this;
@@ -367,7 +373,9 @@ public class Route extends Filter {
      *            Indicates if only the first cookie should be set. Otherwise as
      *            a List instance might be set in the attribute value.
      * @return The current Filter.
+     * @deprecated Use the {@link ServerResource#getQuery()} method instead.
      */
+    @Deprecated
     public Route extractQuery(String attribute, String parameter, boolean first) {
         getQueryExtracts().add(new ExtractInfo(attribute, parameter, first));
         return this;

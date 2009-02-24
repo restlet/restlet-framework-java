@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.Context;
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
 import org.springframework.beans.factory.support.PropertiesBeanDefinitionReader;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.support.GenericApplicationContext;

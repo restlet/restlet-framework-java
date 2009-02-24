@@ -36,7 +36,7 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
 import org.restlet.test.jaxrs.services.others.OPTIONS;
 import org.restlet.test.jaxrs.services.resources.HeadOptionsTestService;
 

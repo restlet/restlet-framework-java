@@ -34,7 +34,7 @@ import org.restlet.data.Method;
 import org.restlet.data.Protocol;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.resource.DomRepresentation;
+import org.restlet.representation.DomRepresentation;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 

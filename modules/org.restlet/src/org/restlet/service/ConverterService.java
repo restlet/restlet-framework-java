@@ -27,9 +27,9 @@
 
 package org.restlet.service;
 
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
+import org.restlet.representation.Variant;
 import org.restlet.resource.UniformResource;
-import org.restlet.resource.Variant;
 
 /**
  * Service converting between representation and regular Java objects. The

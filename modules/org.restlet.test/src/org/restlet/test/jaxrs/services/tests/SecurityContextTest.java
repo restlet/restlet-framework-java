@@ -41,7 +41,7 @@ import org.restlet.data.Reference;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.ext.jaxrs.RoleChecker;
-import org.restlet.resource.Representation;
+import org.restlet.representation.Representation;
 import org.restlet.test.jaxrs.services.resources.SecurityContextService;
 
 /**

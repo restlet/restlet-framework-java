@@ -31,8 +31,8 @@ import java.io.IOException;
 import java.util.List;
 
 import org.restlet.engine.util.FormUtils;
-import org.restlet.resource.Representation;
-import org.restlet.resource.StringRepresentation;
+import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
 import org.restlet.util.Series;
 
 /**
