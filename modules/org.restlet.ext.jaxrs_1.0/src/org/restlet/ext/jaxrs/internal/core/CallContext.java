@@ -654,7 +654,7 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
         if (challengeResponse == null) {
             return null;
         }
-        if (!challengeResponse.isAuthenticated()) {
+        if (!request.getClientInfo().isAuthenticated()) {
             return null;
         }
         final ChallengeScheme authScheme = challengeResponse.getScheme();

@@ -30,9 +30,9 @@ package org.restlet.data;
 import java.io.File;
 
 /**
- * Reference to a local (i.e. non remote) resource. It has helper methods for
- * the three following schemes: {@link Protocol#CLAP}, {@link Protocol#FILE},
- * {@link Protocol#JAR} and {@link Protocol#RIAP}.
+ * Reference to a local resource. It has helper methods for the three following
+ * schemes: {@link Protocol#CLAP}, {@link Protocol#FILE}, {@link Protocol#JAR}
+ * and {@link Protocol#RIAP}.
  * 
  * @author Jerome Louvel
  */

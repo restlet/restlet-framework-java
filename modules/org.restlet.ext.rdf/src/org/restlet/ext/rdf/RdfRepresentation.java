@@ -30,7 +30,6 @@ package org.restlet.ext.rdf;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import org.restlet.data.MediaType;
 import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
 
