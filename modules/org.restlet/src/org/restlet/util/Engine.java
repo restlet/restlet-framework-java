@@ -87,7 +87,7 @@ public abstract class Engine {
 
     /** Complete version. */
     public static final String VERSION = MAJOR_NUMBER + '.' + MINOR_NUMBER
-            + '.' + RELEASE_NUMBER;
+            + RELEASE_NUMBER;
 
     /**
      * Returns the best class loader, first the engine class loader if available
@@ -110,7 +110,7 @@ public abstract class Engine {
         if (result == null) {
             result = ClassLoader.getSystemClassLoader();
         }
-        
+
         return result;
     }
 
@@ -502,7 +502,9 @@ public abstract class Engine {
      * @param defaultLanguage
      *            The default language.
      * @return The preferred variant.
-     * @see <a href="http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm">Apache content negotiation algorithm</a>
+     * @see <a href=
+     *      "http://httpd.apache.org/docs/2.2/en/content-negotiation.html#algorithm"
+     *      >Apache content negotiation algorithm< /a>
      */
     public abstract Variant getPreferredVariant(ClientInfo client,
             List<Variant> variants, Language defaultLanguage);
