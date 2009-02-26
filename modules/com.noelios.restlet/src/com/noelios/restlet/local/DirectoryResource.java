@@ -128,7 +128,7 @@ public class DirectoryResource extends Resource {
     /** The unique representation of the target URI, if it exists. */
     private Reference uniqueReference;
 
-/**
+    /**
      * This constructor aims at answering the following questions:<br>
      * <ul>
      * <li>does this request target a directory?</li>
@@ -492,7 +492,11 @@ public class DirectoryResource extends Resource {
                         filePath = ref.toString(false, false).substring(
                                 rootLength);
                         final Representation rep = contextResponse.getEntity();
-                        rep.setIdentifier(baseRef + filePath);
+                        if (filePath.startsWith("/")) {
+                            rep.setIdentifier(baseRef + filePath);
+                        } else {
+                            rep.setIdentifier(baseRef + "/" + filePath);
+                        }
                         resultSet.add(rep);
                     }
                 }
