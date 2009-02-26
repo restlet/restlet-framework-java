@@ -86,6 +86,8 @@ public class HttpServerConverter extends HttpConverter {
                         }
                         value.append(encoding.getName());
                     }
+                }
+                if (value.length() > 0) {
                     responseHeaders.add(HttpConstants.HEADER_CONTENT_ENCODING,
                             value.toString());
                 }
