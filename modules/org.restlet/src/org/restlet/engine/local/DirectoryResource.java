@@ -57,7 +57,7 @@ import org.restlet.resource.ResourceException;
  * to Apache HTTP server) is available. It is based on path extensions to detect
  * variants (languages, media types or character sets).
  * 
- * @see <a
+ * @see <a 
  *      href="http://httpd.apache.org/docs/2.0/content-negotiation.html">Apache
  *      mod_negotiation module</a>
  * @author Jerome Louvel
@@ -505,7 +505,11 @@ public class DirectoryResource extends Resource {
                         filePath = ref.toString(false, false).substring(
                                 rootLength);
                         final Representation rep = contextResponse.getEntity();
-                        rep.setIdentifier(baseRef + filePath);
+                        if (filePath.startsWith("/")) {
+                            rep.setIdentifier(baseRef + filePath);
+                        } else {
+                            rep.setIdentifier(baseRef + "/" + filePath);
+                        }
                         resultSet.add(rep);
                     }
                 }
