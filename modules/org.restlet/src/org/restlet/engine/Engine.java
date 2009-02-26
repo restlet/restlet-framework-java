@@ -107,7 +107,7 @@ public class Engine {
 
     /** Complete version. */
     public static final String VERSION = MAJOR_NUMBER + '.' + MINOR_NUMBER
-            + '.' + RELEASE_NUMBER;
+            + RELEASE_NUMBER;
 
     /** Complete version header. */
     public static final String VERSION_HEADER = "Noelios-Restlet-Engine/"
