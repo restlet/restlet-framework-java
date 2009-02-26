@@ -141,8 +141,147 @@ public final class MediaType extends Metadata {
     public static final MediaType APPLICATION_MATHML_XML = register(
             "application/mathml+xml", "MathML XML document");
 
+    public static final MediaType APPLICATION_MSOFFICE_DOCM = register(
+            "application/vnd.ms-word.document.macroEnabled.12",
+            "Office Word 2007 macro-enabled document");
+
+    public static final MediaType APPLICATION_MSOFFICE_DOCX = register(
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "Microsoft Office Word 2007 document");
+
+    public static final MediaType APPLICATION_MSOFFICE_DOTM = register(
+            "application/vnd.ms-word.template.macroEnabled.12",
+            "Office Word 2007 macro-enabled document template");
+
+    public static final MediaType APPLICATION_MSOFFICE_DOTX = register(
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.template",
+            "Office Word 2007 template");
+
+    public static final MediaType APPLICATION_MSOFFICE_ONETOC = register(
+            "application/onenote", "Microsoft Office OneNote 2007 TOC");
+
+    public static final MediaType APPLICATION_MSOFFICE_ONETOC2 = register(
+            "application/onenote", "Office OneNote 2007 TOC");
+
+    public static final MediaType APPLICATION_MSOFFICE_POTM = register(
+            "application/vnd.ms-powerpoint.template.macroEnabled.12",
+            "Office PowerPoint 2007 macro-enabled presentation template");
+
+    public static final MediaType APPLICATION_MSOFFICE_POTX = register(
+            "application/vnd.openxmlformats-officedocument.presentationml.template",
+            "Office PowerPoint 2007 template");
+
+    public static final MediaType APPLICATION_MSOFFICE_PPAM = register(
+            "application/vnd.ms-powerpoint.addin.macroEnabled.12",
+            "Office PowerPoint 2007 add-in");
+
+    public static final MediaType APPLICATION_MSOFFICE_PPSM = register(
+            "application/vnd.ms-powerpoint.slideshow.macroEnabled.12",
+            "Office PowerPoint 2007 macro-enabled slide show");
+
+    public static final MediaType APPLICATION_MSOFFICE_PPSX = register(
+            "application/vnd.openxmlformats-officedocument.presentationml.slideshow",
+            "Office PowerPoint 2007 slide show");
+
+    public static final MediaType APPLICATION_MSOFFICE_PPTM = register(
+            "application/vnd.ms-powerpoint.presentation.macroEnabled.12",
+            "Office PowerPoint 2007 macro-enabled presentation");
+
+    public static final MediaType APPLICATION_MSOFFICE_PPTX = register(
+            "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+            "Microsoft Office PowerPoint 2007 presentation");
+
+    public static final MediaType APPLICATION_MSOFFICE_SLDM = register(
+            "application/vnd.ms-powerpoint.slide.macroEnabled.12",
+            "Office PowerPoint 2007 macro-enabled slide");
+
+    public static final MediaType APPLICATION_MSOFFICE_SLDX = register(
+            "application/vnd.openxmlformats-officedocument.presentationml.slide",
+            "Office PowerPoint 2007 slide");
+
+    public static final MediaType APPLICATION_MSOFFICE_XLAM = register(
+            "application/vnd.ms-excel.addin.macroEnabled.12",
+            "Office Excel 2007 add-in");
+
+    public static final MediaType APPLICATION_MSOFFICE_XLSB = register(
+            "application/vnd.ms-excel.sheet.binary.macroEnabled.12",
+            "Office Excel 2007 binary workbook");
+
+    public static final MediaType APPLICATION_MSOFFICE_XLSM = register(
+            "application/vnd.ms-excel.sheet.macroEnabled.12",
+            "Office Excel 2007 macro-enabled workbook");
+
+    public static final MediaType APPLICATION_MSOFFICE_XLSX = register(
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "Microsoft Office Excel 2007 workbook");
+
+    public static final MediaType APPLICATION_MSOFFICE_XLTM = register(
+            "application/vnd.ms-excel.template.macroEnabled.12",
+            "Office Excel 2007 macro-enabled workbook template");
+
+    public static final MediaType APPLICATION_MSOFFICE_XLTX = register(
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.template",
+            "Office Excel 2007 template");
+
     public static final MediaType APPLICATION_OCTET_STREAM = register(
             "application/octet-stream", "Raw octet stream");
+
+    public static final MediaType APPLICATION_OPENOFFICE_ODB = register(
+            "application/vnd.oasis.opendocument.database",
+            "OpenDocument Database");
+
+    public static final MediaType APPLICATION_OPENOFFICE_ODC = register(
+            "application/vnd.oasis.opendocument.chart", "OpenDocument Chart");
+
+    public static final MediaType APPLICATION_OPENOFFICE_ODF = register(
+            "application/vnd.oasis.opendocument.formula",
+            "OpenDocument Formula");
+
+    public static final MediaType APPLICATION_OPENOFFICE_ODG = register(
+            "application/vnd.oasis.opendocument.graphics",
+            "OpenDocument Drawing");
+
+    public static final MediaType APPLICATION_OPENOFFICE_ODI = register(
+            "application/vnd.oasis.opendocument.image", "OpenDocument Image ");
+
+    public static final MediaType APPLICATION_OPENOFFICE_ODM = register(
+            "application/vnd.oasis.opendocument.text-master",
+            "OpenDocument Master Document");
+
+    public static final MediaType APPLICATION_OPENOFFICE_ODP = register(
+            "application/vnd.oasis.opendocument.presentation",
+            "OpenDocument Presentation ");
+
+    public static final MediaType APPLICATION_OPENOFFICE_ODS = register(
+            "application/vnd.oasis.opendocument.spreadsheet",
+            "OpenDocument Spreadsheet");
+
+    public static final MediaType APPLICATION_OPENOFFICE_ODT = register(
+            "application/vnd.oasis.opendocument.text ", "OpenDocument Text");
+
+    public static final MediaType APPLICATION_OPENOFFICE_OTG = register(
+            "application/vnd.oasis.opendocument.graphics-template",
+            "OpenDocument Drawing Template");
+
+    public static final MediaType APPLICATION_OPENOFFICE_OTH = register(
+            "application/vnd.oasis.opendocument.text-web",
+            "HTML Document Template");
+
+    public static final MediaType APPLICATION_OPENOFFICE_OTP = register(
+            "application/vnd.oasis.opendocument.presentation-template",
+            "OpenDocument Presentation Template");
+
+    public static final MediaType APPLICATION_OPENOFFICE_OTS = register(
+            "application/vnd.oasis.opendocument.spreadsheet-template",
+            "OpenDocument Spreadsheet Template");
+
+    public static final MediaType APPLICATION_OPENOFFICE_OTT = register(
+            "application/vnd.oasis.opendocument.text-template",
+            "OpenDocument Text Template");
+
+    public static final MediaType APPLICATION_OPENOFFICE_OXT = register(
+            "application/vnd.openofficeorg.extension",
+            "OpenOffice.org extension");
 
     public static final MediaType APPLICATION_PDF = register("application/pdf",
             "Adobe PDF document");
@@ -200,6 +339,15 @@ public final class MediaType extends Metadata {
     public static final MediaType APPLICATION_SPARQL_RESULTS_XML = register(
             "application/sparql-results+xml",
             "SPARQL Query Results XML document");
+
+    public static final MediaType APPLICATION_SPSS_SAV = register(
+            "application/x-spss-sav", "SPSS Data");
+
+    public static final MediaType APPLICATION_SPSS_SPS = register(
+            "application/x-spss-sps", "SPSS Script Syntax");
+
+    public static final MediaType APPLICATION_STATA_STA = register(
+            "application/x-stata", "Stata data file");
 
     public static final MediaType APPLICATION_STUFFIT = register(
             "application/x-stuffit", "Stuffit archive");
@@ -328,6 +476,12 @@ public final class MediaType extends Metadata {
     public static final MediaType TEXT_CSS = register("text/css",
             "CSS stylesheet");
 
+    public static final MediaType TEXT_CSV = register("text/csv",
+            "Comma-separated Values");
+
+    public static final MediaType TEXT_DAT = register("text/x-fixed-field",
+            "Fixed-width Values");
+
     public static final MediaType TEXT_HTML = register("text/html",
             "HTML document");
 
@@ -342,6 +496,9 @@ public final class MediaType extends Metadata {
 
     public static final MediaType TEXT_RDF_N3 = register("text/rdf+n3",
             "N3 serialized Resource Description Framework document");
+
+    public static final MediaType TEXT_TSV = register(
+            "text/tab-separated-values", "Tab-separated Values");
 
     public static final MediaType TEXT_URI_LIST = register("text/uri-list",
             "List of URIs");

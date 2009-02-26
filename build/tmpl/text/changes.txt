@@ -19,6 +19,8 @@ Changes log
         - DirectoryResource class in engine now has a protected
           getDirectoryContent() method. Suggested by Gordon Mohr.
         - Implemented Text#toString() in the Atom extension.
+        - Completed list of registered media types. Suggested by Rémi 
+          Dewitte.
     - API changes
         - Added organization description classes 
           (org.restlet.security.Organization, User, Group). Added 

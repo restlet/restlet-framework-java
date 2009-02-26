@@ -114,7 +114,7 @@ public class MetadataService extends Service {
         addCommonExtensions();
     }
 
-    /**
+/**
      * Adds a common list of associations from extensions to metadata. The list
      * of languages extensions:<br>
      * <ul>
@@ -132,8 +132,14 @@ public class MetadataService extends Service {
      * <li>bmp: Bitmap graphics</li>
      * <li>class: Java bytecode</li>
      * <li>css: CSS stylesheet</li>
+     * <li>csv: Comma-separated Values</li>
+     * <li>dat: Fixed-width Values</li>
      * <li>dib: Device-Independent Bitmap Graphics</li>
      * <li>doc: Microsoft Word document</li>
+     * <li>docx: Microsoft Office Word 2007 document</li>                     
+     * <li>docm: Office Word 2007 macro-enabled document</li>                 
+     * <li>dotx: Office Word 2007 template</li>
+     * <li>dotm: Office Word 2007 macro-enabled document template</li>
      * <li>dtd: XML Document Type Definition</li>
      * <li>eps: Encapsulated PostScript</li>
      * <li>exe: Executable File (Microsoft Corporation)</li>
@@ -159,22 +165,52 @@ public class MetadataService extends Service {
      * <li>mp2, mp3: MPEG Audio Stream file</li>
      * <li>mp4: MPEG-4 video file</li>
      * <li>mpe, mpeg, mpg: MPEG video clip</li>
+     * <li>odb: OpenDocument Database</li>
+     * <li>odc: OpenDocument Chart</li>
+     * <li>odf: OpenDocument Formula</li>
+     * <li>odg: OpenDocument Drawing</li>
+     * <li>odi: OpenDocument Image </li>
+     * <li>odm: OpenDocument Master Document</li>
+     * <li>odp: OpenDocument Presentation </li>
+     * <li>ods: OpenDocument Spreadsheet</li>
+     * <li>odt: OpenDocument Text</li>
+     * <li>onetoc: Microsoft Office OneNote 2007 TOC</li>
+     * <li>onetoc2: Office OneNote 2007 TOC</li>
+     * <li>otg: OpenDocument Drawing Template</li>
+     * <li>oth: HTML Document Template</li>
+     * <li>otp: OpenDocument Presentation Template</li>
+     * <li>ots: OpenDocument Spreadsheet Template</li>
+     * <li>ott: OpenDocument Text Template</li>
+     * <li>oxt: OpenOffice.org extension</li>
      * <li>pdf: Adobe PDF document</li>
      * <li>png: PNG image</li>
+     * <li>potm: Office PowerPoint 2007 macro-enabled presentation template</li>
+     * <li>potx: Office PowerPoint 2007 template</li>
+     * <li>ppam: Office PowerPoint 2007 add-in</li>
      * <li>pps, ppt: Microsoft Powerpoint document</li>
+     * <li>ppsm: Office PowerPoint 2007 macro-enabled slide show</li>
+     * <li>ppsx: Office PowerPoint 2007 slide show</li>
+     * <li>pptm: Office PowerPoint 2007 macro-enabled presentation</li>
+     * <li>pptx: Microsoft Office PowerPoint 2007 presentation</li>
      * <li>ps: PostScript document</li>
      * <li>rdf: Description Framework document</li>
      * <li>rnc: Relax NG Schema document, Compact syntax</li>
      * <li>rng: Relax NG Schema document, XML syntax</li>
      * <li>rss: RSS file</li>
      * <li>rtf: Rich Text Format document</li>
+     * <li>sav: SPSS Data</li>
      * <li>sit: StuffIt compressed archive file</li>
+     * <li>sldm: Office PowerPoint 2007 macro-enabled slide</li>
+     * <li>sldx: Office PowerPoint 2007 slide</li>
      * <li>snd: Amiga sound</li>
+     * <li>sps: SPSS Script Syntax</li>
+     * <li>sta: Stata data file</li>
      * <li>svg: Scalable Vector Graphics file</li>
      * <li>swf: Adobe Flash file</li>
      * <li>tar: Tape Archive file</li>
      * <li>tex: Tex file</li>
      * <li>tif, tiff: Tagged Image Format File</li>
+     * <li>tsv: Tab-separated Values</li>
      * <li>txt: Plain text</li>
      * <li>ulw: MU-LAW (US telephony format)</li>
      * <li>vm: Velocity encoding</li>
@@ -184,7 +220,13 @@ public class MetadataService extends Service {
      * <li>wav: Waveform audio</li>
      * <li>wrl: Plain text VRML file</li>
      * <li>xht, xhtml: XHTML document</li>
+     * <li>xlam: Office Excel 2007 add-in</li>
      * <li>xls: Microsoft Excel document</li>
+     * <li>xlsb: Office Excel 2007 binary workbook</li>
+     * <li>xlsm: Office Excel 2007 macro-enabled workbook</li>
+     * <li>xlsx: Microsoft Office Excel 2007 workbook</li>
+     * <li>xltm: Office Excel 2007 macro-enabled workbook template</li>
+     * <li>xltx: Office Excel 2007 template</li>
      * <li>xml: XML document</li>
      * <li>xsd: W3C XML Schema document</li>
      * <li>xslt: XSL Transform file</li>
@@ -205,8 +247,14 @@ public class MetadataService extends Service {
         addExtension("bmp", MediaType.IMAGE_BMP);
         addExtension("class", MediaType.APPLICATION_JAVA);
         addExtension("css", MediaType.TEXT_CSS);
+        addExtension("csv", MediaType.TEXT_CSV);
+        addExtension("dat", MediaType.TEXT_DAT);
         addExtension("dib", MediaType.IMAGE_BMP);
         addExtension("doc", MediaType.APPLICATION_WORD);
+        addExtension("docm", MediaType.APPLICATION_MSOFFICE_DOCM);
+        addExtension("docx", MediaType.APPLICATION_MSOFFICE_DOCX);
+        addExtension("dotm", MediaType.APPLICATION_MSOFFICE_DOTM);
+        addExtension("dotx", MediaType.APPLICATION_MSOFFICE_DOTX);
         addExtension("dtd", MediaType.APPLICATION_XML_DTD);
         addExtension("eps", MediaType.APPLICATION_POSTSCRIPT);
         addExtension("exe", MediaType.APPLICATION_OCTET_STREAM);
@@ -239,10 +287,34 @@ public class MetadataService extends Service {
         addExtension("mpe", MediaType.VIDEO_MPEG);
         addExtension("mpeg", MediaType.VIDEO_MPEG);
         addExtension("mpg", MediaType.VIDEO_MPEG);
+        addExtension("odb", MediaType.APPLICATION_OPENOFFICE_ODB);
+        addExtension("odc", MediaType.APPLICATION_OPENOFFICE_ODC);
+        addExtension("odf", MediaType.APPLICATION_OPENOFFICE_ODF);
+        addExtension("odi", MediaType.APPLICATION_OPENOFFICE_ODI);
+        addExtension("odm", MediaType.APPLICATION_OPENOFFICE_ODM);
+        addExtension("odg", MediaType.APPLICATION_OPENOFFICE_ODG);
+        addExtension("odp", MediaType.APPLICATION_OPENOFFICE_ODP);
+        addExtension("ods", MediaType.APPLICATION_OPENOFFICE_ODS);
+        addExtension("odt", MediaType.APPLICATION_OPENOFFICE_ODT);
+        addExtension("onetoc", MediaType.APPLICATION_MSOFFICE_ONETOC);
+        addExtension("onetoc2", MediaType.APPLICATION_MSOFFICE_ONETOC2);
+        addExtension("otg", MediaType.APPLICATION_OPENOFFICE_OTG);
+        addExtension("oth", MediaType.APPLICATION_OPENOFFICE_OTH);
+        addExtension("otp", MediaType.APPLICATION_OPENOFFICE_OTP);
+        addExtension("ots", MediaType.APPLICATION_OPENOFFICE_OTS);
+        addExtension("ott", MediaType.APPLICATION_OPENOFFICE_OTT);
+        addExtension("oxt", MediaType.APPLICATION_OPENOFFICE_OXT);
         addExtension("pdf", MediaType.APPLICATION_PDF);
         addExtension("png", MediaType.IMAGE_PNG);
+        addExtension("potx", MediaType.APPLICATION_MSOFFICE_POTX);
+        addExtension("potm", MediaType.APPLICATION_MSOFFICE_POTM);
+        addExtension("ppam", MediaType.APPLICATION_MSOFFICE_PPAM);
         addExtension("pps", MediaType.APPLICATION_POWERPOINT);
+        addExtension("ppsm", MediaType.APPLICATION_MSOFFICE_PPSM);
+        addExtension("ppsx", MediaType.APPLICATION_MSOFFICE_PPSX);
         addExtension("ppt", MediaType.APPLICATION_POWERPOINT);
+        addExtension("pptm", MediaType.APPLICATION_MSOFFICE_PPTM);
+        addExtension("pptx", MediaType.APPLICATION_MSOFFICE_PPTX);
         addExtension("ps", MediaType.APPLICATION_POSTSCRIPT);
         addExtension("qt", MediaType.VIDEO_QUICKTIME);
         addExtension("rdf", MediaType.APPLICATION_RDF_XML);
@@ -250,14 +322,20 @@ public class MetadataService extends Service {
         addExtension("rng", MediaType.APPLICATION_RELAXNG_XML);
         addExtension("rss", MediaType.APPLICATION_RSS);
         addExtension("rtf", MediaType.APPLICATION_RTF);
+        addExtension("sav", MediaType.APPLICATION_SPSS_SAV);
         addExtension("sit", MediaType.APPLICATION_STUFFIT);
+        addExtension("sldm", MediaType.APPLICATION_MSOFFICE_SLDM);
+        addExtension("sldx", MediaType.APPLICATION_MSOFFICE_SLDX);
         addExtension("snd", MediaType.AUDIO_BASIC);
+        addExtension("sps", MediaType.APPLICATION_SPSS_SPS);
+        addExtension("sta", MediaType.APPLICATION_STATA_STA);
         addExtension("svg", MediaType.IMAGE_SVG);
         addExtension("swf", MediaType.APPLICATION_FLASH);
         addExtension("tar", MediaType.APPLICATION_TAR);
         addExtension("tex", MediaType.APPLICATION_TEX);
         addExtension("tif", MediaType.IMAGE_TIFF);
         addExtension("tiff", MediaType.IMAGE_TIFF);
+        addExtension("tsv", MediaType.TEXT_TSV);
         addExtension("txt", MediaType.TEXT_PLAIN, true);
         addExtension("ulw", MediaType.AUDIO_BASIC);
         addExtension("vm", Encoding.VELOCITY);
@@ -269,6 +347,12 @@ public class MetadataService extends Service {
         addExtension("xht", MediaType.APPLICATION_XHTML);
         addExtension("xhtml", MediaType.APPLICATION_XHTML);
         addExtension("xls", MediaType.APPLICATION_EXCEL);
+        addExtension("xlsx", MediaType.APPLICATION_MSOFFICE_XLSX);
+        addExtension("xlsm", MediaType.APPLICATION_MSOFFICE_XLSM);
+        addExtension("xltx", MediaType.APPLICATION_MSOFFICE_XLTX);
+        addExtension("xltm", MediaType.APPLICATION_MSOFFICE_XLTM);
+        addExtension("xlsb", MediaType.APPLICATION_MSOFFICE_XLSB);
+        addExtension("xlam", MediaType.APPLICATION_MSOFFICE_XLAM);
         addExtension("xml", MediaType.TEXT_XML);
         addExtension("xml", MediaType.APPLICATION_XML);
         addExtension("xsd", MediaType.APPLICATION_W3C_SCHEMA);
