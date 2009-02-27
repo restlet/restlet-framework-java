@@ -37,6 +37,7 @@ import org.restlet.engine.Helper;
 import org.restlet.engine.application.ApplicationHelper;
 import org.restlet.security.Role;
 import org.restlet.service.ConnectorService;
+import org.restlet.service.ConverterService;
 import org.restlet.service.DecoderService;
 import org.restlet.service.MetadataService;
 import org.restlet.service.RangeService;
@@ -55,6 +56,8 @@ import org.restlet.service.TunnelService;
  * properties that can be eventually overriden:
  * <ul>
  * <li>"connectorService" to declare necessary client and server connectors.</li>
+ * <li>"converterService" to convert between regular objects and
+ * representations.</li>
  * <li>"decoderService" to automatically decode or decompress request entities.</li>
  * <li>"metadataService" to provide access to metadata and their associated
  * extension names.</li>
@@ -103,6 +106,9 @@ public class Application extends Restlet {
 
     /** The connector service. */
     private volatile ConnectorService connectorService;
+
+    /** The converter service. */
+    private volatile ConverterService converterService;
 
     /** The decoder service. */
     private volatile DecoderService decoderService;
@@ -173,6 +179,7 @@ public class Application extends Restlet {
         this.owner = null;
         this.root = null;
         this.connectorService = new ConnectorService();
+        this.converterService = new ConverterService();
         this.decoderService = new DecoderService();
         this.metadataService = new MetadataService();
         this.rangeService = new RangeService();
@@ -186,7 +193,7 @@ public class Application extends Restlet {
      * Creates a root Restlet that will receive all incoming calls. In general,
      * instances of Router, Filter or Handler classes will be used as initial
      * application Restlet. The default implementation returns null by default.
-     * This method is intended to be overriden by subclasses.
+     * This method is intended to be overridden by subclasses.
      * 
      * @return The root Restlet.
      */
@@ -230,9 +237,18 @@ public class Application extends Restlet {
     }
 
     /**
+     * Returns the converter service. The service is enabled by default.
+     * 
+     * @return The converter service.
+     */
+    public ConverterService getConverterService() {
+        return this.converterService;
+    }
+
+    /**
      * Returns the decoder service. The service is enabled by default.
      * 
-     * @return The decoderservice.
+     * @return The decoder service.
      */
     public DecoderService getDecoderService() {
         return this.decoderService;
@@ -370,6 +386,16 @@ public class Application extends Restlet {
      */
     public void setConnectorService(ConnectorService connectorService) {
         this.connectorService = connectorService;
+    }
+
+    /**
+     * Sets the converter service.
+     * 
+     * @param converterService
+     *            The converter service.
+     */
+    public void setConverterService(ConverterService converterService) {
+        this.converterService = converterService;
     }
 
     /**

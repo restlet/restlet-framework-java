@@ -27,13 +27,15 @@
 
 package org.restlet.service;
 
+import java.util.List;
+
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.UniformResource;
 
 /**
  * Service converting between representation and regular Java objects. The
- * convertion can work in work directions.<br>
+ * conversion can work in work directions.<br>
  * <br>
  * By default, the following conversions are supported. Additional ones can be
  * plugged into the engine.
@@ -57,6 +59,30 @@ public class ConverterService extends Service {
      */
     public ConverterService(boolean enabled) {
         super(enabled);
+    }
+
+    /**
+     * Returns the list of object classes that can be converted from a given
+     * variant.
+     * 
+     * @param variant
+     *            The source variant.
+     * @return The list of object class that can be converted.
+     */
+    public List<Class<?>> getObjectClasses(Variant variant) {
+        return null;
+    }
+
+    /**
+     * Returns the list of variants that can be converted from a given object
+     * class.
+     * 
+     * @param objectClass
+     *            The source object class.
+     * @return The list of variants that can be converted.
+     */
+    public List<Variant> getVariants(Class<?> objectClass) {
+        return null;
     }
 
     /**
