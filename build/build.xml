@@ -1135,7 +1135,7 @@
 		<!-- disabled for now  <pomModule name="jmx" /> -->
 		<pomModule name="json" />
 		<!-- disabled for now  <pomModule name="jxta" /> -->
-		<pomModule name="lucene" />
+		<pomModule name="lucene" ext1="solr" ext2="tika"/>
 		<pomModule name="net" />
 		<pomModule name="oauth" />
 		<pomModule name="servlet" />
