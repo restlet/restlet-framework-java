@@ -122,7 +122,6 @@ public class Engine extends org.restlet.util.Engine {
             + DESCRIPTOR_SERVER;
 
     /** Complete version. */
-    @SuppressWarnings("hiding")
     public static final String VERSION = org.restlet.util.Engine.VERSION;
 
     /** Complete version header. */

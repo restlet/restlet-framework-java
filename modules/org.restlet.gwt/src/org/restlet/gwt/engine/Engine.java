@@ -64,7 +64,6 @@ import org.restlet.gwt.resource.Variant;
  */
 public class Engine extends org.restlet.gwt.util.Engine {
     /** Complete version. */
-    @SuppressWarnings("hiding")
     public static final String VERSION = org.restlet.gwt.util.Engine.VERSION;
 
     /** Complete version header. */

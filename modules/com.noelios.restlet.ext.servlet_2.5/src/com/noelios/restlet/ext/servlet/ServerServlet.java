@@ -680,7 +680,6 @@ public class ServerServlet extends HttpServlet {
      * 
      * @return The application.
      */
-    @SuppressWarnings("null")
     public Application getApplication() {
         Application result = this.application;
 
@@ -721,7 +720,6 @@ public class ServerServlet extends HttpServlet {
      * 
      * @return The component.
      */
-    @SuppressWarnings("null")
     public Component getComponent() {
         Component result = this.component;
 
@@ -784,7 +782,6 @@ public class ServerServlet extends HttpServlet {
      *            The HTTP Servlet request.
      * @return The HTTP server handling calls.
      */
-    @SuppressWarnings("null")
     public HttpServerHelper getServer(HttpServletRequest request) {
         HttpServerHelper result = this.helper;
 

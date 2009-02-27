@@ -174,7 +174,6 @@ public class ServletConverter extends HttpServerConverter {
      * @param response
      *            The HTTP Servlet response.
      */
-    @SuppressWarnings("unused")
     public void service(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         if (getTarget() != null) {

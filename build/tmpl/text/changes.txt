@@ -5,6 +5,12 @@ Changes log
 
 - @version-full@ (@release-date@)
     - Bugs fixed
+       - Fixed issue in JettyHandler mixing HTTP and HTTPS requests.
+         Reported by Albert Boehmler. 
+    - Misc
+    
+- 1.1.3 (2009-02-26)
+    - Bugs fixed
        - Fixed Regex issue in Template with fixed variables. 
          Contributed by Bruno Dumon.
        - Fixed bug in ReadableRepresentation preventing channel from
