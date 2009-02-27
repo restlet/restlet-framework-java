@@ -535,6 +535,11 @@ public class FileClientHelper extends EntityClientHelper {
                             }
                             return;
                         }
+                        
+                        // Calling the garbage collector helps to 
+                        // workaround deletion issues on Windows
+                        System.gc();
+
                         // Then delete the existing file
                         if (tmp.exists() && file.delete()) {
                             // Finally move the temporary file to the

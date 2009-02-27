@@ -6,7 +6,11 @@ Changes log
 - @version-full@ (@release-date@)
     - Bugs fixed
        - Fixed issue in JettyHandler mixing HTTP and HTTPS requests.
-         Reported by Albert Boehmler. 
+         Reported by Albert Boehmler.
+       - When updating a file via the FILE connector, some deletion
+         issue could occur on Windows due to JVM integration issues
+         with the OS. A workaround to reduce this was to invoke the
+         garbage collection. Reported by Kevin Conaway.  
     - Misc
     
 - 1.1.3 (2009-02-26)
