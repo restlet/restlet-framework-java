@@ -339,11 +339,12 @@ public class FileClientHelper extends EntityClientHelper {
                         }
                     }
                 }
+
                 if (uniqueVariant != null) {
                     file = uniqueVariant;
                 } else {
                     if (!variantsList.isEmpty()) {
-                        // Negociated resource (several variants, but not the
+                        // Negotiated resource (several variants, but not the
                         // right one).
                         // Check if the request could be completed or not.
                         // The request could be more precise
@@ -404,6 +405,7 @@ public class FileClientHelper extends EntityClientHelper {
                                 .toString());
                     }
                 }
+
                 // Before putting the file representation, we check that all
                 // the extensions are known
                 if (!checkExtensionsConsistency(file, metadataService)) {
@@ -415,6 +417,7 @@ public class FileClientHelper extends EntityClientHelper {
                 } else {
                     File tmp = null;
                     boolean error = false;
+
                     if (file.exists()) {
                         // The PUT call is handled in two phases:
                         // 1- write a temporary file
@@ -535,6 +538,11 @@ public class FileClientHelper extends EntityClientHelper {
                             }
                             return;
                         }
+                        
+                        // Calling the garbage collector helps to 
+                        // workaround deletion issues on Windows
+                        System.gc();
+                        
                         // Then delete the existing file
                         if (tmp.exists() && file.delete()) {
                             // Finally move the temporary file to the
@@ -552,7 +560,7 @@ public class FileClientHelper extends EntityClientHelper {
                                 // Many aspects of the behavior of the method
                                 // "renameTo" are inherently platform-dependent:
                                 // the rename operation might not be able to
-                                // move a file from one filesystem to another.
+                                // move a file from one file system to another.
                                 if (tmp.exists()) {
                                     try {
                                         final BufferedReader br = new BufferedReader(
