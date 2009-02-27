@@ -99,9 +99,8 @@ public class AuthenticatorUtils {
 
             if (cr != null) {
                 if (guard.getScheme().equals(cr.getScheme())) {
-                    final AuthenticatorHelper helper = Engine
-                            .getInstance().findHelper(cr.getScheme(), false,
-                                    true);
+                    final AuthenticatorHelper helper = Engine.getInstance()
+                            .findHelper(cr.getScheme(), false, true);
 
                     if (helper != null) {
                         result = helper.authenticate(cr, request, guard);
@@ -125,6 +124,10 @@ public class AuthenticatorUtils {
                     result == Guard.AUTHENTICATION_VALID);
         }
 
+        // Update the client info accordingly
+        request.getClientInfo().setAuthenticated(
+                result == Guard.AUTHENTICATION_VALID);
+
         return result;
     }
 
@@ -142,8 +145,8 @@ public class AuthenticatorUtils {
      */
     @Deprecated
     public static void challenge(Response response, boolean stale, Guard guard) {
-        final AuthenticatorHelper helper = Engine.getInstance()
-                .findHelper(guard.getScheme(), false, true);
+        final AuthenticatorHelper helper = Engine.getInstance().findHelper(
+                guard.getScheme(), false, true);
 
         if (helper != null) {
             helper.challenge(response, stale, guard);
@@ -165,8 +168,8 @@ public class AuthenticatorUtils {
         String result = null;
 
         if (request != null) {
-            final AuthenticatorHelper helper = Engine.getInstance()
-                    .findHelper(request.getScheme(), false, true);
+            final AuthenticatorHelper helper = Engine.getInstance().findHelper(
+                    request.getScheme(), false, true);
 
             if (helper != null) {
                 result = helper.format(request);
@@ -195,8 +198,8 @@ public class AuthenticatorUtils {
     public static String format(ChallengeResponse challenge, Request request,
             Series<Parameter> httpHeaders) {
         String result = null;
-        final AuthenticatorHelper helper = Engine.getInstance()
-                .findHelper(challenge.getScheme(), true, false);
+        final AuthenticatorHelper helper = Engine.getInstance().findHelper(
+                challenge.getScheme(), true, false);
 
         if (helper != null) {
             result = helper.format(challenge, request, httpHeaders);
@@ -240,8 +243,8 @@ public class AuthenticatorUtils {
         }
 
         // Give a chance to the authentication helper to do further parsing
-        final AuthenticatorHelper helper = Engine.getInstance()
-                .findHelper(result.getScheme(), true, false);
+        final AuthenticatorHelper helper = Engine.getInstance().findHelper(
+                result.getScheme(), true, false);
 
         if (helper != null) {
             helper.parseRequest(result, header);
@@ -278,9 +281,8 @@ public class AuthenticatorUtils {
 
                 // Give a chance to the authentication helper to do further
                 // parsing
-                final AuthenticatorHelper helper = Engine
-                        .getInstance().findHelper(result.getScheme(), true,
-                                false);
+                final AuthenticatorHelper helper = Engine.getInstance()
+                        .findHelper(result.getScheme(), true, false);
 
                 if (helper != null) {
                     helper.parseResponse(result, request);

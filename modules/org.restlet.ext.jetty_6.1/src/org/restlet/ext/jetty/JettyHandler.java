@@ -71,9 +71,9 @@ public class JettyHandler extends AbstractHandler {
      */
     public JettyHandler(Server server, boolean secure) {
         if (secure) {
-            this.helper = new HttpServerHelper(server);
-        } else {
             this.helper = new HttpsServerHelper(server);
+        } else {
+            this.helper = new HttpServerHelper(server);
         }
     }
 

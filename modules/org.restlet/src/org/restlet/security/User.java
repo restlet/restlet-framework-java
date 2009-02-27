@@ -27,7 +27,6 @@
 
 package org.restlet.security;
 
-
 /**
  * User part of an organization. Note the same user can be member of any number
  * of groups.
@@ -81,8 +80,6 @@ public class User {
      *            The first name.
      * @param lastName
      *            The last name.
-     * @param title
-     *            The title.
      * @param email
      *            The email.
      */
@@ -118,8 +115,6 @@ public class User {
      *            The first name.
      * @param lastName
      *            The last name.
-     * @param title
-     *            The title.
      * @param email
      *            The email.
      */

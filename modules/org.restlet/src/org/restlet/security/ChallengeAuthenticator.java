@@ -33,6 +33,7 @@ import org.restlet.Context;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
+import org.restlet.data.ClientInfo;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -111,7 +112,8 @@ public class ChallengeAuthenticator extends Authenticator {
      * is invoked with the "stale" parameter to true.<br>
      * <br>
      * At the end of the process, the
-     * {@link ChallengeResponse#setAuthenticated(boolean)} method is invoked.
+     * {@link ChallengeResponse#setAuthenticated(boolean)} and
+     * {@link ClientInfo#setAuthenticated(boolean)} methods are invoked.
      * 
      * @param request
      *            The request sent.

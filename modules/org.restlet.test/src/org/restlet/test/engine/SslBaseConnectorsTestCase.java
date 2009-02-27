@@ -77,7 +77,7 @@ public abstract class SslBaseConnectorsTestCase extends RestletTestCase {
     protected void configureSslParameters(Context context) {
         Series<Parameter> parameters = context.getParameters();
         parameters.add("sslContextFactory",
-                "org.restlet.engine.util.DefaultSslContextFactory");
+                "org.restlet.engine.security.DefaultSslContextFactory");
         parameters.add("keystorePath", testKeystoreFile.getPath());
         parameters.add("keystorePassword", "testtest");
         parameters.add("keyPassword", "testtest");

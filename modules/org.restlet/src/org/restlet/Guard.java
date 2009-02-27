@@ -35,6 +35,7 @@ import java.util.logging.Level;
 
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
+import org.restlet.data.ClientInfo;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -201,8 +202,9 @@ public class Guard extends Filter {
     /**
      * Indicates if the call is properly authenticated. By default, this
      * delegates credential checking to checkSecret(). Note that the
-     * {@link ChallengeResponse#setAuthenticated(boolean)} method is always
-     * called after authentication.
+     * {@link ChallengeResponse#setAuthenticated(boolean)} and
+     * {@link ClientInfo#setAuthenticated(boolean)} methods are always called
+     * after authentication.
      * 
      * @param request
      *            The request to authenticate.

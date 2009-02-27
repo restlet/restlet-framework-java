@@ -99,6 +99,7 @@ public abstract class Authenticator extends Filter {
      * result and the mode set, it either skips or invoke the (optionally)
      * attached Restlet.
      */
+    @SuppressWarnings("deprecation")
     @Override
     protected int beforeHandle(Request request, Response response) {
         int result = CONTINUE;
@@ -111,6 +112,11 @@ public abstract class Authenticator extends Filter {
         if (!isOptional()) {
             if (!success)
                 result = STOP;
+
+            if (request.getChallengeResponse() != null) {
+                // Update the challenge response accordingly
+                request.getChallengeResponse().setAuthenticated(success);
+            }
 
             request.getClientInfo().setAuthenticated(success);
         }

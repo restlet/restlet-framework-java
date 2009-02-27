@@ -134,7 +134,7 @@ public class MemoryRealm extends Realm {
      *            The user groups.
      * @param user
      *            The user.
-     * @return
+     * @return The roles found.
      */
     public Set<Role> findRoles(Organization userOrganization,
             Set<Group> userGroups, User user) {
