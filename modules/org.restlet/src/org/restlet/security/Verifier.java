@@ -31,7 +31,7 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 
 /**
- * Filter verifying the credentials provided by a subject sending a request.
+ * Verifies the credentials provided by a subject sending a request.
  * 
  * @author Jerome Louvel
  */

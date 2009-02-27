@@ -48,7 +48,7 @@ import org.restlet.representation.DomRepresentation;
 import org.restlet.representation.FileRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Resource;
-import org.restlet.security.Organization;
+import org.restlet.security.Realm;
 import org.restlet.service.LogService;
 import org.restlet.service.StatusService;
 import org.restlet.util.ClientList;
@@ -195,8 +195,8 @@ public class Component extends Restlet {
     /** The log service. */
     private volatile LogService logService;
 
-    /** The modifiable list of organizations. */
-    private List<Organization> organizations;
+    /** The modifiable list of securit realms. */
+    private List<Realm> realms;
 
     /** The modifiable list of server connectors. */
     private final ServerList servers;
@@ -211,7 +211,7 @@ public class Component extends Restlet {
         this.hosts = new CopyOnWriteArrayList<VirtualHost>();
         this.clients = new ClientList(null);
         this.servers = new ServerList(null, this);
-        this.organizations = new CopyOnWriteArrayList<Organization>();
+        this.realms = new CopyOnWriteArrayList<Realm>();
 
         if (Engine.getInstance() != null) {
             this.helper = new ComponentHelper(this);
@@ -670,15 +670,6 @@ public class Component extends Restlet {
     }
 
     /**
-     * Returns the modifiable list of organizations.
-     * 
-     * @return The modifiable list of organizations.
-     */
-    public List<Organization> getOrganizations() {
-        return organizations;
-    }
-
-    /**
      * Returns a protocol by its scheme. If the latter is unknown, instantiate a
      * new protocol object.
      * 
@@ -692,6 +683,15 @@ public class Component extends Restlet {
             protocol = new Protocol(scheme);
         }
         return protocol;
+    }
+
+    /**
+     * Returns the modifiable list of security realms.
+     * 
+     * @return The modifiable list of security realms.
+     */
+    public List<Realm> getRealms() {
+        return realms;
     }
 
     /**
@@ -1217,16 +1217,16 @@ public class Component extends Restlet {
     }
 
     /**
-     * Sets the list of organizations.
+     * Sets the list of realms.
      * 
-     * @param organizations
-     *            The list of organizations.
+     * @param realms
+     *            The list of realms.
      */
-    public synchronized void setOrganizations(List<Organization> organizations) {
-        this.organizations.clear();
+    public synchronized void setRealms(List<Realm> realms) {
+        this.realms.clear();
 
-        if (organizations != null) {
-            this.organizations.addAll(organizations);
+        if (realms != null) {
+            this.realms.addAll(realms);
         }
     }
 

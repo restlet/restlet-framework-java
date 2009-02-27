@@ -22,13 +22,12 @@ Changes log
         - Completed list of registered media types. Suggested by Rémi 
           Dewitte.
     - API changes
-        - Added organization description classes 
-          (org.restlet.security.Organization, User, Group). Added 
-          "organizations" property to Component.
         - Added Role class and "roles" property to Application.
-        - Refactored the security package introduce in 1.2 M1 based on
-          community feed-back.
-        - Added "roleMappings" property to Context.
+        - Fully refactored the security package introduce in 1.2 M1 
+          based on community feed-back.
+        - Added Realm, MemoryRealm classes and "realms" property to 
+          Component.
+        - Added "verifier" and "enroler" properties to Context.
         - Reverted represent*() auto-matching support for further 
           discussions. Suggested by Tim Peierls.
         - Added constructors with feed URI in the Feed class of the Atom 

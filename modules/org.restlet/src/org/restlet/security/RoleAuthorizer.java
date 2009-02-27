@@ -70,7 +70,7 @@ public class RoleAuthorizer extends Authorizer {
 
     /**
      * Authorizes the request only if its subject is in one of the authorized
-     * roles and in none of the forbidden roles.
+     * roles and in none of the forbidden ones.
      * 
      * @param request
      *            The request sent.

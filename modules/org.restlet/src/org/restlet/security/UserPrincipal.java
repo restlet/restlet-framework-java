@@ -38,17 +38,17 @@ public class UserPrincipal implements java.security.Principal, Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    /** The underlying user. */
-    private final User user;
+    /** The underlying user identifier. */
+    private final String identifier;
 
     /**
      * Constructor.
      * 
-     * @param user
-     *            The underlying user.
+     * @param identifier
+     *            The underlying user identifier as the principal name.
      */
-    public UserPrincipal(User user) {
-        this.user = user;
+    public UserPrincipal(String identifier) {
+        this.identifier = identifier;
     }
 
     @Override
@@ -56,34 +56,26 @@ public class UserPrincipal implements java.security.Principal, Serializable {
         if (another == this) {
             return true;
         }
+
         if (!(another instanceof UserPrincipal)) {
             return false;
         }
+
         final UserPrincipal otherPrinc = (UserPrincipal) another;
-        return getUser().equals(otherPrinc.getUser());
+        return getName().equals(otherPrinc.getName());
     }
 
     /**
-     * Returns the user identifier.
+     * Returns the user identifier as the principal name.
      * 
      * @return The user identifier.
      */
     public String getName() {
-        return getUser().getIdentifier();
-    }
-
-    /**
-     * Returns the underlying user.
-     * 
-     * @return The underlying user.
-     */
-    private User getUser() {
-        return user;
+        return this.identifier;
     }
 
     @Override
     public String toString() {
         return "User principal: " + getName();
     }
-
 }

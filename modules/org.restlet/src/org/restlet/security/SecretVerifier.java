@@ -44,18 +44,12 @@ public abstract class SecretVerifier extends Verifier {
      * When the verification succeeds, we need to update the {@link Subject}
      * associated to the request. By default, it adds a {@link UserPrincipal}.
      * 
-     * @param subject
-     *            The subject to update.
      * @param identifier
      *            The user identifier.
-     * @param inputSecret
-     *            The proposed secret.
+     * @return The user principal created.
      */
-    protected void updateSubject(Subject subject, String identifier,
-            char[] inputSecret) {
-        // Add a principal for this identifier
-        subject.getPrincipals().add(
-                new UserPrincipal(new User(identifier, inputSecret)));
+    protected UserPrincipal createUserPrincipal(String identifier) {
+        return new UserPrincipal(identifier);
     }
 
     /**
@@ -82,8 +76,9 @@ public abstract class SecretVerifier extends Verifier {
             char[] inputSecret = request.getChallengeResponse().getSecret();
 
             if (verify(identifier, inputSecret)) {
-                updateSubject(request.getClientInfo().getSubject(), identifier,
-                        inputSecret);
+                // Add a principal for this identifier
+                request.getClientInfo().getSubject().getPrincipals().add(
+                        createUserPrincipal(identifier));
             } else {
                 result = RESULT_INVALID;
             }

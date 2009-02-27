@@ -27,27 +27,17 @@
 
 package org.restlet;
 
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
-import javax.security.auth.Subject;
-
 import org.restlet.data.Form;
 import org.restlet.data.Parameter;
-import org.restlet.engine.security.RoleMapping;
-import org.restlet.security.Group;
-import org.restlet.security.LocalVerifier;
-import org.restlet.security.Organization;
-import org.restlet.security.Role;
-import org.restlet.security.RolePrincipal;
-import org.restlet.security.User;
-import org.restlet.security.UserPrincipal;
+import org.restlet.security.Enroler;
+import org.restlet.security.Realm;
+import org.restlet.security.Verifier;
 import org.restlet.util.Series;
 
 /**
@@ -64,6 +54,7 @@ import org.restlet.util.Series;
  * @author Jerome Louvel
  */
 public class Context {
+
     private static final ThreadLocal<Context> CURRENT = new ThreadLocal<Context>();
 
     /**
@@ -114,14 +105,20 @@ public class Context {
     /** The logger instance to use. */
     private volatile Logger logger;
 
-    /** The modifiable map of bounded organizations. */
-    private Map<String, Organization> organizations;
-
     /** The modifiable series of parameters. */
     private final Series<Parameter> parameters;
 
-    /** The modifiable list of role mappings. */
-    private List<RoleMapping> roleMappings;
+    /**
+     * The enroler that can add the user roles based on Restlet default
+     * authorization model.
+     */
+    private volatile Enroler enroler;
+
+    /**
+     * The verifier that can check the validity of user/secret couples based on
+     * Restlet default authorization model.
+     */
+    private volatile Verifier verifier;
 
     /**
      * Constructor. Writes log messages to "org.restlet".
@@ -138,10 +135,10 @@ public class Context {
      */
     public Context(Logger logger) {
         this.attributes = new ConcurrentHashMap<String, Object>();
+        this.enroler = null;
         this.logger = logger;
         this.parameters = new Form(new CopyOnWriteArrayList<Parameter>());
-        this.organizations = new ConcurrentHashMap<String, Organization>();
-        this.roleMappings = new CopyOnWriteArrayList<RoleMapping>();
+        this.verifier = null;
     }
 
     /**
@@ -155,19 +152,6 @@ public class Context {
     }
 
     /**
-     * Bind an organization and all its users to this context to support the
-     * authentication of users. Note that if you bind several organizations, the
-     * users must authenticate themselves using a fully qualified identifier
-     * (ex: mylogin@mycompany.com).
-     * 
-     * @param organization
-     *            The organization to bind.
-     */
-    public void bind(Organization organization) {
-        getOrganizations().put(organization.getDomainName(), organization);
-    }
-
-    /**
      * Creates a protected child context. This is especially useful for new
      * application attached to their parent component, to ensure their isolation
      * from the other applications. By default it just creates a new context
@@ -177,34 +161,6 @@ public class Context {
      */
     public Context createChildContext() {
         return new Context();
-    }
-
-    /**
-     * Finds the roles mapped to a specific user/groups/organization triple.
-     * 
-     * @param userOrganization
-     *            The user organization.
-     * @param userGroups
-     *            The user groups.
-     * @param user
-     *            The user.
-     * @return
-     */
-    private Set<Role> findRoles(Organization userOrganization,
-            Set<Group> userGroups, User user) {
-        Set<Role> result = new HashSet<Role>();
-
-        Object source;
-        for (RoleMapping mapping : getRoleMappings()) {
-            source = mapping.getSource();
-
-            if (userOrganization.equals(source) || user.equals(source)
-                    || userGroups.contains(source)) {
-                result.add(mapping.getTarget());
-            }
-        }
-
-        return result;
     }
 
     /**
@@ -252,21 +208,22 @@ public class Context {
     }
 
     /**
+     * Returns an enroler that can add the user roles based on authenticated
+     * user principals.
+     * 
+     * @return An enroler.
+     */
+    public Enroler getEnroler() {
+        return enroler;
+    }
+
+    /**
      * Returns the logger.
      * 
      * @return The logger.
      */
     public Logger getLogger() {
         return this.logger;
-    }
-
-    /**
-     * Returns the modifiable map of bounded organizations.
-     * 
-     * @return The modifiable map of bounded organizations.
-     */
-    private Map<String, Organization> getOrganizations() {
-        return organizations;
     }
 
     /**
@@ -280,15 +237,6 @@ public class Context {
      */
     public Series<Parameter> getParameters() {
         return this.parameters;
-    }
-
-    /**
-     * Returns the modifiable list of role mappings.
-     * 
-     * @return The modifiable list of role mappings.
-     */
-    private List<RoleMapping> getRoleMappings() {
-        return roleMappings;
     }
 
     /**
@@ -308,137 +256,13 @@ public class Context {
     }
 
     /**
-     * Returns a local verifier that can check the validity of user/secret
-     * couples based on Restlet default authorization model.
+     * Returns a verifier that can check the validity of the credentials
+     * associated to a request.
      * 
-     * @return A local verifier.
+     * @return A verifier.
      */
-    public LocalVerifier getVerifier() {
-        return new LocalVerifier() {
-
-            @Override
-            protected char[] getSecret(String identifier) {
-                char[] result = null;
-
-                // Parse qualified identifiers
-                int at = identifier.indexOf('@');
-                String domainName = (at == -1) ? null : identifier
-                        .substring(at + 1);
-                String userIdentifier = (at == -1) ? identifier : identifier
-                        .substring(0, at);
-
-                // Lookup the organization
-                Organization orga = null;
-
-                if (domainName == null) {
-                    if (getOrganizations().size() == 1) {
-                        orga = getOrganizations().entrySet().iterator().next()
-                                .getValue();
-                    } else {
-                        getLogger()
-                                .info(
-                                        "Unable to identify an unqualified user. Multiple organizations were bounded.");
-                    }
-                } else {
-                    orga = getOrganizations().get(domainName);
-                }
-
-                // Lookup the user
-                if (orga != null) {
-                    User user = orga.findUser(userIdentifier);
-
-                    if (user != null) {
-                        result = user.getSecret();
-                    }
-                }
-
-                return result;
-            }
-
-            @Override
-            protected void updateSubject(Subject subject, String identifier,
-                    char[] inputSecret) {
-                // Parse qualified identifiers
-                int at = identifier.indexOf('@');
-                String domainName = (at == -1) ? null : identifier
-                        .substring(at + 1);
-                String userIdentifier = (at == -1) ? identifier : identifier
-                        .substring(0, at);
-
-                // Lookup the organization
-                Organization orga = null;
-
-                if (domainName == null) {
-                    if (getOrganizations().size() == 1) {
-                        orga = getOrganizations().entrySet().iterator().next()
-                                .getValue();
-                    } else {
-                        getLogger()
-                                .info(
-                                        "Unable to identify an unqualified user. Multiple organizations were bounded.");
-                    }
-                } else {
-                    orga = getOrganizations().get(domainName);
-                }
-
-                // Lookup the user
-                if (orga != null) {
-                    User user = orga.findUser(userIdentifier);
-
-                    if (user != null) {
-                        // Add a principal for this identifier
-                        subject.getPrincipals().add(new UserPrincipal(user));
-
-                        // Add a principal for the user roles
-                        Set<Group> userGroups = orga.findGroups(user);
-                        Set<Role> userRoles = findRoles(orga, userGroups, user);
-
-                        for (Role role : userRoles) {
-                            subject.getPrincipals()
-                                    .add(new RolePrincipal(role));
-                        }
-                    }
-                }
-            }
-
-        };
-    }
-
-    /**
-     * Maps a group defined in a component to a role defined in the application.
-     * 
-     * @param group
-     *            The source group.
-     * @param role
-     *            The target role.
-     */
-    public void map(Group group, Role role) {
-        getRoleMappings().add(new RoleMapping(group, role));
-    }
-
-    /**
-     * Maps an organization defined in a component to a role defined in the
-     * application.
-     * 
-     * @param organization
-     *            The source organization.
-     * @param role
-     *            The target role.
-     */
-    public void map(Organization organization, Role role) {
-        getRoleMappings().add(new RoleMapping(organization, role));
-    }
-
-    /**
-     * Maps a user defined in a component to a role defined in the application.
-     * 
-     * @param user
-     *            The source user.
-     * @param role
-     *            The target role.
-     */
-    public void map(User user, Role role) {
-        getRoleMappings().add(new RoleMapping(user, role));
+    public Verifier getVerifier() {
+        return this.verifier;
     }
 
     /**
@@ -450,6 +274,17 @@ public class Context {
     public synchronized void setAttributes(Map<String, Object> attributes) {
         this.attributes.clear();
         this.attributes.putAll(attributes);
+    }
+
+    /**
+     * Sets an enroler that can add the user roles based on authenticated user
+     * principals.
+     * 
+     * @param enroler
+     *            An enroler.
+     */
+    public void setEnroler(Enroler enroler) {
+        this.enroler = enroler;
     }
 
     /**
@@ -487,87 +322,26 @@ public class Context {
     }
 
     /**
-     * Sets the modifiable list of role mappings.
+     * Sets a local enroler that can add the user roles based on Restlet default
+     * authorization model.
      * 
-     * @param roleMappings
-     *            The modifiable list of role mappings.
+     * @param realm
+     *            A security realm.
      */
-    public void setRoleMappings(List<RoleMapping> roleMappings) {
-        this.roleMappings.clear();
-
-        if (roleMappings != null) {
-            this.roleMappings.addAll(roleMappings);
-        }
+    public void setRealm(Realm realm) {
+        setEnroler(realm.getEnroler());
+        setVerifier(realm.getVerifier());
     }
 
     /**
-     * Unbind an organization and all its users from this context.
+     * Sets a local verifier that can check the validity of user/secret couples
+     * based on Restlet default authorization model.
      * 
-     * @param organization
-     *            The organization to unbind.
+     * @param verifier
+     *            A local verifier.
      */
-    public void unbind(Organization organization) {
-        getOrganizations().remove(organization);
-    }
-
-    /**
-     * Unmaps a group defined in a component from a role defined in the
-     * application.
-     * 
-     * @param group
-     *            The source group.
-     * @param role
-     *            The target role.
-     */
-    public void unmap(Group group, Role role) {
-        unmap((Object) group, role);
-    }
-
-    /**
-     * Unmaps an element (user, group or organization) defined in a component
-     * from a role defined in the application.
-     * 
-     * @param group
-     *            The source group.
-     * @param role
-     *            The target role.
-     */
-    private void unmap(Object source, Role role) {
-        RoleMapping mapping;
-        for (int i = getRoleMappings().size(); i >= 0; i--) {
-            mapping = getRoleMappings().get(i);
-
-            if (mapping.getSource().equals(source)
-                    && mapping.getTarget().equals(role)) {
-                getRoleMappings().remove(i);
-            }
-        }
-    }
-
-    /**
-     * Unmaps an organization defined in a component from a role defined in the
-     * application.
-     * 
-     * @param organization
-     *            The source organization.
-     * @param role
-     *            The target role.
-     */
-    public void unmap(Organization organization, Role role) {
-        unmap((Object) organization, role);
-    }
-
-    /**
-     * Unmaps a user defined in a component from a role defined in the
-     * application.
-     * 
-     * @param user
-     *            The source user.
-     * @param role
-     *            The target role.
-     */
-    public void unmap(User user, Role role) {
-        unmap((Object) user, role);
+    public void setVerifier(Verifier verifier) {
+        this.verifier = verifier;
     }
 
 }

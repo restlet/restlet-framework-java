@@ -28,7 +28,6 @@
 package org.restlet.data;
 
 import org.restlet.engine.Engine;
-import org.restlet.security.User;
 import org.restlet.security.UserPrincipal;
 import org.restlet.util.Series;
 
@@ -237,7 +236,7 @@ public final class ChallengeResponse {
      */
     @Deprecated
     public UserPrincipal getPrincipal() {
-        return new UserPrincipal(new User(getIdentifier(), getSecret()));
+        return new UserPrincipal(getIdentifier());
     }
 
     /**

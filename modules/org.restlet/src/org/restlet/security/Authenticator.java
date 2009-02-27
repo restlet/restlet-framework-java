@@ -46,6 +46,12 @@ public abstract class Authenticator extends Filter {
     private volatile boolean optional;
 
     /**
+     * Invoked upon successful authentication to update the subject with new
+     * principals.
+     */
+    private volatile Enroler enroler;
+
+    /**
      * Default constructor setting the mode to "required".
      */
     public Authenticator(Context context) {
@@ -53,14 +59,27 @@ public abstract class Authenticator extends Filter {
     }
 
     /**
-     * Constructor.
+     * Constructor. Use the context's enroler by default.
      * 
      * @param optional
      *            The authentication mode.
      */
     public Authenticator(Context context, boolean optional) {
+        this(context, optional, context.getEnroler());
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param optional
+     *            The authentication mode.
+     * @param enroler
+     *            The enroler to invoke upon successful authentication.
+     */
+    public Authenticator(Context context, boolean optional, Enroler enroler) {
         super(context);
         this.optional = optional;
+        this.enroler = enroler;
     }
 
     /**
@@ -85,6 +104,10 @@ public abstract class Authenticator extends Filter {
         int result = CONTINUE;
         boolean success = authenticate(request, response);
 
+        if (success && (getEnroler() != null)) {
+            getEnroler().enrole(request.getClientInfo().getSubject());
+        }
+
         if (!isOptional()) {
             if (!success)
                 result = STOP;
@@ -96,6 +119,17 @@ public abstract class Authenticator extends Filter {
     }
 
     /**
+     * Returns the enroler invoked upon successful authentication to update the
+     * subject with new principals. Typically new {@link RolePrincipal} are
+     * added based on the available {@link UserPrincipal} instances available.
+     * 
+     * @return The enroler invoked upon successful authentication
+     */
+    public Enroler getEnroler() {
+        return enroler;
+    }
+
+    /**
      * Indicates if the authenticator is not required to succeed. In those
      * cases, the attached Restlet is invoked.
      * 
@@ -103,6 +137,16 @@ public abstract class Authenticator extends Filter {
      */
     public boolean isOptional() {
         return optional;
+    }
+
+    /**
+     * Sets the enroler invoked upon successful authentication.
+     * 
+     * @param enroler
+     *            The enroler invoked upon successful authentication.
+     */
+    public void setEnroler(Enroler enroler) {
+        this.enroler = enroler;
     }
 
     /**
