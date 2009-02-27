@@ -27,8 +27,6 @@
 
 package org.restlet.security;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 /**
  * User part of an organization. Note the same user can be member of any number
@@ -37,9 +35,6 @@ import java.util.concurrent.ConcurrentMap;
  * @author Jerome Louvel
  */
 public class User {
-
-    /** The modifiable attributes map. */
-    private final ConcurrentMap<String, Object> attributes;
 
     /** The email. */
     private volatile String email;
@@ -97,7 +92,6 @@ public class User {
         this.secret = secret;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.attributes = new ConcurrentHashMap<String, Object>();
         this.email = email;
     }
 
@@ -132,16 +126,6 @@ public class User {
     public User(String identifier, String secret, String firstName,
             String lastName, String email) {
         this(identifier, secret.toCharArray(), firstName, lastName, email);
-    }
-
-    /**
-     * Returns a modifiable attributes map that can be used to save information
-     * relative to the user.
-     * 
-     * @return The modifiable attributes map.
-     */
-    public ConcurrentMap<String, Object> getAttributes() {
-        return this.attributes;
     }
 
     /**
