@@ -10,8 +10,11 @@ Changes log
        - When updating a file via the FILE connector, some deletion
          issue could occur on Windows due to JVM integration issues
          with the OS. A workaround to reduce this was to invoke the
-         garbage collection. Reported by Kevin Conaway.  
+         garbage collection. Reported by Kevin Conaway.
+       - The CLAP connector didn't set the expiration date based on
+         its 'timeToLive' parameter. Reported by Peter Becker.  
     - Misc
+       - 
     
 - 1.1.3 (2009-02-26)
     - Bugs fixed

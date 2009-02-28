@@ -54,7 +54,8 @@ import com.noelios.restlet.ClientHelper;
  * <td>timeToLive</td>
  * <td>int</td>
  * <td>600</td>
- * <td>Time to live for a file representation before it expires (in seconds).</td>
+ * <td>Time to live for a representation before it expires (in seconds). If you
+ * set the value to '0', the representation will never expire.</td>
  * </tr>
  * <tr>
  * <td>defaultLanguage</td>

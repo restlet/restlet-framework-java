@@ -168,6 +168,16 @@ public class ClapClientHelper extends LocalClientHelper {
                     output.setIdentifier(request.getResourceRef());
                     output.setModificationDate(modificationDate);
 
+                    // Update the expiration date
+                    long timeToLive = getTimeToLive();
+                    if (timeToLive == 0) {
+                        output.setExpirationDate(new Date());
+                    } else if (timeToLive > 0) {
+                        output.setExpirationDate(new Date(System
+                                .currentTimeMillis()
+                                + (1000L * timeToLive)));
+                    }
+
                     // Update the metadata based on file extensions
                     final String name = path
                             .substring(path.lastIndexOf('/') + 1);
