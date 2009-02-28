@@ -32,14 +32,14 @@ import javax.ws.rs.core.SecurityContext;
 
 import org.restlet.Component;
 import org.restlet.Server;
-import org.restlet.security.ChallengeGuard;
-import org.restlet.security.MemoryRealm;
-import org.restlet.security.Organization;
-import org.restlet.security.User;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
 import org.restlet.ext.jaxrs.JaxRsApplication;
 import org.restlet.ext.jaxrs.RoleChecker;
+import org.restlet.security.ChallengeGuard;
+import org.restlet.security.MemoryRealm;
+import org.restlet.security.Organization;
+import org.restlet.security.User;
 
 /**
  * <p>
@@ -61,6 +61,7 @@ import org.restlet.ext.jaxrs.RoleChecker;
  * @see ExampleServer
  * @see ExampleApplication
  */
+@SuppressWarnings("deprecation")
 public class GuardedExample {
 
     /**

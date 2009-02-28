@@ -39,7 +39,6 @@ import org.restlet.engine.ClientHelper;
 import org.restlet.representation.Variant;
 import org.restlet.service.MetadataService;
 
-
 /**
  * Connector to the local resources accessible via file system, class loaders
  * and similar mechanisms. Here is the list of parameters that are supported:
@@ -54,7 +53,8 @@ import org.restlet.service.MetadataService;
  * <td>timeToLive</td>
  * <td>int</td>
  * <td>600</td>
- * <td>Time to live for a file representation before it expires (in seconds).</td>
+ * <td>Time to live for a representation before it expires (in seconds). If you
+ * set the value to '0', the representation will never expire.</td>
  * </tr>
  * <tr>
  * <td>defaultLanguage</td>
