@@ -61,6 +61,7 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Variant;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
+import org.restlet.Application;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.CharacterSet;
@@ -80,6 +81,8 @@ import org.restlet.ext.jaxrs.internal.util.SecurityUtil;
 import org.restlet.ext.jaxrs.internal.util.SortedMetadata;
 import org.restlet.ext.jaxrs.internal.util.Util;
 import org.restlet.representation.Representation;
+import org.restlet.security.Role;
+import org.restlet.security.UserPrincipal;
 
 /**
  * Contains all request specific data of the interfaces injectable for &#64;
@@ -91,6 +94,7 @@ import org.restlet.representation.Representation;
  * 
  * @author Stephan Koops
  */
+@SuppressWarnings("deprecation")
 public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
         SecurityContext {
 
@@ -234,15 +238,10 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * 
      * @param request
      *            The Restlet request to wrap. Must not be null.
-     * @param templateParametersEncoded
-     *            The template parameters. Must not be null.
      * @param response
      *            The Restlet response
      * @param roleChecker
-     *            The roleChecker is needed to check, if a user is in a role,
-     *            see {@link #isUserInRole(String)}. If null was given here and
-     *            {@link SecurityContext#isUserInRole(String)} is called, the
-     *            HTTP client will get an Internal Server Error as response.
+     *            Optional, can be null, see {@link RoleChecker}.
      */
     public CallContext(Request request, org.restlet.data.Response response,
             RoleChecker roleChecker) {
@@ -253,10 +252,6 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
         if (response == null) {
             throw new IllegalArgumentException(
                     "The Restlet Response must not be null");
-        }
-        if (roleChecker == null) {
-            throw new IllegalArgumentException(
-                    "The RoleChecker must not be null.");
         }
         final Reference referenceCut = request.getResourceRef();
         if (referenceCut == null) {
@@ -1097,11 +1092,23 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      *         authenticated
      * @see SecurityContext#getUserPrincipal()
      */
-    @SuppressWarnings("deprecation")
     public Principal getUserPrincipal() {
-        if (this.request.getChallengeResponse() != null) {
-            return this.request.getChallengeResponse().getPrincipal();
+        Principal foundPrincipal = null;
+        for (Principal principal : request.getClientInfo().getSubject()
+                .getPrincipals()) {
+            if (principal instanceof UserPrincipal) {
+                if (foundPrincipal != null) {
+                    throw new RuntimeException(
+                            "Multiple UserPrincipal's in Request.clientInfo.subject:"
+                                    + " don't know which one to use.");
+                }
+                foundPrincipal = principal;
+            }
         }
+
+        if (foundPrincipal != null)
+            return foundPrincipal;
+
         return SecurityUtil.getSslClientCertPrincipal(this.request);
     }
 
@@ -1143,19 +1150,20 @@ public class CallContext implements javax.ws.rs.core.Request, HttpHeaders,
      * in the specified logical "role". If the user has not been authenticated,
      * the method returns <code>false</code>.
      * 
-     * @param role
+     * @param roleName
      *            a <code>String</code> specifying the name of the role
      * @return a <code>boolean</code> indicating whether the user making the
      *         request belongs to a given role; <code>false</code> if the user
      *         has not been authenticated
      * @see SecurityContext#isUserInRole(String)
      */
-    @SuppressWarnings("deprecation")
-    public boolean isUserInRole(String role) {
-        // LATER here ServletRequest.isUserInRole(role)
-        final Principal principal = (this.request.getChallengeResponse() == null) ? null
-                : this.request.getChallengeResponse().getPrincipal();
-        return this.roleChecker.isInRole(principal, role);
+    public boolean isUserInRole(String roleName) {
+        if (roleChecker != null) {
+            return roleChecker.isInRole(getUserPrincipal(), roleName);
+        } else {
+            Role role = Application.getCurrent().findRole(roleName);
+            return role != null && this.request.getClientInfo().isInRole(role);
+        }
     }
 
     /**

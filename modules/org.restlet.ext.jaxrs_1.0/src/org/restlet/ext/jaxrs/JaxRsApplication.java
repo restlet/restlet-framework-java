@@ -30,12 +30,13 @@ import java.util.Collection;
 import java.util.Set;
 
 import javax.ws.rs.core.Application;
-import javax.ws.rs.core.SecurityContext;
 
 import org.restlet.Component;
 import org.restlet.Context;
-import org.restlet.Guard;
+import org.restlet.Filter;
 import org.restlet.Restlet;
+import org.restlet.data.ClientInfo;
+import org.restlet.security.Guard;
 
 /**
  * <p>
@@ -62,8 +63,11 @@ import org.restlet.Restlet;
  */
 public class JaxRsApplication extends org.restlet.Application {
 
-    /** The {@link Guard} to use. May be null. */
-    private volatile Guard guard;
+    /**
+     * The Guard to use (either {@link org.restlet.Guard} or
+     * {@link org.restlet.security.Guard}). May be null.
+     */
+    private volatile Filter guard;
 
     /** The {@link JaxRsRestlet} to use. */
     private volatile JaxRsRestlet jaxRsRestlet;
@@ -78,12 +82,8 @@ public class JaxRsApplication extends org.restlet.Application {
     }
 
     /**
-     * Creates an new JaxRsApplication, without any access control. Attach
-     * JAX-RS-{@link Application}s by using {@link #add(Application)}.<br>
-     * If a method calls {@link SecurityContext#isUserInRole(String)}, status
-     * 500 is returned to the client, see {@link RoleChecker#REJECT_WITH_ERROR}.
-     * Use {@link #setGuard(Guard)} and {@link #setRoleChecker(RoleChecker)} or
-     * {@link #setAuthentication(Guard, RoleChecker)}, to set access control.<br>
+     * Creates an new JaxRsApplication. Attach JAX-RS-{@link Application}s by
+     * using {@link #add(Application)}.
      * 
      * @param context
      *            The application's dedicated context based on the protected
@@ -154,7 +154,7 @@ public class JaxRsApplication extends org.restlet.Application {
      * 
      * @return the Guard
      */
-    public Guard getGuard() {
+    public Filter getGuard() {
         return this.guard;
     }
 
@@ -182,6 +182,8 @@ public class JaxRsApplication extends org.restlet.Application {
      * Returns the current RoleChecker
      * 
      * @return the current RoleChecker
+     * @deprecated Use {@link ClientInfo#isInRole(org.restlet.security.Role)}
+     *             instead
      */
     public RoleChecker getRoleChecker() {
         return this.jaxRsRestlet.getRoleChecker();
@@ -217,6 +219,8 @@ public class JaxRsApplication extends org.restlet.Application {
      *            the RoleChecker to use
      * @see #setGuard(Guard)
      * @see #setRoleChecker(RoleChecker)
+     * @deprecated Use {@link ClientInfo#isInRole(org.restlet.security.Role)}
+     *             instead
      */
     public void setAuthentication(Guard guard, RoleChecker roleChecker) {
         setGuard(guard);
@@ -235,11 +239,27 @@ public class JaxRsApplication extends org.restlet.Application {
      * The new one is ignored, after the root Restlet is created (see
      * {@link #createRoot()}.
      * 
+     * <p>
+     * This replaced the guard set via
+     * {@link #setGuard(org.restlet.security.Guard)}.
+     * 
      * @param guard
      *            the Guard to use.
      * @see #setAuthentication(Guard, RoleChecker)
+     * @see #setGuard(org.restlet.security.Guard)
      */
-    public void setGuard(Guard guard) {
+    public void setGuard(org.restlet.Guard guard) {
+        this.guard = guard;
+    }
+
+    /**
+     * Set the Guard from the org.restlet.security package. This should be
+     * called before the root Restlet is created.
+     * 
+     * <p>
+     * This replaced the guard set via {@link #setGuard(org.restlet.Guard)}.
+     */
+    public void setGuard(org.restlet.security.Guard guard) {
         this.guard = guard;
     }
 
@@ -262,6 +282,8 @@ public class JaxRsApplication extends org.restlet.Application {
      * @param roleChecker
      * @see #setAuthentication(Guard, RoleChecker)
      * @see #setGuard(Guard)
+     * @deprecated Use {@link ClientInfo#isInRole(org.restlet.security.Role)}
+     *             instead
      */
     public void setRoleChecker(RoleChecker roleChecker) {
         this.jaxRsRestlet.setRoleChecker(roleChecker);

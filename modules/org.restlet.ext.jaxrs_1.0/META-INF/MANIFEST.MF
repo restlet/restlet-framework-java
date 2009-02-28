@@ -77,6 +77,7 @@ Import-Package: javax.activation;version="1.1.1",
  org.restlet.engine.util,
  org.restlet.representation,
  org.restlet.resource,
+ org.restlet.security,
  org.restlet.service,
  org.restlet.util
 Bundle-RequiredExecutionEnvironment: J2SE-1.5

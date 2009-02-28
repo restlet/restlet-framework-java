@@ -51,6 +51,7 @@ import org.restlet.test.jaxrs.services.resources.SecurityContextService;
  * @author Stephan Koops
  * @see SecurityContextService
  */
+@SuppressWarnings("deprecation")
 public class SecurityContextTest extends JaxRsTestCase {
     private static final Class<SecurityContextService> SEC_CONT_SERV = SecurityContextService.class;
 

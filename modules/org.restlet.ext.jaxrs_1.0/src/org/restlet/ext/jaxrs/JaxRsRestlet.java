@@ -49,12 +49,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.restlet.Context;
 import org.restlet.Restlet;
 import org.restlet.Router;
+import org.restlet.data.ClientInfo;
 import org.restlet.data.MediaType;
 import org.restlet.data.Method;
 import org.restlet.data.Reference;
@@ -128,6 +128,7 @@ public class JaxRsRestlet extends Restlet {
 
     private static final Annotation[] EMPTY_ANNOTATION_ARRAY = new Annotation[0];
 
+    @SuppressWarnings("deprecation")
     private volatile RoleChecker roleChecker;
 
     private final JaxRsProviders providers;
@@ -150,12 +151,7 @@ public class JaxRsRestlet extends Restlet {
 
     /**
      * Creates a new JaxRsRestlet with the given Context. Only the default
-     * providers are loaded. If a resource class later wants to check if a user
-     * has a role, the request is returned with HTTP status 500 (Internal Server
-     * Error), see {@link SecurityContext#isUserInRole(String)}. You may set a
-     * {@link RoleChecker} by using the constructor
-     * {@link #JaxRsRestlet(Context, RoleChecker, MetadataService)} or method
-     * {@link #setRoleChecker(RoleChecker)}.
+     * providers are loaded.
      * 
      * @param context
      *            the context from the parent, see
@@ -176,14 +172,13 @@ public class JaxRsRestlet extends Restlet {
      *            the context from the parent, see
      *            {@link Restlet#Restlet(Context)}.
      * @param roleChecker
-     *            The RoleChecker to use. If you don't need the access control,
-     *            you can use the {@link RoleChecker#FORBID_ALL}, the
-     *            {@link RoleChecker#ALLOW_ALL} or the
-     *            {@link RoleChecker#REJECT_WITH_ERROR}.
+     *            The RoleChecker to use. If null, the normal Restlet security
+     *            API wil be used.
      * @param metadataService
      *            the metadata service of the {@link JaxRsApplication}.
      * @see #JaxRsRestlet(Context, MetadataService)
      */
+    @SuppressWarnings("deprecation")
     public JaxRsRestlet(Context context, RoleChecker roleChecker,
             MetadataService metadataService) {
         super(context);
@@ -195,10 +190,7 @@ public class JaxRsRestlet extends Restlet {
         this.resourceClasses = new ResourceClasses(this.tlContext,
                 this.providers, extensionBackwardMapping, getLogger());
         this.loadDefaultProviders();
-        if (roleChecker != null)
-            this.setRoleChecker(roleChecker);
-        else
-            this.setRoleChecker(RoleChecker.REJECT_WITH_ERROR);
+        this.setRoleChecker(roleChecker);
     }
 
     private void loadDefaultProviders() {
@@ -1026,6 +1018,8 @@ public class JaxRsRestlet extends Restlet {
      * 
      * @return the currently used RoleChecker.
      * @see #setRoleChecker(RoleChecker)
+     * @deprecated Use {@link ClientInfo#isInRole(org.restlet.security.Role)}
+     *             instead
      */
     public RoleChecker getRoleChecker() {
         return roleChecker;
@@ -1035,22 +1029,15 @@ public class JaxRsRestlet extends Restlet {
      * Sets the {@link RoleChecker} to use.
      * 
      * @param roleChecker
-     *            the roleChecker to set. Must not be null. Take a look at
-     *            {@link RoleChecker#ALLOW_ALL}, {@link RoleChecker#FORBID_ALL}
-     *            and {@link RoleChecker#REJECT_WITH_ERROR}.
-     * @throws IllegalArgumentException
-     *             If the given roleChecker is null.
+     *            the roleChecker to set. Can be null, in which case the normal
+     *            Restlet security API will be used.
      * @see RoleChecker
      * @see #getRoleChecker()
+     * @deprecated Use {@link ClientInfo#isInRole(org.restlet.security.Role)}
+     *             instead
      */
     public void setRoleChecker(RoleChecker roleChecker)
             throws IllegalArgumentException {
-        if (roleChecker == null)
-            throw new IllegalArgumentException(
-                    "The roleChecker must not be null. You can use the "
-                            + "RoleChecker.ALLOW_ALL constant, the "
-                            + "RoleChecker.FORBID_ALL constant or the "
-                            + "RoleChecker.REJECT_WITH_ERROR constant");
         this.roleChecker = roleChecker;
     }
 

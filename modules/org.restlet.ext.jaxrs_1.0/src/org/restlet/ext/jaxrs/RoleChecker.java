@@ -35,17 +35,21 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.restlet.Guard;
+import org.restlet.data.ClientInfo;
 
 /**
  * <p>
  * This interface provides user role checks.
  * </p>
  * <p>
- * Because the Restlet API does not support its own mechanism for role checks
- * (as e.g. the Servlet API), you must use this inteface if you need role checks
- * in a JAX-RS application.<br>
- * This interface is used to check, if a user is in a role. Implementations must
- * be thread save.
+ * This interface is from a time when Restlet did not have a full security API,
+ * and hence no support for checking if a user is in a role. At that time, this
+ * interface was used to check if a user is in a role. It is currently still
+ * supported for backwards compatibility, but should not be used for new
+ * development.
+ * </p>
+ * <p>
+ * Implementations must be thread save.
  * </p>
  * <p>
  * This interface is used by {@link SecurityContext#isUserInRole(String)}. The
@@ -54,11 +58,9 @@ import org.restlet.Guard;
  * method of this interface.
  * </p>
  * <p>
- * If you need user access control, you must give an instance of this inteface
- * to the {@link JaxRsApplication}. If you do not give an instance, every call
- * of {@link SecurityContext#isUserInRole(String)} results in an Internal Server
- * Error (HTTP status 500), which will get returned to the client (see
- * {@link #REJECT_WITH_ERROR}).
+ * If you want to use a RoleChecker, you must give an instance of this inteface
+ * to the {@link JaxRsApplication}. If you do not give an instance, the normal
+ * Restlet security API will be used.
  * </p>
  * <p>
  * To check if the user is authenticated, use any Restlet {@link Guard}.
@@ -66,6 +68,8 @@ import org.restlet.Guard;
  * 
  * @author Stephan Koops
  * @see SecurityContext
+ * @see ClientInfo#isInRole(org.restlet.security.Role)
+ * @deprecated Use the new Restlet security model instead.
  */
 public interface RoleChecker {
 

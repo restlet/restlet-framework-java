@@ -76,6 +76,7 @@ public class ChallengeAuthenticator extends Authenticator {
             ChallengeScheme challengeScheme, String realm) {
         super(context, optional);
         this.realm = realm;
+        this.rechallenge = true;
         this.scheme = challengeScheme;
         this.verifier = context.getVerifier();
     }

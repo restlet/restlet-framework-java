@@ -42,7 +42,7 @@ import junit.framework.TestCase;
 
 import org.restlet.Application;
 import org.restlet.Context;
-import org.restlet.Guard;
+import org.restlet.security.*;
 import org.restlet.Restlet;
 import org.restlet.data.ChallengeResponse;
 import org.restlet.data.ChallengeScheme;
@@ -155,11 +155,18 @@ public abstract class RestletServerTestCase extends TestCase {
      */
     public static Guard createGuard(final Context context,
             final ChallengeScheme challengeScheme) {
-        final Guard guard = new Guard(context, challengeScheme, "");
-        guard.getSecrets().put("admin", "adminPW".toCharArray());
-        guard.getSecrets().put("alice", "alicesSecret".toCharArray());
-        guard.getSecrets().put("bob", "bobsSecret".toCharArray());
-        return guard;
+        MemoryRealm realm = new MemoryRealm();
+
+        Organization organization = new Organization();
+        realm.getOrganizations().add(organization);
+
+        organization.getUsers().add(new User("admin", "adminPW".toCharArray()));
+        organization.getUsers().add(new User("alice", "alicesSecret".toCharArray()));
+        organization.getUsers().add(new User("bob", "bobsSecret".toCharArray()));
+
+        context.setRealm(realm);
+
+        return new ChallengeGuard(context, challengeScheme, "");
     }
 
     /**

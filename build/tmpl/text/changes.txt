@@ -19,8 +19,10 @@ Changes log
         - DirectoryResource class in engine now has a protected
           getDirectoryContent() method. Suggested by Gordon Mohr.
         - Implemented Text#toString() in the Atom extension.
-        - Completed list of registered media types. Suggested by Rémi 
+        - Completed list of registered media types. Suggested by Remi 
           Dewitte.
+        - JAX-RS extension now leverages the new security API.
+          Contributed by Bruno Dumon.
     - API changes
         - Added Role class and "roles" property to Application.
         - Fully refactored the security package introduce in 1.2 M1 

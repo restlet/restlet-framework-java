@@ -31,8 +31,11 @@ import java.security.Principal;
 import javax.ws.rs.core.SecurityContext;
 
 import org.restlet.Component;
-import org.restlet.Guard;
 import org.restlet.Server;
+import org.restlet.security.ChallengeGuard;
+import org.restlet.security.MemoryRealm;
+import org.restlet.security.Organization;
+import org.restlet.security.User;
 import org.restlet.data.ChallengeScheme;
 import org.restlet.data.Protocol;
 import org.restlet.ext.jaxrs.JaxRsApplication;
@@ -97,12 +100,19 @@ public class GuardedExample {
                 .getContext().createChildContext());
 
         // create a Guard
-        final Guard guard = new Guard(application.getContext(),
+        final ChallengeGuard guard = new ChallengeGuard(application.getContext(),
                 ChallengeScheme.HTTP_BASIC, "JAX-RS example");
+
         // set valid users and thier passwords.
-        guard.getSecrets().put("admin", "adminPW".toCharArray());
-        guard.getSecrets().put("alice", "alicesSecret".toCharArray());
-        guard.getSecrets().put("bob", "bobsSecret".toCharArray());
+        MemoryRealm realm = new MemoryRealm();
+        application.getContext().setRealm(realm);
+
+        Organization organization = new Organization();
+        realm.getOrganizations().add(organization);
+        
+        organization.getUsers().add(new User("admin", "adminPW".toCharArray()));
+        organization.getUsers().add(new User("alice", "alicesSecret".toCharArray()));
+        organization.getUsers().add(new User("bob", "bobsSecret".toCharArray()));
 
         // create an RoleChecker (see above)
         final ExampleRoleChecker roleChecker = new ExampleRoleChecker();
