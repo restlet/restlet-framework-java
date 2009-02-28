@@ -23,7 +23,9 @@ Changes log
           Dewitte.
         - JAX-RS extension now leverages the new security API.
           Contributed by Bruno Dumon.
-    - API changes
+        - Added setters for helpers in Engine. 
+          Suggested by Kevin Conaway.
+     - API changes
         - Added Role class and "roles" property to Application.
         - Fully refactored the security package introduce in 1.2 M1 
           based on community feed-back.

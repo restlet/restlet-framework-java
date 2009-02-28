@@ -53,6 +53,7 @@ import org.restlet.engine.http.StreamClientHelper;
 import org.restlet.engine.http.StreamServerHelper;
 import org.restlet.engine.local.ClapClientHelper;
 import org.restlet.engine.local.FileClientHelper;
+import org.restlet.engine.local.ZipClientHelper;
 import org.restlet.engine.security.AuthenticatorHelper;
 import org.restlet.engine.security.HttpAwsS3Helper;
 import org.restlet.engine.security.HttpBasicHelper;
@@ -294,16 +295,16 @@ public class Engine {
     }
 
     /** List of available authenticator helpers. */
-    private volatile List<AuthenticatorHelper> registeredAuthenticators;
+    private final List<AuthenticatorHelper> registeredAuthenticators;
 
     /** List of available client connectors. */
-    private volatile List<ClientHelper> registeredClients;
+    private final List<ClientHelper> registeredClients;
 
     /** List of available converter helpers. */
-    private volatile List<ConverterHelper> registeredConverters;
+    private final List<ConverterHelper> registeredConverters;
 
     /** List of available server connectors. */
-    private volatile List<ServerHelper> registeredServers;
+    private final List<ServerHelper> registeredServers;
 
     /**
      * Constructor that will automatically attempt to discover connectors.
@@ -757,6 +758,72 @@ public class Engine {
             }
 
         });
+    }
+
+    /**
+     * Sets the list of available authentication helpers.
+     * 
+     * @param registeredAuthenticators
+     *            The list of available authentication helpers.
+     */
+    public void setRegisteredAuthenticators(
+            List<AuthenticatorHelper> registeredAuthenticators) {
+        synchronized (this.registeredAuthenticators) {
+            this.registeredAuthenticators.clear();
+
+            if (registeredAuthenticators != null) {
+                this.registeredAuthenticators.addAll(registeredAuthenticators);
+            }
+        }
+    }
+
+    /**
+     * Sets the list of available client helpers.
+     * 
+     * @param registeredClients
+     *            The list of available client helpers.
+     */
+    public void setRegisteredClients(List<ClientHelper> registeredClients) {
+        synchronized (this.registeredClients) {
+            this.registeredClients.clear();
+
+            if (registeredClients != null) {
+                this.registeredClients.addAll(registeredClients);
+            }
+        }
+    }
+
+    /**
+     * Sets the list of available converter helpers.
+     * 
+     * @param registeredConverters
+     *            The list of available converter helpers.
+     */
+    public void setRegisteredConverters(
+            List<ConverterHelper> registeredConverters) {
+        synchronized (this.registeredConverters) {
+            this.registeredConverters.clear();
+
+            if (registeredConverters != null) {
+                this.registeredConverters.addAll(registeredConverters);
+            }
+        }
+    }
+
+    /**
+     * Sets the list of available server helpers.
+     * 
+     * @param registeredServers
+     *            The list of available server helpers.
+     */
+    public void setRegisteredServers(List<ServerHelper> registeredServers) {
+        synchronized (this.registeredServers) {
+            this.registeredServers.clear();
+
+            if (registeredServers != null) {
+                this.registeredServers.addAll(registeredServers);
+            }
+        }
     }
 
 }
