@@ -290,7 +290,7 @@ public class AlgorithmUtil {
 
     /**
      * Implementation of algorithm in JSR-311-Spec, Revision 151, Version
-     * 2009-08-27, Section 3.7.2, Part 1.e and nearly the same part 2f+2g.<br>
+     * 2008-08-27, Section 3.7.2, Part 1.e and nearly the same part 2f+2g.<br>
      * Sort E using
      * <ol>
      * <li>the number of literal characters in each member as the primary key
