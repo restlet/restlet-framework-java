@@ -342,7 +342,7 @@ public class JaxRsRestlet extends Restlet {
         request.setRootRef(new Reference(baseRef.toString()));
         // NICE Normally, the "rootRef" property is set by the VirtualHost, each
         // time a request is handled by one of its routes.
-        // Email from Jerome, 2009-09-22
+        // Email from Jerome, 2008-09-22
         try {
             CallContext callContext;
             callContext = new CallContext(request, response, this.roleChecker);
@@ -371,7 +371,7 @@ public class JaxRsRestlet extends Restlet {
     }
 
     /**
-     * Implementation of algorithm in JAX-RS-Spec (2009-04-16), Section 3.7.2
+     * Implementation of algorithm in JAX-RS-Spec (2008-04-16), Section 3.7.2
      * "Request Matching"
      * 
      * @return (Sub)Resource Method
@@ -400,7 +400,7 @@ public class JaxRsRestlet extends Restlet {
     }
 
     /**
-     * Identifies the root resource class, see JAX-RS-Spec (2009-04-16), section
+     * Identifies the root resource class, see JAX-RS-Spec (2008-04-16), section
      * 3.7.2 "Request Matching", Part 1: "Identify the root resource class"
      * 
      * @param u
@@ -449,7 +449,7 @@ public class JaxRsRestlet extends Restlet {
 
     /**
      * Obtains the object that will handle the request, see JAX-RS-Spec
-     * (2009-04-16), section 3.7.2 "Request Matching", Part 2: "Obtain the
+     * (2008-04-16), section 3.7.2 "Request Matching", Part 2: "btain the
      * object that will handle the request"
      * 
      * @param rroRemPathAndMatchedPath
@@ -485,7 +485,7 @@ public class JaxRsRestlet extends Restlet {
                     continue;
                 if (matchingResult.getFinalCapturingGroup().isEmptyOrSlash())
                     eWithMethod.add(methodOrLocator);
-                // the following is added by Stephan (is not in spec 2009-03-06)
+                // the following is added by Stephan (is not in spec 2008-03-06)
                 else if (methodOrLocator instanceof SubResourceLocator)
                     eWithMethod.add(methodOrLocator);
             }
@@ -518,7 +518,7 @@ public class JaxRsRestlet extends Restlet {
 
     /**
      * Identifies the method that will handle the request, see JAX-RS-Spec
-     * (2009-04-16), section 3.7.2 "Request Matching", Part 3: Identify the
+     * (2008-04-16), section 3.7.2 "Request Matching", Part 3: Identify the
      * method that will handle the request:"
      * 
      * @return Resource Object and Method, that handle the request.
@@ -790,7 +790,7 @@ public class JaxRsRestlet extends Restlet {
     }
 
     /**
-     * Determines the MediaType for a response, see JAX-RS-Spec (2009-08-27),
+     * Determines the MediaType for a response, see JAX-RS-Spec (2008-08-27),
      * section 3.8 "Determining the MediaType of Responses"
      * 
      * @param jaxRsResponseMediaType
@@ -1021,6 +1021,7 @@ public class JaxRsRestlet extends Restlet {
      * @deprecated Use {@link ClientInfo#isInRole(org.restlet.security.Role)}
      *             instead
      */
+    @Deprecated
     public RoleChecker getRoleChecker() {
         return roleChecker;
     }
@@ -1036,8 +1037,8 @@ public class JaxRsRestlet extends Restlet {
      * @deprecated Use {@link ClientInfo#isInRole(org.restlet.security.Role)}
      *             instead
      */
-    public void setRoleChecker(RoleChecker roleChecker)
-            throws IllegalArgumentException {
+    @Deprecated
+    public void setRoleChecker(RoleChecker roleChecker) {
         this.roleChecker = roleChecker;
     }
 

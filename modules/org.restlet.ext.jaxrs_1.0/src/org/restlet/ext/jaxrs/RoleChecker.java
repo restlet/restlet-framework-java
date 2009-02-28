@@ -71,6 +71,7 @@ import org.restlet.data.ClientInfo;
  * @see ClientInfo#isInRole(org.restlet.security.Role)
  * @deprecated Use the new Restlet security model instead.
  */
+@Deprecated
 public interface RoleChecker {
 
     /**
