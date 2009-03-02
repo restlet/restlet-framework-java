@@ -53,7 +53,6 @@ import org.restlet.engine.http.StreamClientHelper;
 import org.restlet.engine.http.StreamServerHelper;
 import org.restlet.engine.local.ClapClientHelper;
 import org.restlet.engine.local.FileClientHelper;
-import org.restlet.engine.local.ZipClientHelper;
 import org.restlet.engine.security.AuthenticatorHelper;
 import org.restlet.engine.security.HttpAwsS3Helper;
 import org.restlet.engine.security.HttpBasicHelper;
