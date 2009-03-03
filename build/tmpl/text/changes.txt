@@ -15,6 +15,9 @@ Changes log
          its 'timeToLive' parameter. Reported by Peter Becker.
        - Added dependencies to the fileupload and dbcp modules for 
          OSGi runtime. Reported by Rob Heittman.
+       - Fixed "Content-location" header value set by the 
+         DirectoryResource when files are served from a CLAP connector. 
+         Reported by David Fogel.
     - Misc
        - 
     
