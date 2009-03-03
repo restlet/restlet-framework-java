@@ -12,7 +12,9 @@ Changes log
          with the OS. A workaround to reduce this was to invoke the
          garbage collection. Reported by Kevin Conaway.
        - The CLAP connector didn't set the expiration date based on
-         its 'timeToLive' parameter. Reported by Peter Becker.  
+         its 'timeToLive' parameter. Reported by Peter Becker.
+       - Added dependencies to the fileupload and dbcp modules for 
+         OSGi runtime. Reported by Rob Heittman.
     - Misc
        - 
     
