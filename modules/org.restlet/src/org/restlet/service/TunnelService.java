@@ -29,10 +29,11 @@ package org.restlet.service;
 
 import org.restlet.data.ClientInfo;
 import org.restlet.data.Request;
+import org.restlet.engine.http.HttpConstants;
 
 /**
  * Service tunneling request method or client preferences. The tunneling can use
- * query parameters and file-like extensions. This is particularly useful for
+ * query parameters, file-like extensions and specific headers. This is particularly useful for
  * browser-based applications that can't fully control the HTTP requests sent.<br>
  * <br>
  * Here is the list of the default parameter names supported:
@@ -82,6 +83,13 @@ import org.restlet.data.Request;
  * <td>For GET requests, replaces the accepted media type set by the given
  * value.</td>
  * </tr>
+ * <tr>
+ * <td>methodHeaderParameter</td>
+ * <td>X-HTTP-Method-Override</td>
+ * <td>Name of non-standard header. It is a good practive to prefix it with "X-".</td>
+ * <td>For POST requests, let you specify the actual method to use (DELETE, PUT,
+ * MOVE, etc.).</td>
+ * </tr>
  * </table>
  * <br>
  * The client preferences can also be updated based on the extensions available
@@ -123,11 +131,17 @@ public class TunnelService extends Service {
      */
     private volatile boolean extensionsTunnel;
 
+    /** Indicates if the method can be tunnelled via the header. */
+    private volatile boolean headerTunnel;
+
     /** The name of the parameter containing the accepted language. */
     private volatile String languageParameter;
 
     /** The name of the parameter containing the accepted media type. */
     private volatile String mediaTypeParameter;
+
+    /** The name of the header that contains the method name. */
+    private volatile String methodHeaderParameter;
 
     /** The name of the parameter containing the method name. */
     private volatile String methodParameter;
@@ -205,7 +219,7 @@ public class TunnelService extends Service {
     }
 
     /**
-     * Constructor.
+     * Constructor that enables the header tunneling.
      * 
      * @param enabled
      *            True if the service has been enabled.
@@ -225,6 +239,34 @@ public class TunnelService extends Service {
     public TunnelService(boolean enabled, boolean methodTunnel,
             boolean preferencesTunnel, boolean queryTunnel,
             boolean extensionsTunnel, boolean userAgentTunnel) {
+        this(enabled, methodTunnel, preferencesTunnel, queryTunnel,
+                extensionsTunnel, userAgentTunnel, true);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param enabled
+     *            True if the service has been enabled.
+     * @param methodTunnel
+     *            Indicates if the method can be tunnelled using a query
+     *            parameter.
+     * @param preferencesTunnel
+     *            Indicates if the client preferences can be tunnelled using
+     *            query parameters or file-like extensions or user agent string.
+     * @param queryTunnel
+     *            Indicates if tunneling can use query parameters.
+     * @param extensionsTunnel
+     *            Indicates if tunneling can use file-like extensions.
+     * @param userAgentTunnel
+     *            Indicates if tunneling can use user agent string.
+     * @param methodHeaderTunnel
+     *            Indicates if method can be tunnelled via a specifc header.
+     */
+    public TunnelService(boolean enabled, boolean methodTunnel,
+            boolean preferencesTunnel, boolean queryTunnel,
+            boolean extensionsTunnel, boolean userAgentTunnel,
+            boolean methodHeaderTunnel) {
         super(enabled);
 
         this.extensionsTunnel = extensionsTunnel;
@@ -232,12 +274,14 @@ public class TunnelService extends Service {
         this.preferencesTunnel = preferencesTunnel;
         this.queryTunnel = queryTunnel;
         this.userAgentTunnel = userAgentTunnel;
+        this.headerTunnel = methodHeaderTunnel;
 
         this.characterSetParameter = "charset";
         this.encodingParameter = "encoding";
         this.languageParameter = "language";
         this.mediaTypeParameter = "media";
         this.methodParameter = "method";
+        this.methodHeaderParameter = HttpConstants.HEADER_X_HTTP_METHOD_OVERRIDE;
     }
 
     /**
@@ -290,6 +334,15 @@ public class TunnelService extends Service {
     }
 
     /**
+     * Returns the name of the header containing the method name.
+     * 
+     * @return the name of the header containing the method name.
+     */
+    public String getMethodHeaderParameter() {
+        return methodHeaderParameter;
+    }
+
+    /**
      * Returns the method parameter name.
      * 
      * @return The method parameter name.
@@ -307,6 +360,15 @@ public class TunnelService extends Service {
      */
     public boolean isExtensionsTunnel() {
         return this.extensionsTunnel;
+    }
+
+    /**
+     * Indicates if the method can be tunnelled via the header.
+     * 
+     * @return True if the method can be tunnelled via the header.
+     */
+    public boolean isHeaderTunnel() {
+        return headerTunnel;
     }
 
     /**
@@ -382,6 +444,16 @@ public class TunnelService extends Service {
     }
 
     /**
+     * Indicates if the method can be tunnelled via the header.
+     * 
+     * @param methodTunnelViaHeader
+     *            True if the method can be tunnelled via the header.
+     */
+    public void setHeaderTunnel(boolean headerTunnel) {
+        this.headerTunnel = headerTunnel;
+    }
+
+    /**
      * Sets the name of the parameter containing the accepted language.
      * 
      * @param parameterName
@@ -399,6 +471,16 @@ public class TunnelService extends Service {
      */
     public void setMediaTypeParameter(String parameterName) {
         this.mediaTypeParameter = parameterName;
+    }
+
+    /**
+     * Sets the name of the header containing the method name.
+     * 
+     * @param methodHeaderParameter
+     *            The name of the header containing the method name.
+     */
+    public void setMethodHeaderParameter(String methodHeaderParameter) {
+        this.methodHeaderParameter = methodHeaderParameter;
     }
 
     /**

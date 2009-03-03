@@ -43,6 +43,7 @@ import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
 import org.restlet.data.Method;
+import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
@@ -52,6 +53,7 @@ import org.restlet.engine.http.HttpConstants;
 import org.restlet.engine.http.PreferenceUtils;
 import org.restlet.service.MetadataService;
 import org.restlet.service.TunnelService;
+import org.restlet.util.Series;
 
 /**
  * Filter tunneling browser calls into full REST calls. The request method can
@@ -88,6 +90,10 @@ public class TunnelFilter extends Filter {
 
         if (getTunnelService().isQueryTunnel()) {
             processQuery(request);
+        }
+
+        if (getTunnelService().isHeaderTunnel()) {
+            processHeader(request);
         }
 
         return CONTINUE;
@@ -198,6 +204,35 @@ public class TunnelFilter extends Filter {
         }
 
         return extensionsModified;
+    }
+
+    /**
+     * Updates the request method based on specific header.
+     * 
+     * @param request
+     *            The request to update.
+     */
+    @SuppressWarnings("unchecked")
+    private void processHeader(Request request) {
+        final TunnelService tunnelService = getTunnelService();
+        if (tunnelService.isMethodTunnel()) {
+            // get the headers
+            final Series<Parameter> extraHeaders = (Series<Parameter>) request
+                    .getAttributes().get(HttpConstants.ATTRIBUTE_HEADERS);
+
+            if (extraHeaders != null) {
+                // look for the new value of the method
+                final String newMethodValue = extraHeaders.getFirstValue(
+                        getTunnelService().getMethodHeaderParameter(), true);
+
+                if (newMethodValue != null
+                        && newMethodValue.trim().length() > 0) {
+                    // set the current method to the new method
+                    request.setMethod(Method.valueOf(newMethodValue));
+
+                }
+            }
+        }
     }
 
     /**
@@ -419,7 +454,7 @@ public class TunnelFilter extends Filter {
     }
 
     /**
-     * Updates the client info with the given metadata. It clears exisiting
+     * Updates the client info with the given metadata. It clears existing
      * preferences for the same type of metadata if necessary.
      * 
      * @param clientInfo

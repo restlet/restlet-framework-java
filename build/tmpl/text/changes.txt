@@ -25,6 +25,8 @@ Changes log
           Contributed by Bruno Dumon.
         - Added setters for helpers in Engine. 
           Suggested by Kevin Conaway.
+        - Added the ability to tunnel methods via a specific header.
+          Contributed by Fabrice Boileau.
      - API changes
         - Added Role class and "roles" property to Application.
         - Fully refactored the security package introduce in 1.2 M1 
