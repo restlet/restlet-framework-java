@@ -549,6 +549,12 @@ public class DirectoryResource extends Resource {
                 }
             }
         } else if (this.fileTarget && (this.fileContent != null)) {
+            // Sets the identifier of the target representation.
+            if (getRequest().getOriginalRef() != null) {
+                this.fileContent.setIdentifier(getRequest().getOriginalRef());
+            } else {
+                this.fileContent.setIdentifier(getRequest().getResourceRef());
+            }
             results.add(this.fileContent);
         }
 
