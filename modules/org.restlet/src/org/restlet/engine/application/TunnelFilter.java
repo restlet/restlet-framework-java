@@ -92,8 +92,8 @@ public class TunnelFilter extends Filter {
             processQuery(request);
         }
 
-        if (getTunnelService().isHeaderTunnel()) {
-            processHeader(request);
+        if (getTunnelService().isHeadersTunnel()) {
+            processHeaders(request);
         }
 
         return CONTINUE;
@@ -213,8 +213,9 @@ public class TunnelFilter extends Filter {
      *            The request to update.
      */
     @SuppressWarnings("unchecked")
-    private void processHeader(Request request) {
+    private void processHeaders(Request request) {
         final TunnelService tunnelService = getTunnelService();
+
         if (tunnelService.isMethodTunnel()) {
             // get the headers
             final Series<Parameter> extraHeaders = (Series<Parameter>) request
@@ -223,13 +224,12 @@ public class TunnelFilter extends Filter {
             if (extraHeaders != null) {
                 // look for the new value of the method
                 final String newMethodValue = extraHeaders.getFirstValue(
-                        getTunnelService().getMethodHeaderParameter(), true);
+                        getTunnelService().getMethodHeader(), true);
 
                 if (newMethodValue != null
                         && newMethodValue.trim().length() > 0) {
                     // set the current method to the new method
                     request.setMethod(Method.valueOf(newMethodValue));
-
                 }
             }
         }

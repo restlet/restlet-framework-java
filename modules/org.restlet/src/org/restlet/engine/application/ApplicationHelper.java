@@ -111,6 +111,9 @@ public class ApplicationHelper extends ChainHelper<Application> {
 
         // Actually handle call
         super.handle(request, response);
+        
+        // Clean the current application
+        Application.setCurrent(null);
     }
 
     /** Start hook. */

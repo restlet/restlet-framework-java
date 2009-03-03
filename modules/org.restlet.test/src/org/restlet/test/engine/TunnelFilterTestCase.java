@@ -370,14 +370,14 @@ public class TunnelFilterTestCase extends TestCase {
         assertMethod(Method.POST);
 
         createPost(UNEFFECTED);
-        tunnelFilter.getTunnelService().setMethodHeaderParameter(
+        tunnelFilter.getTunnelService().setMethodHeader(
                 HttpConstants.HEADER_X_FORWARDED_FOR);
         this.request.setAttributes(attributesHeader);
         filter();
         assertNotSameMethod(Method.PUT);
 
         createPost(UNEFFECTED);
-        tunnelFilter.getTunnelService().setMethodHeaderParameter(
+        tunnelFilter.getTunnelService().setMethodHeader(
                 HttpConstants.HEADER_X_FORWARDED_FOR);
         tunnelFilter.getTunnelService().setHeaderTunnel(false);
         this.request.setAttributes(attributesHeader);

@@ -33,8 +33,9 @@ import org.restlet.engine.http.HttpConstants;
 
 /**
  * Service tunneling request method or client preferences. The tunneling can use
- * query parameters, file-like extensions and specific headers. This is particularly useful for
- * browser-based applications that can't fully control the HTTP requests sent.<br>
+ * query parameters, file-like extensions and specific headers. This is
+ * particularly useful for browser-based applications that can't fully control
+ * the HTTP requests sent.<br>
  * <br>
  * Here is the list of the default parameter names supported:
  * <table>
@@ -86,7 +87,8 @@ import org.restlet.engine.http.HttpConstants;
  * <tr>
  * <td>methodHeaderParameter</td>
  * <td>X-HTTP-Method-Override</td>
- * <td>Name of non-standard header. It is a good practive to prefix it with "X-".</td>
+ * <td>Name of non-standard header. It is a good practice to prefix it with
+ * "X-".</td>
  * <td>For POST requests, let you specify the actual method to use (DELETE, PUT,
  * MOVE, etc.).</td>
  * </tr>
@@ -126,12 +128,12 @@ public class TunnelService extends Service {
     private volatile String encodingParameter;
 
     /**
-     * Indicates if the client preferences can be tunnelled via file-like
+     * Indicates if the client preferences can be tunneled via file-like
      * extensions.
      */
     private volatile boolean extensionsTunnel;
 
-    /** Indicates if the method can be tunnelled via the header. */
+    /** Indicates if the method can be tunneled via the header. */
     private volatile boolean headerTunnel;
 
     /** The name of the parameter containing the accepted language. */
@@ -141,25 +143,25 @@ public class TunnelService extends Service {
     private volatile String mediaTypeParameter;
 
     /** The name of the header that contains the method name. */
-    private volatile String methodHeaderParameter;
+    private volatile String methodHeader;
 
     /** The name of the parameter containing the method name. */
     private volatile String methodParameter;
 
-    /** Indicates if the method name can be tunnelled. */
+    /** Indicates if the method name can be tunneled. */
     private volatile boolean methodTunnel;
 
-    /** Indicates if the client preferences can be tunnelled. */
+    /** Indicates if the client preferences can be tunneled. */
     private volatile boolean preferencesTunnel;
 
     /**
-     * Indicates if the method and client preferences can be tunnelled via query
+     * Indicates if the method and client preferences can be tunneled via query
      * parameters.
      */
     private volatile boolean queryTunnel;
 
     /**
-     * Indicates if the client preferences can be tunnelled via the user agent
+     * Indicates if the client preferences can be tunneled via the user agent
      * string.
      */
     private volatile boolean userAgentTunnel;
@@ -169,9 +171,9 @@ public class TunnelService extends Service {
      * user agent tunnels.
      * 
      * @param methodTunnel
-     *            Indicates if the method name can be tunnelled.
+     *            Indicates if the method name can be tunneled.
      * @param preferencesTunnel
-     *            Indicates if the client preferences can be tunnelled by query
+     *            Indicates if the client preferences can be tunneled by query
      *            parameters or file-like extensions or user agent string.
      */
     public TunnelService(boolean methodTunnel, boolean preferencesTunnel) {
@@ -185,9 +187,9 @@ public class TunnelService extends Service {
      * @param enabled
      *            True if the service has been enabled.
      * @param methodTunnel
-     *            Indicates if the method name can be tunnelled.
+     *            Indicates if the method name can be tunneled.
      * @param preferencesTunnel
-     *            Indicates if the client preferences can be tunnelled by query
+     *            Indicates if the client preferences can be tunneled by query
      *            parameters or file-like extensions or user agent string.
      */
     public TunnelService(boolean enabled, boolean methodTunnel,
@@ -201,10 +203,10 @@ public class TunnelService extends Service {
      * @param enabled
      *            True if the service has been enabled.
      * @param methodTunnel
-     *            Indicates if the method can be tunnelled using a query
+     *            Indicates if the method can be tunneled using a query
      *            parameter.
      * @param preferencesTunnel
-     *            Indicates if the client preferences can be tunnelled using
+     *            Indicates if the client preferences can be tunneled using
      *            query parameters or file-like extensions or user agent string.
      * @param queryTunnel
      *            Indicates if tunneling can use query parameters.
@@ -224,10 +226,10 @@ public class TunnelService extends Service {
      * @param enabled
      *            True if the service has been enabled.
      * @param methodTunnel
-     *            Indicates if the method can be tunnelled using a query
+     *            Indicates if the method can be tunneled using a query
      *            parameter.
      * @param preferencesTunnel
-     *            Indicates if the client preferences can be tunnelled using
+     *            Indicates if the client preferences can be tunneled using
      *            query parameters or file-like extensions or user agent string.
      * @param queryTunnel
      *            Indicates if tunneling can use query parameters.
@@ -249,10 +251,10 @@ public class TunnelService extends Service {
      * @param enabled
      *            True if the service has been enabled.
      * @param methodTunnel
-     *            Indicates if the method can be tunnelled using a query
+     *            Indicates if the method can be tunneled using a query
      *            parameter.
      * @param preferencesTunnel
-     *            Indicates if the client preferences can be tunnelled using
+     *            Indicates if the client preferences can be tunneled using
      *            query parameters or file-like extensions or user agent string.
      * @param queryTunnel
      *            Indicates if tunneling can use query parameters.
@@ -261,7 +263,7 @@ public class TunnelService extends Service {
      * @param userAgentTunnel
      *            Indicates if tunneling can use user agent string.
      * @param methodHeaderTunnel
-     *            Indicates if method can be tunnelled via a specifc header.
+     *            Indicates if method can be tunneled via a specific header.
      */
     public TunnelService(boolean enabled, boolean methodTunnel,
             boolean preferencesTunnel, boolean queryTunnel,
@@ -281,17 +283,17 @@ public class TunnelService extends Service {
         this.languageParameter = "language";
         this.mediaTypeParameter = "media";
         this.methodParameter = "method";
-        this.methodHeaderParameter = HttpConstants.HEADER_X_HTTP_METHOD_OVERRIDE;
+        this.methodHeader = HttpConstants.HEADER_X_HTTP_METHOD_OVERRIDE;
     }
 
     /**
-     * Indicates if the request from a given client can be tunnelled. The
-     * default implementation always return true. This could be customize to
-     * restrict the usage of the tunnel service.
+     * Indicates if the request from a given client can be tunneled. The default
+     * implementation always return true. This could be customize to restrict
+     * the usage of the tunnel service.
      * 
      * @param client
      *            The client to test.
-     * @return True if the request from a given client can be tunnelled.
+     * @return True if the request from a given client can be tunneled.
      */
     public boolean allowClient(ClientInfo client) {
         return true;
@@ -338,8 +340,8 @@ public class TunnelService extends Service {
      * 
      * @return the name of the header containing the method name.
      */
-    public String getMethodHeaderParameter() {
-        return methodHeaderParameter;
+    public String getMethodHeader() {
+        return methodHeader;
     }
 
     /**
@@ -352,10 +354,9 @@ public class TunnelService extends Service {
     }
 
     /**
-     * Indicates if the client preferences can be tunnelled via the extensions.
+     * Indicates if the client preferences can be tunneled via the extensions.
      * 
-     * @return True if the client preferences can be tunnelled via the
-     *         extensions
+     * @return True if the client preferences can be tunneled via the extensions
      * @see Request#getOriginalRef()
      */
     public boolean isExtensionsTunnel() {
@@ -363,48 +364,48 @@ public class TunnelService extends Service {
     }
 
     /**
-     * Indicates if the method can be tunnelled via the header.
+     * Indicates if the method can be tunneled via the header.
      * 
-     * @return True if the method can be tunnelled via the header.
+     * @return True if the method can be tunneled via the header.
      */
-    public boolean isHeaderTunnel() {
+    public boolean isHeadersTunnel() {
         return headerTunnel;
     }
 
     /**
-     * Indicates if the method name can be tunnelled.
+     * Indicates if the method name can be tunneled.
      * 
-     * @return True if the method name can be tunnelled.
+     * @return True if the method name can be tunneled.
      */
     public boolean isMethodTunnel() {
         return this.methodTunnel;
     }
 
     /**
-     * Indicates if the client preferences can be tunnelled via the query
+     * Indicates if the client preferences can be tunneled via the query
      * parameters or file extensions.
      * 
-     * @return True if the client preferences can be tunnelled.
+     * @return True if the client preferences can be tunneled.
      */
     public boolean isPreferencesTunnel() {
         return this.preferencesTunnel;
     }
 
     /**
-     * Indicates if the method and client preferences can be tunnelled via query
+     * Indicates if the method and client preferences can be tunneled via query
      * parameters or file extensions.
      * 
-     * @return True if the method and client preferences can be tunnelled.
+     * @return True if the method and client preferences can be tunneled.
      */
     public boolean isQueryTunnel() {
         return this.queryTunnel;
     }
 
     /**
-     * Indicates if the client preferences can be tunnelled according to the
-     * user agent.
+     * Indicates if the client preferences can be tunneled according to the user
+     * agent.
      * 
-     * @return True if the client preferences can be tunnelled according to the
+     * @return True if the client preferences can be tunneled according to the
      *         user agent.
      */
     public boolean isUserAgentTunnel() {
@@ -432,10 +433,10 @@ public class TunnelService extends Service {
     }
 
     /**
-     * Indicates if the client preferences can be tunnelled via the extensions.
+     * Indicates if the client preferences can be tunneled via the extensions.
      * 
      * @param extensionTunnel
-     *            True if the client preferences can be tunnelled via the
+     *            True if the client preferences can be tunneled via the
      *            extensions.
      * @see Request#getOriginalRef()
      */
@@ -444,10 +445,10 @@ public class TunnelService extends Service {
     }
 
     /**
-     * Indicates if the method can be tunnelled via the header.
+     * Indicates if the method can be tunneled via the header.
      * 
      * @param methodTunnelViaHeader
-     *            True if the method can be tunnelled via the header.
+     *            True if the method can be tunneled via the header.
      */
     public void setHeaderTunnel(boolean headerTunnel) {
         this.headerTunnel = headerTunnel;
@@ -476,11 +477,11 @@ public class TunnelService extends Service {
     /**
      * Sets the name of the header containing the method name.
      * 
-     * @param methodHeaderParameter
+     * @param methodHeader
      *            The name of the header containing the method name.
      */
-    public void setMethodHeaderParameter(String methodHeaderParameter) {
-        this.methodHeaderParameter = methodHeaderParameter;
+    public void setMethodHeader(String methodHeader) {
+        this.methodHeader = methodHeader;
     }
 
     /**
@@ -494,21 +495,21 @@ public class TunnelService extends Service {
     }
 
     /**
-     * Indicates if the method name can be tunnelled.
+     * Indicates if the method name can be tunneled.
      * 
      * @param methodTunnel
-     *            True if the method name can be tunnelled.
+     *            True if the method name can be tunneled.
      */
     public void setMethodTunnel(boolean methodTunnel) {
         this.methodTunnel = methodTunnel;
     }
 
     /**
-     * Indicates if the client preferences can be tunnelled via the query
+     * Indicates if the client preferences can be tunneled via the query
      * parameters.
      * 
      * @param preferencesTunnel
-     *            True if the client preferences can be tunnelled via the query
+     *            True if the client preferences can be tunneled via the query
      *            parameters.
      */
     public void setPreferencesTunnel(boolean preferencesTunnel) {
@@ -516,11 +517,11 @@ public class TunnelService extends Service {
     }
 
     /**
-     * Indicates if the method and client preferences can be tunnelled via query
+     * Indicates if the method and client preferences can be tunneled via query
      * parameters.
      * 
      * @param queryTunnel
-     *            True if the method and client preferences can be tunnelled via
+     *            True if the method and client preferences can be tunneled via
      *            query parameters.
      */
     public void setQueryTunnel(boolean queryTunnel) {
@@ -528,11 +529,11 @@ public class TunnelService extends Service {
     }
 
     /**
-     * Indicates if the client preferences can be tunnelled according to the
-     * user agent.
+     * Indicates if the client preferences can be tunneled according to the user
+     * agent.
      * 
      * @param userAgentTunnel
-     *            True if the client preferences can be tunnelled according to
+     *            True if the client preferences can be tunneled according to
      *            the user agent.
      */
     public void setUserAgentTunnel(boolean userAgentTunnel) {
