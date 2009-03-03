@@ -28,7 +28,9 @@
 package org.restlet.test.engine;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import junit.framework.TestCase;
 
@@ -36,15 +38,19 @@ import org.restlet.Application;
 import org.restlet.Context;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.Encoding;
+import org.restlet.data.Form;
 import org.restlet.data.Language;
 import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
 import org.restlet.data.Method;
+import org.restlet.data.Parameter;
 import org.restlet.data.Preference;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.engine.application.TunnelFilter;
+import org.restlet.engine.http.HttpConstants;
+import org.restlet.util.Series;
 
 /**
  * Tests cases for the tunnel filter.
@@ -116,6 +122,14 @@ public class TunnelFilterTestCase extends TestCase {
         assertEqualSet(this.accMediaTypes, mediaTypes);
     }
 
+    void assertMethod(Method method) {
+        assertEquals(this.request.getMethod(), method);
+    }
+
+    void assertNotSameMethod(Method method) {
+        assertNotSame(this.request.getMethod(), method);
+    }
+
     /**
      * @param expectedCut
      * @param expectedExtensions
@@ -166,12 +180,20 @@ public class TunnelFilterTestCase extends TestCase {
     }
 
     /**
+     * 
+     */
+    void createPost(String reference) {
+        createRequest(Method.POST, reference);
+    }
+
+    /**
      * Creates a {@link Request} and put it into {@link #request}.<br>
      * To use the methods provided by the test case class use ever the provided
      * create methods to create a request.
      * 
      * @param method
      * @param reference
+     * @see #createPost(String)
      * @see #createGet(String)
      * @see #createGetFromPath(String)
      */
@@ -327,6 +349,41 @@ public class TunnelFilterTestCase extends TestCase {
         assertLanguages();
         assertEncodings();
         assertCharSets();
+    }
+
+    public void testMethodTunnelingViaHeader() {
+        tunnelFilter.getTunnelService().setMethodTunnel(true);
+        Map<String, Object> attributesHeader = new HashMap<String, Object>();
+        Series<Parameter> headers = new Form();
+        headers.add(HttpConstants.HEADER_X_HTTP_METHOD_OVERRIDE, Method.GET
+                .getName());
+        headers.add(HttpConstants.HEADER_X_FORWARDED_FOR, "TEST");
+        attributesHeader.put(HttpConstants.ATTRIBUTE_HEADERS, headers);
+
+        createGet(UNEFFECTED);
+        this.request.setAttributes(attributesHeader);
+        filter();
+        assertMethod(Method.GET);
+
+        createPost(UNEFFECTED);
+        filter();
+        assertMethod(Method.POST);
+
+        createPost(UNEFFECTED);
+        tunnelFilter.getTunnelService().setMethodHeaderParameter(
+                HttpConstants.HEADER_X_FORWARDED_FOR);
+        this.request.setAttributes(attributesHeader);
+        filter();
+        assertNotSameMethod(Method.PUT);
+
+        createPost(UNEFFECTED);
+        tunnelFilter.getTunnelService().setMethodHeaderParameter(
+                HttpConstants.HEADER_X_FORWARDED_FOR);
+        tunnelFilter.getTunnelService().setHeaderTunnel(false);
+        this.request.setAttributes(attributesHeader);
+        filter();
+        assertMethod(Method.POST);
+
     }
 
     public void testWithMatrixParam() {
