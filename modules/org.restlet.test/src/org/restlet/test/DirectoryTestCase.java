@@ -29,6 +29,7 @@ package org.restlet.test;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 
 import org.restlet.Application;
 import org.restlet.Component;
@@ -67,15 +68,15 @@ public class DirectoryTestCase extends RestletTestCase {
          *            The test directory.
          */
         public MyApplication(File testDirectory) {
-            setTestDirectory(testDirectory);
+            // Create a DirectoryHandler that manages a local Directory
+            this.directory = new Directory(getContext(), LocalReference
+                    .createFileReference(testDirectory));
+            this.directory.setNegotiateContent(true);
+            this.testDirectory = testDirectory;
         }
 
         @Override
         public Restlet createRoot() {
-            // Create a DirectoryHandler that manages a local Directory
-            this.directory = new Directory(getContext(), LocalReference
-                    .createFileReference(getTestDirectory()));
-            this.directory.setNegotiateContent(true);
             return this.directory;
         }
 
@@ -93,6 +94,14 @@ public class DirectoryTestCase extends RestletTestCase {
 
         public void setTestDirectory(File testDirectory) {
             this.testDirectory = testDirectory;
+            final String rootIdentifier = LocalReference.createFileReference(
+                    testDirectory).getIdentifier();
+
+            if (rootIdentifier.endsWith("/")) {
+                this.directory.setRootRef(new Reference(rootIdentifier));
+            } else {
+                this.directory.setRootRef(new Reference(rootIdentifier + "/"));
+            }
         }
     }
 
@@ -179,7 +188,7 @@ public class DirectoryTestCase extends RestletTestCase {
         try {
             // Create a temporary directory for the tests
             this.testDir = new File(System.getProperty("java.io.tmpdir"),
-                    "DirectoryTestCase");
+                    "DirectoryTestCase/tests1" + new Date().getTime());
 
             // Create a new Restlet component
             final Component clientComponent = new Component();
@@ -196,12 +205,18 @@ public class DirectoryTestCase extends RestletTestCase {
             // Allow extensions tunneling
             application.getTunnelService().setExtensionsTunnel(true);
             deleteDir(this.testDir);
-            this.testDir.mkdir();
+            this.testDir = new File(System.getProperty("java.io.tmpdir"),
+                    "DirectoryTestCase/tests2" + new Date().getTime());
+            this.testDir.mkdirs();
+            application.setTestDirectory(testDir);
 
             // Test the directory Restlet with an index name
             testDirectory(application, application.getDirectory(), "index");
             deleteDir(this.testDir);
-            this.testDir.mkdir();
+            this.testDir = new File(System.getProperty("java.io.tmpdir"),
+                    "DirectoryTestCase/tests3" + new Date().getTime());
+            this.testDir.mkdirs();
+            application.setTestDirectory(testDir);
 
             // Test the directory Restlet with no index name
             testDirectory(application, application.getDirectory(), "");
@@ -209,17 +224,26 @@ public class DirectoryTestCase extends RestletTestCase {
             // Avoid extensions tunneling
             application.getTunnelService().setExtensionsTunnel(false);
             deleteDir(this.testDir);
-            this.testDir.mkdir();
+            this.testDir = new File(System.getProperty("java.io.tmpdir"),
+                    "DirectoryTestCase/tests4" + new Date().getTime());
+            this.testDir.mkdirs();
+            application.setTestDirectory(testDir);
 
             // Test the directory Restlet with an index name
             testDirectory(application, application.getDirectory(), "index");
             deleteDir(this.testDir);
-            this.testDir.mkdir();
+            this.testDir = new File(System.getProperty("java.io.tmpdir"),
+                    "DirectoryTestCase/tests5" + new Date().getTime());
+            this.testDir.mkdirs();
+            application.setTestDirectory(testDir);
 
             // Test the directory Restlet with no index name
             testDirectory(application, application.getDirectory(), "");
             deleteDir(this.testDir);
-            this.testDir.mkdir();
+            this.testDir = new File(System.getProperty("java.io.tmpdir"),
+                    "DirectoryTestCase/tests6" + new Date().getTime());
+            this.testDir.mkdirs();
+            application.setTestDirectory(testDir);
 
             // Test the access to the sub directories.
             testDirectoryDeeplyAccessible(application, application
