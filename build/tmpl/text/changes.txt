@@ -11,6 +11,10 @@ Changes log
           "org.restlet.resource" package into a new 
           "org.restlet.representation" package. Make sure to adjust your
           import instructions.
+    - Bugs fixed
+        - Fixed typo in the declaration of the 
+          o.r.e.Engine#DESCRIPTOR_AUTHENTICATOR. Reported by Rémi 
+          Dewitte.    
     - Enhancements
         - Added a getItemIterator() on RestletFileUpload to facilitate
           access to parts in streaming mode. Suggested by Paul Austin.
@@ -63,7 +67,7 @@ Changes log
         - Removed Link.identifier and Graph.identifier properties.
         - Series#getFirstValue() now returns the default value if the
           parameter exists but has a null value. 
-          Suggested by Jonathan Hall
+          Suggested by Jonathan Hall.
      - Misc
         - Upgraded Simple server to version 4.1.2. 
           Contributed by Niall Gallagher.

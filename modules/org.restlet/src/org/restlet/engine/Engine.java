@@ -70,7 +70,7 @@ public class Engine {
 
     public static final String DESCRIPTOR = "META-INF/services";
 
-    public static final String DESCRIPTOR_AUTHENTICATOR = "org.restlet.engine.Authenticatorelper";
+    public static final String DESCRIPTOR_AUTHENTICATOR = "org.restlet.engine.AuthenticatorHelper";
 
     public static final String DESCRIPTOR_AUTHENTICATOR_PATH = DESCRIPTOR + "/"
             + DESCRIPTOR_AUTHENTICATOR;
