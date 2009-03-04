@@ -81,7 +81,7 @@ public class ConsoleHelper {
         try {
             line = this.consoleReader.readLine(aPrompt);
         } catch (IOException e) {
-            // do nothing
+            throw new RuntimeException(e);
         }
 
         return line;
@@ -93,7 +93,7 @@ public class ConsoleHelper {
         try {
             password = this.consoleReader.readLine(aPrompt);
         } catch (IOException e) {
-            // do nothing
+            throw new RuntimeException(e);
         }
 
         return password;
@@ -108,7 +108,7 @@ public class ConsoleHelper {
             this.consoleReader.printString(line + "\n");
             this.consoleReader.flushConsole();
         } catch (IOException ex) {
-            // do nothing
+            throw new RuntimeException(ex);
         }
     }
 }
