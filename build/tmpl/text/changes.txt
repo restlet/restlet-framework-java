@@ -19,7 +19,9 @@ Changes log
          DirectoryResource when files are served from a CLAP connector. 
          Reported by David Fogel.
     - Misc
-       - 
+       - Updated DirectoryTestCase (tested directory are made unique).
+         May help fix a bug with Windows and deleted files reported by 
+         Kevin Conaway.
     
 - 1.1.3 (2009-02-26)
     - Bugs fixed
