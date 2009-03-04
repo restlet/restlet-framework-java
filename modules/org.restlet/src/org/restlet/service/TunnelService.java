@@ -85,7 +85,7 @@ import org.restlet.engine.http.HttpConstants;
  * value.</td>
  * </tr>
  * <tr>
- * <td>methodHeaderParameter</td>
+ * <td>methodHeader</td>
  * <td>X-HTTP-Method-Override</td>
  * <td>Name of non-standard header. It is a good practice to prefix it with
  * "X-".</td>
