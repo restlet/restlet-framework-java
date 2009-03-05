@@ -22,6 +22,8 @@ Changes log
        - Updated DirectoryTestCase (tested directory are made unique).
          May help fix a bug with Windows and deleted files reported by 
          Kevin Conaway.
+       - Made several JAX-RS imports optional in the OSGi manifest.
+         Suggested by Hendy Irawan.  
     
 - 1.1.3 (2009-02-26)
     - Bugs fixed
