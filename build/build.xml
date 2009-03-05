@@ -1839,6 +1839,7 @@
 		<maven2Module name="example" />
 		<maven2Module name="fileupload" />
 		<maven2Module name="freemarker" />
+		<maven2Module name="grizzly" />
 		<maven2Module name="gwt-api" />
 		<maven2Module name="gwt-ri" />
 		<maven2Module name="httpclient" />
