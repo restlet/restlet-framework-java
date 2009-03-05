@@ -1940,6 +1940,7 @@
 		<maven2Module name="atom" />
 		<maven2Module name="fileupload" />
 		<maven2Module name="freemarker" />
+		<maven2Module name="grizzly" />
 		<maven2Module name="gwt" />
 		<maven2Module name="httpclient" />
 		<maven2Module name="javamail" />
