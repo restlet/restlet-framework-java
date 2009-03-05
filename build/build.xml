@@ -328,6 +328,11 @@
 		<fileset dir="${lib}/${lib-codec-id}" includes="*.jar" />
 	</path>
 
+	<path id="mod-rdf-path">
+		<path refid="mod-core-path" />
+		<pathelement path="${classes}/${mod-core-id}" />
+	</path>
+
 	<path id="mod-servlet-path">
 		<path refid="mod-core-path" />
 		<pathelement path="${classes}/${mod-core-id}" />
@@ -401,6 +406,7 @@
 		<path refid="mod-jaxrs-path" />
 		<path refid="mod-jibx-path" />
 		<path refid="mod-json-path" />
+		<path refid="mod-rdf-path" />
 		<path refid="mod-velocity-path" />
 		<pathelement path="${mod}/${mod-jaxrs-id}/src" />
 		<pathelement path="${classes}/${mod-core-id}" />
@@ -410,6 +416,7 @@
 		<pathelement path="${classes}/${mod-jaxrs-id}" />
 		<pathelement path="${classes}/${mod-jibx-id}" />
 		<pathelement path="${classes}/${mod-json-id}" />
+		<pathelement path="${classes}/${mod-rdf-id}" />
 		<pathelement path="${classes}/${mod-velocity-id}" />
 		<fileset dir="${lib}/${lib-bloat-id}" includes="*.jar" />
 		<fileset dir="${lib}/${lib-collections-id}" includes="*.jar" />
@@ -532,6 +539,7 @@
 		<pathelement path="${classes}/${mod-lucene-id}" />
 		<pathelement path="${classes}/${mod-net-id}" />
 		<pathelement path="${classes}/${mod-oauth-id}" />
+		<pathelement path="${classes}/${mod-rdf-id}" />
 		<pathelement path="${classes}/${mod-servlet-id}" />
 		<pathelement path="${classes}/${mod-spring-id}" />
 		<pathelement path="${classes}/${mod-ssl-id}" />
@@ -556,6 +564,7 @@
 		<path refid="mod-lucene-path" />
 		<path refid="mod-net-path" />
 		<path refid="mod-oauth-path" />
+		<path refid="mod-rdf-path" />
 		<path refid="mod-servlet-path" />
 		<path refid="mod-simple-path" />
 		<path refid="mod-spring-path" />
@@ -1169,6 +1178,7 @@
 		<pomModule name="jibx" />
 		<!-- disabled for now  <pomModule name="jmx" /> -->
 		<pomModule name="json" />
+		<pomModule name="rdf" />
 		<!-- disabled for now  <pomModule name="jxta" /> -->
 		<pomModule name="lucene" ext1="solr" ext2="tika"/>
 		<pomModule name="net" />
@@ -1307,6 +1317,7 @@
 		<compileModule name="lucene" />
 		<compileModule name="net" />
 		<compileModule name="oauth" />
+		<compileModule name="rdf" />
 		<compileModule name="servlet" />
 
 		<!-- depends on servlet -->
@@ -1369,6 +1380,7 @@
 		<backportModule name="net" failonwarning="@{backport-failonwarning}" />
 		<backportModule name="oauth"
 		                failonwarning="@{backport-failonwarning}" />
+		<backportModule name="rdf" failonwarning="@{backport-failonwarning}" />
 		<backportModule name="servlet"
 		                failonwarning="@{backport-failonwarning}" />
 		<backportModule name="shell"
@@ -1485,6 +1497,7 @@
 				<!-- disabled for now  <pathelement path="${mod}/${mod-jxta-id}/src/" /> -->
 				<pathelement path="${mod}/${mod-net-id}/src/" />
 				<pathelement path="${mod}/${mod-oauth-id}/src/" />
+				<pathelement path="${mod}/${mod-rdf-id}/src/" />
 				<pathelement path="${mod}/${mod-servlet-id}/src/" />
 				<!-- disabled for now <pathelement path="${mod}/${mod-shell-id}/src/" /> -->
 				<pathelement path="${mod}/${mod-simple-id}/src/" />
@@ -1504,6 +1517,7 @@
 				<package name="org.restlet.ext.atom*" />
 				<package name="org.restlet.ext.jaxrs*" />
 				<package name="org.restlet.ext.json*" />
+				<package name="org.restlet.ext.rdf*" />
 				<package name="org.restlet.ext.ssl*" />
 				<package name="org.restlet.ext.wadl*" />
 			</group>
@@ -1703,6 +1717,7 @@
 		<findbugsModule name="lucene" />
 		<findbugsModule name="net" />
 		<findbugsModule name="oauth" />
+		<findbugsModule name="rdf" />
 		<findbugsModule name="servlet" />
 		<findbugsModule name="shell" />
 		<findbugsModule name="simple" />
@@ -1738,6 +1753,7 @@
 		<checkstyleModule name="lucene" />
 		<checkstyleModule name="net" />
 		<checkstyleModule name="oauth" />
+		<checkstyleModule name="rdf" />
 		<checkstyleModule name="servlet" />
 		<checkstyleModule name="shell" />
 		<checkstyleModule name="simple" />
@@ -1885,6 +1901,7 @@
 		<stageModule name="lucene" />
 		<stageModule name="net" />
 		<stageModule name="oauth" />
+		<stageModule name="rdf" />
 		<stageModule name="servlet" />
 		<!-- disabled for now <stageModule name="shell" /> -->
 		<stageModule name="simple" />
@@ -1953,6 +1970,7 @@
 		<maven2Module name="lucene" />
 		<maven2Module name="net" />
 		<maven2Module name="oauth" />
+		<maven2Module name="rdf" />
 		<maven2Module name="servlet" />
 		<!-- disabled for now <maven2Module name="shell" /> -->
 		<maven2Module name="simple" />
