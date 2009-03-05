@@ -1582,10 +1582,10 @@
 			      failureproperty="restlet.test.suite.error" />
 		</junit>
 		<echo>
-		   See the JUnit log file for more details about the Noelios test suite: ${temp}/test/TEST-com.noelios.restlet.test.NoeliosTestSuite.txt.
+			See the JUnit log file for more details about the Noelios test suite: ${temp}/test/TEST-com.noelios.restlet.test.NoeliosTestSuite.txt.
 		</echo>
 		<echo>
-                   See the JUnit log file for more details about the Restlet test suite: ${temp}/test/TEST-org.restlet.test.RestletTestSuite.txt.
+			See the JUnit log file for more details about the Restlet test suite: ${temp}/test/TEST-org.restlet.test.RestletTestSuite.txt.
 		</echo>
 	</target>
 
