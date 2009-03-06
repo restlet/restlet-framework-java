@@ -34,7 +34,7 @@ import javax.servlet.ServletException;
 import org.mortbay.jetty.AbstractConnector;
 import org.mortbay.jetty.HttpConnection;
 import org.mortbay.jetty.Server;
-import org.mortbay.thread.BoundedThreadPool;
+import org.mortbay.thread.QueuedThreadPool;
 
 /**
  * Abstract Jetty Web server connector. Here is the list of parameters that are
@@ -194,7 +194,7 @@ public abstract class JettyServerHelper extends
         this.wrappedServer = new WrappedServer(this);
 
         // Configuring the thread pool
-        final BoundedThreadPool btp = new BoundedThreadPool();
+        final QueuedThreadPool btp = new QueuedThreadPool();
         btp.setLowThreads(getLowThreads());
         btp.setMaxIdleTimeMs(getThreadMaxIdleTimeMs());
         btp.setMaxThreads(getMaxThreads());
@@ -292,8 +292,8 @@ public abstract class JettyServerHelper extends
      *         considered as running low on resources.
      */
     public int getLowThreads() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue("lowThreads",
-                "25"));
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "lowThreads", "25"));
     }
 
     /**
@@ -302,8 +302,8 @@ public abstract class JettyServerHelper extends
      * @return The maximum threads that will service requests.
      */
     public int getMaxThreads() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue("maxThreads",
-                "255"));
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "maxThreads", "255"));
     }
 
     /**
@@ -312,8 +312,8 @@ public abstract class JettyServerHelper extends
      * @return The minimum threads waiting to service requests.
      */
     public int getMinThreads() {
-        return Integer.parseInt(getHelpedParameters()
-                .getFirstValue("minThreads", "1"));
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "minThreads", "1"));
     }
 
     /**
@@ -342,8 +342,8 @@ public abstract class JettyServerHelper extends
      * @return The SO linger time (see Jetty 6 documentation).
      */
     public int getSoLingerTime() {
-        return Integer.parseInt(getHelpedParameters().getFirstValue("soLingerTime",
-                "1000"));
+        return Integer.parseInt(getHelpedParameters().getFirstValue(
+                "soLingerTime", "1000"));
     }
 
     /**
