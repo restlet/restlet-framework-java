@@ -33,6 +33,10 @@ Changes log
           Contributed by Fabrice Boileau.
         - Added conversion methods to engine's ByteUtils between byte
           arrays and character arrays. Contributed by Remi Dewitte.
+        - Added protected DirectoryResource#getRepresentation() and 
+          getClientDispatcher() method to facilitate extension and 
+          support of special cases. 
+          Original issue reported by Dave Fogel.
      - API changes
         - Added Role class and "roles" property to Application.
         - Fully refactored the security package introduce in 1.2 M1 

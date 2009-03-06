@@ -97,7 +97,7 @@ public class DirectoryResource extends Resource {
     private ReferenceList directoryContent;
 
     /**
-     * If the resource is a directory, the non-trailing slash caracter leads to
+     * If the resource is a directory, the non-trailing slash character leads to
      * redirection.
      */
     private boolean directoryRedirection;
@@ -187,7 +187,7 @@ public class DirectoryResource extends Resource {
             this.relativePart = this.relativePart.substring(1);
         }
 
-        // The target uri does not take into account the query and fragment
+        // The target URI does not take into account the query and fragment
         // parts of the resource.
         this.targetUri = new Reference(directory.getRootRef().toString()
                 + this.relativePart).normalize().toString(false, false);
@@ -202,8 +202,7 @@ public class DirectoryResource extends Resource {
                             + this.targetUri);
         } else {
             // Try to detect the presence of a directory
-            Response contextResponse = getClientDispatcher()
-                    .get(this.targetUri);
+            Response contextResponse = getRepresentation(this.targetUri);
             if (contextResponse.getEntity() != null) {
                 // As a convention, underlying client connectors return the
                 // directory listing with the media-type
@@ -237,7 +236,7 @@ public class DirectoryResource extends Resource {
                     }
                 } else {
                     // Allows underlying helpers that do not support "content
-                    // negotiation" to return the targetted file.
+                    // negotiation" to return the targeted file.
                     this.directoryTarget = false;
                     this.fileTarget = true;
                     this.fileContent = contextResponse.getEntity();
@@ -246,7 +245,7 @@ public class DirectoryResource extends Resource {
                 this.directoryTarget = false;
                 this.fileTarget = false;
 
-                // Let's try with the facultative index, in case the underlying
+                // Let's try with the optional index, in case the underlying
                 // client connector does not handle directory listing.
                 if (this.targetUri.endsWith("/")) {
                     // In this case, the trailing "/" shows that the URI must
@@ -256,9 +255,8 @@ public class DirectoryResource extends Resource {
                         this.directoryUri = this.targetUri;
                         this.directoryTarget = true;
 
-                        contextResponse = getClientDispatcher().get(
-                                this.directoryUri
-                                        + getDirectory().getIndexName());
+                        contextResponse = getRepresentation(this.directoryUri
+                                + getDirectory().getIndexName());
                         if (contextResponse.getEntity() != null) {
                             this.baseName = getDirectory().getIndexName();
                             this.targetUri = this.directoryUri + this.baseName;
@@ -274,9 +272,8 @@ public class DirectoryResource extends Resource {
                     if ((getDirectory().getIndexName() != null)
                             && (getDirectory().getIndexName().length() > 0)) {
                         // Append the index name
-                        contextResponse = getClientDispatcher().get(
-                                this.targetUri + "/"
-                                        + getDirectory().getIndexName());
+                        contextResponse = getRepresentation(this.targetUri
+                                + "/" + getDirectory().getIndexName());
                         if (contextResponse.getEntity() != null) {
                             this.directoryUri = this.targetUri + "/";
                             this.baseName = getDirectory().getIndexName();
@@ -293,12 +290,12 @@ public class DirectoryResource extends Resource {
             }
 
             // In case the request does not target a directory and the file has
-            // not been found, try with the tunnelled URI.
+            // not been found, try with the tunneled URI.
             if (isNegotiateContent() && !this.directoryTarget
                     && !this.fileTarget && (this.originalRef != null)) {
                 this.relativePart = request.getResourceRef().getRemainingPart();
 
-                // The target uri does not take into account the query and
+                // The target URI does not take into account the query and
                 // fragment parts of the resource.
                 this.targetUri = new Reference(directory.getRootRef()
                         .toString()
@@ -325,7 +322,7 @@ public class DirectoryResource extends Resource {
                             .substring(lastSlashIndex + 1);
                 }
 
-                contextResponse = getClientDispatcher().get(this.directoryUri);
+                contextResponse = getRepresentation(this.directoryUri);
                 if ((contextResponse.getEntity() != null)
                         && MediaType.TEXT_URI_LIST.equals(contextResponse
                                 .getEntity().getMediaType())) {
@@ -384,7 +381,7 @@ public class DirectoryResource extends Resource {
      * 
      * @return A client dispatcher.
      */
-    private Uniform getClientDispatcher() {
+    protected Uniform getClientDispatcher() {
         return getDirectory().getContext().getClientDispatcher();
     }
 
@@ -413,6 +410,40 @@ public class DirectoryResource extends Resource {
      */
     public String getDirectoryUri() {
         return this.directoryUri;
+    }
+
+    /**
+     * Returns a representation of the resource at the target URI. Leverages the
+     * client dispatcher of the parent directory's context.
+     * 
+     * @param resourceUri
+     *            The URI of the target resource.
+     * @return A response with the representation if success.
+     */
+    private Response getRepresentation(String resourceUri) {
+        return getClientDispatcher().get(resourceUri);
+    }
+
+    /**
+     * Returns a representation of the resource at the target URI. Leverages the
+     * client dispatcher of the parent directory's context.
+     * 
+     * @param resourceUri
+     *            The URI of the target resource.
+     * @param acceptedMediaType
+     *            The accepted media type or null.
+     * @return A response with the representation if success.
+     */
+    protected Response getRepresentation(String resourceUri,
+            MediaType acceptedMediaType) {
+        if (acceptedMediaType == null) {
+            return getClientDispatcher().get(resourceUri);
+        } else {
+            Request request = new Request(Method.GET, resourceUri);
+            request.getClientInfo().getAcceptedMediaTypes().add(
+                    new Preference<MediaType>(acceptedMediaType));
+            return getClientDispatcher().handle(request);
+        }
     }
 
     /**
@@ -498,8 +529,8 @@ public class DirectoryResource extends Resource {
                 String filePath;
                 for (final Reference ref : getVariantsReferences()) {
                     // Add the new variant to the result list
-                    final Response contextResponse = getClientDispatcher().get(
-                            ref.toString());
+                    final Response contextResponse = getRepresentation(ref
+                            .toString());
                     if (contextResponse.getStatus().isSuccess()
                             && (contextResponse.getEntity() != null)) {
                         filePath = ref.toString(false, false).substring(
@@ -571,12 +602,9 @@ public class DirectoryResource extends Resource {
         this.uniqueReference = null;
         final ReferenceList result = new ReferenceList(0);
         try {
-            final Request contextCall = new Request(Method.GET, this.targetUri);
             // Ask for the list of all variants of this resource
-            contextCall.getClientInfo().getAcceptedMediaTypes().add(
-                    new Preference<MediaType>(MediaType.TEXT_URI_LIST));
-            final Response contextResponse = getClientDispatcher().handle(
-                    contextCall);
+            final Response contextResponse = getRepresentation(this.targetUri,
+                    MediaType.TEXT_URI_LIST);
             if (contextResponse.getEntity() != null) {
                 // Test if the given response is the list of all variants for
                 // this resource
