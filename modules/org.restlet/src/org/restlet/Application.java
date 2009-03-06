@@ -501,16 +501,20 @@ public class Application extends Restlet {
                 getDecoderService().start();
             }
 
-            if (getTaskService() != null) {
-                getTaskService().start();
-            }
-
             if (getMetadataService() != null) {
                 getMetadataService().start();
             }
 
+            if (getRangeService() != null) {
+                getRangeService().start();
+            }
+
             if (getStatusService() != null) {
                 getStatusService().start();
+            }
+
+            if (getTaskService() != null) {
+                getTaskService().start();
             }
 
             if (getTunnelService() != null) {
@@ -537,24 +541,24 @@ public class Application extends Restlet {
                 getDecoderService().stop();
             }
 
-            if (getTaskService() != null) {
-                getTaskService().stop();
-            }
-
             if (getMetadataService() != null) {
                 getMetadataService().stop();
+            }
+
+            if (getRangeService() != null) {
+                getRangeService().stop();
             }
 
             if (getStatusService() != null) {
                 getStatusService().stop();
             }
 
-            if (getTunnelService() != null) {
-                getTunnelService().stop();
+            if (getTaskService() != null) {
+                getTaskService().stop();
             }
 
-            if (getRangeService() != null) {
-                getRangeService().stop();
+            if (getTunnelService() != null) {
+                getTunnelService().stop();
             }
 
             if (getHelper() != null) {
