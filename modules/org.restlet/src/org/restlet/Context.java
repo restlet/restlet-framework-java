@@ -99,6 +99,12 @@ public class Context {
         CURRENT.set(context);
     }
 
+    /** The client dispatcher. */
+    private volatile Uniform clientDispatcher;
+
+    /** The server dispatcher. */
+    private volatile Uniform serverDispatcher;
+
     /** The modifiable attributes map. */
     private final ConcurrentMap<String, Object> attributes;
 
@@ -139,6 +145,8 @@ public class Context {
         this.logger = logger;
         this.parameters = new Form(new CopyOnWriteArrayList<Parameter>());
         this.verifier = null;
+        this.clientDispatcher = null;
+        this.serverDispatcher = null;
     }
 
     /**
@@ -204,7 +212,7 @@ public class Context {
      * @return A request dispatcher to available client connectors.
      */
     public Uniform getClientDispatcher() {
-        return null;
+        return this.clientDispatcher;
     }
 
     /**
@@ -247,12 +255,12 @@ public class Context {
      * The processing is the same as what would have been done if the request
      * came from one of the component's server connectors. It first must match
      * one of the registered virtual hosts. Then it can be routed to one of the
-     * attaced Restlets, typically an Application.
+     * attached Restlets, typically an Application.
      * 
      * @return A request dispatcher to the server connectors' router.
      */
     public Uniform getServerDispatcher() {
-        return null;
+        return this.serverDispatcher;
     }
 
     /**
@@ -274,6 +282,16 @@ public class Context {
     public synchronized void setAttributes(Map<String, Object> attributes) {
         this.attributes.clear();
         this.attributes.putAll(attributes);
+    }
+
+    /**
+     * Sets the client dispatcher.
+     * 
+     * @param clientDispatcher
+     *            The new client dispatcher.
+     */
+    public void setClientDispatcher(Uniform clientDispatcher) {
+        this.clientDispatcher = clientDispatcher;
     }
 
     /**
@@ -331,6 +349,16 @@ public class Context {
     public void setRealm(Realm realm) {
         setEnroler(realm.getEnroler());
         setVerifier(realm.getVerifier());
+    }
+
+    /**
+     * Sets the server dispatcher.
+     * 
+     * @param serverDispatcher
+     *            The new server dispatcher.
+     */
+    public void setServerDispatcher(Uniform serverDispatcher) {
+        this.serverDispatcher = serverDispatcher;
     }
 
     /**

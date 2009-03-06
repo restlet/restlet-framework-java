@@ -74,6 +74,8 @@ Changes log
         - Series#getFirstValue() now returns the default value if the
           parameter exists but has a null value. 
           Suggested by Jonathan Hall.
+        - Added Context#setClientDispatcher() and 
+          Context#setServerDispatcher() methods.
      - Misc
         - Upgraded Simple server to version 4.1.2. 
           Contributed by Niall Gallagher.

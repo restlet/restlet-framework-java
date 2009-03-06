@@ -30,7 +30,6 @@ package org.restlet.engine.component;
 import org.restlet.Component;
 import org.restlet.Context;
 import org.restlet.Restlet;
-import org.restlet.Uniform;
 
 /**
  * Context based on a parent component's context but dedicated to a child
@@ -108,14 +107,8 @@ public class ChildContext extends Context {
     /** The child delegate, typically an application. */
     private volatile Restlet child;
 
-    /** The client dispatcher. */
-    private volatile ChildClientDispatcher clientDispatcher;
-
     /** The parent context. */
     private volatile Context parentContext;
-
-    /** The server dispatcher. */
-    private volatile Uniform serverDispatcher;
 
     /**
      * Constructor.
@@ -126,10 +119,9 @@ public class ChildContext extends Context {
     public ChildContext(Context parentContext) {
         this.child = null;
         this.parentContext = parentContext;
-        this.clientDispatcher = new ChildClientDispatcher(this);
-        this.serverDispatcher = (getParentContext() != null) ? getParentContext()
-                .getServerDispatcher()
-                : null;
+        setClientDispatcher(new ChildClientDispatcher(this));
+        setServerDispatcher((getParentContext() != null) ? getParentContext()
+                .getServerDispatcher() : null);
     }
 
     @Override
@@ -146,11 +138,6 @@ public class ChildContext extends Context {
         return this.child;
     }
 
-    @Override
-    public ChildClientDispatcher getClientDispatcher() {
-        return this.clientDispatcher;
-    }
-
     /**
      * Returns the parent context.
      * 
@@ -158,11 +145,6 @@ public class ChildContext extends Context {
      */
     protected Context getParentContext() {
         return this.parentContext;
-    }
-
-    @Override
-    public Uniform getServerDispatcher() {
-        return this.serverDispatcher;
     }
 
     /**

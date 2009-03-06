@@ -31,7 +31,6 @@ import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 
 import org.restlet.Context;
-import org.restlet.Uniform;
 
 /**
  * Exposes a Servlet context as a Restlet one. Context allowing access to the
@@ -44,12 +43,6 @@ public class ServletContextAdapter extends Context {
     /** The Servlet context. */
     private volatile ServletContext servletContext;
 
-    /** The client dispatcher. */
-    private volatile Uniform clientDispatcher;
-
-    /** The server dispatcher. */
-    private volatile Uniform serverDispatcher;
-
     /**
      * Constructor.
      * 
@@ -61,20 +54,10 @@ public class ServletContextAdapter extends Context {
     public ServletContextAdapter(Servlet servlet, Context parentContext) {
         super(new ServletLogger(servlet.getServletConfig().getServletContext()));
         this.servletContext = servlet.getServletConfig().getServletContext();
-        this.clientDispatcher = (parentContext != null) ? parentContext
-                .getClientDispatcher() : null;
-        this.serverDispatcher = (parentContext != null) ? parentContext
-                .getServerDispatcher() : null;
-    }
-
-    @Override
-    public Uniform getClientDispatcher() {
-        return this.clientDispatcher;
-    }
-
-    @Override
-    public Uniform getServerDispatcher() {
-        return this.serverDispatcher;
+        setClientDispatcher((parentContext != null) ? parentContext
+                .getClientDispatcher() : null);
+        setServerDispatcher((parentContext != null) ? parentContext
+                .getServerDispatcher() : null);
     }
 
     /**

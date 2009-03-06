@@ -36,14 +36,8 @@ import org.restlet.Context;
  */
 public class ComponentContext extends Context {
 
-    /** The client dispatcher. */
-    private volatile ComponentClientDispatcher clientDispatcher;
-
     /** The component helper. */
     private volatile ComponentHelper componentHelper;
-
-    /** The server dispatcher. */
-    private volatile ComponentServerDispatcher serverDispatcher;
 
     /**
      * Constructor.
@@ -55,18 +49,13 @@ public class ComponentContext extends Context {
         super(ChildContext.getLoggerName("org.restlet", componentHelper
                 .getHelped()));
         this.componentHelper = componentHelper;
-        this.clientDispatcher = new ComponentClientDispatcher(this);
-        this.serverDispatcher = new ComponentServerDispatcher(this);
+        setClientDispatcher(new ComponentClientDispatcher(this));
+        setServerDispatcher(new ComponentServerDispatcher(this));
     }
 
     @Override
     public Context createChildContext() {
         return new ChildContext(getComponentHelper().getHelped().getContext());
-    }
-
-    @Override
-    public ComponentClientDispatcher getClientDispatcher() {
-        return this.clientDispatcher;
     }
 
     /**
@@ -76,11 +65,6 @@ public class ComponentContext extends Context {
      */
     protected ComponentHelper getComponentHelper() {
         return this.componentHelper;
-    }
-
-    @Override
-    public ComponentServerDispatcher getServerDispatcher() {
-        return this.serverDispatcher;
     }
 
     /**
