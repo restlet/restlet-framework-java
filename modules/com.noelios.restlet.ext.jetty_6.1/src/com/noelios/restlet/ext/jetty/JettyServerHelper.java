@@ -34,7 +34,7 @@ import javax.servlet.ServletException;
 import org.mortbay.jetty.AbstractConnector;
 import org.mortbay.jetty.HttpConnection;
 import org.mortbay.jetty.Server;
-import org.mortbay.thread.BoundedThreadPool;
+import org.mortbay.thread.QueuedThreadPool;
 
 /**
  * Abstract Jetty Web server connector. Here is the list of parameters that are
@@ -194,7 +194,7 @@ public abstract class JettyServerHelper extends
         this.wrappedServer = new WrappedServer(this);
 
         // Configuring the thread pool
-        final BoundedThreadPool btp = new BoundedThreadPool();
+        final QueuedThreadPool btp = new QueuedThreadPool();
         btp.setLowThreads(getLowThreads());
         btp.setMaxIdleTimeMs(getThreadMaxIdleTimeMs());
         btp.setMaxThreads(getMaxThreads());
