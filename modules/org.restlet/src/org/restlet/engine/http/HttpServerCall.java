@@ -410,26 +410,23 @@ public abstract class HttpServerCall extends HttpCall {
     public void sendResponse(Response response) throws IOException {
         if (response != null) {
 
+            // Get the connector service to callback
+            final Representation entity = response.getEntity();
+            final ConnectorService connectorService = getConnectorService(response
+                    .getRequest());
+            if (connectorService != null) {
+                connectorService.beforeSend(entity);
+            }
+
             try {
                 writeResponseHead(response);
-                final Representation entity = response.getEntity();
 
                 if (entity != null) {
-                    // Get the connector service to callback
-                    final ConnectorService connectorService = getConnectorService(response
-                            .getRequest());
-                    if (connectorService != null) {
-                        connectorService.beforeSend(entity);
-                    }
 
                     final WritableByteChannel responseEntityChannel = getResponseEntityChannel();
                     final OutputStream responseEntityStream = getResponseEntityStream();
                     writeResponseBody(entity, responseEntityChannel,
                             responseEntityStream);
-
-                    if (connectorService != null) {
-                        connectorService.afterSend(entity);
-                    }
 
                     if (responseEntityStream != null) {
                         try {
@@ -437,7 +434,7 @@ public abstract class HttpServerCall extends HttpCall {
                             responseEntityStream.close();
                         } catch (IOException ioe) {
                             // The stream was probably already closed by the
-                            // connector. Probably ok, low message priority.
+                            // connector. Probably OK, low message priority.
                             getLogger()
                                     .log(
                                             Level.FINE,
@@ -447,9 +444,12 @@ public abstract class HttpServerCall extends HttpCall {
                     }
                 }
             } finally {
-                final Representation entity = response.getEntity();
                 if (entity != null) {
                     entity.release();
+                }
+
+                if (connectorService != null) {
+                    connectorService.afterSend(entity);
                 }
             }
         }

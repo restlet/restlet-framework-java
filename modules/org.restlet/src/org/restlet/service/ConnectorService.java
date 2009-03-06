@@ -65,11 +65,11 @@ public class ConnectorService extends Service {
 
     /**
      * Call-back method invoked by the client or server connectors just after
-     * sending the entity to the target component. The default implementation
+     * sending the response to the target component. The default implementation
      * does nothing.
      * 
      * @param entity
-     *            The entity about to be committed.
+     *            The optional entity about to be committed.
      */
     public void afterSend(Representation entity) {
         // Do nothing by default.
@@ -77,11 +77,11 @@ public class ConnectorService extends Service {
 
     /**
      * Call-back method invoked by the client or server connectors just before
-     * sending the entity to the target component. The default implementation
+     * sending the response to the target component. The default implementation
      * does nothing.
      * 
      * @param entity
-     *            The entity about to be committed.
+     *            The optional entity about to be committed.
      */
     public void beforeSend(Representation entity) {
         // Do nothing by default.

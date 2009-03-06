@@ -420,13 +420,15 @@ public abstract class HttpClientCall extends HttpCall {
         Status result = null;
         final Representation entity = request.isEntityAvailable() ? request
                 .getEntity() : null;
+
+        // Get the connector service to callback
+        final ConnectorService connectorService = getConnectorService(request);
+        if (connectorService != null) {
+            connectorService.beforeSend(entity);
+        }
+
         try {
             if (entity != null) {
-                // Get the connector service to callback
-                final ConnectorService connectorService = getConnectorService(request);
-                if (connectorService != null) {
-                    connectorService.beforeSend(entity);
-                }
 
                 // In order to workaround bug #6472250
                 // (http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6472250),
@@ -441,11 +443,6 @@ public abstract class HttpClientCall extends HttpCall {
                 } else if (rs != null) {
                     entity.write(rs);
                     rs.flush();
-                }
-
-                // Call-back after writing
-                if (connectorService != null) {
-                    connectorService.afterSend(entity);
                 }
 
                 if (rs != null) {
@@ -469,6 +466,11 @@ public abstract class HttpClientCall extends HttpCall {
         } finally {
             if (entity != null) {
                 entity.release();
+            }
+
+            // Call-back after writing
+            if (connectorService != null) {
+                connectorService.afterSend(entity);
             }
         }
 

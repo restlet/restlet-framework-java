@@ -11,6 +11,10 @@ Changes log
           "org.restlet.resource" package into a new 
           "org.restlet.representation" package. Make sure to adjust your
           import instructions.
+        - The ConnectorService#afterSend() and beforeSend() are now
+          always called, even if no entity is written. They are now 
+          related to the sending of the message itself.
+          Suggested by Paul Davis.
     - Bugs fixed
         - Fixed typo in the declaration of the 
           o.r.e.Engine#DESCRIPTOR_AUTHENTICATOR. Reported by Rémi 
