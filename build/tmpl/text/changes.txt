@@ -31,6 +31,8 @@ Changes log
           Suggested by Kevin Conaway.
         - Added the ability to tunnel methods via a specific header.
           Contributed by Fabrice Boileau.
+        - Added conversion methods to engine's ByteUtils between byte
+          arrays and character arrays. Contributed by Remi Dewitte.
      - API changes
         - Added Role class and "roles" property to Application.
         - Fully refactored the security package introduce in 1.2 M1 

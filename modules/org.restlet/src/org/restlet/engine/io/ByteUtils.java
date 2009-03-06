@@ -38,6 +38,8 @@ import java.io.RandomAccessFile;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.Pipe;
@@ -45,6 +47,7 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.WritableByteChannel;
+import java.nio.charset.Charset;
 import java.util.logging.Level;
 
 import org.restlet.Application;
@@ -308,6 +311,64 @@ public final class ByteUtils {
      */
     public static OutputStream getStream(Writer writer) {
         return new WriterOutputStream(writer);
+    }
+
+    /**
+     * Converts a char array into a byte array using the default character set.
+     * 
+     * @param chars
+     *            The source characters.
+     * @return The result bytes.
+     */
+    public static byte[] toByteArray(char[] chars) {
+        return toByteArray(chars, Charset.defaultCharset().name());
+    }
+
+    /**
+     * Converts a char array into a byte array using the default character set.
+     * 
+     * @param chars
+     *            The source characters.
+     * @param charsetName
+     *            The character set to use.
+     * @return The result bytes.
+     */
+    public static byte[] toByteArray(char[] chars, String charsetName) {
+        CharBuffer cb = CharBuffer.wrap(chars);
+        ByteBuffer bb = Charset.forName(charsetName).encode(cb);
+        byte[] r = new byte[bb.remaining()];
+        bb.get(r);
+        return r;
+    }
+
+    /**
+     * Converts a byte array into a character array using the default character
+     * set.
+     * 
+     * @param bytes
+     *            The source bytes.
+     * @return The result characters.
+     */
+    public static char[] toCharArray(byte[] bytes) {
+        return toCharArray(bytes, Charset.defaultCharset().name());
+    }
+
+    /**
+     * Converts a byte array into a character array using the default character
+     * set.
+     * 
+     * @param bytes
+     *            The source bytes.
+     * @param charsetName
+     *            The character set to use.
+     * @return The result characters.
+     */
+    public static char[] toCharArray(byte[] bytes, String charsetName) {
+        ByteBuffer bb = ByteBuffer.wrap(bytes);
+        CharBuffer cb = Charset.forName(charsetName).decode(bb);
+        char[] r = new char[cb.remaining()];
+        cb.get(r);
+        return r;
     }
 
     /**
