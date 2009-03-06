@@ -34,6 +34,7 @@ import net.oauth.OAuthAccessor;
 import net.oauth.OAuthConsumer;
 import net.oauth.OAuthMessage;
 import net.oauth.OAuthProblemException;
+import net.oauth.SimpleOAuthValidator;
 
 import org.restlet.Context;
 import org.restlet.data.ChallengeRequest;
@@ -121,7 +122,8 @@ public class RequestTokenResource extends Resource {
 
         // verify the signature
         try {
-            requestMessage.validateSignature(accessor);
+            requestMessage
+                    .validateMessage(accessor, new SimpleOAuthValidator());
         } catch (OAuthProblemException oape) {
             getResponse().setChallengeRequest(challengeRequest);
             // TODO: Use OAuthServlet mapping from problem to status.

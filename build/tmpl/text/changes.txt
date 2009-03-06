@@ -83,6 +83,8 @@ Changes log
           Contributed by Raif S. Naffah.
         - Fixed issue with parent contexts in ServerServlets. 
           Contributed by Marcelo Ochoa.
+        - Updated OAuth library to latest version. 
+          Suggested by Sean Sullivan.
 
 - 1.2 Milestone 1 (2009-01-23)
     - Breaking changes
