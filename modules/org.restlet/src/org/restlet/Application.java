@@ -528,20 +528,28 @@ public class Application extends Restlet {
                 getConnectorService().start();
             }
 
-            if (getDecoderService() != null) {
-                getDecoderService().start();
+            if (getConverterService() != null) {
+                getConverterService().start();
             }
 
-            if (getTaskService() != null) {
-                getTaskService().start();
+            if (getDecoderService() != null) {
+                getDecoderService().start();
             }
 
             if (getMetadataService() != null) {
                 getMetadataService().start();
             }
 
+            if (getRangeService() != null) {
+                getRangeService().start();
+            }
+
             if (getStatusService() != null) {
                 getStatusService().start();
+            }
+
+            if (getTaskService() != null) {
+                getTaskService().start();
             }
 
             if (getTunnelService() != null) {
@@ -560,28 +568,32 @@ public class Application extends Restlet {
                 getConnectorService().stop();
             }
 
-            if (getDecoderService() != null) {
-                getDecoderService().stop();
+            if (getConverterService() != null) {
+                getConverterService().stop();
             }
 
-            if (getTaskService() != null) {
-                getTaskService().stop();
+            if (getDecoderService() != null) {
+                getDecoderService().stop();
             }
 
             if (getMetadataService() != null) {
                 getMetadataService().stop();
             }
 
+            if (getRangeService() != null) {
+                getRangeService().stop();
+            }
+
             if (getStatusService() != null) {
                 getStatusService().stop();
             }
 
-            if (getTunnelService() != null) {
-                getTunnelService().stop();
+            if (getTaskService() != null) {
+                getTaskService().stop();
             }
 
-            if (getRangeService() != null) {
-                getRangeService().stop();
+            if (getTunnelService() != null) {
+                getTunnelService().stop();
             }
 
             if (getHelper() != null) {
