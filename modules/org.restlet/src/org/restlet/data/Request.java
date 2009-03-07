@@ -103,6 +103,9 @@ public class Request extends Message {
     /** The authentication response sent by a client to an origin server. */
     private volatile ChallengeResponse challengeResponse;
 
+    /** The authentication response sent by a client to a proxy. */
+    private volatile ChallengeResponse proxyChallengeResponse;
+
     /** The client-specific information. */
     private volatile ClientInfo clientInfo;
 
@@ -316,6 +319,15 @@ public class Request extends Message {
     }
 
     /**
+     * Returns the authentication response sent by a client to a proxy.
+     * 
+     * @return The authentication response sent by a client to a proxy.
+     */
+    public ChallengeResponse getProxyChallengeResponse() {
+        return this.proxyChallengeResponse;
+    }
+
+    /**
      * Returns the ranges to return from the target resource's representation.
      * 
      * @return The ranges to return.
@@ -488,6 +500,16 @@ public class Request extends Message {
      */
     public void setOriginalRef(Reference originalRef) {
         this.originalRef = originalRef;
+    }
+
+    /**
+     * Sets the authentication response sent by a client to a proxy.
+     * 
+     * @param challengeResponse
+     *            The authentication response sent by a client to a proxy.
+     */
+    public void setProxyChallengeResponse(ChallengeResponse challengeResponse) {
+        this.proxyChallengeResponse = challengeResponse;
     }
 
     /**

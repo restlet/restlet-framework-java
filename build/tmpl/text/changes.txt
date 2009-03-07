@@ -80,6 +80,10 @@ Changes log
           Suggested by Jonathan Hall.
         - Added Context#setClientDispatcher() and 
           Context#setServerDispatcher() methods.
+        - Added support for proxy authentication in the Restlet API.
+          Added "proxyChallengeResponse" property to Request, added
+          "proxyChallengeRequests" to Response. Added support in the
+          HTTP parsing and formatting layers.
      - Misc
         - Upgraded Simple server to version 4.1.2. 
           Contributed by Niall Gallagher.

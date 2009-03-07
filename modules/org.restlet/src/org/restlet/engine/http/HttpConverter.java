@@ -117,6 +117,10 @@ public class HttpConverter {
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_LOCATION)
                         || param.getName().equalsIgnoreCase(
+                                HttpConstants.HEADER_PROXY_AUTHENTICATE)
+                        || param.getName().equalsIgnoreCase(
+                                HttpConstants.HEADER_PROXY_AUTHORIZATION)
+                        || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_RANGE)
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_REFERRER)
@@ -132,7 +136,7 @@ public class HttpConverter {
                                 HttpConstants.HEADER_VARY)
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_WWW_AUTHENTICATE)) {
-                    // Standard headers that can't be overriden
+                    // Standard headers that can't be overridden
                     getLogger()
                             .warning(
                                     "Addition of the standard header \""
@@ -153,10 +157,6 @@ public class HttpConverter {
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_PRAGMA)
                         || param.getName().equalsIgnoreCase(
-                                HttpConstants.HEADER_PROXY_AUTHENTICATE)
-                        || param.getName().equalsIgnoreCase(
-                                HttpConstants.HEADER_PROXY_AUTHORIZATION)
-                        || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_RETRY_AFTER)
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_TRAILER)
@@ -170,7 +170,7 @@ public class HttpConverter {
                                 HttpConstants.HEADER_VIA)
                         || param.getName().equalsIgnoreCase(
                                 HttpConstants.HEADER_WARNING)) {
-                    // Standard headers can't shouldn't be overriden
+                    // Standard headers can't shouldn't be overridden
                     getLogger()
                             .info(
                                     "Addition of the standard header \""

@@ -171,7 +171,7 @@ public class HostRoute extends Route {
                         .getPort());
             }
 
-            // Check if all the criterias match
+            // Check if all the criteria match
             if (matches(getVirtualHost().getHostDomain(), hostDomain)
                     && matches(getVirtualHost().getHostPort(), hostPort)
                     && matches(getVirtualHost().getHostScheme(), hostScheme)

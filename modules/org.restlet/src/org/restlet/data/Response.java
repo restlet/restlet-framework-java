@@ -82,6 +82,9 @@ public class Response extends Message {
     /** The authentication requests sent by an origin server to a client. */
     private volatile List<ChallengeRequest> challengeRequests;
 
+    /** The authentication requests sent by a proxy to a client. */
+    private volatile List<ChallengeRequest> proxyChallengeRequests;
+
     /** The cookie settings provided by the server. */
     private volatile Series<CookieSetting> cookieSettings;
 
@@ -112,6 +115,7 @@ public class Response extends Message {
         this.cookieSettings = null;
         this.dimensions = null;
         this.locationRef = null;
+        this.proxyChallengeRequests = null;
         this.request = request;
         this.serverInfo = null;
         this.status = Status.SUCCESS_OK;
@@ -202,6 +206,26 @@ public class Response extends Message {
      */
     public Reference getLocationRef() {
         return this.locationRef;
+    }
+
+    /**
+     * Returns the list of authentication requests sent by an origin server to a
+     * client. If none is available, an empty list is returned.
+     * 
+     * @return The list of authentication requests.
+     */
+    public List<ChallengeRequest> getProxyChallengeRequests() {
+        // Lazy initialization with double-check.
+        List<ChallengeRequest> cr = this.proxyChallengeRequests;
+        if (cr == null) {
+            synchronized (this) {
+                cr = this.proxyChallengeRequests;
+                if (cr == null) {
+                    this.proxyChallengeRequests = cr = new CopyOnWriteArrayList<ChallengeRequest>();
+                }
+            }
+        }
+        return cr;
     }
 
     /**
@@ -430,6 +454,31 @@ public class Response extends Message {
         }
 
         setLocationRef(new Reference(baseRef, locationUri).getTargetRef());
+    }
+
+    /**
+     * Sets the authentication request sent by a proxy to a client.
+     * 
+     * @param request
+     *            The authentication request sent by a proxy to a client.
+     */
+    public void setProxyChallengeRequest(ChallengeRequest request) {
+        final List<ChallengeRequest> requests = new CopyOnWriteArrayList<ChallengeRequest>();
+        requests.add(request);
+        setProxyChallengeRequests(requests);
+    }
+
+    /**
+     * Sets the list of authentication requests sent by a proxy to a client. The
+     * list instance set must be thread-safe (use {@link CopyOnWriteArrayList}
+     * for example.
+     * 
+     * @param requests
+     *            The list of authentication requests sent by a proxy to a
+     *            client.
+     */
+    public void setProxyChallengeRequests(List<ChallengeRequest> requests) {
+        this.proxyChallengeRequests = requests;
     }
 
     /**

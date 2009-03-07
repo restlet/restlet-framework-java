@@ -232,6 +232,14 @@ public class HttpServerConverter extends HttpConverter {
             }
         }
 
+        if (response.getProxyChallengeRequests() != null) {
+            for (final ChallengeRequest challengeRequest : response
+                    .getProxyChallengeRequests()) {
+                responseHeaders.add(HttpConstants.HEADER_PROXY_AUTHENTICATE,
+                        AuthenticatorUtils.format(challengeRequest));
+            }
+        }
+
         // Send the Vary header only to none-MSIE user agents as MSIE seems
         // to support partially and badly this header (cf issue 261).
         if (!((response.getRequest().getClientInfo().getAgent() != null) && response

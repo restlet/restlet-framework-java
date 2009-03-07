@@ -92,6 +92,11 @@ public class HttpClientConverter extends HttpConverter {
                         .parseAuthenticateHeader(header.getValue());
                 response.setChallengeRequest(request);
             } else if (header.getName().equalsIgnoreCase(
+                    HttpConstants.HEADER_PROXY_AUTHENTICATE)) {
+                final ChallengeRequest request = AuthenticatorUtils
+                        .parseAuthenticateHeader(header.getValue());
+                response.setProxyChallengeRequest(request);
+            } else if (header.getName().equalsIgnoreCase(
                     HttpConstants.HEADER_SERVER)) {
                 response.getServerInfo().setAgent(header.getValue());
             } else if (header.getName().equalsIgnoreCase(
@@ -390,6 +395,14 @@ public class HttpClientConverter extends HttpConverter {
                 requestHeaders.add(HttpConstants.HEADER_AUTHORIZATION,
                         AuthenticatorUtils.format(challengeResponse, request,
                                 requestHeaders));
+            }
+
+            final ChallengeResponse proxyChallengeResponse = request
+                    .getProxyChallengeResponse();
+            if (proxyChallengeResponse != null) {
+                requestHeaders.add(HttpConstants.HEADER_PROXY_AUTHORIZATION,
+                        AuthenticatorUtils.format(proxyChallengeResponse,
+                                request, requestHeaders));
             }
         }
     }

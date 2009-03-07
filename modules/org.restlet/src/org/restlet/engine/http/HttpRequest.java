@@ -81,6 +81,9 @@ public class HttpRequest extends Request {
     /** Indicates if the security data was parsed and added. */
     private volatile boolean securityAdded;
 
+    /** Indicates if the proxy security data was parsed and added. */
+    private volatile boolean proxySecurityAdded;
+
     /**
      * Constructor.
      * 
@@ -97,6 +100,7 @@ public class HttpRequest extends Request {
         this.entityAdded = false;
         this.referrerAdded = false;
         this.securityAdded = false;
+        this.proxySecurityAdded = false;
         this.httpCall = httpCall;
 
         // Set the properties
@@ -397,6 +401,25 @@ public class HttpRequest extends Request {
     }
 
     @Override
+    public ChallengeResponse getProxyChallengeResponse() {
+        ChallengeResponse result = super.getProxyChallengeResponse();
+
+        if (!this.proxySecurityAdded) {
+            // Extract the header value
+            final String authorization = getHttpCall().getRequestHeaders()
+                    .getValues(HttpConstants.HEADER_PROXY_AUTHORIZATION);
+
+            // Set the challenge response
+            result = AuthenticatorUtils.parseAuthorizationHeader(this,
+                    authorization);
+            setProxyChallengeResponse(result);
+            this.proxySecurityAdded = true;
+        }
+
+        return result;
+    }
+
+    @Override
     public List<Range> getRanges() {
         final List<Range> result = super.getRanges();
 
@@ -442,5 +465,11 @@ public class HttpRequest extends Request {
     public void setEntity(Representation entity) {
         super.setEntity(entity);
         this.entityAdded = true;
+    }
+
+    @Override
+    public void setProxyChallengeResponse(ChallengeResponse response) {
+        super.setProxyChallengeResponse(response);
+        this.proxySecurityAdded = true;
     }
 }
