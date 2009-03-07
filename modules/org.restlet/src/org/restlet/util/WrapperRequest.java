@@ -47,7 +47,8 @@ import org.restlet.representation.SaxRepresentation;
  * Request wrapper. Useful for application developer who need to enrich the
  * request with application related properties and behavior.
  * 
- * @see <a href="http://c2.com/cgi/wiki?DecoratorPattern">The decorator (aka wrapper) pattern</a>
+ * @see <a href="http://c2.com/cgi/wiki?DecoratorPattern">The decorator (aka
+ *      wrapper) pattern</a>
  * @author Jerome Louvel
  */
 public class WrapperRequest extends Request {
@@ -220,6 +221,16 @@ public class WrapperRequest extends Request {
     }
 
     /**
+     * Returns the authentication response sent by a client to a proxy.
+     * 
+     * @return The authentication response sent by a client to a proxy.
+     */
+    @Override
+    public ChallengeResponse getProxyChallengeResponse() {
+        return getWrappedRequest().getProxyChallengeResponse();
+    }
+
+    /**
      * Returns the referrer reference if available.
      * 
      * @return The referrer reference.
@@ -348,6 +359,17 @@ public class WrapperRequest extends Request {
     @Override
     public void setMethod(Method method) {
         getWrappedRequest().setMethod(method);
+    }
+
+    /**
+     * Sets the authentication response sent by a client to a proxy.
+     * 
+     * @param response
+     *            The authentication response sent by a client to a proxy.
+     */
+    @Override
+    public void setProxyChallengeResponse(ChallengeResponse response) {
+        getWrappedRequest().setProxyChallengeResponse(response);
     }
 
     /**

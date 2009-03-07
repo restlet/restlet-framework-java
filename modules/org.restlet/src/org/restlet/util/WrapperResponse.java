@@ -50,7 +50,8 @@ import org.restlet.representation.SaxRepresentation;
  * Request wrapper. Useful for application developer who need to enrich the
  * request with application related properties and behavior.
  * 
- * @see <a href="http://c2.com/cgi/wiki?DecoratorPattern">The decorator (aka wrapper) pattern</a>
+ * @see <a href="http://c2.com/cgi/wiki?DecoratorPattern">The decorator (aka
+ *      wrapper) pattern</a>
  * @author Jerome Louvel
  */
 public class WrapperResponse extends Response {
@@ -213,6 +214,16 @@ public class WrapperResponse extends Response {
     @Override
     public Reference getLocationRef() {
         return getWrappedResponse().getLocationRef();
+    }
+
+    /**
+     * Returns the list of authentication requests sent by a proxy to a client.
+     * 
+     * @return The list of authentication requests sent by a proxy to a client.
+     */
+    @Override
+    public List<ChallengeRequest> getProxyChallengeRequests() {
+        return getWrappedResponse().getProxyChallengeRequests();
     }
 
     /**
@@ -425,6 +436,29 @@ public class WrapperResponse extends Response {
     @Override
     public void setLocationRef(String locationUri) {
         getWrappedResponse().setLocationRef(locationUri);
+    }
+
+    /**
+     * Sets the authentication request sent by a proxy to a client.
+     * 
+     * @param request
+     *            The authentication request sent by a proxy to a client.
+     */
+    @Override
+    public void setProxyChallengeRequest(ChallengeRequest request) {
+        getWrappedResponse().setProxyChallengeRequest(request);
+    }
+
+    /**
+     * Sets the list of authentication requests sent by a proxy to a client.
+     * 
+     * @param requests
+     *            The list of authentication requests sent by a proxy to a
+     *            client.
+     */
+    @Override
+    public void setProxyChallengeRequests(List<ChallengeRequest> requests) {
+        getWrappedResponse().setProxyChallengeRequests(requests);
     }
 
     /**
