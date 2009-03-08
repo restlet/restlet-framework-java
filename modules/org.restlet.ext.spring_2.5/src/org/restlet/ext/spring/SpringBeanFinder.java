@@ -30,10 +30,17 @@ package org.restlet.ext.spring;
 import org.restlet.resource.Resource;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationContext;
 
 /**
  * An alternative to {@link SpringFinder} which uses Spring's BeanFactory
  * mechanism to load a prototype bean by name.
+ *
+ * If both a {@link BeanFactory} and a {@link ApplicationContext} are provided,
+ * the bean will be looked up first in the application context and then in the
+ * bean factory.
  * 
  * Concurrency note: instances of this class or its subclasses can be invoked by
  * several threads at the same time and therefore must be thread-safe. You
@@ -41,9 +48,13 @@ import org.springframework.beans.factory.BeanFactoryAware;
  * 
  * @author Rhett Sutphin
  */
-public class SpringBeanFinder extends SpringFinder implements BeanFactoryAware {
+public class SpringBeanFinder extends SpringFinder
+        implements BeanFactoryAware, ApplicationContextAware {
     /** The parent bean factory. */
     private volatile BeanFactory beanFactory;
+
+    /** The parent application context. */
+    private volatile ApplicationContext applicationContext;
 
     /** The bean name. */
     private volatile String beanName;
@@ -69,7 +80,7 @@ public class SpringBeanFinder extends SpringFinder implements BeanFactoryAware {
 
     @Override
     public Resource createResource() {
-        final Object resource = getBeanFactory().getBean(getBeanName());
+        final Object resource = findBean();
 
         if (!(resource instanceof Resource)) {
             throw new ClassCastException(getBeanName()
@@ -78,6 +89,16 @@ public class SpringBeanFinder extends SpringFinder implements BeanFactoryAware {
         }
 
         return (Resource) resource;
+    }
+
+    private Object findBean() {
+        if (getApplicationContext() != null && getApplicationContext().containsBean(getBeanName())) {
+            return getApplicationContext().getBean(getBeanName());
+        } else if (getBeanFactory() != null && getBeanFactory().containsBean(getBeanName())) {
+            return getBeanFactory().getBean(getBeanName());
+        }
+        throw new IllegalStateException(
+                "Either a beanFactory or an applicationContext is required for SpringBeanFinder.");
     }
 
     /**
@@ -99,6 +120,15 @@ public class SpringBeanFinder extends SpringFinder implements BeanFactoryAware {
     }
 
     /**
+     * Returns the parent application context.
+     *
+     * @return The parent context.
+     */
+    public ApplicationContext getApplicationContext() {
+        return applicationContext;
+    }
+
+    /**
      * Sets the parent bean factory.
      * 
      * @param beanFactory
@@ -106,6 +136,15 @@ public class SpringBeanFinder extends SpringFinder implements BeanFactoryAware {
      */
     public void setBeanFactory(BeanFactory beanFactory) {
         this.beanFactory = beanFactory;
+    }
+
+    /**
+     * Sets the parent application context
+     *
+     * @param applicationContext The parent context.
+     */
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
     }
 
     /**
@@ -117,5 +156,4 @@ public class SpringBeanFinder extends SpringFinder implements BeanFactoryAware {
     public void setBeanName(String beanName) {
         this.beanName = beanName;
     }
-
 }

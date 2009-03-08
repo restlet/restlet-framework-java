@@ -32,30 +32,35 @@ import org.restlet.resource.Resource;
 import org.restlet.test.RestletTestCase;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.context.support.StaticApplicationContext;
 
 /**
  * @author Rhett Sutphin
  */
 public class SpringBeanFinderTestCase extends RestletTestCase {
-    private static class SomeResource extends Resource {
-    }
+    private static class SomeResource extends Resource { }
+    private static class AnotherResource extends Resource { }
 
     private static final String BEAN_NAME = "fish";
 
     private SpringBeanFinder finder;
 
     private DefaultListableBeanFactory beanFactory;
+    private StaticApplicationContext applicationContext;
 
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         this.beanFactory = new DefaultListableBeanFactory();
-        this.finder = new SpringBeanFinder(this.beanFactory, BEAN_NAME);
+        this.applicationContext = new StaticApplicationContext();
+        this.finder = new SpringBeanFinder();
+        this.finder.setBeanName(BEAN_NAME);
     }
 
     public void testExceptionWhenBeanIsWrongType() throws Exception {
-        this.beanFactory.registerBeanDefinition(BEAN_NAME,
-                new RootBeanDefinition(String.class));
+        registerBeanFactoryBean(BEAN_NAME, String.class);
+
+        this.finder.setBeanFactory(beanFactory);
 
         try {
             this.finder.createResource();
@@ -68,13 +73,65 @@ public class SpringBeanFinderTestCase extends RestletTestCase {
     }
 
     public void testReturnsCorrectBeanWhenExists() throws Exception {
-        this.beanFactory.registerBeanDefinition(BEAN_NAME,
-                new RootBeanDefinition(SomeResource.class));
+        registerBeanFactoryBean(BEAN_NAME, SomeResource.class);
+
+        this.finder.setBeanFactory(beanFactory);
 
         final Resource actual = this.finder.createResource();
 
         assertNotNull("Resource not found", actual);
         assertTrue("Resource not the correct type",
                 actual instanceof SomeResource);
+    }
+
+    public void testUsesApplicationContextIfPresent() throws Exception {
+        registerApplicationContextBean(BEAN_NAME, SomeResource.class);
+
+        this.finder.setApplicationContext(applicationContext);
+
+        Resource actual = this.finder.createResource();
+
+        assertNotNull("Resource not found", actual);
+        assertTrue("Resource not the correct type",
+                actual instanceof SomeResource);
+    }
+
+    public void testPrefersApplicationContextOverBeanFactoryIfTheBeanIsInBoth()
+            throws Exception {
+        registerApplicationContextBean(BEAN_NAME, SomeResource.class);
+        registerBeanFactoryBean(BEAN_NAME, AnotherResource.class);
+
+        this.finder.setApplicationContext(applicationContext);
+
+        Resource actual = this.finder.createResource();
+
+        assertNotNull("Resource not found", actual);
+        assertTrue("Resource not from application context: " + actual.getClass().getName(),
+                actual instanceof SomeResource);
+    }
+    
+    public void testBeanResolutionFailsWithNeitherApplicationContextOrBeanFactory()
+            throws Exception {
+        try {
+            this.finder.createResource();
+            fail("Exception not thrown");
+        } catch (IllegalStateException iae) {
+            assertEquals(
+                    "Either a beanFactory or an applicationContext is required for SpringBeanFinder.",
+                    iae.getMessage());
+        }
+    }
+
+    private void registerBeanFactoryBean(
+            String beanName, Class<?> resourceClass) {
+        this.beanFactory.registerBeanDefinition(beanName,
+                new RootBeanDefinition(resourceClass));
+    }
+
+    private void registerApplicationContextBean(
+            String beanName, Class<SomeResource> resourceClass) {
+        this.applicationContext.registerPrototype(
+                beanName, resourceClass);
+        this.applicationContext.refresh();
     }
 }
