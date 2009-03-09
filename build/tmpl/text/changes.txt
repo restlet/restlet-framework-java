@@ -21,6 +21,8 @@ Changes log
        - Fixed starting issue with the range service.
        - Fixed POM generation issue with dependencies release version.
          Reported by Paul Austin. 
+       - Fixed selector exhaustion issue with Grizzly connector.
+         Reported by Bruce Lee.
     - Misc
        - Updated DirectoryTestCase (tested directory are made unique).
          May help fix a bug with Windows and deleted files reported by 

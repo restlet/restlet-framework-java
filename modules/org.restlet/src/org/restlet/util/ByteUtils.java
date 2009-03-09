@@ -227,12 +227,6 @@ public final class ByteUtils {
             this.selector = null;
         }
 
-        @Override
-        public void close() throws IOException {
-            release(this.selector, this.selectionKey);
-            super.close();
-        }
-
         /**
          * Effectively write the current byte buffer.
          * 
@@ -289,6 +283,7 @@ public final class ByteUtils {
                                     + ioe.getLocalizedMessage());
                 } finally {
                     this.bb.clear();
+                    release(this.selector, this.selectionKey);
                 }
             } else {
                 throw new IOException(
