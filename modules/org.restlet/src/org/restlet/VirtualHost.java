@@ -315,7 +315,7 @@ public class VirtualHost extends Router {
      * @return The new finder instance.
      */
     @Override
-    protected Finder createFinder(Class<? extends Resource> targetClass) {
+    public Finder createFinder(Class<? extends Resource> targetClass) {
         Finder result = super.createFinder(targetClass);
         result.setContext(getContext().createChildContext());
         return result;

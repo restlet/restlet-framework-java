@@ -257,7 +257,6 @@ public class WadlApplication extends Application {
      *             If the class name specified in the "id" attribute of the
      *             resource does not exist, this exception will be thrown.
      */
-    @SuppressWarnings("unchecked")
     private void attachResource(ResourceInfo currentResource,
             ResourceInfo parentResource, Router router)
             throws ClassNotFoundException {
@@ -280,18 +279,10 @@ public class WadlApplication extends Application {
             currentResource.setPath(uriPattern);
         }
 
-        if (currentResource.getIdentifier() != null) {
-            // The "id" attribute conveys the target class name
-            final Class targetClass = Engine.loadClass(currentResource
-                    .getIdentifier());
-
+        Finder finder = createFinder(router, uriPattern, currentResource);
+        if (finder != null) {
             // Attach the resource itself
-            router.attach(uriPattern, targetClass);
-        } else {
-            getLogger()
-                    .fine(
-                            "Unable to find the 'id' attribute of the resource element with this path attribute \""
-                                    + uriPattern + "\"");
+            router.attach(uriPattern, finder);
         }
 
         // Attach children of the resource
@@ -351,6 +342,38 @@ public class WadlApplication extends Application {
                     .warning(
                             "The WADL application has no base reference defined. Unable to guess the virtual host.");
         }
+    }
+
+    /**
+     * Creates a finder for the given resource info. By default, it looks up for
+     * an "id" attribute containing a fully qualified class name.
+     * 
+     * @param router
+     *            The parent router.
+     * @param resourceInfo
+     *            The WADL resource descriptor.
+     * @return The created finder.
+     * @throws ClassNotFoundException
+     */
+    @SuppressWarnings("unchecked")
+    protected Finder createFinder(Router router, String uriPattern,
+            ResourceInfo resourceInfo) throws ClassNotFoundException {
+        Finder result = null;
+
+        if (resourceInfo.getIdentifier() != null) {
+            // The "id" attribute conveys the target class name
+            final Class targetClass = Engine.loadClass(resourceInfo
+                    .getIdentifier());
+
+            result = router.createFinder(targetClass);
+        } else {
+            getLogger()
+                    .fine(
+                            "Unable to find the 'id' attribute of the resource element with this path attribute \""
+                                    + uriPattern + "\"");
+        }
+
+        return result;
     }
 
     /**

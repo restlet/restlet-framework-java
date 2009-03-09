@@ -15,6 +15,7 @@ Changes log
           always called, even if no entity is written. They are now 
           related to the sending of the message itself.
           Suggested by Paul Davis.
+        - The Router.createFinder() method is now public.
     - Bugs fixed
         - Fixed typo in the declaration of the 
           o.r.e.Engine#DESCRIPTOR_AUTHENTICATOR. 
@@ -22,7 +23,7 @@ Changes log
         - Removed all string instantiations of secrets. 
           Contributed by Remi Dewitte.
         - Fixed various OSGi issues. Reported by David Fogel.
-      - Enhancements
+    - Enhancements
         - Added a getItemIterator() on RestletFileUpload to facilitate
           access to parts in streaming mode. Suggested by Paul Austin.
         - The default SAX handler has been implemented to log 
@@ -44,7 +45,7 @@ Changes log
           getClientDispatcher() method to facilitate extension and 
           support of special cases. 
           Original issue reported by Dave Fogel.
-     - API changes
+    - API changes
         - Added Role class and "roles" property to Application.
         - Fully refactored the security package introduce in 1.2 M1 
           based on community feed-back.
@@ -87,7 +88,10 @@ Changes log
           Added "proxyChallengeResponse" property to Request, added
           "proxyChallengeRequests" to Response. Added support in the
           HTTP parsing and formatting layers.
-     - Misc
+        - Added a WadlApplication#createFinder() method to facilitate
+          customization of behavior with Spring. 
+          Suggested by Rhett Sutphin.
+    - Misc
         - Upgraded Simple server to version 4.1.8. 
           Contributed by Niall Gallagher.
         - Fixed Javadocs typos in Router and Resource. 
@@ -200,7 +204,7 @@ Changes log
           the ChallengeResponse#getPrincipal() method.
         - Added new Conditions.getStatus() method signature for usage
           by the JAX-RS extension. Suggested by Stephan Koops.
-     - Misc
+    - Misc
         - JAX-RS extension:
             - added class ExendedUriBuilder with "file" extensions for
               content negotiation and an ExtendedUriInfo to get it.
