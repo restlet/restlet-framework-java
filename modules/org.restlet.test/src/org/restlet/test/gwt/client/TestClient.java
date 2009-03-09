@@ -55,7 +55,7 @@ public class TestClient implements EntryPoint {
                 new Client(Protocol.HTTP).put(
                         "http://localhost:8888/demo/hello.txt", "entity",
                         new Callback() {
-                            @Override
+
                             public void onEvent(Request request,
                                     Response response) {
                                 try {

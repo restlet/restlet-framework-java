@@ -16,6 +16,10 @@ Changes log
           related to the sending of the message itself.
           Suggested by Paul Davis.
         - The Router.createFinder() method is now public.
+        - The Callback abstract class in the GWT module is now an 
+          interface. This should have no impact in most cases. Just
+          remove any associated @Override annotations.
+          Suggested by Scooter Willis.
     - Bugs fixed
         - Fixed typo in the declaration of the 
           o.r.e.Engine#DESCRIPTOR_AUTHENTICATOR. 

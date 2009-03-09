@@ -32,23 +32,23 @@ import org.restlet.gwt.data.Response;
 
 /**
  * Callback associated to the uniform interface. This abstract class is
- * typically subclassed and instantiated by the user applications. It contains a
+ * typically sub-classed and instantiated by the user applications. It contains a
  * single method called by the Restlet-GWT library when a request has been
  * processed.
  * 
  * @author Jerome Louvel
  */
-public abstract class Callback {
+public interface Callback {
 
     /**
      * This method is called in all cases, even if a communication error occurs.
-     * When it is invoked the Response instante will have been updated.
+     * When it is invoked the Response instance will have been updated.
      * 
      * @param request
      *            The request processed.
      * @param response
      *            The updated response.
      */
-    public abstract void onEvent(Request request, Response response);
+    public void onEvent(Request request, Response response);
 
 }
