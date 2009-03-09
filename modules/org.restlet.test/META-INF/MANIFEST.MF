@@ -78,6 +78,7 @@ Import-Package: com.google.gwt.core.client,
  org.springframework.beans.factory.config,
  org.springframework.beans.factory.support,
  org.springframework.beans.factory.xml,
+ org.springframework.context.support,
  org.springframework.core,
  org.springframework.core.io
 onEnvironment: J2SE-1.5

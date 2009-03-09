@@ -30,9 +30,8 @@ package org.restlet.ext.spring;
 import org.restlet.resource.Resource;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 /**
  * An alternative to {@link SpringFinder} which uses Spring's BeanFactory
