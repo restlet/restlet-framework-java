@@ -54,6 +54,23 @@ import org.restlet.util.Series;
  * @author Jerome Louvel
  */
 public class HttpRequest extends Request {
+    /**
+     * Adds a new header to the given request.
+     * 
+     * @param request
+     *            The request to update.
+     * @param headerName
+     *            The header name to add.
+     * @param headerValue
+     *            The header value to add.
+     */
+    public static void addHeader(Request request, String headerName,
+            String headerValue) {
+        if (request instanceof HttpRequest) {
+            ((HttpRequest) request).getHeaders().add(headerName, headerValue);
+        }
+    }
+
     /** Indicates if the client data was parsed and added. */
     private volatile boolean clientAdded;
 
@@ -389,6 +406,17 @@ public class HttpRequest extends Request {
         }
 
         return super.getEntity();
+    }
+
+    /**
+     * Returns the HTTP headers.
+     * 
+     * @return The HTTP headers.
+     */
+    @SuppressWarnings("unchecked")
+    public Series<Parameter> getHeaders() {
+        return (Series<Parameter>) getAttributes().get(
+                HttpConstants.ATTRIBUTE_HEADERS);
     }
 
     /**

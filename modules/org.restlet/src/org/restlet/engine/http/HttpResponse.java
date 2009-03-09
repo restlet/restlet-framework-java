@@ -27,12 +27,13 @@
 
 package org.restlet.engine.http;
 
+import org.restlet.data.Parameter;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.ServerInfo;
 import org.restlet.data.Status;
 import org.restlet.engine.Engine;
-
+import org.restlet.util.Series;
 
 /**
  * Response wrapper for server HTTP calls.
@@ -40,6 +41,23 @@ import org.restlet.engine.Engine;
  * @author Jerome Louvel
  */
 public class HttpResponse extends Response {
+    /**
+     * Adds a new header to the given request.
+     * 
+     * @param response
+     *            The response to update.
+     * @param headerName
+     *            The header name to add.
+     * @param headerValue
+     *            The header value to add.
+     */
+    public static void addHeader(Response response, String headerName,
+            String headerValue) {
+        if (response instanceof HttpResponse) {
+            ((HttpResponse) response).getHeaders().add(headerName, headerValue);
+        }
+    }
+
     /** The low-level HTTP call. */
     private volatile HttpServerCall httpCall;
 
@@ -61,6 +79,17 @@ public class HttpResponse extends Response {
 
         // Set the properties
         setStatus(Status.SUCCESS_OK);
+    }
+
+    /**
+     * Returns the HTTP headers.
+     * 
+     * @return The HTTP headers.
+     */
+    @SuppressWarnings("unchecked")
+    public Series<Parameter> getHeaders() {
+        return (Series<Parameter>) getAttributes().get(
+                HttpConstants.ATTRIBUTE_HEADERS);
     }
 
     /**

@@ -93,6 +93,10 @@ Changes log
           Contributed by Marcelo Ochoa.
         - Updated OAuth library to latest version. 
           Suggested by Sean Sullivan.
+        - Added HttpRequest#getHeaders() and HttpResponse#getHeaders()
+          methods. Added HttpRequest#addHeader() and 
+          HttpResponse#addHeader() static methods.
+          Suggested by Kevin Conaway.
 
 - 1.2 Milestone 1 (2009-01-23)
     - Breaking changes
