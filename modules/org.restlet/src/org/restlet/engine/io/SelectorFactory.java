@@ -38,20 +38,23 @@ import java.util.Stack;
  * @author Jean-Francois Arcand
  */
 public class SelectorFactory {
-    /** The number of <code>Selector</code> to create. */
-    public static int maxSelectors = 20;
+    /** The maximum number of <code>Selector</code> to create. */
+    public static final int MAX_SELECTORS = 20;
+
+    /** The number of attempts to find an available selector. */
+    public static final int MAX_ATTEMPTS = 2;
 
     /** Cache of <code>Selector</code>. */
-    private final static Stack<Selector> selectors = new Stack<Selector>();
+    private static final Stack<Selector> SELECTORS = new Stack<Selector>();
 
     /** The timeout before we exit. */
-    public static long timeout = 5000;
+    public static final long TIMEOUT = 5000;
 
     /** Creates the <code>Selector</code>. */
     static {
         try {
-            for (int i = 0; i < maxSelectors; i++) {
-                selectors.add(Selector.open());
+            for (int i = 0; i < MAX_SELECTORS; i++) {
+                SELECTORS.add(Selector.open());
             }
         } catch (IOException ex) {
             // do nothing.
@@ -64,24 +67,24 @@ public class SelectorFactory {
      * @return An exclusive <code>Selector</code>.
      */
     public final static Selector getSelector() {
-        synchronized (selectors) {
+        synchronized (SELECTORS) {
             Selector selector = null;
 
             try {
-                if (selectors.size() != 0) {
-                    selector = selectors.pop();
+                if (SELECTORS.size() != 0) {
+                    selector = SELECTORS.pop();
                 }
             } catch (EmptyStackException ex) {
             }
 
             int attempts = 0;
             try {
-                while ((selector == null) && (attempts < 2)) {
-                    selectors.wait(timeout);
+                while ((selector == null) && (attempts < MAX_ATTEMPTS)) {
+                    SELECTORS.wait(TIMEOUT);
 
                     try {
-                        if (selectors.size() != 0) {
-                            selector = selectors.pop();
+                        if (SELECTORS.size() != 0) {
+                            selector = SELECTORS.pop();
                         }
                     } catch (EmptyStackException ex) {
                         break;
@@ -103,10 +106,10 @@ public class SelectorFactory {
      *            The <code>Selector</code> to return.
      */
     public final static void returnSelector(Selector selector) {
-        synchronized (selectors) {
-            selectors.push(selector);
-            if (selectors.size() == 1) {
-                selectors.notify();
+        synchronized (SELECTORS) {
+            SELECTORS.push(selector);
+            if (SELECTORS.size() == 1) {
+                SELECTORS.notify();
             }
         }
     }

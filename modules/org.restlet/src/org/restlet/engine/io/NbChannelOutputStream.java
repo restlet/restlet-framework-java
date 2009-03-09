@@ -74,12 +74,6 @@ public class NbChannelOutputStream extends OutputStream {
         this.selector = null;
     }
 
-    @Override
-    public void close() throws IOException {
-        NioUtils.release(this.selector, this.selectionKey);
-        super.close();
-    }
-
     /**
      * Effectively write the current byte buffer.
      * 
@@ -135,6 +129,7 @@ public class NbChannelOutputStream extends OutputStream {
                                 + ioe.getLocalizedMessage());
             } finally {
                 this.bb.clear();
+                NioUtils.release(this.selector, this.selectionKey);
             }
         } else {
             throw new IOException(
