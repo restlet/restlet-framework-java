@@ -481,6 +481,10 @@ public class FileClientHelper extends EntityClientHelper {
                                 try {
                                     if (raf != null) {
                                         raf.close();
+
+                                        // Calling the garbage collector helps
+                                        // to workaround lock issues on Windows
+                                        System.gc();
                                     }
                                 } catch (IOException ioe) {
                                     getLogger()
@@ -535,10 +539,6 @@ public class FileClientHelper extends EntityClientHelper {
                             }
                             return;
                         }
-                        
-                        // Calling the garbage collector helps to 
-                        // workaround deletion issues on Windows
-                        System.gc();
 
                         // Then delete the existing file
                         if (tmp.exists() && file.delete()) {
@@ -652,6 +652,10 @@ public class FileClientHelper extends EntityClientHelper {
                                 try {
                                     if (raf != null) {
                                         raf.close();
+
+                                        // Calling the garbage collector helps
+                                        // to workaround lock issues on Windows
+                                        System.gc();
                                     }
                                 } catch (IOException ioe) {
                                     getLogger()
