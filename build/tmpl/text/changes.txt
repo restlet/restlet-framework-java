@@ -85,7 +85,7 @@ Changes log
           "proxyChallengeRequests" to Response. Added support in the
           HTTP parsing and formatting layers.
      - Misc
-        - Upgraded Simple server to version 4.1.2. 
+        - Upgraded Simple server to version 4.1.8. 
           Contributed by Niall Gallagher.
         - Fixed Javadocs typos in Router and Resource. 
           Contributed by Raif S. Naffah.

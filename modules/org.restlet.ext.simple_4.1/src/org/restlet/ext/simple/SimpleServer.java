@@ -27,6 +27,7 @@
 
 package org.restlet.ext.simple;
 
+import java.io.IOException;
 import java.nio.channels.SocketChannel;
 import java.util.Map;
 
@@ -66,7 +67,7 @@ public class SimpleServer implements Server {
      *            the pipeline
      */
     @SuppressWarnings("unchecked")
-    public void process(Socket socket) throws Exception {
+    public void process(Socket socket) throws IOException {
         final Map map = socket.getAttributes();
         final SSLEngine engine = socket.getEngine();
         final SocketChannel channel = socket.getChannel();
@@ -80,7 +81,7 @@ public class SimpleServer implements Server {
     /**
      * This is used to stop the internal server.
      */
-    public void stop() throws Exception {
+    public void stop() throws IOException {
         server.stop();
     }
 }
