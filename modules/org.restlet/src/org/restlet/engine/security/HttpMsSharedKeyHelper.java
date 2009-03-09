@@ -200,6 +200,6 @@ public class HttpMsSharedKeyHelper extends AuthenticatorHelper {
         // Append the SharedKey credentials
         sb.append(challenge.getIdentifier()).append(':').append(
                 Base64.encode(DigestUtils.toHMac256(rest.toString(), Base64
-                        .decode(new String(challenge.getSecret()))), true));
+                        .decode(challenge.getSecret())), true));
     }
 }

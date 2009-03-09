@@ -27,6 +27,8 @@
 
 package org.restlet.engine.security;
 
+import java.io.CharArrayWriter;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
 import org.restlet.data.ChallengeResponse;
@@ -55,13 +57,19 @@ public class SmtpPlainHelper extends AuthenticatorHelper {
             ChallengeResponse challenge, Request request,
             Series<Parameter> httpHeaders) {
         try {
-            final String credentials = "^@" + challenge.getIdentifier() + "^@"
-                    + new String(challenge.getSecret());
-            sb.append(Base64.encode(credentials.getBytes("US-ASCII"), false));
+        	final CharArrayWriter credentials = new CharArrayWriter();
+        	credentials.write("^@");
+        	credentials.write(challenge.getIdentifier());
+        	credentials.write("^@");
+        	credentials.write(challenge.getSecret());
+            sb.append(Base64.encode(credentials.toCharArray(), "US-ASCII", false));
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(
                     "Unsupported encoding, unable to encode credentials");
-        }
+        } catch (IOException e) {
+        	throw new RuntimeException(
+        			"Unexpected exception, unable to encode credentials",e);
+		}
     }
 
 }

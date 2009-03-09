@@ -41,6 +41,7 @@ import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.engine.http.HttpConstants;
+import org.restlet.engine.io.ByteUtils;
 import org.restlet.engine.util.Base64;
 import org.restlet.engine.util.DateUtils;
 import org.restlet.engine.util.DigestUtils;
@@ -193,8 +194,8 @@ public class HttpAwsS3Helper extends AuthenticatorHelper {
 
         // Append the AWS credentials
         sb.append(challenge.getIdentifier()).append(':').append(
-                Base64.encode(DigestUtils.toHMac(rest.toString(), new String(
-                        challenge.getSecret())), false));
+                Base64.encode(DigestUtils.toHMac(rest.toString(), 
+                		ByteUtils.toByteArray(challenge.getSecret())), false));
 
     }
 

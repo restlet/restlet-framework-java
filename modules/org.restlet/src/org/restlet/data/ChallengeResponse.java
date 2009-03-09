@@ -251,7 +251,11 @@ public final class ChallengeResponse {
     /**
      * Returns the user secret, such as a password or a secret key.
      * 
+     * It is not recommended to use {@link String#String(char[])} for security
+     * reasons.
+     * 
      * @return The user secret, such as a password or a secret key.
+     * @see 
      */
     public char[] getSecret() {
         return this.secret;
@@ -261,7 +265,9 @@ public final class ChallengeResponse {
     @Override
     public int hashCode() {
         return Engine.hashCode(getScheme(), getIdentifier(),
-                (getSecret() == null) ? null : new String(getSecret()),
+        		//Secret is simply discarded from hashcode calculation because
+        		//we don't want it to be materialized as a string
+                //(getSecret() == null) ? null : new String(getSecret()),
                 getCredentials());
     }
 

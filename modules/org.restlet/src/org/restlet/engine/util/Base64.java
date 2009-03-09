@@ -29,6 +29,8 @@ package org.restlet.engine.util;
 
 import java.util.Arrays;
 
+import org.restlet.engine.io.ByteUtils;
+
 /**
  * Minimal but fast Base64 codec.
  * 
@@ -41,12 +43,15 @@ public class Base64 {
             .toCharArray();
 
     /**
-     * decoding involves replacing each character with the character's value, or
+     * Decoding involves replacing each character with the character's value, or
      * position, from the above alphabet, and this table makes such lookups
      * quick and easy. Couldn't help myself with the corny name :)
      */
     private static final byte[] DECODER_RING = new byte[128];
 
+    /**
+     * Initializes the decoder ring.
+     */
     static {
         Arrays.fill(DECODER_RING, (byte) -1);
         int i = 0;
@@ -61,16 +66,14 @@ public class Base64 {
     }
 
     /**
-     * Decodes a base64 string into bytes. Newline characters found at block
+     * Decodes base64 characters into bytes. Newline characters found at block
      * boundaries will be ignored.
      * 
-     * @param encodedString
-     *            The string to decode.
+     * @param chars
+     *            The characters array to decode.
      * @return The decoded byte array.
      */
-    public static byte[] decode(String encodedString) {
-        final char[] chars = encodedString.toCharArray();
-
+    public static byte[] decode(final char[] chars) {
         // prepare to ignore newline chars
         int newlineCount = 0;
         for (final char c : chars) {
@@ -143,6 +146,18 @@ public class Base64 {
             }
         }
         return result;
+    };
+
+    /**
+     * Decodes a base64 string into bytes. Newline characters found at block
+     * boundaries will be ignored.
+     * 
+     * @param encodedString
+     *            The string to decode.
+     * @return The decoded byte array.
+     */
+    public static byte[] decode(String encodedString) {
+        return decode(encodedString.toCharArray());
     }
 
     /**
@@ -209,10 +224,54 @@ public class Base64 {
         return new String(output, 0, pos);
     }
 
+    /**
+     * Encodes an entire chars array into a Base64 string, with optional
+     * newlines after every 76 characters.
+     * 
+     * @param chars
+     *            The characters array to encode.
+     * @param newlines
+     *            Indicates whether or not newlines are desired.
+     * @return The encoded string.
+     */
+    public static String encode(char[] chars, boolean newlines) {
+        return encode(ByteUtils.toByteArray(chars), newlines);
+    }
+
+    /**
+     * Encodes an entire chars array into a Base64 string, with optional
+     * newlines after every 76 characters.
+     * 
+     * @param chars
+     *            The characters array to encode.
+     * @param charset
+     *            The character set to use for the character to byte conversion.
+     * @param newlines
+     *            Indicates whether or not newlines are desired.
+     * @return The encoded string.
+     */
+    public static String encode(char[] chars, String charset, boolean newlines) {
+        return encode(ByteUtils.toByteArray(chars, charset), newlines);
+    }
+
+    /**
+     * Computes the unsigned value of a byte.
+     * 
+     * @param b
+     *            The input byte.
+     * @return The output unsigned value.
+     */
     private final static int unsign(byte b) {
         return b < 0 ? b + 256 : b;
     }
 
+    /**
+     * Indicates if the character is valid and can be decoded.
+     * 
+     * @param c
+     *            The input character.
+     * @return True if the character is valid.
+     */
     private final static boolean validChar(char c) {
         return (c < 128) && (DECODER_RING[c] != -1);
     }

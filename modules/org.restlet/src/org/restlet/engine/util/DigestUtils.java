@@ -35,7 +35,6 @@ import java.security.NoSuchAlgorithmException;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-
 /**
  * Security data manipulation utilities.
  * 
@@ -78,13 +77,13 @@ public class DigestUtils {
      *            The secret key to use for conversion.
      * @return The HMac value of the source string.
      */
-    public static byte[] toHMac(String source, String secretKey) {
+    public static byte[] toHMac(String source, byte[] secretKey) {
         byte[] result = null;
 
         try {
             // Create the HMAC/SHA1 key
-            final SecretKeySpec signingKey = new SecretKeySpec(secretKey
-                    .getBytes(), "HmacSHA1");
+            final SecretKeySpec signingKey = new SecretKeySpec(secretKey,
+                    "HmacSHA1");
 
             // Create the message authentication code (MAC)
             final Mac mac = Mac.getInstance("HmacSHA1");
@@ -103,6 +102,19 @@ public class DigestUtils {
         }
 
         return result;
+    };
+
+    /**
+     * Converts a source string to its HMAC/SHA-1 value.
+     * 
+     * @param source
+     *            The source string to convert.
+     * @param secretKey
+     *            The secret key to use for conversion.
+     * @return The HMac value of the source string.
+     */
+    public static byte[] toHMac(String source, String secretKey) {
+        return toHMac(source, secretKey.getBytes());
     }
 
     /**
