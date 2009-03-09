@@ -17,9 +17,11 @@ Changes log
           Suggested by Paul Davis.
     - Bugs fixed
         - Fixed typo in the declaration of the 
-          o.r.e.Engine#DESCRIPTOR_AUTHENTICATOR. Reported by Rémi 
-          Dewitte.    
-    - Enhancements
+          o.r.e.Engine#DESCRIPTOR_AUTHENTICATOR. 
+          Reported by Remi Dewitte.    
+        - Removed all string instantiations of secrets. 
+          Contributed by Remi Dewitte.
+     - Enhancements
         - Added a getItemIterator() on RestletFileUpload to facilitate
           access to parts in streaming mode. Suggested by Paul Austin.
         - The default SAX handler has been implemented to log 
