@@ -21,7 +21,8 @@ Changes log
           Reported by Remi Dewitte.    
         - Removed all string instantiations of secrets. 
           Contributed by Remi Dewitte.
-     - Enhancements
+        - Fixed various OSGi issues. Reported by David Fogel.
+      - Enhancements
         - Added a getItemIterator() on RestletFileUpload to facilitate
           access to parts in streaming mode. Suggested by Paul Austin.
         - The default SAX handler has been implemented to log 

@@ -41,3 +41,4 @@ Import-Package: javax.crypto,
  org.xml.sax,
  org.xml.sax.helpers
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-Activator: org.restlet.engine.internal.Activator
