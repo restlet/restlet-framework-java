@@ -761,21 +761,56 @@
 			<replace file="${temp}/poms/${mod-@{name}-id}.pom"
 			         token="@artifact-id@"
 			         value="${mod-pom-@{name}-artifactId}" />
+
+			<condition property="lib-pom-@{ext1}-version"
+			           value="${lib-@{ext1}-version}.${lib-@{ext1}-release}">
+				<isset property="lib-@{ext1}-release" />
+			</condition>
+			<property name="lib-pom-@{ext1}-version"
+			          value="${lib-@{ext1}-version}" />
 			<replace file="${temp}/poms/${mod-@{name}-id}.pom"
 			         token="@lib-@{ext1}-version@"
-			         value="${lib-@{ext1}-version}" />
+			         value="${lib-pom-@{ext1}-version}" />
+
+			<condition property="lib-pom-@{ext2}-version"
+			           value="${lib-@{ext2}-version}.${lib-@{ext2}-release}">
+				<isset property="lib-@{ext2}-release" />
+			</condition>
+			<property name="lib-pom-@{ext2}-version"
+			          value="${lib-@{ext2}-version}" />
 			<replace file="${temp}/poms/${mod-@{name}-id}.pom"
 			         token="@lib-@{ext2}-version@"
-			         value="${lib-@{ext2}-version}" />
+			         value="${lib-pom-@{ext2}-version}" />
+			
+			<condition property="lib-pom-@{ext3}-version"
+			           value="${lib-@{ext3}-version}.${lib-@{ext3}-release}">
+				<isset property="lib-@{ext3}-release" />
+			</condition>
+			<property name="lib-pom-@{ext3}-version"
+			          value="${lib-@{ext3}-version}" />
 			<replace file="${temp}/poms/${mod-@{name}-id}.pom"
 			         token="@lib-@{ext3}-version@"
-			         value="${lib-@{ext3}-version}" />
+			         value="${lib-pom-@{ext3}-version}" />
+
+			<condition property="lib-pom-@{ext4}-version"
+			           value="${lib-@{ext4}-version}.${lib-@{ext4}-release}">
+				<isset property="lib-@{ext4}-release" />
+			</condition>
+			<property name="lib-pom-@{ext4}-version"
+			          value="${lib-@{ext4}-version}" />
 			<replace file="${temp}/poms/${mod-@{name}-id}.pom"
 			         token="@lib-@{ext4}-version@"
-			         value="${lib-@{ext4}-version}" />
+			         value="${lib-pom-@{ext4}-version}" />
+
+			<condition property="lib-pom-@{ext5}-version"
+			           value="${lib-@{ext5}-version}.${lib-@{ext5}-release}">
+				<isset property="lib-@{ext5}-release" />
+			</condition>
+			<property name="lib-pom-@{ext5}-version"
+			          value="${lib-@{ext5}-version}" />
 			<replace file="${temp}/poms/${mod-@{name}-id}.pom"
 			         token="@lib-@{ext5}-version@"
-			         value="${lib-@{ext5}-version}" />
+			         value="${lib-pom-@{ext5}-version}" />
 		</sequential>
 	</macrodef>
 

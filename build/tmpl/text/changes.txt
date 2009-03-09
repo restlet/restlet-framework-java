@@ -19,6 +19,8 @@ Changes log
          DirectoryResource when files are served from a CLAP connector. 
          Reported by David Fogel.
        - Fixed starting issue with the range service.
+       - Fixed POM generation issue with dependencies release version.
+         Reported by Paul Austin. 
     - Misc
        - Updated DirectoryTestCase (tested directory are made unique).
          May help fix a bug with Windows and deleted files reported by 
