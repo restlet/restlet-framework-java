@@ -24,7 +24,7 @@
  * 
  * Restlet is a registered trademark of Noelios Technologies.
  */
-package org.restlet.example.jaxrs;
+package org.restlet.example.ext.jaxrs;
 
 import java.security.Principal;
 

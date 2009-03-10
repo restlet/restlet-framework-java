@@ -24,14 +24,14 @@
  * 
  * Restlet is a registered trademark of Noelios Technologies.
  */
-package org.restlet.example.jaxrs;
+package org.restlet.example.ext.jaxrs;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import javax.ws.rs.core.Application;
 
-import org.restlet.example.jaxrs.employees.EmployeesResource;
+import org.restlet.example.ext.jaxrs.employees.EmployeesResource;
 
 /**
  * An {@link ApplicationConfig} contains the root resource classes and the

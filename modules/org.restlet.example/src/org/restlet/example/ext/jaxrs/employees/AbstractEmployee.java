@@ -24,27 +24,44 @@
  * 
  * Restlet is a registered trademark of Noelios Technologies.
  */
-package org.restlet.example.jaxrs.employees;
-
-import java.net.URI;
-
-import javax.xml.bind.annotation.XmlRootElement;
+package org.restlet.example.ext.jaxrs.employees;
 
 /**
- * Contains a small amount of data about an employee.
+ * This class is the superclass of {@link Employee} and {@link SmallEmployee}.
  * 
  * @author Stephan Koops
+ * @see Employee
+ * @see SmallEmployee
  */
-@XmlRootElement(name = "employee")
-public class SmallEmployee extends AbstractEmployee {
+public abstract class AbstractEmployee {
 
-    private URI details;
+    private Integer staffNo;
 
-    public URI getDetails() {
-        return this.details;
+    private String firstname;
+
+    private String lastname;
+
+    public String getFirstname() {
+        return this.firstname;
     }
 
-    public void setDetails(URI details) {
-        this.details = details;
+    public String getLastname() {
+        return this.lastname;
+    }
+
+    public Integer getStaffNo() {
+        return this.staffNo;
+    }
+
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
+    }
+
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
+    }
+
+    public void setStaffNo(Integer staffNo) {
+        this.staffNo = staffNo;
     }
 }
