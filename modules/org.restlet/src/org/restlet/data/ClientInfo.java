@@ -330,7 +330,7 @@ public final class ClientInfo {
             // the current user-agent string. The list of templates is
             // located in a file named "agent.properties" available on
             // the classpath.
-            // Soem defined variables are used in order to catch the name,
+            // Some defined variables are used in order to catch the name,
             // version and facultative comment. Respectively, these
             // variables are called "agentName", "agentVersion" and
             // "agentComment".

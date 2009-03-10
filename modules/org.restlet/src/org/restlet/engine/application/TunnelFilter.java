@@ -374,7 +374,7 @@ public class TunnelFilter extends Filter {
      * the fact this block concerns only "firefox" clients.
      * 
      * The "acceptOld" property allows to check the value of the current
-     * "Accept" header. If the lattest equals to the value of the "acceptOld"
+     * "Accept" header. If the latest equals to the value of the "acceptOld"
      * property then the preferences will be updated. This is useful for Ajax
      * clients which looks like their browser (same agentName, agentVersion,
      * etc.) but can provide their own "Accept" header.
@@ -394,7 +394,8 @@ public class TunnelFilter extends Filter {
                         HttpConstants.ATTRIBUTE_HEADERS);
 
                 final String acceptOld = (headers != null) ? headers
-                        .getFirstValue(HttpConstants.HEADER_ACCEPT) : null;
+                        .getFirstValue(HttpConstants.HEADER_ACCEPT, true)
+                        : null;
 
                 BufferedReader reader;
                 try {

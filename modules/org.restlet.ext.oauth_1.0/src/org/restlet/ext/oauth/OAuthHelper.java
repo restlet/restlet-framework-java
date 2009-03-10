@@ -84,7 +84,8 @@ public class OAuthHelper extends AuthenticatorHelper {
         final Form headers = (Form) request.getAttributes().get(
                 "org.restlet.http.headers");
         for (final OAuth.Parameter parameter : OAuthMessage
-                .decodeAuthorization(headers.getFirstValue("Authorization"))) {
+                .decodeAuthorization(headers.getFirstValue("Authorization",
+                        true))) {
             if (!parameter.getKey().equalsIgnoreCase("realm")) {
                 parameters.add(parameter);
             }

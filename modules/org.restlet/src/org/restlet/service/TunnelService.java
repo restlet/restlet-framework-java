@@ -94,28 +94,33 @@ import org.restlet.engine.http.HttpConstants;
  * </tr>
  * </table>
  * <br>
- * The client preferences can also be updated based on the extensions available
- * in the last path segment. The syntax is similar to file extensions by allows
- * several extensions to be present, in any particular order: e.g.
- * "/path/foo.fr.txt"). This mechanism relies on the mapping between an
- * extension and a metadata (e.g. "txt" => "text/plain") declared by the
- * {@link MetadataService}.<br>
- * <br>
  * The client preferences can also be updated according to the user agent
  * properties (its name, version, operating system, or other) available via the
- * {@link ClientInfo#getAgentAttributes()} method. The feature is based on a
- * property-like file called "accept.properties" and loaded from the classpath.
- * Here is an excerpt of such file :<br>
+ * {@link ClientInfo#getAgentAttributes()} method.<br>
  * <br>
- * <code>
+ * The list of new media type preferences is loaded from a property file called
+ * "accept.properties" located in the classpath in the sub directory
+ * "org/restlet/service". This property file is composed of blocks of
+ * properties. One "block" of properties starts either with the beginning of the
+ * properties file or with the end of the previous block. One block ends with
+ * the "acceptNew" property which contains the value of the new accept header.
+ * Here is a sample block.<br>
+ * 
+ * <pre>
  * agentName: firefox
- * accept: application/xhtml+xml,text/html,text/xml;q=0.9,application/xml;q=0.9
- * </code><br>
+ * acceptOld: text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,\*\/\*;q=0.5
+ * acceptNew: application/xhtml+xml,text/html,text/xml;q=0.9,application/xml;q=0.9,text/plain;q=0.8,image/png,\*\/\*;q=0.5
+ * </pre>
+ * 
+ * Each declared property is a condition that must be filled in order to update
+ * the client preferences. For example "agentName: firefox" expresses the fact
+ * this block concerns only "firefox" clients. <br>
  * <br>
- * It allows to specify a complete "accept" header string for a set of
- * (key:value) pairs. The header value is given with the "accept" key, and the
- * set of (key:value) pairs is the simple list of key:value just above the
- * "accept" line.
+ * The "acceptOld" property allows to check the value of the current "Accept"
+ * header. If the latest equals to the value of the "acceptOld" property then
+ * the preferences will be updated. This is useful for Ajax clients which looks
+ * like their browser (same agentName, agentVersion, etc.) but can provide their
+ * own "Accept" header.
  * 
  * @author Jerome Louvel
  */

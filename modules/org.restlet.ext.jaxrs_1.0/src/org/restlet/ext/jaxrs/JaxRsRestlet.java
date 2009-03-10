@@ -61,6 +61,7 @@ import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
+import org.restlet.engine.Engine;
 import org.restlet.ext.jaxrs.internal.core.CallContext;
 import org.restlet.ext.jaxrs.internal.core.ThreadLocalizedContext;
 import org.restlet.ext.jaxrs.internal.exceptions.ConvertRepresentationException;
@@ -70,14 +71,8 @@ import org.restlet.ext.jaxrs.internal.exceptions.MissingAnnotationException;
 import org.restlet.ext.jaxrs.internal.exceptions.RequestHandledException;
 import org.restlet.ext.jaxrs.internal.provider.BufferedReaderProvider;
 import org.restlet.ext.jaxrs.internal.provider.ByteArrayProvider;
-import org.restlet.ext.jaxrs.internal.provider.DataSourceProvider;
 import org.restlet.ext.jaxrs.internal.provider.FileProvider;
-import org.restlet.ext.jaxrs.internal.provider.FileUploadProvider;
 import org.restlet.ext.jaxrs.internal.provider.InputStreamProvider;
-import org.restlet.ext.jaxrs.internal.provider.JaxbElementProvider;
-import org.restlet.ext.jaxrs.internal.provider.JaxbProvider;
-import org.restlet.ext.jaxrs.internal.provider.JsonProvider;
-import org.restlet.ext.jaxrs.internal.provider.MultipartProvider;
 import org.restlet.ext.jaxrs.internal.provider.ReaderProvider;
 import org.restlet.ext.jaxrs.internal.provider.SourceProvider;
 import org.restlet.ext.jaxrs.internal.provider.StreamingOutputProvider;
@@ -114,7 +109,7 @@ import org.restlet.service.MetadataService;
 /**
  * <p>
  * This class choose the JAX-RS resource class and method to use for a request
- * and handles the result from he resource method. Typcally you should
+ * and handles the result from he resource method. Typically you should
  * instantiate a {@link JaxRsApplication} to run JAX-RS resource classes.
  * </p>
  * 
@@ -196,14 +191,24 @@ public class JaxRsRestlet extends Restlet {
     private void loadDefaultProviders() {
         this.addSingleton(new BufferedReaderProvider(), true);
         this.addSingleton(new ByteArrayProvider(), true);
-        this.addSingleton(new DataSourceProvider(), true);
-        this.addSingleton(new FileUploadProvider(), true); // not yet tested
+        this.addSingleton(
+                "org.restlet.ext.jaxrs.internal.provider.DataSourceProvider",
+                true);
+        this.addSingleton(
+                "org.restlet.ext.jaxrs.internal.provider.FileUploadProvider",
+                true); // not yet tested
         this.addSingleton(new FileProvider(), true);
         this.addSingleton(new InputStreamProvider(), true);
-        this.addSingleton(new JaxbElementProvider(), true);
-        this.addSingleton(new JaxbProvider(), true);
-        this.addSingleton(new JsonProvider(), true);
-        this.addSingleton(new MultipartProvider(), true); // not yet tested
+        this.addSingleton(
+                "org.restlet.ext.jaxrs.internal.provider.JaxbElementProvider",
+                true);
+        this.addSingleton(
+                "org.restlet.ext.jaxrs.internal.provider.JaxbProvider", true);
+        this.addSingleton(
+                "org.restlet.ext.jaxrs.internal.provider.JsonProvider", true);
+        this.addSingleton(
+                "org.restlet.ext.jaxrs.internal.provider.MultipartProvider",
+                true); // not yet tested
         this.addSingleton(new ReaderProvider(), true);
         this.addSingleton(new StreamingOutputProvider(), true);
         this.addSingleton(new StringProvider(), true);
@@ -268,34 +273,60 @@ public class JaxRsRestlet extends Restlet {
     /**
      * Adds the provider object to this JaxRsRestlet.
      * 
-     * @param jaxRsProviderClass
-     *            the JAX-RS provider class.
+     * @param jaxRsProvider
+     *            The provider object or class name.
+     * @param defaultProvider
      * @return true, if the provider is ok and added, otherwise false.
      * @throws IllegalArgumentException
      *             if null was given
      * @see {@link javax.ws.rs.ext.Provider}
      */
-    private boolean addSingleton(Object jaxRsObject, boolean defaultProvider)
+    private boolean addSingleton(Object jaxRsProvider, boolean defaultProvider)
             throws IllegalArgumentException {
-        if (jaxRsObject == null)
+        if (jaxRsProvider instanceof String) {
+            try {
+                jaxRsProvider = Engine.loadClass((String) jaxRsProvider)
+                        .newInstance();
+            } catch (ClassNotFoundException e) {
+                getLogger().fine(
+                        "Unable to load provider class : " + jaxRsProvider);
+                jaxRsProvider = null;
+            } catch (InstantiationException e) {
+                getLogger().fine(
+                        "Unable to instantiate provider : " + jaxRsProvider);
+                jaxRsProvider = null;
+            } catch (IllegalAccessException e) {
+                getLogger().fine(
+                        "Unable to access to provider : " + jaxRsProvider);
+                jaxRsProvider = null;
+            } catch (NoClassDefFoundError e) {
+                getLogger().fine(
+                        "Unable to load provider class : " + jaxRsProvider);
+                jaxRsProvider = null;
+            }
+        } else if (jaxRsProvider == null)
             throw new IllegalArgumentException(
                     "The JAX-RS object to add must not be null");
-        if (jaxRsObject instanceof Class)
+        else if (jaxRsProvider instanceof Class)
             throw new IllegalArgumentException(
                     "The JAX-RS object to add must not be a java.lang.Class");
+
         boolean used = false;
-        if (defaultProvider || Util.isProvider(jaxRsObject.getClass())) {
-            used = providers.addSingleton(jaxRsObject, defaultProvider);
+        if (jaxRsProvider != null) {
+            if (defaultProvider || Util.isProvider(jaxRsProvider.getClass())) {
+                used = providers.addSingleton(jaxRsProvider, defaultProvider);
+            }
+            if (Util.isRootResourceClass(jaxRsProvider.getClass())) {
+                throw new NotYetImplementedException(
+                        "only providers are allowed as singletons for now");
+                // used = ...
+            }
+            if (!used) {
+                final String warning = ("The class " + jaxRsProvider.getClass() + " is neither a provider nor a root resource class");
+                getLogger().warning(warning);
+            }
         }
-        if (Util.isRootResourceClass(jaxRsObject.getClass())) {
-            throw new NotYetImplementedException(
-                    "only providers are allowed as singletons for now");
-            // used = ...
-        }
-        if (!used) {
-            final String warning = ("The class " + jaxRsObject.getClass() + " is neither a povider nor a root resource class");
-            getLogger().warning(warning);
-        }
+
         return used;
     }
 
@@ -449,8 +480,8 @@ public class JaxRsRestlet extends Restlet {
 
     /**
      * Obtains the object that will handle the request, see JAX-RS-Spec
-     * (2008-04-16), section 3.7.2 "Request Matching", Part 2: "btain the
-     * object that will handle the request"
+     * (2008-04-16), section 3.7.2 "Request Matching", Part 2: "btain the object
+     * that will handle the request"
      * 
      * @param rroRemPathAndMatchedPath
      * @throws WebApplicationException
@@ -843,8 +874,8 @@ public class JaxRsRestlet extends Restlet {
         List<MediaType> pSorted = sortByConcreteness(p);
         // 6.
         List<MediaType> m = new ArrayList<MediaType>();
-        for (MediaType prod : pSorted)
-            for (MediaType acc : a)
+        for (MediaType acc : a)
+            for (MediaType prod : pSorted)
                 if (prod.isCompatible(acc))
                     m.add(MediaType.getMostSpecific(prod, acc));
         // 7.
