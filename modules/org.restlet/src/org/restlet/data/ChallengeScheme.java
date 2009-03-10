@@ -70,7 +70,7 @@ public final class ChallengeScheme extends Metadata {
     /** Cookie HTTP scheme. */
     public static final ChallengeScheme HTTP_COOKIE = new ChallengeScheme(
             "HTTP_Cookie", "Cookie", "Cookie HTTP authentication");
-    
+
     /** Basic POP scheme. Based on the USER/PASS commands. */
     public static final ChallengeScheme POP_BASIC = new ChallengeScheme(
             "POP_BASIC", "Basic",

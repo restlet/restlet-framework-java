@@ -39,28 +39,76 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public class CryptoUtils {
 
-    protected static Cipher newCipher(String algo, String base64Secret, int mode)
-            throws GeneralSecurityException {
+    /**
+     * Creates a cipher for a given algorithm and secret.
+     * 
+     * @param algo
+     *            The cryptographic algorithm.
+     * @param base64Secret
+     *            The cryptographic secret, encoded as a Base64 string.
+     * @param mode
+     *            The cipher mode, either {@link Cipher#ENCRYPT_MODE} or
+     *            {@link Cipher#DECRYPT_MODE}.
+     * @return
+     * @throws GeneralSecurityException
+     */
+    protected static Cipher createCipher(String algo, String base64Secret,
+            int mode) throws GeneralSecurityException {
         Cipher cipher = Cipher.getInstance(algo);
         cipher.init(mode, new SecretKeySpec(Base64.decode(base64Secret), algo));
         return cipher;
     }
 
-    public static byte[] encrypt(String algo, String base64Secret,
-            String content) throws GeneralSecurityException {
-        return crypt(algo, base64Secret, Cipher.ENCRYPT_MODE, content
-                .getBytes());
-    }
-
+    /**
+     * Decrypts a bytes array.
+     * 
+     * @param algo
+     *            The cryptographic algorithm.
+     * @param base64Secret
+     *            The cryptographic secret, encoded as a Base64 string.
+     * @param encrypted
+     *            The encrypted bytes.
+     * @return The decrypted content string.
+     * @throws GeneralSecurityException
+     */
     public static String decrypt(String algo, String base64Secret,
             byte[] encrypted) throws GeneralSecurityException {
-        byte[] original = crypt(algo, base64Secret, Cipher.DECRYPT_MODE,
+        byte[] original = doFinal(algo, base64Secret, Cipher.DECRYPT_MODE,
                 encrypted);
         return new String(original);
     }
 
-    protected static byte[] crypt(String algo, String base64Secret, int mode,
+    /**
+     * 
+     * @param algo
+     *            The cryptographic algorithm.
+     * @param base64Secret
+     *            The cryptographic secret, encoded as a Base64 string.
+     * @param mode
+     * @param what
+     * @return
+     * @throws GeneralSecurityException
+     */
+    protected static byte[] doFinal(String algo, String base64Secret, int mode,
             byte[] what) throws GeneralSecurityException {
-        return newCipher(algo, base64Secret, mode).doFinal(what);
+        return createCipher(algo, base64Secret, mode).doFinal(what);
+    }
+
+    /**
+     * Encrypts a content string.
+     * 
+     * @param algo
+     *            The cryptographic algorithm.
+     * @param base64Secret
+     *            The cryptographic secret, encoded as a Base64 string.
+     * @param content
+     *            The content string to encrypt.
+     * @return The encrypted bytes.
+     * @throws GeneralSecurityException
+     */
+    public static byte[] encrypt(String algo, String base64Secret,
+            String content) throws GeneralSecurityException {
+        return doFinal(algo, base64Secret, Cipher.ENCRYPT_MODE, content
+                .getBytes());
     }
 }
