@@ -161,6 +161,20 @@ public final class LocalReference extends Reference {
     }
 
     /**
+     * Constructor.
+     * 
+     * @param zipFile
+     *            The Zip file reference.
+     * @param entryPath
+     *            The entry path inside the Zip file.
+     */
+    public static LocalReference createZipReference(Reference zipFile,
+            String entryPath) {
+        return new LocalReference("zip:" + zipFile.toString() + "!/"
+                + entryPath);
+    }
+
+    /**
      * Returns an authority name.
      * 
      * @param authority

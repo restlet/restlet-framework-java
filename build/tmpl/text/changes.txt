@@ -49,6 +49,9 @@ Changes log
           getClientDispatcher() method to facilitate extension and 
           support of special cases. 
           Original issue reported by Dave Fogel.
+        - Added a client connector supporting ZIP and JAR URIs that
+          are based on local archive files.
+          Contributed by Remi Dewitte.
     - API changes
         - Added Role class and "roles" property to Application.
         - Fully refactored the security package introduce in 1.2 M1 
@@ -95,6 +98,10 @@ Changes log
         - Added a WadlApplication#createFinder() method to facilitate
           customization of behavior with Spring. 
           Suggested by Rhett Sutphin.
+        - Added Protocol#ZIP constant.
+        - Representation#finalize() method now has a default 
+          implementation that calls the release() method.
+          Suggested by Remi Dewitte.
     - Misc
         - Upgraded Simple server to version 4.1.8. 
           Contributed by Niall Gallagher.

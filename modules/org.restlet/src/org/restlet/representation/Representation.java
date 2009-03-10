@@ -297,6 +297,20 @@ public abstract class Representation extends Variant {
     }
 
     /**
+     * Finalize this representation. By default it invokes the
+     * {@link #release()} method. You should not however rely on the garbage
+     * collector calling {@link #finalize()} to release your representation,
+     * this is only an extra security to prevent memory leaks and locking
+     * issues.
+     */
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
+
+        release();
+    }
+
+    /**
      * Returns the size effectively available. This returns the same value as
      * {@link #getSize()} if no range is defined, otherwise it returns the size
      * of the range using {@link Range#getSize()}.

@@ -91,7 +91,8 @@ public final class Protocol extends Metadata {
      * archive files. Example URI:
      * "jar:http://www.foo.com/bar/baz.jar!/COM/foo/Quux.class".
      * 
-     * @see org.restlet.data.LocalReference
+     * @see org.restlet.data.LocalReference#createJarReference(Reference,
+     *      String)
      */
     public static final Protocol JAR = new Protocol("jar", "JAR",
             "Java ARchive", UNKNOWN_PORT, true);
@@ -135,6 +136,16 @@ public final class Protocol extends Metadata {
             "Web Archive Access Protocol", UNKNOWN_PORT, true);
 
     /**
+     * ZIP is a special scheme to access to representations inside Zip archive
+     * files. Example URI: "zip:file:///tmp/test.zip!/test.txt".
+     * 
+     * @see org.restlet.data.LocalReference#createZipReference(Reference,
+     *      String)
+     */
+    public static final Protocol ZIP = new Protocol("zip", "ZIP",
+            "Zip Archive Access Protocol", UNKNOWN_PORT, true);
+
+    /**
      * Creates the protocol associated to a URI scheme name. If an existing
      * constant exists then it is returned, otherwise a new instance is created.
      * 
@@ -174,6 +185,8 @@ public final class Protocol extends Metadata {
                 result = SMTPS;
             } else if (name.equalsIgnoreCase(WAR.getSchemeName())) {
                 result = WAR;
+            } else if (name.equalsIgnoreCase(ZIP.getSchemeName())) {
+                result = ZIP;
             } else {
                 result = new Protocol(name);
             }

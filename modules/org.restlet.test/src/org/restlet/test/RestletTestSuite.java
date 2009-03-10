@@ -99,6 +99,7 @@ public class RestletTestSuite extends TestSuite {
         addTestSuite(TransformerTestCase.class);
         addTestSuite(VelocityTestCase.class);
         addTestSuite(WadlTestCase.class);
+        addTestSuite(ZipClientTestCase.class);
 
         addTest(EngineTestSuite.suite());
         addTest(AllJaxRsTests.suite());

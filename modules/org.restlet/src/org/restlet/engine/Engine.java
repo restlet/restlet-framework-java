@@ -53,6 +53,7 @@ import org.restlet.engine.http.StreamClientHelper;
 import org.restlet.engine.http.StreamServerHelper;
 import org.restlet.engine.local.ClapClientHelper;
 import org.restlet.engine.local.FileClientHelper;
+import org.restlet.engine.local.ZipClientHelper;
 import org.restlet.engine.security.AuthenticatorHelper;
 import org.restlet.engine.security.HttpAwsS3Helper;
 import org.restlet.engine.security.HttpBasicHelper;
@@ -601,6 +602,7 @@ public class Engine {
         getRegisteredClients().add(new StreamClientHelper(null));
         getRegisteredClients().add(new ClapClientHelper(null));
         getRegisteredClients().add(new FileClientHelper(null));
+        getRegisteredClients().add(new ZipClientHelper(null));
         getRegisteredServers().add(new StreamServerHelper(null));
     }
 
