@@ -61,9 +61,14 @@ package org.restlet.service;
  * For custom access log format, see the syntax to use and the list of available
  * variable names in {@link org.restlet.util.Template}. <br>
  * 
- * @see <a href="http://www.restlet.org/documentation/1.1/tutorial#part07">Tutorial: Access logging</a>
- * @see <a href="http://wiki.restlet.org/docs_1.1/g1/13-restlet/29-restlet/98-restlet/101-restlet.html">Wiki: Logging</a> 
- * @see <a href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/logging/package-summary.html">java.util.logging</a>
+ * @see <a
+ *      href="http://www.restlet.org/documentation/1.1/tutorial#part07">Tutorial:
+ *      Access logging</a>
+ * @see <a
+ *      href="http://wiki.restlet.org/docs_1.2/g1/13-restlet/29-restlet/98-restlet/101-restlet.html">Wiki:
+ *      Logging</a>
+ * @see <a
+ *      href="http://java.sun.com/j2se/1.5.0/docs/api/java/util/logging/package-summary.html">java.util.logging</a>
  * @author Jerome Louvel
  */
 public class LogService extends Service {

@@ -28,8 +28,8 @@
 package org.restlet.service;
 
 /**
- * Generic service associated to a component or an application. The lifecycle of
- * a service is tigthly related to the one of the associated component or
+ * Generic service associated to a component or an application. The life cycle
+ * of a service is tightly related to the one of the associated component or
  * application.<br>
  * <br>
  * If you want to use a specific service, you can always disable it before it is

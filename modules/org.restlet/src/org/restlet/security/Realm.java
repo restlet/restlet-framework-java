@@ -27,6 +27,12 @@
 
 package org.restlet.security;
 
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import org.restlet.data.Form;
+import org.restlet.data.Parameter;
+import org.restlet.util.Series;
+
 /**
  * Security realm capable of providing an enroler and a verifier.
  * 
@@ -34,35 +40,63 @@ package org.restlet.security;
  */
 public abstract class Realm {
 
+    /** The modifiable series of parameters. */
+    private final Series<Parameter> parameters;
+
     /**
-     * The enroler that can add the user roles based on Restlet default
-     * authorization model.
+     * The enroler that can add the user roles based on user principals.
      */
     private volatile Enroler enroler;
 
     /**
-     * The verifier that can check the validity of user/secret couples based on
-     * Restlet default authorization model.
+     * The verifier that can check the validity of the credentials associated to
+     * a request.
      */
     private volatile Verifier verifier;
 
+    /**
+     * Constructor.
+     */
     public Realm() {
         this(null, null);
     }
 
+    /**
+     * Constructor.
+     * 
+     * @param verifier
+     *            The verifier that can check the validity of the credentials
+     *            associated to a request.
+     * 
+     * @param enroler
+     *            The enroler that can add the user roles based on user
+     *            principals.
+     */
     public Realm(Verifier verifier, Enroler enroler) {
         this.enroler = enroler;
         this.verifier = verifier;
+        this.parameters = new Form(new CopyOnWriteArrayList<Parameter>());
     }
 
     /**
-     * Returns a local enroler that can add the user roles based on Restlet
-     * default authorization model.
+     * Returns an enroler that can add the user roles based on user principals.
      * 
      * @return An enroler.
      */
     public Enroler getEnroler() {
         return enroler;
+    }
+
+    /**
+     * Returns the modifiable series of parameters. A parameter is a pair
+     * composed of a name and a value and is typically used for configuration
+     * purpose, like Java properties. Note that multiple parameters with the
+     * same name can be declared and accessed.
+     * 
+     * @return The modifiable series of parameters.
+     */
+    public Series<Parameter> getParameters() {
+        return this.parameters;
     }
 
     /**
@@ -76,8 +110,7 @@ public abstract class Realm {
     }
 
     /**
-     * Sets a local enroler that can add the user roles based on Restlet default
-     * authorization model.
+     * Sets an enroler that can add the user roles based on user principals.
      * 
      * @param enroler
      *            An enroler.
@@ -87,8 +120,22 @@ public abstract class Realm {
     }
 
     /**
-     * Sets a local verifier that can check the validity of user/secret couples
-     * based on Restlet default authorization model.
+     * Sets the modifiable series of parameters.
+     * 
+     * @param parameters
+     *            The modifiable series of parameters.
+     */
+    public synchronized void setParameters(Series<Parameter> parameters) {
+        this.parameters.clear();
+
+        if (parameters != null) {
+            this.parameters.addAll(parameters);
+        }
+    }
+
+    /**
+     * Sets a verifier that can check the validity of the credentials associated
+     * to a request.
      * 
      * @param verifier
      *            A local verifier.

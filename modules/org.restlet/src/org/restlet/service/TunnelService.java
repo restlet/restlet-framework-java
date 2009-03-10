@@ -32,10 +32,10 @@ import org.restlet.data.Request;
 import org.restlet.engine.http.HttpConstants;
 
 /**
- * Service tunneling request method or client preferences. The tunneling can use
- * query parameters, file-like extensions and specific headers. This is
- * particularly useful for browser-based applications that can't fully control
- * the HTTP requests sent.<br>
+ * Application service tunneling request method or client preferences. The
+ * tunneling can use query parameters, file-like extensions and specific
+ * headers. This is particularly useful for browser-based applications that
+ * can't fully control the HTTP requests sent.<br>
  * <br>
  * Here is the list of the default parameter names supported:
  * <table>

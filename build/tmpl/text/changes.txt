@@ -102,6 +102,7 @@ Changes log
         - Representation#finalize() method now has a default 
           implementation that calls the release() method.
           Suggested by Remi Dewitte.
+        - 
     - Misc
         - Upgraded Simple server to version 4.1.8. 
           Contributed by Niall Gallagher.

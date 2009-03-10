@@ -35,8 +35,9 @@ import org.restlet.data.Protocol;
 import org.restlet.representation.Representation;
 
 /**
- * Service declaring client and server connectors. This is useful at deployment
- * time to know which connectors an application expects to be able to use.<br>
+ * Application service declaring client and server connectors. This is useful at
+ * deployment time to know which connectors an application expects to be able to
+ * use.<br>
  * <br>
  * If you need to override the {@link #afterSend(Representation)} method for
  * example, just create a subclass and set it on your application with the

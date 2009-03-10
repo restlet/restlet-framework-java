@@ -235,11 +235,10 @@ public class Context {
     }
 
     /**
-     * Returns the modifiable series of parameters. Creates a new instance if no
-     * one has been set. A parameter is a pair composed of a name and a value
-     * and is typically used for configuration purpose, like Java properties.
-     * Note that multiple parameters with the same name can be declared and
-     * accessed.
+     * Returns the modifiable series of parameters. A parameter is a pair
+     * composed of a name and a value and is typically used for configuration
+     * purpose, like Java properties. Note that multiple parameters with the
+     * same name can be declared and accessed.
      * 
      * @return The modifiable series of parameters.
      */
@@ -340,8 +339,7 @@ public class Context {
     }
 
     /**
-     * Sets a local enroler that can add the user roles based on Restlet default
-     * authorization model.
+     * Sets an enroler and a verifier based on the given realm.
      * 
      * @param realm
      *            A security realm.

@@ -37,7 +37,8 @@ import org.restlet.data.MediaType;
 import org.restlet.data.Metadata;
 
 /**
- * Service providing access to metadata and their associated extension names.
+ * Application service providing access to metadata and their associated
+ * extension names.
  * 
  * @author Jerome Louvel
  */
@@ -114,7 +115,7 @@ public class MetadataService extends Service {
         addCommonExtensions();
     }
 
-/**
+    /**
      * Adds a common list of associations from extensions to metadata. The list
      * of languages extensions:<br>
      * <ul>
@@ -136,8 +137,8 @@ public class MetadataService extends Service {
      * <li>dat: Fixed-width Values</li>
      * <li>dib: Device-Independent Bitmap Graphics</li>
      * <li>doc: Microsoft Word document</li>
-     * <li>docx: Microsoft Office Word 2007 document</li>                     
-     * <li>docm: Office Word 2007 macro-enabled document</li>                 
+     * <li>docx: Microsoft Office Word 2007 document</li>
+     * <li>docm: Office Word 2007 macro-enabled document</li>
      * <li>dotx: Office Word 2007 template</li>
      * <li>dotm: Office Word 2007 macro-enabled document template</li>
      * <li>dtd: XML Document Type Definition</li>
@@ -169,9 +170,9 @@ public class MetadataService extends Service {
      * <li>odc: OpenDocument Chart</li>
      * <li>odf: OpenDocument Formula</li>
      * <li>odg: OpenDocument Drawing</li>
-     * <li>odi: OpenDocument Image </li>
+     * <li>odi: OpenDocument Image</li>
      * <li>odm: OpenDocument Master Document</li>
-     * <li>odp: OpenDocument Presentation </li>
+     * <li>odp: OpenDocument Presentation</li>
      * <li>ods: OpenDocument Spreadsheet</li>
      * <li>odt: OpenDocument Text</li>
      * <li>onetoc: Microsoft Office OneNote 2007 TOC</li>

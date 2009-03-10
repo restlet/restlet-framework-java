@@ -28,7 +28,7 @@
 package org.restlet.service;
 
 /**
- * Service automatically decoding or decompressing request entities.
+ * Application service automatically decoding or uncompressing request entities.
  * 
  * @author Jerome Louvel
  */

@@ -48,8 +48,8 @@ import org.restlet.representation.DomRepresentation;
 import org.restlet.representation.FileRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.Resource;
-import org.restlet.security.Realm;
 import org.restlet.service.LogService;
+import org.restlet.service.RealmService;
 import org.restlet.service.StatusService;
 import org.restlet.util.ClientList;
 import org.restlet.util.ServerList;
@@ -195,11 +195,11 @@ public class Component extends Restlet {
     /** The log service. */
     private volatile LogService logService;
 
-    /** The modifiable list of securit realms. */
-    private List<Realm> realms;
-
     /** The modifiable list of server connectors. */
     private final ServerList servers;
+
+    /** The security realm service. */
+    private volatile RealmService realmService;
 
     /** The status service. */
     private volatile StatusService statusService;
@@ -211,7 +211,6 @@ public class Component extends Restlet {
         this.hosts = new CopyOnWriteArrayList<VirtualHost>();
         this.clients = new ClientList(null);
         this.servers = new ServerList(null, this);
-        this.realms = new CopyOnWriteArrayList<Realm>();
 
         if (Engine.getInstance() != null) {
             this.helper = new ComponentHelper(this);
@@ -264,6 +263,7 @@ public class Component extends Restlet {
 
                 };
                 this.logService = new LogService(true);
+                this.realmService = new RealmService(true);
                 this.statusService = new StatusService(true);
                 this.clients.setContext(getContext());
                 this.servers.setContext(getContext());
@@ -275,7 +275,7 @@ public class Component extends Restlet {
      * Constructor with the reference to the XML configuration file.
      * 
      * @param xmlConfigReference
-     *            The reference to the XML config file.
+     *            The reference to the XML configuration file.
      */
     public Component(Reference xmlConfigReference) {
         this();
@@ -531,8 +531,7 @@ public class Component extends Restlet {
     }
 
     /**
-     * Returns a modifiable list of client connectors. Creates a new instance if
-     * no one has been set.
+     * Returns a modifiable list of client connectors.
      * 
      * @return A modifiable list of client connectors.
      */
@@ -580,8 +579,7 @@ public class Component extends Restlet {
     }
 
     /**
-     * Returns the modifiable list of virtual hosts. Creates a new instance if
-     * no one has been set.
+     * Returns the modifiable list of virtual hosts.
      * 
      * @return The modifiable list of virtual hosts.
      */
@@ -686,17 +684,16 @@ public class Component extends Restlet {
     }
 
     /**
-     * Returns the modifiable list of security realms.
+     * Returns the security service, enabled by default.
      * 
-     * @return The modifiable list of security realms.
+     * @return The security service.
      */
-    public List<Realm> getRealms() {
-        return realms;
+    public RealmService getRealmService() {
+        return this.realmService;
     }
 
     /**
-     * Returns the modifiable list of server connectors. Creates a new instance
-     * if no one has been set.
+     * Returns the modifiable list of server connectors.
      * 
      * @return The modifiable list of server connectors.
      */
@@ -705,8 +702,7 @@ public class Component extends Restlet {
     }
 
     /**
-     * Returns the status service, enabled by default. Creates a new instance if
-     * no one has been set.
+     * Returns the status service, enabled by default.
      * 
      * @return The status service.
      */
@@ -1217,17 +1213,13 @@ public class Component extends Restlet {
     }
 
     /**
-     * Sets the list of realms.
+     * Sets the security service.
      * 
-     * @param realms
-     *            The list of realms.
+     * @param securityService
+     *            The security service.
      */
-    public synchronized void setRealms(List<Realm> realms) {
-        this.realms.clear();
-
-        if (realms != null) {
-            this.realms.addAll(realms);
-        }
+    public void setRealmService(RealmService securityService) {
+        this.realmService = securityService;
     }
 
     /**

@@ -46,8 +46,8 @@ import org.restlet.VirtualHost;
 import org.restlet.data.Response;
 
 /**
- * Service capable of running tasks asynchronously. The service instance
- * returned will not invoke the runnable task in the current thread.<br>
+ * Application service capable of running tasks asynchronously. The service
+ * instance returned will not invoke the runnable task in the current thread.<br>
  * <br>
  * In addition to allowing pooling, this method will ensure that the threads
  * executing the tasks will have the thread local variables copied from the

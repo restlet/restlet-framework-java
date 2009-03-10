@@ -34,8 +34,8 @@ import org.restlet.representation.Variant;
 import org.restlet.resource.UniformResource;
 
 /**
- * Service converting between representation and regular Java objects. The
- * conversion can work in work directions.<br>
+ * Application service converting between representation and regular Java
+ * objects. The conversion can work in work directions.<br>
  * <br>
  * By default, the following conversions are supported. Additional ones can be
  * plugged into the engine.
