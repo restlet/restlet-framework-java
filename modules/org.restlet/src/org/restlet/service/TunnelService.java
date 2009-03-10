@@ -32,8 +32,8 @@ import org.restlet.data.Request;
 
 /**
  * Service tunneling request method or client preferences. The tunneling can use
- * query parameters and file-like extensions. This is particularly useful for browser-based applications that can't fully
- * control the HTTP requests sent.<br>
+ * query parameters and file-like extensions. This is particularly useful for
+ * browser-based applications that can't fully control the HTTP requests sent.<br>
  * <br>
  * Here is the list of the default parameter names supported:
  * <table>
@@ -48,7 +48,8 @@ import org.restlet.data.Request;
  * <td>methodParameter</td>
  * <td>method</td>
  * <td>See values in {@link org.restlet.data.Method}</td>
- * <td>For POST requests, let you specify the actual method to use (DELETE, PUT, MOVE, etc.).</td>
+ * <td>For POST requests, let you specify the actual method to use (DELETE, PUT,
+ * MOVE, etc.).</td>
  * <td>For GET requests, let you specify OPTIONS as the actual method to use.</td>
  * </tr>
  * <tr>
@@ -88,19 +89,31 @@ import org.restlet.data.Request;
  * <br>
  * The client preferences can also be updated according to the user agent
  * properties (its name, version, operating system, or other) available via the
- * {@link ClientInfo#getAgentAttributes()} method. The feature is based on a
- * property-like file called "accept.properties" and loaded from the classpath.
- * Here is an excerpt of such file :<br>
+ * {@link ClientInfo#getAgentAttributes()} method.<br>
  * <br>
- * <code>
+ * The list of new media type preferences is loaded from a property file called
+ * "accept.properties" located in the classpath in the sub directory
+ * "org/restlet/service". This property file is composed of blocks of
+ * properties. One "block" of properties starts either with the beginning of the
+ * properties file or with the end of the previous block. One block ends with
+ * the "acceptNew" property which contains the value of the new accept header.
+ * Here is a sample block.<br>
+ * 
+ * <pre>
  * agentName: firefox
- * accept: application/xhtml+xml,text/html,text/xml;q=0.9,application/xml;q=0.9
- * </code><br>
+ * acceptOld: text/xml,application/xml,application/xhtml+xml,text/html;q=0.9,text/plain;q=0.8,image/png,\*\/\*;q=0.5
+ * acceptNew: application/xhtml+xml,text/html,text/xml;q=0.9,application/xml;q=0.9,text/plain;q=0.8,image/png,\*\/\*;q=0.5
+ * </pre>
+ * 
+ * Each declared property is a condition that must be filled in order to update
+ * the client preferences. For example "agentName: firefox" expresses the fact
+ * this block concerns only "firefox" clients. <br>
  * <br>
- * It allows to specify a complete "accept" header string for a set of
- * (key:value) pairs. The header value is given with the "accept" key, and the
- * set of (key:value) pairs is the simple list of key:value just above the
- * "accept" line.
+ * The "acceptOld" property allows to check the value of the current "Accept"
+ * header. If the latest equals to the value of the "acceptOld" property then
+ * the preferences will be updated. This is useful for Ajax clients which looks
+ * like their browser (same agentName, agentVersion, etc.) but can provide their
+ * own "Accept" header.
  * 
  * @author Jerome Louvel
  */

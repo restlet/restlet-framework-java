@@ -94,7 +94,7 @@ public class SortedMetadata<T extends Metadata> implements Iterable<T> {
 
     /**
      * @param respMediaType
-     * @return the media type as singelton of SortedMetadata
+     * @return the media type as singleton of SortedMetadata
      */
     public static SortedMetadata<MediaType> get(MediaType respMediaType) {
         return new SortedMetadata<MediaType>(Collections
@@ -155,7 +155,7 @@ public class SortedMetadata<T extends Metadata> implements Iterable<T> {
     /**
      * 
      * @param mediaType
-     * @return the media type as singelton as SortedMetadata
+     * @return the media type as singleton as SortedMetadata
      * @see Collections#singleton(Object)
      */
     public static SortedMetadata<MediaType> singleton(MediaType mediaType) {
