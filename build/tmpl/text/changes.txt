@@ -102,7 +102,8 @@ Changes log
         - Representation#finalize() method now has a default 
           implementation that calls the release() method.
           Suggested by Remi Dewitte.
-        - 
+        - Updated accept.properties file, removing Firefox 
+          customization as version 3.0 has proper 'Accept' header.
     - Misc
         - Upgraded Simple server to version 4.1.8. 
           Contributed by Niall Gallagher.
