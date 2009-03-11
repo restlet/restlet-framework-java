@@ -129,11 +129,20 @@ public class RdfN3ContentHandler extends GraphHandler {
     }
 
     /**
-     * Discard all read characters. A call to {@link getCurrentToken} will
-     * return a single character.
+     * Discard all read characters until the end of the statement is reached
+     * (maked by a '.').
+     * 
+     * @throws IOException
      */
-    public void discard() {
-        startTokenIndex = scoutIndex;
+    public void consumeStatement() throws IOException {
+        if (getChar() != '.') {
+            int c;
+            do {
+                c = step();
+            } while (c != RdfN3ContentHandler.EOF && c != '.');
+            step();
+        }
+        discard();
     }
 
     /**
@@ -151,20 +160,11 @@ public class RdfN3ContentHandler extends GraphHandler {
     }
 
     /**
-     * Discard all read characters until the end of the statement is reached
-     * (maked by a '.').
-     * 
-     * @throws IOException
+     * Discard all read characters. A call to {@link getCurrentToken} will
+     * return a single character.
      */
-    public void consumeStatement() throws IOException {
-        if (getChar() != '.') {
-            int c;
-            do {
-                c = step();
-            } while (c != RdfN3ContentHandler.EOF && c != '.');
-            step();
-        }
-        discard();
+    public void discard() {
+        startTokenIndex = scoutIndex;
     }
 
     /**
@@ -269,6 +269,7 @@ public class RdfN3ContentHandler extends GraphHandler {
     }
 
     /**
+     * Parse a comment.
      * 
      * @throws IOException
      */
@@ -281,13 +282,15 @@ public class RdfN3ContentHandler extends GraphHandler {
     }
 
     /**
-     * Returns the value of the current URI.
+     * Parse the current directive and update the context according to the kind
+     * of directive ("base", "prefix", etc).
      * 
-     * @return The value of the current URI.
+     * @param context
+     *            The context to update.
      * @throws IOException
      */
     public void parseDirective(Context context) throws IOException {
-        // Remove the leading '@' character
+        // Remove the leading '@' character.
         step();
         discard();
         String currentKeyword = parseToken();
@@ -320,11 +323,14 @@ public class RdfN3ContentHandler extends GraphHandler {
                 context.getKeywords().add(keyword.trim());
             }
             consumeStatement();
+        } else {
+            // TODO @ForAll and @ForSome are not supported yet.
+            consumeStatement();
         }
     }
 
     /**
-     * Returns the value of the current token.
+     * Returns the value of the current statement.
      * 
      * @return The value of the current token.
      * @throws IOException
