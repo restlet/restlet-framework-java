@@ -117,6 +117,8 @@ Changes log
           methods. Added HttpRequest#addHeader() and 
           HttpResponse#addHeader() static methods.
           Suggested by Kevin Conaway.
+        - Updated licensing information to mention addition of the 
+          EPL 1.0 licensing option (Eclipse Public License 1.0).
 
 - 1.2 Milestone 1 (2009-01-23)
     - Breaking changes
