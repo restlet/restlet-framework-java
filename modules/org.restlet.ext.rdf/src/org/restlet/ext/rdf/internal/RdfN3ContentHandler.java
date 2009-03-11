@@ -268,6 +268,10 @@ public class RdfN3ContentHandler extends GraphHandler {
         } while (getChar() != RdfN3ContentHandler.EOF);
     }
 
+    /**
+     * 
+     * @throws IOException
+     */
     public void parseComment() throws IOException {
         int c;
         do {
@@ -305,6 +309,7 @@ public class RdfN3ContentHandler extends GraphHandler {
             context.getPrefixes().put(prefix, uri);
             consumeStatement();
         } else if ("keywords".equalsIgnoreCase(currentKeyword)) {
+            consumeWhiteSpaces();
             int c;
             do {
                 c = step();
@@ -312,7 +317,6 @@ public class RdfN3ContentHandler extends GraphHandler {
             String strKeywords = getCurrentToken();
             String[] keywords = strKeywords.split(",");
             for (String keyword : keywords) {
-                System.out.println("." + keyword.trim() + ".");
                 context.getKeywords().add(keyword.trim());
             }
             consumeStatement();
