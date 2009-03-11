@@ -344,6 +344,7 @@ public class RdfN3ContentHandler extends GraphHandler {
             // TODO parse statement
             c = step();
         }
+
         return result;
     }
 
@@ -379,7 +380,7 @@ public class RdfN3ContentHandler extends GraphHandler {
             c = step();
         }
         if (c == '>') {
-            // Set the cursor at the right of the end of the Uri.
+            // Set the cursor at the right of the uri.
             step();
         }
         discard();
