@@ -30,6 +30,8 @@ package org.restlet.ext.rdf.internal;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.restlet.data.Reference;
 import org.restlet.ext.rdf.Graph;
@@ -335,13 +337,14 @@ public class RdfN3ContentHandler extends GraphHandler {
      * @return The value of the current token.
      * @throws IOException
      */
-    public String parseStatement(Context context) throws IOException {
-        int c = step();
+    public List<LexicalUnit> parseStatement(Context context) throws IOException {
+        List<LexicalUnit> result = new ArrayList<LexicalUnit>();
+        int c = getChar();
         while (c != RdfN3ContentHandler.EOF && !isDelimiter(c)) {
-            c = step();
             // TODO parse statement
+            c = step();
         }
-        return getCurrentToken();
+        return result;
     }
 
     /**
