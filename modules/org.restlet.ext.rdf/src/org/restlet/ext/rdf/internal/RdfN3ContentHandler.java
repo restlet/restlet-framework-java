@@ -27,8 +27,8 @@
  * 
  * Restlet is a registered trademark of Noelios Technologies.
  */
- 
- package org.restlet.ext.rdf.internal;
+
+package org.restlet.ext.rdf.internal;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -92,18 +92,22 @@ public class RdfN3ContentHandler extends GraphHandler {
     public static void main(String[] args) throws IOException {
         StringRepresentation rep = new StringRepresentation(
                 "@base    <tru   c>.\n"
-                        + "#Directive base.\n"
-                        + "@prefix machin <http://www . \nexample .com>.\n\n"
-                        + "@keywords toto, tutu, titi."
-                        + " language _:toto <http://rdf.com>. "
-                        + "machin <http://rdf.com> \"chaine\"."
-                        + "truc <http://www.multiligne.com> \"\"\"cha\nine\"\"\"."
-                        + "machin <= \"\"\"cha\nine\"\"\"."
-                        + "truc = <http://rdf.com>."
-                        + "machin => <http://rdf.com>."
-                        + "machin is <http://rdf.com>."
-                        + "machin @is <http://rdf.com>."
-                        + "(machin <http://rdf.com>) @is <http://rdf.com>.");
+//                        + "#Directive base.\n"
+//                        + "@prefix machin <http://www . \nexample .com>.\n\n"
+//                        + "@keywords toto, tutu, titi."
+//                        + " language _:toto <http://rdf.com>. "
+//                        + "machin <http://rdf.com> \"chaine\"."
+//                        + "truc <http://www.multiligne.com> \"\"\"cha\nine\"\"\"."
+//                        + "machin <= \"\"\"cha\nine\"\"\"."
+//                        + "truc = <http://rdf.com>."
+//                        + "machin => <http://rdf.com>."
+//                        + "machin is <http://rdf.com>."
+//                        + "machin @is <http://rdf.com>."
+//                        + "(machin <http://rdf.com>) @is <http://rdf.com>."
+//                        + "() @is <http://empty.list.com>."
+//                        + "(machin <http://rdf.com> () bidule) @is <http://empty-list.inside-with-bidule.com>."
+//                        + "(machin <http://rdf.com> ()) @is <http://empty-list.inside.com>."
+                        + "[<http://rdf.com> machin] @is <http://blank node.inside.com>.");
 
         new RdfN3Representation(rep, new Graph());
     }
@@ -153,8 +157,8 @@ public class RdfN3ContentHandler extends GraphHandler {
         this.scoutIndex = 2 * RdfN3ContentHandler.BUFFER_SIZE;
         this.startTokenIndex = 0;
 
-        this.br = new BufferedReader(new InputStreamReader(this.rdfN3Representation
-                .getStream()));
+        this.br = new BufferedReader(new InputStreamReader(
+                this.rdfN3Representation.getStream()));
         this.context = new Context();
         context.getKeywords().addAll(
                 Arrays.asList("a", "is", "of", "this", "has"));
@@ -374,6 +378,7 @@ public class RdfN3ContentHandler extends GraphHandler {
         List<LexicalUnit> lexicalUnits = new ArrayList<LexicalUnit>();
         do {
             consumeWhiteSpaces();
+            System.out.println("av " + getChar());
             switch (getChar()) {
             case '(':
                 lexicalUnits.add(new ListToken(this, context));

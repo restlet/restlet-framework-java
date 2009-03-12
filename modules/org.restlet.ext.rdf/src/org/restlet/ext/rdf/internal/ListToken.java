@@ -27,8 +27,8 @@
  * 
  * Restlet is a registered trademark of Noelios Technologies.
  */
- 
- package org.restlet.ext.rdf.internal;
+
+package org.restlet.ext.rdf.internal;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -86,7 +86,7 @@ class ListToken extends LexicalUnit {
                 lexicalUnits.add(new FormulaToken(getContentHandler(),
                         getContext()));
                 break;
-            case '.':
+            case ')':
                 break;
             case RdfN3ContentHandler.EOF:
                 break;
@@ -95,10 +95,14 @@ class ListToken extends LexicalUnit {
                 break;
             }
         } while (getContentHandler().getChar() != RdfN3ContentHandler.EOF
-                && getContentHandler().getChar() != '.');
-
+                && getContentHandler().getChar() != ')');
+        if (getContentHandler().getChar() == ')') {
+            // Set the cursor at the right of the list token.
+            getContentHandler().step();
+        }
         for (LexicalUnit lexicalUnit : lexicalUnits) {
-            System.out.print("lexicalUnit " + lexicalUnit.getClass());
+            System.out.print("List tokens lexicalUnit "
+                    + lexicalUnit.getClass());
             System.out.println(" => value " + lexicalUnit.getValue());
         }
     }
