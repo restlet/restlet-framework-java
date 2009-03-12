@@ -34,14 +34,18 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.restlet.ext.rdf.RdfN3Representation;
-
 public class BlankNodeToken extends LexicalUnit {
     List<Arc> arcs;
 
-    public BlankNodeToken(RdfN3ContentHandler contentHandler) {
-        super(contentHandler);
+    public BlankNodeToken(RdfN3ContentHandler contentHandler, Context context)
+            throws IOException {
+        super(contentHandler, context);
         arcs = new ArrayList<Arc>();
+        this.parse();
+    }
+
+    public BlankNodeToken(String value) {
+        super(value);
     }
 
     public void addArc(BlankNodeToken element, String predicate, boolean subject) {
@@ -59,33 +63,34 @@ public class BlankNodeToken extends LexicalUnit {
         while (c != RdfN3ContentHandler.EOF && c != ']') {
             LexicalUnit unit = null;
             if (c == '(') {
-                unit = new ListToken(getContentHandler());
+                unit = new ListToken(getContentHandler(), getContext());
                 unit.parse();
             } else if (c == '<') {
                 getContentHandler().stepBack();
-                LexicalUnit uriToken = new UriToken(getContentHandler());
+                LexicalUnit uriToken = new UriToken(getContentHandler(),
+                        getContext());
                 uriToken.parse();
             } else if (c == '[') {
-                unit = new BlankNodeToken(getContentHandler());
+                unit = new BlankNodeToken(getContentHandler(), getContext());
                 unit.parse();
             } else if (c == '{') {
-                unit = new FormulaToken(getContentHandler());
+                unit = new FormulaToken(getContentHandler(), getContext());
                 unit.parse();
             } else if (c == '_') {
                 getContentHandler().step();
                 getContentHandler().discard();
-                unit = new BlankNodeToken(getContentHandler());
+                unit = new BlankNodeToken(getContentHandler(), getContext());
                 unit.setValue(getContentHandler().parseToken());
             } else if (RdfN3ContentHandler.isAlphaNum(c)) {
-                unit = new Token(getContentHandler());
+                unit = new Token(getContentHandler(), getContext());
                 unit.parse();
             } else if (RdfN3ContentHandler.isWhiteSpace(c)) {
                 getContentHandler().discard();
             } else if (c == '!') {
-                unit = new Token(getContentHandler());
+                unit = new Token(getContentHandler(), getContext());
                 unit.setValue("!");
             } else if (c == '^') {
-                unit = new Token(getContentHandler());
+                unit = new Token(getContentHandler(), getContext());
                 unit.setValue("^");
             } else if (c == ';') {
                 getContentHandler().discard();

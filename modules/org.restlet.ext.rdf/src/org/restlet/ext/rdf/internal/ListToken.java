@@ -37,9 +37,11 @@ import java.util.List;
 class ListToken extends LexicalUnit {
     List<LexicalUnit> lexicalUnits;
 
-    public ListToken(RdfN3ContentHandler contentHandler) {
-        super(contentHandler);
+    public ListToken(RdfN3ContentHandler contentHandler, Context context)
+            throws IOException {
+        super(contentHandler, context);
         lexicalUnits = new ArrayList<LexicalUnit>();
+        this.parse();
     }
 
     @Override
@@ -49,67 +51,55 @@ class ListToken extends LexicalUnit {
 
     @Override
     public void parse() throws IOException {
-        int c = getContentHandler().step();
-        while (c != RdfN3ContentHandler.EOF) {
-            if (c == '(') {
-                LexicalUnit unit = new ListToken(getContentHandler());
-                unit.parse();
-                lexicalUnits.add(unit);
-            } else if (c == '<') {
-                getContentHandler().stepBack();
-                LexicalUnit uriToken = new UriToken(getContentHandler());
-                uriToken.parse();
-                lexicalUnits.add(uriToken);
-            } else if (c == '[') {
-                LexicalUnit unit = new BlankNodeToken(getContentHandler());
-                unit.parse();
-                lexicalUnits.add(unit);
-            } else if (c == '{') {
-                LexicalUnit unit = new FormulaToken(getContentHandler());
-                unit.parse();
-                lexicalUnits.add(unit);
-            } else if (c == '_') {
-                getContentHandler().step();
-                getContentHandler().discard();
-                BlankNodeToken unit = new BlankNodeToken(getContentHandler());
-                unit.setValue(getContentHandler().parseToken());
-                System.out.println("BlankNode" + unit.getValue());
-                lexicalUnits.add(unit);
-            } else if (RdfN3ContentHandler.isAlphaNum(c)) {
-                Token unit = new Token(getContentHandler());
-                unit.parse();
-                System.out.println("unit.getToken()=" + unit.getValue());
-                lexicalUnits.add(unit);
-            } else if (RdfN3ContentHandler.isWhiteSpace(c)) {
-                getContentHandler().discard();
-            } else if (c == '!') {
-                Token unit = new Token(getContentHandler());
-                unit.setValue("!");
-                System.out.println("unit.getToken()=" + unit.getValue());
-                lexicalUnits.add(unit);
-            } else if (c == '^') {
-                Token unit = new Token(getContentHandler());
-                unit.setValue("^");
-                System.out.println("unit.getToken()=" + unit.getValue());
-                lexicalUnits.add(unit);
-            } else if (c == ';') {
-                getContentHandler().discard();
-                // End of the statement
-            } else if (c == ',') {
-                getContentHandler().discard();
-                // End of the statement
-            } else if (c == '.') {
-                getContentHandler().discard();
-                // End of the statement
+        getContentHandler().step();
+        do {
+            getContentHandler().consumeWhiteSpaces();
+            switch (getContentHandler().getChar()) {
+            case '(':
+                lexicalUnits.add(new ListToken(getContentHandler(),
+                        getContext()));
+                break;
+            case '<':
+                if (getContentHandler().step() == '=') {
+                    lexicalUnits.add(new Token("<="));
+                    getContentHandler().step();
+                    getContentHandler().discard();
+                } else {
+                    getContentHandler().stepBack();
+                    lexicalUnits.add(new UriToken(getContentHandler(),
+                            getContext()));
+                }
+                break;
+            case '_':
+                lexicalUnits.add(new BlankNodeToken(getContentHandler()
+                        .parseToken()));
+                break;
+            case '"':
+                lexicalUnits.add(new StringToken(getContentHandler(),
+                        getContext()));
+                break;
+            case '[':
+                lexicalUnits.add(new BlankNodeToken(getContentHandler(),
+                        getContext()));
+                break;
+            case '{':
+                lexicalUnits.add(new FormulaToken(getContentHandler(),
+                        getContext()));
+                break;
+            case '.':
+                break;
+            case RdfN3ContentHandler.EOF:
+                break;
+            default:
+                lexicalUnits.add(new Token(getContentHandler().parseToken()));
+                break;
             }
-            c = getContentHandler().step();
-        }
+        } while (getContentHandler().getChar() != RdfN3ContentHandler.EOF
+                && getContentHandler().getChar() != '.');
 
         for (LexicalUnit lexicalUnit : lexicalUnits) {
             System.out.print("lexicalUnit " + lexicalUnit.getClass());
             System.out.println(" => value " + lexicalUnit.getValue());
         }
-
-        setParsed(c != RdfN3ContentHandler.EOF);
     }
 }

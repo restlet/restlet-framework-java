@@ -33,12 +33,18 @@ package org.restlet.ext.rdf.internal;
 import java.io.IOException;
 
 class Token extends LexicalUnit {
-    public Token(RdfN3ContentHandler contentHandler) {
-        super(contentHandler);
+    
+    public Token(RdfN3ContentHandler contentHandler, Context context) {
+        super(contentHandler, context);
+    }
+
+    public Token(String value) {
+        super(value);
     }
 
     @Override
     public void parse() throws IOException {
+        
         int c = getContentHandler().step();
         while (c != RdfN3ContentHandler.EOF && c != '}' && c != '.'
                 && !RdfN3ContentHandler.isWhiteSpace(c)) {

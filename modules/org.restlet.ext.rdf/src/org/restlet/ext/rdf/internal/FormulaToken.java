@@ -35,9 +35,10 @@ import java.io.IOException;
 public class FormulaToken extends LexicalUnit {
     // List<Statement> statements;
 
-    public FormulaToken(RdfN3ContentHandler contentHandler) {
-        super(contentHandler);
+    public FormulaToken(RdfN3ContentHandler contentHandler, Context context) throws IOException {
+        super(contentHandler, context);
         // statements = new ArrayList<Statement>();
+        this.parse();
     }
 
     @Override

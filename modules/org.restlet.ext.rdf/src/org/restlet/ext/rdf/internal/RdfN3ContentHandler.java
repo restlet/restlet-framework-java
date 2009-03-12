@@ -34,13 +34,16 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.restlet.data.Reference;
 import org.restlet.ext.rdf.Graph;
 import org.restlet.ext.rdf.GraphHandler;
 import org.restlet.ext.rdf.Literal;
+import org.restlet.ext.rdf.RdfN3Representation;
 import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
 
 /**
  * Handler of content according to the RDF N3 notation.
@@ -86,10 +89,32 @@ public class RdfN3ContentHandler extends GraphHandler {
         return c == ' ' || c == '\n' || c == '\r' || c == '\t';
     }
 
+    public static void main(String[] args) throws IOException {
+        StringRepresentation rep = new StringRepresentation(
+                "@base    <tru   c>.\n"
+                        + "#Directive base.\n"
+                        + "@prefix machin <http://www . \nexample .com>.\n\n"
+                        + "@keywords toto, tutu, titi."
+                        + " language _:toto <http://rdf.com>. "
+                        + "machin <http://rdf.com> \"chaine\"."
+                        + "truc <http://www.multiligne.com> \"\"\"cha\nine\"\"\"."
+                        + "machin <= \"\"\"cha\nine\"\"\"."
+                        + "truc = <http://rdf.com>."
+                        + "machin => <http://rdf.com>."
+                        + "machin is <http://rdf.com>."
+                        + "machin @is <http://rdf.com>."
+                        + "(machin <http://rdf.com>) @is <http://rdf.com>.");
+
+        new RdfN3Representation(rep, new Graph());
+    }
+
     /** Internal buffered reader. */
     private BufferedReader br;
 
     private final char[] buffer;
+
+    /** Data object. */
+    private Context context;
 
     /** The set of links to update when parsing, or to read when writing. */
     private Graph linkSet;
@@ -128,23 +153,27 @@ public class RdfN3ContentHandler extends GraphHandler {
         this.scoutIndex = 2 * RdfN3ContentHandler.BUFFER_SIZE;
         this.startTokenIndex = 0;
 
-        this.br = new BufferedReader(new InputStreamReader(rdfN3Representation
+        this.br = new BufferedReader(new InputStreamReader(this.rdfN3Representation
                 .getStream()));
+        this.context = new Context();
+        context.getKeywords().addAll(
+                Arrays.asList("a", "is", "of", "this", "has"));
         parse();
     }
 
     /**
      * Discard all read characters until the end of the statement is reached
-     * (maked by a '.').
+     * (marked by a '.').
      * 
      * @throws IOException
      */
     public void consumeStatement() throws IOException {
-        if (getChar() != '.') {
-            int c;
-            do {
-                c = step();
-            } while (c != RdfN3ContentHandler.EOF && c != '.');
+        int c = getChar();
+        while (c != RdfN3ContentHandler.EOF && c != '.') {
+            c = step();
+        }
+        if (getChar() == '.') {
+            // A further step at the right of the statement.
             step();
         }
         discard();
@@ -157,10 +186,9 @@ public class RdfN3ContentHandler extends GraphHandler {
      * @throws IOException
      */
     public void consumeWhiteSpaces() throws IOException {
-        int c;
-        do {
-            c = step();
-        } while (RdfN3ContentHandler.isWhiteSpace(c));
+        while (RdfN3ContentHandler.isWhiteSpace(getChar())) {
+            step();
+        }
         discard();
     }
 
@@ -239,7 +267,6 @@ public class RdfN3ContentHandler extends GraphHandler {
     @Override
     public void link(Reference source, Reference typeRef, Reference target) {
         // TODO Auto-generated method stub
-
     }
 
     /**
@@ -247,7 +274,7 @@ public class RdfN3ContentHandler extends GraphHandler {
      * 
      */
     private void parse() throws IOException {
-        parse(new Context());
+        parse(this.context);
     }
 
     /**
@@ -255,6 +282,8 @@ public class RdfN3ContentHandler extends GraphHandler {
      * 
      */
     private void parse(Context context) throws IOException {
+        // Init the reading.
+        step();
         do {
             consumeWhiteSpaces();
             switch (getChar()) {
@@ -265,6 +294,7 @@ public class RdfN3ContentHandler extends GraphHandler {
                 parseComment();
                 break;
             case '.':
+                step();
                 break;
             default:
                 parseStatement(context);
@@ -341,14 +371,84 @@ public class RdfN3ContentHandler extends GraphHandler {
      * @throws IOException
      */
     public List<LexicalUnit> parseStatement(Context context) throws IOException {
-        List<LexicalUnit> result = new ArrayList<LexicalUnit>();
-        int c = getChar();
-        while (c != RdfN3ContentHandler.EOF && !isDelimiter(c)) {
-            // TODO parse statement
-            c = step();
+        List<LexicalUnit> lexicalUnits = new ArrayList<LexicalUnit>();
+        do {
+            consumeWhiteSpaces();
+            switch (getChar()) {
+            case '(':
+                lexicalUnits.add(new ListToken(this, context));
+                break;
+            case '<':
+                if (step() == '=') {
+                    lexicalUnits.add(new Token("<="));
+                    step();
+                    discard();
+                } else {
+                    stepBack();
+                    lexicalUnits.add(new UriToken(this, context));
+                }
+                break;
+            case '_':
+                lexicalUnits.add(new BlankNodeToken(parseToken()));
+                break;
+            case '"':
+                lexicalUnits.add(new StringToken(this, context));
+                break;
+            case '[':
+                lexicalUnits.add(new BlankNodeToken(this, context));
+                break;
+            case '!':
+                lexicalUnits.add(new Token("!"));
+                step();
+                discard();
+                break;
+            case '^':
+                lexicalUnits.add(new Token("^"));
+                step();
+                discard();
+                break;
+            case '=':
+                if (step() == '>') {
+                    lexicalUnits.add(new Token("=>"));
+                    step();
+                    discard();
+                } else {
+                    lexicalUnits.add(new Token("="));
+                    discard();
+                }
+                break;
+            case '@':
+                // Remove the leading '@' character.
+                step();
+                discard();
+                lexicalUnits.add(new Token(parseToken()));
+                discard();
+                break;
+            case ';':
+                // TODO !
+                break;
+            case ',':
+                // TODO !
+                break;
+            case '{':
+                lexicalUnits.add(new FormulaToken(this, context));
+                break;
+            case '.':
+                break;
+            case RdfN3ContentHandler.EOF:
+                break;
+            default:
+                lexicalUnits.add(new Token(parseToken()));
+                break;
+            }
+        } while (getChar() != RdfN3ContentHandler.EOF && getChar() != '.');
+
+        for (LexicalUnit lexicalUnit : lexicalUnits) {
+            System.out.print("lexicalUnit " + lexicalUnit.getClass());
+            System.out.println(" => value " + lexicalUnit.getValue());
         }
 
-        return result;
+        return lexicalUnits;
     }
 
     /**
@@ -358,11 +458,13 @@ public class RdfN3ContentHandler extends GraphHandler {
      * @throws IOException
      */
     public String parseToken() throws IOException {
-        int c = step();
-        while (c != RdfN3ContentHandler.EOF && !isDelimiter(c)) {
+        int c;
+        do {
             c = step();
-        }
-        return getCurrentToken();
+        } while (c != RdfN3ContentHandler.EOF && !isDelimiter(c));
+        String result = getCurrentToken();
+        System.out.println("Token =" + result + "=");
+        return result;
     }
 
     /**
@@ -430,6 +532,19 @@ public class RdfN3ContentHandler extends GraphHandler {
         }
 
         return buffer[scoutIndex];
+    }
+
+    /**
+     * Steps forward.
+     * 
+     * @param n
+     *            the number of steps to go forward.
+     * @throws IOException
+     */
+    public void step(int n) throws IOException {
+        for (int i = 0; i < n; i++) {
+            step();
+        }
     }
 
     /**

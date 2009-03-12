@@ -36,24 +36,37 @@ public abstract class LexicalUnit {
 
     private RdfN3ContentHandler contentHandler;
 
+    private Context context;
+
     private LexicalUnit parent;
 
     private boolean parsed;
 
     private String value;
 
-    public LexicalUnit(RdfN3ContentHandler contentHandler) {
+    public LexicalUnit(String value) {
         super();
-        this.contentHandler = contentHandler;
+        setValue(value);
     }
 
-    public LexicalUnit(RdfN3ContentHandler contentHandler, LexicalUnit parent) {
-        this(contentHandler);
+    public LexicalUnit(RdfN3ContentHandler contentHandler, Context context) {
+        super();
+        this.contentHandler = contentHandler;
+        this.context = context;
+    }
+
+    public LexicalUnit(RdfN3ContentHandler contentHandler, LexicalUnit parent,
+            Context context) {
+        this(contentHandler, context);
         this.parent = parent;
     }
 
     public RdfN3ContentHandler getContentHandler() {
         return contentHandler;
+    }
+
+    public Context getContext() {
+        return context;
     }
 
     public LexicalUnit getParent() {
@@ -69,6 +82,10 @@ public abstract class LexicalUnit {
     }
 
     public abstract void parse() throws IOException;
+
+    public void setContext(Context context) {
+        this.context = context;
+    }
 
     public void setParent(LexicalUnit parent) {
         this.parent = parent;

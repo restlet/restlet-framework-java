@@ -33,8 +33,8 @@
 import java.io.IOException;
 
 class MultiLinesToken extends LexicalUnit {
-    public MultiLinesToken(RdfN3ContentHandler contentHandler) {
-        super(contentHandler);
+    public MultiLinesToken(RdfN3ContentHandler contentHandler, Context context) {
+        super(contentHandler, context);
     }
 
     @Override
