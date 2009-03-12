@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright 2005-2009 Noelios Technologies.
  * 
  * The contents of this file are subject to the terms of one of the following

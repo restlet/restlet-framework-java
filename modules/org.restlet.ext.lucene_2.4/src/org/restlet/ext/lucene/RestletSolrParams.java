@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright 2005-2009 Noelios Technologies.
  * 
  * The contents of this file are subject to the terms of one of the following
@@ -43,54 +43,54 @@ import org.restlet.data.Request;
  */
 public class RestletSolrParams extends SolrParams {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private final Request request;
+    private final Request request;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param request
-	 *            The wrapped Restlet request.
-	 */
-	public RestletSolrParams(Request request) {
-		this.request = request;
-	}
+    /**
+     * Constructor.
+     * 
+     * @param request
+     *            The wrapped Restlet request.
+     */
+    public RestletSolrParams(Request request) {
+        this.request = request;
+    }
 
-	/**
-	 * Returns the request query form.
-	 * 
-	 * @return The request query form.
-	 */
-	protected Form getForm() {
-		return request.getResourceRef().getQueryAsForm();
-	}
+    /**
+     * Returns the request query form.
+     * 
+     * @return The request query form.
+     */
+    protected Form getForm() {
+        return request.getResourceRef().getQueryAsForm();
+    }
 
-	/**
-	 * Reads parameter from the form returned {@link #getForm()}.
-	 * 
-	 */
-	@Override
-	public String get(String param) {
-		return getForm().getFirstValue(param);
-	}
+    /**
+     * Reads parameter from the form returned {@link #getForm()}.
+     * 
+     */
+    @Override
+    public String get(String param) {
+        return getForm().getFirstValue(param);
+    }
 
-	/**
-	 * Reads parameter names from the form returned {@link #getForm()}.
-	 * 
-	 */
-	@Override
-	public Iterator<String> getParameterNamesIterator() {
-		return getForm().getNames().iterator();
-	}
+    /**
+     * Reads parameter names from the form returned {@link #getForm()}.
+     * 
+     */
+    @Override
+    public Iterator<String> getParameterNamesIterator() {
+        return getForm().getNames().iterator();
+    }
 
-	/**
-	 * Reads parameter values from the form returned {@link #getForm()}.
-	 * 
-	 */
-	@Override
-	public String[] getParams(String param) {
-		return getForm().getValuesArray(param);
-	}
+    /**
+     * Reads parameter values from the form returned {@link #getForm()}.
+     * 
+     */
+    @Override
+    public String[] getParams(String param) {
+        return getForm().getValuesArray(param);
+    }
 
 }
