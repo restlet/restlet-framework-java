@@ -58,7 +58,6 @@ public class BlankNodeToken extends LexicalUnit {
 
     @Override
     public void parse() throws IOException {
-        int cpt = 0;
         int c = getContentHandler().step();
         while (c != RdfN3ContentHandler.EOF && c != ']') {
             LexicalUnit unit = null;

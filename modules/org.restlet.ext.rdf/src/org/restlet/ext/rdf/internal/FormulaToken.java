@@ -43,7 +43,6 @@ public class FormulaToken extends LexicalUnit {
 
     @Override
     public void parse() throws IOException {
-        int c;
         do {
             // Statement statement =
             getContentHandler().parseStatement(new Context());
