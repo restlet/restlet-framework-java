@@ -1040,13 +1040,19 @@
 		<sequential>
 			<property name="mod-@{name}-version-maven"
 		                  value="${version-maven}" />
+			<propertyregex property="mod-dir-maven-groupId"
+			               input="${mod-maven-groupId}"
+			               regexp="\."
+			               replace="/"
+			               global="true"
+			               casesensitive="false" />
 			<propertyregex property="mod-dir-@{name}-maven-groupId"
 			               input="${mod-@{name}-maven-groupId}"
 			               regexp="\."
 			               replace="/"
 			               global="true"
 			               casesensitive="false"
-			               defaultvalue="${mod-maven-groupId}" />
+			               defaultvalue="${mod-dir-maven-groupId}" />
 			<condition property="mod-pom-@{name}-artifactId"
 			           value="${mod-@{name}-maven-artifactId}">
 				<isset property="mod-@{name}-maven-artifactId" />
