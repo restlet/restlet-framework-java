@@ -52,7 +52,7 @@ public class CryptoUtils {
      * @param mode
      *            The cipher mode, either {@link Cipher#ENCRYPT_MODE} or
      *            {@link Cipher#DECRYPT_MODE}.
-     * @return
+     * @return The new cipher.
      * @throws GeneralSecurityException
      */
     protected static Cipher createCipher(String algo, String base64Secret,
@@ -82,14 +82,18 @@ public class CryptoUtils {
     }
 
     /**
+     * Does final processing.
      * 
      * @param algo
      *            The cryptographic algorithm.
      * @param base64Secret
      *            The cryptographic secret, encoded as a Base64 string.
      * @param mode
+     *            The processing mode, either {@link Cipher#DECRYPT_MODE} or
+     *            {@link Cipher#ENCRYPT_MODE}.
      * @param what
-     * @return
+     *            The byte array to process.
+     * @return The processed byte array.
      * @throws GeneralSecurityException
      */
     protected static byte[] doFinal(String algo, String base64Secret, int mode,

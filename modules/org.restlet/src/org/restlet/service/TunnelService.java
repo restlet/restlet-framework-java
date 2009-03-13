@@ -455,7 +455,7 @@ public class TunnelService extends Service {
     /**
      * Indicates if the method can be tunneled via the header.
      * 
-     * @param methodTunnelViaHeader
+     * @param headerTunnel
      *            True if the method can be tunneled via the header.
      */
     public void setHeaderTunnel(boolean headerTunnel) {

@@ -19,30 +19,30 @@ org.restlet (Restlet API)
  - J2SE 5.0
 
 
-org.restlet.ext.atom_1.0 (Atom client API)
-------------------------
+org.restlet.ext.atom (Atom client API)
+--------------------
  - nothing beside org.restlet JAR.
 
 
-org.restlet.ext.fileupload_1.2 (Integration with Apache FileUpload)
-------------------------------
+org.restlet.ext.fileupload (Integration with Apache FileUpload)
+--------------------------
  - javax.servlet_2.5
  - org.apache.commons.fileupload_1.2
 
 
-org.restlet.ext.freemarker_2.3 (Integration with FreeMarker template engine)
-------------------------------
+org.restlet.ext.freemarker (Integration with FreeMarker template engine)
+--------------------------
  - org.freemarker_2.3
 
 
-org.restlet.ext.jaxb_2.1 (Integration with JAXB 2.1)
-------------------------
+org.restlet.ext.jaxb (Integration with JAXB)
+--------------------
  - javax.xml.bind_2.1
  - javax.xml.stream_1.0
 
 
-org.restlet.ext.jaxrs_1.0 (Integration with JAX-RS 1.0)
--------------------------
+org.restlet.ext.jaxrs (Integration with JAX-RS)
+---------------------
  - javax.ws.rs_1.0
  - javax.xml.bind_2.1 (optional)
  - javax.xml.stream_1.0 (optional)
@@ -51,105 +51,105 @@ org.restlet.ext.jaxrs_1.0 (Integration with JAX-RS 1.0)
  - org.json_2.0 (optional)
 
 
-org.restlet.ext.jibx_1.1 (Integration with JiBX 1.1)
-------------------------
+org.restlet.ext.jibx (Integration with JiBX)
+--------------------
  - org.jibx_1.1
 
 
-org.restlet.ext.json_2.0 (Integration with JavaScript Object Notation)
-------------------------
+org.restlet.ext.json (Integration with JavaScript Object Notation)
+--------------------
  - org.json_2.0
 
 
-org.restlet.ext.spring_2.5 (Integration with Spring Framework)
---------------------------
+org.restlet.ext.spring (Integration with Spring Framework)
+----------------------
  - org.springframework_2.5
 
 
-org.restlet.ext.velocity_1.5 (Integration with Apache Velocity)
-----------------------------
+org.restlet.ext.velocity (Integration with Apache Velocity)
+------------------------
  - org.apache.velocity_1.5
  - org.apache.commons.collections_3.2
  - org.apache.commons.lang_2.3
 
 
-org.restlet.ext.wadl_1.0 (Support for WADL configuration)
-------------------------
+org.restlet.ext.wadl (Support for WADL configuration)
+--------------------
  - nothing beside org.restlet JAR.
 
 
 org.restlet.engine.example (Tutorial examples)
 ---------------------------
  - org.restlet.ext.net
- - org.restlet.ext.simple_3.1
+ - org.restlet.ext.simple
  - org.simpleframework_3.1
  - com.db4o_7.0 (for book examples)
  - edu.purdue.cs.bloat_1.0 (for book examples)
 
 
-org.restlet.ext.grizzly_1.8 (HTTP server connector base on Grizzly NIO framework)
------------------------------------
+org.restlet.ext.grizzly (HTTP server connector base on Grizzly NIO framework)
+-----------------------
  - com.sun.grizzly_1.8
 
 
-org.restlet.ext.gwt_1.5 (Integration with GWT 1.5)
---------------------------------------
- - org.restlet.ext.servlet_2.5
+org.restlet.ext.gwt (Server-side integration with GWT)
+-------------------
+ - org.restlet.ext.servlet
  
 
-org.restlet.ext.httpclient_3.1 (HTTP client connector based on Apache Commons HTTP Client)
---------------------------------------
+org.restlet.ext.httpclient (HTTP client connector based on Apache Commons HTTP Client)
+--------------------------
  - org.apache.commons.codec 1.3
  - org.apache.commons.httpclient 3.1
  - org.apache.commons.logging 1.1
 
 
-org.restlet.ext.javamail_1.4 (SMTP client connector based on JavaMail)
-------------------------------------
+org.restlet.ext.javamail (SMTP client connector based on JavaMail)
+------------------------
  - javax.mail_1.4
  - javax.activation_1.1
 
 
-org.restlet.ext.jdbc_3.0 (JDBC client connector using Apache connections pool)
---------------------------------
+org.restlet.ext.jdbc (JDBC client connector using Apache connections pool)
+--------------------
  - org.apache.commons.dbcp_1.2
  - org.apache.commons.logging_1.1
  - org.apache.commons.pool_1.3
 
 
-org.restlet.ext.jetty_6.1 (Jetty 6 server HTTP connector)
----------------------------------
+org.restlet.ext.jetty (Jetty server HTTP connector)
+---------------------
  - javax.servlet_2.5
  - org.mortbay.jetty_6.1
 
 
 org.restlet.ext.net (HTTP client connector based on JDK's HttpUrlConnection)
----------------------------
+-------------------
  - nothing beside org.restlet JAR.
 
 
 org.restlet.ext.oauth (Authentication plugin for the OAuth scheme)
------------------------------
+---------------------
  - net.oauth_1.0
 
 
-org.restlet.ext.servlet_2.5 (Servlet base server HTTP connector)
------------------------------------
+org.restlet.ext.servlet (Servlet base server HTTP connector)
+-----------------------
  - Only a Servlet container like Tomcat.
 
 
-org.restlet.ext.simple_3.1 (Simple server HTTP connector)
-----------------------------------
+org.restlet.ext.simple (Simple server HTTP connector)
+----------------------
  - org.simpleframework_3.1
 
 
-org.restlet.ext.spring_2.5 (Integration with Spring Framework)
-----------------------------------
- - org.restlet.ext.servlet_2.5
+org.restlet.ext.spring (Integration with Spring Framework)
+----------------------
+ - org.restlet.ext.servlet
  - org.springframework_2.5
 
 
-org.restlet.ext.xdb_11.1 (Integration with Oracle 11g XDB)
---------------------------------
- - org.restlet.ext.servlet_2.5
+org.restlet.ext.xdb (Integration with Oracle 11g XDB)
+-------------------
+ - org.restlet.ext.servlet
  

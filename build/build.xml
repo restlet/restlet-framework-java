@@ -52,6 +52,7 @@
 	<property name="classes" value="${temp}/classes" />
 	<property name="lib" value="../libraries" />
 	<property name="mod" value="${temp}/modules" />
+	<property name="mod-maven-groupId" value="org.restlet" />
 	<property name="tmpl" value="tmpl" />
 	<property name="docs" value="${temp}/docs" />
 	<property name="docs-api" value="${docs}/api" />
@@ -675,7 +676,7 @@
 			      file="${mod}/${mod-@{name}-id}/META-INF/MANIFEST.MF"
 			      tofile="${temp}/jar/META-INF/MANIFEST.MF" />
 			<manifest file="${temp}/jar/META-INF/MANIFEST.MF" mode="update">
-				<section name="${mod-@{name}-package}">
+				<section name="${mod-@{name}-id}">
 					<attribute name="Implementation-Title"
 					           value="${mod-@{name}-id}" />
 					<attribute name="Implementation-Version"
@@ -762,13 +763,13 @@
 			          value="${lib-@{name}-version}" />
 
 			<condition property="mod-pom-@{name}-artifactId"
-			           value="${mod-@{name}-maven-artifactId}">
-				<isset property="mod-@{name}-maven-artifactId" />
+			           value="${mod-@{name}-id}">
+				<isset property="mod-@{name}-id" />
 			</condition>
 			<property name="mod-pom-@{name}-artifactId"
-			          value="${mod-@{name}-package}" />
+			          value="${mod-@{name}-id}" />
 
-			<copy file="${tmpl}/poms/${mod-@{name}-package}.pom"
+			<copy file="${tmpl}/poms/${mod-@{name}-id}.pom"
 			      tofile="${temp}/poms/${mod-@{name}-id}.pom"
 			      overwrite="true" />
 			<replace file="${temp}/poms/${mod-@{name}-id}.pom"
@@ -779,7 +780,7 @@
 			         value="${mod-pom-@{name}-version}" />
 			<replace file="${temp}/poms/${mod-@{name}-id}.pom"
 			         token="@group-id@"
-			         value="${mod-@{name}-maven-groupId}" />
+			         value="${mod-maven-groupId}" />
 			<replace file="${temp}/poms/${mod-@{name}-id}.pom"
 			         token="@artifact-id@"
 			         value="${mod-pom-@{name}-artifactId}" />
@@ -1045,13 +1046,13 @@
 			               replace="/"
 			               global="true"
 			               casesensitive="false"
-			               defaultvalue="${mod-@{name}-maven-groupId}" />
+			               defaultvalue="${mod-maven-groupId}" />
 			<condition property="mod-pom-@{name}-artifactId"
 			           value="${mod-@{name}-maven-artifactId}">
 				<isset property="mod-@{name}-maven-artifactId" />
 			</condition>
 			<property name="mod-pom-@{name}-artifactId"
-			          value="${mod-@{name}-package}" />
+			          value="${mod-@{name}-id}" />
 
 			<!-- All files generated from the modules are stampped with the current full version number -->
 			<property name="mod-dir-@{name}-maven2"

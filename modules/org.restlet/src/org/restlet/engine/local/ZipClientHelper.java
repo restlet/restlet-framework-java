@@ -152,10 +152,10 @@ public class ZipClientHelper extends LocalClientHelper {
      *            The request to answer.
      * @param response
      *            The response to update.
-     * @param path
-     *            The encoded path of the requested entity.
-     * @param entity
-     *            The requested entity (normal or directory).
+     * @param file
+     *            The Zip archive file.
+     * @param entryName
+     *            The Zip archive entry name.
      * @param metadataService
      *            The metadata service.
      */

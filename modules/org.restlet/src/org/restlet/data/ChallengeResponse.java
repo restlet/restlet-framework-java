@@ -258,7 +258,6 @@ public final class ChallengeResponse {
      * reasons.
      * 
      * @return The user secret, such as a password or a secret key.
-     * @see 
      */
     public char[] getSecret() {
         return this.secret;

@@ -34,13 +34,13 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Level;
 
 import javax.sql.rowset.WebRowSet;
 
+import org.restlet.Context;
 import org.restlet.data.MediaType;
 import org.restlet.representation.OutputRepresentation;
-
-import com.sun.rowset.WebRowSetImpl;
 
 /**
  * XML Representation of a ResultSet instance wrapped either in a JdbcResult
@@ -65,7 +65,16 @@ public class RowSetRepresentation extends OutputRepresentation {
      * @throws SQLException
      */
     private static WebRowSet create(ResultSet resultSet) throws SQLException {
-        final WebRowSet result = new WebRowSetImpl();
+        WebRowSet result = null;
+
+        try {
+            result = (WebRowSet) Class.forName("com.sun.rowset.WebRowSetImpl")
+                    .newInstance();
+        } catch (Throwable t) {
+            Context.getCurrentLogger().log(Level.WARNING,
+                    "Unable to instantiate the Sun's WebRowSet implementation",
+                    t);
+        }
 
         if (resultSet != null) {
             result.populate(resultSet);

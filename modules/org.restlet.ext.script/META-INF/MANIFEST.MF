@@ -1,0 +1,19 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Restlet Extension - Script
+Bundle-SymbolicName: org.restlet.ext.script
+Bundle-Version: 1.2
+Bundle-Vendor: Noelios Technologies
+Import-Package: org.restlet,
+ org.restlet.data,
+ org.restlet.engine,
+ org.restlet.engine.application,
+ org.restlet.engine.component,
+ org.restlet.engine.http,
+ org.restlet.engine.local,
+ org.restlet.engine.security,
+ org.restlet.engine.util,
+ org.restlet.resource,
+ org.restlet.service,
+ org.restlet.util
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
