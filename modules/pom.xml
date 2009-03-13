@@ -31,10 +31,10 @@
 
 	<modules>
 		<module>org.restlet</module>
+		<module>org.restlet.ext.atom</module>
+		<module>org.restlet.ext.fileupload</module>
 		<!--
 			<module>org.restlet.example</module>
-			<module>org.restlet.ext.atom</module>
-			<module>org.restlet.ext.fileupload</module>
 			<module>org.restlet.ext.freemarker</module>
 			<module>org.restlet.ext.grizzly</module>
 			<module>org.restlet.ext.gwt</module>
