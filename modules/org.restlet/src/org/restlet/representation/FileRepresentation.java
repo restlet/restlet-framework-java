@@ -2,7 +2,7 @@
  * Copyright 2005-2009 Noelios Technologies.
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or CDL 1.0 (the
+ * open source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL 1.0 (the
  * "Licenses"). You can select the license that you prefer but you may not use
  * this file except in compliance with one of these Licenses.
  * 
@@ -48,7 +48,7 @@ import org.restlet.engine.io.ByteUtils;
 
 /**
  * Representation based on a static file. Note that in order for Web clients to
- * display a download box upon receiption of a file representation, in need in
+ * display a download box upon reception of a file representation, in need in
  * addition to call {@link #setDownloadable(boolean)} with a 'true' value.
  * 
  * @author Jerome Louvel

@@ -2,7 +2,7 @@
  * Copyright 2005-2009 Noelios Technologies.
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or CDL 1.0 (the
+ * open source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL 1.0 (the
  * "Licenses"). You can select the license that you prefer but you may not use
  * this file except in compliance with one of these Licenses.
  * 
@@ -56,7 +56,7 @@ import org.restlet.service.TunnelService;
  * VirtualHost instances.<br>
  * <br>
  * Applications also have many useful Services associated. They are available as
- * properties that can be eventually overriden:
+ * properties that can be eventually overridden:
  * <ul>
  * <li>"connectorService" to declare necessary client and server connectors.</li>
  * <li>"converterService" to convert between regular objects and

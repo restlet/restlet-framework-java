@@ -2,7 +2,7 @@
  * Copyright 2005-2009 Noelios Technologies.
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or CDL 1.0 (the
+ * open source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL 1.0 (the
  * "Licenses"). You can select the license that you prefer but you may not use
  * this file except in compliance with one of these Licenses.
  * 
@@ -30,6 +30,7 @@
 
 package org.restlet.util;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -41,13 +42,12 @@ import org.restlet.data.Response;
 
 /**
  * Modifiable list of routes with some helper methods. Note that this class
- * implements the java.util.List interface using the Route class as the generic
+ * implements the {@link List} interface using the Route class as the generic
  * type. This allows you to use an instance of this class as any other
- * java.util.List, in particular all the helper methods in
- * java.util.Collections.<br>
+ * {@link List}, in particular all the helper methods in {@link Collections}.<br>
  * <br>
  * Note that structural changes to this list are thread-safe, using an
- * underlying {@link java.util.concurrent.CopyOnWriteArrayList}.
+ * underlying {@link CopyOnWriteArrayList}.
  * 
  * @author Jerome Louvel
  * @see java.util.Collections

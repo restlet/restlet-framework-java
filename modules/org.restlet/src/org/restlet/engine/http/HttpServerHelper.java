@@ -2,7 +2,7 @@
  * Copyright 2005-2009 Noelios Technologies.
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or CDL 1.0 (the
+ * open source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL 1.0 (the
  * "Licenses"). You can select the license that you prefer but you may not use
  * this file except in compliance with one of these Licenses.
  * 
@@ -37,7 +37,6 @@ import org.restlet.Context;
 import org.restlet.Server;
 import org.restlet.engine.Engine;
 import org.restlet.engine.ServerHelper;
-
 
 /**
  * Base HTTP server connector. Here is the list of parameters that are

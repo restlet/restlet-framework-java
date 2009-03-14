@@ -2,7 +2,7 @@
  * Copyright 2005-2009 Noelios Technologies.
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or CDL 1.0 (the
+ * open source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL 1.0 (the
  * "Licenses"). You can select the license that you prefer but you may not use
  * this file except in compliance with one of these Licenses.
  * 
@@ -38,7 +38,6 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.engine.ClientHelper;
-
 
 /**
  * Base HTTP client connector. Here is the list of parameters that are
@@ -92,9 +91,8 @@ public abstract class HttpClientHelper extends ClientHelper {
      */
     public HttpClientConverter getConverter() throws Exception {
         if (this.converter == null) {
-            final String converterClass = getHelpedParameters()
-                    .getFirstValue("converter",
-                            "org.restlet.engine.http.HttpClientConverter");
+            final String converterClass = getHelpedParameters().getFirstValue(
+                    "converter", "org.restlet.engine.http.HttpClientConverter");
             this.converter = (HttpClientConverter) Class
                     .forName(converterClass).getConstructor(Context.class)
                     .newInstance(getContext());

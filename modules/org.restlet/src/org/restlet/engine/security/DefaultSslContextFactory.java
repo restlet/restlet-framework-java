@@ -2,7 +2,7 @@
  * Copyright 2005-2009 Noelios Technologies.
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or CDL 1.0 (the
+ * open source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL 1.0 (the
  * "Licenses"). You can select the license that you prefer but you may not use
  * this file except in compliance with one of these Licenses.
  * 
@@ -52,7 +52,7 @@ import org.restlet.util.Series;
  * certificates to be trusted when connecting to a remote host). Both keystore
  * and trust store are KeyStores. When not explicitly set using the setters of
  * this class, the values will default to the default system properties,
- * following the behaviour described in the JSSE reference guide.
+ * following the behavior described in the JSSE reference guide.
  * </p>
  * <p>
  * There is more information in the <a href=

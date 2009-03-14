@@ -2,7 +2,7 @@
  * Copyright 2005-2009 Noelios Technologies.
  * 
  * The contents of this file are subject to the terms of one of the following
- * open source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or CDL 1.0 (the
+ * open source licenses: LGPL 3.0 or LGPL 2.1 or CDDL 1.0 or EPL 1.0 (the
  * "Licenses"). You can select the license that you prefer but you may not use
  * this file except in compliance with one of these Licenses.
  * 
@@ -31,11 +31,11 @@
 package org.restlet.engine.util;
 
 import java.io.IOException;
+import java.util.logging.FileHandler;
 
 /**
  * Log file handler that uses the {@link AccessLogFormatter} by default. Also
- * useful in configuration files to differentiate from the
- * java.util.logging.FileHandler.
+ * useful in configuration files to differentiate from the {@link FileHandler}.
  * 
  * @author Jerome Louvel
  */
