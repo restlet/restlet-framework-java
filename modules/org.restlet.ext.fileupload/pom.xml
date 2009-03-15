@@ -10,7 +10,7 @@
 
 	<artifactId>org.restlet.fileupload</artifactId>
 	<name>Restlet extension: Apache FileUpload</name>
-	<description>Integration with Apache FileUpload ${lib-fileupload-version}.</description>
+	<description>Integration with Apache FileUpload.</description>
 
 	<dependencies>
 		<dependency>

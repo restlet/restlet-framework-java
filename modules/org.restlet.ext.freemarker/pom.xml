@@ -9,7 +9,7 @@
 	</parent>
 
 	<artifactId>org.restlet.ext.freemarker</artifactId>
-	<name>Restlet extension: Template engine</name>
+	<name>Restlet extension: FreeMarker</name>
 	<description>Integration with FreeMarker.</description>
 
 	<dependencies>
@@ -21,7 +21,7 @@
 		<dependency>
 			<groupId>org.freemarker</groupId>
 			<artifactId>freemarker</artifactId>
-			<version>2.3.15</version>
+			<version>${lib-freemarker-version}</version>
 		</dependency>
 	</dependencies>
 </project>

@@ -31,6 +31,7 @@
 	
 	<properties>
         <lib-fileupload-version>1.2</lib-fileupload-version>
+        <lib-freemarker-version>2.3.15</lib-freemarker-version>
 		<lib-javamail-version>1.4</lib-javamail-version>
 		<lib-jaxb-version>2.1</lib-jaxb-version>
 		<lib-json-version>2.0</lib-json-version>
