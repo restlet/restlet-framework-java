@@ -8,9 +8,9 @@
 		<version>1.2-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>org.restlet.fileupload</artifactId>
-	<name>Restlet extension: Apache FileUpload</name>
-	<description>Integration with Apache FileUpload ${lib-fileupload-version}.</description>
+	<artifactId>org.restlet.ext.jaxb</artifactId>
+	<name>Restlet extension: JAXB representation</name>
+	<description>Integration with Java XML Binding.</description>
 
 	<dependencies>
 		<dependency>
@@ -19,15 +19,9 @@
 			<version>${version}</version>
 		</dependency>
 		<dependency>
-			<groupId>commons-fileupload</groupId>
-			<artifactId>commons-fileupload</artifactId>
-			<version>${lib-fileupload-version}</version>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>${lib-servlet-version}</version>
-			<scope>provided</scope>
+			<groupId>javax.xml.bind</groupId>
+			<artifactId>jaxb-api</artifactId>
+			<version>${lib-jaxb-version}</version>
 		</dependency>
 	</dependencies>
 </project>

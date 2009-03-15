@@ -119,7 +119,7 @@ Changes log
           Suggested by Kevin Conaway.
         - Updated licensing information to mention addition of the 
           EPL 1.0 licensing option (Eclipse Public License 1.0).
-        - Added beginning of Maven support to build Restlet modules.
+        - Added Maven support to build Restlet modules.
           Suggested by many. Contributions by Jean-Yves Cronier.
 
 - 1.2 Milestone 1 (2009-01-23)

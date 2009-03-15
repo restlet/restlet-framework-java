@@ -8,9 +8,9 @@
 		<version>1.2-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>org.restlet.fileupload</artifactId>
-	<name>Restlet extension: Apache FileUpload</name>
-	<description>Integration with Apache FileUpload ${lib-fileupload-version}.</description>
+	<artifactId>org.restlet.ext.ssl</artifactId>
+	<name>Restlet extension: SSL utilities</name>
+	<description>Utilities to configure SSL support.</description>
 
 	<dependencies>
 		<dependency>
@@ -19,15 +19,9 @@
 			<version>${version}</version>
 		</dependency>
 		<dependency>
-			<groupId>commons-fileupload</groupId>
-			<artifactId>commons-fileupload</artifactId>
-			<version>${lib-fileupload-version}</version>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>${lib-servlet-version}</version>
-			<scope>provided</scope>
+			<groupId>org.jsslutils</groupId>
+			<artifactId>org.jsslutils</artifactId>
+			<version>0.5.1</version>
 		</dependency>
 	</dependencies>
 </project>

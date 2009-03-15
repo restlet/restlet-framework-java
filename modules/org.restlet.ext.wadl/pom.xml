@@ -8,26 +8,15 @@
 		<version>1.2-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>org.restlet.fileupload</artifactId>
-	<name>Restlet extension: Apache FileUpload</name>
-	<description>Integration with Apache FileUpload ${lib-fileupload-version}.</description>
+	<artifactId>org.restlet.ext.wadl</artifactId>
+	<name>Restlet extension: WADL extension</name>
+	<description>Support WADL documents.</description>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.restlet</groupId>
 			<artifactId>org.restlet</artifactId>
 			<version>${version}</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-fileupload</groupId>
-			<artifactId>commons-fileupload</artifactId>
-			<version>${lib-fileupload-version}</version>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>${lib-servlet-version}</version>
-			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 </project>

@@ -8,9 +8,9 @@
 		<version>1.2-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>org.restlet.fileupload</artifactId>
-	<name>Restlet extension: Apache FileUpload</name>
-	<description>Integration with Apache FileUpload ${lib-fileupload-version}.</description>
+	<artifactId>org.restlet.ext.jdbc</artifactId>
+	<name>Restlet extension: JDBC client connector</name>
+	<description>Integration with JDBC.</description>
 
 	<dependencies>
 		<dependency>
@@ -19,15 +19,9 @@
 			<version>${version}</version>
 		</dependency>
 		<dependency>
-			<groupId>commons-fileupload</groupId>
-			<artifactId>commons-fileupload</artifactId>
-			<version>${lib-fileupload-version}</version>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>${lib-servlet-version}</version>
-			<scope>provided</scope>
+			<groupId>commons-dbcp</groupId>
+			<artifactId>commons-dbcp</artifactId>
+			<version>1.2.2</version>
 		</dependency>
 	</dependencies>
 </project>

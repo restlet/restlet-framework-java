@@ -8,9 +8,9 @@
 		<version>1.2-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>org.restlet.fileupload</artifactId>
-	<name>Restlet extension: Apache FileUpload</name>
-	<description>Integration with Apache FileUpload ${lib-fileupload-version}.</description>
+	<artifactId>org.restlet.ext.jxta</artifactId>
+	<name>Restlet extension: JXTA connectors</name>
+	<description>Integration with JXTA framework.</description>
 
 	<dependencies>
 		<dependency>
@@ -19,9 +19,9 @@
 			<version>${version}</version>
 		</dependency>
 		<dependency>
-			<groupId>commons-fileupload</groupId>
-			<artifactId>commons-fileupload</artifactId>
-			<version>${lib-fileupload-version}</version>
+			<groupId>net.jxta</groupId>
+			<artifactId>jxta-jxse</artifactId>
+			<version>2.5</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>

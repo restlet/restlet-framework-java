@@ -8,15 +8,15 @@
 		<version>1.2-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>org.restlet.atom</artifactId>
-	<name>Restlet extension: Atom</name>
-	<description>Support for the Atom syndication and the AtomPub (Atom Publication Protocol) standards in their 1.0 version.</description>
+	<artifactId>org.restlet.gwt</artifactId>
+	<name>Restlet API</name>
+	<description>GWT API</description>
 
 	<dependencies>
 		<dependency>
-			<groupId>org.restlet</groupId>
-			<artifactId>org.restlet</artifactId>
-			<version>${version}</version>
+			<groupId>com.google.gwt</groupId>
+			<artifactId>gwt-user</artifactId>
+			<version>1.5.3</version>
 		</dependency>
 	</dependencies>
 </project>

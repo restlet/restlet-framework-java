@@ -8,9 +8,17 @@
 		<version>1.2-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>org.restlet.fileupload</artifactId>
-	<name>Restlet extension: Apache FileUpload</name>
-	<description>Integration with Apache FileUpload ${lib-fileupload-version}.</description>
+	<artifactId>org.restlet.ext.oauth</artifactId>
+	<name>Restlet extension: OAuth Authentication</name>
+	<description>OAuth Authentication</description>
+
+	<repositories>
+		<repository>
+			<id>oauth-repo</id>
+			<name>OAuth repository</name>
+			<url>http://oauth.googlecode.com/svn/code/maven</url>
+		</repository>
+	</repositories>
 
 	<dependencies>
 		<dependency>
@@ -19,15 +27,9 @@
 			<version>${version}</version>
 		</dependency>
 		<dependency>
-			<groupId>commons-fileupload</groupId>
-			<artifactId>commons-fileupload</artifactId>
-			<version>${lib-fileupload-version}</version>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>${lib-servlet-version}</version>
-			<scope>provided</scope>
+			<groupId>net.oauth</groupId>
+			<artifactId>core</artifactId>
+			<version>20081027</version>
 		</dependency>
 	</dependencies>
 </project>

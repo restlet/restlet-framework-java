@@ -8,9 +8,9 @@
 		<version>1.2-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>org.restlet.fileupload</artifactId>
-	<name>Restlet extension: Apache FileUpload</name>
-	<description>Integration with Apache FileUpload ${lib-fileupload-version}.</description>
+	<artifactId>org.restlet.ext.gwt</artifactId>
+	<name>Restlet extension: GWT extension</name>
+	<description>Integration with GWT API.</description>
 
 	<dependencies>
 		<dependency>
@@ -19,9 +19,9 @@
 			<version>${version}</version>
 		</dependency>
 		<dependency>
-			<groupId>commons-fileupload</groupId>
-			<artifactId>commons-fileupload</artifactId>
-			<version>${lib-fileupload-version}</version>
+			<groupId>org.restlet</groupId>
+			<artifactId>org.restlet.ext.servlet</artifactId>
+			<version>${version}</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>

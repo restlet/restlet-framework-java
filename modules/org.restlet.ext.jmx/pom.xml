@@ -8,15 +8,7 @@
 		<version>1.2-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>org.restlet.atom</artifactId>
-	<name>Restlet extension: Atom</name>
-	<description>Support for the Atom syndication and the AtomPub (Atom Publication Protocol) standards in their 1.0 version.</description>
+	<artifactId>org.restlet.ext.jmx</artifactId>
+	<name>Restlet extension: JMX</name>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.restlet</groupId>
-			<artifactId>org.restlet</artifactId>
-			<version>${version}</version>
-		</dependency>
-	</dependencies>
 </project>
