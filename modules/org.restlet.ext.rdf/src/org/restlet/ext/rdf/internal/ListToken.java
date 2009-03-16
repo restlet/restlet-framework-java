@@ -114,7 +114,7 @@ class ListToken extends LexicalUnit {
             case RdfN3ContentHandler.EOF:
                 break;
             default:
-                lexicalUnits.add(new Token(getContentHandler().parseToken()));
+                lexicalUnits.add(new Token(getContentHandler(), getContext()));
                 break;
             }
         } while (getContentHandler().getChar() != RdfN3ContentHandler.EOF

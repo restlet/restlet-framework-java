@@ -31,27 +31,25 @@
 package org.restlet.ext.rdf.internal;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.ext.rdf.Graph;
 import org.restlet.ext.rdf.GraphHandler;
 import org.restlet.ext.rdf.Literal;
 import org.restlet.ext.rdf.RdfN3Representation;
-import org.restlet.representation.FileRepresentation;
 import org.restlet.representation.Representation;
-import org.restlet.representation.StringRepresentation;
 
 /**
  * Handler of content according to the RDF N3 notation.
  */
 public class RdfN3ContentHandler extends GraphHandler {
+    private static int blankNodeId = 0;
+
     private static final int BUFFER_SIZE = 4096;
 
     public static final int EOF = 0;
@@ -78,7 +76,7 @@ public class RdfN3ContentHandler extends GraphHandler {
     public static boolean isDelimiter(int c) {
         return isWhiteSpace(c) || c == '^' || c == '!' || c == '=' || c == '<'
                 || c == '"' || c == '{' || c == '}' || c == '[' || c == ']'
-                || c == '(' || c == ')' || c == '.'|| c == ';'|| c == ',';
+                || c == '(' || c == ')' || c == '.' || c == ';' || c == ',';
     }
 
     /**
@@ -92,45 +90,13 @@ public class RdfN3ContentHandler extends GraphHandler {
         return c == ' ' || c == '\n' || c == '\r' || c == '\t';
     }
 
-    public static void main(String[] args) throws IOException {
-        Representation rep = new StringRepresentation(
-                "@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ."
-                        + "@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>."
-                        + "@prefix cfg: <http://www.w3.org/2000/10/swap/grammar/bnf#>."
-                        + "@prefix : <http://www.w3.org/2000/10/swap/grammar/n3#>."
-                        + "@prefix n3: <http://www.w3.org/2000/10/swap/grammar/n3#>."
-                        + "@prefix list: <http://www.w3.org/2000/10/swap/list#>."
-                        + "@prefix doc: <http://www.w3.org/2000/10/swap/pim/doc#>."
-                        + "@prefix dc: <http://purl.org/dc/elements/1.1/>."
-                        + "@keywords a, is, of."
-                        + "@base    <tru   c>.\n"
-                        + "#Directive base.\n"
-                        + "@prefix machin <http://www . \nexample .com>.\n\n"
-                        + "@keywords a, is, of."
-                        + " language has _:toto <http://rdf.com>. "
-                        + " bidule has _:tutu <http://www.example.com>; _:titi <http://www.exampleavecpointvirgule.com>, <http://www.exampleavecvirgule.com>. "
-                        + " _:toto has <http://www.rdf.com/language> <http://allemand.com>. "
-                        + " <http://www.rdf.com/language> = <http://www.language.com>. "
-                        + " <http://www.rdf.com/language> => <http://www.implies.com>. "
-                        + " <http://www.language.com> <= <http://www.rdf.com/language>. "
-                        + "machin <http://rdf.com> \"chaine\"."
-                        + "truc <http://www.multiligne.com> \"\"\"cha\nine\"\"\"."
-                        + "machin <= \"\"\"cha\nine\"\"\"."
-                        + "truc = <http://rdf.com>."
-                        + "machin => <http://rdf.com>."
-                        + "machin is <http://rdf.com>."
-                        + "machin @is bidule of <http://rdf.com>."
-        // + "(machin <http://rdf.com>) @is <http://rdf.com>."
-        // + "() @is <http://empty.list.com>."
-        // +
-        // "(machin <http://rdf.com> () bidule) @is <http://empty-list.inside-with-bidule.com>."
-        // +
-        // "(machin <http://rdf.com> ()) is <http://empty-list.inside.com> of <http://wow.com>."
-        );
-
-        File file = new File("/home/thierry/data/bureau/rdf/bnf.n3");
-        rep = new FileRepresentation(file.getPath(), MediaType.TEXT_PLAIN);
-        new RdfN3Representation(rep, new Graph());
+    /**
+     * Returns the identifier of a new blank node.
+     * 
+     * @return The identifier of a new blank node.
+     */
+    public static String newBlankNodeId() {
+        return "#_bn" + blankNodeId++;
     }
 
     /** Internal buffered reader. */
@@ -277,6 +243,23 @@ public class RdfN3ContentHandler extends GraphHandler {
         return builder.toString();
     }
 
+    private Reference getPredicate(LexicalUnit lexicalUnit) {
+        Reference result = null;
+        Object p = lexicalUnit.resolve();
+        if (p instanceof Reference) {
+            result = (Reference) p;
+        } else if (p instanceof String) {
+            result = new Reference((String) p);
+        }
+
+        return result;
+    }
+
+    @Override
+    public void link(Graph source, Reference typeRef, Reference target) {
+        this.linkSet.add(source, typeRef, target);
+    }
+
     private void link(Object source, Reference typeRef, Object target) {
         System.out.print("Nouveau Link : ");
         System.out.println(source);
@@ -284,11 +267,6 @@ public class RdfN3ContentHandler extends GraphHandler {
         System.out.println(typeRef);
         System.out.print("\t\t");
         System.out.println(target);
-    }
-
-    @Override
-    public void link(Graph source, Reference typeRef, Reference target) {
-        this.linkSet.add(source, typeRef, target);
     }
 
     @Override
@@ -403,8 +381,7 @@ public class RdfN3ContentHandler extends GraphHandler {
      * @return The value of the current token.
      * @throws IOException
      */
-    public Graph parseStatement(Context context) throws IOException {
-        Graph result = new Graph();
+    public void parseStatement(Context context) throws IOException {
         List<LexicalUnit> lexicalUnits = new ArrayList<LexicalUnit>();
         do {
             consumeWhiteSpaces();
@@ -455,7 +432,7 @@ public class RdfN3ContentHandler extends GraphHandler {
                 // Remove the leading '@' character.
                 step();
                 discard();
-                lexicalUnits.add(new Token(parseToken()));
+                lexicalUnits.add(new Token(this, context));
                 discard();
                 break;
             case ';':
@@ -485,19 +462,25 @@ public class RdfN3ContentHandler extends GraphHandler {
                 && getChar() != '}');
 
         // Generate the links
-        LexicalUnit currentSubject = null;
+        generateLinks(lexicalUnits);
+    }
+
+    public void generateLinks(List<LexicalUnit> lexicalUnits) {
+        Object currentSubject = null;
         Reference currentPredicate = null;
-        LexicalUnit currentObject = null;
+        Object currentObject = null;
         int nbTokens = 0;
         boolean swapSubjectObject = false;
-        for (LexicalUnit lexicalUnit : lexicalUnits) {
+        for (int i = 0; i < lexicalUnits.size(); i++) {
+            LexicalUnit lexicalUnit = lexicalUnits.get(i);
+
             nbTokens++;
             switch (nbTokens) {
             case 1:
                 if (",".equals(lexicalUnit.getValue())) {
                     nbTokens++;
                 } else if (!";".equals(lexicalUnit.getValue())) {
-                    currentSubject = lexicalUnit;
+                    currentSubject = lexicalUnit.resolve();
                 }
                 break;
             case 2:
@@ -515,15 +498,23 @@ public class RdfN3ContentHandler extends GraphHandler {
                     currentPredicate = RdfN3Representation.PREDICATE_IMPLIES;
                 } else if ("a".equalsIgnoreCase(lexicalUnit.getValue())) {
                     currentPredicate = RdfN3Representation.PREDICATE_TYPE;
+                } else if ("!".equalsIgnoreCase(lexicalUnit.getValue())) {
+                    currentObject = new BlankNodeToken(RdfN3ContentHandler
+                            .newBlankNodeId()).resolve();
+                    currentPredicate = getPredicate(lexicalUnits.get(++i));
+                    this.link(currentSubject, currentPredicate, currentObject);
+                    currentSubject = currentObject;
+                    nbTokens = 1;
+                } else if ("^".equalsIgnoreCase(lexicalUnit.getValue())) {
+                    currentObject = currentSubject;
+                    currentPredicate = getPredicate(lexicalUnits.get(++i));
+                    currentSubject = new BlankNodeToken(RdfN3ContentHandler
+                            .newBlankNodeId()).resolve();
+                    this.link(currentSubject, currentPredicate, currentObject);
+                    nbTokens = 1;
                 } else {
-                    Object p = lexicalUnit.resolve();
-                    if (p instanceof Reference) {
-                        currentPredicate = (Reference) p;
-                    } else if (p instanceof String) {
-                        currentPredicate = new Reference((String) p);
-                    }
+                    currentPredicate = getPredicate(lexicalUnit);
                 }
-
                 break;
             case 3:
                 if ("of".equalsIgnoreCase(lexicalUnit.getValue())) {
@@ -531,12 +522,11 @@ public class RdfN3ContentHandler extends GraphHandler {
                 } else {
                     if (swapSubjectObject) {
                         currentObject = currentSubject;
-                        currentSubject = lexicalUnit;
+                        currentSubject = lexicalUnit.resolve();
                     } else {
-                        currentObject = lexicalUnit;
+                        currentObject = lexicalUnit.resolve();
                     }
-                    this.link(currentSubject.resolve(), currentPredicate,
-                            currentObject.resolve());
+                    this.link(currentSubject, currentPredicate, currentObject);
                     nbTokens = 0;
                     swapSubjectObject = false;
                 }
@@ -545,7 +535,6 @@ public class RdfN3ContentHandler extends GraphHandler {
                 break;
             }
         }
-        return result;
     }
 
     /**

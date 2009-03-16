@@ -62,7 +62,7 @@ class Token extends LexicalUnit {
         setResolved(true);
         int index = getValue().indexOf(":");
         if (index != -1) {
-            String prefix = getValue().substring(0, index+1);
+            String prefix = getValue().substring(0, index + 1);
 
             String base = null;
             if (getContext() != null) {
@@ -76,7 +76,20 @@ class Token extends LexicalUnit {
                 result = null;
             }
         } else {
-            result = new Reference(getValue());
+            if (getContext().getKeywords().contains(getValue())) {
+                String base = null;
+                if (getContext() != null) {
+                    base = getContext().getPrefixes().get(":");
+                    result = new Reference(base + getValue());
+                } else {
+                    // TODO Error, the empty prefix has not been declared!
+
+                }
+            } else {
+                result = new Reference(getContext().getBase().toString()
+                        + getValue());
+            }
+
         }
 
         setResolved(!(result == null));

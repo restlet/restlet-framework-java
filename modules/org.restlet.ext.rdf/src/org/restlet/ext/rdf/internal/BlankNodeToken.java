@@ -38,13 +38,12 @@ public class BlankNodeToken extends LexicalUnit {
 
     List<LexicalUnit> lexicalUnits;
 
-    List<Arc> arcs;
-
     public BlankNodeToken(RdfN3ContentHandler contentHandler, Context context)
             throws IOException {
         super(contentHandler, context);
-        arcs = new ArrayList<Arc>();
         lexicalUnits = new ArrayList<LexicalUnit>();
+        this.setValue(RdfN3ContentHandler.newBlankNodeId());
+        lexicalUnits.add(this);
         this.parse();
     }
 
@@ -52,23 +51,13 @@ public class BlankNodeToken extends LexicalUnit {
         super(value);
     }
 
-    public void addArc(BlankNodeToken element, String predicate, boolean subject) {
-        arcs.add(new Arc(element, predicate, subject));
-    }
-
-    public void addArc(String predicate, String element, boolean subject) {
-        arcs.add(new Arc(element, predicate, subject));
-    }
-
     @Override
-    public Object resolve() {
-        if (this.getValue() != null) {
-            return getValue();
-        } else {
-            
-            // TODO parcours des unités lexicales
+    public String getValue() {
+        if (super.getValue() != null) {
+            return super.getValue();
+        } else if (this.lexicalUnits != null) {
+            return this.lexicalUnits.toString();
         }
-
         return null;
     }
 
@@ -114,7 +103,7 @@ public class BlankNodeToken extends LexicalUnit {
             case RdfN3ContentHandler.EOF:
                 break;
             default:
-                lexicalUnits.add(new Token(getContentHandler().parseToken()));
+                lexicalUnits.add(new Token(getContentHandler(), getContext()));
                 break;
             }
         } while (getContentHandler().getChar() != RdfN3ContentHandler.EOF
@@ -126,12 +115,19 @@ public class BlankNodeToken extends LexicalUnit {
     }
 
     @Override
-    public String getValue() {
-        if (super.getValue() != null) {
-            return super.getValue();
-        } else if (this.lexicalUnits != null) {
-            return this.lexicalUnits.toString();
+    public Object resolve() {
+        if (!isResolved()) {
+            setResolved(true);
+            if (getContentHandler() != null) {
+                getContentHandler().generateLinks(lexicalUnits);
+            }
         }
+
+        if (this.getValue() != null) {
+            return getValue();
+        } else {
+        }
+
         return null;
     }
 }
