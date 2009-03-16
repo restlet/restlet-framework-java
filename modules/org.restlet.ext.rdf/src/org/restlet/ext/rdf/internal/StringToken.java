@@ -27,8 +27,8 @@
  * 
  * Restlet is a registered trademark of Noelios Technologies.
  */
- 
- package org.restlet.ext.rdf.internal;
+
+package org.restlet.ext.rdf.internal;
 
 import java.io.IOException;
 
@@ -89,7 +89,12 @@ class StringToken extends LexicalUnit {
             getContentHandler().step();
             getContentHandler().discard();
         }
-        System.out.println("String =" + getValue() + "=");
+        // TODO il manque le traitement des litéraux typés
+    }
 
+    @Override
+    public Object resolve() {
+        setResolved(true);
+        return getValue();
     }
 }

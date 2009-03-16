@@ -27,28 +27,39 @@
  * 
  * Restlet is a registered trademark of Noelios Technologies.
  */
- 
+
 package org.restlet.ext.rdf.internal;
 
 import java.io.IOException;
 
+/**
+ * Allows to parse a formula in RDF N3 notation. PLease note that this kind of
+ * feature is not supported, since it can't be translated into pure RDF.
+ */
 public class FormulaToken extends LexicalUnit {
-    // List<Statement> statements;
 
-    public FormulaToken(RdfN3ContentHandler contentHandler, Context context) throws IOException {
+    @Override
+    public Object resolve() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public FormulaToken(RdfN3ContentHandler contentHandler, Context context)
+            throws IOException {
         super(contentHandler, context);
-        // statements = new ArrayList<Statement>();
         this.parse();
     }
 
     @Override
     public void parse() throws IOException {
+        getContentHandler().step();
         do {
-            // Statement statement =
             getContentHandler().parseStatement(new Context());
-            // statements.add(statement);
         } while (getContentHandler().getChar() != RdfN3ContentHandler.EOF
                 && getContentHandler().getChar() != '}');
-        // System.out.println("formula-statements " + statements.size());
+        if (getContentHandler().getChar() == '}') {
+            // Set the cursor at the right of the list token.
+            getContentHandler().step();
+        }
     }
 }

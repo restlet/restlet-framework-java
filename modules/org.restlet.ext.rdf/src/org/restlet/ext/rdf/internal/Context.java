@@ -47,6 +47,8 @@ public class Context {
     public Context() {
         super();
         this.prefixes = new HashMap<String, String>();
+        // "#" is the default URI of the "null" prefix
+        this.prefixes.put(":", "#");
         this.keywords = new ArrayList<String>();
     }
 

@@ -61,6 +61,18 @@ public class BlankNodeToken extends LexicalUnit {
     }
 
     @Override
+    public Object resolve() {
+        if (this.getValue() != null) {
+            return getValue();
+        } else {
+            
+            // TODO parcours des unités lexicales
+        }
+
+        return null;
+    }
+
+    @Override
     public void parse() throws IOException {
         getContentHandler().step();
         do {
@@ -111,15 +123,15 @@ public class BlankNodeToken extends LexicalUnit {
             // Set the cursor at the right of the list token.
             getContentHandler().step();
         }
-        for (LexicalUnit lexicalUnit : lexicalUnits) {
-            System.out.print("Blanknode tokens lexicalUnit "
-                    + lexicalUnit.getClass());
-            System.out.println(" => value " + lexicalUnit.getValue());
-        }
     }
 
     @Override
     public String getValue() {
-        return this.lexicalUnits.toString();
+        if (super.getValue() != null) {
+            return super.getValue();
+        } else if (this.lexicalUnits != null) {
+            return this.lexicalUnits.toString();
+        }
+        return null;
     }
 }

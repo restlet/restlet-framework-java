@@ -27,8 +27,8 @@
  * 
  * Restlet is a registered trademark of Noelios Technologies.
  */
- 
- package org.restlet.ext.rdf;
+
+package org.restlet.ext.rdf;
 
 import org.restlet.data.Reference;
 
@@ -74,5 +74,6 @@ public abstract class GraphHandler {
      * @param target
      *            The target or object of the link.
      */
-    public abstract void link(Object source, Reference typeRef, Reference target);
+    public abstract void link(Graph source, Reference typeRef, Reference target);
+
 }

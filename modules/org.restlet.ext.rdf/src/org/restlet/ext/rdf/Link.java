@@ -42,7 +42,7 @@ import org.restlet.resource.Resource;
  * of the Web of data (also know as Linked Data and Hyperdata).
  * 
  * @author Jerome Louvel
- * @see <a href="http://www.w3.org/TR/rdf-concepts/">RDF concepts</a>
+ * @see <a href="http://www.w3.org/TR/rdf-concepts/">RDF concepts< /a>
  */
 public class Link {
 
@@ -54,6 +54,34 @@ public class Link {
 
     /** The type reference. */
     private Reference typeRef;
+
+    /**
+     * Constructor.
+     * 
+     * @param sourcegGraph
+     *            The source graph.
+     * @param typeRef
+     *            The type reference.
+     * @param targetLit
+     *            The target literal.
+     */
+    public Link(Graph sourceGraph, Reference typeRef, Literal targetLit) {
+        this(sourceGraph, typeRef, (Object) targetLit);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param sourcegGraph
+     *            The source graph.
+     * @param typeRef
+     *            The type reference.
+     * @param targetReference
+     *            The target reference.
+     */
+    public Link(Graph sourceGraph, Reference typeRef, Reference targetRef) {
+        this(sourceGraph, typeRef, (Object) targetRef);
+    }
 
     /**
      * Constructor by copy.
@@ -77,6 +105,22 @@ public class Link {
      */
     private Link(Object source, Reference typeRef, Object target) {
         this.source = source;
+        this.target = target;
+        this.typeRef = typeRef;
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param sourceGraph
+     *            The source graph.
+     * @param typeRef
+     *            The type reference.
+     * @param target
+     *            The target.
+     */
+    public Link(Graph sourceGraph, Reference typeRef, Object target) {
+        this.source = sourceGraph;
         this.target = target;
         this.typeRef = typeRef;
     }

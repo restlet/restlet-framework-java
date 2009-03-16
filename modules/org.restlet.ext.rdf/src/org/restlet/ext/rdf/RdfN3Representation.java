@@ -35,19 +35,32 @@ import java.io.IOException;
 import org.restlet.data.Reference;
 import org.restlet.ext.rdf.internal.RdfN3ContentHandler;
 import org.restlet.representation.Representation;
+
 public class RdfN3Representation extends RdfRepresentation {
 
-    /** Common predicate for the "implies" predicate. */
+    /** Predicate "implies" . */
     public static Reference PREDICATE_IMPLIES = new Reference(
             "http://www.w3.org/2000/10/swap/log#implies");
 
-    /** Common predicate for the "same as" predicate. */
+    /** Predicate "same as". */
     public static Reference PREDICATE_SAME = new Reference(
             "http://www.w3.org/2002/07/owl#sameAs");
 
-    /** Common predicate for the "is a" predicate. */
+    /** Predicate "is as". */
     public static Reference PREDICATE_TYPE = new Reference(
             "http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
+
+    /** Object "nil". */
+    public static Reference OBJECT_NIL = new Reference(
+            "http://www.w3.org/1999/02/22-rdf-syntax-ns#nil");
+
+    /** Rdf syntax. */
+    public static Reference RDF_SYNTAX = new Reference(
+            "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
+
+    /** Rdf schema. */
+    public static Reference RDF_SCHEMA = new Reference(
+            "http://www.w3.org/2000/01/rdf-schema#");
 
     public RdfN3Representation(Representation rdfRepresentation, Graph linkSet)
             throws IOException {

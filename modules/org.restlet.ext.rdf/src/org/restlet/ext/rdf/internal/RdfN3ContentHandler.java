@@ -31,17 +31,20 @@
 package org.restlet.ext.rdf.internal;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.ext.rdf.Graph;
 import org.restlet.ext.rdf.GraphHandler;
 import org.restlet.ext.rdf.Literal;
 import org.restlet.ext.rdf.RdfN3Representation;
+import org.restlet.representation.FileRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
 
@@ -75,7 +78,7 @@ public class RdfN3ContentHandler extends GraphHandler {
     public static boolean isDelimiter(int c) {
         return isWhiteSpace(c) || c == '^' || c == '!' || c == '=' || c == '<'
                 || c == '"' || c == '{' || c == '}' || c == '[' || c == ']'
-                || c == '(' || c == ')' || c == '.';
+                || c == '(' || c == ')' || c == '.'|| c == ';'|| c == ',';
     }
 
     /**
@@ -90,25 +93,43 @@ public class RdfN3ContentHandler extends GraphHandler {
     }
 
     public static void main(String[] args) throws IOException {
-        StringRepresentation rep = new StringRepresentation(
-                "@base    <tru   c>.\n"
-//                        + "#Directive base.\n"
-//                        + "@prefix machin <http://www . \nexample .com>.\n\n"
-//                        + "@keywords toto, tutu, titi."
-//                        + " language _:toto <http://rdf.com>. "
-//                        + "machin <http://rdf.com> \"chaine\"."
-//                        + "truc <http://www.multiligne.com> \"\"\"cha\nine\"\"\"."
-//                        + "machin <= \"\"\"cha\nine\"\"\"."
-//                        + "truc = <http://rdf.com>."
-//                        + "machin => <http://rdf.com>."
-//                        + "machin is <http://rdf.com>."
-//                        + "machin @is <http://rdf.com>."
-//                        + "(machin <http://rdf.com>) @is <http://rdf.com>."
-//                        + "() @is <http://empty.list.com>."
-//                        + "(machin <http://rdf.com> () bidule) @is <http://empty-list.inside-with-bidule.com>."
-//                        + "(machin <http://rdf.com> ()) @is <http://empty-list.inside.com>."
-                        + "[<http://rdf.com> machin] @is <http://blank node.inside.com>.");
+        Representation rep = new StringRepresentation(
+                "@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ."
+                        + "@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>."
+                        + "@prefix cfg: <http://www.w3.org/2000/10/swap/grammar/bnf#>."
+                        + "@prefix : <http://www.w3.org/2000/10/swap/grammar/n3#>."
+                        + "@prefix n3: <http://www.w3.org/2000/10/swap/grammar/n3#>."
+                        + "@prefix list: <http://www.w3.org/2000/10/swap/list#>."
+                        + "@prefix doc: <http://www.w3.org/2000/10/swap/pim/doc#>."
+                        + "@prefix dc: <http://purl.org/dc/elements/1.1/>."
+                        + "@keywords a, is, of."
+                        + "@base    <tru   c>.\n"
+                        + "#Directive base.\n"
+                        + "@prefix machin <http://www . \nexample .com>.\n\n"
+                        + "@keywords a, is, of."
+                        + " language has _:toto <http://rdf.com>. "
+                        + " bidule has _:tutu <http://www.example.com>; _:titi <http://www.exampleavecpointvirgule.com>, <http://www.exampleavecvirgule.com>. "
+                        + " _:toto has <http://www.rdf.com/language> <http://allemand.com>. "
+                        + " <http://www.rdf.com/language> = <http://www.language.com>. "
+                        + " <http://www.rdf.com/language> => <http://www.implies.com>. "
+                        + " <http://www.language.com> <= <http://www.rdf.com/language>. "
+                        + "machin <http://rdf.com> \"chaine\"."
+                        + "truc <http://www.multiligne.com> \"\"\"cha\nine\"\"\"."
+                        + "machin <= \"\"\"cha\nine\"\"\"."
+                        + "truc = <http://rdf.com>."
+                        + "machin => <http://rdf.com>."
+                        + "machin is <http://rdf.com>."
+                        + "machin @is bidule of <http://rdf.com>."
+        // + "(machin <http://rdf.com>) @is <http://rdf.com>."
+        // + "() @is <http://empty.list.com>."
+        // +
+        // "(machin <http://rdf.com> () bidule) @is <http://empty-list.inside-with-bidule.com>."
+        // +
+        // "(machin <http://rdf.com> ()) is <http://empty-list.inside.com> of <http://wow.com>."
+        );
 
+        File file = new File("/home/thierry/data/bureau/rdf/bnf.n3");
+        rep = new FileRepresentation(file.getPath(), MediaType.TEXT_PLAIN);
         new RdfN3Representation(rep, new Graph());
     }
 
@@ -256,21 +277,28 @@ public class RdfN3ContentHandler extends GraphHandler {
         return builder.toString();
     }
 
-    @Override
-    public void link(Object source, Reference typeRef, Reference target) {
-        // TODO Auto-generated method stub
+    private void link(Object source, Reference typeRef, Object target) {
+        System.out.print("Nouveau Link : ");
+        System.out.println(source);
+        System.out.print("\t\t");
+        System.out.println(typeRef);
+        System.out.print("\t\t");
+        System.out.println(target);
+    }
 
+    @Override
+    public void link(Graph source, Reference typeRef, Reference target) {
+        this.linkSet.add(source, typeRef, target);
     }
 
     @Override
     public void link(Reference source, Reference typeRef, Literal target) {
-        // TODO Auto-generated method stub
-
+        this.linkSet.add(source, typeRef, target);
     }
 
     @Override
     public void link(Reference source, Reference typeRef, Reference target) {
-        // TODO Auto-generated method stub
+        this.linkSet.add(source, typeRef, target);
     }
 
     /**
@@ -358,6 +386,7 @@ public class RdfN3ContentHandler extends GraphHandler {
             } while (c != RdfN3ContentHandler.EOF && c != '.');
             String strKeywords = getCurrentToken();
             String[] keywords = strKeywords.split(",");
+            context.getKeywords().clear();
             for (String keyword : keywords) {
                 context.getKeywords().add(keyword.trim());
             }
@@ -374,11 +403,11 @@ public class RdfN3ContentHandler extends GraphHandler {
      * @return The value of the current token.
      * @throws IOException
      */
-    public List<LexicalUnit> parseStatement(Context context) throws IOException {
+    public Graph parseStatement(Context context) throws IOException {
+        Graph result = new Graph();
         List<LexicalUnit> lexicalUnits = new ArrayList<LexicalUnit>();
         do {
             consumeWhiteSpaces();
-            System.out.println("av " + getChar());
             switch (getChar()) {
             case '(':
                 lexicalUnits.add(new ListToken(this, context));
@@ -430,10 +459,16 @@ public class RdfN3ContentHandler extends GraphHandler {
                 discard();
                 break;
             case ';':
-                // TODO !
+                // TODO
+                step();
+                discard();
+                lexicalUnits.add(new Token(";"));
                 break;
             case ',':
-                // TODO !
+                // TODO
+                step();
+                discard();
+                lexicalUnits.add(new Token(","));
                 break;
             case '{':
                 lexicalUnits.add(new FormulaToken(this, context));
@@ -443,17 +478,74 @@ public class RdfN3ContentHandler extends GraphHandler {
             case RdfN3ContentHandler.EOF:
                 break;
             default:
-                lexicalUnits.add(new Token(parseToken()));
+                lexicalUnits.add(new Token(this, context));
                 break;
             }
-        } while (getChar() != RdfN3ContentHandler.EOF && getChar() != '.');
+        } while (getChar() != RdfN3ContentHandler.EOF && getChar() != '.'
+                && getChar() != '}');
 
+        // Generate the links
+        LexicalUnit currentSubject = null;
+        Reference currentPredicate = null;
+        LexicalUnit currentObject = null;
+        int nbTokens = 0;
+        boolean swapSubjectObject = false;
         for (LexicalUnit lexicalUnit : lexicalUnits) {
-            System.out.print("lexicalUnit " + lexicalUnit.getClass());
-            System.out.println(" => value " + lexicalUnit.getValue());
-        }
+            nbTokens++;
+            switch (nbTokens) {
+            case 1:
+                if (",".equals(lexicalUnit.getValue())) {
+                    nbTokens++;
+                } else if (!";".equals(lexicalUnit.getValue())) {
+                    currentSubject = lexicalUnit;
+                }
+                break;
+            case 2:
+                if ("is".equalsIgnoreCase(lexicalUnit.getValue())) {
+                    nbTokens--;
+                    swapSubjectObject = true;
+                } else if ("has".equalsIgnoreCase(lexicalUnit.getValue())) {
+                    nbTokens--;
+                } else if ("=".equalsIgnoreCase(lexicalUnit.getValue())) {
+                    currentPredicate = RdfN3Representation.PREDICATE_SAME;
+                } else if ("=>".equalsIgnoreCase(lexicalUnit.getValue())) {
+                    currentPredicate = RdfN3Representation.PREDICATE_IMPLIES;
+                } else if ("<=".equalsIgnoreCase(lexicalUnit.getValue())) {
+                    swapSubjectObject = true;
+                    currentPredicate = RdfN3Representation.PREDICATE_IMPLIES;
+                } else if ("a".equalsIgnoreCase(lexicalUnit.getValue())) {
+                    currentPredicate = RdfN3Representation.PREDICATE_TYPE;
+                } else {
+                    Object p = lexicalUnit.resolve();
+                    if (p instanceof Reference) {
+                        currentPredicate = (Reference) p;
+                    } else if (p instanceof String) {
+                        currentPredicate = new Reference((String) p);
+                    }
+                }
 
-        return lexicalUnits;
+                break;
+            case 3:
+                if ("of".equalsIgnoreCase(lexicalUnit.getValue())) {
+                    nbTokens--;
+                } else {
+                    if (swapSubjectObject) {
+                        currentObject = currentSubject;
+                        currentSubject = lexicalUnit;
+                    } else {
+                        currentObject = lexicalUnit;
+                    }
+                    this.link(currentSubject.resolve(), currentPredicate,
+                            currentObject.resolve());
+                    nbTokens = 0;
+                    swapSubjectObject = false;
+                }
+                break;
+            default:
+                break;
+            }
+        }
+        return result;
     }
 
     /**
@@ -468,7 +560,6 @@ public class RdfN3ContentHandler extends GraphHandler {
             c = step();
         } while (c != RdfN3ContentHandler.EOF && !isDelimiter(c));
         String result = getCurrentToken();
-        System.out.println("Token =" + result + "=");
         return result;
     }
 

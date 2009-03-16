@@ -27,11 +27,13 @@
  * 
  * Restlet is a registered trademark of Noelios Technologies.
  */
- 
+
 package org.restlet.ext.rdf;
 
+import java.io.IOException;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import org.restlet.data.MediaType;
 import org.restlet.data.Reference;
 import org.restlet.representation.Representation;
 
@@ -75,9 +77,59 @@ public class Graph extends CopyOnWriteArraySet<Link> {
      * 
      * @param rdfRepresentation
      *            The RDF representation to parse.
+     * @throws IOException
      */
-    public Graph(Representation rdfRepresentation) {
-        // TODO : call the engine for parsing
+    public Graph(Representation rdfRepresentation) throws IOException {
+        if (MediaType.TEXT_RDF_N3
+                .equals(rdfRepresentation.getMediaType(), true)) {
+            new RdfN3Representation(rdfRepresentation, this);
+        } else if (MediaType.APPLICATION_RDF_XML.equals(rdfRepresentation
+                .getMediaType(), true)) {
+            // TODO : call the engine for parsing
+            // new RdfXmlRepresentation(rdfRepresentation, this);
+        } else if (MediaType.APPLICATION_RDF_TURTLE.equals(rdfRepresentation
+                .getMediaType(), true)) {
+            // TODO : call the engine for parsing
+            // new RdfTurtleRepresentation(rdfRepresentation, this);
+        }
+    }
+
+    /**
+     * Creates then adds a link. If one of the parameter is null, the value from
+     * {@link #getDefaultLink()} is used instead if possible.
+     * 
+     * @param sourceGraph
+     *            The source graph.
+     * @param typeRef
+     *            The type reference.
+     * @param targetLit
+     *            The target literal.
+     * @return The created link.
+     */
+    public Link add(Graph sourceGraph, Reference typeRef, Literal targetLit) {
+        Link result = new Link(getSourceAsGraph(sourceGraph),
+                getTypeRef(typeRef), getTargetAsLiteral(targetLit));
+        add(result);
+        return result;
+    }
+
+    /**
+     * Creates then adds a link. If one of the parameter is null, the value from
+     * {@link #getDefaultLink()} is used instead if possible.
+     * 
+     * @param sourceGraph
+     *            The source graph.
+     * @param typeRef
+     *            The type reference.
+     * @param targetRef
+     *            The target reference.
+     * @return The created link.
+     */
+    public Link add(Graph sourceGraph, Reference typeRef, Reference targetRef) {
+        Link result = new Link(getSourceAsGraph(sourceGraph),
+                getTypeRef(typeRef), getTargetAsReference(targetRef));
+        add(result);
+        return result;
     }
 
     /**
@@ -168,6 +220,24 @@ public class Graph extends CopyOnWriteArraySet<Link> {
      *            The source reference to check.
      * @return The source reference.
      */
+    private Graph getSourceAsGraph(Graph sourceGraph) {
+        Graph result = sourceGraph;
+
+        if ((result == null) && (getDefaultLink() != null)) {
+            result = getDefaultLink().getSourceAsGraph();
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the source reference, either the one given in the sourceRef
+     * parameter or if it is null, the source reference of the default link.
+     * 
+     * @param sourceRef
+     *            The source reference to check.
+     * @return The source reference.
+     */
     private Reference getSourceAsReference(Reference sourceRef) {
         Reference result = sourceRef;
 
@@ -191,6 +261,24 @@ public class Graph extends CopyOnWriteArraySet<Link> {
 
         if ((result == null) && (getDefaultLink() != null)) {
             result = getDefaultLink().getTargetAsLiteral();
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the target, either the one given in the target parameter or if it
+     * is null, the target of the default link.
+     * 
+     * @param target
+     *            The target to check.
+     * @return The target.
+     */
+    private Object getTargetAsObject(Object target) {
+        Object result = target;
+
+        if ((result == null) && (getDefaultLink() != null)) {
+            result = getDefaultLink().getTarget();
         }
 
         return result;

@@ -34,6 +34,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.restlet.ext.rdf.Graph;
+
 class ListToken extends LexicalUnit {
     List<LexicalUnit> lexicalUnits;
 
@@ -42,6 +44,27 @@ class ListToken extends LexicalUnit {
         super(contentHandler, context);
         lexicalUnits = new ArrayList<LexicalUnit>();
         this.parse();
+    }
+
+    @Override
+    public Object resolve() {
+/*
+     <rdf:Description>
+        <rdf:first rdf:resource="http://www.example.com#machin"/>
+        <rdf:rest rdf:parseType="Resource">
+            <rdf:first rdf:resource="http://www.example.com#truc"/>
+            <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+        </rdf:rest>
+    </rdf:Description>
+         
+ */
+        Graph result = new Graph();
+        for (LexicalUnit lexicalUnit : lexicalUnits) {
+  
+        }
+
+        setResolved(true);
+        return result;
     }
 
     @Override
@@ -99,11 +122,6 @@ class ListToken extends LexicalUnit {
         if (getContentHandler().getChar() == ')') {
             // Set the cursor at the right of the list token.
             getContentHandler().step();
-        }
-        for (LexicalUnit lexicalUnit : lexicalUnits) {
-            System.out.print("List tokens lexicalUnit "
-                    + lexicalUnit.getClass());
-            System.out.println(" => value " + lexicalUnit.getValue());
         }
     }
 }

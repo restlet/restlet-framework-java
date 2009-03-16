@@ -32,8 +32,11 @@ package org.restlet.ext.rdf.internal;
 
 import java.io.IOException;
 
+import org.restlet.data.Reference;
+
 class UriToken extends LexicalUnit {
-    public UriToken(RdfN3ContentHandler contentHandler, Context context) throws IOException {
+    public UriToken(RdfN3ContentHandler contentHandler, Context context)
+            throws IOException {
         super(contentHandler, context);
         this.parse();
     }
@@ -41,6 +44,12 @@ class UriToken extends LexicalUnit {
     @Override
     public void parse() throws IOException {
         setValue(getContentHandler().parseUri());
-        System.out.println("URI " +  getValue());
     }
+
+    @Override
+    public Reference resolve() {
+        setResolved(true);
+        return new Reference(getValue());
+    }
+
 }

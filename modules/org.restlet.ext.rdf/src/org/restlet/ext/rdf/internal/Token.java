@@ -27,15 +27,19 @@
  * 
  * Restlet is a registered trademark of Noelios Technologies.
  */
- 
+
 package org.restlet.ext.rdf.internal;
 
 import java.io.IOException;
 
+import org.restlet.data.Reference;
+
 class Token extends LexicalUnit {
-    
-    public Token(RdfN3ContentHandler contentHandler, Context context) {
+
+    public Token(RdfN3ContentHandler contentHandler, Context context)
+            throws IOException {
         super(contentHandler, context);
+        this.parse();
     }
 
     public Token(String value) {
@@ -44,16 +48,38 @@ class Token extends LexicalUnit {
 
     @Override
     public void parse() throws IOException {
-        
-        int c = getContentHandler().step();
-        while (c != RdfN3ContentHandler.EOF && c != '}' && c != '.'
-                && !RdfN3ContentHandler.isWhiteSpace(c)) {
-            if (c == '!' || c == '^') {
-                getContentHandler().stepBack();
-                break;
-            }
+        int c;
+        do {
             c = getContentHandler().step();
-        }
+        } while (c != RdfN3ContentHandler.EOF
+                && !RdfN3ContentHandler.isDelimiter(c));
         setValue(getContentHandler().getCurrentToken());
+    }
+
+    @Override
+    public Object resolve() {
+        Object result = null;
+        setResolved(true);
+        int index = getValue().indexOf(":");
+        if (index != -1) {
+            String prefix = getValue().substring(0, index+1);
+
+            String base = null;
+            if (getContext() != null) {
+                base = getContext().getPrefixes().get(prefix);
+            }
+
+            if (base != null) {
+                result = new Reference(base + getValue().substring(index));
+            } else {
+                // TODO Error, this prefix has not been declared!
+                result = null;
+            }
+        } else {
+            result = new Reference(getValue());
+        }
+
+        setResolved(!(result == null));
+        return result;
     }
 }
