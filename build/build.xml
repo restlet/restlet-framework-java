@@ -1019,6 +1019,7 @@
 		<pomModule name="lucene" ext1="solr" ext2="tika" />
 		<pomModule name="net" />
 		<pomModule name="oauth" />
+		<pomModule name="script" ext1="script" ext2="scripturian" />
 		<pomModule name="servlet" />
 		<!-- disabled for now  <pomModule name="shell" ext1="jline" ext2="rhino" ext3="script" /> -->
 		<pomModule name="simple" />
@@ -1059,7 +1060,6 @@
 		<replace file="${temp}/javadocs/overview-engine.html" token="@version-minor@" value="${version-minor}" />
 		<replace file="${temp}/javadocs/overview-ext.html" token="@version-minor@" value="${version-minor}" />
 		<replace file="${temp}/javadocs/overview-gwt.html" token="@version-minor@" value="${version-minor}" />
-
 	</target>
 
 	<!-- COMPILE target -->
@@ -1177,496 +1177,494 @@
 
 			<bottom>
 				<![CDATA[<i>Copyright &#169; 2005-2009 <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
-         	</bottom>
-
-		<group title="${restlet-api}">
-			<package name="org.restlet*" />
-		</group>
-
-		<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
-	</javadoc>
-
-	<javadoc packagenames="org.restlet.engine.*" excludepackagenames="${exclude-packages}" destdir="${docs-engine}" classpathref="path-all" author="true" version="true" use="true" windowtitle="Restlet Engine ${version-full}" doctitle="Restlet Engine ${version-full}" overview="${temp}/javadocs/overview-engine.html" stylesheetfile="${tmpl}/javadocs/stylesheet.css" verbose="${verbose}">
-		<sourcepath>
-			<pathelement path="${mod}/${mod-core-id}/src/" />
-		</sourcepath>
-
-		<bottom>
-			<![CDATA[<i>Copyright &#169; 2005-2009 <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
 			</bottom>
 
-	<group title="${restlet-engine}">
-		<package name="org.restlet.engine*" />
-	</group>
+			<group title="${restlet-api}">
+				<package name="org.restlet*" />
+			</group>
 
-	<link href="http://www.restlet.org/documentation/${version-minor}/api/" packagelistLoc="${docs-api}" offline="true" />
-	<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
-</javadoc>
+			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
+		</javadoc>
 
-<javadoc packagenames="org.restlet.ext.*" excludepackagenames="${exclude-packages}" destdir="${docs-ext}" classpathref="path-all" author="true" version="true" use="true" windowtitle="Restlet Extensions ${version-full}" doctitle="Restlet Extensions ${version-full}" overview="${temp}/javadocs/overview-ext.html" stylesheetfile="${tmpl}/javadocs/stylesheet.css" verbose="${verbose}">
-	<sourcepath>
-		<pathelement path="${mod}/${mod-atom-id}/src/" />
-		<pathelement path="${mod}/${mod-fileupload-id}/src/" />
-		<pathelement path="${mod}/${mod-freemarker-id}/src/" />
-		<pathelement path="${mod}/${mod-grizzly-id}/src/" />
-		<pathelement path="${mod}/${mod-core-gwt-id}/src/" />
-		<pathelement path="${mod}/${mod-gwt-id}/src/" />
-		<pathelement path="${mod}/${mod-httpclient-id}/src/" />
-		<pathelement path="${mod}/${mod-javamail-id}/src/" />
-		<pathelement path="${mod}/${mod-jaxb-id}/src/" />
-		<pathelement path="${mod}/${mod-jaxrs-id}/src/" />
-		<pathelement path="${mod}/${mod-jdbc-id}/src/" />
-		<pathelement path="${mod}/${mod-jetty-id}/src/" />
-		<pathelement path="${mod}/${mod-jibx-id}/src/" />
-		<!-- disabled for now  <pathelement path="${mod}/${mod-jmx-id}/src/" /> -->
-		<pathelement path="${mod}/${mod-json-id}/src/" />
-		<pathelement path="${mod}/${mod-lucene-id}/src/" />
-		<!-- disabled for now  <pathelement path="${mod}/${mod-jxta-id}/src/" /> -->
-		<pathelement path="${mod}/${mod-net-id}/src/" />
-		<pathelement path="${mod}/${mod-oauth-id}/src/" />
-		<pathelement path="${mod}/${mod-rdf-id}/src/" />
-		<!-- disabled for now <pathelement path="${mod}/${mod-script-id}/src/" /> -->
-		<pathelement path="${mod}/${mod-servlet-id}/src/" />
-		<!-- disabled for now <pathelement path="${mod}/${mod-shell-id}/src/" /> -->
-		<pathelement path="${mod}/${mod-simple-id}/src/" />
-		<pathelement path="${mod}/${mod-spring-id}/src/" />
-		<pathelement path="${mod}/${mod-ssl-id}/src/" />
-		<pathelement path="${mod}/${mod-velocity-id}/src/" />
-		<pathelement path="${mod}/${mod-wadl-id}/src/" />
-		<pathelement path="${mod}/${mod-xdb-id}/src/" />
-	</sourcepath>
+		<javadoc packagenames="org.restlet.engine.*" excludepackagenames="${exclude-packages}" destdir="${docs-engine}" classpathref="path-all" author="true" version="true" use="true" windowtitle="Restlet Engine ${version-full}" doctitle="Restlet Engine ${version-full}" overview="${temp}/javadocs/overview-engine.html" stylesheetfile="${tmpl}/javadocs/stylesheet.css" verbose="${verbose}">
+			<sourcepath>
+				<pathelement path="${mod}/${mod-core-id}/src/" />
+			</sourcepath>
 
-	<bottom>
-		<![CDATA[<i>Copyright &#169; 2005-2009 <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
+			<bottom>
+				<![CDATA[<i>Copyright &#169; 2005-2009 <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
 			</bottom>
 
-<group title="${restlet-ext-standards}">
-	<package name="org.restlet.ext.oauth*" />
-	<package name="org.restlet.ext.atom*" />
-	<package name="org.restlet.ext.jaxrs*" />
-	<package name="org.restlet.ext.json*" />
-	<package name="org.restlet.ext.rdf*" />
-	<package name="org.restlet.ext.ssl*" />
-	<package name="org.restlet.ext.wadl*" />
-</group>
-<group title="${restlet-ext-connectors}">
-	<package name="org.restlet.ext.grizzly*" />
-	<package name="org.restlet.ext.httpclient*" />
-	<package name="org.restlet.ext.javamail*" />
-	<package name="org.restlet.ext.jdbc*" />
-	<package name="org.restlet.ext.jetty*" />
-	<package name="org.restlet.ext.net*" />
-	<package name="org.restlet.ext.simple*" />
-</group>
-<group title="${restlet-ext-integrations}">
-	<package name="org.restlet.ext.gwt*" />
-	<package name="org.restlet.ext.lucene*" />
-	<package name="org.restlet.ext.servlet*" />
-	<package name="org.restlet.ext.spring*" />
-	<package name="org.restlet.ext.xdb*" />
-	<package name="org.restlet.ext.fileupload*" />
-	<package name="org.restlet.ext.freemarker*" />
-	<package name="org.restlet.ext.jaxb*" />
-	<package name="org.restlet.ext.jibx*" />
-	<package name="org.restlet.ext.velocity*" />
-</group>
+			<group title="${restlet-engine}">
+				<package name="org.restlet.engine*" />
+			</group>
 
-<link href="http://freemarker.sourceforge.net/docs/api/" />
-<link href="http://jakarta.apache.org/commons/codec/apidocs/" />
-<link href="http://jakarta.apache.org/commons/collections/api-release/" />
-<link href="http://jakarta.apache.org/commons/fileupload/apidocs/" />
-<link href="http://jakarta.apache.org/commons/httpclient/apidocs/" />
-<link href="http://jakarta.apache.org/velocity/docs/api/" />
-<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
-<link href="http://java.sun.com/javaee/5/docs/api/" />
-<link href="http://java.sun.com/products/javamail/javadocs/" />
-<link href="https://jaxb.dev.java.net/nonav/2.1.3/docs/api/" />
-<link href="http://jetty.mortbay.org/apidocs/" />
-<link href="http://jibx.sourceforge.net/api/" />
-<link href="https://jsr311.dev.java.net/nonav/javadoc/" />
-<link href="http://lucene.apache.org/java/2_4_0/api/" />
-<link href="http://lucene.apache.org/solr/api/" />
-<link href="http://lucene.apache.org/tika/apidocs/" />
-<link href="http://static.springframework.org/spring/docs/2.0.x/api/" />
-<link href="http://www.json.org/javadoc/" />
-<link href="http://www.restlet.org/documentation/${version-minor}/api/" packagelistLoc="${docs-api}" offline="true" />
-<link href="http://www.restlet.org/documentation/${version-minor}/engine/" packagelistLoc="${docs-engine}" offline="true" />
-<link href="http://www.simpleframework.org/doc/javadoc/" />
-</javadoc>
+			<link href="http://www.restlet.org/documentation/${version-minor}/api/" packagelistLoc="${docs-api}" offline="true" />
+			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
+		</javadoc>
 
-<javadoc packagenames="org.restlet.gwt.*" excludepackagenames="${exclude-packages},*org.restlet.gwt.engine.*" destdir="${docs-gwt}" classpathref="path-all" author="true" version="true" use="true" windowtitle="Restlet-GWT module ${version-full}" doctitle="Restlet-GWT module ${version-full}" overview="${temp}/javadocs/overview-gwt.html" stylesheetfile="${tmpl}/javadocs/stylesheet.css" verbose="${verbose}">
-<sourcepath>
-	<pathelement path="${mod}/${mod-core-gwt-id}/src/" />
-</sourcepath>
+		<javadoc packagenames="org.restlet.ext.*" excludepackagenames="${exclude-packages}" destdir="${docs-ext}" classpathref="path-all" author="true" version="true" use="true" windowtitle="Restlet Extensions ${version-full}" doctitle="Restlet Extensions ${version-full}" overview="${temp}/javadocs/overview-ext.html" stylesheetfile="${tmpl}/javadocs/stylesheet.css" verbose="${verbose}">
+			<sourcepath>
+				<pathelement path="${mod}/${mod-atom-id}/src/" />
+				<pathelement path="${mod}/${mod-fileupload-id}/src/" />
+				<pathelement path="${mod}/${mod-freemarker-id}/src/" />
+				<pathelement path="${mod}/${mod-grizzly-id}/src/" />
+				<pathelement path="${mod}/${mod-core-gwt-id}/src/" />
+				<pathelement path="${mod}/${mod-gwt-id}/src/" />
+				<pathelement path="${mod}/${mod-httpclient-id}/src/" />
+				<pathelement path="${mod}/${mod-javamail-id}/src/" />
+				<pathelement path="${mod}/${mod-jaxb-id}/src/" />
+				<pathelement path="${mod}/${mod-jaxrs-id}/src/" />
+				<pathelement path="${mod}/${mod-jdbc-id}/src/" />
+				<pathelement path="${mod}/${mod-jetty-id}/src/" />
+				<pathelement path="${mod}/${mod-jibx-id}/src/" />
+				<!-- disabled for now  <pathelement path="${mod}/${mod-jmx-id}/src/" /> -->
+				<pathelement path="${mod}/${mod-json-id}/src/" />
+				<pathelement path="${mod}/${mod-lucene-id}/src/" />
+				<!-- disabled for now  <pathelement path="${mod}/${mod-jxta-id}/src/" /> -->
+				<pathelement path="${mod}/${mod-net-id}/src/" />
+				<pathelement path="${mod}/${mod-oauth-id}/src/" />
+				<pathelement path="${mod}/${mod-rdf-id}/src/" />
+				<pathelement path="${mod}/${mod-script-id}/src/" />
+				<pathelement path="${mod}/${mod-servlet-id}/src/" />
+				<!-- disabled for now <pathelement path="${mod}/${mod-shell-id}/src/" /> -->
+				<pathelement path="${mod}/${mod-simple-id}/src/" />
+				<pathelement path="${mod}/${mod-spring-id}/src/" />
+				<pathelement path="${mod}/${mod-ssl-id}/src/" />
+				<pathelement path="${mod}/${mod-velocity-id}/src/" />
+				<pathelement path="${mod}/${mod-wadl-id}/src/" />
+				<pathelement path="${mod}/${mod-xdb-id}/src/" />
+			</sourcepath>
 
-<bottom>
-	<![CDATA[<i>Copyright &#169; 2005-2009 <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
+			<bottom>
+				<![CDATA[<i>Copyright &#169; 2005-2009 <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
 			</bottom>
 
-<group title="${restlet-gwt}">
-<package name="org.restlet.gwt*" />
-</group>
+			<group title="${restlet-ext-standards}">
+				<package name="org.restlet.ext.oauth*" />
+				<package name="org.restlet.ext.atom*" />
+				<package name="org.restlet.ext.jaxrs*" />
+				<package name="org.restlet.ext.json*" />
+				<package name="org.restlet.ext.rdf*" />
+				<package name="org.restlet.ext.ssl*" />
+				<package name="org.restlet.ext.wadl*" />
+			</group>
+			<group title="${restlet-ext-connectors}">
+				<package name="org.restlet.ext.grizzly*" />
+				<package name="org.restlet.ext.httpclient*" />
+				<package name="org.restlet.ext.javamail*" />
+				<package name="org.restlet.ext.jdbc*" />
+				<package name="org.restlet.ext.jetty*" />
+				<package name="org.restlet.ext.net*" />
+				<package name="org.restlet.ext.simple*" />
+			</group>
+			<group title="${restlet-ext-integrations}">
+				<package name="org.restlet.ext.gwt*" />
+				<package name="org.restlet.ext.lucene*" />
+				<package name="org.restlet.ext.servlet*" />
+				<package name="org.restlet.ext.spring*" />
+				<package name="org.restlet.ext.xdb*" />
+				<package name="org.restlet.ext.fileupload*" />
+				<package name="org.restlet.ext.freemarker*" />
+				<package name="org.restlet.ext.jaxb*" />
+				<package name="org.restlet.ext.jibx*" />
+				<package name="org.restlet.ext.script*" />
+				<package name="org.restlet.ext.velocity*" />
+			</group>
 
-<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
-<link href="http://google-web-toolkit.googlecode.com/svn/javadoc/1.5/" />
-</javadoc>
-</target>
+			<link href="http://freemarker.sourceforge.net/docs/api/" />
+			<link href="http://jakarta.apache.org/commons/codec/apidocs/" />
+			<link href="http://jakarta.apache.org/commons/collections/api-release/" />
+			<link href="http://jakarta.apache.org/commons/fileupload/apidocs/" />
+			<link href="http://jakarta.apache.org/commons/httpclient/apidocs/" />
+			<link href="http://jakarta.apache.org/velocity/docs/api/" />
+			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
+			<link href="http://java.sun.com/javaee/5/docs/api/" />
+			<link href="http://java.sun.com/products/javamail/javadocs/" />
+			<link href="https://jaxb.dev.java.net/nonav/${lib-jaxb-version}.${lib-jaxb-release}/docs/api/" />
+			<link href="http://jetty.mortbay.org/apidocs/" />
+			<link href="http://jibx.sourceforge.net/api/" />
+			<link href="https://jsr311.dev.java.net/nonav/javadoc/" />
+			<link href="http://lucene.apache.org/java/2_4_0/api/" />
+			<link href="http://lucene.apache.org/solr/api/" />
+			<link href="http://lucene.apache.org/tika/apidocs/" />
+			<link href="http://static.springframework.org/spring/docs/${lib-spring-version}.x/api/" />
+			<link href="http://www.json.org/javadoc/" />
+			<link href="http://www.restlet.org/documentation/${version-minor}/api/" packagelistLoc="${docs-api}" offline="true" />
+			<link href="http://www.restlet.org/documentation/${version-minor}/engine/" packagelistLoc="${docs-engine}" offline="true" />
+			<link href="http://www.simpleframework.org/doc/javadoc/" />
+		</javadoc>
 
-<!-- umlgraph target -->
-<target name="umlgraph">
-<!-- Generate UML graphics for the Restlet API -->
-<javadoc packagenames="org.restlet.*" excludepackagenames="${exclude-packages}" destdir="${uml-reports-api}" classpathref="path-all" author="true" version="true" use="true" windowtitle="Restlet API ${version-full}" doctitle="Restlet API ${version-full}" overview="${temp}/javadocs/overview-api.html" stylesheetfile="${tmpl}/javadocs/stylesheet.css" verbose="${verbose}">
-<sourcepath>
-<pathelement path="${mod}/${mod-core-id}/src/" />
-</sourcepath>
+		<javadoc packagenames="org.restlet.gwt.*" excludepackagenames="${exclude-packages},*org.restlet.gwt.engine.*" destdir="${docs-gwt}" classpathref="path-all" author="true" version="true" use="true" windowtitle="Restlet-GWT module ${version-full}" doctitle="Restlet-GWT module ${version-full}" overview="${temp}/javadocs/overview-gwt.html" stylesheetfile="${tmpl}/javadocs/stylesheet.css" verbose="${verbose}">
+			<sourcepath>
+				<pathelement path="${mod}/${mod-core-gwt-id}/src/" />
+			</sourcepath>
 
-<bottom>
-<![CDATA[<i>Copyright &#169; 2005-2009 <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
-         	</bottom>
+			<bottom>
+				<![CDATA[<i>Copyright &#169; 2005-2009 <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
+			</bottom>
 
-<group title="${restlet-api}">
-<package name="org.restlet*" />
-</group>
+			<group title="${restlet-gwt}">
+				<package name="org.restlet.gwt*" />
+			</group>
 
-<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
-<doclet name="org.umlgraph.doclet.UmlGraphDoc" path="tools/umlgraph/umlgraph.jar">
-<param name="-attributes" />
-<param name="-operations" />
-<param name="-qualify" />
-<param name="-types" />
-<param name="-visibility" />
-</doclet>
-</javadoc>
-<apply executable="dot" dest="${uml-reports-api}" parallel="false" failifexecutionfails="false" failonerror="false" verbose="false">
-<arg value="-Tpng" />
-<arg value="-o" />
-<targetfile />
-<srcfile />
-<fileset dir="${uml-reports-api}" includes="*.dot" />
-<mapper type="glob" from="*.dot" to="*.png" />
-</apply>
-<delete verbose="false" quiet="true">
-<fileset dir="${uml-reports-api}" includes="**/*.dot, **/*.map" />
-</delete>
-</target>
+			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
+			<link href="http://google-web-toolkit.googlecode.com/svn/javadoc/1.5/" />
+		</javadoc>
+	</target>
 
-<!-- VERIFY target -->
-<target name="verify" if="do-verify" depends="verify-ant, verify-tests, verify-findbugs, verify-checkstyle" description="Verify build." />
+	<!-- umlgraph target -->
+	<target name="umlgraph">
+		<!-- Generate UML graphics for the Restlet API -->
+		<javadoc packagenames="org.restlet.*" excludepackagenames="${exclude-packages}" destdir="${uml-reports-api}" classpathref="path-all" author="true" version="true" use="true" windowtitle="Restlet API ${version-full}" doctitle="Restlet API ${version-full}" overview="${temp}/javadocs/overview-api.html" stylesheetfile="${tmpl}/javadocs/stylesheet.css" verbose="${verbose}">
+			<sourcepath>
+				<pathelement path="${mod}/${mod-core-id}/src/" />
+			</sourcepath>
 
-<target name="verify-ant" if="ant-old" description="Check the Ant version for potential issues with JUnit.">
-<echo message="For easier integration with JUnit, we recommand usage of Ant 1.7." />
-<echo message="Otherwise, make sure that you have JUnit's JAR into you Ant's lib directory." />
-<echo message="Current version: ${ant.version}" />
-</target>
+			<bottom>
+				<![CDATA[<i>Copyright &#169; 2005-2009 <a target="_top" href="http://www.noelios.com">Noelios Technologies</a>.</i>]]>
+			</bottom>
 
-<target name="verify-tests" if="do-verify" depends="verify-ant" description="Execute the tests suites.">
-<mkdir dir="${temp}/test" />
+			<group title="${restlet-api}">
+				<package name="org.restlet*" />
+			</group>
 
-<junit printsummary="true" fork="true" haltonfailure="true" filtertrace="true" showoutput="${verbose}">
-<classpath>
-<path location="${mod}/${mod-core-test-id}/src" />
-<path refid="mod-core-test-path" />
-</classpath>
-<formatter type="plain" />
-<test name="org.restlet.test.RestletTestSuite" todir="${temp}/test" />
-<!--
-			<test name="org.restlet.test.RestletTestSuite"
-			      todir="${temp}/test"
-			      failureproperty="restlet.test.suite.error"/>
--->
-</junit>
-<echo>
+			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
+			<doclet name="org.umlgraph.doclet.UmlGraphDoc" path="tools/umlgraph/umlgraph.jar">
+				<param name="-attributes" />
+				<param name="-operations" />
+				<param name="-qualify" />
+				<param name="-types" />
+				<param name="-visibility" />
+			</doclet>
+		</javadoc>
+		<apply executable="dot" dest="${uml-reports-api}" parallel="false" failifexecutionfails="false" failonerror="false" verbose="false">
+			<arg value="-Tpng" />
+			<arg value="-o" />
+			<targetfile />
+			<srcfile />
+			<fileset dir="${uml-reports-api}" includes="*.dot" />
+			<mapper type="glob" from="*.dot" to="*.png" />
+		</apply>
+		<delete verbose="false" quiet="true">
+			<fileset dir="${uml-reports-api}" includes="**/*.dot, **/*.map" />
+		</delete>
+	</target>
+
+	<!-- VERIFY target -->
+	<target name="verify" if="do-verify" depends="verify-ant, verify-tests, verify-findbugs, verify-checkstyle" description="Verify build." />
+
+	<target name="verify-ant" if="ant-old" description="Check the Ant version for potential issues with JUnit.">
+		<echo message="For easier integration with JUnit, we recommand usage of Ant 1.7." />
+		<echo message="Otherwise, make sure that you have JUnit's JAR into you Ant's lib directory." />
+		<echo message="Current version: ${ant.version}" />
+	</target>
+
+	<target name="verify-tests" if="do-verify" depends="verify-ant" description="Execute the tests suites.">
+		<mkdir dir="${temp}/test" />
+
+		<junit printsummary="true" fork="true" haltonfailure="true" filtertrace="true" showoutput="${verbose}">
+			<classpath>
+				<path location="${mod}/${mod-core-test-id}/src" />
+				<path refid="mod-core-test-path" />
+			</classpath>
+			<formatter type="plain" />
+			<test name="org.restlet.test.RestletTestSuite" todir="${temp}/test" />
+			<!-- <test name="org.restlet.test.RestletTestSuite" todir="${temp}/test"
+			      failureproperty="restlet.test.suite.error"/> -->
+		</junit>
+		<echo>
                    See the JUnit log file for more details: ${temp}/test/TEST-org.restlet.test.RestletTestSuite.txt.
 		</echo>
-</target>
+	</target>
 
-<target name="verify-findbugs" if="do-findbugs" description="Attempts to find bugs.">
-<mkdir dir="${temp}/findbugs" />
-<findbugsModule name="core" />
-<findbugsModule name="core-example" />
-<findbugsModule name="core-gwt" />
-<findbugsModule name="atom" />
-<findbugsModule name="fileupload" />
-<findbugsModule name="freemarker" />
-<findbugsModule name="grizzly" />
-<findbugsModule name="gwt" />
-<findbugsModule name="httpclient" />
-<findbugsModule name="javamail" />
-<findbugsModule name="jaxb" />
-<findbugsModule name="jaxrs" />
-<findbugsModule name="jdbc" />
-<findbugsModule name="jetty" />
-<findbugsModule name="jibx" />
-<!-- disabled for now  <findbugsModule name="jmx" /> -->
-<findbugsModule name="json" />
-<findbugsModule name="jxta" />
-<findbugsModule name="lucene" />
-<findbugsModule name="net" />
-<findbugsModule name="oauth" />
-<findbugsModule name="rdf" />
-<findbugsModule name="script" />
-<findbugsModule name="servlet" />
-<findbugsModule name="shell" />
-<findbugsModule name="simple" />
-<findbugsModule name="spring" />
-<findbugsModule name="ssl" />
-<findbugsModule name="velocity" />
-<findbugsModule name="wadl" />
-<findbugsModule name="xdb" />
-</target>
+	<target name="verify-findbugs" if="do-findbugs" description="Attempts to find bugs.">
+		<mkdir dir="${temp}/findbugs" />
+		<findbugsModule name="core" />
+		<findbugsModule name="core-example" />
+		<findbugsModule name="core-gwt" />
+		<findbugsModule name="atom" />
+		<findbugsModule name="fileupload" />
+		<findbugsModule name="freemarker" />
+		<findbugsModule name="grizzly" />
+		<findbugsModule name="gwt" />
+		<findbugsModule name="httpclient" />
+		<findbugsModule name="javamail" />
+		<findbugsModule name="jaxb" />
+		<findbugsModule name="jaxrs" />
+		<findbugsModule name="jdbc" />
+		<findbugsModule name="jetty" />
+		<findbugsModule name="jibx" />
+		<!-- disabled for now  <findbugsModule name="jmx" /> -->
+		<findbugsModule name="json" />
+		<findbugsModule name="jxta" />
+		<findbugsModule name="lucene" />
+		<findbugsModule name="net" />
+		<findbugsModule name="oauth" />
+		<findbugsModule name="rdf" />
+		<findbugsModule name="script" />
+		<findbugsModule name="servlet" />
+		<findbugsModule name="shell" />
+		<findbugsModule name="simple" />
+		<findbugsModule name="spring" />
+		<findbugsModule name="ssl" />
+		<findbugsModule name="velocity" />
+		<findbugsModule name="wadl" />
+		<findbugsModule name="xdb" />
+	</target>
 
-<target name="verify-checkstyle" if="do-checkstyle" description="Check the style of the code.">
-<mkdir dir="${temp}/checkstyle" />
-<checkstyleModule name="core" />
-<checkstyleModule name="core-example" />
-<checkstyleModule name="core-gwt" />
-<checkstyleModule name="atom" />
-<checkstyleModule name="fileupload" />
-<checkstyleModule name="freemarker" />
-<checkstyleModule name="grizzly" />
-<checkstyleModule name="gwt" />
-<checkstyleModule name="httpclient" />
-<checkstyleModule name="javamail" />
-<checkstyleModule name="jaxb" />
-<checkstyleModule name="jaxrs" />
-<checkstyleModule name="jdbc" />
-<checkstyleModule name="jetty" />
-<checkstyleModule name="jibx" />
-<checkstyleModule name="jmx" />
-<checkstyleModule name="json" />
-<checkstyleModule name="jxta" />
-<checkstyleModule name="lucene" />
-<checkstyleModule name="net" />
-<checkstyleModule name="oauth" />
-<checkstyleModule name="rdf" />
-<checkstyleModule name="script" />
-<checkstyleModule name="servlet" />
-<checkstyleModule name="shell" />
-<checkstyleModule name="simple" />
-<checkstyleModule name="spring" />
-<checkstyleModule name="ssl" />
-<checkstyleModule name="velocity" />
-<checkstyleModule name="wadl" />
-<checkstyleModule name="xdb" />
-</target>
+	<target name="verify-checkstyle" if="do-checkstyle" description="Check the style of the code.">
+		<mkdir dir="${temp}/checkstyle" />
+		<checkstyleModule name="core" />
+		<checkstyleModule name="core-example" />
+		<checkstyleModule name="core-gwt" />
+		<checkstyleModule name="atom" />
+		<checkstyleModule name="fileupload" />
+		<checkstyleModule name="freemarker" />
+		<checkstyleModule name="grizzly" />
+		<checkstyleModule name="gwt" />
+		<checkstyleModule name="httpclient" />
+		<checkstyleModule name="javamail" />
+		<checkstyleModule name="jaxb" />
+		<checkstyleModule name="jaxrs" />
+		<checkstyleModule name="jdbc" />
+		<checkstyleModule name="jetty" />
+		<checkstyleModule name="jibx" />
+		<checkstyleModule name="jmx" />
+		<checkstyleModule name="json" />
+		<checkstyleModule name="jxta" />
+		<checkstyleModule name="lucene" />
+		<checkstyleModule name="net" />
+		<checkstyleModule name="oauth" />
+		<checkstyleModule name="rdf" />
+		<checkstyleModule name="script" />
+		<checkstyleModule name="servlet" />
+		<checkstyleModule name="shell" />
+		<checkstyleModule name="simple" />
+		<checkstyleModule name="spring" />
+		<checkstyleModule name="ssl" />
+		<checkstyleModule name="velocity" />
+		<checkstyleModule name="wadl" />
+		<checkstyleModule name="xdb" />
+	</target>
 
-<!-- Integrate target -->
-<target name="integrate" depends="" description="Integrate files from other projects." />
+	<!-- Integrate target -->
+	<target name="integrate" depends="" description="Integrate files from other projects." />
 
-<!-- STAGE target -->
-<target name="stage" depends="stage-classic, stage-maven" description="Stage the packaging step." />
+	<!-- STAGE target -->
+	<target name="stage" depends="stage-classic, stage-maven" description="Stage the packaging step." />
 
-<!-- STAGE-CLASSIC target (Stage the packaging step) -->
-<target name="stage-classic" description="Stage the packaging step of classic distribution.">
-<!-- Prepare distribution directories -->
-<delete dir="${dist-classic}" verbose="false" quiet="true" includeEmptyDirs="true" />
-<mkdir dir="${dist-classic}/bin" />
-<mkdir dir="${dist-classic}/lib" />
-<!-- <mkdir dir="${dist-classic}/lib/poms" /> -->
-<mkdir dir="${dist-classic}/src" />
+	<!-- STAGE-CLASSIC target (Stage the packaging step) -->
+	<target name="stage-classic" description="Stage the packaging step of classic distribution.">
+		<!-- Prepare distribution directories -->
+		<delete dir="${dist-classic}" verbose="false" quiet="true" includeEmptyDirs="true" />
+		<mkdir dir="${dist-classic}/bin" />
+		<mkdir dir="${dist-classic}/lib" />
+		<!-- <mkdir dir="${dist-classic}/lib/poms" /> -->
+		<mkdir dir="${dist-classic}/src" />
 
-<!-- Increment the build number -->
-<buildnumber />
+		<!-- Increment the build number -->
+		<buildnumber />
 
-<!-- Copy the binaries -->
-<copy todir="${dist-classic}/bin">
-<fileset dir="${bin}" />
-</copy>
+		<!-- Copy the binaries -->
+		<copy todir="${dist-classic}/bin">
+			<fileset dir="${bin}" />
+		</copy>
 
-<!-- Copy the Javadoc -->
-<if>
-<istrue value="${do-javadoc}" />
-<then>
-<copy todir="${dist-classic}/docs/api">
-<fileset dir="${docs-api}" />
-</copy>
-<copy todir="${dist-classic}/docs/ext">
-<fileset dir="${docs-ext}" />
-</copy>
-<copy todir="${dist-classic}/docs/engine">
-<fileset dir="${docs-engine}" />
-</copy>
-<copy todir="${dist-classic}/docs/gwt">
-<fileset dir="${docs-gwt}" />
-</copy>
-</then>
-</if>
+		<!-- Copy the Javadoc -->
+		<if>
+			<istrue value="${do-javadoc}" />
+			<then>
+				<copy todir="${dist-classic}/docs/api">
+					<fileset dir="${docs-api}" />
+				</copy>
+				<copy todir="${dist-classic}/docs/ext">
+					<fileset dir="${docs-ext}" />
+				</copy>
+				<copy todir="${dist-classic}/docs/engine">
+					<fileset dir="${docs-engine}" />
+				</copy>
+				<copy todir="${dist-classic}/docs/gwt">
+					<fileset dir="${docs-gwt}" />
+				</copy>
+			</then>
+		</if>
 
-<!-- Copy text notes -->
-<copy file="${docs}/changes.txt" tofile="${dist-classic}/changes.txt" />
-<copy file="${tmpl}/text/copyright.txt" tofile="${dist-classic}/copyright.txt" />
-<copy file="${tmpl}/text/dependencies.txt" tofile="${dist-classic}/lib/readme.txt" />
-<copy file="${tmpl}/text/docs.txt" tofile="${dist-classic}/docs/readme.txt" />
-<copy file="${tmpl}/text/src.txt" tofile="${dist-classic}/src/readme.txt" />
-<copy file="${tmpl}/text/license.txt" tofile="${dist-classic}/license.txt" />
-<copy file="${tmpl}/text/readme.txt" tofile="${dist-classic}/readme.txt" />
-<copy file="${tmpl}/text/trademarks.txt" tofile="${dist-classic}/trademarks.txt" />
+		<!-- Copy text notes -->
+		<copy file="${docs}/changes.txt" tofile="${dist-classic}/changes.txt" />
+		<copy file="${tmpl}/text/copyright.txt" tofile="${dist-classic}/copyright.txt" />
+		<copy file="${tmpl}/text/dependencies.txt" tofile="${dist-classic}/lib/readme.txt" />
+		<copy file="${tmpl}/text/docs.txt" tofile="${dist-classic}/docs/readme.txt" />
+		<copy file="${tmpl}/text/src.txt" tofile="${dist-classic}/src/readme.txt" />
+		<copy file="${tmpl}/text/license.txt" tofile="${dist-classic}/license.txt" />
+		<copy file="${tmpl}/text/readme.txt" tofile="${dist-classic}/readme.txt" />
+		<copy file="${tmpl}/text/trademarks.txt" tofile="${dist-classic}/trademarks.txt" />
 
-<!-- Copy the build properties files. -->
-<copy todir="${dist-classic}/src">
-<fileset dir="${basedir}">
-<include name="*.properties" />
-</fileset>
-</copy>
+		<!-- Copy the build properties files. -->
+		<copy todir="${dist-classic}/src">
+			<fileset dir="${basedir}">
+				<include name="*.properties" />
+			</fileset>
+		</copy>
 
-<!-- Packages libraries -->
-<!-- disabled for now  <stageLibrary name="bouncycastle" /> -->
-<stageLibrary name="cli" />
-<stageLibrary name="codec" />
-<stageLibrary name="collections" />
-<stageLibrary name="db4o" />
-<stageLibrary name="dbcp" />
-<stageLibrary name="fileupload" />
-<stageLibrary name="freemarker" />
-<stageLibrary name="grizzly" />
-<!-- disabled for now  <stageLibrary name="gwt" /> -->
-<stageLibrary name="httpclient" />
-<stageLibrary name="io" />
-<stageLibrary name="javamail" />
-<stageLibrary name="jaxb" />
-<stageLibrary name="jaxrs" />
-<stageLibrary name="activation" />
-<stageLibrary name="jetty" />
-<stageLibrary name="jibx" />
-<!-- disabled for now  <stageLibrary name="jline" /> -->
-<stageLibrary name="json" />
-<stageLibrary name="jsslutils" />
-<!-- disabled for now  <stageLibrary name="jxta" /> -->
-<stageLibrary name="lang" />
-<stageLibrary name="logging" />
-<stageLibrary name="lucene" />
-<!-- disabled for now  <stageLibrary name="mina" /> -->
-<stageLibrary name="oauth" />
-<stageLibrary name="pool" />
-<stageLibrary name="rhino" />
-<stageLibrary name="servlet" />
-<stageLibrary name="simple" />
-<stageLibrary name="solr" />
-<stageLibrary name="spring" />
-<stageLibrary name="stax" />
-<stageLibrary name="tika" />
-<stageLibrary name="velocity" />
-<stageLibrary name="wrapper" />
-<stageLibrary name="bloat" />
-<stageLibrary name="xdb" />
+		<!-- Packages libraries -->
+		<!-- disabled for now  <stageLibrary name="bouncycastle" /> -->
+		<stageLibrary name="cli" />
+		<stageLibrary name="codec" />
+		<stageLibrary name="collections" />
+		<stageLibrary name="db4o" />
+		<stageLibrary name="dbcp" />
+		<stageLibrary name="fileupload" />
+		<stageLibrary name="freemarker" />
+		<stageLibrary name="grizzly" />
+		<!-- disabled for now  <stageLibrary name="gwt" /> -->
+		<stageLibrary name="httpclient" />
+		<stageLibrary name="io" />
+		<stageLibrary name="javamail" />
+		<stageLibrary name="jaxb" />
+		<stageLibrary name="jaxrs" />
+		<stageLibrary name="activation" />
+		<stageLibrary name="jetty" />
+		<stageLibrary name="jibx" />
+		<!-- disabled for now  <stageLibrary name="jline" /> -->
+		<stageLibrary name="json" />
+		<stageLibrary name="jsslutils" />
+		<!-- disabled for now  <stageLibrary name="jxta" /> -->
+		<stageLibrary name="lang" />
+		<stageLibrary name="logging" />
+		<stageLibrary name="lucene" />
+		<!-- disabled for now  <stageLibrary name="mina" /> -->
+		<stageLibrary name="oauth" />
+		<stageLibrary name="pool" />
+		<stageLibrary name="rhino" />
+		<stageLibrary name="servlet" />
+		<stageLibrary name="simple" />
+		<stageLibrary name="solr" />
+		<stageLibrary name="spring" />
+		<stageLibrary name="stax" />
+		<stageLibrary name="tika" />
+		<stageLibrary name="velocity" />
+		<stageLibrary name="wrapper" />
+		<stageLibrary name="bloat" />
+		<stageLibrary name="xdb" />
 
-<!-- Package modules -->
-<stageModule name="core" />
-<stageModule name="core-example" />
-<stageModule name="core-gwt" includeSource="true" />
-<stageModule name="atom" />
-<stageModule name="fileupload" />
-<stageModule name="freemarker" />
-<stageModule name="grizzly" />
-<stageModule name="gwt" />
-<stageModule name="httpclient" />
-<stageModule name="javamail" />
-<stageModule name="jaxb" />
-<stageModule name="jaxrs" />
-<stageModule name="jibx" />
-<stageModule name="jdbc" />
-<stageModule name="jetty" />
-<!-- disabled for now  <stageModule name="jmx" /> -->
-<stageModule name="json" />
-<!-- disabled for now  <stageModule name="jxta" /> -->
-<stageModule name="lucene" />
-<stageModule name="net" />
-<stageModule name="oauth" />
-<stageModule name="rdf" />
-<!-- disabled for now <stageModule name="script" /> -->
-<stageModule name="servlet" />
-<!-- disabled for now <stageModule name="shell" /> -->
-<stageModule name="simple" />
-<stageModule name="spring" />
-<stageModule name="ssl" />
-<stageModule name="velocity" />
-<stageModule name="wadl" />
-<stageModule name="xdb" />
+		<!-- Package modules -->
+		<stageModule name="core" />
+		<stageModule name="core-example" />
+		<stageModule name="core-gwt" includeSource="true" />
+		<stageModule name="atom" />
+		<stageModule name="fileupload" />
+		<stageModule name="freemarker" />
+		<stageModule name="grizzly" />
+		<stageModule name="gwt" />
+		<stageModule name="httpclient" />
+		<stageModule name="javamail" />
+		<stageModule name="jaxb" />
+		<stageModule name="jaxrs" />
+		<stageModule name="jibx" />
+		<stageModule name="jdbc" />
+		<stageModule name="jetty" />
+		<!-- disabled for now  <stageModule name="jmx" /> -->
+		<stageModule name="json" />
+		<!-- disabled for now  <stageModule name="jxta" /> -->
+		<stageModule name="lucene" />
+		<stageModule name="net" />
+		<stageModule name="oauth" />
+		<stageModule name="rdf" />
+		<stageModule name="script" />
+		<stageModule name="servlet" />
+		<!-- disabled for now <stageModule name="shell" /> -->
+		<stageModule name="simple" />
+		<stageModule name="spring" />
+		<stageModule name="ssl" />
+		<stageModule name="velocity" />
+		<stageModule name="wadl" />
+		<stageModule name="xdb" />
 
-<!-- Copy the POM files -->
-<!-- 
+		<!-- Copy the POM files -->
+		<!-- 
       <copy todir="${dist-classic}/lib/poms">
          <fileset dir="${temp}/poms" />
       </copy>
  		-->
-</target>
+	</target>
 
-<target name="prepare-stage-maven" if="do-prepare-stage-maven" description="Prepare the generation of the maven distributions.">
-<!-- Svn revision number -->
-<mkdir dir="${temp}" />
-<exec executable="svn" output="${temp}/svninfo.xml">
-<arg line="info --xml" />
-</exec>
-<xmlproperty file="${temp}/svninfo.xml" collapseattributes="true" />
-<property name="svn.revision" value="${info.entry.revision}" />
+	<target name="prepare-stage-maven" if="do-prepare-stage-maven" description="Prepare the generation of the maven distributions.">
+		<!-- Svn revision number -->
+		<mkdir dir="${temp}" />
+		<exec executable="svn" output="${temp}/svninfo.xml">
+			<arg line="info --xml" />
+		</exec>
+		<xmlproperty file="${temp}/svninfo.xml" collapseattributes="true" />
+		<property name="svn.revision" value="${info.entry.revision}" />
 
-<!-- Snapshot? -->
-<condition property="is.snapshot" else="false">
-<contains string="${version-maven}" substring="-SNAPSHOT" />
-</condition>
-<echo message="maven-timestamp:${maven-snapshot-timestamp}${line.separator}" file="${temp}/snapshot.properties" append="false" />
-<echo message="svn-revision:${svn.revision}${line.separator}" file="${temp}/snapshot.properties" append="true" />
-</target>
+		<!-- Snapshot? -->
+		<condition property="is.snapshot" else="false">
+			<contains string="${version-maven}" substring="-SNAPSHOT" />
+		</condition>
+		<echo message="maven-timestamp:${maven-snapshot-timestamp}${line.separator}" file="${temp}/snapshot.properties" append="false" />
+		<echo message="svn-revision:${svn.revision}${line.separator}" file="${temp}/snapshot.properties" append="true" />
+	</target>
 
-<target name="stage-maven" depends="prepare-stage-maven,stage-maven-2" if="do-maven" description="Generate the maven distributions." />
+	<target name="stage-maven" depends="prepare-stage-maven,stage-maven-2" if="do-maven" description="Generate the maven distributions." />
 
-<!-- STAGE-MAVEN-2 target -->
-<target name="stage-maven-2" if="do-maven" description="Generate the maven-2.x distributions.">
-<delete dir="${dist-maven2}" verbose="false" quiet="true" includeEmptyDirs="true" />
-<maven2Module name="core" />
-<maven2Module name="core-example" />
-<maven2Module name="core-gwt" />
-<maven2Module name="atom" />
-<maven2Module name="fileupload" />
-<maven2Module name="freemarker" />
-<maven2Module name="grizzly" />
-<maven2Module name="gwt" />
-<maven2Module name="httpclient" />
-<maven2Module name="javamail" />
-<maven2Module name="jaxb" />
-<maven2Module name="jaxrs" />
-<maven2Module name="jdbc" />
-<maven2Module name="jetty" />
-<maven2Module name="jibx" />
-<maven2Module name="json" />
-<maven2Module name="lucene" />
-<maven2Module name="net" />
-<maven2Module name="oauth" />
-<maven2Module name="rdf" />
-<!-- disabled for now <maven2Module name="script" /> -->
-<maven2Module name="servlet" />
-<!-- disabled for now <maven2Module name="shell" /> -->
-<maven2Module name="simple" />
-<maven2Module name="spring" />
-<maven2Module name="ssl" />
-<maven2Module name="velocity" />
-<maven2Module name="xdb" />
-<maven2Module name="wadl" />
+	<!-- STAGE-MAVEN-2 target -->
+	<target name="stage-maven-2" if="do-maven" description="Generate the maven-2.x distributions.">
+		<delete dir="${dist-maven2}" verbose="false" quiet="true" includeEmptyDirs="true" />
+		<maven2Module name="core" />
+		<maven2Module name="core-example" />
+		<maven2Module name="core-gwt" />
+		<maven2Module name="atom" />
+		<maven2Module name="fileupload" />
+		<maven2Module name="freemarker" />
+		<maven2Module name="grizzly" />
+		<maven2Module name="gwt" />
+		<maven2Module name="httpclient" />
+		<maven2Module name="javamail" />
+		<maven2Module name="jaxb" />
+		<maven2Module name="jaxrs" />
+		<maven2Module name="jdbc" />
+		<maven2Module name="jetty" />
+		<maven2Module name="jibx" />
+		<maven2Module name="json" />
+		<maven2Module name="lucene" />
+		<maven2Module name="net" />
+		<maven2Module name="oauth" />
+		<maven2Module name="rdf" />
+		<maven2Module name="script" />
+		<maven2Module name="servlet" />
+		<!-- disabled for now <maven2Module name="shell" /> -->
+		<maven2Module name="simple" />
+		<maven2Module name="spring" />
+		<maven2Module name="ssl" />
+		<maven2Module name="velocity" />
+		<maven2Module name="xdb" />
+		<maven2Module name="wadl" />
 
-<maven2Library name="scripturian" />
-<maven2Library name="simple" />
-<maven2Library name="jsslutils" />
-<maven2Library name="jaxrs" />
-<maven2Library name="json" />
-<maven2Library name="db4o" />
-<maven2Library name="db4o-nativequery" />
-<maven2Library name="bloat" />
-</target>
+		<maven2Library name="scripturian" />
+		<maven2Library name="simple" />
+		<maven2Library name="jsslutils" />
+		<maven2Library name="jaxrs" />
+		<maven2Library name="json" />
+		<maven2Library name="db4o" />
+		<maven2Library name="db4o-nativequery" />
+		<maven2Library name="bloat" />
+	</target>
 
-<!-- PACKAGE target -->
-<target name="package" if="do-package" depends="package-classic" description="Generate the distribution." />
+	<!-- PACKAGE target -->
+	<target name="package" if="do-package" depends="package-classic" description="Generate the distribution." />
 
-<target name="package-classic" if="do-package" depends="package-classic-zip, package-classic-nsis" description="Generate the classic distributions." />
+	<target name="package-classic" if="do-package" depends="package-classic-zip, package-classic-nsis" description="Generate the classic distributions." />
 
-<!-- PACKAGE-ZIP target (generation of final Zip file) -->
-<target name="package-classic-zip" if="do-package" description="Generate the final zip file for the classic distribution.">
-<zip destfile="${dist-base}/restlet-${version-compact}.zip" basedir="${dist-base}/classic" includes="restlet-${version-compact}/**/*" />
-</target>
+	<!-- PACKAGE-ZIP target (generation of final Zip file) -->
+	<target name="package-classic-zip" if="do-package" description="Generate the final zip file for the classic distribution.">
+		<zip destfile="${dist-base}/restlet-${version-compact}.zip" basedir="${dist-base}/classic" includes="restlet-${version-compact}/**/*" />
+	</target>
 
-<!-- PACKAGE-NSIS target (generation of Windows installer) -->
-<target name="package-classic-nsis" if="do-nsis" description="Generate the windows installer for the classic distribution.">
-<nsis path="${nsis-makensis-path}" script="${temp}/setup.nsi" verbosity="2" uninstallfilelist="${dist-classic}/uninstall.log">
-<fileset dir="${dist-classic}" includes="**/*" />
-</nsis>
-</target>
+	<!-- PACKAGE-NSIS target (generation of Windows installer) -->
+	<target name="package-classic-nsis" if="do-nsis" description="Generate the windows installer for the classic distribution.">
+		<nsis path="${nsis-makensis-path}" script="${temp}/setup.nsi" verbosity="2" uninstallfilelist="${dist-classic}/uninstall.log">
+			<fileset dir="${dist-classic}" includes="**/*" />
+		</nsis>
+	</target>
 </project>
