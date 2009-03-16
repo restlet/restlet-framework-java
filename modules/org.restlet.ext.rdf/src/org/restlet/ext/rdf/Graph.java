@@ -267,24 +267,6 @@ public class Graph extends CopyOnWriteArraySet<Link> {
     }
 
     /**
-     * Returns the target, either the one given in the target parameter or if it
-     * is null, the target of the default link.
-     * 
-     * @param target
-     *            The target to check.
-     * @return The target.
-     */
-    private Object getTargetAsObject(Object target) {
-        Object result = target;
-
-        if ((result == null) && (getDefaultLink() != null)) {
-            result = getDefaultLink().getTarget();
-        }
-
-        return result;
-    }
-
-    /**
      * Returns the target reference, either the one given in the targetRef
      * parameter or if it is null, the target reference of the default link.
      * 
