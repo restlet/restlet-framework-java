@@ -493,6 +493,10 @@
 		<pathelement path="${classes}/${mod-net-id}" />
 		<pathelement path="${mod}/${mod-net-id}/src" />
 
+		<path refid="mod-rdf-path" />
+		<pathelement path="${classes}/${mod-rdf-id}" />
+		<pathelement path="${mod}/${mod-rdf-id}/src" />
+
 		<path refid="mod-simple-path" />
 		<pathelement path="${classes}/${mod-simple-id}" />
 		<pathelement path="${mod}/${mod-simple-id}/src" />
