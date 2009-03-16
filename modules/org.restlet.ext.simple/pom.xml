@@ -9,7 +9,7 @@
 	</parent>
 
 	<artifactId>org.restlet.ext.simple</artifactId>
-	<name>Restlet extension: HTTP server connector</name>
+	<name>Restlet extension: Simple</name>
 	<description>Integration with Simple framework.</description>
 
 	<dependencies>
@@ -21,7 +21,7 @@
 		<dependency>
 			<groupId>org.simpleframework</groupId>
 			<artifactId>simple</artifactId>
-			<version>4.1.5</version>
+			<version>${lib-simple-version}</version>
 		</dependency>
 	</dependencies>
 </project>

@@ -9,19 +9,19 @@
 	</parent>
 
 	<artifactId>org.restlet.ext.javamail</artifactId>
-	<name>Restlet extension: SMTP client connector</name>
+	<name>Restlet extension: JavaMail</name>
 	<description>Integration with JavaMail.</description>
 
 	<dependencies>
 		<dependency>
-			<groupId>org.restlet</groupId>
-			<artifactId>org.restlet</artifactId>
-			<version>${version}</version>
-		</dependency>
-		<dependency>
 			<groupId>javax.mail</groupId>
 			<artifactId>mail</artifactId>
 			<version>${lib-javamail-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.restlet</groupId>
+			<artifactId>org.restlet</artifactId>
+			<version>${version}</version>
 		</dependency>
 	</dependencies>
 </project>

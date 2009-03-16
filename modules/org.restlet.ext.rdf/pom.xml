@@ -9,7 +9,7 @@
 	</parent>
 
 	<artifactId>org.restlet.ext.rdf</artifactId>
-	<name>Restlet extension: RDF extension</name>
+	<name>Restlet extension: RDF</name>
 	<description>Support for the RDF parsing and generation.</description>
 
 	<dependencies>

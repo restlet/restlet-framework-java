@@ -40,32 +40,33 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- * Basic resolver that exposes several data from a given mail.<br>
+ * Basic resolver that exposes several data from a given mail. Here is a list of
+ * the keys available from this resolver and their corresponding value.<br>
  * 
  * <table>
  * <tr>
- * <th>What?</th>
  * <th>Key</th>
+ * <th>Value</th>
  * </tr>
  * <tr>
- * <td>Mail identifier</li>
  * <td>mailId</td>
+ * <td>Mail identifier</li>
  * </tr>
  * <tr>
- * <td>Sender</li>
  * <td>from</td>
+ * <td>Sender</li>
  * </tr>
  * <tr>
- * <td>Recipients (comma separated string)</li>
  * <td>recipients</td>
+ * <td>Recipients (comma separated string)</li>
  * </tr>
  * <tr>
- * <td>Subject</li>
  * <td>subject</td>
+ * <td>Subject</li>
  * </tr>
  * <tr>
- * <td>Mail text part</li>
  * <td>message</td>
+ * <td>Mail text part</li>
  * </tr>
  * </table>
  */

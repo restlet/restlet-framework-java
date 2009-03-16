@@ -9,25 +9,25 @@
 	</parent>
 
 	<artifactId>org.restlet.ext.jxta</artifactId>
-	<name>Restlet extension: JXTA connectors</name>
+	<name>Restlet extension: JXTA</name>
 	<description>Integration with JXTA framework.</description>
 
 	<dependencies>
-		<dependency>
-			<groupId>org.restlet</groupId>
-			<artifactId>org.restlet</artifactId>
-			<version>${version}</version>
-		</dependency>
-		<dependency>
-			<groupId>net.jxta</groupId>
-			<artifactId>jxta-jxse</artifactId>
-			<version>2.5</version>
-		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
 			<version>${lib-servlet-version}</version>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>net.jxta</groupId>
+			<artifactId>jxta-jxse</artifactId>
+			<version>${lib-jxta-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.restlet</groupId>
+			<artifactId>org.restlet</artifactId>
+			<version>${version}</version>
 		</dependency>
 	</dependencies>
 </project>

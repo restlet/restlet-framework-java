@@ -44,7 +44,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.restlet.engine.Engine;
 import org.restlet.ext.servlet.ServerServlet;
 
-
 /**
  * Servlet to Restlet adapter aware of GWT requests. To allow Restlet to handle
  * all non-module requests under the hosted mode of Google Web Toolkit, this

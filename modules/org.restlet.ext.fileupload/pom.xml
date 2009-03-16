@@ -9,10 +9,16 @@
 	</parent>
 
 	<artifactId>org.restlet.fileupload</artifactId>
-	<name>Restlet extension: Apache FileUpload</name>
+	<name>Restlet extension: FileUpload</name>
 	<description>Integration with Apache FileUpload.</description>
 
 	<dependencies>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>${lib-servlet-version}</version>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.restlet</groupId>
 			<artifactId>org.restlet</artifactId>
@@ -22,12 +28,6 @@
 			<groupId>commons-fileupload</groupId>
 			<artifactId>commons-fileupload</artifactId>
 			<version>${lib-fileupload-version}</version>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>${lib-servlet-version}</version>
-			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 </project>

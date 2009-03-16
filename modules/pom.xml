@@ -1,48 +1,80 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	
+
 	<groupId>org.restlet</groupId>
 	<artifactId>restlet-parent</artifactId>
 	<version>1.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
-	
+
 	<name>Restlet project</name>
 	<description>Lightweight REST framework</description>
 	<url>http://www.restlet.org</url>
 	<inceptionYear>2005</inceptionYear>
-	
+
 	<scm>
 		<url>http://restlet.tigris.org/svn/restlet/modules/</url>
 	</scm>
-	
+
 	<repositories>
 		<repository>
-			<id>maven-restlet</id>
-			<name>Restlet repository</name>
-			<url>http://maven.restlet.org</url>
+			<id>maven-central</id>
+			<name>Central Maven repository</name>
+			<url>http://repo1.maven.org/maven2/</url>
 		</repository>
 		<repository>
 			<id>maven-java</id>
 			<name>Java.net repository</name>
 			<url>http://download.java.net/maven/2</url>
 		</repository>
+		<repository>
+			<id>maven-restlet</id>
+			<name>Restlet repository</name>
+			<url>http://maven.restlet.org</url>
+		</repository>
 	</repositories>
-	
+
 	<properties>
-        <lib-fileupload-version>1.2</lib-fileupload-version>
-        <lib-freemarker-version>2.3.15</lib-freemarker-version>
+		<lib-activation-version>1.1</lib-activation-version>
+		<lib-dbcp-version>1.2.2</lib-dbcp-version>
+		<lib-cli-version>1.1</lib-cli-version>
+		<lib-db4o-version>7.7.67</lib-db4o-version>
+		<lib-fileupload-version>1.2.1</lib-fileupload-version>
+		<lib-freemarker-version>2.3.15</lib-freemarker-version>
+		<lib-grizzly-version>1.9.8</lib-grizzly-version>
+		<lib-gwt-version>1.5.3</lib-gwt-version>
+		<lib-httpclient-version>3.1</lib-httpclient-version>
 		<lib-javamail-version>1.4</lib-javamail-version>
 		<lib-jaxb-version>2.1</lib-jaxb-version>
+		<lib-jaxrs-version>1.0</lib-jaxrs-version>
+		<lib-jetty-version>6.1.11</lib-jetty-version>
+		<lib-jibx-version>1.1.5</lib-jibx-version>
+		<lib-jline-version>0.9.94</lib-jline-version>
 		<lib-json-version>2.0</lib-json-version>
+		<lib-jsslutils-version>0.5.1</lib-jsslutils-version>
+		<lib-jxta-version>2.5</lib-jxta-version>
+		<lib-junit-version>4.5</lib-junit-version>
+		<lib-oauth-version>20081027</lib-oauth-version>
+		<lib-osgi-version>1.0</lib-osgi-version>
+		<lib-rhino-version>1.7R1</lib-rhino-version>
+		<lib-scripturian-version>1.0</lib-scripturian-version>
 		<lib-servlet-version>2.5</lib-servlet-version>
+		<lib-simple-version>4.1.5</lib-simple-version>
+		<lib-solr-version>1.3.0</lib-solr-version>
+		<lib-spring-version>2.5.6</lib-spring-version>
+		<lib-tika-version>0.2</lib-tika-version>
+		<lib-velocity-version>1.5</lib-velocity-version>
 	</properties>
-	
+
 	<modules>
 		<module>org.restlet</module>
+		<module>org.restlet.example</module>
+		<module>org.restlet.gwt</module>
+		<module>org.restlet.test</module>
+
 		<module>org.restlet.ext.atom</module>
 		<module>org.restlet.ext.fileupload</module>
-		<module>org.restlet.example</module>
 		<module>org.restlet.ext.freemarker</module>
 		<module>org.restlet.ext.grizzly</module>
 		<module>org.restlet.ext.gwt</module>
@@ -55,9 +87,7 @@
 		<module>org.restlet.ext.jibx</module>
 		<module>org.restlet.ext.jmx</module>
 		<module>org.restlet.ext.json</module>
-		<!--
-		<module>org.restlet.ext.jxta</module>
-		-->
+		<!-- <module>org.restlet.ext.jxta</module> -->
 		<module>org.restlet.ext.lucene</module>
 		<module>org.restlet.ext.net</module>
 		<module>org.restlet.ext.oauth</module>
@@ -71,10 +101,8 @@
 		<module>org.restlet.ext.velocity</module>
 		<module>org.restlet.ext.wadl</module>
 		<module>org.restlet.ext.xdb</module>
-		<module>org.restlet.gwt</module>
-		<module>org.restlet.test</module>
 	</modules>
-	
+
 	<licenses>
 		<license>
 			<name>LGPL 3.0 license</name>
@@ -93,10 +121,10 @@
 			<url>http://www.opensource.org/licenses/eclipse-1.0.php</url>
 		</license>
 	</licenses>
-	
+
 	<build>
 		<sourceDirectory>${basedir}/src</sourceDirectory>
-		
+
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

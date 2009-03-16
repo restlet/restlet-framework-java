@@ -9,19 +9,19 @@
 	</parent>
 
 	<artifactId>org.restlet.ext.jdbc</artifactId>
-	<name>Restlet extension: JDBC client connector</name>
-	<description>Integration with JDBC.</description>
+	<name>Restlet extension: JDBC</name>
+	<description>Integration with Java DataBase Connectivity (JDBC).</description>
 
 	<dependencies>
+		<dependency>
+			<groupId>commons-dbcp</groupId>
+			<artifactId>commons-dbcp</artifactId>
+			<version>${lib-dbcp-version}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.restlet</groupId>
 			<artifactId>org.restlet</artifactId>
 			<version>${version}</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-dbcp</groupId>
-			<artifactId>commons-dbcp</artifactId>
-			<version>1.2.2</version>
 		</dependency>
 	</dependencies>
 </project>

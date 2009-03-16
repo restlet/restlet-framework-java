@@ -9,19 +9,19 @@
 	</parent>
 
 	<artifactId>org.restlet.ext.grizzly</artifactId>
-	<name>Restlet extension: HTTP server connector</name>
+	<name>Restlet extension: Grizzly</name>
 	<description>Integration with Grizzly NIO framework.</description>
 
 	<dependencies>
 		<dependency>
+			<groupId>com.sun.grizzly</groupId>
+			<artifactId>grizzly-framework</artifactId>
+			<version>${lib-grizzly-version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.restlet</groupId>
 			<artifactId>org.restlet</artifactId>
 			<version>${version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.grizzly</groupId>
-			<artifactId>grizzly-framework</artifactId>
-			<version>1.9.8</version>
 		</dependency>
 	</dependencies>
 </project>

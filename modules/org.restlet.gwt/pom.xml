@@ -9,14 +9,14 @@
 	</parent>
 
 	<artifactId>org.restlet.gwt</artifactId>
-	<name>Restlet API</name>
-	<description>GWT API</description>
+	<name>Restlet GWT module</name>
+	<description>Port of Restlet to GWT.</description>
 
 	<dependencies>
 		<dependency>
 			<groupId>com.google.gwt</groupId>
 			<artifactId>gwt-user</artifactId>
-			<version>1.5.3</version>
+			<version>${lib-gwt-version}</version>
 		</dependency>
 	</dependencies>
 </project>

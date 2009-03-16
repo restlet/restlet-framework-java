@@ -9,19 +9,19 @@
 	</parent>
 
 	<artifactId>org.restlet.ext.jaxb</artifactId>
-	<name>Restlet extension: JAXB representation</name>
+	<name>Restlet extension: JAXB</name>
 	<description>Integration with Java XML Binding.</description>
 
 	<dependencies>
 		<dependency>
-			<groupId>org.restlet</groupId>
-			<artifactId>org.restlet</artifactId>
-			<version>${version}</version>
-		</dependency>
-		<dependency>
 			<groupId>javax.xml.bind</groupId>
 			<artifactId>jaxb-api</artifactId>
 			<version>${lib-jaxb-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.restlet</groupId>
+			<artifactId>org.restlet</artifactId>
+			<version>${version}</version>
 		</dependency>
 	</dependencies>
 </project>

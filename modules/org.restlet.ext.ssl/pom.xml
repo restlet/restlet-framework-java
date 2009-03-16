@@ -9,7 +9,7 @@
 	</parent>
 
 	<artifactId>org.restlet.ext.ssl</artifactId>
-	<name>Restlet extension: SSL utilities</name>
+	<name>Restlet extension: SSL</name>
 	<description>Utilities to configure SSL support.</description>
 
 	<dependencies>
@@ -21,7 +21,7 @@
 		<dependency>
 			<groupId>org.jsslutils</groupId>
 			<artifactId>org.jsslutils</artifactId>
-			<version>0.5.1</version>
+			<version>${lib-jsslutils-version}</version>
 		</dependency>
 	</dependencies>
 </project>

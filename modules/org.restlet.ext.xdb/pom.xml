@@ -9,10 +9,16 @@
 	</parent>
 
 	<artifactId>org.restlet.ext.xdb</artifactId>
-	<name>Restlet extension: HTTP server connector</name>
+	<name>Restlet extension: XDB</name>
 	<description>Integration within OracleJVM via the Oracle XML DB feature.</description>
 
 	<dependencies>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>${lib-servlet-version}</version>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.restlet</groupId>
 			<artifactId>org.restlet</artifactId>
@@ -22,12 +28,6 @@
 			<groupId>org.restlet</groupId>
 			<artifactId>org.restlet.ext.servlet</artifactId>
 			<version>${version}</version>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>${lib-servlet-version}</version>
-			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 </project>

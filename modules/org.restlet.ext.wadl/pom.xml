@@ -9,8 +9,8 @@
 	</parent>
 
 	<artifactId>org.restlet.ext.wadl</artifactId>
-	<name>Restlet extension: WADL extension</name>
-	<description>Support WADL documents.</description>
+	<name>Restlet extension: WADL</name>
+	<description>Support the WADL specification.</description>
 
 	<dependencies>
 		<dependency>

@@ -9,19 +9,19 @@
 	</parent>
 
 	<artifactId>org.restlet.ext.json</artifactId>
-	<name>Restlet extension: JSON representation</name>
+	<name>Restlet extension: JSON</name>
 	<description>Support for JSON representations.</description>
 
 	<dependencies>
 		<dependency>
-			<groupId>org.restlet</groupId>
-			<artifactId>org.restlet</artifactId>
-			<version>${version}</version>
-		</dependency>
-		<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>org.json</artifactId>
 			<version>${lib-json-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.restlet</groupId>
+			<artifactId>org.restlet</artifactId>
+			<version>${version}</version>
 		</dependency>
 	</dependencies>
 </project>

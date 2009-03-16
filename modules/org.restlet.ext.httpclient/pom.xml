@@ -9,19 +9,19 @@
 	</parent>
 
 	<artifactId>org.restlet.ext.httpclient</artifactId>
-	<name>Restlet extension: HTTP client connector</name>
+	<name>Restlet extension: HttpClient</name>
 	<description>Integration with Apache Commons HTTP Client.</description>
 
 	<dependencies>
 		<dependency>
+			<groupId>commons-httpclient</groupId>
+			<artifactId>commons-httpclient</artifactId>
+			<version>${lib-httpclient-version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.restlet</groupId>
 			<artifactId>org.restlet</artifactId>
 			<version>${version}</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-httpclient</groupId>
-			<artifactId>commons-httpclient</artifactId>
-			<version>3.1</version>
 		</dependency>
 	</dependencies>
 </project>

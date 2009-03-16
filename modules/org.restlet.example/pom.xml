@@ -12,33 +12,55 @@
 	<name>Restlet examples</name>
 	<description>Various examples including those from the tutorial</description>
 
-	<properties>
-		<db4o-version>7.7.67</db4o-version>
-	</properties>
 	<dependencies>
+		<dependency>
+			<groupId>com.db4o</groupId>
+			<artifactId>com.db4o</artifactId>
+			<version>${lib-db4o-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.db4o</groupId>
+			<artifactId>com.db4o.nativequery</artifactId>
+			<version>${lib-db4o-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${lib-junit-version}</version>
+		</dependency>
 		<dependency>
 			<groupId>org.restlet</groupId>
 			<artifactId>org.restlet</artifactId>
 			<version>${version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.db4o</groupId>
-			<artifactId>com.db4o</artifactId>
-			<version>${db4o-version}</version>
+			<groupId>org.restlet</groupId>
+			<artifactId>org.restlet.atom</artifactId>
+			<version>${version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.db4o</groupId>
-			<artifactId>com.db4o.nativequery</artifactId>
-			<version>${db4o-version}</version>
+			<groupId>org.restlet</groupId>
+			<artifactId>org.restlet.ext.freemarker</artifactId>
+			<version>${version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.restlet.engine</groupId>
-			<artifactId>org.restlet.ext.jetty</artifactId>
+			<groupId>org.restlet</groupId>
+			<artifactId>org.restlet.ext.jaxb</artifactId>
 			<version>${version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.restlet</groupId>
 			<artifactId>org.restlet.ext.jaxrs</artifactId>
+			<version>${version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.restlet</groupId>
+			<artifactId>org.restlet.ext.jetty</artifactId>
+			<version>${version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.restlet</groupId>
+			<artifactId>org.restlet.ext.jibx</artifactId>
 			<version>${version}</version>
 		</dependency>
 		<dependency>
@@ -53,33 +75,8 @@
 		</dependency>
 		<dependency>
 			<groupId>org.restlet</groupId>
-			<artifactId>org.restlet.ext.jaxb</artifactId>
-			<version>${version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.restlet</groupId>
-			<artifactId>org.restlet.ext.freemarker</artifactId>
-			<version>${version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.restlet</groupId>
 			<artifactId>org.restlet.ext.velocity</artifactId>
 			<version>${version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.restlet</groupId>
-			<artifactId>org.restlet.ext.jibx</artifactId>
-			<version>${version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.restlet</groupId>
-			<artifactId>org.restlet.atom</artifactId>
-			<version>${version}</version>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.5</version>
 		</dependency>
 	</dependencies>
 </project>

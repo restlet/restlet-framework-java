@@ -9,19 +9,19 @@
 	</parent>
 
 	<artifactId>org.restlet.ext.velocity</artifactId>
-	<name>Restlet extension: Template engine</name>
+	<name>Restlet extension: Velocity</name>
 	<description>Integration with Apache Velocity.</description>
 
 	<dependencies>
 		<dependency>
+			<groupId>org.apache.velocity</groupId>
+			<artifactId>velocity</artifactId>
+			<version>${lib-velocity-version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.restlet</groupId>
 			<artifactId>org.restlet</artifactId>
 			<version>${version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.velocity</groupId>
-			<artifactId>velocity</artifactId>
-			<version>1.5</version>
 		</dependency>
 	</dependencies>
 </project>

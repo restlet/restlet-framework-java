@@ -9,19 +9,19 @@
 	</parent>
 
 	<artifactId>org.restlet.ext.jibx</artifactId>
-	<name>Restlet extension: JiBX representation</name>
+	<name>Restlet extension: JiBX</name>
 	<description>Integration with JiBX.</description>
 
 	<dependencies>
 		<dependency>
+			<groupId>org.jibx</groupId>
+			<artifactId>jibx-run</artifactId>
+			<version>${lib-jibx-version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.restlet</groupId>
 			<artifactId>org.restlet</artifactId>
 			<version>${version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.jibx</groupId>
-			<artifactId>jibx-run</artifactId>
-			<version>1.1.5</version>
 		</dependency>
 	</dependencies>
 </project>

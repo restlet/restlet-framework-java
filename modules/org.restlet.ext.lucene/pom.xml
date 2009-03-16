@@ -9,24 +9,24 @@
 	</parent>
 
 	<artifactId>org.restlet.ext.lucene</artifactId>
-	<name>Restlet extension: Lucene extension</name>
+	<name>Restlet extension: Lucene</name>
 	<description>Integration with Apache Lucene, Solr and Tika sub-projects.</description>
 
 	<dependencies>
 		<dependency>
-			<groupId>org.restlet</groupId>
-			<artifactId>org.restlet</artifactId>
-			<version>${version}</version>
-		</dependency>
-		<dependency>
 			<groupId>org.apache.solr</groupId>
 			<artifactId>solr-core</artifactId>
-			<version>1.3.0</version>
+			<version>${lib-solr-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.tika</groupId>
 			<artifactId>tika</artifactId>
-			<version>0.2</version>
+			<version>${lib-tika-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.restlet</groupId>
+			<artifactId>org.restlet</artifactId>
+			<version>${version}</version>
 		</dependency>
 	</dependencies>
 </project>

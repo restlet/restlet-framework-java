@@ -5,18 +5,23 @@
 	<parent>
 		<groupId>org.restlet</groupId>
 		<artifactId>restlet-parent</artifactId>
-		<version>1.2-SNAPSHOT</version>
+		<version>@version@</version>
 	</parent>
 
-	<artifactId>org.restlet.ext.net</artifactId>
-	<name>Restlet extension: Net</name>
-	<description>Integration with java.net.HttpURLConnection class.</description>
+	<artifactId>org.restlet.ext.script</artifactId>
+	<name>Restlet extension: Script</name>
+	<description>Support for scripted resources and representations.</description>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.restlet</groupId>
 			<artifactId>org.restlet</artifactId>
 			<version>${version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.scripturian</groupId>
+			<artifactId>com.scripturian</artifactId>
+			<version>@lib-scripturian-version@}</version>
 		</dependency>
 	</dependencies>
 </project>

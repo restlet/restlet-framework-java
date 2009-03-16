@@ -19,23 +19,24 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${lib-junit-version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.restlet</groupId>
 			<artifactId>org.restlet</artifactId>
 			<version>${version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.restlet</groupId>
-			<artifactId>org.restlet.ext.jaxrs</artifactId>
+			<artifactId>org.restlet.gwt</artifactId>
 			<version>${version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.restlet</groupId>
-			<artifactId>org.restlet.ext.spring</artifactId>
-			<version>${version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.restlet</groupId>
-			<artifactId>org.restlet.ext.gwt</artifactId>
+			<artifactId>org.restlet.ext.atom</artifactId>
 			<version>${version}</version>
 		</dependency>
 		<dependency>
@@ -45,17 +46,12 @@
 		</dependency>
 		<dependency>
 			<groupId>org.restlet</groupId>
-			<artifactId>org.restlet.atom</artifactId>
-			<version>${version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.restlet</groupId>
-			<artifactId>org.restlet.ext.velocity</artifactId>
-			<version>${version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.restlet</groupId>
 			<artifactId>org.restlet.ext.grizzly</artifactId>
+			<version>${version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.restlet</groupId>
+			<artifactId>org.restlet.ext.gwt</artifactId>
 			<version>${version}</version>
 		</dependency>
 		<dependency>
@@ -65,12 +61,22 @@
 		</dependency>
 		<dependency>
 			<groupId>org.restlet</groupId>
+			<artifactId>org.restlet.ext.jaxb</artifactId>
+			<version>${version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.restlet</groupId>
+			<artifactId>org.restlet.ext.jaxrs</artifactId>
+			<version>${version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.restlet</groupId>
 			<artifactId>org.restlet.ext.jetty</artifactId>
 			<version>${version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.restlet</groupId>
-			<artifactId>org.restlet.ext.wadl</artifactId>
+			<artifactId>org.restlet.ext.lucene</artifactId>
 			<version>${version}</version>
 		</dependency>
 		<dependency>
@@ -85,23 +91,18 @@
 		</dependency>
 		<dependency>
 			<groupId>org.restlet</groupId>
-			<artifactId>org.restlet.ext.lucene</artifactId>
+			<artifactId>org.restlet.ext.spring</artifactId>
 			<version>${version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.restlet</groupId>
-			<artifactId>org.restlet.ext.jaxb</artifactId>
+			<artifactId>org.restlet.ext.velocity</artifactId>
 			<version>${version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.restlet</groupId>
-			<artifactId>org.restlet.gwt</artifactId>
+			<artifactId>org.restlet.ext.wadl</artifactId>
 			<version>${version}</version>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.5</version>
 		</dependency>
 	</dependencies>
 </project>

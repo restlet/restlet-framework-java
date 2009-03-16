@@ -9,20 +9,20 @@
 	</parent>
 
 	<artifactId>org.restlet.ext.servlet</artifactId>
-	<name>Restlet extension: HTTP server connector</name>
+	<name>Restlet extension: Servlet</name>
 	<description>Integration with Servlet API.</description>
 
 	<dependencies>
-		<dependency>
-			<groupId>org.restlet</groupId>
-			<artifactId>org.restlet</artifactId>
-			<version>${version}</version>
-		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
 			<version>${lib-servlet-version}</version>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.restlet</groupId>
+			<artifactId>org.restlet</artifactId>
+			<version>${version}</version>
 		</dependency>
 	</dependencies>
 </project>

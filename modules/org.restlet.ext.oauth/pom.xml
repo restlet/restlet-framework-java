@@ -9,8 +9,8 @@
 	</parent>
 
 	<artifactId>org.restlet.ext.oauth</artifactId>
-	<name>Restlet extension: OAuth Authentication</name>
-	<description>OAuth Authentication</description>
+	<name>Restlet extension: OAuth</name>
+	<description>Support for OAuth HTTP authentication.</description>
 
 	<repositories>
 		<repository>
@@ -22,14 +22,14 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>net.oauth</groupId>
+			<artifactId>core</artifactId>
+			<version>${lib-oauth-version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.restlet</groupId>
 			<artifactId>org.restlet</artifactId>
 			<version>${version}</version>
-		</dependency>
-		<dependency>
-			<groupId>net.oauth</groupId>
-			<artifactId>core</artifactId>
-			<version>20081027</version>
 		</dependency>
 	</dependencies>
 </project>
