@@ -57,7 +57,7 @@ public class Client extends Connector {
     private volatile int connectTimeout = 0;
 
     /** The helper provided by the implementation. */
-    private volatile Helper<Client> helper;
+    private final Helper<Client> helper;
 
     /**
      * Constructor.
@@ -88,7 +88,11 @@ public class Client extends Connector {
             if (Engine.getInstance() != null) {
                 this.helper = Engine.getInstance().createHelper(this,
                         helperClass);
+            } else {
+                this.helper = null;
             }
+        } else {
+            this.helper = null;
         }
     }
 
