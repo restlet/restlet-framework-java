@@ -48,6 +48,10 @@ public final class ChallengeScheme extends Metadata {
     public static final ChallengeScheme HTTP_BASIC = new ChallengeScheme(
             "HTTP_BASIC", "Basic", "Basic HTTP authentication");
 
+    /** Cookie HTTP scheme. */
+    public static final ChallengeScheme HTTP_COOKIE = new ChallengeScheme(
+            "HTTP_Cookie", "Cookie", "Cookie HTTP authentication");
+
     /** Digest HTTP scheme. */
     public static final ChallengeScheme HTTP_DIGEST = new ChallengeScheme(
             "HTTP_DIGEST", "Digest", "Digest HTTP authentication");
@@ -69,10 +73,6 @@ public final class ChallengeScheme extends Metadata {
     /** OAuth HTTP scheme. */
     public static final ChallengeScheme HTTP_OAUTH = new ChallengeScheme(
             "HTTP_OAuth", "OAuth", "Open protocol for API authentication");
-
-    /** Cookie HTTP scheme. */
-    public static final ChallengeScheme HTTP_COOKIE = new ChallengeScheme(
-            "HTTP_Cookie", "Cookie", "Cookie HTTP authentication");
 
     /** Basic POP scheme. Based on the USER/PASS commands. */
     public static final ChallengeScheme POP_BASIC = new ChallengeScheme(
@@ -105,24 +105,24 @@ public final class ChallengeScheme extends Metadata {
                 result = HTTP_AWS_S3;
             } else if (name.equalsIgnoreCase(HTTP_BASIC.getName())) {
                 result = HTTP_BASIC;
+            } else if (name.equalsIgnoreCase(HTTP_COOKIE.getName())) {
+                result = HTTP_COOKIE;
             } else if (name.equalsIgnoreCase(HTTP_DIGEST.getName())) {
                 result = HTTP_DIGEST;
+            } else if (name.equalsIgnoreCase(HTTP_MS_SHAREDKEY.getName())) {
+                result = HTTP_MS_SHAREDKEY;
+            } else if (name.equalsIgnoreCase(HTTP_MS_SHAREDKEY_LITE.getName())) {
+                result = HTTP_MS_SHAREDKEY_LITE;
             } else if (name.equalsIgnoreCase(HTTP_NTLM.getName())) {
                 result = HTTP_NTLM;
+            } else if (name.equalsIgnoreCase(HTTP_OAUTH.getName())) {
+                result = HTTP_OAUTH;
             } else if (name.equalsIgnoreCase(POP_BASIC.getName())) {
                 result = POP_BASIC;
             } else if (name.equalsIgnoreCase(POP_DIGEST.getName())) {
                 result = POP_DIGEST;
             } else if (name.equalsIgnoreCase(SMTP_PLAIN.getName())) {
                 result = SMTP_PLAIN;
-            } else if (name.equalsIgnoreCase(POP_BASIC.getName())) {
-                result = POP_BASIC;
-            } else if (name.equalsIgnoreCase(POP_DIGEST.getName())) {
-                result = POP_DIGEST;
-            } else if (name.equalsIgnoreCase(HTTP_MS_SHAREDKEY.getName())) {
-                result = HTTP_MS_SHAREDKEY;
-            } else if (name.equalsIgnoreCase(HTTP_MS_SHAREDKEY_LITE.getName())) {
-                result = HTTP_MS_SHAREDKEY_LITE;
             } else {
                 result = new ChallengeScheme(name, null, null);
             }

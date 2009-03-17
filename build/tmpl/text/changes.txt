@@ -27,6 +27,8 @@ Changes log
         - Removed all string instantiations of secrets. 
           Contributed by Remi Dewitte.
         - Fixed various OSGi issues. Reported by David Fogel.
+        - Fixed missing entries in ChallengeScheme#valueOf.
+          Reported by Sean Sullivan.
     - Enhancements
         - Added a getItemIterator() on RestletFileUpload to facilitate
           access to parts in streaming mode. Suggested by Paul Austin.
