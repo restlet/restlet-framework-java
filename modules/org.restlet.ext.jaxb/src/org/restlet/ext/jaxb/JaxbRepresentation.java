@@ -596,6 +596,17 @@ public class JaxbRepresentation<T> extends XmlRepresentation {
     }
 
     /**
+     * Sets the validation event handler.
+     * 
+     * @param validationEventHandler
+     *            The optional validation event handler.
+     */
+    public void setValidationEventHandler(
+            ValidationEventHandler validationEventHandler) {
+        this.validationEventHandler = validationEventHandler;
+    }
+
+    /**
      * Writes the representation to a byte stream.
      * 
      * @param outputStream
