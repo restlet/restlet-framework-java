@@ -182,7 +182,8 @@ public class ZipClientHelper extends LocalClientHelper {
                     final ReferenceList rl = new ReferenceList(children.size());
                     String fileUri = LocalReference.createFileReference(file)
                             .toString();
-                    String baseUri = "zip:" + fileUri + "!/";
+                    String scheme = request.getResourceRef().getScheme();
+                    String baseUri = scheme + ":" + fileUri + "!/";
 
                     for (final Entity entry : children) {
                         rl.add(baseUri + entry.getName());
