@@ -60,30 +60,22 @@ public class RdfTestCase extends TestCase {
                         + "#Directive base.\n"
                         + "@prefix machin <http://www . \nexample .com>.\n\n"
                         + "@keywords a, is, of."
-                        + " language has _:toto <http://rdf.com>. "
-                        + " bidule has _:tutu <http://www.example.com>; _:titi <http://www.exampleavecpointvirgule.com>, <http://www.exampleavecvirgule.com>. "
-                        + " _:toto has <http://www.rdf.com/language> <http://allemand.com>. "
+                        + " _:x1 has <http://www.rdf.com> :x2. "
+                        + " :x3 has _:x4 <http://www.example.com>; _:x5 <http://www.examplewith;.com>, <http://www.examplewith,.com>. "
+                        + " _:x6 has <http://www.rdf.com/language> <http://www.deutsch.com>. "
                         + " <http://www.rdf.com/language> = <http://www.language.com>. "
                         + " <http://www.rdf.com/language> => <http://www.implies.com>. "
                         + " <http://www.language.com> <= <http://www.rdf.com/language>. "
-                        + "machin <http://rdf.com> \"chaine\"."
-                        + "truc <http://www.multiligne.com> \"\"\"cha\nine\"\"\"."
-                        + "machin <= \"\"\"cha\nine\"\"\"."
-                        + "truc = <http://rdf.com>."
-                        + "machin => <http://rdf.com>."
-                        + "machin is <http://rdf.com>."
-                        + "machin @is bidule of <http://rdf.com>." + "x1^x2."
-                        + "x3^x4^x5." + "x6^x7 x8 x9." + "x10!x11."
-                        + "x12!x13!x14." + "[] x15 x16." + "[:x17 :x18]."
-        // + "(machin <http://rdf.com>) @is <http://rdf.com>."
-        // + "() @is <http://empty.list.com>."
-        // +
-        // "(machin <http://rdf.com> () bidule) @is <http://empty-list.inside-with-bidule.com>."
-        // +
-        // "(machin <http://rdf.com> ()) is <http://empty-list.inside.com> of <http://wow.com>."
+                        + ":x7 <http://rdf.com> \"string\"."
+                        + ":x8 <http://www.multiline.com> \"\"\"str\ning\"\"\"."
+                        + ":x9 <= \"\"\"str\ning\"\"\"."
+                        + ":x10 @is <http://rdf.com> of <http://www.example.com>."
+                        + ":x11^:x12."
+                        + ":x13^:x14^:x15." + ":x16^:x17 :x18 :x19." + ":x20!:x21."
+                        + ":x22!:x23!:x24." + "[] :x25 :x26." + "[:x27 :x28]."
         );
 
-        // File file = new File("/home/thierry/data/bureau/rdf/bnf.n3");
+        // File file = new File("/bnf.n3");
         // rep = new FileRepresentation(file.getPath(), MediaType.TEXT_PLAIN);
         new RdfN3Representation(rep, new Graph());
 
