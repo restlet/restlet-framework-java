@@ -151,7 +151,7 @@ public class HttpsServerHelper extends GrizzlyServerHelper {
         /*
          * If an SslContextFactory has been set up, its settings take priority
          * over the other parameters (which are otherwise used to build and
-         * initialise an SSLContext).
+         * initialize an SSLContext).
          */
         if (sslContextFactory == null) {
             final KeyStore keyStore = KeyStore.getInstance(getKeystoreType());
