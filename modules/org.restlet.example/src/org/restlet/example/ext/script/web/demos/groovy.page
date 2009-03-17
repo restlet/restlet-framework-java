@@ -1,0 +1,94 @@
+<html>
+<head>
+	<title>Embedded Groovy Demo</title>
+</head>
+<body>
+<%groovy
+
+//
+// Accessing the request
+//
+
+def form = container.request.resourceRef.queryAsForm
+
+//
+// Stream this script
+//
+
+if(form.getFirstValue('stream') == 'true') {
+	if(container.stream()) {
+		throw new Exception()
+	}
+}
+
+script.cacheDuration = 5000
+
+//
+// Calling Java
+//
+
+print '<h3>Timestamp:</h3> ' + System.currentTimeMillis()
+
+//
+// Including a script
+//
+// This is identical to:
+//
+//   container.include 'tests/groovy.fragment'
+//
+
+%>
+<%& 'tests/groovy.fragment' %>
+<%
+
+//
+// An example of a closure
+//
+
+def printFactory = { factory ->
+%>
+<p>
+	Engine: <%= factory.engineName %> version <%= factory.engineVersion %><br />
+	Language: <%= factory.languageName %> version <%= factory.languageVersion %><br />
+	Names: 
+<%
+	names = factory.names.toArray()
+	for(i in 0 .. names.length - 1) {
+		print names[i]
+		if(i < names.length - 1) {
+			print ', '
+		}
+	}
+%>
+</p>
+<%
+}
+
+%>
+<h3>Current script engine:</h3>
+<%
+printFactory script.scriptEngine.factory
+%>
+<h3>Available script engines:</h3>
+<%
+def factories = container.scriptEngineManager.engineFactories.toArray()
+for(def factory in factories){
+	printFactory factory
+}
+%>
+<h3>The "id" attribute is:</h3>
+<p><%= form.getFirstValue('id') %></p>
+<h3>A few tests:</h3>
+<%
+for(def i in 0 .. 9){
+%>
+A multiple of three: 
+<%
+	printTriple i
+%>
+<br />
+<%
+}
+%>
+</body>
+<html>

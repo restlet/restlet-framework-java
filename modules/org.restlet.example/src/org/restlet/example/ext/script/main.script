@@ -1,0 +1,101 @@
+<%rhino-nonjdk
+
+//
+// This script starts a Restlet component with an HTTP server. The attached application supports scripted
+// resources and a directory containing both static files and dynamic scripts. It is intended to be run via
+// com.threecrickets.util.script.ScriptedMain, which can be set as the main class in your wrapper.conf.
+//
+// See conf/restlet.conf for more information, and edit it to configure your setup. You may also edit
+// this file to control your Restlet component and application. 
+//
+
+// Important! The version of Rhino included with the JDK has an overly simplified version of JavaAdapter,
+// so that it's impossible to extend classes. To boot-strap our Restlet application, we need to extend it,
+// and so we absolutely must use the non-JDK version of Rhino. Annoyingly, there's no simple way to disable
+// the built-in version of Rhino, and so Mozilla had to add the "rhino-nonjdk" engine name as a workaround.
+// We'll go ahead and set that as our default engine name.
+
+importClass(
+	com.threecrickets.scripturian.ScriptedMain,
+	org.restlet.ext.script.ScriptedResource,
+	org.restlet.ext.script.ScriptedTextResource);
+
+ScriptedMain.defaultEngineName = 
+ScriptedResource.defaultEngineName =
+ScriptedTextResource.defaultEngineName = 'rhino-nonjdk';
+
+%><%& 'conf/restlet.conf' %><%
+
+importClass(
+	java.io.File,
+	org.restlet.Application,
+	org.restlet.Component,
+	org.restlet.Directory,
+	org.restlet.Router,
+	org.restlet.Redirector,
+	org.restlet.data.Protocol,
+	org.restlet.util.Template,
+	com.threecrickets.scripturian.file.ScriptFileSource);
+
+//
+// Application
+//
+
+var application = {
+
+	createRoot: function() {
+	
+		this.setAuthor(applicationAuthor);
+		this.setName(applicationName);
+		this.setDescription(applicationDescription);
+		
+		var context = this.context;
+		var classLoader = this.getClass().classLoader;
+
+		var directory = new Directory(context, new File(staticWebBasePath).toURI());
+		directory.setListingAllowed(staticWebDirectoryListingAllowed);
+
+		var router = new Router();
+		router.attach(resourceBaseURL, classLoader.loadClass('org.restlet.ext.script.ScriptedResource'));
+		router.attach(scriptedWebBaseURL, classLoader.loadClass('org.restlet.ext.script.ScriptedTextResource'));
+		router.attach(staticWebBaseURL, directory);
+
+		// Redirect to trailing slashes
+		for(var i in urlAddTrailingSlash) {
+			var url = urlAddTrailingSlash[i];
+			var route = router.attach(url, new Redirector(context, url + '/', Redirector.MODE_CLIENT_PERMANENT));
+			route.matchingMode = Template.MODE_EQUALS;
+		}
+		
+		return router;
+	}
+};
+
+//
+// ScriptedResource
+//
+
+ScriptedResource.extension = resourceExtension;
+ScriptedResource.defaultName = resourceDefaultName;
+ScriptedResource.scriptSource = new ScriptFileSource(new File(resourceBasePath), ScriptedResource.defaultName, ScriptedResource.extension, resourceMinimumTimeBetweenValidityChecks);
+ScriptedResource.sourceViewable = resourceSourceViewable;
+
+//
+// ScriptedTextResource
+//
+
+ScriptedTextResource.defaultName = scriptedWebDefaultScript;
+ScriptedTextResource.scriptSource = new ScriptFileSource(new File(scriptedWebBasePath), ScriptedTextResource.defaultName, null, scriptedWebMinimumTimeBetweenValidityChecks);
+ScriptedTextResource.sourceViewable = scriptedWebSourceViewable;
+
+//
+// Component
+//
+
+var component = new Component();
+component.servers.add(Protocol.HTTP, serverPort);
+component.clients.add(Protocol.FILE);
+component.defaultHost.attach(new JavaAdapter(Application, application)); // Note: this does not work with the version of Rhino shipped with the JDK!
+component.start();
+
+%>

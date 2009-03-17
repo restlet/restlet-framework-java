@@ -1,0 +1,121 @@
+<% script.cacheDuration = 5000; var exampleBasePath = script.statics.get('exampleBasePath'); %><%& exampleBasePath + 'header.fragment' %>
+
+<script>
+function call(verb) {
+	var resource = $('#resource').val();
+	var mime = $('#mime').val();
+	$.ajax({
+		type: verb,
+		url: resource,
+		cache: false,
+		data: ((verb=='POST')||(verb=='PUT')) ? $('#content').val() : null,
+		dataType: (mime == 'application/json') ? 'json' : 'text',
+		beforeSend: function(request) {
+
+			// By default, jQuery adds the "*/*" wildcard to our Accept header, so
+			// that the resource will respond using whatever MIME type it desires.
+			// For out testing purposes, we want to request a specific MIME type.
+			
+			request.setRequestHeader('Accept', mime);
+		},
+		error: function(request, status, ex) {
+			update(status, request.responseText);
+		},
+		success: function(data, status) {
+			update(status, data);
+		}
+	});
+	function update(status, result) {
+		$('#status').html(
+			'Resource: ' + resource + '<br />' +
+			'Verb: ' + verb + '<br />' +
+			'MIME type requested: ' + mime + '<br />' +
+			'Status: ' + status + '<br />' +
+			'Timestamp: ' + new Date().getTime()
+		);
+		
+		if(mime == 'application/json') {
+
+			// Note: When dataType is 'json', jQuery automatically converts the JSON returned
+			// into a JavaScript object. To print it out, we need to translate it back to JSON!
+			// (This is good for this demo, because it proves that the JSON is valid.)
+		
+			result = 'Text dump of valid JSON received:<p>' + $.toJSON(result) + '</p>';
+		} else {
+			result = 'Text received:<p>' + result + '</p>';
+		}
+		
+		var width = $('#main').width() - 5;
+		$('#result').width(width).html(result);
+	}
+}
+
+function seeMainSource() {
+	var resource = $('#resource').val();
+	window.location = resource + '?source=true';
+}
+
+function seeIncludeSource() {
+	var resource = $('#resource').val();
+	window.location = resource + '/statics.fragment?source=true';
+}
+</script>
+
+<h2>Demos of REST Resources</h2>
+<p>
+The following demo uses JavaScript (in your browser) to communicate with REST resources on the site.
+Each resource is implemented in a different language, and each has its own state, which is a <a href="http://www.json.org/">JSON</a>
+object. Press a verb button to activate.
+</p><p>
+Note that other people may be playing with this demo at the same time as you are,
+in which case you might see their changes reflected in your results!
+(It may be even possible to use this side effect for a terribly geeky chat app...)
+</p><p>
+Post (update) only changes keys that you specify in the JSON object, while leaving the others intact.
+Put (create) replaces the entire object.
+</p><p>
+The source code demonstrates how to synchronize data between threads using a read-write
+lock protocol for scalable performance.
+</p><p>
+Note that <a href="php.page">PHP</a> and <a href="python.page">Python (Jepp)</a> cannot at this time be used for
+creating REST resources.
+</p><p>
+<i>Resource:</i>
+<select id="resource">
+	<option value="resource/rhino">JavaScript</option>
+	<!-- <option value="resource/quercus">PHP [BROKEN]</option> -->
+	<option value="resource/jython">Python (Jython)</option>
+	<!-- <option value="resource/jepp">Python (Jepp) [BROKEN]</option> -->
+	<option value="resource/jruby">Ruby</option>
+	<option value="resource/groovy">Groovy</option>
+</select>
+</p><p>
+<i>Source code:</i>
+<input type="button" onclick="seeMainSource()" value="Main" />
+<input type="button" onclick="seeIncludeSource()" value="Include" />
+</p><p>
+<i>MIME to request (for Get, Post and Put):</i>
+<select id="mime">
+	<option>application/json</option>
+	<option>text/plain</option>
+</select>
+</p><p>
+<i>JSON to send (for Post and Put):</i>
+</p><p>
+<textarea id="content" cols="40" rows="5"></textarea>
+</p><p>
+<i>Verbs:</i>
+</p><p>
+<input type="button" onclick="call('GET')" value="Get (read)" />
+<input type="button" onclick="call('POST')" value="Post (update)" />
+<input type="button" onclick="call('PUT')" value="Put (create)" />
+<input type="button" onclick="call('DELETE')" value="Delete" />
+</p><p>
+<i>Result of last verb:</i>
+</p><p>
+<div id="status">n/a</div>
+</p><p>
+<div id="result" class="result"></div>
+</p>
+
+<%& exampleBasePath + 'footer.fragment' %>

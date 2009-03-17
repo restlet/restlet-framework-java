@@ -1,0 +1,10 @@
+<%groovy
+
+// Important! If we use "def" to localize the scope of our closures, they won't be available to scripts
+// that include this script.
+
+printTriple = { value ->
+	print value*3
+}
+
+%>

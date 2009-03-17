@@ -1,0 +1,81 @@
+<%ruby
+
+#
+# Important!
+#
+# JRuby handles each evaluation by wrapping it in a special "main" object. Unfortunately for Scripturian, this
+# means that we are not in the global scope: each embedded script file is run inside its own "main" object.
+# For embedded script files to share resources, we need to explicitly access global variables.
+#
+# A straightforward way to do this is to wrap the global parts of each embedded script in an anonymous module
+# stored in a global variable, as we do here. This module can then be accessed by or included into other embedded
+# script files, just like any other module. One limitation of this technique is that it's not that simple to
+# "reopen" the module for modification in other embedded script files. The simplest usage would thus be to have
+# each embedded script file have its own module or modules. That's actually good practice! 
+#
+# Another way is to store methods as closures in global variables. For example:
+#
+# def mymethod value
+# 	print value*3
+# end
+# $mymethod = method :mymethod
+#
+# Or even store raw lambdas:
+#
+# $mymethod = lambda do |value|
+# 	print value*3
+# end
+#
+# If you do this, don't forget that closures must be called using ".call". For example:
+#
+# $mymethod.call 5
+#
+
+$statics_module = Module.new do
+
+	# Utilities to access $script.statics
+	
+	# These functions allow for safe, scalable access in heavily concurrent
+	# applications, by following the semantics of reentrant read-write locks.
+	
+	def get_static name
+		value = nil
+		$script.statics_lock.read_lock().lock()
+		begin
+			value = $script.statics.get name
+			if value == nil
+				$script.statics_lock.read_lock().unlock()
+	
+				# We're not holding any lock!
+				# Statics may change here!
+	
+				$script.statics_lock.write_lock().lock()
+	
+				# We must test again, because statics may have changed
+				value = $script.statics.get name
+				if value == nil
+					value = yield
+					$script.statics.put name, value
+				end
+	
+				$script.statics_lock.read_lock().lock()
+			end
+		ensure
+			$script.statics_lock.read_lock().unlock()
+		end
+	
+		return value
+	end
+	
+	def set_static name, value
+		$script.statics_lock.write_lock().lock()
+		begin
+			$script.statics.put name, value
+		ensure
+			$script.statics_lock.write_lock().unlock()
+		end
+	end
+
+end
+
+%>

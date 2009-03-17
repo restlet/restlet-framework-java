@@ -1,0 +1,17 @@
+<% script.cacheDuration = 5000; var exampleBasePath = script.statics.get('exampleBasePath'); %><%& exampleBasePath + 'header.fragment' %>
+
+<h2>Supported Scripting Language: Groovy</h2>
+<p>
+In many ways, Groovy is the best of this bunch. It has all the flexibility of <a href="ruby.page">Ruby</a>, but is designed from the ground up to integrate
+strongly into Java. That means that any Java library is also a Groovy library. (This is true to various extents for the other scripting languages
+here, but Groovy does it best.) Additionally, Groovy is enjoying a huge growth in specialized adaptations and Groovy-specific libraries.
+</p><p>
+If you know your project will involve a lot of Java coding in addition to scripting, Groovy is a terrific choice.
+</p>
+
+<h3>Implementation</h3>
+<p>
+Groovy is implemented by, well, <a href="http://groovy.codehaus.org/">Groovy</a>.
+</p>
+
+<%& exampleBasePath + 'footer.fragment' %>

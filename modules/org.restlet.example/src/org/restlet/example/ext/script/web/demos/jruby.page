@@ -1,0 +1,100 @@
+<html>
+<head>
+	<title>Embedded Ruby Demo</title>
+</head>
+<body>
+<%ruby
+
+#
+# Accessing the request
+#
+
+form = $container.request.resource_ref.query_as_form
+
+#
+# Stream this script
+#
+
+if form.get_first_value('stream') == 'true'
+	if $container.stream()
+		raise
+	end
+end
+
+$script.cache_duration = 5000
+
+#
+# Calling Java
+#
+
+require 'java'
+import java.lang.System
+print '<h3>Timestamp:</h3> ', System.current_time_millis
+
+#
+# Including a script
+#
+# This is identical to:
+#
+#   $container.include 'tests/jruby.fragment'
+#
+
+%>
+<%& 'tests/jruby.fragment' %>
+<%
+
+# (See comments in jruby.fragment)
+
+include $my_module
+
+#
+# An example of a method
+#
+
+def print_factory factory
+%>
+<p>
+	Engine: <%= factory.engine_name %> version <%= factory.engine_version %><br />
+	Language: <%= factory.language_name %> version <%= factory.language_version %><br />
+	Names: 
+<%
+	names = factory.names.to_array
+	for i in 0 .. names.length - 1
+		print names[i]
+		if i < names.length - 1
+			print ', '
+		end
+	end
+%>
+</p>
+<%
+end
+
+%>
+<h3>Current script engine:</h3>
+<%
+print_factory $script.script_engine.factory
+%>
+<h3>Available script engines:</h3>
+<%
+factories = $container.script_engine_manager.engine_factories.to_array
+for factory in factories
+	print_factory factory
+end
+%>
+<h3>The "id" attribute is:</h3>
+<p><%= form.get_first_value('id') %></p>
+<h3>A few tests:</h3>
+<%
+for i in 0 .. 9
+%>
+A multiple of three: 
+<%
+	print_triple i
+%>
+<br />
+<%
+end
+%>
+</body>
+<html>

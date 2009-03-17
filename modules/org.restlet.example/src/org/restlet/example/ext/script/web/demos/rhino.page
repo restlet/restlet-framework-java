@@ -1,0 +1,88 @@
+<html>
+<head>
+	<title>Embedded JavaScript Demo</title>
+</head>
+<body>
+<%
+
+//
+// Accessing the request
+//
+
+var form = container.request.resourceRef.queryAsForm;
+
+//
+// Stream this script
+//
+
+if(form.getFirstValue('stream') == 'true') if(container.stream()) throw null;
+
+//
+// Calling Java
+//
+
+script.cacheDuration = 5000;
+print('<h3>Timestamp:</h3> ' + java.lang.System.currentTimeMillis());
+
+//
+// Including a script
+//
+// This is identical to:
+//
+//   container.include('tests/rhino.fragment');
+//
+
+%>
+<%& 'tests/rhino.fragment' %>
+<%
+
+//
+// An example of a function
+//
+
+function printFactory(factory) {
+%>
+<p>
+	Engine: <%= factory.engineName %> version <%= factory.engineVersion %><br />
+	Language: <%= factory.languageName %> version <%= factory.languageVersion %><br />
+	Names: 
+<%
+	var names = factory.names.toArray();
+	for(var i = 0; i < names.length; i++) {
+		print(names[i]);
+		if(i < names.length - 1) {
+			print(', ');
+		}
+	}
+%>
+</p>
+<%
+}
+%>
+<h3>Current script engine:</h3>
+<%
+printFactory(script.scriptEngine.factory);
+%>
+<h3>Available script engines:</h3>
+<%
+var factories = container.scriptEngineManager.engineFactories.toArray();
+for(var i = 0; i < factories.length; i++) {
+	printFactory(factories[i]);
+}
+%>
+<h3>The "id" attribute is:</h3>
+<p><%= form.getFirstValue('id') %></p>
+<h3>A few tests:</h3>
+<%
+for(var i = 0; i < 10; i++) {
+%>
+A multiple of three: 
+<%
+	printTriple(i);
+%>
+<br />
+<%
+}
+%>
+</body>
+<html>
