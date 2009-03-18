@@ -1006,7 +1006,7 @@
 		<pomModule name="xdb" />
 
 		<!-- Generate the parent POM -->
-		<fmpp sourcefile="${tmpl}/poms/org.restlet.parent.xml" outputfile="${temp}/poms/org.restlet.parent.pom" dataroot="${basedir}" >
+		<fmpp sourcefile="${tmpl}/poms/org.restlet.parent.xml" outputfile="${temp}/poms/${parent-maven-artifactId}.pom" dataroot="${basedir}" >
 			<data>
 				ant: antProperties()
 				lib: properties(libraries.properties)
@@ -1635,6 +1635,19 @@
 		<maven2Library name="db4o" />
 		<maven2Library name="db4o-nativequery" />
 		<maven2Library name="bloat" />
+
+		<!-- Add the parent pom -->
+		<property name="mod-restlet-parent-version-maven" value="${version-maven}" />
+		<propertyregex property="mod-restlet-parent-dir-maven-groupId" input="${parent-maven-groupId}" regexp="\." replace="/" global="true" casesensitive="false" />
+
+		<!-- All files generated from the modules are stampped with the current full version number -->
+		<property name="mod-dir-restlet-parent-maven2" value="${dist-maven2}/${mod-restlet-parent-dir-maven-groupId}/${parent-maven-artifactId}/${version-maven}" />
+		<mkdir dir="${mod-dir-restlet-parent-maven2}" />
+
+		<copy file="${temp}/poms/${parent-maven-artifactId}.pom" tofile="${mod-dir-restlet-parent-maven2}/${parent-maven-artifactId}-${mod-restlet-parent-version-maven}.pom" overwrite="true" />
+		<checksum file="${mod-dir-restlet-parent-maven2}/${parent-maven-artifactId}-${mod-restlet-parent-version-maven}.pom" algorithm="MD5" fileext=".md5" />
+		<checksum file="${mod-dir-restlet-parent-maven2}/${parent-maven-artifactId}-${mod-restlet-parent-version-maven}.pom" algorithm="SHA" fileext=".sha1" />
+
 	</target>
 
 	<!-- PACKAGE target -->
