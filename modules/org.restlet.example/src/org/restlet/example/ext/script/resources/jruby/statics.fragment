@@ -50,15 +50,17 @@ $statics_module = Module.new do
 				# Statics may change here!
 	
 				$script.statics_lock.write_lock().lock()
-	
-				# We must test again, because statics may have changed
-				value = $script.statics.get name
-				if value == nil
-					value = yield
-					$script.statics.put name, value
+				begin
+					# We must test again, because statics may have changed
+					value = $script.statics.get name
+					if value == nil
+						value = yield
+						$script.statics.put name, value
+					end
+				ensure
+					$script.statics_lock.read_lock().lock()
+					$script.statics_lock.write_lock().unlock()
 				end
-	
-				$script.statics_lock.read_lock().lock()
 			end
 		ensure
 			$script.statics_lock.read_lock().unlock()

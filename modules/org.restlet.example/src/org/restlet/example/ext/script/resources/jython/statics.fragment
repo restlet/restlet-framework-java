@@ -19,14 +19,15 @@ def getStatic(name, getDefaultValue):
 			# Statics may change here!
 
 			script.staticsLock.writeLock().lock()
-
-			# We must test again, because statics may have changed
-			value = script.statics.get(name)
-			if value == None:
-				value = getDefaultValue()
-				script.statics.put(name, value)
-
-			script.staticsLock.readLock().lock()
+			try:
+				# We must test again, because statics may have changed
+				value = script.statics.get(name)
+				if value == None:
+					value = getDefaultValue()
+					script.statics.put(name, value)
+			finally:
+				script.staticsLock.readLock().lock()
+				script.staticsLock.writeLock().unlock()
 	finally:
 		script.staticsLock.readLock().unlock()
 

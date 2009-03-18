@@ -29,11 +29,11 @@ print('<h3>Timestamp:</h3> ' + java.lang.System.currentTimeMillis());
 //
 // This is identical to:
 //
-//   container.include('tests/rhino.fragment');
+//   container.include('path');
 //
 
 %>
-<%& 'tests/rhino.fragment' %>
+<%& script.statics.get('exampleBasePath') + 'demos/rhino.fragment' %>
 <%
 
 //

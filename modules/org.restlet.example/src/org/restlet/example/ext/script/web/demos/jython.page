@@ -39,11 +39,11 @@ sys.stdout.write('<h3>Timestamp:</h3> ' + str(System.currentTimeMillis()))
 #
 # This is identical to:
 #
-#   container.include('tests/jython.fragment')
+#   container.include('path')
 #
 
 %>
-<%& 'tests/jython.fragment' %>
+<%& script.statics['exampleBasePath'] + 'demos/jython.fragment' %>
 <%
 
 #

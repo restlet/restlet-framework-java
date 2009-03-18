@@ -34,11 +34,11 @@ print '<h3>Timestamp:</h3> ' + System.currentTimeMillis()
 //
 // This is identical to:
 //
-//   container.include 'tests/groovy.fragment'
+//   container.include 'path'
 //
 
 %>
-<%& 'tests/groovy.fragment' %>
+<%& script.statics['exampleBasePath'] + 'demos/groovy.fragment' %>
 <%
 
 //

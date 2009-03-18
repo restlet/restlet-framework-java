@@ -36,11 +36,11 @@ print '<h3>Timestamp:</h3> ', System.current_time_millis
 #
 # This is identical to:
 #
-#   $container.include 'tests/jruby.fragment'
+#   $container.include 'path'
 #
 
 %>
-<%& 'tests/jruby.fragment' %>
+<%& $script.statics['exampleBasePath'] + 'demos/jruby.fragment' %>
 <%
 
 # (See comments in jruby.fragment)

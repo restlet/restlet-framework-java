@@ -38,11 +38,11 @@ sys.stdout.write('<h3>Timestamp:</h3> ' + str(System.currentTimeMillis()))
 #
 # This is identical to:
 #
-#   container.include('tests/jepp.fragment')
+#   container.include('path')
 #
 
 %>
-<%& 'tests/jepp.fragment' %>
+<%& str(script.getStatics().get('exampleBasePath')) + 'demos/jepp.fragment' %>
 <%
 
 #
