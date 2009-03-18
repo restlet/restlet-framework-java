@@ -36,7 +36,7 @@
 	</repositories>
 
 	<properties>
-<#list lib?keys as key>
+<#list lib?keys?sort as key>
 	<#if key?starts_with("lib-") && key?ends_with("-version")>
 		<${key}>${lib[key]}</${key}>
     </#if>
