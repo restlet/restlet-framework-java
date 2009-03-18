@@ -1,48 +1,42 @@
-<project>
-   <modelVersion>4.0.0</modelVersion>
-   <groupId>@group-id@</groupId>
-   <artifactId>@artifact-id@</artifactId>
-   <version>@version@</version>
-   <dependencies>
-      <dependency>
-         <groupId>org.restlet</groupId>
-         <artifactId>org.restlet</artifactId>
-         <version>@version@</version>
-      </dependency>
-      <dependency>
-         <groupId>org.mortbay.jetty</groupId>
-         <artifactId>jetty</artifactId>
-         <version>@lib-jetty-version@</version>
-      </dependency>
-      <dependency>
-         <groupId>org.mortbay.jetty</groupId>
-         <artifactId>jetty-ajp</artifactId>
-         <version>@lib-jetty-version@</version>
-      </dependency>
-      <dependency>
-         <groupId>org.mortbay.jetty</groupId>
-         <artifactId>jetty-sslengine</artifactId>
-         <version>@lib-jetty-version@</version>
-      </dependency>
-      <dependency>
-         <groupId>org.mortbay.jetty</groupId>
-         <artifactId>jetty-util</artifactId>
-         <version>@lib-jetty-version@</version>
-      </dependency>
-   </dependencies>
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>@parent-group-id@</groupId>
+		<artifactId>@parent-artifact-id@</artifactId>
+		<version>@parent-version@</version>
+	</parent>
 
-   <name>HTTP server connector</name>
-   <description>Integration with Jetty.</description>
-   <licenses>
-      <license>
-         <name>CDDL license</name>
-         <url>http://www.opensource.org/licenses/cddl1.php</url>
-      </license>
-      <license>
-         <name>LGPL license</name>
-         <url>
-            http://www.opensource.org/licenses/lgpl-license.php
-         </url>
-      </license>
-   </licenses>
+	<artifactId>org.restlet.ext.jetty</artifactId>
+	<name>Restlet extension: Jetty</name>
+	<description>Integration with Jetty.</description>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.mortbay.jetty</groupId>
+			<artifactId>jetty</artifactId>
+			<version>${lib-jetty-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mortbay.jetty</groupId>
+			<artifactId>jetty-ajp</artifactId>
+			<version>${lib-jetty-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mortbay.jetty</groupId>
+			<artifactId>jetty-sslengine</artifactId>
+			<version>${lib-jetty-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.mortbay.jetty</groupId>
+			<artifactId>jetty-util</artifactId>
+			<version>${lib-jetty-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.restlet</groupId>
+			<artifactId>org.restlet</artifactId>
+			<version>${version}</version>
+		</dependency>
+	</dependencies>
 </project>

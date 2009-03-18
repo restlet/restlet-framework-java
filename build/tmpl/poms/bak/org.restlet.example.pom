@@ -1,0 +1,38 @@
+<project>
+   <modelVersion>4.0.0</modelVersion>
+   <groupId>@group-id@</groupId>
+   <artifactId>@artifact-id@</artifactId>
+   <version>@version@</version>
+   <dependencies>
+      <dependency>
+         <groupId>org.restlet</groupId>
+         <artifactId>org.restlet</artifactId>
+         <version>@version@</version>
+      </dependency>
+      <dependency>
+         <groupId>com.db4o</groupId>
+         <artifactId>com.db4o</artifactId>
+         <version>@lib-db4o-version@</version>
+      </dependency>
+      <dependency>
+         <groupId>com.db4o</groupId>
+         <artifactId>com.db4o.nativequery</artifactId>
+         <version>@lib-db4o-version@</version>
+      </dependency>
+      <dependency>
+         <groupId>org.restlet.engine</groupId>
+         <artifactId>org.restlet.ext.jetty</artifactId>
+         <version>@version@</version>
+      </dependency>
+      <dependency>
+         <groupId>org.restlet</groupId>
+         <artifactId>org.restlet.ext.json</artifactId>
+         <version>@version@</version>
+      </dependency>
+   </dependencies>
+
+   <name>Restlet examples</name>
+   <description>
+      Various examples including those from the tutorial
+   </description>
+</project>

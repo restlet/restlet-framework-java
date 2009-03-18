@@ -589,6 +589,14 @@
 		<fileset dir="tools/ant-contrib" includes="**/*.jar" />
 	</path>
 
+	<path id="fmpp.path">
+		<pathelement location="tools/fmpp/bsh.jar" />
+		<pathelement location="tools/fmpp/fmpp.jar" />
+		<pathelement location="tools/fmpp/freemarker.jar" />
+		<pathelement location="tools/fmpp/oro.jar" />
+		<pathelement location="tools/fmpp/resolver.jar" />
+	</path>
+
 	<!-- =================== -->
 	<!-- ===  Ant Tasks  === -->
 	<!-- =================== -->
@@ -624,6 +632,9 @@
 
 	<!-- Ant Contrib -->
 	<taskdef resource="net/sf/antcontrib/antcontrib.properties" classpathref="ant-contrib.path" />
+
+	<!-- FMPP (FreeMarker-based text file PreProcessor) -->
+	<taskdef name="fmpp" classname="fmpp.tools.AntTask" classpathref="fmpp.path" />
 
 	<!-- ==================== -->
 	<!-- ===  Ant Macros  === -->
@@ -713,15 +724,10 @@
 			</findbugs>
 		</sequential>
 	</macrodef>
-
+	
 	<!-- Generate the module POM file -->
 	<macrodef name="pomModule">
 		<attribute name="name" />
-		<attribute name="ext1" default="" />
-		<attribute name="ext2" default="" />
-		<attribute name="ext3" default="" />
-		<attribute name="ext4" default="" />
-		<attribute name="ext5" default="" />
 		<sequential>
 			<!-- sets the final pom version -->
 			<condition property="mod-pom-@{name}-version" value="${lib-@{name}-version}.${lib-@{name}-release}${lib-@{name}-suffix-maven}">
@@ -744,50 +750,18 @@
 			<property name="mod-pom-@{name}-artifactId" value="${mod-@{name}-id}" />
 
 			<copy file="${tmpl}/poms/${mod-@{name}-id}.pom" tofile="${temp}/poms/${mod-@{name}-id}.pom" overwrite="true" />
-			<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@version@" value="${version-maven}" />
+			<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@parent-group-id@" value="${parent-maven-groupId}" />
+			<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@parent-artifact-id@" value="${parent-maven-artifactId}" />
+			<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@parent-version@" value="${parent-maven-version}" />
 			<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@lib-@{name}-version@" value="${mod-pom-@{name}-version}" />
 			<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@group-id@" value="${mod-maven-groupId}" />
 			<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@artifact-id@" value="${mod-pom-@{name}-artifactId}" />
-
-			<condition property="lib-pom-@{ext1}-version" value="${lib-@{ext1}-version}.${lib-@{ext1}-release}">
-				<isset property="lib-@{ext1}-release" />
-			</condition>
-			<property name="lib-pom-@{ext1}-version" value="${lib-@{ext1}-version}" />
-			<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@lib-@{ext1}-version@" value="${lib-pom-@{ext1}-version}" />
-
-			<condition property="lib-pom-@{ext2}-version" value="${lib-@{ext2}-version}.${lib-@{ext2}-release}">
-				<isset property="lib-@{ext2}-release" />
-			</condition>
-			<property name="lib-pom-@{ext2}-version" value="${lib-@{ext2}-version}" />
-			<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@lib-@{ext2}-version@" value="${lib-pom-@{ext2}-version}" />
-
-			<condition property="lib-pom-@{ext3}-version" value="${lib-@{ext3}-version}.${lib-@{ext3}-release}">
-				<isset property="lib-@{ext3}-release" />
-			</condition>
-			<property name="lib-pom-@{ext3}-version" value="${lib-@{ext3}-version}" />
-			<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@lib-@{ext3}-version@" value="${lib-pom-@{ext3}-version}" />
-
-			<condition property="lib-pom-@{ext4}-version" value="${lib-@{ext4}-version}.${lib-@{ext4}-release}">
-				<isset property="lib-@{ext4}-release" />
-			</condition>
-			<property name="lib-pom-@{ext4}-version" value="${lib-@{ext4}-version}" />
-			<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@lib-@{ext4}-version@" value="${lib-pom-@{ext4}-version}" />
-
-			<condition property="lib-pom-@{ext5}-version" value="${lib-@{ext5}-version}.${lib-@{ext5}-release}">
-				<isset property="lib-@{ext5}-release" />
-			</condition>
-			<property name="lib-pom-@{ext5}-version" value="${lib-@{ext5}-version}" />
-			<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@lib-@{ext5}-version@" value="${lib-pom-@{ext5}-version}" />
 		</sequential>
 	</macrodef>
 
 	<!-- Generate the library POM file -->
 	<macrodef name="pomLibrary">
 		<attribute name="name" />
-		<attribute name="depend1" default="-" />
-		<attribute name="type1" default="-" />
-		<attribute name="depend2" default="-" />
-		<attribute name="type2" default="-" />
 		<sequential>
 			<!-- sets the final pom version -->
 			<condition property="lib-pom-@{name}-version" value="${lib-@{name}-version}.${lib-@{name}-release}${lib-@{name}-suffix-maven}">
@@ -804,31 +778,23 @@
 			</condition>
 			<property name="lib-pom-@{name}-version" value="${lib-@{name}-version}" />
 
-			<condition property="lib-pom-@{name}-artifactId" value="${lib-@{name}-maven-artifactId}">
+			<!-- sets the final pom artifact id: "org.restlet.lib.<artifactId>" -->
+			<condition property="lib-pom-@{name}-artifactId" value="org.restlet.lib.${lib-@{name}-maven-artifactId}">
 				<isset property="lib-@{name}-maven-artifactId" />
 			</condition>
-			<property name="lib-pom-@{name}-artifactId" value="${lib-@{name}-package}" />
+			<property name="lib-pom-@{name}-artifactId" value="org.restlet.lib.${lib-@{name}-package}" />
 
+			<!-- sets the final pom group id: "org.restlet" -->
+			<property name="lib-@{name}-groupId" value="${lib-@{name}-package}" />
+			<property name="lib-pom-@{name}-groupId" value="org.restlet" />
+				
 			<copy file="${tmpl}/poms/${lib-@{name}-package}.pom" tofile="${temp}/poms/${lib-@{name}-id}.pom" overwrite="true" />
+			<replace file="${temp}/poms/${lib-@{name}-id}.pom" token="@parent-group-id@" value="${parent-maven-groupId}" />
+			<replace file="${temp}/poms/${lib-@{name}-id}.pom" token="@parent-artifact-id@" value="${parent-maven-artifactId}" />
+			<replace file="${temp}/poms/${lib-@{name}-id}.pom" token="@parent-version@" value="${parent-maven-version}" />
 			<replace file="${temp}/poms/${lib-@{name}-id}.pom" token="@version@" value="${lib-pom-@{name}-version}" />
-			<replace file="${temp}/poms/${lib-@{name}-id}.pom" token="@group-id@" value="${lib-@{name}-maven-groupId}" />
+			<replace file="${temp}/poms/${lib-@{name}-id}.pom" token="@group-id@" value="${lib-pom-@{name}-groupId}" />
 			<replace file="${temp}/poms/${lib-@{name}-id}.pom" token="@artifact-id@" value="${lib-pom-@{name}-artifactId}" />
-			<if>
-				<not>
-					<equals arg1="@{depend1}" arg2="-" />
-				</not>
-				<then>
-					<replace file="${temp}/poms/${@{type1}-@{depend1}-id}.pom" token="@lib-@{name}-version@" value="${lib-pom-@{name}-version}" />
-				</then>
-			</if>
-			<if>
-				<not>
-					<equals arg1="@{depend2}" arg2="-" />
-				</not>
-				<then>
-					<replace file="${temp}/poms/${@{type2}-@{depend2}-id}.pom" token="@lib-@{name}-version@" value="${lib-pom-@{name}-version}" />
-				</then>
-			</if>
 		</sequential>
 	</macrodef>
 
@@ -887,7 +853,7 @@
 		</sequential>
 	</macrodef>
 
-	<!-- Generate the Maven 2.x files -->
+	<!-- Generate the Maven 2.x files for a hosted library -->
 	<macrodef name="maven2Library">
 		<attribute name="name" />
 		<sequential>
@@ -906,12 +872,17 @@
 			</condition>
 			<property name="lib-pom-@{name}-version" value="${lib-@{name}-version}" />
 
-			<condition property="lib-pom-@{name}-artifactId" value="${lib-@{name}-maven-artifactId}">
+			<!-- sets the final pom artifact id: "org.restlet.lib.<artifactId>" -->
+			<condition property="lib-pom-@{name}-artifactId" value="org.restlet.lib.${lib-@{name}-maven-artifactId}">
 				<isset property="lib-@{name}-maven-artifactId" />
 			</condition>
-			<property name="lib-pom-@{name}-artifactId" value="${lib-@{name}-package}" />
+			<property name="lib-pom-@{name}-artifactId" value="org.restlet.lib.${lib-@{name}-package}" />
 
-			<propertyregex property="lib-dir-@{name}-maven-groupId" input="${lib-@{name}-maven-groupId}" regexp="\." replace="/" global="true" casesensitive="false" defaultvalue="${lib-@{name}-maven-groupId}" />
+			<!-- sets the final pom group id: "org.restlet" -->
+			<property name="lib-@{name}-maven-groupId" value="${lib-@{name}-package}" />
+			<property name="lib-pom-@{name}-maven-groupId" value="org.restlet" />
+			
+			<propertyregex property="lib-dir-@{name}-maven-groupId" input="${lib-pom-@{name}-maven-groupId}" regexp="\." replace="/" global="true" casesensitive="false" defaultvalue="${lib-@{name}-maven-groupId}" />
 			<property name="lib-dir-@{name}-maven2" value="${dist-maven2}/${lib-dir-@{name}-maven-groupId}/${lib-pom-@{name}-artifactId}/${lib-pom-@{name}-version}" />
 			<mkdir dir="${lib-dir-@{name}-maven2}" />
 
@@ -998,45 +969,54 @@
 		<!-- Generate the Maven POM files -->
 		<mkdir dir="${temp}/poms" />
 		<pomModule name="core" />
-		<pomModule name="core-gwt" ext1="gwt" />
+		<pomModule name="core-gwt" />
 		<pomModule name="core-example" />
 		<pomModule name="atom" />
 		<pomModule name="fileupload" />
 		<pomModule name="freemarker" />
 		<pomModule name="grizzly" />
-		<pomModule name="gwt" ext1="gwt" />
+		<pomModule name="gwt" />
 		<pomModule name="httpclient" />
 		<pomModule name="javamail" />
 		<pomModule name="jaxb" />
-		<pomModule name="jaxrs" ext1="activation" ext2="jaxb" ext3="json" ext4="javamail" ext5="fileupload" />
-		<pomModule name="jdbc" ext1="dbcp" />
+		<pomModule name="jaxrs" />
+		<pomModule name="jdbc" />
 		<pomModule name="jetty" />
 		<pomModule name="jibx" />
 		<!-- disabled for now  <pomModule name="jmx" /> -->
 		<pomModule name="json" />
 		<pomModule name="rdf" />
 		<!-- disabled for now  <pomModule name="jxta" /> -->
-		<pomModule name="lucene" ext1="solr" ext2="tika" />
+		<pomModule name="lucene" />
 		<pomModule name="net" />
 		<pomModule name="oauth" />
-		<pomModule name="script" ext1="script" ext2="scripturian" />
+		<pomModule name="script" />
 		<pomModule name="servlet" />
-		<!-- disabled for now  <pomModule name="shell" ext1="jline" ext2="rhino" ext3="script" /> -->
+		<!-- disabled for now  <pomModule name="shell" /> -->
 		<pomModule name="simple" />
-		<pomModule name="spring" ext1="spring" />
-		<pomModule name="ssl" ext1="jsslutils" />
+		<pomModule name="spring" />
+		<pomModule name="ssl" />
 		<pomModule name="velocity" />
 		<pomModule name="wadl" />
 		<pomModule name="xdb" />
 
+		<!-- Generate the parent POM -->
+		<fmpp sourcefile="${tmpl}/poms/org.restlet.parent.xml" outputfile="${temp}/poms/org.restlet.parent.pom" dataroot="${basedir}" >
+			<data>
+				ant: antProperties()
+				lib: properties(libraries.properties)
+			</data>
+		</fmpp>
+		
 		<pomLibrary name="simple" />
 		<pomLibrary name="jaxrs" />
 		<pomLibrary name="json" />
 		<pomLibrary name="jsslutils" />
-		<pomLibrary name="db4o" depend1="core-example" type1="mod" />
+		<pomLibrary name="db4o"/>
 		<pomLibrary name="db4o-nativequery" />
-		<pomLibrary name="bloat" depend1="db4o" type1="lib" depend2="db4o-nativequery" type2="lib" />
-
+		<pomLibrary name="bloat" />
+		<pomLibrary name="scripturian" />
+		
 		<!-- Generate the NSIS files -->
 		<copy file="${tmpl}/nsis/common.nsh" todir="${temp}" overwrite="true" />
 		<copy file="${tmpl}/nsis/setup.nsi" todir="${temp}" overwrite="true" />
@@ -1537,6 +1517,7 @@
 		<stageLibrary name="oauth" />
 		<stageLibrary name="pool" />
 		<stageLibrary name="rhino" />
+		<stageLibrary name="scripturian" />
 		<stageLibrary name="servlet" />
 		<stageLibrary name="simple" />
 		<stageLibrary name="solr" />

@@ -1,21 +1,22 @@
-<project>
-   <modelVersion>4.0.0</modelVersion>
-   <groupId>@group-id@</groupId>
-   <artifactId>@artifact-id@</artifactId>
-   <version>@version@</version>
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>@parent-group-id@</groupId>
+		<artifactId>@parent-artifact-id@</artifactId>
+		<version>@parent-version@</version>
+	</parent>
 
-   <name>Restlet API</name>
-   <description>GWT API</description>
-   <licenses>
-      <license>
-         <name>CDDL license</name>
-         <url>http://www.opensource.org/licenses/cddl1.php</url>
-      </license>
-      <license>
-         <name>LGPL license</name>
-         <url>
-            http://www.opensource.org/licenses/lgpl-license.php
-         </url>
-      </license>
-   </licenses>
+	<artifactId>org.restlet.gwt</artifactId>
+	<name>Restlet GWT module</name>
+	<description>Port of Restlet to GWT.</description>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.google.gwt</groupId>
+			<artifactId>gwt-user</artifactId>
+			<version>${lib-gwt-version}</version>
+		</dependency>
+	</dependencies>
 </project>

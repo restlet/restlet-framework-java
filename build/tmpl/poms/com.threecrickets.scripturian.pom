@@ -1,15 +1,18 @@
-<project>
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>@parent-group-id@</groupId>
+		<artifactId>@parent-artifact-id@</artifactId>
+		<version>@parent-version@</version>
+	</parent>
+
    <modelVersion>4.0.0</modelVersion>
    <groupId>@group-id@</groupId>
    <artifactId>@artifact-id@</artifactId>
    <version>@version@</version>
-   <dependencies>
-      <dependency>
-         <groupId>com.threecrickets.scripturian</groupId>
-         <artifactId>com.threecrickets.scripturian</artifactId>
-         <version>@lib-scripturian-version@</version>
-      </dependency>
-   </dependencies>
+
    <name>scripturian</name>
    <description>An embedded script library for Java.</description>
 </project>

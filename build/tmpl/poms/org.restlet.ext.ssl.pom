@@ -1,33 +1,27 @@
-<project>
-   <modelVersion>4.0.0</modelVersion>
-   <groupId>@group-id@</groupId>
-   <artifactId>@artifact-id@</artifactId>
-   <version>@version@</version>
-   <dependencies>
-      <dependency>
-         <groupId>org.restlet</groupId>
-         <artifactId>org.restlet</artifactId>
-         <version>@version@</version>
-      </dependency>
-      <dependency>
-         <groupId>jsslutils</groupId>
-         <artifactId>jsslutils</artifactId>
-         <version>@lib-jsslutils-version@</version>
-      </dependency>
-   </dependencies>
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>@parent-group-id@</groupId>
+		<artifactId>@parent-artifact-id@</artifactId>
+		<version>@parent-version@</version>
+	</parent>
 
-   <name>SSL utilities</name>
-   <description>Utilities to configure SSL support.</description>
-   <licenses>
-      <license>
-         <name>CDDL license</name>
-         <url>http://www.opensource.org/licenses/cddl1.php</url>
-      </license>
-      <license>
-         <name>LGPL license</name>
-         <url>
-            http://www.opensource.org/licenses/lgpl-license.php
-         </url>
-      </license>
-   </licenses>
+	<artifactId>org.restlet.ext.ssl</artifactId>
+	<name>Restlet extension: SSL</name>
+	<description>Utilities to configure SSL support.</description>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.restlet</groupId>
+			<artifactId>org.restlet</artifactId>
+			<version>${version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jsslutils</groupId>
+			<artifactId>org.jsslutils</artifactId>
+			<version>${lib-jsslutils-version}</version>
+		</dependency>
+	</dependencies>
 </project>

@@ -3,9 +3,9 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>org.restlet</groupId>
-		<artifactId>restlet-parent</artifactId>
-		<version>@version@</version>
+		<groupId>@parent-group-id@</groupId>
+		<artifactId>@parent-artifact-id@</artifactId>
+		<version>@parent-version@</version>
 	</parent>
 
 	<artifactId>org.restlet.ext.script</artifactId>
@@ -21,7 +21,7 @@
 		<dependency>
 			<groupId>com.scripturian</groupId>
 			<artifactId>com.scripturian</artifactId>
-			<version>@lib-scripturian-version@</version>
+			<version>${lib-scripturian-version}</version>
 		</dependency>
 	</dependencies>
 </project>

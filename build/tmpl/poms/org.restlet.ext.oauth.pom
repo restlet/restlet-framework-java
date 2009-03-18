@@ -1,42 +1,35 @@
-<project>
-   <modelVersion>4.0.0</modelVersion>
-   <groupId>@group-id@</groupId>
-   <artifactId>@artifact-id@</artifactId>
-   <version>@version@</version>
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>@parent-group-id@</groupId>
+		<artifactId>@parent-artifact-id@</artifactId>
+		<version>@parent-version@</version>
+	</parent>
 
-   <repositories>
-       <repository>
-          <id>oauth-repo</id>
-          <name>OAuth repository</name>
-          <url>http://oauth.googlecode.com/svn/code/maven</url>
-       </repository>
-   </repositories>
+	<artifactId>org.restlet.ext.oauth</artifactId>
+	<name>Restlet extension: OAuth</name>
+	<description>Support for OAuth HTTP authentication.</description>
 
-   <dependencies>
-      <dependency>
-         <groupId>org.restlet</groupId>
-         <artifactId>org.restlet</artifactId>
-         <version>@version@</version>
-      </dependency>
-      <dependency>
-         <groupId>net.oauth</groupId>
-         <artifactId>core</artifactId>
-         <version>20081027</version>
-      </dependency>
-   </dependencies>
+	<repositories>
+		<repository>
+			<id>oauth-repo</id>
+			<name>OAuth repository</name>
+			<url>http://oauth.googlecode.com/svn/code/maven</url>
+		</repository>
+	</repositories>
 
-   <name>OAuth Authentication</name>
-   <description>OAuth Authentication</description>
-   <licenses>
-      <license>
-         <name>CDDL license</name>
-         <url>http://www.opensource.org/licenses/cddl1.php</url>
-      </license>
-      <license>
-         <name>LGPL license</name>
-         <url>
-            http://www.opensource.org/licenses/lgpl-license.php
-         </url>
-      </license>
-   </licenses>
+	<dependencies>
+		<dependency>
+			<groupId>net.oauth</groupId>
+			<artifactId>core</artifactId>
+			<version>${lib-oauth-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.restlet</groupId>
+			<artifactId>org.restlet</artifactId>
+			<version>${version}</version>
+		</dependency>
+	</dependencies>
 </project>

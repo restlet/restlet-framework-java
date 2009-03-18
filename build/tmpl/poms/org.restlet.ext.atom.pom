@@ -1,28 +1,22 @@
-<project>
-   <modelVersion>4.0.0</modelVersion>
-   <groupId>@group-id@</groupId>
-   <artifactId>@artifact-id@</artifactId>
-   <version>@version@</version>
-   <dependencies>
-      <dependency>
-         <groupId>org.restlet</groupId>
-         <artifactId>org.restlet</artifactId>
-         <version>@version@</version>
-      </dependency>
-   </dependencies>
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>@parent-group-id@</groupId>
+		<artifactId>@parent-artifact-id@</artifactId>
+		<version>@parent-version@</version>
+	</parent>
 
-   <name>Atom extension</name>
-   <description>Support Atom representations.</description>
-   <licenses>
-      <license>
-         <name>CDDL license</name>
-         <url>http://www.opensource.org/licenses/cddl1.php</url>
-      </license>
-      <license>
-         <name>LGPL license</name>
-         <url>
-            http://www.opensource.org/licenses/lgpl-license.php
-         </url>
-      </license>
-   </licenses>
+	<artifactId>org.restlet.atom</artifactId>
+	<name>Restlet extension: Atom</name>
+	<description>Support for the Atom syndication and the AtomPub (Atom Publication Protocol) standards in their 1.0 version.</description>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.restlet</groupId>
+			<artifactId>org.restlet</artifactId>
+			<version>${version}</version>
+		</dependency>
+	</dependencies>
 </project>
