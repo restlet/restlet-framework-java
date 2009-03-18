@@ -3,9 +3,12 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Mozilla Rhino
 Bundle-SymbolicName: org.mozilla.rhino
 Bundle-Version: 1.7
-Bundle-ClassPath: org.mozilla.rhino.jar
+Bundle-ClassPath: org.mozilla.rhino.jar,
+ js-engine.jar
 Bundle-Vendor: Mozilla Foundation
 Export-Package: 
+ com.sun.phobos.script.javascript,
+ com.sun.phobos.script.util,
  org.mozilla.classfile,
  org.mozilla.javascript,
  org.mozilla.javascript.continuations,
