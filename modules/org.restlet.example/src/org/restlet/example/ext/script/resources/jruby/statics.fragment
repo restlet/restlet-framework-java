@@ -42,7 +42,7 @@ $statics_module = Module.new do
 		value = nil
 		$script.statics_lock.read_lock().lock()
 		begin
-			value = $script.statics.get name
+			value = $script.statics[name]
 			if value == nil
 				$script.statics_lock.read_lock().unlock()
 	
@@ -52,10 +52,10 @@ $statics_module = Module.new do
 				$script.statics_lock.write_lock().lock()
 				begin
 					# We must test again, because statics may have changed
-					value = $script.statics.get name
+					value = $script.statics[name]
 					if value == nil
 						value = yield
-						$script.statics.put name, value
+						$script.statics[name] = value
 					end
 				ensure
 					$script.statics_lock.read_lock().lock()
@@ -72,7 +72,7 @@ $statics_module = Module.new do
 	def set_static name, value
 		$script.statics_lock.write_lock().lock()
 		begin
-			$script.statics.put name, value
+			$script.statics[name] = value
 		ensure
 			$script.statics_lock.write_lock().unlock()
 		end

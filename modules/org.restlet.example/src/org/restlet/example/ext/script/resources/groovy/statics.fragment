@@ -9,7 +9,7 @@ getStatic = { name, getDefaultValue ->
 	def value
 	script.staticsLock.readLock().lock()
 	try {
-		value = script.statics.get(name)
+		value = script.statics[name]
 		if(value == null) {
 			script.staticsLock.readLock().unlock()
 
@@ -19,10 +19,10 @@ getStatic = { name, getDefaultValue ->
 			script.staticsLock.writeLock().lock()
 			try {
 				// We must test again, because statics may have changed
-				value = script.statics.get(name)
+				value = script.statics[name]
 				if(value == null) {
 					value = getDefaultValue()
-					script.statics.put(name, value)
+					script.statics[name] = value
 				}
 			}
 			finally {
@@ -40,7 +40,7 @@ getStatic = { name, getDefaultValue ->
 setStatic = { name, value ->
 	script.staticsLock.writeLock().lock()
 	try {
-		script.statics.put(name, value)
+		script.statics[name] = value
 	}
 	finally {
 		script.staticsLock.writeLock().unlock()
