@@ -17,10 +17,11 @@ The former is 100% Java, while the latter uses a Java bridge to a natively compi
 </p><p>
 Jython requires a small library for
 <a href="http://java.sun.com/developer/technicalArticles/J2SE/Desktop/scripting/">Java scripting standard (JSR-223)</a>, which is available 
-at the <a href="https://scripting.dev.java.net/">Java scripting project</a>. (This was true for version 2.2.1.) 
+at the <a href="https://scripting.dev.java.net/">Java scripting project</a>. (This was true for version 2.2.1.)
+See the <a href="requirements.page">requirement notes</a> if you are using Java 5.
 </p><p>
 <i>Important!</i> At this time (version 2.3), Jepp cannot be used for creating REST resources, due to its very limited implementation of the
-Java scripting standard. It is OK for embedded scripts, though. 
+Java scripting standard. It is OK for embedded scripts, though. Also note that Jepp requires Java 5, and will not work on Java 5.
 </p>
 
 <%& exampleBasePath + 'footer.fragment' %>

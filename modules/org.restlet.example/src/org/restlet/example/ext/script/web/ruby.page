@@ -13,7 +13,8 @@ Ruby has some excellent libraries, and may be very productive for developing lar
 <p>
 Ruby is implemented by <a href="http://jruby.codehaus.org/">JRuby</a>. Note that you also need a small library for
 <a href="http://java.sun.com/developer/technicalArticles/J2SE/Desktop/scripting/">Java scripting standard (JSR-223)</a>, which is available 
-at the <a href="https://scripting.dev.java.net/">Java scripting project</a>. (This was true for version 1.2.0RC2.)
-</p>
+at the <a href="https://scripting.dev.java.net/">Java scripting project</a>. (This was true for version 1.2.)
+See the <a href="requirements.page">requirement notes</a> if you are using Java 5.
+</p> 
 
 <%& exampleBasePath + 'footer.fragment' %>

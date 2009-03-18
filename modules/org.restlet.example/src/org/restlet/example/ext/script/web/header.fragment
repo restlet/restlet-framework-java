@@ -34,6 +34,7 @@
 								<li><a href="other.page">Other...</a></li>
 							</ul>
 						</li>
+						<li><a href="requirements.page">Requirements</a></li>
 						<li><a href="performance.page">Performance Notes</a></li>
 						<li><a href="restlet.page">Integration with Restlet</a></li>
 						<li><a href="legal.page">License and Trademarks</a></li>

@@ -22,6 +22,11 @@ This is true for Sun's JDK and OpenJDK. Otherwise, JavaScript is implemented by 
 Note that Sun and OpenJDK's built-in JavaScript support is a simplified version of Rhino, which may limit the power of Scripturian, so that
 Mozilla's version is recommended. If you have both versions installed, use the "rhino-nonjdk" name to circumvent the built-in Rhino
 (see demo JavaScript source code).
+</p><p>
+Mozilla's Rhino requires a small library for
+<a href="http://java.sun.com/developer/technicalArticles/J2SE/Desktop/scripting/">Java scripting standard (JSR-223)</a>, which is available 
+at the <a href="https://scripting.dev.java.net/">Java scripting project</a>. (This was true for version 1.7R1.)
+See the <a href="requirements.page">requirement notes</a> if you are using Java 5.
 </p>
 
 <%& exampleBasePath + 'footer.fragment' %>
