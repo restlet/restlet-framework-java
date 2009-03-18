@@ -1,0 +1,33 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Jython
+Bundle-SymbolicName: org.python
+Bundle-Version: 2.2.1
+Bundle-ClassPath: org.python.jar,
+ jython-engine.jar
+Bundle-Vendor: Python Software Foundation
+Import-Package: javax.script
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Export-Package: com.sun.script.jython,
+ com.ziclix.python.sql,
+ com.ziclix.python.sql.connect,
+ com.ziclix.python.sql.handler,
+ com.ziclix.python.sql.pipe,
+ com.ziclix.python.sql.pipe.csv,
+ com.ziclix.python.sql.pipe.db,
+ com.ziclix.python.sql.procedure,
+ com.ziclix.python.sql.util,
+ javatests,
+ jxxload_help,
+ org.python.compiler,
+ org.python.core,
+ org.python.core.adapter,
+ org.python.modules,
+ org.python.modules.sets,
+ org.python.modules.sre,
+ org.python.modules.time,
+ org.python.parser,
+ org.python.parser.ast,
+ org.python.rmi,
+ org.python.util
+

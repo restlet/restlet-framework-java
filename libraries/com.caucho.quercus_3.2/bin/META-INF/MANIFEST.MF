@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Quercus
+Bundle-SymbolicName: com.caucho.quercus
+Bundle-Version: 3.2.1
+Bundle-ClassPath: com.caucho.quercus.jar
+Bundle-Vendor: Caucho
+Import-Package: javax.script
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+

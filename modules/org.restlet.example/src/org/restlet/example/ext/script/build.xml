@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+
+<project name="Restlet Script Extension Example">
+
+	<property name="root" value="../../../../../../.." />
+	<property name="lib" value="${root}/lib" />
+	<property name="bin" value="${root}/bin" />
+	<property name="wrapper-lib" value="${lib}/org.tanukisoftware.wrapper_3.2" />
+	<property name="scripturian-lib" value="${lib}/com.threecrickets.scripturian_1.0" />
+	<property name="json-lib" value="${lib}/org.json_2.0" />
+	<property name="commons-logging-lib" value="${lib}/org.apache.commons.logging_1.1" />
+	<property name="jsr223-lib" value="${lib}/jaxax.script_1.0" />
+	<property name="rhino-lib" value="${lib}/org.mozilla.rhino_1.7" />
+	<property name="quercus-lib" value="${lib}/com.caucho.quercus_3.2" />
+	<property name="jython-lib" value="${lib}/org.python_2.2" />
+	<property name="jruby-lib" value="${lib}/org.jruby_1.2" />
+	<property name="groovy-lib" value="${lib}/org.codehaus.groovy_1.6" />
+
+	<target name="wrapper" description="Fetch Wrapper libraries">
+		<copy todir="jar/" flatten="true">
+			<file file="${wrapper-lib}/wrapper.jar" />
+		</copy>
+	</target>
+
+	<target name="wrapper-linux" description="Fetch Wrapper libraries for Linux">
+		<copy todir="." flatten="true">
+			<file file="${bin}/linux/wrapper" />
+		</copy>
+	</target>
+
+	<target name="wrapper-windows" description="Fetch Wrapper libraries for Windows">
+		<copy todir="." flatten="true">
+			<file file="${bin}/win/wrapper.exe" />
+		</copy>
+	</target>
+
+	<target name="wrapper-linux-x86-64bit" depends="wrapper-linux" description="Fetch Wrapper binaries for Linux x86 64bit">
+		<copy todir="bin/" flatten="true">
+			<file file="${wrapper-lib}/libwrapper-linux-x86-64.so" />
+		</copy>
+	</target>
+
+	<target name="wrapper-linux-x86-32bit" depends="wrapper-linux" description="Fetch Wrapper binaries for Linux x86 32bit">
+		<copy todir="bin/" flatten="true">
+			<file file="${wrapper-lib}/libwrapper-linux-x86-32.so" />
+		</copy>
+	</target>
+
+	<target name="wrapper-windows-x86-32bit" depends="wrapper-windows" description="Fetch Wrapper binaries for Windows x86 32bit">
+		<copy todir="bin/" flatten="true">
+			<file file="${wrapper-lib}/wrapper-windows-x86-32.dll" />
+		</copy>
+	</target>
+
+	<target name="restlet" description="Fetch Restlet libraries">
+		<copy todir="jar/restlet/" flatten="true">
+			<file file="${lib}/org.restlet.jar" />
+			<file file="${lib}/org.restlet.ext.script.jar" />
+			<file file="${scripturian-lib}/com.threecrickets.scripturian.jar" />
+			<file file="${lib}/org.restlet.ext.json.jar" />
+			<file file="${json-lib}/org.json.jar" />
+		</copy>
+	</target>
+
+	<target name="logging" description="Fetch logging libraries">
+		<copy todir="jar/logging/" flatten="true">
+			<file file="${commons-logging-lib}/org.apache.commons.logging.jar" />
+		</copy>
+	</target>
+
+	<target name="scripting" description="Fetch scripting libraries">
+		<copy todir="jar/scripting/" flatten="true">
+			<file file="${jsr223-lib}/javax.script.jar" />
+			<file file="${rhino-lib}/org.mozilla.rhino.jar" />
+			<file file="${quercus-lib}/com.caucho.quercus.jar" />
+			<file file="${jython-lib}/org.python.jar" />
+			<file file="${jruby-lib}/org.jruby.jar" />
+			<file file="${groovy-lib}/org.codehaus.groovy.jar" />
+		</copy>
+	</target>
+
+	<target name="libraries" depends="wrapper, restlet, logging, scripting" description="Fetch all libraries">
+	</target>
+
+</project>

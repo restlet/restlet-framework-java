@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Groovy
+Bundle-SymbolicName: org.codehaus.groovy
+Bundle-Version: 1.6
+Bundle-ClassPath: org.codehaus.groovy.jar
+Bundle-Vendor: Codehaus
+Import-Package: javax.script
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+
