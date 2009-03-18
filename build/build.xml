@@ -756,6 +756,11 @@
 			<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@lib-@{name}-version@" value="${mod-pom-@{name}-version}" />
 			<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@group-id@" value="${mod-maven-groupId}" />
 			<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@artifact-id@" value="${mod-pom-@{name}-artifactId}" />
+
+			<!-- Generation of the pom.xml file --> 
+			<!--
+			<copy file="${temp}/poms/${mod-@{name}-id}.pom" tofile="../modules/${mod-@{name}-id}/pom.xml" overwrite="true" />
+			-->
 		</sequential>
 	</macrodef>
 
