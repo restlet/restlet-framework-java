@@ -261,12 +261,19 @@ public class RdfN3ContentHandler extends GraphHandler {
     }
 
     private void link(Object source, Reference typeRef, Object target) {
-        System.out.print("Nouveau Link : ");
-        System.out.println(source);
-        System.out.print("\t\t");
-        System.out.println(typeRef);
-        System.out.print("\t\t");
-        System.out.println(target);
+        if (source instanceof Reference) {
+            if (target instanceof Reference) {
+                link((Reference) source, typeRef, (Reference) target);
+            } else {
+                if (target instanceof Literal) {
+                    link((Reference) source, typeRef, (Literal) target);
+                }
+            }
+        } else if (source instanceof Graph) {
+            if (target instanceof Reference) {
+                link((Graph) source, typeRef, (Reference) target);
+            }
+        }
     }
 
     @Override

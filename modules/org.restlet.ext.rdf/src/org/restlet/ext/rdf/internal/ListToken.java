@@ -34,7 +34,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.restlet.ext.rdf.Graph;
+import org.restlet.data.Reference;
+import org.restlet.ext.rdf.RdfN3Representation;
 
 class ListToken extends LexicalUnit {
     List<LexicalUnit> lexicalUnits;
@@ -48,23 +49,35 @@ class ListToken extends LexicalUnit {
 
     @Override
     public Object resolve() {
-/*
-     <rdf:Description>
-        <rdf:first rdf:resource="http://www.example.com#machin"/>
-        <rdf:rest rdf:parseType="Resource">
-            <rdf:first rdf:resource="http://www.example.com#truc"/>
-            <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
-        </rdf:rest>
-    </rdf:Description>
-         
- */
-        Graph result = new Graph();
+        Reference currentBlankNode = new Reference((String) new BlankNodeToken(
+                RdfN3ContentHandler.newBlankNodeId()).resolve());
         for (LexicalUnit lexicalUnit : lexicalUnits) {
-  
+            Object element = lexicalUnit.resolve();
+
+            if (element instanceof Reference) {
+                getContentHandler().link(currentBlankNode,
+                        RdfN3Representation.LIST_FIRST, (Reference) element);
+            } else if (element instanceof String) {
+                getContentHandler().link(currentBlankNode,
+                        RdfN3Representation.LIST_FIRST,
+                        new Reference((String) element));
+            } else {
+                // TODO Error.
+            }
+
+            Reference restBlankNode = new Reference(
+                    (String) new BlankNodeToken(RdfN3ContentHandler
+                            .newBlankNodeId()).resolve());
+
+            getContentHandler().link(currentBlankNode,
+                    RdfN3Representation.LIST_REST, restBlankNode);
+            currentBlankNode = restBlankNode;
         }
+        getContentHandler().link(currentBlankNode,
+                RdfN3Representation.LIST_REST, RdfN3Representation.OBJECT_NIL);
 
         setResolved(true);
-        return result;
+        return currentBlankNode;
     }
 
     @Override
