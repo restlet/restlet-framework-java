@@ -38,6 +38,18 @@ import org.restlet.representation.Representation;
 
 public class RdfN3Representation extends RdfRepresentation {
 
+    /** List "first". */
+    public static Reference LIST_FIRST = new Reference(
+            "http://www.w3.org/1999/02/22-rdf-syntax-ns#first");
+
+    /** List "rest". */
+    public static Reference LIST_REST = new Reference(
+            "http://www.w3.org/1999/02/22-rdf-syntax-ns#rest");
+
+    /** Object "nil". */
+    public static Reference OBJECT_NIL = new Reference(
+            "http://www.w3.org/1999/02/22-rdf-syntax-ns#nil");
+
     /** Predicate "implies" . */
     public static Reference PREDICATE_IMPLIES = new Reference(
             "http://www.w3.org/2000/10/swap/log#implies");
@@ -50,17 +62,13 @@ public class RdfN3Representation extends RdfRepresentation {
     public static Reference PREDICATE_TYPE = new Reference(
             "http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
 
-    /** Object "nil". */
-    public static Reference OBJECT_NIL = new Reference(
-            "http://www.w3.org/1999/02/22-rdf-syntax-ns#nil");
+    /** Rdf schema. */
+    public static Reference RDF_SCHEMA = new Reference(
+            "http://www.w3.org/2000/01/rdf-schema#");
 
     /** Rdf syntax. */
     public static Reference RDF_SYNTAX = new Reference(
             "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
-
-    /** Rdf schema. */
-    public static Reference RDF_SCHEMA = new Reference(
-            "http://www.w3.org/2000/01/rdf-schema#");
 
     public RdfN3Representation(Representation rdfRepresentation, Graph linkSet)
             throws IOException {
