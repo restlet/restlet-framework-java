@@ -239,9 +239,14 @@ public class ScriptedTextResource extends Resource {
     private static Map<String, RepresentableString> cache = new HashMap<String, RepresentableString>();
 
     /**
+     * Constructs the resource.
+     * 
      * @param context
+     *            The restlet context
      * @param request
+     *            The request
      * @param response
+     *            The response
      */
     public ScriptedTextResource(Context context, Request request,
             Response response) {

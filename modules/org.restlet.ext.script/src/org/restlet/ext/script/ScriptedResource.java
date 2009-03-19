@@ -286,8 +286,11 @@ public class ScriptedResource extends Resource {
      * point in the script.
      * 
      * @param context
+     *            The restlet context
      * @param request
+     *            The request
      * @param response
+     *            The response
      * @see #initializeResourceEntryPointName
      * @see org.restlet.resource.Resource#Resource(Context, Request, Response)
      */
