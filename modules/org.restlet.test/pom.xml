@@ -14,6 +14,7 @@
 	<description>All Restlet unit tests.</description>
 
 	<build>
+	
 		<testSourceDirectory>${basedir}/src</testSourceDirectory>
 	</build>
 
