@@ -58,7 +58,7 @@ public class Link {
     /**
      * Constructor.
      * 
-     * @param sourcegGraph
+     * @param sourceGraph
      *            The source graph.
      * @param typeRef
      *            The type reference.
@@ -72,11 +72,11 @@ public class Link {
     /**
      * Constructor.
      * 
-     * @param sourcegGraph
+     * @param sourceGraph
      *            The source graph.
      * @param typeRef
      *            The type reference.
-     * @param targetReference
+     * @param targetRef
      *            The target reference.
      */
     public Link(Graph sourceGraph, Reference typeRef, Reference targetRef) {
