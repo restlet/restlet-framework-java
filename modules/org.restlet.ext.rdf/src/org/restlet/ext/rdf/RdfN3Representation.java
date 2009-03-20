@@ -127,7 +127,7 @@ public class RdfN3Representation extends RdfRepresentation {
             if (link.hasReferenceSource()) {
                 write(outputStream, link.getSourceAsReference(), prefixes);
             } else if (link.hasLinkSource()) {
-                Link source = link.getSourceAsLink();
+                // Link source = link.getSourceAsLink();
             } else if (link.hasGraphSource()) {
                 outputStream.write("{".getBytes());
                 write(outputStream, link.getSourceAsGraph(),

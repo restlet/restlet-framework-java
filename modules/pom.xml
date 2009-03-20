@@ -65,7 +65,8 @@
 		<lib-httpclient-version>3.1</lib-httpclient-version>
 		<lib-io-version>1.4</lib-io-version>
 		<lib-javamail-version>1.4.1</lib-javamail-version>
-		<lib-jaxb-version>2.1.10</lib-jaxb-version>
+		<lib-jaxb-api-version>2.1</lib-jaxb-api-version>
+		<lib-jaxb-ri-version>2.1.10</lib-jaxb-ri-version>
 		<lib-jaxrs-version>1.0</lib-jaxrs-version>
 		<lib-jetty-version>6.1.15</lib-jetty-version>
 		<lib-jibx-version>1.1.5</lib-jibx-version>

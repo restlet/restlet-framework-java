@@ -252,7 +252,8 @@
 	<path id="mod-jaxb-path">
 		<path refid="mod-core-path" />
 		<pathelement path="${classes}/${mod-core-id}" />
-		<fileset dir="${lib}/${lib-jaxb-id}" includes="*.jar" />
+		<fileset dir="${lib}/${lib-jaxb-api-id}" includes="*.jar" />
+		<fileset dir="${lib}/${lib-jaxb-ri-id}" includes="*.jar" />
 		<fileset dir="${lib}/${lib-stax-id}" includes="*.jar" />
 	</path>
 
@@ -1252,7 +1253,7 @@
 			     Order is important here: it *must* appear after the link for Java 5 documentation. -->
 			<link href="http://java.sun.com/javase/6/docs/api/" />
 			<link href="http://java.sun.com/products/javamail/javadocs/" />
-			<link href="https://jaxb.dev.java.net/nonav/${lib-jaxb-version}.${lib-jaxb-release}/docs/api/" />
+			<link href="https://jaxb.dev.java.net/nonav/${lib-jaxb-ri-version}.${lib-jaxb-ri-release}/docs/api/" />
 			<link href="http://jetty.mortbay.org/apidocs/" />
 			<link href="http://jibx.sourceforge.net/api/" />
 			<link href="https://jsr311.dev.java.net/nonav/javadoc/" />
@@ -1493,7 +1494,8 @@
 		<stageLibrary name="httpclient" />
 		<stageLibrary name="io" />
 		<stageLibrary name="javamail" />
-		<stageLibrary name="jaxb" />
+		<stageLibrary name="jaxb-api" />
+		<stageLibrary name="jaxb-ri" />
 		<stageLibrary name="jaxrs" />
 		<stageLibrary name="activation" />
 		<stageLibrary name="jetty" />
