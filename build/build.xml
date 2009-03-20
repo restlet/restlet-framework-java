@@ -1796,7 +1796,6 @@
 		<stageLibrary name="velocity" />
 		<stageLibrary name="wrapper" />
 		<stageLibrary name="bloat" />
-		<stageLibrary name="xdb" />
 
 		<!-- Package modules -->
 		<stageModule name="api" />
