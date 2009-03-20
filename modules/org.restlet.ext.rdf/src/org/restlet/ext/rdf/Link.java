@@ -221,10 +221,10 @@ public class Link {
     /**
      * Returns the target graph.
      * 
-     * @return The target literal.
+     * @return The target graph.
      */
-    public Literal getTargetAsGraph() {
-        return hasLiteralTarget() ? (Literal) getTarget() : null;
+    public Graph getTargetAsGraph() {
+        return hasGraphTarget() ? (Graph) getTarget() : null;
     }
 
     /**

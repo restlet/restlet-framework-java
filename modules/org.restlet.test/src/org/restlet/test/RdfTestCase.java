@@ -77,7 +77,7 @@ public class RdfTestCase extends TestCase {
 
         // File file = new File("/bnf.n3");
         // rep = new FileRepresentation(file.getPath(), MediaType.TEXT_PLAIN);
-        new RdfN3Representation(rep, new Graph());
-
+        Representation n3Rep = new RdfN3Representation(rep, new Graph());
+        n3Rep.write(System.out);
     }
 }
