@@ -987,7 +987,7 @@
 		<pomModule name="xdb" />
 
 		<!-- Generate the parent POM -->
-		<fmpp sourcefile="${tmpl}/poms/org.restlet.parent.xml" outputfile="${temp}/poms/${parent-maven-artifactId}.pom" dataroot="${basedir}" >
+		<fmpp sourcefile="${tmpl}/poms/${parent-maven-artifactId}.pom" outputfile="${temp}/poms/${parent-maven-artifactId}.pom" dataroot="${basedir}" >
 			<data>
 				ant: antProperties()
 				lib: properties(libraries.properties)
