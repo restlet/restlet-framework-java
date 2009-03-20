@@ -69,7 +69,7 @@
 		<module>org.restlet</module>
 		<module>org.restlet.example</module>
 		<module>org.restlet.gwt</module>
-		<module>org.restlet.test</module>
+		<!-- <module>org.restlet.test</module> -->
 
 		<module>org.restlet.ext.atom</module>
 		<module>org.restlet.ext.fileupload</module>
@@ -90,7 +90,7 @@
 		<module>org.restlet.ext.net</module>
 		<module>org.restlet.ext.oauth</module>
 		<module>org.restlet.ext.rdf</module>
-		<module>org.restlet.ext.script</module>
+		<!-- <module>org.restlet.ext.script</module> -->
 		<module>org.restlet.ext.servlet</module>
 		<module>org.restlet.ext.shell</module>
 		<module>org.restlet.ext.simple</module>
