@@ -55,6 +55,8 @@ Changes log
         - Added a client connector supporting ZIP and JAR URIs that
           are based on local archive files.
           Contributed by Remi Dewitte.
+        - Enhanced JsonRepresentation based on Tal Liron's contributions.
+          Now supports indentation configuration.
     - API changes
         - Added Role class and "roles" property to Application.
         - Fully refactored the security package introduce in 1.2 M1 

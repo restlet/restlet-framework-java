@@ -31,6 +31,7 @@
 package org.restlet.ext.json;
 
 import java.io.IOException;
+import java.io.Writer;
 import java.util.Map;
 
 import org.json.JSONArray;
@@ -42,6 +43,7 @@ import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.representation.Representation;
 import org.restlet.representation.StringRepresentation;
+import org.restlet.representation.WriterRepresentation;
 
 /**
  * Representation based on a JSON document. JSON stands for JavaScript Object
@@ -50,7 +52,20 @@ import org.restlet.representation.StringRepresentation;
  * @author Jerome Louvel
  * @see <a href="http://www.json.org">JSON home</a>
  */
-public class JsonRepresentation extends StringRepresentation {
+public class JsonRepresentation extends WriterRepresentation {
+
+    /** The wrapped JSON object. */
+    private Object jsonObject;
+
+    /** The wrapped JSON representation. */
+    private Representation jsonRepresentation;
+
+    /** Number of spaces to use for indentation. */
+    private int indentFactor;
+
+    /** Indicates if JSON objects and arrays should be indented. */
+    private boolean indent;
+
     /**
      * Constructor from a JSON array.
      * 
@@ -58,7 +73,8 @@ public class JsonRepresentation extends StringRepresentation {
      *            The JSON array.
      */
     public JsonRepresentation(JSONArray jsonArray) {
-        this(jsonArray.toString());
+        super(MediaType.APPLICATION_JSON);
+        init(jsonArray);
     }
 
     /**
@@ -68,8 +84,8 @@ public class JsonRepresentation extends StringRepresentation {
      *            The JSON object.
      */
     public JsonRepresentation(JSONObject jsonObject) {
-        super(jsonObject.toString(), MediaType.APPLICATION_JSON, null,
-                CharacterSet.UTF_8);
+        super(MediaType.APPLICATION_JSON);
+        init(jsonObject);
     }
 
     /**
@@ -79,7 +95,8 @@ public class JsonRepresentation extends StringRepresentation {
      *            The JSON stringer.
      */
     public JsonRepresentation(JSONStringer jsonStringer) {
-        this(jsonStringer.toString());
+        super(MediaType.APPLICATION_JSON);
+        init(jsonStringer);
     }
 
     /**
@@ -89,7 +106,8 @@ public class JsonRepresentation extends StringRepresentation {
      *            The JSON tokener.
      */
     public JsonRepresentation(JSONTokener jsonTokener) {
-        this(jsonTokener.toString());
+        super(MediaType.APPLICATION_JSON);
+        init(jsonTokener);
     }
 
     /**
@@ -122,8 +140,9 @@ public class JsonRepresentation extends StringRepresentation {
      */
     public JsonRepresentation(Representation jsonRepresentation)
             throws IOException {
-        super(jsonRepresentation.getText(), MediaType.APPLICATION_JSON, null,
-                CharacterSet.UTF_8);
+        super((jsonRepresentation == null) ? null : jsonRepresentation
+                .getMediaType());
+        this.jsonRepresentation = jsonRepresentation;
     }
 
     /**
@@ -133,7 +152,102 @@ public class JsonRepresentation extends StringRepresentation {
      *            The JSON string.
      */
     public JsonRepresentation(String jsonString) {
-        super(jsonString, MediaType.APPLICATION_JSON, null, CharacterSet.UTF_8);
+        super(MediaType.APPLICATION_JSON);
+        this.jsonRepresentation = new StringRepresentation(jsonString,
+                MediaType.APPLICATION_JSON, null, CharacterSet.UTF_8);
+    }
+
+    /**
+     * Returns the number of spaces to use for indentation.
+     * 
+     * @return The number of spaces to use for indentation.
+     */
+    public int getIndentFactor() {
+        return indentFactor;
+    }
+
+    /**
+     * Returns the JSON text for the wrapped JSON object or representation.
+     * 
+     * @return The JSON text.
+     * @throws JSONException
+     */
+    private String getJsonText() throws JSONException {
+        String result = null;
+
+        if (this.jsonObject != null) {
+            if (this.jsonObject instanceof JSONArray) {
+                JSONArray jsonArray = (JSONArray) this.jsonObject;
+
+                if (isIndent()) {
+                    result = jsonArray.toString(getIndentFactor());
+                } else {
+                    result = jsonArray.toString();
+                }
+            } else if (this.jsonObject instanceof JSONObject) {
+                JSONObject jsonObject = (JSONObject) this.jsonObject;
+
+                if (isIndent()) {
+                    result = jsonObject.toString(getIndentFactor());
+                } else {
+                    result = jsonObject.toString();
+                }
+            } else if (this.jsonObject instanceof JSONStringer) {
+                JSONStringer jsonStringer = (JSONStringer) this.jsonObject;
+                result = jsonStringer.toString();
+            } else if (this.jsonObject instanceof JSONTokener) {
+                JSONTokener jsonTokener = (JSONTokener) this.jsonObject;
+                result = jsonTokener.toString();
+            }
+        } else if (this.jsonRepresentation != null) {
+            try {
+                result = this.jsonRepresentation.getText();
+            } catch (IOException e) {
+                throw new JSONException(e);
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * 
+     * @param jsonObject
+     */
+    private void init(Object jsonObject) {
+        setCharacterSet(CharacterSet.UTF_8);
+        this.jsonObject = jsonObject;
+        this.indent = false;
+        this.indentFactor = 3;
+    }
+
+    /**
+     * Indicates if JSON objects and arrays should be indented.
+     * 
+     * @return True if JSON objects and arrays should be indented.
+     */
+    public boolean isIndent() {
+        return indent;
+    }
+
+    /**
+     * Indicates if JSON objects and arrays should be indented.
+     * 
+     * @param indent
+     *            True if JSON objects and arrays should be indented.
+     */
+    public void setIndent(boolean indent) {
+        this.indent = indent;
+    }
+
+    /**
+     * Sets the number of spaces to use for indentation.
+     * 
+     * @param indentFactor
+     *            The number of spaces to use for indentation.
+     */
+    public void setIndentFactor(int indentFactor) {
+        this.indentFactor = indentFactor;
     }
 
     /**
@@ -143,7 +257,7 @@ public class JsonRepresentation extends StringRepresentation {
      * @throws JSONException
      */
     public JSONArray toJsonArray() throws JSONException {
-        return new JSONArray(getText());
+        return new JSONArray(getJsonText());
     }
 
     /**
@@ -153,7 +267,16 @@ public class JsonRepresentation extends StringRepresentation {
      * @throws JSONException
      */
     public JSONObject toJsonObject() throws JSONException {
-        return new JSONObject(getText());
+        return new JSONObject(getJsonText());
+    }
+
+    @Override
+    public void write(Writer writer) throws IOException {
+        try {
+            writer.write(getJsonText());
+        } catch (JSONException e) {
+            throw new IOException(e.getLocalizedMessage());
+        }
     }
 
 }
