@@ -16,7 +16,7 @@
 		<dependency>
 			<groupId>com.sun.xml.bind</groupId>
 			<artifactId>jaxb-impl</artifactId>
-			<version>${lib-jaxb-version}</version>
+			<version>${lib-jaxb-ri-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.restlet</groupId>
