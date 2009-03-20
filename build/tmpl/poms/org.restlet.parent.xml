@@ -33,6 +33,11 @@
             <url>http://download.java.net/maven/1</url>
             <layout>legacy</layout>
         </repository>
+        <repository>
+            <id>maven-caucho</id>
+            <url>http://caucho.com/m2/</url>
+            <layout>legacy</layout>
+        </repository>
 		<repository>
 			<id>maven-restlet</id>
 			<name>Restlet repository</name>

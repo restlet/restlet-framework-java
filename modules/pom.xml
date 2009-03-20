@@ -33,6 +33,11 @@
             <url>http://download.java.net/maven/1</url>
             <layout>legacy</layout>
         </repository>
+        <repository>
+            <id>maven-caucho</id>
+            <url>http://caucho.com/m2/</url>
+            <layout>legacy</layout>
+        </repository>
 		<repository>
 			<id>maven-restlet</id>
 			<name>Restlet repository</name>
@@ -41,11 +46,11 @@
 	</repositories>
 
 	<properties>
-		<lib-activation-version>1.1</lib-activation-version>
+		<lib-activation-version>1.1.1</lib-activation-version>
 		<lib-antlr-version>3.0</lib-antlr-version>
 		<lib-bloat-version>1.0</lib-bloat-version>
 		<lib-bouncycastle-version>1.34</lib-bouncycastle-version>
-		<lib-cglib-version>2.1</lib-cglib-version>
+		<lib-cglib-version>2.1.3</lib-cglib-version>
 		<lib-cli-version>1.1</lib-cli-version>
 		<lib-codec-version>1.3</lib-codec-version>
 		<lib-collections-version>3.2</lib-collections-version>
@@ -54,16 +59,19 @@
 		<lib-dbcp-version>1.2.2</lib-dbcp-version>
 		<lib-fileupload-version>1.2</lib-fileupload-version>
 		<lib-freemarker-version>2.3.15</lib-freemarker-version>
-		<lib-grizzly-version>1.9.8</lib-grizzly-version>
-		<lib-gwt-version>1.5</lib-gwt-version>
+		<lib-grizzly-version>1.9.10</lib-grizzly-version>
+		<lib-groovy-version>1.6.0</lib-groovy-version>
+		<lib-gwt-version>1.5.3</lib-gwt-version>
 		<lib-httpclient-version>3.1</lib-httpclient-version>
 		<lib-io-version>1.4</lib-io-version>
-		<lib-javamail-version>1.4</lib-javamail-version>
-		<lib-jaxb-version>2.1.9</lib-jaxb-version>
+		<lib-javamail-version>1.4.1</lib-javamail-version>
+		<lib-jaxb-version>2.1.10</lib-jaxb-version>
 		<lib-jaxrs-version>1.0</lib-jaxrs-version>
-		<lib-jetty-version>6.1.11</lib-jetty-version>
+		<lib-jetty-version>6.1.15</lib-jetty-version>
 		<lib-jibx-version>1.1.5</lib-jibx-version>
-		<lib-jline-version>0.9</lib-jline-version>
+		<lib-jline-version>0.9.94</lib-jline-version>
+		<lib-jpython-version>2.2.1</lib-jpython-version>
+		<lib-jruby-version>1.2.0</lib-jruby-version>
 		<lib-json-version>2.0</lib-json-version>
 		<lib-jsslutils-version>0.5.1</lib-jsslutils-version>
 		<lib-junit-version>4.4</lib-junit-version>
@@ -75,19 +83,20 @@
 		<lib-oauth-version>1.0</lib-oauth-version>
 		<lib-osgi-version>1.0</lib-osgi-version>
 		<lib-pool-version>1.3</lib-pool-version>
+		<lib-quercus-version>3.2.1</lib-quercus-version>
 		<lib-retroweaver-version>1.2</lib-retroweaver-version>
 		<lib-rhino-version>${lib-rhino-version}R1</lib-rhino-version>
-		<lib-scripturian-version>1.0</lib-scripturian-version>
+		<lib-scripturian-version>1.0.0.rc1</lib-scripturian-version>
 		<lib-script-version>1.0</lib-script-version>
 		<lib-servlet-version>2.5</lib-servlet-version>
-		<lib-simple-version>4.1.1</lib-simple-version>
+		<lib-simple-version>4.1.8</lib-simple-version>
 		<lib-solr-version>1.3.0</lib-solr-version>
 		<lib-spring-modules-db4o-version>0.9</lib-spring-modules-db4o-version>
 		<lib-spring-version>2.5.6</lib-spring-version>
-		<lib-stax-version>1.0</lib-stax-version>
+		<lib-stax-version>1.0.2</lib-stax-version>
 		<lib-tika-version>0.2</lib-tika-version>
 		<lib-velocity-version>1.5</lib-velocity-version>
-		<lib-wrapper-version>3.2</lib-wrapper-version>
+		<lib-wrapper-version>3.2.3</lib-wrapper-version>
 		<lib-xdb-version>11.1</lib-xdb-version>
 	</properties>
 
