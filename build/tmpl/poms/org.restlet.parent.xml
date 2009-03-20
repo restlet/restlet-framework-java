@@ -48,7 +48,11 @@
 		<#else>
  	        <#if key?ends_with("-version")>
                 <#if !((lib?keys)?seq_contains(key?replace("-version", "-maven-version")))>
+                    <#if ((lib?keys)?seq_contains(key?replace("-version", "-release")))>
+		<${key}>${lib[key]}.${lib[key?replace("-version", "-release")]}</${key}>
+                    <#else>
 		<${key}>${lib[key]}</${key}>
+                    </#if>
                 </#if>
             </#if>
         </#if>
