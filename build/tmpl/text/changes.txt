@@ -39,6 +39,7 @@ Changes log
          to not throw class not found exceptions if they are not
          available in the classpath (JavaMail, JAXB, etc.)
        - Updated JAXB to version 2.1.10.
+       - Upgraded Grizzly to version 1.9.10.
     
 - 1.1.3 (2009-02-26)
     - Bugs fixed
