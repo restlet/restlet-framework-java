@@ -40,6 +40,12 @@ import org.restlet.data.Reference;
 import org.restlet.ext.rdf.internal.RdfN3ContentHandler;
 import org.restlet.representation.Representation;
 
+/**
+ * Representation for RDF/n3 documents. It knows how to serialize and
+ * deserialize a {@link Graph}.
+ * 
+ * @author Thierry Boileau
+ */
 public class RdfN3Representation extends RdfRepresentation {
 
     /** List "first". */

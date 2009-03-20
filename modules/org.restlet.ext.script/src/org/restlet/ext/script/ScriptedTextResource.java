@@ -60,7 +60,7 @@ import com.threecrickets.scripturian.ScriptContextController;
 import com.threecrickets.scripturian.ScriptSource;
 
 /**
- * A restlet resource which runs an {@link EmbeddedScript} and redirects its
+ * A Restlet resource which runs an {@link EmbeddedScript} and redirects its
  * standard output to a {@link Representation}, for both HTTP GET and POST
  * verbs.
  * <p>
@@ -241,8 +241,8 @@ public class ScriptedTextResource extends Resource {
     /**
      * Constructs the resource.
      * 
-     * @param context
-     *            The restlet context
+     * @param context   
+     *            The Restlet context
      * @param request
      *            The request
      * @param response

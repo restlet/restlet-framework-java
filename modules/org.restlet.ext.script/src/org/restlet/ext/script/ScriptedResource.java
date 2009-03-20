@@ -55,7 +55,7 @@ import com.threecrickets.scripturian.ScriptContextController;
 import com.threecrickets.scripturian.ScriptSource;
 
 /**
- * A restlet resource which delegates functionality to an {@link EmbeddedScript}
+ * A Restlet resource which delegates functionality to an {@link EmbeddedScript}
  * with well-defined entry points. The entry points must be global functions, or
  * closures, or whatever other technique the scripting engine uses to make entry
  * point available to Java. They entry points are:
@@ -286,7 +286,7 @@ public class ScriptedResource extends Resource {
      * point in the script.
      * 
      * @param context
-     *            The restlet context
+     *            The Restlet context
      * @param request
      *            The request
      * @param response
