@@ -31,6 +31,7 @@
 package org.restlet.ext.rdf;
 
 import java.io.IOException;
+import java.io.OutputStream;
 
 import org.restlet.data.Reference;
 import org.restlet.ext.rdf.internal.RdfN3ContentHandler;
@@ -70,9 +71,19 @@ public class RdfN3Representation extends RdfRepresentation {
     public static Reference RDF_SYNTAX = new Reference(
             "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
 
+    public RdfN3Representation(Graph linkSet) {
+        super(linkSet);
+    }
+
     public RdfN3Representation(Representation rdfRepresentation, Graph linkSet)
             throws IOException {
         super(rdfRepresentation, linkSet);
         new RdfN3ContentHandler(linkSet, rdfRepresentation);
+    }
+
+    @Override
+    public void write(OutputStream outputStream) throws IOException {
+
+        super.write(outputStream);
     }
 }
