@@ -37,8 +37,16 @@
 
 	<properties>
 <#list lib?keys?sort as key>
-	<#if key?starts_with("lib-") && key?ends_with("-version")>
+	<#if key?starts_with("lib-")>
+	    <#if key?ends_with("-maven-version")>
+		<${key?replace("-maven-version", "-version")}>${lib[key]}</${key?replace("-maven-version", "-version")}>
+		<#else>
+ 	        <#if key?ends_with("-version")>
+                <#if !((lib?keys)?seq_contains(key?replace("-version", "-maven-version")))>
 		<${key}>${lib[key]}</${key}>
+                </#if>
+            </#if>
+        </#if>
     </#if>
 </#list>
 	</properties>

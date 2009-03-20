@@ -758,9 +758,7 @@
 			<replace file="${temp}/poms/${mod-@{name}-id}.pom" token="@artifact-id@" value="${mod-pom-@{name}-artifactId}" />
 
 			<!-- Generation of the pom.xml file --> 
-			<!--
 			<copy file="${temp}/poms/${mod-@{name}-id}.pom" tofile="../modules/${mod-@{name}-id}/pom.xml" overwrite="true" />
-			-->
 		</sequential>
 	</macrodef>
 
@@ -1012,6 +1010,8 @@
 				lib: properties(libraries.properties)
 			</data>
 		</fmpp>
+		<!-- Copy it as the parent pom module -->
+		<copy file="${temp}/poms/${parent-maven-artifactId}.pom" tofile="../modules/pom.xml" overwrite="true" />
 		
 		<pomLibrary name="simple" />
 		<pomLibrary name="jaxrs" />
