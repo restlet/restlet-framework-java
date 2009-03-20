@@ -24,12 +24,12 @@
 			<url>http://repo1.maven.org/maven2/</url>
 		</repository>
 		<repository>
-			<id>maven-java</id>
+			<id>maven2-java</id>
 			<name>Java.net repository</name>
 			<url>http://download.java.net/maven/2</url>
 		</repository>
         <repository>
-            <id>java.net</id>
+            <id>maven1-java</id>
             <url>http://download.java.net/maven/1</url>
             <layout>legacy</layout>
         </repository>
