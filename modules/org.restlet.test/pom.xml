@@ -5,7 +5,7 @@
 
 	<parent>
 		<groupId>org.restlet</groupId>
-		<artifactId>restlet-parent</artifactId>
+		<artifactId>org.restlet.parent</artifactId>
 		<version>1.2-SNAPSHOT</version>
 	</parent>
 
