@@ -958,6 +958,7 @@
 		<pomModule name="core" />
 		<pomModule name="core-gwt" />
 		<pomModule name="core-example" />
+		<pomModule name="core-test" />
 		<pomModule name="atom" />
 		<pomModule name="fileupload" />
 		<pomModule name="freemarker" />
@@ -1000,7 +1001,6 @@
 		<pomLibrary name="simple" />
 		<pomLibrary name="jaxrs" />
 		<pomLibrary name="json" />
-		<pomLibrary name="jsslutils" />
 		<pomLibrary name="db4o"/>
 		<pomLibrary name="db4o-nativequery" />
 		<pomLibrary name="bloat" />
@@ -1617,7 +1617,6 @@
 
 		<maven2Library name="scripturian" />
 		<maven2Library name="simple" />
-		<maven2Library name="jsslutils" />
 		<maven2Library name="jaxrs" />
 		<maven2Library name="json" />
 		<maven2Library name="db4o" />

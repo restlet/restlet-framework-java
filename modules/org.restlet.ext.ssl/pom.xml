@@ -20,7 +20,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.jsslutils</groupId>
-			<artifactId>org.jsslutils</artifactId>
+			<artifactId>jsslutils</artifactId>
 			<version>${lib-jsslutils-version}</version>
 		</dependency>
 	</dependencies>

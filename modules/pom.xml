@@ -33,11 +33,6 @@
             <url>http://download.java.net/maven/1</url>
             <layout>legacy</layout>
         </repository>
-        <repository>
-            <id>maven-caucho</id>
-            <url>http://caucho.com/m2/</url>
-            <layout>legacy</layout>
-        </repository>
 		<repository>
 			<id>maven-restlet</id>
 			<name>Restlet repository</name>
@@ -105,7 +100,7 @@
 		<module>org.restlet</module>
 		<module>org.restlet.example</module>
 		<module>org.restlet.gwt</module>
-		<!-- <module>org.restlet.test</module> -->
+		<module>org.restlet.test</module>
 
 		<module>org.restlet.ext.atom</module>
 		<module>org.restlet.ext.fileupload</module>

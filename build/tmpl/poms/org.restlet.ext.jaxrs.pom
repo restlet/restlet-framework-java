@@ -40,13 +40,13 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>javax.ws.rs</groupId>
-			<artifactId>javax.ws.rs</artifactId>
+			<groupId>org.restlet</groupId>
+			<artifactId>org.restlet.lib.javax.ws.rs</artifactId>
 			<version>${lib-jaxrs-version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.json</groupId>
-			<artifactId>org.json</artifactId>
+			<groupId>org.restlet</groupId>
+			<artifactId>org.restlet.lib.org.json</artifactId>
 			<version>${lib-json-version}</version>
 		</dependency>
 		<dependency>

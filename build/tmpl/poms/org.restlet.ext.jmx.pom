@@ -11,5 +11,4 @@
 	<artifactId>org.restlet.ext.jmx</artifactId>
 	<name>Restlet extension: JMX</name>
 	<description>Integration with Java Management Extensions (JMX).</description>
-
 </project>

@@ -14,13 +14,13 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>com.db4o</groupId>
-			<artifactId>com.db4o</artifactId>
+			<groupId>org.restlet</groupId>
+			<artifactId>org.restlet.lib.com.db4o</artifactId>
 			<version>${lib-db4o-version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.db4o</groupId>
-			<artifactId>com.db4o.nativequery</artifactId>
+			<groupId>org.restlet</groupId>
+			<artifactId>org.restlet.lib.com.db4o.nativequery</artifactId>
 			<version>${lib-db4o-version}</version>
 		</dependency>
 		<dependency>
