@@ -29,6 +29,7 @@ Changes log
         - Fixed various OSGi issues. Reported by David Fogel.
         - Fixed missing entries in ChallengeScheme#valueOf.
           Reported by Sean Sullivan.
+        - Fixed JAXB pom issue. Reported by Fabio Mancinelli.
     - Enhancements
         - Added a getItemIterator() on RestletFileUpload to facilitate
           access to parts in streaming mode. Suggested by Paul Austin.

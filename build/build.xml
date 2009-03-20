@@ -574,6 +574,7 @@
 		<path refid="mod-net-path" />
 		<path refid="mod-oauth-path" />
 		<path refid="mod-rdf-path" />
+		<path refid="mod-script-path" />
 		<path refid="mod-servlet-path" />
 		<path refid="mod-simple-path" />
 		<path refid="mod-spring-path" />
@@ -1265,6 +1266,9 @@
 			<link href="http://jakarta.apache.org/velocity/docs/api/" />
 			<link href="http://java.sun.com/j2se/1.5.0/docs/api/" />
 			<link href="http://java.sun.com/javaee/5/docs/api/" />
+			<!-- Note: The link to Java 6 is a fall-back for the javax.script package, which otherwise is not documented for Java 5.
+			     Order is important here: it *must* appear after the link for Java 5 documentation. -->
+			<link href="http://java.sun.com/javase/6/docs/api/" />
 			<link href="http://java.sun.com/products/javamail/javadocs/" />
 			<link href="https://jaxb.dev.java.net/nonav/${lib-jaxb-version}.${lib-jaxb-release}/docs/api/" />
 			<link href="http://jetty.mortbay.org/apidocs/" />
@@ -1278,6 +1282,7 @@
 			<link href="http://www.restlet.org/documentation/${version-minor}/api/" packagelistLoc="${docs-api}" offline="true" />
 			<link href="http://www.restlet.org/documentation/${version-minor}/engine/" packagelistLoc="${docs-engine}" offline="true" />
 			<link href="http://www.simpleframework.org/doc/javadoc/" />
+			<link href="http://www.threecrickets.com/scripturian/static/javadoc/" />
 		</javadoc>
 
 		<javadoc packagenames="org.restlet.gwt.*" excludepackagenames="${exclude-packages},*org.restlet.gwt.engine.*" destdir="${docs-gwt}" classpathref="path-all" author="true" version="true" use="true" windowtitle="Restlet-GWT module ${version-full}" doctitle="Restlet-GWT module ${version-full}" overview="${temp}/javadocs/overview-gwt.html" stylesheetfile="${tmpl}/javadocs/stylesheet.css" verbose="${verbose}">
