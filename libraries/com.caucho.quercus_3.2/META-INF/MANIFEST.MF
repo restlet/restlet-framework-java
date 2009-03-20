@@ -4,7 +4,7 @@ Bundle-Name: Quercus
 Bundle-SymbolicName: com.caucho.quercus
 Bundle-Version: 3.2.1
 Bundle-ClassPath: com.caucho.quercus.jar,
- resin-util.jar
+ com.caucho.resin.util.jar
 Bundle-Vendor: Caucho
 Import-Package: javax.script
 Bundle-RequiredExecutionEnvironment: J2SE-1.5

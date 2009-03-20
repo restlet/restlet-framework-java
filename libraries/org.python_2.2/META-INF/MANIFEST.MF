@@ -4,7 +4,7 @@ Bundle-Name: Jython
 Bundle-SymbolicName: org.python
 Bundle-Version: 2.2.1
 Bundle-ClassPath: org.python.jar,
- jython-engine.jar
+ com.sun.script.jython.jar
 Bundle-Vendor: Python Software Foundation
 Import-Package: javax.script
 Bundle-RequiredExecutionEnvironment: J2SE-1.5

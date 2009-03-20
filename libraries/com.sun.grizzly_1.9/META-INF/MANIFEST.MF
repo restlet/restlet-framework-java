@@ -2,16 +2,16 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Grizzly NIO Framework
 Bundle-SymbolicName: com.sun.grizzly
-Bundle-Version: 1.9.8
+Bundle-Version: 1.9.10
 Bundle-ClassPath: com.sun.grizzly.jar,
  com.sun.grizzly.util.jar
 Bundle-Vendor: Sun Microsystems Inc.
 Export-Package: com.sun.grizzly;
-  uses:="new com.sun.grizzly,
-   com.sun.grizzly.async,
+  uses:="com.sun.grizzly.async,
    com.sun.grizzly.util,
+   new com.sun.grizzly,
    javax.net.ssl",
- com.sun.grizzly.async;uses:="com.sun.grizzly",
+ com.sun.grizzly.async;uses:="com.sun.grizzly,com.sun.grizzly.util",
  com.sun.grizzly.connectioncache.client;uses:="com.sun.grizzly.connectioncache.spi.transport,com.sun.grizzly",
  com.sun.grizzly.connectioncache.impl.concurrent;uses:="com.sun.grizzly.connectioncache.spi.concurrent",
  com.sun.grizzly.connectioncache.impl.transport;uses:="com.sun.grizzly.connectioncache.spi.transport,com.sun.grizzly.connectioncache.spi.concurrent",
@@ -20,14 +20,14 @@ Export-Package: com.sun.grizzly;
  com.sun.grizzly.connectioncache.spi.transport,
  com.sun.grizzly.filter;uses:="com.sun.grizzly,javax.net.ssl",
  com.sun.grizzly.suspendable;uses:="com.sun.grizzly,com.sun.grizzly.util",
- com.sun.grizzly.tcp;uses:="com.sun.grizzly.util.http,com.sun.grizzly.util.buf",
+ com.sun.grizzly.tcp;uses:="com.sun.grizzly.util.http,com.sun.grizzly.util.buf,com.sun.grizzly.tcp.http11.filters",
  com.sun.grizzly.tcp.http11;
   uses:="com.sun.grizzly.util.http,
+   javax.security.auth,
    com.sun.grizzly.util.buf,
    com.sun.grizzly.tcp,
-   com.sun.grizzly.util.res,
-   javax.security.auth",
- com.sun.grizzly.tcp.http11.filters;uses:="com.sun.grizzly.tcp.http11,com.sun.grizzly.util.buf,com.sun.grizzly.tcp",
+   com.sun.grizzly.util.res",
+ com.sun.grizzly.tcp.http11.filters;uses:="com.sun.grizzly.tcp.http11,com.sun.grizzly.tcp,com.sun.grizzly.util.buf",
  com.sun.grizzly.util;uses:="javax.net.ssl",
  com.sun.grizzly.util.buf,
  com.sun.grizzly.util.collections;uses:="com.sun.grizzly.util.buf",

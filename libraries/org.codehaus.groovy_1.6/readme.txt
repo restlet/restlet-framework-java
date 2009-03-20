@@ -1,22 +1,24 @@
-$Id: README.txt 7092 2007-08-10 09:53:31Z user57 $
+--------------------------------------------------------
+Groovy - An agile dynamic language for the Java Platform
+--------------------------------------------------------
 
-Building
-========
+"Groovy...
+ * is an agile and dynamic language for the Java Virtual Machine
+ * builds upon the strengths of Java but has additional power features 
+   inspired by languages like Python, Ruby and Smalltalk
+ * makes modern programming features available to Java developers with 
+   almost-zero learning curve
+ * supports Domain-Specific Languages and other compact syntax so your 
+   code becomes easy to read and maintain
+ * makes writing shell and build scripts easy with its powerful 
+   processing primitives, OO abilities and an Ant DSL
+ * increases developer productivity by reducing scaffolding code when 
+   developing web, GUI, database or console applications
+ * simplifies testing by supporting unit testing and mocking 
+   out-of-the-box
+ * seamlessly integrates with all existing Java objects and libraries
+ * compiles straight to Java bytecode so you can use it anywhere you can 
+   use Java"
 
-To build you will need:
-
- * JDK 1.4+ (J2SE 1.4.0+) (http://java.sun.com/j2se/1.4.2)
- * Apache Ant 1.7+ (http://ant.apache.org)
-
-For detailed instructions please see:
-
-    http://groovy.codehaus.org/Building+Groovy+from+Source
-
-To build everything, run tests and create a complete installation:
-
-    ant install
-
-To build without running tests:
-
-    ant install -DskipTests=true
-
+For more information:
+http://groovy.codehaus.org/

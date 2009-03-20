@@ -1,6 +1,6 @@
-------------------------------------
-JDBC Rowset - 1.0.1 Implementation
-------------------------------------
+--------------------------------------
+JDBC Rowset - Reference Implementation
+--------------------------------------
 
 "A RowSet object is a container for tabular data, encapsulating 
 a set of zero or more rows that have been retrieved from a data 
@@ -13,4 +13,4 @@ scrollable, can be updatable, and can do anything a ResultSet
 object can do."
 
 For more information:
-http://java.sun.com/products/jdbc/download.html#rowset1_0_1
+http://java.sun.com/products/jdbc/download.html
