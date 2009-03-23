@@ -40,6 +40,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
+import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.ext.script.internal.ScriptedResourceContainer;
 import org.restlet.ext.script.internal.ScriptedTextRepresentationContainer;
@@ -126,12 +127,15 @@ public class ScriptedTextRepresentation extends WriterRepresentation {
      * 
      * @param mediaType
      *            The media type
+     * @param characterSet
+     *            The character set
      * @param embeddedScript
      *            The embedded script instance
      */
     public ScriptedTextRepresentation(MediaType mediaType,
-            EmbeddedScript embeddedScript) {
+            CharacterSet characterSet, EmbeddedScript embeddedScript) {
         super(mediaType);
+        setCharacterSet(characterSet);
         this.embeddedScript = embeddedScript;
     }
 
@@ -205,6 +209,8 @@ public class ScriptedTextRepresentation extends WriterRepresentation {
             IOException ioe = new IOException("Script exception");
             ioe.initCause(e);
             throw ioe;
+        } finally {
+            writer.close();
         }
     }
 }
