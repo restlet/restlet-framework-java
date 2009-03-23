@@ -51,7 +51,7 @@ public class BlankNodeToken extends LexicalUnit {
 
     /**
      * Constructor. The blank node is given a new identifier thanks to the
-     * context..
+     * context.
      * 
      * @param contentHandler
      *            The parent content handler.
