@@ -100,9 +100,9 @@ def represent
 
 	if $container.media_type == MediaType::APPLICATION_JSON
 		return JsonRepresentation.new r
-	else
-		return r
 	end
+
+	return r
 end
 
 # This method is called for the POST verb, which is expected to behave as a

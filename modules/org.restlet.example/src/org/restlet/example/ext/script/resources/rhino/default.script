@@ -14,6 +14,7 @@
 
 importClass(
 	java.util.concurrent.locks.ReentrantReadWriteLock,
+	org.json.JSONObject,
 	org.restlet.data.MediaType,
 	org.restlet.representation.Variant,
 	org.restlet.ext.json.JsonRepresentation,
@@ -96,10 +97,11 @@ function represent() {
 	// Return a representation appropriate for the requested media type
 	// of the possible options we created in initializeResource()
 
-	if(container.mediaType == MediaType.APPLICATION_JSON)
-		return new JsonRepresentation(r);
-	else
-		return r;
+	if(container.mediaType == MediaType.APPLICATION_JSON) {
+		r = new JsonRepresentation(new JSONObject(r));
+	}
+	
+	return r;
 }
 
 // This function is called for the POST verb, which is expected to behave as a

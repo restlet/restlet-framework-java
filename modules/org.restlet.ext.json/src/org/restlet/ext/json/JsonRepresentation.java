@@ -276,6 +276,8 @@ public class JsonRepresentation extends WriterRepresentation {
             writer.write(getJsonText());
         } catch (JSONException e) {
             throw new IOException(e.getLocalizedMessage());
+        } finally {
+            writer.close();
         }
     }
 

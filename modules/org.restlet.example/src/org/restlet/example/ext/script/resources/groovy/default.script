@@ -92,9 +92,9 @@ represent = {
 	// of the possible options we created in initializeResource()
 
 	if(container.mediaType == MediaType.APPLICATION_JSON)
-		return new JsonRepresentation(r)
-	else
-		return r
+		r = new JsonRepresentation(r)
+
+	return r
 } 
 
 // This closure is called for the POST verb, which is expected to behave as a

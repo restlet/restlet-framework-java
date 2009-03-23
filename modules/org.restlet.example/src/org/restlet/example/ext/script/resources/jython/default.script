@@ -13,6 +13,7 @@
 #
 
 from java.util.concurrent.locks import ReentrantReadWriteLock
+from org.json import JSONObject
 from org.restlet.data import MediaType
 from org.restlet.representation import Variant
 from org.restlet.ext.json import JsonRepresentation
@@ -94,9 +95,9 @@ def represent():
 	# of the possible options we created in initializeResource()
 
 	if container.mediaType == MediaType.APPLICATION_JSON:
-		return JsonRepresentation(r)
-	else:
-		return r
+		r = JsonRepresentation(JSONObject(r))
+		
+	return r
 
 # This function is called for the POST verb, which is expected to behave as a
 # logical "update" of the resource's state.
