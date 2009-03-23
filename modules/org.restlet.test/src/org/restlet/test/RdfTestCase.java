@@ -54,26 +54,27 @@ public class RdfTestCase extends TestCase {
                         + "@prefix list: <http://www.w3.org/2000/10/swap/list#>."
                         + "@prefix doc: <http://www.w3.org/2000/10/swap/pim/doc#>."
                         + "@prefix dc: <http://purl.org/dc/elements/1.1/>."
+                        + "@prefix type: <http://www.w3.org/2001/XMLSchema/#>."
                         + "@keywords a, is, of."
-
                         + "@base    <tru   c>.\n"
                         + "#Directive base.\n"
-                        + "@prefix machin <http://www . \nexample .com>.\n\n"
-                        + "@keywords a, is, of."
+                        + "@prefix prefix <http://www . \nexample .com>.\n\n"
                         + " _:x1 has <http://www.rdf.com> :x2. "
                         + " :x3 has _:x4 <http://www.example.com>; _:x5 <http://www.examplewith;.com>, <http://www.examplewith,.com>. "
                         + " _:x6 has <http://www.rdf.com/language> <http://www.deutsch.com>. "
                         + " <http://www.rdf.com/language> = <http://www.language.com>. "
                         + " <http://www.rdf.com/language> => <http://www.implies.com>. "
                         + " <http://www.language.com> <= <http://www.rdf.com/language>. "
-                        + ":x7 <http://rdf.com> \"string\"."
-                        + ":x8 <http://www.multiline.com> \"\"\"str\ning\"\"\"."
-                        + ":x9 <= \"\"\"str\ning\"\"\"."
-                        + ":x10 @is <http://rdf.com> of <http://www.example.com>."
-                        + ":x11^:x12." + ":x13^:x14^:x15."
-                        + ":x16^:x17 :x18 :x19." + ":x20!:x21."
-                        + ":x22!:x23!:x24." + "[] :x25 :x26." + "[:x27 :x28]."
-                        + "(:x29 :x30) :x31 :x32.");
+                        + ":x7 <http://rdf.com> \"string\". "
+                        + ":x8 <http://www.multiline.com> \"\"\"str\ning\"\"\". "
+                        + ":x9 <= \"\"\"str\ning\"\"\". "
+                        + ":x10 @is <http://rdf.com> of <http://www.example.com>. "
+                        + ":x11^:x12. " + ":x13^:x14^:x15. "
+                        + ":x16^:x17 :x18 :x19. " + ":x20!:x21."
+                        + ":x22!:x23!:x24. " + "[] :x25 :x26." + "[:x27 :x28]."
+                        + "(:x29 :x30) :x31 :x32."
+                        + " _:x33 <http://www.rdf.com> \"12\"^^type:int. "
+                        + " _:x33 <http://www.rdf.com> 12. ");
 
         // File file = new File("/bnf.n3");
         // rep = new FileRepresentation(file.getPath(), MediaType.TEXT_PLAIN);
