@@ -44,6 +44,7 @@ import org.restlet.data.MediaType;
 import org.restlet.ext.script.internal.ScriptedResourceContainer;
 import org.restlet.ext.script.internal.ScriptedTextRepresentationContainer;
 import org.restlet.ext.script.internal.ScriptedTextRepresentationScriptContextController;
+import org.restlet.representation.Representation;
 import org.restlet.representation.WriterRepresentation;
 
 import com.threecrickets.scripturian.EmbeddedScript;
@@ -62,6 +63,10 @@ import com.threecrickets.scripturian.ScriptContextController;
  * "container". This name can be changed via {@link #containerVariableName}. The
  * following read-only attributes are available:
  * <ul>
+ * <li><b>container.representation</b>: Access to the representation itself.
+ * This can be useful for generating text according to set characteristics. For
+ * example, calling {@link Representation#getLanguages()} and generating the
+ * appropriate text.</li>
  * <li><b>container.writer</b>: Allows the script direct access to the
  * {@link Writer}. This should rarely be necessary, because by default the
  * standard output for your scripting engine would be directed to it, and the
@@ -191,7 +196,7 @@ public class ScriptedTextRepresentation extends WriterRepresentation {
     public void write(Writer writer) throws IOException {
         try {
             ScriptedTextRepresentationContainer container = new ScriptedTextRepresentationContainer(
-                    writer, this.errorWriter);
+                    this, writer, this.errorWriter);
             this.embeddedScript.run(writer, this.errorWriter,
                     this.scriptEngines,
                     new ScriptedTextRepresentationScriptContextController(

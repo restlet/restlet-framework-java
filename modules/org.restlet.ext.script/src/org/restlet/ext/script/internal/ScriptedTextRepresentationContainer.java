@@ -5,6 +5,7 @@ import java.io.Writer;
 import javax.script.ScriptEngineManager;
 
 import org.restlet.ext.script.ScriptedTextRepresentation;
+import org.restlet.representation.Representation;
 
 /**
  * This is the type of the "container" variable exposed to the script. The name
@@ -14,11 +15,16 @@ import org.restlet.ext.script.ScriptedTextRepresentation;
  * @see ScriptedTextRepresentation
  */
 public class ScriptedTextRepresentationContainer {
+    private final ScriptedTextRepresentation representation;
+
     private final Writer writer;
 
     private final Writer errorWriter;
 
-    public ScriptedTextRepresentationContainer(Writer writer, Writer errorWriter) {
+    public ScriptedTextRepresentationContainer(
+            ScriptedTextRepresentation representation, Writer writer,
+            Writer errorWriter) {
+        this.representation = representation;
         this.writer = writer;
         this.errorWriter = errorWriter;
     }
@@ -30,6 +36,18 @@ public class ScriptedTextRepresentationContainer {
      */
     public Writer getErrorWriter() {
         return this.errorWriter;
+    }
+
+    /**
+     * Access to the representation itself. This can be useful for generating
+     * text according to set characteristics. For example, calling
+     * {@link Representation#getLanguages()} and generating the appropriate
+     * text.
+     * 
+     * @return The representation
+     */
+    public ScriptedTextRepresentation getRepresentation() {
+        return this.representation;
     }
 
     /**
