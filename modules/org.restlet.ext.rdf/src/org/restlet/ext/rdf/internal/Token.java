@@ -32,7 +32,8 @@ package org.restlet.ext.rdf.internal;
 
 import java.io.IOException;
 
-import org.restlet.data.Reference;
+import org.restlet.ext.rdf.Literal;
+import org.restlet.ext.rdf.RdfN3Representation;
 
 class Token extends LexicalUnit {
 
@@ -59,37 +60,24 @@ class Token extends LexicalUnit {
     @Override
     public Object resolve() {
         Object result = null;
-        setResolved(true);
-        int index = getValue().indexOf(":");
-        if (index != -1) {
-            String prefix = getValue().substring(0, index + 1);
-
-            String base = null;
-            if (getContext() != null) {
-                base = getContext().getPrefixes().get(prefix);
-            }
-
-            if (base != null) {
-                result = new Reference(base + getValue().substring(index));
-            } else {
-                // TODO Error, this prefix has not been declared!
-                result = null;
-            }
+        if (getContext().isQName(getValue())) {
+            result = (getContext() != null) ? getContext().resolve(getValue())
+                    : getValue();
         } else {
-            if (getContext().getKeywords().contains(getValue())) {
-                String base = null;
-                if (getContext() != null) {
-                    base = getContext().getPrefixes().get(":");
-                    result = new Reference(base + getValue());
+            // Must be a literal
+            if (getValue().charAt(0) > '0' && getValue().charAt(0) < '9') {
+                if (getValue().contains(".")) {
+                    // Consider it as a float
+                    result = new Literal(getValue(),
+                            RdfN3Representation.XML_SCHEMA_TYPE_FLOAT);
                 } else {
-                    // TODO Error, the empty prefix has not been declared!
-
+                    // Consider it as an integer
+                    result = new Literal(getValue(),
+                            RdfN3Representation.XML_SCHEMA_TYPE_INTEGER);
                 }
             } else {
-                result = new Reference(getContext().getBase().toString()
-                        + getValue());
+                // TODO What kind of literal?
             }
-
         }
 
         setResolved(!(result == null));

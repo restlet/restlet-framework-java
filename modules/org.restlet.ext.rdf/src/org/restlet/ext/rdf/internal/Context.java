@@ -70,4 +70,53 @@ public class Context {
     public void setBase(Reference base) {
         this.base = base;
     }
+
+    /**
+     * Resolve a qualified name according to the current context.
+     * 
+     * @param qname
+     *            The qualified name to resolve.
+     * @return The RDF URI reference.
+     */
+    public Reference resolve(String qname) {
+        Reference result = null;
+        int index = qname.indexOf(":");
+        if (index != -1) {
+            String prefix = qname.substring(0, index + 1);
+            String base = getPrefixes().get(prefix);
+            if (base != null) {
+                result = new Reference(base + qname.substring(index + 1));
+            } else {
+                // TODO Error, this prefix has not been declared!
+                result = null;
+            }
+        } else {
+            if (getKeywords().contains(qname)) {
+                String base = getPrefixes().get(":");
+                if (qname != null) {
+                    result = new Reference(base + qname);
+                } else {
+                    // TODO Error, the empty prefix has not been declared!
+                }
+            } else {
+                result = new Reference(getBase().toString() + qname);
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns true if the given value is a qualified name.
+     * 
+     * @param value
+     *            The value to test.
+     * @return True if the given value is a qualified name.
+     */
+    public boolean isQName(String value) {
+        boolean result = (value.indexOf(":") != -1)
+                || getKeywords().contains(value);
+
+        return result;
+    }
 }

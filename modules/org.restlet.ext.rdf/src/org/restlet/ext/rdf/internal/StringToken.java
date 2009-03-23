@@ -32,9 +32,16 @@ package org.restlet.ext.rdf.internal;
 
 import java.io.IOException;
 
+import org.restlet.data.Language;
+import org.restlet.ext.rdf.Literal;
+
 class StringToken extends LexicalUnit {
 
     private boolean multiLines;
+
+    private String type;
+
+    private String language;
 
     public StringToken(RdfN3ContentHandler contentHandler, Context context)
             throws IOException {
@@ -89,12 +96,31 @@ class StringToken extends LexicalUnit {
             getContentHandler().step();
             getContentHandler().discard();
         }
-        // TODO il manque le traitement des litéraux typés
+
+        // Parse the type and language of literals
+        int c = getContentHandler().getChar();
+        if (c == '@') {
+            this.language = getContentHandler().parseToken();
+        } else if (c == '^') {
+            c = getContentHandler().step();
+            if (c == '^') {
+                this.type = getContentHandler().parseToken();
+            } else {
+                getContentHandler().stepBack();
+            }
+        }
     }
 
     @Override
     public Object resolve() {
+        Literal result = new Literal(getValue());
+        if (this.type != null) {
+            result.setDatatypeRef(getContext().resolve(this.type));
+        }
+        if (this.language != null) {
+            result.setLanguage(Language.valueOf(this.language));
+        }
         setResolved(true);
-        return getValue();
+        return result;
     }
 }

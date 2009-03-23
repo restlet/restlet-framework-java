@@ -34,6 +34,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.restlet.data.Reference;
+
 public class BlankNodeToken extends LexicalUnit {
 
     List<LexicalUnit> lexicalUnits;
@@ -49,16 +51,6 @@ public class BlankNodeToken extends LexicalUnit {
 
     public BlankNodeToken(String value) {
         super(value);
-    }
-
-    @Override
-    public String getValue() {
-        if (super.getValue() != null) {
-            return super.getValue();
-        } else if (this.lexicalUnits != null) {
-            return this.lexicalUnits.toString();
-        }
-        return null;
     }
 
     @Override
@@ -124,8 +116,9 @@ public class BlankNodeToken extends LexicalUnit {
         }
 
         if (this.getValue() != null) {
-            return getValue();
+            return new Reference(getValue());
         } else {
+            // TODO Error
         }
 
         return null;

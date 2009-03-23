@@ -80,6 +80,15 @@ public class RdfN3Representation extends RdfRepresentation {
     public static Reference RDF_SYNTAX = new Reference(
             "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
 
+    public static Reference XML_SCHEMA = new Reference(
+            "http://www.w3.org/2001/XMLSchema#");
+
+    public static Reference XML_SCHEMA_TYPE_INTEGER = new Reference(
+            "http://www.w3.org/2001/XMLSchema#int");
+
+    public static Reference XML_SCHEMA_TYPE_FLOAT = new Reference(
+            "http://www.w3.org/2001/XMLSchema#float");
+
     public RdfN3Representation(Graph linkSet) {
         super(linkSet);
     }
@@ -103,6 +112,7 @@ public class RdfN3Representation extends RdfRepresentation {
             prefixes.put("http://www.w3.org/2002/07/owl#", "owl");
             prefixes.put("http://www.w3.org/2000/10/swap/log#", "log");
             prefixes.put("http://purl.org/dc/elements/1.1/", "dc");
+            prefixes.put("http://www.w3.org/2001/XMLSchema#", "type");
 
             StringBuilder builder = new StringBuilder();
             for (Entry<String, String> entry : prefixes.entrySet()) {
@@ -130,17 +140,23 @@ public class RdfN3Representation extends RdfRepresentation {
     private void write(OutputStream outputStream, Graph graph,
             Map<String, String> prefixes) throws IOException {
         for (Link link : getGraph()) {
+            System.out.print("*** Link ");
+            System.out.print(link.getSource().toString());
+            System.out.print(" ");
+            System.out.print(link.getTypeRef().toString());
+            System.out.print(" ");
+            System.out.println(link.getTarget().toString());
             if (link.hasReferenceSource()) {
                 write(outputStream, link.getSourceAsReference(), prefixes);
             } else if (link.hasLinkSource()) {
-                // Link source = link.getSourceAsLink();
+                // TODO Hande source as link.
             } else if (link.hasGraphSource()) {
                 outputStream.write("{".getBytes());
                 write(outputStream, link.getSourceAsGraph(),
                         new HashMap<String, String>(prefixes));
                 outputStream.write("}".getBytes());
             } else {
-
+                // TODO Must be an error
             }
             outputStream.write(" ".getBytes());
             write(outputStream, link.getTypeRef(), prefixes);
@@ -149,16 +165,37 @@ public class RdfN3Representation extends RdfRepresentation {
                 write(outputStream, link.getTargetAsReference(), prefixes);
             } else if (link.hasLiteralTarget()) {
                 Literal target = link.getTargetAsLiteral();
-                outputStream.write(target.toString().getBytes());
-            } else if (link.hasLinkTarget()) {
+                // Write it as a string
+                outputStream.write("\"".getBytes());
+                if (target.getValue().contains("\n")) {
+                    outputStream.write("\"".getBytes());
+                    outputStream.write("\"".getBytes());
+                    outputStream.write(target.getValue().getBytes());
+                    outputStream.write("\"".getBytes());
+                    outputStream.write("\"".getBytes());
+                } else {
+                    outputStream.write(target.getValue().getBytes());
+                }
 
+                outputStream.write("\"".getBytes());
+                if (target.getDatatypeRef() != null) {
+                    outputStream.write("^^".getBytes());
+                    write(outputStream, target.getDatatypeRef(), prefixes);
+                }
+                if (target.getLanguage() != null) {
+                    outputStream.write("@".getBytes());
+                    outputStream.write(target.getLanguage().toString()
+                            .getBytes());
+                }
+            } else if (link.hasLinkTarget()) {
+                // TODO Hande target as link.
             } else if (link.hasGraphTarget()) {
                 outputStream.write("{".getBytes());
                 write(outputStream, link.getTargetAsGraph(),
                         new HashMap<String, String>(prefixes));
                 outputStream.write("}".getBytes());
             } else {
-
+                // TODO Must be an error
             }
             outputStream.write(".\n".getBytes());
         }
@@ -193,7 +230,9 @@ public class RdfN3Representation extends RdfRepresentation {
                 }
             }
             if (!found) {
-
+                outputStream.write("<".getBytes());
+                outputStream.write(uri.getBytes());
+                outputStream.write(">".getBytes());
             }
         }
     }

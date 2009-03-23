@@ -76,7 +76,8 @@ public class RdfN3ContentHandler extends GraphHandler {
     public static boolean isDelimiter(int c) {
         return isWhiteSpace(c) || c == '^' || c == '!' || c == '=' || c == '<'
                 || c == '"' || c == '{' || c == '}' || c == '[' || c == ']'
-                || c == '(' || c == ')' || c == '.' || c == ';' || c == ',';
+                || c == '(' || c == ')' || c == '.' || c == ';' || c == ','
+                || c == '@';
     }
 
     /**
@@ -240,6 +241,8 @@ public class RdfN3ContentHandler extends GraphHandler {
                 }
             }
         }
+        // the current token is consumed.
+        startTokenIndex = scoutIndex;
         return builder.toString();
     }
 

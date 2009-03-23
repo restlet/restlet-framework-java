@@ -49,8 +49,8 @@ class ListToken extends LexicalUnit {
 
     @Override
     public Object resolve() {
-        Reference currentBlankNode = new Reference((String) new BlankNodeToken(
-                RdfN3ContentHandler.newBlankNodeId()).resolve());
+        Reference currentBlankNode = (Reference) new BlankNodeToken(
+                RdfN3ContentHandler.newBlankNodeId()).resolve();
         for (LexicalUnit lexicalUnit : lexicalUnits) {
             Object element = lexicalUnit.resolve();
 
@@ -65,9 +65,8 @@ class ListToken extends LexicalUnit {
                 // TODO Error.
             }
 
-            Reference restBlankNode = new Reference(
-                    (String) new BlankNodeToken(RdfN3ContentHandler
-                            .newBlankNodeId()).resolve());
+            Reference restBlankNode = (Reference) new BlankNodeToken(
+                    RdfN3ContentHandler.newBlankNodeId()).resolve();
 
             getContentHandler().link(currentBlankNode,
                     RdfN3Representation.LIST_REST, restBlankNode);
