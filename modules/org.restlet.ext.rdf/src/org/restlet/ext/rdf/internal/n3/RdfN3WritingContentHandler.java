@@ -56,6 +56,15 @@ public class RdfN3WritingContentHandler extends GraphHandler {
     /** The current context object. */
     private Context context;
 
+    /** The preceding predicate used for factorization matter. */
+    private Reference precPredicate;
+
+    /** The preceding source used for factorization matter. */
+    private Reference precSource;
+
+    /** Indicates if the end of the statement is to be written. */
+    private boolean writeExtraDot;
+
     /**
      * Constructor.
      * 
@@ -84,7 +93,7 @@ public class RdfN3WritingContentHandler extends GraphHandler {
         prefixes.put("http://www.w3.org/2001/XMLSchema#", "type");
 
         for (Entry<String, String> entry : prefixes.entrySet()) {
-            this.bw.append("@prefix ").append(entry.getValue()).append(":")
+            this.bw.append("@prefix ").append(entry.getValue()).append(": ")
                     .append(entry.getKey()).append(".\n");
         }
         this.bw.append("@keywords a, is, of, has.\n");
@@ -98,12 +107,10 @@ public class RdfN3WritingContentHandler extends GraphHandler {
         try {
             this.bw.write("{");
             write(source);
-            this.bw.write("}");
-            this.bw.write(" ");
+            this.bw.write("} ");
             write(typeRef, this.context.getPrefixes());
             this.bw.write(" ");
             write(target);
-            this.bw.write(".\n");
         } catch (IOException e) {
             // TODO Auto-generated catch block
         }
@@ -114,12 +121,10 @@ public class RdfN3WritingContentHandler extends GraphHandler {
         try {
             this.bw.write("{");
             write(source);
-            this.bw.write("}");
-            this.bw.write(" ");
+            this.bw.write("} ");
             write(typeRef, this.context.getPrefixes());
             this.bw.write(" ");
             write(target, this.context.getPrefixes());
-            this.bw.write(".\n");
         } catch (IOException e) {
             // TODO Auto-generated catch block
         }
@@ -128,27 +133,46 @@ public class RdfN3WritingContentHandler extends GraphHandler {
     @Override
     public void link(Reference source, Reference typeRef, Literal target) {
         try {
-            write(source, this.context.getPrefixes());
-            this.bw.write(" ");
-            write(typeRef, this.context.getPrefixes());
-            this.bw.write(" ");
+            if (source.equals(this.precSource)) {
+                if (typeRef.equals(this.precPredicate)) {
+                    this.bw.write(", ");
+                } else {
+                    this.bw.write("; ");
+                    write(typeRef, this.context.getPrefixes());
+                    this.bw.write(" ");
+                }
+            } else {
+                write(source, this.context.getPrefixes());
+                this.bw.write(" ");
+                write(typeRef, this.context.getPrefixes());
+                this.bw.write(" ");
+            }
             write(target);
-            this.bw.write(".\n");
         } catch (IOException e) {
             // TODO Auto-generated catch block
         }
-
     }
 
     @Override
     public void link(Reference source, Reference typeRef, Reference target) {
         try {
-            write(source, this.context.getPrefixes());
-            this.bw.write(" ");
-            write(typeRef, this.context.getPrefixes());
-            this.bw.write(" ");
+            if (source.equals(this.precSource)) {
+                this.writeExtraDot = false;
+                if (typeRef.equals(this.precPredicate)) {
+                    this.bw.write(", ");
+                } else {
+                    this.bw.write("; ");
+                    write(typeRef, this.context.getPrefixes());
+                    this.bw.write(" ");
+                }
+            } else {
+                this.writeExtraDot = true;
+                write(source, this.context.getPrefixes());
+                this.bw.write(" ");
+                write(typeRef, this.context.getPrefixes());
+                this.bw.write(" ");
+            }
             write(target, this.context.getPrefixes());
-            this.bw.write(".\n");
         } catch (IOException e) {
             // TODO Auto-generated catch block
         }
@@ -160,10 +184,15 @@ public class RdfN3WritingContentHandler extends GraphHandler {
      * @param linkset
      *            the given graph of links.
      * @throws IOException
+     * @throws IOException
      */
-    private void write(Graph linkset) {
+    private void write(Graph linkset) throws IOException {
         for (Link link : linkset) {
             if (link.hasReferenceSource()) {
+                if (!link.getSourceAsReference().equals(this.precSource)) {
+                    this.bw.write(".\n");
+                    this.writeExtraDot = true;
+                }
                 if (link.hasReferenceTarget()) {
                     link(link.getSourceAsReference(), link.getTypeRef(), link
                             .getTargetAsReference());
@@ -176,6 +205,7 @@ public class RdfN3WritingContentHandler extends GraphHandler {
                     // Error?
                 }
             } else if (link.hasGraphSource()) {
+                this.writeExtraDot = false;
                 if (link.hasReferenceTarget()) {
                     link(link.getSourceAsGraph(), link.getTypeRef(), link
                             .getTargetAsReference());
@@ -187,7 +217,13 @@ public class RdfN3WritingContentHandler extends GraphHandler {
                 } else {
                     // Error?
                 }
+                this.bw.write(".\n");
             }
+            this.precSource = link.getSourceAsReference();
+            this.precPredicate = link.getTypeRef();
+        }
+        if (writeExtraDot) {
+            this.bw.write(".\n");
         }
     }
 
