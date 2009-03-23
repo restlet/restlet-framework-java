@@ -140,12 +140,6 @@ public class RdfN3Representation extends RdfRepresentation {
     private void write(OutputStream outputStream, Graph graph,
             Map<String, String> prefixes) throws IOException {
         for (Link link : getGraph()) {
-            System.out.print("*** Link ");
-            System.out.print(link.getSource().toString());
-            System.out.print(" ");
-            System.out.print(link.getTypeRef().toString());
-            System.out.print(" ");
-            System.out.println(link.getTarget().toString());
             if (link.hasReferenceSource()) {
                 write(outputStream, link.getSourceAsReference(), prefixes);
             } else if (link.hasLinkSource()) {

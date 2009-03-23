@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.data.Reference;
+import org.restlet.ext.rdf.LinkReference;
 
 public class BlankNodeToken extends LexicalUnit {
 
@@ -44,7 +45,7 @@ public class BlankNodeToken extends LexicalUnit {
             throws IOException {
         super(contentHandler, context);
         lexicalUnits = new ArrayList<LexicalUnit>();
-        this.setValue(RdfN3ContentHandler.newBlankNodeId());
+        this.setValue("_:" + RdfN3ContentHandler.newBlankNodeId());
         lexicalUnits.add(this);
         this.parse();
     }
@@ -115,8 +116,12 @@ public class BlankNodeToken extends LexicalUnit {
             }
         }
 
-        if (this.getValue() != null) {
-            return new Reference(getValue());
+        if (getValue() != null) {
+            if (getValue().startsWith("_:")) {
+                return new Reference(getValue());
+            } else {
+                return LinkReference.createBlank(getValue());
+            }
         } else {
             // TODO Error
         }
