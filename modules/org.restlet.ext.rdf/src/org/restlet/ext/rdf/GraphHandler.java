@@ -76,4 +76,16 @@ public abstract class GraphHandler {
      */
     public abstract void link(Graph source, Reference typeRef, Reference target);
 
+    /**
+     * Callback method used when a link is parsed or written.
+     * 
+     * @param source
+     *            The source or subject of the link.
+     * @param typeRef
+     *            The type reference of the link.
+     * @param target
+     *            The target or object of the link.
+     */
+    public abstract void link(Graph source, Reference typeRef, Literal target);
+
 }

@@ -57,7 +57,7 @@ class StringToken extends LexicalUnit {
      * @param context
      *            The parsing context.
      */
-    public StringToken(RdfN3ContentHandler contentHandler, Context context)
+    public StringToken(RdfN3ParsingContentHandler contentHandler, Context context)
             throws IOException {
         super(contentHandler, context);
         multiLines = false;
@@ -88,7 +88,7 @@ class StringToken extends LexicalUnit {
             int[] tab = new int[3];
             int cpt = 0; // Number of consecutives '"' characters.
             int c = getContentHandler().getChar();
-            while (c != RdfN3ContentHandler.EOF) {
+            while (c != RdfN3ParsingContentHandler.EOF) {
                 if (c == '"') {
                     tab[++cpt - 1] = c;
                 } else {
@@ -109,7 +109,7 @@ class StringToken extends LexicalUnit {
             getContentHandler().stepBack(1);
             getContentHandler().discard();
             int c = getContentHandler().getChar();
-            while (c != RdfN3ContentHandler.EOF && (c != '"')) {
+            while (c != RdfN3ParsingContentHandler.EOF && (c != '"')) {
                 c = getContentHandler().step();
             }
             setValue(getContentHandler().getCurrentToken());

@@ -47,7 +47,7 @@ import org.restlet.representation.Representation;
 /**
  * Handler of RDF content according to the N3 notation.
  */
-public class RdfN3ContentHandler extends GraphHandler {
+public class RdfN3ParsingContentHandler extends GraphHandler {
     /** Increment used to identify inner blank nodes. */
     private static int blankNodeId = 0;
 
@@ -136,17 +136,17 @@ public class RdfN3ContentHandler extends GraphHandler {
      *            The representation to read.
      * @throws IOException
      */
-    public RdfN3ContentHandler(Graph linkSet, Representation rdfN3Representation)
-            throws IOException {
+    public RdfN3ParsingContentHandler(Graph linkSet,
+            Representation rdfN3Representation) throws IOException {
         super();
         this.linkSet = linkSet;
         this.rdfN3Representation = rdfN3Representation;
 
         // Initialize the buffer in two parts
-        this.buffer = new char[(RdfN3ContentHandler.BUFFER_SIZE + 1) * 2];
+        this.buffer = new char[(RdfN3ParsingContentHandler.BUFFER_SIZE + 1) * 2];
         // Mark the upper index of each part.
-        this.buffer[RdfN3ContentHandler.BUFFER_SIZE] = this.buffer[2 * RdfN3ContentHandler.BUFFER_SIZE + 1] = EOF;
-        this.scoutIndex = 2 * RdfN3ContentHandler.BUFFER_SIZE;
+        this.buffer[RdfN3ParsingContentHandler.BUFFER_SIZE] = this.buffer[2 * RdfN3ParsingContentHandler.BUFFER_SIZE + 1] = EOF;
+        this.scoutIndex = 2 * RdfN3ParsingContentHandler.BUFFER_SIZE;
         this.startTokenIndex = 0;
 
         this.br = new BufferedReader(new InputStreamReader(
@@ -165,7 +165,7 @@ public class RdfN3ContentHandler extends GraphHandler {
      */
     public void consumeStatement() throws IOException {
         int c = getChar();
-        while (c != RdfN3ContentHandler.EOF && c != '.') {
+        while (c != RdfN3ParsingContentHandler.EOF && c != '.') {
             c = step();
         }
         if (getChar() == '.') {
@@ -182,7 +182,7 @@ public class RdfN3ContentHandler extends GraphHandler {
      * @throws IOException
      */
     public void consumeWhiteSpaces() throws IOException {
-        while (RdfN3ContentHandler.isWhiteSpace(getChar())) {
+        while (RdfN3ParsingContentHandler.isWhiteSpace(getChar())) {
             step();
         }
         discard();
@@ -240,8 +240,9 @@ public class RdfN3ContentHandler extends GraphHandler {
                 } else if ("a".equalsIgnoreCase(lexicalUnit.getValue())) {
                     currentPredicate = RdfN3Representation.PREDICATE_TYPE;
                 } else if ("!".equalsIgnoreCase(lexicalUnit.getValue())) {
-                    currentObject = new BlankNodeToken(RdfN3ContentHandler
-                            .newBlankNodeId()).resolve();
+                    currentObject = new BlankNodeToken(
+                            RdfN3ParsingContentHandler.newBlankNodeId())
+                            .resolve();
                     currentPredicate = getPredicate(lexicalUnits.get(++i));
                     this.link(currentSubject, currentPredicate, currentObject);
                     currentSubject = currentObject;
@@ -249,8 +250,9 @@ public class RdfN3ContentHandler extends GraphHandler {
                 } else if ("^".equalsIgnoreCase(lexicalUnit.getValue())) {
                     currentObject = currentSubject;
                     currentPredicate = getPredicate(lexicalUnits.get(++i));
-                    currentSubject = new BlankNodeToken(RdfN3ContentHandler
-                            .newBlankNodeId()).resolve();
+                    currentSubject = new BlankNodeToken(
+                            RdfN3ParsingContentHandler.newBlankNodeId())
+                            .resolve();
                     this.link(currentSubject, currentPredicate, currentObject);
                     nbTokens = 1;
                 } else {
@@ -295,31 +297,31 @@ public class RdfN3ContentHandler extends GraphHandler {
     public String getCurrentToken() {
         StringBuilder builder = new StringBuilder();
         if (startTokenIndex <= scoutIndex) {
-            if (scoutIndex <= RdfN3ContentHandler.BUFFER_SIZE) {
+            if (scoutIndex <= RdfN3ParsingContentHandler.BUFFER_SIZE) {
                 for (int i = startTokenIndex; i < scoutIndex; i++) {
                     builder.append((char) buffer[i]);
                 }
             } else {
-                for (int i = startTokenIndex; i < RdfN3ContentHandler.BUFFER_SIZE; i++) {
+                for (int i = startTokenIndex; i < RdfN3ParsingContentHandler.BUFFER_SIZE; i++) {
                     builder.append((char) buffer[i]);
                 }
-                for (int i = RdfN3ContentHandler.BUFFER_SIZE + 1; i < scoutIndex; i++) {
+                for (int i = RdfN3ParsingContentHandler.BUFFER_SIZE + 1; i < scoutIndex; i++) {
                     builder.append((char) buffer[i]);
                 }
             }
         } else {
-            if (startTokenIndex <= RdfN3ContentHandler.BUFFER_SIZE) {
-                for (int i = startTokenIndex; i < RdfN3ContentHandler.BUFFER_SIZE; i++) {
+            if (startTokenIndex <= RdfN3ParsingContentHandler.BUFFER_SIZE) {
+                for (int i = startTokenIndex; i < RdfN3ParsingContentHandler.BUFFER_SIZE; i++) {
                     builder.append((char) buffer[i]);
                 }
-                for (int i = RdfN3ContentHandler.BUFFER_SIZE + 1; i < (2 * RdfN3ContentHandler.BUFFER_SIZE + 1); i++) {
+                for (int i = RdfN3ParsingContentHandler.BUFFER_SIZE + 1; i < (2 * RdfN3ParsingContentHandler.BUFFER_SIZE + 1); i++) {
                     builder.append((char) buffer[i]);
                 }
                 for (int i = 0; i < scoutIndex; i++) {
                     builder.append((char) buffer[i]);
                 }
             } else {
-                for (int i = startTokenIndex; i < (2 * RdfN3ContentHandler.BUFFER_SIZE + 1); i++) {
+                for (int i = startTokenIndex; i < (2 * RdfN3ParsingContentHandler.BUFFER_SIZE + 1); i++) {
                     builder.append((char) buffer[i]);
                 }
                 for (int i = 0; i < scoutIndex; i++) {
@@ -352,6 +354,11 @@ public class RdfN3ContentHandler extends GraphHandler {
     }
 
     @Override
+    public void link(Graph source, Reference typeRef, Literal target) {
+        this.linkSet.add(source, typeRef, target);
+    }
+
+    @Override
     public void link(Graph source, Reference typeRef, Reference target) {
         this.linkSet.add(source, typeRef, target);
     }
@@ -370,14 +377,18 @@ public class RdfN3ContentHandler extends GraphHandler {
         if (source instanceof Reference) {
             if (target instanceof Reference) {
                 link((Reference) source, typeRef, (Reference) target);
+            } else if (target instanceof Literal) {
+                link((Reference) source, typeRef, (Literal) target);
             } else {
-                if (target instanceof Literal) {
-                    link((Reference) source, typeRef, (Literal) target);
-                }
+                // Error?
             }
         } else if (source instanceof Graph) {
             if (target instanceof Reference) {
                 link((Graph) source, typeRef, (Reference) target);
+            } else if (target instanceof Literal) {
+                link((Graph) source, typeRef, (Literal) target);
+            } else {
+                // Error?
             }
         }
     }
@@ -416,7 +427,7 @@ public class RdfN3ContentHandler extends GraphHandler {
                 parseStatement(this.context);
                 break;
             }
-        } while (getChar() != RdfN3ContentHandler.EOF);
+        } while (getChar() != RdfN3ParsingContentHandler.EOF);
 
     }
 
@@ -429,7 +440,7 @@ public class RdfN3ContentHandler extends GraphHandler {
         int c;
         do {
             c = step();
-        } while (c != RdfN3ContentHandler.EOF && c != '\n' && c != '\r');
+        } while (c != RdfN3ParsingContentHandler.EOF && c != '\n' && c != '\r');
         discard();
     }
 
@@ -468,7 +479,7 @@ public class RdfN3ContentHandler extends GraphHandler {
             int c;
             do {
                 c = step();
-            } while (c != RdfN3ContentHandler.EOF && c != '.');
+            } while (c != RdfN3ParsingContentHandler.EOF && c != '.');
             String strKeywords = getCurrentToken();
             String[] keywords = strKeywords.split(",");
             context.getKeywords().clear();
@@ -560,14 +571,14 @@ public class RdfN3ContentHandler extends GraphHandler {
                 break;
             case '.':
                 break;
-            case RdfN3ContentHandler.EOF:
+            case RdfN3ParsingContentHandler.EOF:
                 break;
             default:
                 lexicalUnits.add(new Token(this, context));
                 break;
             }
-        } while (getChar() != RdfN3ContentHandler.EOF && getChar() != '.'
-                && getChar() != '}');
+        } while (getChar() != RdfN3ParsingContentHandler.EOF
+                && getChar() != '.' && getChar() != '}');
 
         // Generate the links
         generateLinks(lexicalUnits);
@@ -583,7 +594,7 @@ public class RdfN3ContentHandler extends GraphHandler {
         int c;
         do {
             c = step();
-        } while (c != RdfN3ContentHandler.EOF && !isDelimiter(c));
+        } while (c != RdfN3ParsingContentHandler.EOF && !isDelimiter(c));
         String result = getCurrentToken();
         return result;
     }
@@ -598,7 +609,7 @@ public class RdfN3ContentHandler extends GraphHandler {
         StringBuilder builder = new StringBuilder();
         // Suppose the current character is "<".
         int c = step();
-        while (c != RdfN3ContentHandler.EOF && c != '>') {
+        while (c != RdfN3ParsingContentHandler.EOF && c != '>') {
             if (!isWhiteSpace(c)) {
                 // Discard white spaces.
                 builder.append((char) c);
@@ -622,30 +633,30 @@ public class RdfN3ContentHandler extends GraphHandler {
      */
     public int step() throws IOException {
         scoutIndex++;
-        if (buffer[scoutIndex] == RdfN3ContentHandler.EOF) {
-            if (scoutIndex == RdfN3ContentHandler.BUFFER_SIZE) {
+        if (buffer[scoutIndex] == RdfN3ParsingContentHandler.EOF) {
+            if (scoutIndex == RdfN3ParsingContentHandler.BUFFER_SIZE) {
                 // Reached the end of the first part of the buffer, read into
                 // the second one.
                 scoutIndex++;
                 int len = this.br.read(buffer, 0,
-                        RdfN3ContentHandler.BUFFER_SIZE);
+                        RdfN3ParsingContentHandler.BUFFER_SIZE);
                 if (len == -1) {
                     // End of the stream reached
-                    buffer[scoutIndex] = RdfN3ContentHandler.EOF;
+                    buffer[scoutIndex] = RdfN3ParsingContentHandler.EOF;
                 } else {
-                    buffer[RdfN3ContentHandler.BUFFER_SIZE + len + 1] = RdfN3ContentHandler.EOF;
+                    buffer[RdfN3ParsingContentHandler.BUFFER_SIZE + len + 1] = RdfN3ParsingContentHandler.EOF;
                 }
-            } else if (scoutIndex == (2 * RdfN3ContentHandler.BUFFER_SIZE + 1)) {
+            } else if (scoutIndex == (2 * RdfN3ParsingContentHandler.BUFFER_SIZE + 1)) {
                 scoutIndex = 0;
                 // Reached the end of the second part of the buffer, read into
                 // the first one.
                 int len = this.br.read(buffer, 0,
-                        RdfN3ContentHandler.BUFFER_SIZE);
+                        RdfN3ParsingContentHandler.BUFFER_SIZE);
                 if (len == -1) {
                     // End of the stream reached
-                    buffer[scoutIndex] = RdfN3ContentHandler.EOF;
+                    buffer[scoutIndex] = RdfN3ParsingContentHandler.EOF;
                 } else {
-                    buffer[len] = RdfN3ContentHandler.EOF;
+                    buffer[len] = RdfN3ParsingContentHandler.EOF;
                 }
             } else {
                 // Reached the end of the stream.
@@ -685,7 +696,8 @@ public class RdfN3ContentHandler extends GraphHandler {
     public void stepBack(int n) {
         scoutIndex -= n;
         if (scoutIndex < 0) {
-            scoutIndex = RdfN3ContentHandler.BUFFER_SIZE * 2 + 1 - scoutIndex;
+            scoutIndex = RdfN3ParsingContentHandler.BUFFER_SIZE * 2 + 1
+                    - scoutIndex;
         }
     }
 

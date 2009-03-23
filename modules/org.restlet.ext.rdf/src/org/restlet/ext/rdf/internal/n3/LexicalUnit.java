@@ -38,7 +38,7 @@ import java.io.IOException;
 public abstract class LexicalUnit {
 
     /** The content handler of the current N3 document. */
-    private RdfN3ContentHandler contentHandler;
+    private RdfN3ParsingContentHandler contentHandler;
 
     /** The context maintained during the parsing. */
     private Context context;
@@ -54,7 +54,7 @@ public abstract class LexicalUnit {
      * @param context
      *            The parsing context.
      */
-    public LexicalUnit(RdfN3ContentHandler contentHandler, Context context) {
+    public LexicalUnit(RdfN3ParsingContentHandler contentHandler, Context context) {
         super();
         this.contentHandler = contentHandler;
         this.context = context;
@@ -76,7 +76,7 @@ public abstract class LexicalUnit {
      * 
      * @return The document's parent handler.
      */
-    public RdfN3ContentHandler getContentHandler() {
+    public RdfN3ParsingContentHandler getContentHandler() {
         return contentHandler;
     }
 

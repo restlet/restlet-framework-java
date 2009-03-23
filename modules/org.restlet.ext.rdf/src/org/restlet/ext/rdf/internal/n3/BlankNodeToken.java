@@ -46,6 +46,9 @@ public class BlankNodeToken extends LexicalUnit {
     /** List of lexical units contained by this blank node. */
     List<LexicalUnit> lexicalUnits;
 
+    /** Indicates if the given blank node has been already resolved. */
+    private boolean resolved = false;
+
     /**
      * Constructor. The blank node is given a new identifier thanks to the
      * context..
@@ -56,11 +59,11 @@ public class BlankNodeToken extends LexicalUnit {
      *            The context used to resolved references.
      * @throws IOException
      */
-    public BlankNodeToken(RdfN3ContentHandler contentHandler, Context context)
-            throws IOException {
+    public BlankNodeToken(RdfN3ParsingContentHandler contentHandler,
+            Context context) throws IOException {
         super(contentHandler, context);
         lexicalUnits = new ArrayList<LexicalUnit>();
-        this.setValue("_:" + RdfN3ContentHandler.newBlankNodeId());
+        this.setValue("_:" + RdfN3ParsingContentHandler.newBlankNodeId());
         lexicalUnits.add(this);
         this.parse();
     }
@@ -73,6 +76,7 @@ public class BlankNodeToken extends LexicalUnit {
      */
     public BlankNodeToken(String value) {
         super(value);
+        this.resolved = true;
     }
 
     @Override
@@ -114,13 +118,13 @@ public class BlankNodeToken extends LexicalUnit {
                 break;
             case ']':
                 break;
-            case RdfN3ContentHandler.EOF:
+            case RdfN3ParsingContentHandler.EOF:
                 break;
             default:
                 lexicalUnits.add(new Token(getContentHandler(), getContext()));
                 break;
             }
-        } while (getContentHandler().getChar() != RdfN3ContentHandler.EOF
+        } while (getContentHandler().getChar() != RdfN3ParsingContentHandler.EOF
                 && getContentHandler().getChar() != ']');
         if (getContentHandler().getChar() == ']') {
             // Set the cursor at the right of the list token.
@@ -130,8 +134,11 @@ public class BlankNodeToken extends LexicalUnit {
 
     @Override
     public Object resolve() {
-        if (getContentHandler() != null) {
-            getContentHandler().generateLinks(lexicalUnits);
+        if (!this.resolved) {
+            this.resolved = true;
+            if (getContentHandler() != null) {
+                getContentHandler().generateLinks(lexicalUnits);
+            }
         }
 
         if (getValue() != null) {

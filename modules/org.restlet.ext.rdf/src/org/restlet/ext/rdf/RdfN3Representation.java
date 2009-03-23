@@ -32,12 +32,10 @@ package org.restlet.ext.rdf;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import org.restlet.data.Reference;
-import org.restlet.ext.rdf.internal.n3.RdfN3ContentHandler;
+import org.restlet.ext.rdf.internal.n3.RdfN3ParsingContentHandler;
+import org.restlet.ext.rdf.internal.n3.RdfN3WritingContentHandler;
 import org.restlet.representation.Representation;
 
 /**
@@ -89,145 +87,35 @@ public class RdfN3Representation extends RdfRepresentation {
     public static Reference XML_SCHEMA_TYPE_FLOAT = new Reference(
             "http://www.w3.org/2001/XMLSchema#float");
 
+    /**
+     * Constructor.
+     * 
+     * @param linkSet
+     *            The given graph of links.
+     */
     public RdfN3Representation(Graph linkSet) {
         super(linkSet);
     }
 
+    /**
+     * Constructor. Parses the given representation into the given graph.
+     * 
+     * @param rdfRepresentation
+     *            The RDF N3 representation to parse.
+     * @param linkSet
+     *            The graph to update.
+     * @throws IOException
+     */
     public RdfN3Representation(Representation rdfRepresentation, Graph linkSet)
             throws IOException {
         super(rdfRepresentation, linkSet);
-        new RdfN3ContentHandler(linkSet, rdfRepresentation);
+        new RdfN3ParsingContentHandler(linkSet, rdfRepresentation);
     }
 
     @Override
     public void write(OutputStream outputStream) throws IOException {
         if (getGraph() != null) {
-            Map<String, String> prefixes = new HashMap<String, String>();
-            prefixes.put(RDF_SCHEMA.toString(), "rdf");
-            prefixes.put(RDF_SYNTAX.toString(), "rdfs");
-            prefixes.put("http://www.w3.org/2000/10/swap/grammar/bnf#", "cfg");
-            prefixes.put("http://www.w3.org/2000/10/swap/grammar/n3#", "n3");
-            prefixes.put("http://www.w3.org/2000/10/swap/list#", "list");
-            prefixes.put("http://www.w3.org/2000/10/swap/pim/doc#", "doc");
-            prefixes.put("http://www.w3.org/2002/07/owl#", "owl");
-            prefixes.put("http://www.w3.org/2000/10/swap/log#", "log");
-            prefixes.put("http://purl.org/dc/elements/1.1/", "dc");
-            prefixes.put("http://www.w3.org/2001/XMLSchema#", "type");
-
-            StringBuilder builder = new StringBuilder();
-            for (Entry<String, String> entry : prefixes.entrySet()) {
-                builder.append("@prefix ").append(entry.getValue()).append(":")
-                        .append(entry.getKey()).append(".\n");
-            }
-            builder.append("@keywords a, is, of, has.\n");
-
-            outputStream.write(builder.toString().getBytes());
-            write(outputStream, getGraph(), prefixes);
-        }
-    }
-
-    /**
-     * Writes the representation of a given graph to a byte stream.
-     * 
-     * @param outputStream
-     *            The output stream.
-     * @param graph
-     *            The graph to write.
-     * @param prefixes
-     *            The map of known namespaces.
-     * @throws IOException
-     */
-    private void write(OutputStream outputStream, Graph graph,
-            Map<String, String> prefixes) throws IOException {
-        for (Link link : getGraph()) {
-            if (link.hasReferenceSource()) {
-                write(outputStream, link.getSourceAsReference(), prefixes);
-            } else if (link.hasLinkSource()) {
-                // TODO Hande source as link.
-            } else if (link.hasGraphSource()) {
-                outputStream.write("{".getBytes());
-                write(outputStream, link.getSourceAsGraph(),
-                        new HashMap<String, String>(prefixes));
-                outputStream.write("}".getBytes());
-            } else {
-                // TODO Must be an error
-            }
-            outputStream.write(" ".getBytes());
-            write(outputStream, link.getTypeRef(), prefixes);
-            outputStream.write(" ".getBytes());
-            if (link.hasReferenceTarget()) {
-                write(outputStream, link.getTargetAsReference(), prefixes);
-            } else if (link.hasLiteralTarget()) {
-                Literal target = link.getTargetAsLiteral();
-                // Write it as a string
-                outputStream.write("\"".getBytes());
-                if (target.getValue().contains("\n")) {
-                    outputStream.write("\"".getBytes());
-                    outputStream.write("\"".getBytes());
-                    outputStream.write(target.getValue().getBytes());
-                    outputStream.write("\"".getBytes());
-                    outputStream.write("\"".getBytes());
-                } else {
-                    outputStream.write(target.getValue().getBytes());
-                }
-
-                outputStream.write("\"".getBytes());
-                if (target.getDatatypeRef() != null) {
-                    outputStream.write("^^".getBytes());
-                    write(outputStream, target.getDatatypeRef(), prefixes);
-                }
-                if (target.getLanguage() != null) {
-                    outputStream.write("@".getBytes());
-                    outputStream.write(target.getLanguage().toString()
-                            .getBytes());
-                }
-            } else if (link.hasLinkTarget()) {
-                // TODO Hande target as link.
-            } else if (link.hasGraphTarget()) {
-                outputStream.write("{".getBytes());
-                write(outputStream, link.getTargetAsGraph(),
-                        new HashMap<String, String>(prefixes));
-                outputStream.write("}".getBytes());
-            } else {
-                // TODO Must be an error
-            }
-            outputStream.write(".\n".getBytes());
-        }
-    }
-
-    /**
-     * Writes the representation of a given reference to a byte stream.
-     * 
-     * @param outputStream
-     *            The output stream.
-     * @param reference
-     *            The reference to write.
-     * @param prefixes
-     *            The map of known namespaces.
-     * @throws IOException
-     */
-    private void write(OutputStream outputStream, Reference reference,
-            Map<String, String> prefixes) throws IOException {
-        String uri = reference.toString();
-        if (LinkReference.isBlank(reference)) {
-            outputStream.write(uri.getBytes());
-        } else {
-            boolean found = false;
-            for (Entry<String, String> entry : prefixes.entrySet()) {
-                if (uri.startsWith(entry.getKey())) {
-                    found = true;
-                    StringBuilder builder = new StringBuilder(entry.getValue());
-                    builder.append(":");
-                    builder.append(uri.substring(entry.getKey().length()));
-                    outputStream.write(builder.toString().getBytes());
-                    break;
-                }
-            }
-            if (!found) {
-                outputStream.write("<".getBytes());
-                outputStream.write(uri.getBytes());
-                outputStream.write(">".getBytes());
-            }
+            new RdfN3WritingContentHandler(getGraph(), outputStream);
         }
     }
 }

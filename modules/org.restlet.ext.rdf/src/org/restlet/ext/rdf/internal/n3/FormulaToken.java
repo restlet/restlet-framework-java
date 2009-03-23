@@ -44,7 +44,7 @@ public class FormulaToken extends LexicalUnit {
         return null;
     }
 
-    public FormulaToken(RdfN3ContentHandler contentHandler, Context context)
+    public FormulaToken(RdfN3ParsingContentHandler contentHandler, Context context)
             throws IOException {
         super(contentHandler, context);
         this.parse();
@@ -55,7 +55,7 @@ public class FormulaToken extends LexicalUnit {
         getContentHandler().step();
         do {
             getContentHandler().parseStatement(new Context());
-        } while (getContentHandler().getChar() != RdfN3ContentHandler.EOF
+        } while (getContentHandler().getChar() != RdfN3ParsingContentHandler.EOF
                 && getContentHandler().getChar() != '}');
         if (getContentHandler().getChar() == '}') {
             // Set the cursor at the right of the list token.

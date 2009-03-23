@@ -33,6 +33,7 @@ package org.restlet.ext.rdf;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.restlet.data.MediaType;
 import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
 
@@ -44,8 +45,15 @@ import org.restlet.representation.Representation;
  */
 public abstract class RdfRepresentation extends OutputRepresentation {
 
+    /** The inner graph of links. */
     private Graph graph;
 
+    /**
+     * Constructor with argument.
+     * 
+     * @param linkSet
+     *            The graph of link.
+     */
     public RdfRepresentation(Graph linkSet) {
         super(null);
         this.graph = linkSet;
@@ -63,19 +71,38 @@ public abstract class RdfRepresentation extends OutputRepresentation {
     public RdfRepresentation(Representation rdfRepresentation, Graph linkSet)
             throws IOException {
         this(linkSet);
-        // Parsing goes here.
+        if (MediaType.TEXT_RDF_N3.equals(rdfRepresentation.getMediaType())) {
+            new RdfN3Representation(rdfRepresentation, linkSet);
+        } else {
+            // Parsing for other media types goes here.
+        }
     }
 
+    /**
+     * Returns the graph of links.
+     * 
+     * @return The graph of links.
+     */
     public Graph getGraph() {
         return graph;
     }
 
+    /**
+     * Sets the graph of links.
+     * 
+     * @param linkSet
+     *            The graph of links.
+     */
     public void setGraph(Graph linkSet) {
         this.graph = linkSet;
     }
 
     @Override
     public void write(OutputStream outputStream) throws IOException {
+        if (MediaType.TEXT_RDF_N3.equals(getMediaType())) {
+            new RdfN3Representation(getGraph()).write(outputStream);
+        } else {
+            // Writing for other media types goes here.
+        }
     }
-
 }

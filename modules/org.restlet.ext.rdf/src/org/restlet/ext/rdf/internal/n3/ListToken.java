@@ -52,7 +52,7 @@ class ListToken extends LexicalUnit {
      * @param context
      *            The parsing context.
      */
-    public ListToken(RdfN3ContentHandler contentHandler, Context context)
+    public ListToken(RdfN3ParsingContentHandler contentHandler, Context context)
             throws IOException {
         super(contentHandler, context);
         lexicalUnits = new ArrayList<LexicalUnit>();
@@ -62,7 +62,7 @@ class ListToken extends LexicalUnit {
     @Override
     public Object resolve() {
         Reference currentBlankNode = (Reference) new BlankNodeToken(
-                RdfN3ContentHandler.newBlankNodeId()).resolve();
+                RdfN3ParsingContentHandler.newBlankNodeId()).resolve();
         for (LexicalUnit lexicalUnit : lexicalUnits) {
             Object element = lexicalUnit.resolve();
 
@@ -78,7 +78,7 @@ class ListToken extends LexicalUnit {
             }
 
             Reference restBlankNode = (Reference) new BlankNodeToken(
-                    RdfN3ContentHandler.newBlankNodeId()).resolve();
+                    RdfN3ParsingContentHandler.newBlankNodeId()).resolve();
 
             getContentHandler().link(currentBlankNode,
                     RdfN3Representation.LIST_REST, restBlankNode);
@@ -134,13 +134,13 @@ class ListToken extends LexicalUnit {
                 break;
             case ')':
                 break;
-            case RdfN3ContentHandler.EOF:
+            case RdfN3ParsingContentHandler.EOF:
                 break;
             default:
                 lexicalUnits.add(new Token(getContentHandler(), getContext()));
                 break;
             }
-        } while (getContentHandler().getChar() != RdfN3ContentHandler.EOF
+        } while (getContentHandler().getChar() != RdfN3ParsingContentHandler.EOF
                 && getContentHandler().getChar() != ')');
         if (getContentHandler().getChar() == ')') {
             // Set the cursor at the right of the list token.

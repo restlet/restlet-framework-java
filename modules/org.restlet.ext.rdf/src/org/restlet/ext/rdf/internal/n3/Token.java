@@ -48,7 +48,7 @@ class Token extends LexicalUnit {
      * @param context
      *            The parsing context.
      */
-    public Token(RdfN3ContentHandler contentHandler, Context context)
+    public Token(RdfN3ParsingContentHandler contentHandler, Context context)
             throws IOException {
         super(contentHandler, context);
         this.parse();
@@ -69,8 +69,8 @@ class Token extends LexicalUnit {
         int c;
         do {
             c = getContentHandler().step();
-        } while (c != RdfN3ContentHandler.EOF
-                && !RdfN3ContentHandler.isDelimiter(c));
+        } while (c != RdfN3ParsingContentHandler.EOF
+                && !RdfN3ParsingContentHandler.isDelimiter(c));
         setValue(getContentHandler().getCurrentToken());
     }
 
