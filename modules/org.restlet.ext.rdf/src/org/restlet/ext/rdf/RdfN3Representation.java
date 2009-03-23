@@ -37,7 +37,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.restlet.data.Reference;
-import org.restlet.ext.rdf.internal.RdfN3ContentHandler;
+import org.restlet.ext.rdf.internal.n3.RdfN3ContentHandler;
 import org.restlet.representation.Representation;
 
 /**

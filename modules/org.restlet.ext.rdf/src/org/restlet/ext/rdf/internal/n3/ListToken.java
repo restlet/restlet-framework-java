@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.rdf.internal;
+package org.restlet.ext.rdf.internal.n3;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -37,9 +37,21 @@ import java.util.List;
 import org.restlet.data.Reference;
 import org.restlet.ext.rdf.RdfN3Representation;
 
+/**
+ * Represens a list of N3 tokens.
+ */
 class ListToken extends LexicalUnit {
+    /** The list of contained tokens. */
     List<LexicalUnit> lexicalUnits;
 
+    /**
+     * Constructor with arguments.
+     * 
+     * @param contentHandler
+     *            The document's parent handler.
+     * @param context
+     *            The parsing context.
+     */
     public ListToken(RdfN3ContentHandler contentHandler, Context context)
             throws IOException {
         super(contentHandler, context);
@@ -75,7 +87,6 @@ class ListToken extends LexicalUnit {
         getContentHandler().link(currentBlankNode,
                 RdfN3Representation.LIST_REST, RdfN3Representation.OBJECT_NIL);
 
-        setResolved(true);
         return currentBlankNode;
     }
 

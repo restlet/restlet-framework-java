@@ -27,76 +27,109 @@
  * 
  * Restlet is a registered trademark of Noelios Technologies.
  */
- 
- package org.restlet.ext.rdf.internal;
+
+package org.restlet.ext.rdf.internal.n3;
 
 import java.io.IOException;
 
+/**
+ * Represents a lexical unit inside a N3 document.
+ */
 public abstract class LexicalUnit {
 
+    /** The content handler of the current N3 document. */
     private RdfN3ContentHandler contentHandler;
 
+    /** The context maintained during the parsing. */
     private Context context;
 
-    private LexicalUnit parent;
-
+    /** The parsed value as a simple string of characters. */
     private String value;
 
-    private boolean isResolved;
-    public boolean isResolved() {
-        return isResolved;
-    }
-
-    public void setResolved(boolean isResolved) {
-        this.isResolved = isResolved;
-    }
-
+    /**
+     * Constructor with arguments.
+     * 
+     * @param contentHandler
+     *            The document's parent handler.
+     * @param context
+     *            The parsing context.
+     */
     public LexicalUnit(RdfN3ContentHandler contentHandler, Context context) {
         super();
         this.contentHandler = contentHandler;
         this.context = context;
     }
 
-    public LexicalUnit(RdfN3ContentHandler contentHandler, LexicalUnit parent,
-            Context context) {
-        this(contentHandler, context);
-        this.parent = parent;
-    }
-
+    /**
+     * Constructor with value.
+     * 
+     * @param value
+     *            The value of the current lexical unit.
+     */
     public LexicalUnit(String value) {
         super();
         setValue(value);
     }
 
+    /**
+     * Returns the document's parent handler.
+     * 
+     * @return The document's parent handler.
+     */
     public RdfN3ContentHandler getContentHandler() {
         return contentHandler;
     }
 
-    
+    /**
+     * Returns the parsing context.
+     * 
+     * @return The parsing context.
+     */
     public Context getContext() {
         return context;
     }
 
-    public LexicalUnit getParent() {
-        return parent;
-    }
-
+    /**
+     * Returns the current value.
+     * 
+     * @return The current value.
+     */
     public String getValue() {
         return value;
     }
 
+    /**
+     * Contains the parsing logic of this lexical unit.
+     * 
+     * @throws IOException
+     */
     public abstract void parse() throws IOException;
 
+    /**
+     * Resolves the current value as a reference or a literal or a graph of
+     * links according to the current context.
+     * 
+     * @return The current value as a reference or a literal or a graph of links
+     *         according to the current context.
+     */
     public abstract Object resolve();
 
+    /**
+     * Sets the parsing context.
+     * 
+     * @param context
+     *            The parsing context.
+     */
     public void setContext(Context context) {
         this.context = context;
     }
 
-    public void setParent(LexicalUnit parent) {
-        this.parent = parent;
-    }
-
+    /**
+     * Sets the value.
+     * 
+     * @param value
+     *            The current value.
+     */
     public void setValue(String value) {
         this.value = value;
     }

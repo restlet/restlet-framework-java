@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.rdf.internal;
+package org.restlet.ext.rdf.internal.n3;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -37,10 +37,25 @@ import java.util.List;
 import org.restlet.data.Reference;
 import org.restlet.ext.rdf.LinkReference;
 
+/**
+ * Represents a blank node inside a RDF N3 document. Contains all the logic to
+ * parse a blank node in N3 documents.
+ */
 public class BlankNodeToken extends LexicalUnit {
 
+    /** List of lexical units contained by this blank node. */
     List<LexicalUnit> lexicalUnits;
 
+    /**
+     * Constructor. The blank node is given a new identifier thanks to the
+     * context..
+     * 
+     * @param contentHandler
+     *            The parent content handler.
+     * @param context
+     *            The context used to resolved references.
+     * @throws IOException
+     */
     public BlankNodeToken(RdfN3ContentHandler contentHandler, Context context)
             throws IOException {
         super(contentHandler, context);
@@ -50,6 +65,12 @@ public class BlankNodeToken extends LexicalUnit {
         this.parse();
     }
 
+    /**
+     * Constructor
+     * 
+     * @param value
+     *            The value of this blank node.
+     */
     public BlankNodeToken(String value) {
         super(value);
     }
@@ -109,11 +130,8 @@ public class BlankNodeToken extends LexicalUnit {
 
     @Override
     public Object resolve() {
-        if (!isResolved()) {
-            setResolved(true);
-            if (getContentHandler() != null) {
-                getContentHandler().generateLinks(lexicalUnits);
-            }
+        if (getContentHandler() != null) {
+            getContentHandler().generateLinks(lexicalUnits);
         }
 
         if (getValue() != null) {

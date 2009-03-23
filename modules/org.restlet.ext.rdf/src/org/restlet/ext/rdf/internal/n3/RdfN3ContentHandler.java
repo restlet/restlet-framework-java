@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.rdf.internal;
+package org.restlet.ext.rdf.internal.n3;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -45,13 +45,16 @@ import org.restlet.ext.rdf.RdfN3Representation;
 import org.restlet.representation.Representation;
 
 /**
- * Handler of content according to the RDF N3 notation.
+ * Handler of RDF content according to the N3 notation.
  */
 public class RdfN3ContentHandler extends GraphHandler {
+    /** Increment used to identify inner blank nodes. */
     private static int blankNodeId = 0;
 
+    /** Size of the reading buffer. */
     private static final int BUFFER_SIZE = 4096;
 
+    /** End of reading buffer marker. */
     public static final int EOF = 0;
 
     /**
@@ -103,9 +106,10 @@ public class RdfN3ContentHandler extends GraphHandler {
     /** Internal buffered reader. */
     private BufferedReader br;
 
+    /** The reading buffer. */
     private final char[] buffer;
 
-    /** Data object. */
+    /** The current context object. */
     private Context context;
 
     /** The set of links to update when parsing, or to read when writing. */
@@ -115,8 +119,8 @@ public class RdfN3ContentHandler extends GraphHandler {
     private Representation rdfN3Representation;
 
     /**
-     * Index that discovers the end of the curren token and the beginning of the
-     * futur one.
+     * Index that discovers the end of the current token and the beginning of
+     * the futur one.
      */
     private int scoutIndex;
 
@@ -193,6 +197,88 @@ public class RdfN3ContentHandler extends GraphHandler {
     }
 
     /**
+     * Loops over the given list of lexical units and generates the adequat
+     * calls to link* methods.
+     * 
+     * @see GraphHandler#link(Graph, Reference, Reference)
+     * @see GraphHandler#link(Reference, Reference, Literal)
+     * @see GraphHandler#link(Reference, Reference, Reference)
+     * @param lexicalUnits
+     *            The list of lexical units used to generate the links.
+     */
+    public void generateLinks(List<LexicalUnit> lexicalUnits) {
+        Object currentSubject = null;
+        Reference currentPredicate = null;
+        Object currentObject = null;
+        int nbTokens = 0;
+        boolean swapSubjectObject = false;
+        for (int i = 0; i < lexicalUnits.size(); i++) {
+            LexicalUnit lexicalUnit = lexicalUnits.get(i);
+
+            nbTokens++;
+            switch (nbTokens) {
+            case 1:
+                if (",".equals(lexicalUnit.getValue())) {
+                    nbTokens++;
+                } else if (!";".equals(lexicalUnit.getValue())) {
+                    currentSubject = lexicalUnit.resolve();
+                }
+                break;
+            case 2:
+                if ("is".equalsIgnoreCase(lexicalUnit.getValue())) {
+                    nbTokens--;
+                    swapSubjectObject = true;
+                } else if ("has".equalsIgnoreCase(lexicalUnit.getValue())) {
+                    nbTokens--;
+                } else if ("=".equalsIgnoreCase(lexicalUnit.getValue())) {
+                    currentPredicate = RdfN3Representation.PREDICATE_SAME;
+                } else if ("=>".equalsIgnoreCase(lexicalUnit.getValue())) {
+                    currentPredicate = RdfN3Representation.PREDICATE_IMPLIES;
+                } else if ("<=".equalsIgnoreCase(lexicalUnit.getValue())) {
+                    swapSubjectObject = true;
+                    currentPredicate = RdfN3Representation.PREDICATE_IMPLIES;
+                } else if ("a".equalsIgnoreCase(lexicalUnit.getValue())) {
+                    currentPredicate = RdfN3Representation.PREDICATE_TYPE;
+                } else if ("!".equalsIgnoreCase(lexicalUnit.getValue())) {
+                    currentObject = new BlankNodeToken(RdfN3ContentHandler
+                            .newBlankNodeId()).resolve();
+                    currentPredicate = getPredicate(lexicalUnits.get(++i));
+                    this.link(currentSubject, currentPredicate, currentObject);
+                    currentSubject = currentObject;
+                    nbTokens = 1;
+                } else if ("^".equalsIgnoreCase(lexicalUnit.getValue())) {
+                    currentObject = currentSubject;
+                    currentPredicate = getPredicate(lexicalUnits.get(++i));
+                    currentSubject = new BlankNodeToken(RdfN3ContentHandler
+                            .newBlankNodeId()).resolve();
+                    this.link(currentSubject, currentPredicate, currentObject);
+                    nbTokens = 1;
+                } else {
+                    currentPredicate = getPredicate(lexicalUnit);
+                }
+                break;
+            case 3:
+                if ("of".equalsIgnoreCase(lexicalUnit.getValue())) {
+                    nbTokens--;
+                } else {
+                    if (swapSubjectObject) {
+                        currentObject = currentSubject;
+                        currentSubject = lexicalUnit.resolve();
+                    } else {
+                        currentObject = lexicalUnit.resolve();
+                    }
+                    this.link(currentSubject, currentPredicate, currentObject);
+                    nbTokens = 0;
+                    swapSubjectObject = false;
+                }
+                break;
+            default:
+                break;
+            }
+        }
+    }
+
+    /**
      * Returns the current parsed character.
      * 
      * @return The current parsed character.
@@ -246,6 +332,13 @@ public class RdfN3ContentHandler extends GraphHandler {
         return builder.toString();
     }
 
+    /**
+     * Returns the given lexical unit as a predicate.
+     * 
+     * @param lexicalUnit
+     *            The lexical unit to get as a predicate.
+     * @return A RDF URI reference of the predicate.
+     */
     private Reference getPredicate(LexicalUnit lexicalUnit) {
         Reference result = null;
         Object p = lexicalUnit.resolve();
@@ -263,6 +356,16 @@ public class RdfN3ContentHandler extends GraphHandler {
         this.linkSet.add(source, typeRef, target);
     }
 
+    /**
+     * Callback method used when a link is parsed or written.
+     * 
+     * @param source
+     *            The source or subject of the link.
+     * @param typeRef
+     *            The type reference of the link.
+     * @param target
+     *            The target or object of the link.
+     */
     private void link(Object source, Reference typeRef, Object target) {
         if (source instanceof Reference) {
             if (target instanceof Reference) {
@@ -290,25 +393,18 @@ public class RdfN3ContentHandler extends GraphHandler {
     }
 
     /**
-     * @throws IOException
+     * Parses the current representation.
      * 
+     * @throws IOException
      */
     private void parse() throws IOException {
-        parse(this.context);
-    }
-
-    /**
-     * @throws IOException
-     * 
-     */
-    private void parse(Context context) throws IOException {
         // Init the reading.
         step();
         do {
             consumeWhiteSpaces();
             switch (getChar()) {
             case '@':
-                parseDirective(context);
+                parseDirective(this.context);
                 break;
             case '#':
                 parseComment();
@@ -317,14 +413,15 @@ public class RdfN3ContentHandler extends GraphHandler {
                 step();
                 break;
             default:
-                parseStatement(context);
+                parseStatement(this.context);
                 break;
             }
         } while (getChar() != RdfN3ContentHandler.EOF);
+
     }
 
     /**
-     * Parse a comment.
+     * Parses a comment.
      * 
      * @throws IOException
      */
@@ -386,9 +483,10 @@ public class RdfN3ContentHandler extends GraphHandler {
     }
 
     /**
-     * Returns the value of the current statement.
+     * Reads the current statement until its end, and parses it.
      * 
-     * @return The value of the current token.
+     * @param context
+     *            The current context.
      * @throws IOException
      */
     public void parseStatement(Context context) throws IOException {
@@ -473,78 +571,6 @@ public class RdfN3ContentHandler extends GraphHandler {
 
         // Generate the links
         generateLinks(lexicalUnits);
-    }
-
-    public void generateLinks(List<LexicalUnit> lexicalUnits) {
-        Object currentSubject = null;
-        Reference currentPredicate = null;
-        Object currentObject = null;
-        int nbTokens = 0;
-        boolean swapSubjectObject = false;
-        for (int i = 0; i < lexicalUnits.size(); i++) {
-            LexicalUnit lexicalUnit = lexicalUnits.get(i);
-
-            nbTokens++;
-            switch (nbTokens) {
-            case 1:
-                if (",".equals(lexicalUnit.getValue())) {
-                    nbTokens++;
-                } else if (!";".equals(lexicalUnit.getValue())) {
-                    currentSubject = lexicalUnit.resolve();
-                }
-                break;
-            case 2:
-                if ("is".equalsIgnoreCase(lexicalUnit.getValue())) {
-                    nbTokens--;
-                    swapSubjectObject = true;
-                } else if ("has".equalsIgnoreCase(lexicalUnit.getValue())) {
-                    nbTokens--;
-                } else if ("=".equalsIgnoreCase(lexicalUnit.getValue())) {
-                    currentPredicate = RdfN3Representation.PREDICATE_SAME;
-                } else if ("=>".equalsIgnoreCase(lexicalUnit.getValue())) {
-                    currentPredicate = RdfN3Representation.PREDICATE_IMPLIES;
-                } else if ("<=".equalsIgnoreCase(lexicalUnit.getValue())) {
-                    swapSubjectObject = true;
-                    currentPredicate = RdfN3Representation.PREDICATE_IMPLIES;
-                } else if ("a".equalsIgnoreCase(lexicalUnit.getValue())) {
-                    currentPredicate = RdfN3Representation.PREDICATE_TYPE;
-                } else if ("!".equalsIgnoreCase(lexicalUnit.getValue())) {
-                    currentObject = new BlankNodeToken(RdfN3ContentHandler
-                            .newBlankNodeId()).resolve();
-                    currentPredicate = getPredicate(lexicalUnits.get(++i));
-                    this.link(currentSubject, currentPredicate, currentObject);
-                    currentSubject = currentObject;
-                    nbTokens = 1;
-                } else if ("^".equalsIgnoreCase(lexicalUnit.getValue())) {
-                    currentObject = currentSubject;
-                    currentPredicate = getPredicate(lexicalUnits.get(++i));
-                    currentSubject = new BlankNodeToken(RdfN3ContentHandler
-                            .newBlankNodeId()).resolve();
-                    this.link(currentSubject, currentPredicate, currentObject);
-                    nbTokens = 1;
-                } else {
-                    currentPredicate = getPredicate(lexicalUnit);
-                }
-                break;
-            case 3:
-                if ("of".equalsIgnoreCase(lexicalUnit.getValue())) {
-                    nbTokens--;
-                } else {
-                    if (swapSubjectObject) {
-                        currentObject = currentSubject;
-                        currentSubject = lexicalUnit.resolve();
-                    } else {
-                        currentObject = lexicalUnit.resolve();
-                    }
-                    this.link(currentSubject, currentPredicate, currentObject);
-                    nbTokens = 0;
-                    swapSubjectObject = false;
-                }
-                break;
-            default:
-                break;
-            }
-        }
     }
 
     /**

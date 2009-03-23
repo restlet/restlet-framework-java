@@ -33,13 +33,13 @@ package org.restlet.ext.rdf;
 import org.restlet.data.Reference;
 
 /**
- * Handler for the content of a Graph. List of callbacks used when parsing a
- * representation of a RDF graph.
+ * Handler for the content of a Graph. List of callbacks used when parsing or
+ * writing a representation of a RDF graph.
  */
 public abstract class GraphHandler {
 
     /**
-     * Callback method used when a link has been parsed.
+     * Callback method used when a link is parsed or written.
      * 
      * @param source
      *            The source or subject of the link.
@@ -52,7 +52,7 @@ public abstract class GraphHandler {
             Literal target);
 
     /**
-     * Callback method used when a link has been parsed.
+     * Callback method used when a link is parsed or written.
      * 
      * @param source
      *            The source or subject of the link.
@@ -65,7 +65,7 @@ public abstract class GraphHandler {
             Reference target);
 
     /**
-     * Callback method used when a link has been parsed.
+     * Callback method used when a link is parsed or written.
      * 
      * @param source
      *            The source or subject of the link.

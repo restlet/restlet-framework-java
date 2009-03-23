@@ -28,21 +28,35 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.rdf.internal;
+package org.restlet.ext.rdf.internal.n3;
 
 import java.io.IOException;
 
 import org.restlet.data.Language;
 import org.restlet.ext.rdf.Literal;
 
+/**
+ * Represents a string of characters. This string could have a type and a
+ * language.
+ */
 class StringToken extends LexicalUnit {
-
+    /** Does this string contains at least a new line character? */
     private boolean multiLines;
 
+    /** The type of the represented value. */
     private String type;
 
+    /** The language of the value. */
     private String language;
 
+    /**
+     * Constructor with arguments.
+     * 
+     * @param contentHandler
+     *            The document's parent handler.
+     * @param context
+     *            The parsing context.
+     */
     public StringToken(RdfN3ContentHandler contentHandler, Context context)
             throws IOException {
         super(contentHandler, context);
@@ -50,6 +64,12 @@ class StringToken extends LexicalUnit {
         this.parse();
     }
 
+    /**
+     * Returns true if this string of characters contains at least one newline
+     * character.
+     * 
+     * @return
+     */
     public boolean isMultiLines() {
         return multiLines;
     }
@@ -120,7 +140,6 @@ class StringToken extends LexicalUnit {
         if (this.language != null) {
             result.setLanguage(Language.valueOf(this.language));
         }
-        setResolved(true);
         return result;
     }
 }

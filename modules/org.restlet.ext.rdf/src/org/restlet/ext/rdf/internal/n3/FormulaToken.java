@@ -28,13 +28,13 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.rdf.internal;
+package org.restlet.ext.rdf.internal.n3;
 
 import java.io.IOException;
 
 /**
- * Allows to parse a formula in RDF N3 notation. PLease note that this kind of
- * feature is not supported, since it can't be translated into pure RDF.
+ * Allows to parse a formula in RDF N3 notation. Please note that this kind of
+ * feature is not supported yet.
  */
 public class FormulaToken extends LexicalUnit {
 

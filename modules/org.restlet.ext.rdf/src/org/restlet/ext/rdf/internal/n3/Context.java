@@ -28,7 +28,7 @@
  * Restlet is a registered trademark of Noelios Technologies.
  */
 
-package org.restlet.ext.rdf.internal;
+package org.restlet.ext.rdf.internal.n3;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,13 +37,23 @@ import java.util.Map;
 
 import org.restlet.data.Reference;
 
+/**
+ * Contains essentials data updated during the parsing of a N3 document such as
+ * the list of known namespaces, keywords.
+ */
 public class Context {
+    /** The value of the "base" keyword. */
     private Reference base;
 
+    /** The list of known keywords. */
     private List<String> keywords;
 
+    /** The list of known prefixes. */
     private Map<String, String> prefixes;
 
+    /**
+     * Default constructor.
+     */
     public Context() {
         super();
         this.prefixes = new HashMap<String, String>();
@@ -52,6 +62,11 @@ public class Context {
         this.keywords = new ArrayList<String>();
     }
 
+    /**
+     * Returns the base reference.
+     * 
+     * @return The base reference.
+     */
     public Reference getBase() {
         if (base == null) {
             base = new Reference();
@@ -59,20 +74,40 @@ public class Context {
         return base;
     }
 
+    /**
+     * Returns the list of known keywords.
+     * 
+     * @return The list of known keywords.
+     */
     public List<String> getKeywords() {
         return keywords;
     }
 
+    /**
+     * Returns the list of known prefixes.
+     * 
+     * @return The list of known prefixes.
+     */
     public Map<String, String> getPrefixes() {
         return prefixes;
     }
 
-    public void setBase(Reference base) {
-        this.base = base;
+    /**
+     * Returns true if the given value is a qualified name.
+     * 
+     * @param value
+     *            The value to test.
+     * @return True if the given value is a qualified name.
+     */
+    public boolean isQName(String value) {
+        boolean result = (value.indexOf(":") != -1)
+                || getKeywords().contains(value);
+
+        return result;
     }
 
     /**
-     * Resolve a qualified name according to the current context.
+     * Resolves a qualified name according to the current context.
      * 
      * @param qname
      *            The qualified name to resolve.
@@ -107,16 +142,12 @@ public class Context {
     }
 
     /**
-     * Returns true if the given value is a qualified name.
+     * Sets the base reference.
      * 
-     * @param value
-     *            The value to test.
-     * @return True if the given value is a qualified name.
+     * @param base
+     *            The base reference.
      */
-    public boolean isQName(String value) {
-        boolean result = (value.indexOf(":") != -1)
-                || getKeywords().contains(value);
-
-        return result;
+    public void setBase(Reference base) {
+        this.base = base;
     }
 }
