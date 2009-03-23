@@ -241,7 +241,7 @@ public class ScriptedTextResource extends Resource {
     /**
      * Constructs the resource.
      * 
-     * @param context   
+     * @param context
      *            The Restlet context
      * @param request
      *            The request

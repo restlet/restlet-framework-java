@@ -85,7 +85,7 @@ class ScriptedTextStreamingRepresentation extends WriterRepresentation {
                     this.container.scriptEngines,
                     this.container.scriptContextController, false);
         } catch (ScriptException x) {
-            IOException xx = new IOException("Script exception");
+            IOException xx = new IOException("EmbeddedScriptScript exception");
             xx.initCause(x);
             throw xx;
         } finally {
