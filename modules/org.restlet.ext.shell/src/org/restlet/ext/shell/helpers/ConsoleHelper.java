@@ -73,7 +73,7 @@ public class ConsoleHelper {
         this.consoleReader.setHistory(this.history);
         this.consoleReader.setUseHistory(true);
 
-        // Completition
+        // Completion
         this.completor = new SimpleCompletor(new String[] { "help", "version" });
         this.consoleReader.addCompletor(this.completor);
     }
