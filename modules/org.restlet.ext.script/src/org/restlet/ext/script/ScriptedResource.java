@@ -62,7 +62,7 @@ import com.threecrickets.scripturian.ScriptSource;
  * <ul>
  * <li><b>initializeResource()</b>: This function is called when the resource is
  * initialized. We will use it set general characteristics for the resource.</li>
- * <li>represent(): This function is called for the GET verb, which is expected
+ * <li><b>represent()</b>: This function is called for the GET verb, which is expected
  * to behave as a logical "read" of the resource's state. The expectation is
  * that it return one representation, out of possibly many, of the resource's
  * state. Returned values can be of any explicit sub-class of
