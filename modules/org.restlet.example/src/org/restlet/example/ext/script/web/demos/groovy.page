@@ -1,8 +1,10 @@
 <html>
 <head>
 	<title>Embedded Groovy Demo</title>
+	<link rel="stylesheet" type="text/css" href="../static/example.css" />
 </head>
 <body>
+<table width="100%"><tr valign="top"><td>
 <%groovy
 
 //
@@ -27,7 +29,7 @@ script.cacheDuration = 5000
 // Calling Java
 //
 
-print '<h3>Timestamp:</h3> ' + System.currentTimeMillis()
+print 'This page was dynamically generated at ' + System.currentTimeMillis()
 
 //
 // Including a script
@@ -65,7 +67,7 @@ def printFactory = { factory ->
 }
 
 %>
-<h3>Current script engine:</h3>
+<h3>Script engine used:</h3>
 <%
 printFactory script.scriptEngine.factory
 %>
@@ -76,7 +78,8 @@ for(def factory in factories){
 	printFactory factory
 }
 %>
-<h3>The "id" attribute is:</h3>
+</td><td>
+<h3>The "id" attribute in the URL query is:</h3>
 <p><%= form.getFirstValue('id') %></p>
 <h3>A few tests:</h3>
 <%
@@ -90,5 +93,6 @@ A multiple of three:
 <%
 }
 %>
+</td></tr></table>
 </body>
 <html>

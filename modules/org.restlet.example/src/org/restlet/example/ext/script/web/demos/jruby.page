@@ -1,8 +1,10 @@
 <html>
 <head>
 	<title>Embedded Ruby Demo</title>
+	<link rel="stylesheet" type="text/css" href="../static/example.css" />
 </head>
 <body>
+<table width="100%"><tr valign="top"><td>
 <%ruby
 
 #
@@ -29,7 +31,7 @@ $script.cache_duration = 5000
 
 require 'java'
 import java.lang.System
-print '<h3>Timestamp:</h3> ', System.current_time_millis
+print 'This page was dynamically generated at ', System.current_time_millis
 
 #
 # Including a script
@@ -71,7 +73,7 @@ def print_factory factory
 end
 
 %>
-<h3>Current script engine:</h3>
+<h3>Script engine used:</h3>
 <%
 print_factory $script.script_engine.factory
 %>
@@ -82,7 +84,8 @@ for factory in factories
 	print_factory factory
 end
 %>
-<h3>The "id" attribute is:</h3>
+</td><td>
+<h3>The "id" attribute in the URL query is:</h3>
 <p><%= form.get_first_value('id') %></p>
 <h3>A few tests:</h3>
 <%
@@ -96,5 +99,6 @@ A multiple of three:
 <%
 end
 %>
+</td></tr></table>
 </body>
 <html>

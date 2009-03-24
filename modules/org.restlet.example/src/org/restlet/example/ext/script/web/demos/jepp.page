@@ -1,8 +1,10 @@
 <html>
 <head>
 	<title>Embedded Python (Jepp) Demo</title>
+	<link rel="stylesheet" type="text/css" href="../static/example.css" />
 </head>
 <body>
+<table width="100%"><tr valign="top"><td>
 <%jep
 
 #
@@ -26,7 +28,7 @@ script.setCacheDuration(5000)
 #
 
 from java.lang import *
-sys.stdout.write('<h3>Timestamp:</h3> ' + str(System.currentTimeMillis()))
+sys.stdout.write('This page was dynamically generated at ' + str(System.currentTimeMillis()))
 
 # (Note: Python's print statement can be used here, too, but it may not be the best choice
 # for outputting HTML due to its "softspace" feature. It is meant more for debugging than
@@ -62,7 +64,7 @@ def print_factory(factory):
 	%></p><%
 
 %>
-<h3>Current script engine:</h3>
+<h3>Script engine used:</h3>
 <%
 print_factory(script.getScriptEngine().getFactory())
 %>
@@ -72,7 +74,8 @@ factories = container.getScriptEngineManager().getEngineFactories().toArray()
 for factory in factories:
 	print_factory(factory)
 %>
-<h3>The "id" attribute is:</h3>
+</td><td>
+<h3>The "id" attribute in the URL query is:</h3>
 <p><%= form.getFirstValue('id') %></p>
 <h3>A few tests:</h3>
 <%
@@ -81,5 +84,7 @@ for i in range(10):
 	print_triple(i)
 	%><br /><%
 
-%></body>
+%>
+</td></tr></table>
+</body>
 <html>

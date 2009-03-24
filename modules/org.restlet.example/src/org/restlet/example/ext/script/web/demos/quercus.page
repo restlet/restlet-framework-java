@@ -1,8 +1,10 @@
 <html>
 <head>
 	<title>Embedded PHP Demo</title>
+	<link rel="stylesheet" type="text/css" href="../static/example.css" />
 </head>
 <body>
+<table width="100%"><tr valign="top"><td>
 <?php
 
 //
@@ -24,7 +26,7 @@ $script->cacheDuration = 5000;
 //
 
 import java.lang.System;
-print '<h3>Timestamp:</h3> ' . System::currentTimeMillis();
+print 'This page was dynamically generated at ' . System::currentTimeMillis();
 
 //
 // Including a script
@@ -63,7 +65,7 @@ function printFactory($factory) {
 <?
 }
 ?>
-<h3>Current script engine:</h3>
+<h3>Script engine used:</h3>
 <?
 printFactory($script->scriptEngine->factory);
 ?>
@@ -74,7 +76,8 @@ foreach($factories as $factory) {
 	printFactory($factory);
 }
 ?>
-<h3>The "id" attribute is:</h3>
+</td><td>
+<h3>The "id" attribute in the URL query is:</h3>
 <p><?= $form->getFirstValue('id') ?></p>
 <h3>A few tests:</h3>
 <?
@@ -89,5 +92,6 @@ A multiple of three:
 <?
 }
 ?>
+</td></tr></table>
 </body>
 <html>

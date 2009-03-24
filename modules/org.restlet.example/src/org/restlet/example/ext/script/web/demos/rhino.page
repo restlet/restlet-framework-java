@@ -1,8 +1,10 @@
 <html>
 <head>
 	<title>Embedded JavaScript Demo</title>
+	<link rel="stylesheet" type="text/css" href="../static/example.css" />
 </head>
 <body>
+<table width="100%"><tr valign="top"><td>
 <%
 
 //
@@ -22,7 +24,7 @@ if(form.getFirstValue('stream') == 'true') if(container.stream()) throw null;
 //
 
 script.cacheDuration = 5000;
-print('<h3>Timestamp:</h3> ' + java.lang.System.currentTimeMillis());
+print('This page was dynamically generated at ' + java.lang.System.currentTimeMillis() + '');
 
 //
 // Including a script
@@ -43,9 +45,9 @@ print('<h3>Timestamp:</h3> ' + java.lang.System.currentTimeMillis());
 function printFactory(factory) {
 %>
 <p>
-	Engine: <%= factory.engineName %> version <%= factory.engineVersion %><br />
-	Language: <%= factory.languageName %> version <%= factory.languageVersion %><br />
-	Names: 
+	<i>Engine:</i> <%= factory.engineName %> version <%= factory.engineVersion %><br />
+	<i>Language:</i> <%= factory.languageName %> version <%= factory.languageVersion %><br />
+	<i>Names:</i> 
 <%
 	var names = factory.names.toArray();
 	for(var i = 0; i < names.length; i++) {
@@ -59,7 +61,7 @@ function printFactory(factory) {
 <%
 }
 %>
-<h3>Current script engine:</h3>
+<h3>Script engine used:</h3>
 <%
 printFactory(script.scriptEngine.factory);
 %>
@@ -70,7 +72,8 @@ for(var i = 0; i < factories.length; i++) {
 	printFactory(factories[i]);
 }
 %>
-<h3>The "id" attribute is:</h3>
+</td><td>
+<h3>The "id" attribute in the URL query is:</h3>
 <p><%= form.getFirstValue('id') %></p>
 <h3>A few tests:</h3>
 <%
@@ -84,5 +87,6 @@ A multiple of three:
 <%
 }
 %>
+</td></tr></table>
 </body>
 <html>
