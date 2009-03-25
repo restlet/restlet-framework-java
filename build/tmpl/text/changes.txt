@@ -28,6 +28,8 @@ Changes log
        - Fixed bug in TunnelService preventing the replacement of 
          client preferences if the HTTP header was "Accept" and not
          "accept".
+       - Fixed flushing bug with WriterRepresentation subclasses.
+         Reported by Tal Liron.
     - Misc
        - Updated DirectoryTestCase (tested directory are made unique).
          May help fix a bug with Windows and deleted files reported by 
