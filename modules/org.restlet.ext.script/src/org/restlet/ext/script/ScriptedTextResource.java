@@ -232,18 +232,16 @@ public class ScriptedTextResource extends Resource {
 
     private Map<String, RepresentableString> getCache() {
         /*
-         *
+         * 
          * TODO:
          * 
-        if (this.cache == null) {
-            ConcurrentMap<String, Object> attributes = Application.getCurrent().getContext()
-                    .getAttributes();
-            this.cache = (Map<String, RepresentableString>) attributes
-                    .get("org.restlet.ext.script.ScriptedTextResource.cache");
-            if (this.cache == null) {
-                this.cache = new HashMap<String, RepresentableString>();
-            }
-        }*/
+         * if (this.cache == null) { ConcurrentMap<String, Object> attributes =
+         * Application.getCurrent().getContext() .getAttributes(); this.cache =
+         * (Map<String, RepresentableString>) attributes
+         * .get("org.restlet.ext.script.ScriptedTextResource.cache"); if
+         * (this.cache == null) { this.cache = new HashMap<String,
+         * RepresentableString>(); } }
+         */
 
         return ScriptedTextResource.cache;
     }
