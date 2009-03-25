@@ -153,8 +153,8 @@ public class JsonRepresentation extends WriterRepresentation {
      */
     public JsonRepresentation(String jsonString) {
         super(MediaType.APPLICATION_JSON);
-        this.jsonRepresentation = new StringRepresentation(jsonString,
-                MediaType.APPLICATION_JSON, null, CharacterSet.UTF_8);
+        setCharacterSet(CharacterSet.UTF_8);
+        this.jsonRepresentation = new StringRepresentation(jsonString);
     }
 
     /**
