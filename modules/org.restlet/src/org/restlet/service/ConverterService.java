@@ -153,7 +153,7 @@ public class ConverterService extends Service {
                 resource);
 
         if (ch != null) {
-            ch.toRepresentation(object, targetVariant, resource);
+            result = ch.toRepresentation(object, targetVariant, resource);
         } else {
             Context.getCurrentLogger().warning(
                     "Unable to find a converter for this object : " + object);

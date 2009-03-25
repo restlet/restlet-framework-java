@@ -102,7 +102,8 @@ public class AtomConverter extends ConverterHelper {
         Representation result = null;
 
         if ((object instanceof Feed)
-                && targetVariant.isCompatible(VARIANT_ATOM)) {
+                && ((targetVariant == null) || targetVariant
+                        .isCompatible(VARIANT_ATOM))) {
             Feed feed = (Feed) object;
             result = feed;
         }

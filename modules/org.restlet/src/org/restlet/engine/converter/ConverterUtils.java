@@ -52,10 +52,14 @@ public class ConverterUtils {
             variants = ch.getVariants(object.getClass());
 
             if (variants != null) {
-                for (Variant variant : variants) {
-                    if (variant.isCompatible(targetVariant)) {
-                        return ch;
+                if (targetVariant != null) {
+                    for (Variant variant : variants) {
+                        if (variant.isCompatible(targetVariant)) {
+                            return ch;
+                        }
                     }
+                } else {
+                    return ch;
                 }
             }
         }
