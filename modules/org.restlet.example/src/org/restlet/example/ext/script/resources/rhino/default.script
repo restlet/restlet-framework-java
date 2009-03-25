@@ -14,7 +14,6 @@
 
 importClass(
 	java.util.concurrent.locks.ReentrantReadWriteLock,
-	org.json.JSONObject,
 	org.restlet.data.MediaType,
 	org.restlet.representation.Variant,
 	org.restlet.ext.json.JsonRepresentation,
@@ -98,7 +97,7 @@ function represent() {
 	// of the possible options we created in initializeResource()
 
 	if(container.mediaType == MediaType.APPLICATION_JSON) {
-		r = new JsonRepresentation(new JSONObject(r));
+		r = new JsonRepresentation(r);
 	}
 	
 	return r;

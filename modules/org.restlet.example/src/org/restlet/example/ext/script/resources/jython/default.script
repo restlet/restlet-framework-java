@@ -13,7 +13,6 @@
 #
 
 from java.util.concurrent.locks import ReentrantReadWriteLock
-from org.json import JSONObject
 from org.restlet.data import MediaType
 from org.restlet.representation import Variant
 from org.restlet.ext.json import JsonRepresentation
@@ -95,7 +94,7 @@ def represent():
 	# of the possible options we created in initializeResource()
 
 	if container.mediaType == MediaType.APPLICATION_JSON:
-		r = JsonRepresentation(JSONObject(r))
+		r = JsonRepresentation(r)
 		
 	return r
 
