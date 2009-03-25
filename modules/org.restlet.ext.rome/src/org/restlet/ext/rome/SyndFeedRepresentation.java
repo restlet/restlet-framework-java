@@ -20,6 +20,7 @@ import com.sun.syndication.io.SyndFeedOutput;
  * access via {@link #getFeed()}.
  * 
  * @author Tal Liron
+ * @see <a href="https://rome.dev.java.net/">ROME home</a>
  */
 public class SyndFeedRepresentation extends WriterRepresentation {
     /**
@@ -107,8 +108,6 @@ public class SyndFeedRepresentation extends WriterRepresentation {
             IOException ioe = new IOException("Feed exception");
             ioe.initCause(e);
             throw ioe;
-        } finally {
-            writer.close();
         }
     }
 }
