@@ -360,4 +360,36 @@ public class Variant {
         this.mediaType = mediaType;
     }
 
+    /**
+     * Indicates if the current variant is compatible with the given variant.
+     * 
+     * @param other
+     *            The other variant.
+     * @return True if the current variant includes the other.
+     */
+    public boolean isCompatible(Variant other) {
+        boolean result = true;
+
+        // Compare the character set
+        if (result) {
+            result = (getCharacterSet() == null)
+                    || getCharacterSet().equals(CharacterSet.ALL)
+                    || getCharacterSet().equals(other.getCharacterSet());
+        }
+
+        // Compare the media type
+        if (result) {
+            result = (getMediaType() == null)
+                    || getMediaType().isCompatible(other.getMediaType());
+        }
+
+        // Compare the languages
+        if (result) {
+            result = (getLanguages().isEmpty())
+                    || getLanguages().contains(Language.ALL)
+                    || getLanguages().containsAll(other.getLanguages());
+        }
+
+        return result;
+    }
 }

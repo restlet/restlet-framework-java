@@ -114,6 +114,7 @@ Changes log
         - Updated accept.properties file, removing Firefox 
           customization as version 3.0 has proper 'Accept' header.
         - Added a JaxbRepresentation#setValidationEventHandler method.
+        - Added Variant#isCompatible() method.
     - Misc
         - Upgraded Simple server to version 4.1.8. 
           Contributed by Niall Gallagher.

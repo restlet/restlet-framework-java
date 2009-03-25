@@ -68,29 +68,29 @@ public abstract class ConverterHelper {
      * 
      * @param <T>
      *            The expected class of the Java object.
-     * @param resource
-     *            The calling resource.
      * @param representation
      *            The source representation to convert.
-     * @param objectClass
+     * @param targetClass
      *            The expected class of the Java object.
+     * @param resource
+     *            The calling resource.
      * @return The converted Java object.
      */
-    public abstract <T> T toObject(UniformResource resource,
-            Representation representation, Class<T> objectClass);
+    public abstract <T> T toObject(Representation representation,
+            Class<T> targetClass, UniformResource resource);
 
     /**
      * Converts a regular Java object into a Representation.
      * 
-     * @param resource
-     *            The calling resource.
      * @param object
      *            The source object to convert.
-     * @param variant
+     * @param targetVariant
      *            The expected representation metadata.
+     * @param resource
+     *            The calling resource.
      * @return The converted representation.
      */
-    public abstract Representation toRepresentation(UniformResource resource,
-            Object object, Variant variant);
+    public abstract Representation toRepresentation(Object object,
+            Variant targetVariant, UniformResource resource);
 
 }

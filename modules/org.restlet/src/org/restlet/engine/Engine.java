@@ -74,7 +74,7 @@ public class Engine {
 
     public static final String DESCRIPTOR = "META-INF/services";
 
-    public static final String DESCRIPTOR_AUTHENTICATOR = "org.restlet.engine.AuthenticatorHelper";
+    public static final String DESCRIPTOR_AUTHENTICATOR = "org.restlet.engine.security.AuthenticatorHelper";
 
     public static final String DESCRIPTOR_AUTHENTICATOR_PATH = DESCRIPTOR + "/"
             + DESCRIPTOR_AUTHENTICATOR;
@@ -84,7 +84,7 @@ public class Engine {
     public static final String DESCRIPTOR_CLIENT_PATH = DESCRIPTOR + "/"
             + DESCRIPTOR_CLIENT;
 
-    public static final String DESCRIPTOR_CONVERTER = "org.restlet.engine.ConverterHelper";
+    public static final String DESCRIPTOR_CONVERTER = "org.restlet.engine.converter.ConverterHelper";
 
     public static final String DESCRIPTOR_CONVERTER_PATH = DESCRIPTOR + "/"
             + DESCRIPTOR_CONVERTER;

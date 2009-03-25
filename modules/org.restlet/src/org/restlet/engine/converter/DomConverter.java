@@ -54,14 +54,14 @@ public class DomConverter extends ConverterHelper {
     }
 
     @Override
-    public <T> T toObject(UniformResource resource,
-            Representation representation, Class<T> objectClass) {
+    public <T> T toObject(Representation representation, Class<T> targetClass,
+            UniformResource resource) {
         return null;
     }
 
     @Override
-    public Representation toRepresentation(UniformResource resource,
-            Object object, Variant variant) {
+    public Representation toRepresentation(Object object,
+            Variant targetVariant, UniformResource resource) {
         return null;
     }
 

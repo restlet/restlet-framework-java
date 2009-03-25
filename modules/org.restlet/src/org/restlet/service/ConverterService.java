@@ -32,6 +32,9 @@ package org.restlet.service;
 
 import java.util.List;
 
+import org.restlet.Context;
+import org.restlet.engine.converter.ConverterHelper;
+import org.restlet.engine.converter.ConverterUtils;
 import org.restlet.representation.Representation;
 import org.restlet.representation.Variant;
 import org.restlet.resource.UniformResource;
@@ -91,8 +94,6 @@ public class ConverterService extends Service {
     /**
      * Converts a Representation into a regular Java object.
      * 
-     * @param <T>
-     *            The expected class of the Java object.
      * @param resource
      *            The calling resource.
      * @param representation
@@ -101,25 +102,64 @@ public class ConverterService extends Service {
      *            The expected class of the Java object.
      * @return The converted Java object.
      */
-    public <T> T toObject(UniformResource resource,
-            Representation representation, Class<T> objectClass) {
+    public Object toObject(Representation representation) {
+        return toObject(representation, null, null);
+    }
+
+    /**
+     * Converts a Representation into a regular Java object.
+     * 
+     * @param <T>
+     *            The expected class of the Java object.
+     * @param representation
+     *            The representation to convert.
+     * @param targetClass
+     *            The target class of the Java object.
+     * @param resource
+     *            The calling resource.
+     * @return The converted Java object.
+     */
+    public <T> T toObject(Representation representation, Class<T> targetClass,
+            UniformResource resource) {
         return null;
     }
 
     /**
      * Converts a regular Java object into a Representation.
      * 
-     * @param resource
-     *            The calling resource.
      * @param object
      *            The object to convert.
-     * @param variant
-     *            The expected representation metadata.
      * @return The converted representation.
      */
-    public Representation toRepresentation(UniformResource resource,
-            Object object, Variant variant) {
-        return null;
+    public Representation toRepresentation(Object object) {
+        return toRepresentation(object, null, null);
+    }
+
+    /**
+     * Converts a regular Java object into a Representation.
+     * 
+     * @param object
+     *            The object to convert.
+     * @param targetVariant
+     *            The target variant.
+     * @param resource
+     *            The calling resource.
+     * @return The converted representation.
+     */
+    public Representation toRepresentation(Object object,
+            Variant targetVariant, UniformResource resource) {
+        Representation result = null;
+        ConverterHelper ch = ConverterUtils.getHelper(object, targetVariant,
+                resource);
+
+        if (ch != null) {
+            ch.toRepresentation(object, targetVariant, resource);
+        } else {
+            Context.getCurrentLogger().warning(
+                    "Unable to find a converter for this object : " + object);
+        }
+
+        return result;
     }
 
 }
