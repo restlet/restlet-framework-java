@@ -52,9 +52,11 @@ public abstract class ScriptUtils {
     public static String getRelativePart(Request request, String def) {
         String url = request.getResourceRef().getRemainingPart(true);
 
-        int query = url.indexOf('?');
-        if (query != -1) {
-            url = url.substring(0, query);
+        if (url != null) {
+            int query = url.indexOf('?');
+            if (query != -1) {
+                url = url.substring(0, query);
+            }
         }
 
         if ((url == null) || (url.length() == 0) || url.equals("/")) {

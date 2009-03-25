@@ -43,37 +43,44 @@ import com.threecrickets.scripturian.ScriptContextController;
  */
 class ScriptedTextResourceScriptContextController implements
         ScriptContextController {
+    private final ScriptedTextResource resource;
+
     private final ScriptedTextResourceContainer container;
 
     /**
      * Constructor.
      * 
+     * @param resource
+     *            The resource
      * @param container
      *            The container
      */
-    ScriptedTextResourceScriptContextController(
+    ScriptedTextResourceScriptContextController(ScriptedTextResource resource,
             ScriptedTextResourceContainer container) {
+        this.resource = resource;
         this.container = container;
     }
 
     public void finalize(ScriptContext scriptContext) {
-        ScriptedTextResource.scriptSource.finalize(scriptContext);
+        this.resource.getScriptSource().finalize(scriptContext);
 
-        if (ScriptedTextResource.scriptContextController != null) {
-            ScriptedTextResource.scriptContextController
-                    .finalize(scriptContext);
+        ScriptContextController scriptContextController = this.resource
+                .getScriptContextController();
+        if (scriptContextController != null) {
+            scriptContextController.finalize(scriptContext);
         }
     }
 
     public void initialize(ScriptContext scriptContext) throws ScriptException {
-        scriptContext.setAttribute(ScriptedTextResource.containerVariableName,
+        scriptContext.setAttribute(this.resource.getContainerVariableName(),
                 this.container, ScriptContext.ENGINE_SCOPE);
 
-        if (ScriptedTextResource.scriptContextController != null) {
-            ScriptedTextResource.scriptContextController
-                    .initialize(scriptContext);
+        ScriptContextController scriptContextController = this.resource
+                .getScriptContextController();
+        if (scriptContextController != null) {
+            scriptContextController.initialize(scriptContext);
         }
 
-        ScriptedTextResource.scriptSource.initialize(scriptContext);
+        this.resource.getScriptSource().initialize(scriptContext);
     }
 }

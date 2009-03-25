@@ -9,7 +9,8 @@ import org.restlet.representation.Representation;
 
 /**
  * This is the type of the "container" variable exposed to the script. The name
- * is set according to {@link ScriptedTextRepresentation#containerVariableName}.
+ * is set according to
+ * {@link ScriptedTextRepresentation#getContainerVariableName()}.
  * 
  * @author Tal Liron
  * @see ScriptedTextRepresentation
@@ -58,7 +59,7 @@ public class ScriptedTextRepresentationContainer {
      * @return The script engine manager
      */
     public ScriptEngineManager getScriptEngineManager() {
-        return ScriptedTextRepresentation.scriptEngineManager;
+        return getRepresentation().getScriptEngineManager();
     }
 
     /**

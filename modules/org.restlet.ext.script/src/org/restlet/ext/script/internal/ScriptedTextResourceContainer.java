@@ -56,18 +56,16 @@ import com.threecrickets.scripturian.ScriptSource;
 
 /**
  * This is the type of the "container" variable exposed to the script. The name
- * is set according to {@link ScriptedTextResource#containerVariableName}.
+ * is set according to {@link ScriptedTextResource#getContainerVariableName()}.
  * 
  * @author Tal Liron
  */
 public class ScriptedTextResourceContainer {
+    private final ScriptedTextResource resource;
+
     private boolean startStreaming;
 
     private final Variant variant;
-
-    private final Request request;
-
-    private final Response response;
 
     private final Map<String, RepresentableString> cache;
 
@@ -85,36 +83,34 @@ public class ScriptedTextResourceContainer {
 
     private StringBuffer buffer;
 
-    protected final ScriptedTextResourceScriptContextController scriptContextController = new ScriptedTextResourceScriptContextController(
-            this);
+    protected final ScriptedTextResourceScriptContextController scriptContextController;
 
     protected final Map<String, ScriptEngine> scriptEngines = new HashMap<String, ScriptEngine>();
 
     /**
      * Constructs a container with media type and character set according to the
-     * variant, or {@link ScriptedTextResource#defaultCharacterSet} if none is
-     * provided.
+     * variant, or {@link ScriptedTextResource#getDefaultCharacterSet()} if none
+     * is provided.
      * 
+     * @param resource
+     *            The resource
      * @param variant
      *            The variant
-     * @param request
-     *            The request
-     * @param response
-     *            The response
      * @param cache
      *            The cache
      */
-    public ScriptedTextResourceContainer(Variant variant, Request request,
-            Response response, Map<String, RepresentableString> cache) {
+    public ScriptedTextResourceContainer(ScriptedTextResource resource,
+            Variant variant, Map<String, RepresentableString> cache) {
+        this.resource = resource;
         this.variant = variant;
-        this.request = request;
-        this.response = response;
         this.cache = cache;
         this.mediaType = variant.getMediaType();
         this.characterSet = variant.getCharacterSet();
         if (this.characterSet == null) {
-            this.characterSet = ScriptedTextResource.defaultCharacterSet;
+            this.characterSet = resource.getDefaultCharacterSet();
         }
+        this.scriptContextController = new ScriptedTextResourceScriptContextController(
+                resource, this);
     }
 
     /**
@@ -143,12 +139,15 @@ public class ScriptedTextResourceContainer {
     }
 
     /**
-     * This boolean is true when the writer is in streaming mode.
+     * Identical to {@link #isStreaming()}. Supports scripting engines which
+     * don't know how to recognize the "is" getter notation, but can recognize
+     * the "get" notation.
      * 
      * @return True if in streaming mode, false if in caching mode
+     * @see #isStreaming()
      */
     public boolean getIsStreaming() {
-        return this.isStreaming;
+        return isStreaming();
     }
 
     /**
@@ -182,7 +181,7 @@ public class ScriptedTextResourceContainer {
      * @return The request
      */
     public Request getRequest() {
-        return this.request;
+        return this.resource.getRequest();
     }
 
     /**
@@ -192,7 +191,7 @@ public class ScriptedTextResourceContainer {
      * @return The response
      */
     public Response getResponse() {
-        return this.response;
+        return this.resource.getResponse();
     }
 
     /**
@@ -203,7 +202,7 @@ public class ScriptedTextResourceContainer {
      * @return The script engine manager
      */
     public ScriptEngineManager getScriptEngineManager() {
-        return ScriptedTextResource.scriptEngineManager;
+        return this.resource.getScriptEngineManager();
     }
 
     /**
@@ -274,8 +273,8 @@ public class ScriptedTextResourceContainer {
             throws IOException, ScriptException {
 
         // Get script descriptor
-        ScriptSource.ScriptDescriptor<EmbeddedScript> scriptDescriptor = ScriptedTextResource.scriptSource
-                .getScriptDescriptor(name);
+        ScriptSource.ScriptDescriptor<EmbeddedScript> scriptDescriptor = this.resource
+                .getScriptSource().getScriptDescriptor(name);
 
         EmbeddedScript script = scriptDescriptor.getScript();
         if (script == null) {
@@ -285,10 +284,10 @@ public class ScriptedTextResourceContainer {
                 text = EmbeddedScript.delimiter1Start + scriptEngineName + " "
                         + text + EmbeddedScript.delimiter1End;
             }
-            script = new EmbeddedScript(text,
-                    ScriptedTextResource.scriptEngineManager,
-                    ScriptedTextResource.defaultEngineName,
-                    ScriptedTextResource.allowCompilation);
+            script = new EmbeddedScript(text, this.resource
+                    .getScriptEngineManager(), this.resource
+                    .getDefaultScriptEngineName(), this.resource
+                    .isAllowCompilation());
             scriptDescriptor.setScript(script);
         }
 
@@ -298,14 +297,14 @@ public class ScriptedTextResourceContainer {
             if (getWriter() != null) {
                 getWriter().write(trivial);
             }
-            return new StringRepresentation(trivial, this.mediaType,
-                    this.language, this.characterSet);
+            return new StringRepresentation(trivial, getMediaType(),
+                    getLanguage(), getCharacterSet());
         }
 
         int startPosition = 0;
 
         // Make sure we have a valid writer for caching mode
-        if (!this.isStreaming) {
+        if (!isStreaming()) {
             if (getWriter() == null) {
                 StringWriter stringWriter = new StringWriter();
                 this.buffer = stringWriter.getBuffer();
@@ -318,8 +317,8 @@ public class ScriptedTextResourceContainer {
 
         try {
             // Do not allow caching in streaming mode
-            if (script.run(getWriter(), this.errorWriter, this.scriptEngines,
-                    this.scriptContextController, !this.isStreaming)) {
+            if (script.run(getWriter(), getErrorWriter(), this.scriptEngines,
+                    this.scriptContextController, !isStreaming())) {
 
                 // Did the script ask us to start streaming?
                 if (this.startStreaming) {
@@ -329,7 +328,7 @@ public class ScriptedTextResourceContainer {
                     return new ScriptedTextStreamingRepresentation(this, script);
                 }
 
-                if (this.isStreaming) {
+                if (isStreaming()) {
                     // Nothing to return in streaming mode
                     return null;
                 } else {
@@ -338,7 +337,7 @@ public class ScriptedTextResourceContainer {
                     // Get the buffer from when we ran the script
                     RepresentableString string = new RepresentableString(
                             this.buffer.substring(startPosition),
-                            this.mediaType, this.language, this.characterSet);
+                            getMediaType(), getLanguage(), getCharacterSet());
 
                     // Cache it
                     this.cache.put(name, string);
@@ -348,8 +347,8 @@ public class ScriptedTextResourceContainer {
                         return string.represent();
                     } else {
                         return new StringRepresentation(this.buffer.toString(),
-                                this.mediaType, this.language,
-                                this.characterSet);
+                                getMediaType(), getLanguage(),
+                                getCharacterSet());
                     }
                 }
             } else {
@@ -383,6 +382,15 @@ public class ScriptedTextResourceContainer {
     }
 
     /**
+     * This boolean is true when the writer is in streaming mode.
+     * 
+     * @return True if in streaming mode, false if in caching mode
+     */
+    public boolean isStreaming() {
+        return this.isStreaming;
+    }
+
+    /**
      * Throws an {@link IllegalStateException} if in streaming mode.
      * 
      * @param characterSet
@@ -390,7 +398,7 @@ public class ScriptedTextResourceContainer {
      * @see #getCharacterSet()
      */
     public void setCharacterSet(CharacterSet characterSet) {
-        if (this.isStreaming) {
+        if (isStreaming()) {
             throw new IllegalStateException(
                     "Cannot change character set while streaming");
         }
@@ -405,7 +413,7 @@ public class ScriptedTextResourceContainer {
      * @see #getLanguage()
      */
     public void setLanguage(Language language) {
-        if (this.isStreaming) {
+        if (isStreaming()) {
             throw new IllegalStateException(
                     "Cannot change language while streaming");
         }
@@ -420,7 +428,7 @@ public class ScriptedTextResourceContainer {
      * @see #getMediaType()
      */
     public void setMediaType(MediaType mediaType) {
-        if (this.isStreaming) {
+        if (isStreaming()) {
             throw new IllegalStateException(
                     "Cannot change media type while streaming");
         }
@@ -449,7 +457,7 @@ public class ScriptedTextResourceContainer {
      *         mode
      */
     public boolean stream() {
-        if (this.isStreaming) {
+        if (isStreaming()) {
             return false;
         }
         this.startStreaming = true;

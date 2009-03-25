@@ -32,6 +32,7 @@ package org.restlet.ext.script;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.concurrent.ConcurrentMap;
 
 import javax.script.ScriptEngineManager;
 
@@ -98,14 +99,16 @@ import com.threecrickets.scripturian.ScriptSource;
  * passing of value.</li>
  * </ul>
  * <p>
- * Names of these entry point can be changed via
- * {@link #initializeResourceEntryPointName}, {@link #representEntryPointName},
- * {@link #acceptRepresentationEntryPointName},
- * {@link #storeRepresentationEntryPointName} and
- * {@link #removeRepresentationsEntryPointName}.
+ * Names of these entry point can be configured via attributes in the
+ * application's {@link Context}. See
+ * {@link #getInitializeResourceEntryPointName()},
+ * {@link #getRepresentEntryPointName()},
+ * {@link #getAcceptRepresentationEntryPointName()},
+ * {@link #getStoreRepresentationEntryPointName()} and
+ * {@link #getRemoveRepresentationsEntryPointName()}.
  * <p>
- * Before using this resource, make sure to set {@link ScriptSource} to a valid
- * source.
+ * Before using this resource, make sure to configure a valid source in the
+ * application's {@link Context}; see {@link #getScriptSource()}.
  * <p>
  * Note that the embedded script's output is sent to the system's standard
  * output. Most likely, you will not want to output anything from the script.
@@ -114,8 +117,9 @@ import com.threecrickets.scripturian.ScriptSource;
  * <p>
  * A special container environment is created for scripts, with some useful
  * services. It is available to the script as a global variable named
- * "container". This name can be changed via {@link #containerVariableName},
- * though if you want the embedded script include tag to work, you must also set
+ * "container". This name can be configured via the application's
+ * {@link Context} (see {@link #getContainerVariableName()}), though if you want
+ * the embedded script include tag to work, you must also set
  * {@link EmbeddedScript#containerVariableName} to be the same. For some other
  * global variables available to scripts, see {@link EmbeddedScript}.
  * <p>
@@ -169,113 +173,51 @@ import com.threecrickets.scripturian.ScriptSource;
  * <li><b>container.characterSet</b>: The {@link CharacterSet} that will be used
  * if you return an arbitrary type for represent(), acceptRepresentation() and
  * storeRepresentation(). Defaults to what the client requested (in
- * container.variant), or to the value of {@link #defaultCharacterSet} if the
- * client did not specify it.</li>
+ * container.variant), or to the value of {@link #getDefaultCharacterSet()} if
+ * the client did not specify it.</li>
  * <li><b>container.language</b>: The {@link Language} that will be used if you
  * return an arbitrary type for represent(), acceptRepresentation() and
  * storeRepresentation(). Defaults to null.</li>
  * </ul>
  * <p>
- * In addition to the above, a {@link #scriptContextController} can be set to
- * add your own global variables to each embedded script.
+ * In addition to the above, a {@link ScriptContextController} can be set to add
+ * your own global variables to each embedded script. See
+ * {@link #getScriptContextController()}.
  * 
  * @author Tal Liron
  * @see EmbeddedScript
  * @see ScriptedTextResource
  */
 public class ScriptedResource extends Resource {
-    /**
-     * The {@link ScriptEngineManager} used to create the script engines for the
-     * scripts. Uses a default instance, but can be set to something else.
-     */
-    public static ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
+    private ScriptEngineManager scriptEngineManager;
 
-    /**
-     * Whether or not compilation is attempted for script engines that support
-     * it. Defaults to true.
-     */
-    public static boolean allowCompilation = true;
+    private Boolean allowCompilation;
 
-    /**
-     * The {@link ScriptSource} used to fetch scripts. This must be set to a
-     * valid value before this class is used!
-     */
-    public static ScriptSource<EmbeddedScript> scriptSource;
+    private ScriptSource<EmbeddedScript> scriptSource;
 
-    /**
-     * Files with this extension can have the extension omitted from the URL,
-     * allowing for nicer URLs. Defaults to "script".
-     */
-    public static String extension = "script";
+    private String extension;
 
-    /**
-     * If the URL points to a directory rather than a file, and that directory
-     * contains a file with this name, then it will be used. This allows you to
-     * use the directory structure to create nice URLs without relying on
-     * filenames. Defaults to "default.script".
-     */
-    public static String defaultName = "default.script";
+    private String defaultName;
 
-    /**
-     * The default script engine name to be used if the script doesn't specify
-     * one. Defaults to "js".
-     */
-    public static String defaultEngineName = "js";
+    private String defaultScriptEngineName;
 
-    /**
-     * The default character set to be used if the client does not specify it.
-     * Defaults to {@link CharacterSet#UTF_8}.
-     */
-    public static CharacterSet defaultCharacterSet = CharacterSet.UTF_8;
+    private CharacterSet defaultCharacterSet;
 
-    /**
-     * The default variable name for the {@link ScriptedResourceContainer}
-     * instance. Defaults to "container".
-     */
-    public static String containerVariableName = "container";
+    private String containerVariableName;
 
-    /**
-     * An optional {@link ScriptContextController} to be used with the scripts.
-     * Useful for adding your own global variables to the script.
-     */
-    public static ScriptContextController scriptContextController;
+    private ScriptContextController scriptContextController;
 
-    /**
-     * The name of the initializeResource entry point in the script. Defaults to
-     * "initialize".
-     */
-    public static String initializeResourceEntryPointName = "initializeResource";
+    private String initializeResourceEntryPointName;
 
-    /**
-     * The name of the represent entry point in the script. Defaults to
-     * "represent".
-     */
-    public static String representEntryPointName = "represent";
+    private String representEntryPointName;
 
-    /**
-     * The name of the acceptRepresentation entry point in the script. Defaults
-     * to "acceptRepresentation".
-     */
-    public static String acceptRepresentationEntryPointName = "acceptRepresentation";
+    private String acceptRepresentationEntryPointName;
 
-    /**
-     * The name of the storeRepresentation entry point in the script. Defaults
-     * to "storeRepresentation".
-     */
-    public static String storeRepresentationEntryPointName = "storeRepresentation";
+    private String storeRepresentationEntryPointName;
 
-    /**
-     * The name of the removeRepresentations entry point in the script. Defaults
-     * to "removeRepresentations".
-     */
-    public static String removeRepresentationsEntryPointName = "removeRepresentations";
+    private String removeRepresentationsEntryPointName;
 
-    /**
-     * This is so we can see the source code for scripts by adding ?source=true
-     * to the URL. You probably wouldn't want this for most applications.
-     * Defaults to false.
-     */
-    public static boolean sourceViewable = false;
+    private Boolean sourceViewable;
 
     private static final String SOURCE = "source";
 
@@ -291,7 +233,7 @@ public class ScriptedResource extends Resource {
      *            The request
      * @param response
      *            The response
-     * @see #initializeResourceEntryPointName
+     * @see #getInitializeResourceEntryPointName()
      * @see org.restlet.resource.Resource#Resource(Context, Request, Response)
      */
     public ScriptedResource(Context context, Request request, Response response) {
@@ -300,9 +242,9 @@ public class ScriptedResource extends Resource {
         ScriptedResourceContainer container = new ScriptedResourceContainer(
                 this);
         try {
-            container.invoke(initializeResourceEntryPointName);
-        } catch (ResourceException x) {
-            x.printStackTrace();
+            container.invoke(getInitializeResourceEntryPointName());
+        } catch (ResourceException e) {
+            e.printStackTrace();
         }
     }
 
@@ -310,7 +252,7 @@ public class ScriptedResource extends Resource {
      * Delegates to the acceptRepresentation entry point in the script.
      * 
      * @param entity
-     * @see #acceptRepresentationEntryPointName
+     * @see #getAcceptRepresentationEntryPointName()
      * @see Resource#acceptRepresentation(Representation)
      */
     @Override
@@ -319,7 +261,7 @@ public class ScriptedResource extends Resource {
         ScriptedResourceContainer container = new ScriptedResourceContainer(
                 this, entity);
 
-        Object r = container.invoke(acceptRepresentationEntryPointName);
+        Object r = container.invoke(getAcceptRepresentationEntryPointName());
         if (r != null) {
             if (r instanceof Representation) {
                 getResponse().setEntity((Representation) r);
@@ -333,9 +275,341 @@ public class ScriptedResource extends Resource {
     }
 
     /**
+     * The name of the acceptRepresentation entry point in the script. Defaults
+     * to "acceptRepresentation".
+     * <p>
+     * This setting can be configured by setting an attribute named
+     * "org.restlet.ext.script.ScriptedResource.acceptRepresentationEntryPointName"
+     * in the application's {@link Context}.
+     */
+    public String getAcceptRepresentationEntryPointName() {
+        if (this.acceptRepresentationEntryPointName == null) {
+            ConcurrentMap<String, Object> attributes = getContext()
+                    .getAttributes();
+            this.acceptRepresentationEntryPointName = (String) attributes
+                    .get("org.restlet.ext.script.ScriptedResource.acceptRepresentationEntryPointName");
+            if (this.acceptRepresentationEntryPointName == null) {
+                this.acceptRepresentationEntryPointName = "acceptRepresentation";
+            }
+        }
+
+        return this.acceptRepresentationEntryPointName;
+    }
+
+    /**
+     * The default variable name for the container instance. Defaults to
+     * "container".
+     * <p>
+     * This setting can be configured by setting an attribute named
+     * "org.restlet.ext.script.ScriptedResource.containerVariableName" in the
+     * application's {@link Context}.
+     */
+    public String getContainerVariableName() {
+        if (this.containerVariableName == null) {
+            ConcurrentMap<String, Object> attributes = getContext()
+                    .getAttributes();
+            this.containerVariableName = (String) attributes
+                    .get("org.restlet.ext.script.ScriptedResource.containerVariableName");
+            if (this.containerVariableName == null) {
+                this.containerVariableName = "container";
+            }
+        }
+
+        return this.containerVariableName;
+    }
+
+    /**
+     * The default character set to be used if the client does not specify it.
+     * Defaults to {@link CharacterSet#UTF_8}.
+     * <p>
+     * This setting can be configured by setting an attribute named
+     * "org.restlet.ext.script.ScriptedResource.defaultCharacterSet" in the
+     * application's {@link Context}.
+     */
+    public CharacterSet getDefaultCharacterSet() {
+        if (this.defaultCharacterSet == null) {
+            ConcurrentMap<String, Object> attributes = getContext()
+                    .getAttributes();
+            this.defaultCharacterSet = (CharacterSet) attributes
+                    .get("org.restlet.ext.script.ScriptedResource.defaultCharacterSet");
+            if (this.defaultCharacterSet == null) {
+                this.defaultCharacterSet = CharacterSet.UTF_8;
+            }
+        }
+
+        return this.defaultCharacterSet;
+    }
+
+    /**
+     * If the URL points to a directory rather than a file, and that directory
+     * contains a file with this name, then it will be used. This allows you to
+     * use the directory structure to create nice URLs without relying on
+     * filenames. Defaults to "default.script".
+     * <p>
+     * This setting can be configured by setting an attribute named
+     * "org.restlet.ext.script.ScriptedResource.defaultName" in the
+     * application's {@link Context}.
+     */
+    public String getDefaultName() {
+        if (this.defaultName == null) {
+            ConcurrentMap<String, Object> attributes = getContext()
+                    .getAttributes();
+            this.defaultName = (String) attributes
+                    .get("org.restlet.ext.script.ScriptedResource.defaultName");
+            if (this.defaultName == null) {
+                this.defaultName = "default.script";
+            }
+        }
+
+        return this.defaultName;
+    }
+
+    /**
+     * The default script engine name to be used if the script doesn't specify
+     * one. Defaults to "js".
+     * <p>
+     * This setting can be configured by setting an attribute named
+     * "org.restlet.ext.script.ScriptedResource.defaultScriptEngineName" in the
+     * application's {@link Context}.
+     */
+    public String getDefaultScriptEngineName() {
+        if (this.defaultScriptEngineName == null) {
+            ConcurrentMap<String, Object> attributes = getContext()
+                    .getAttributes();
+            this.defaultScriptEngineName = (String) attributes
+                    .get("org.restlet.ext.script.ScriptedResource.defaultScriptEngineName");
+            if (this.defaultScriptEngineName == null) {
+                this.defaultScriptEngineName = "js";
+            }
+        }
+
+        return this.defaultScriptEngineName;
+    }
+
+    /**
+     * Files with this extension can have the extension omitted from the URL,
+     * allowing for nicer URLs. Defaults to "script".
+     * <p>
+     * This setting can be configured by setting an attribute named
+     * "org.restlet.ext.script.ScriptedResource.extension" in the application's
+     * {@link Context}.
+     */
+    public String getExtension() {
+        if (this.extension == null) {
+            ConcurrentMap<String, Object> attributes = getContext()
+                    .getAttributes();
+            this.extension = (String) attributes
+                    .get("org.restlet.ext.script.ScriptedResource.extension");
+            if (this.extension == null) {
+                this.extension = "script";
+            }
+        }
+
+        return this.extension;
+    }
+
+    /**
+     * The name of the initializeResource entry point in the script. Defaults to
+     * "initialize".
+     * <p>
+     * This setting can be configured by setting an attribute named
+     * "org.restlet.ext.script.ScriptedResource.initializeResourceEntryPointName"
+     * in the application's {@link Context}.
+     */
+    public String getInitializeResourceEntryPointName() {
+        if (this.initializeResourceEntryPointName == null) {
+            ConcurrentMap<String, Object> attributes = getContext()
+                    .getAttributes();
+            this.initializeResourceEntryPointName = (String) attributes
+                    .get("org.restlet.ext.script.ScriptedResource.initializeResourceEntryPointName");
+            if (this.initializeResourceEntryPointName == null) {
+                this.initializeResourceEntryPointName = "initializeResource";
+            }
+        }
+
+        return this.initializeResourceEntryPointName;
+    }
+
+    /**
+     * The name of the removeRepresentations entry point in the script. Defaults
+     * to "removeRepresentations".
+     * <p>
+     * This setting can be configured by setting an attribute named
+     * "org.restlet.ext.script.ScriptedResource.removeRepresentationsEntryPointName"
+     * in the application's {@link Context}.
+     */
+    public String getRemoveRepresentationsEntryPointName() {
+        if (this.removeRepresentationsEntryPointName == null) {
+            ConcurrentMap<String, Object> attributes = getContext()
+                    .getAttributes();
+            this.removeRepresentationsEntryPointName = (String) attributes
+                    .get("org.restlet.ext.script.ScriptedResource.removeRepresentationsEntryPointName");
+            if (this.removeRepresentationsEntryPointName == null) {
+                this.removeRepresentationsEntryPointName = "removeRepresentations";
+            }
+        }
+
+        return this.removeRepresentationsEntryPointName;
+    }
+
+    /**
+     * The name of the represent entry point in the script. Defaults to
+     * "represent".
+     * <p>
+     * This setting can be configured by setting an attribute named
+     * "org.restlet.ext.script.ScriptedResource.representEntryPointName" in the
+     * application's {@link Context}.
+     */
+    public String getRepresentEntryPointName() {
+        if (this.representEntryPointName == null) {
+            ConcurrentMap<String, Object> attributes = getContext()
+                    .getAttributes();
+            this.representEntryPointName = (String) attributes
+                    .get("org.restlet.ext.script.ScriptedResource.representEntryPointName");
+            if (this.representEntryPointName == null) {
+                this.representEntryPointName = "represent";
+            }
+        }
+
+        return this.representEntryPointName;
+    }
+
+    /**
+     * An optional {@link ScriptContextController} to be used with the scripts.
+     * Useful for adding your own global variables to the script.
+     * <p>
+     * This setting can be configured by setting an attribute named
+     * "org.restlet.ext.script.ScriptedResource.scriptContextController" in the
+     * application's {@link Context}.
+     */
+    public ScriptContextController getScriptContextController() {
+        if (this.scriptContextController == null) {
+            ConcurrentMap<String, Object> attributes = getContext()
+                    .getAttributes();
+            this.scriptContextController = (ScriptContextController) attributes
+                    .get("org.restlet.ext.script.ScriptedResource.scriptContextController");
+        }
+
+        return this.scriptContextController;
+    }
+
+    /**
+     * The {@link ScriptEngineManager} used to create the script engines for the
+     * scripts. Uses a default instance, but can be set to something else.
+     * <p>
+     * This setting can be configured by setting an attribute named
+     * "org.restlet.ext.script.ScriptedResource.scriptEngineManager" in the
+     * application's {@link Context}.
+     */
+    public ScriptEngineManager getScriptEngineManager() {
+        if (this.scriptEngineManager == null) {
+            ConcurrentMap<String, Object> attributes = getContext()
+                    .getAttributes();
+            this.scriptEngineManager = (ScriptEngineManager) attributes
+                    .get("org.restlet.ext.script.ScriptedResource.scriptEngineManager");
+            if (this.scriptEngineManager == null) {
+                this.scriptEngineManager = new ScriptEngineManager();
+            }
+        }
+
+        return this.scriptEngineManager;
+    }
+
+    /**
+     * The {@link ScriptSource} used to fetch scripts. This must be set to a
+     * valid value before this class is used!
+     * <p>
+     * This setting can be configured by setting an attribute named
+     * "org.restlet.ext.script.ScriptedResource.scriptSource" in the
+     * application's {@link Context}.
+     */
+    @SuppressWarnings("unchecked")
+    public ScriptSource<EmbeddedScript> getScriptSource() {
+        if (this.scriptSource == null) {
+            ConcurrentMap<String, Object> attributes = getContext()
+                    .getAttributes();
+            this.scriptSource = (ScriptSource<EmbeddedScript>) attributes
+                    .get("org.restlet.ext.script.ScriptedResource.scriptSource");
+            if (this.scriptSource == null) {
+                throw new RuntimeException(
+                        "Attribute org.restlet.ext.script.ScriptedResource.scriptSource must be set in context to use ScriptResource");
+            }
+        }
+
+        return this.scriptSource;
+    }
+
+    /**
+     * The name of the storeRepresentation entry point in the script. Defaults
+     * to "storeRepresentation".
+     * <p>
+     * This setting can be configured by setting an attribute named
+     * "org.restlet.ext.script.ScriptedResource.storeRepresentationEntryPointName"
+     * in the application's {@link Context}.
+     */
+    public String getStoreRepresentationEntryPointName() {
+        if (this.storeRepresentationEntryPointName == null) {
+            ConcurrentMap<String, Object> attributes = getContext()
+                    .getAttributes();
+            this.storeRepresentationEntryPointName = (String) attributes
+                    .get("org.restlet.ext.script.ScriptedResource.storeRepresentationEntryPointName");
+            if (this.storeRepresentationEntryPointName == null) {
+                this.storeRepresentationEntryPointName = "storeRepresentation";
+            }
+        }
+
+        return this.storeRepresentationEntryPointName;
+    }
+
+    /**
+     * Whether or not compilation is attempted for script engines that support
+     * it. Defaults to true.
+     * <p>
+     * This setting can be configured by setting an attribute named
+     * "org.restlet.ext.script.ScriptedResource.allowCompilation" in the
+     * application's {@link Context}.
+     */
+    public boolean isAllowCompilation() {
+        if (this.allowCompilation == null) {
+            ConcurrentMap<String, Object> attributes = getContext()
+                    .getAttributes();
+            this.allowCompilation = (Boolean) attributes
+                    .get("org.restlet.ext.script.ScriptedResource.allowCompilation");
+            if (this.allowCompilation == null) {
+                this.allowCompilation = true;
+            }
+        }
+
+        return this.allowCompilation;
+    }
+
+    /**
+     * This is so we can see the source code for scripts by adding ?source=true
+     * to the URL. You probably wouldn't want this for most applications.
+     * Defaults to false.
+     * <p>
+     * This setting can be configured by setting an attribute named
+     * "org.restlet.ext.script.ScriptedResource.sourceViewable" in the
+     * application's {@link Context}.
+     */
+    public boolean isSourceViewable() {
+        if (this.sourceViewable == null) {
+            ConcurrentMap<String, Object> attributes = getContext()
+                    .getAttributes();
+            this.sourceViewable = (Boolean) attributes
+                    .get("org.restlet.ext.script.ScriptedResource.sourceViewable");
+            if (this.sourceViewable == null) {
+                this.sourceViewable = false;
+            }
+        }
+
+        return this.sourceViewable;
+    }
+
+    /**
      * Delegates to the removeRepresentations entry point in the script.
      * 
-     * @see #removeRepresentationsEntryPointName
+     * @see #getRemoveRepresentationsEntryPointName()
      * @see Resource#removeRepresentations()
      */
     @Override
@@ -343,7 +617,7 @@ public class ScriptedResource extends Resource {
         ScriptedResourceContainer container = new ScriptedResourceContainer(
                 this);
 
-        container.invoke(removeRepresentationsEntryPointName);
+        container.invoke(getRemoveRepresentationsEntryPointName());
     }
 
     /**
@@ -351,7 +625,7 @@ public class ScriptedResource extends Resource {
      * 
      * @param variant
      * @return A representation of the resource's state
-     * @see #representEntryPointName
+     * @see #getRepresentEntryPointName()
      * @see Resource#represent(Variant)
      */
     @Override
@@ -360,19 +634,20 @@ public class ScriptedResource extends Resource {
                 this, variant);
 
         Request request = getRequest();
-        if (sourceViewable
+        if (isSourceViewable()
                 && TRUE.equals(request.getResourceRef().getQueryAsForm()
                         .getFirstValue(SOURCE))) {
             // Represent script source
-            String name = ScriptUtils.getRelativePart(request, defaultName);
+            String name = ScriptUtils
+                    .getRelativePart(request, getDefaultName());
             try {
-                return new StringRepresentation(scriptSource
+                return new StringRepresentation(getScriptSource()
                         .getScriptDescriptor(name).getText());
-            } catch (IOException x) {
-                throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, x);
+            } catch (IOException e) {
+                throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, e);
             }
         } else {
-            Object r = container.invoke(representEntryPointName);
+            Object r = container.invoke(getRepresentEntryPointName());
             if (r == null) {
                 return null;
             }
@@ -390,7 +665,7 @@ public class ScriptedResource extends Resource {
      * Delegates to the storeRepresentation entry point in the script.
      * 
      * @param entity
-     * @see #storeRepresentationEntryPointName
+     * @see #getStoreRepresentationEntryPointName()
      * @see Resource#storeRepresentation(Representation)
      */
     @Override
@@ -399,7 +674,7 @@ public class ScriptedResource extends Resource {
         ScriptedResourceContainer container = new ScriptedResourceContainer(
                 this, entity);
 
-        Object r = container.invoke(storeRepresentationEntryPointName);
+        Object r = container.invoke(getStoreRepresentationEntryPointName());
         if (r != null) {
             if (r instanceof Representation) {
                 getResponse().setEntity((Representation) r);

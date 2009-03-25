@@ -24,8 +24,8 @@ importClass(
 container.include('rhino/statics.fragment');
 
 // Include the JSON library
-
-container.include('rhino/json2.js', ScriptedResource.defaultEngineName);
+print(container.resource.defaultScriptEngineName);
+container.include('rhino/json2.js', container.resource.defaultScriptEngineName);
 
 // State
 //

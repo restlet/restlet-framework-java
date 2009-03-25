@@ -16,13 +16,9 @@
 // We'll go ahead and set that as our default engine name.
 
 importClass(
-	com.threecrickets.scripturian.ScriptedMain,
-	org.restlet.ext.script.ScriptedResource,
-	org.restlet.ext.script.ScriptedTextResource);
+	com.threecrickets.scripturian.ScriptedMain);
 
-ScriptedMain.defaultEngineName = 
-ScriptedResource.defaultEngineName =
-ScriptedTextResource.defaultEngineName = 'rhino-nonjdk';
+ScriptedMain.defaultEngineName = 'rhino-nonjdk';
 
 %><%& 'conf/restlet.conf' %><%
 
@@ -35,13 +31,17 @@ importClass(
 	org.restlet.Redirector,
 	org.restlet.data.Protocol,
 	org.restlet.util.Template,
+	org.restlet.ext.script.ScriptedResource,
+	org.restlet.ext.script.ScriptedTextResource,
 	com.threecrickets.scripturian.file.ScriptFileSource);
 
 //
 // Application
 //
 
-var application = {
+// Note: this use of JavaAdapter does not work with the version of Rhino shipped with the JDK!
+
+var application = new JavaAdapter(Application, {
 
 	createRoot: function() {
 	
@@ -69,24 +69,7 @@ var application = {
 		
 		return router;
 	}
-};
-
-//
-// ScriptedResource
-//
-
-ScriptedResource.extension = resourceExtension;
-ScriptedResource.defaultName = resourceDefaultName;
-ScriptedResource.scriptSource = new ScriptFileSource(new File(resourceBasePath), ScriptedResource.defaultName, ScriptedResource.extension, resourceMinimumTimeBetweenValidityChecks);
-ScriptedResource.sourceViewable = resourceSourceViewable;
-
-//
-// ScriptedTextResource
-//
-
-ScriptedTextResource.defaultName = scriptedWebDefaultScript;
-ScriptedTextResource.scriptSource = new ScriptFileSource(new File(scriptedWebBasePath), ScriptedTextResource.defaultName, null, scriptedWebMinimumTimeBetweenValidityChecks);
-ScriptedTextResource.sourceViewable = scriptedWebSourceViewable;
+});
 
 //
 // Component
@@ -95,7 +78,35 @@ ScriptedTextResource.sourceViewable = scriptedWebSourceViewable;
 var component = new Component();
 component.servers.add(Protocol.HTTP, serverPort);
 component.clients.add(Protocol.FILE);
-component.defaultHost.attach(new JavaAdapter(Application, application)); // Note: this does not work with the version of Rhino shipped with the JDK!
+component.defaultHost.attach(application);
+
+//
+// Context
+//
+
+var attributes = application.context.attributes;
+
+// ScriptedResource
+
+attributes.put('org.restlet.ext.script.ScriptedResource.defaultScriptEngineName', 'rhino-nonjdk');
+attributes.put('org.restlet.ext.script.ScriptedResource.extension', resourceExtension);
+attributes.put('org.restlet.ext.script.ScriptedResource.defaultName', resourceDefaultName);
+attributes.put('org.restlet.ext.script.ScriptedResource.scriptSource',
+	new ScriptFileSource(new File(resourceBasePath), resourceDefaultName, resourceExtension, resourceMinimumTimeBetweenValidityChecks));
+attributes.put('org.restlet.ext.script.ScriptedResource.sourceViewable', resourceSourceViewable);
+
+// ScriptedTextResource
+
+attributes.put('org.restlet.ext.script.ScriptedTextResource.defaultScriptEngineName', 'rhino-nonjdk');
+attributes.put('org.restlet.ext.script.ScriptedTextResource.defaultName', scriptedWebDefaultScript);
+attributes.put('org.restlet.ext.script.ScriptedTextResource.scriptSource',
+	 new ScriptFileSource(new File(scriptedWebBasePath), scriptedWebDefaultScript, null, scriptedWebMinimumTimeBetweenValidityChecks));
+attributes.put('org.restlet.ext.script.ScriptedTextResource.sourceViewable', scriptedWebSourceViewable);
+
+//
+// Start
+//
+
 component.start();
 
 %>

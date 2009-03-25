@@ -56,13 +56,13 @@ import com.threecrickets.scripturian.ScriptSource;
 
 /**
  * This is the type of the "container" variable exposed to the script. The name
- * is set according to {@link ScriptedResource#containerVariableName}.
+ * is set according to {@link ScriptedResource#getContainerVariableName()}.
  * 
  * @author Tal Liron
  * @see ScriptedResource
  */
 public class ScriptedResourceContainer {
-    private final Resource resource;
+    private final ScriptedResource resource;
 
     private final Variant variant;
 
@@ -78,14 +78,13 @@ public class ScriptedResourceContainer {
 
     private final Writer errorWriter = new OutputStreamWriter(System.err);
 
-    private final ScriptedResourceScriptContextController scriptContextController = new ScriptedResourceScriptContextController(
-            this);
+    private final ScriptedResourceScriptContextController scriptContextController;
 
     private final Map<String, ScriptEngine> scriptEngines = new HashMap<String, ScriptEngine>();
 
     /**
      * Constructs a container with no variant or entity, plain text media type,
-     * and {@link ScriptedResource#defaultCharacterSet}.
+     * and {@link ScriptedResource#getDefaultCharacterSet()}.
      * 
      * @param resource
      *            The resource
@@ -95,13 +94,15 @@ public class ScriptedResourceContainer {
         this.variant = null;
         this.entity = null;
         this.mediaType = MediaType.TEXT_PLAIN;
-        this.characterSet = ScriptedResource.defaultCharacterSet;
+        this.characterSet = resource.getDefaultCharacterSet();
+        this.scriptContextController = new ScriptedResourceScriptContextController(
+                resource, this);
     }
 
     /**
      * Constructs a container with media type and character set according to the
-     * entity representation, or {@link ScriptedResource#defaultCharacterSet} if
-     * none is provided.
+     * entity representation, or
+     * {@link ScriptedResource#getDefaultCharacterSet()} if none is provided.
      * 
      * @param resource
      *            The resource
@@ -116,13 +117,15 @@ public class ScriptedResourceContainer {
         this.mediaType = this.variant.getMediaType();
         this.characterSet = this.variant.getCharacterSet();
         if (this.characterSet == null) {
-            this.characterSet = ScriptedResource.defaultCharacterSet;
+            this.characterSet = resource.getDefaultCharacterSet();
         }
+        this.scriptContextController = new ScriptedResourceScriptContextController(
+                resource, this);
     }
 
     /**
      * Constructs a container with media type and character set according to the
-     * variant, or {@link ScriptedResource#defaultCharacterSet} if none is
+     * variant, or {@link ScriptedResource#getDefaultCharacterSet()} if none is
      * provided.
      * 
      * @param resource
@@ -137,16 +140,18 @@ public class ScriptedResourceContainer {
         this.mediaType = variant.getMediaType();
         this.characterSet = variant.getCharacterSet();
         if (this.characterSet == null) {
-            this.characterSet = ScriptedResource.defaultCharacterSet;
+            this.characterSet = resource.getDefaultCharacterSet();
         }
+        this.scriptContextController = new ScriptedResourceScriptContextController(
+                resource, this);
     }
 
     /**
      * The {@link CharacterSet} that will be used if you return an arbitrary
      * type for represent(), acceptRepresentation() and storeRepresentation().
      * Defaults to what the client requested (in container.variant), or to the
-     * value of {@link ScriptedResource#defaultCharacterSet} if the client did
-     * not specify it.
+     * value of {@link ScriptedResource#getDefaultCharacterSet()} if the client
+     * did not specify it.
      * 
      * @return The character set
      * @see #setCharacterSet(CharacterSet)
@@ -219,7 +224,7 @@ public class ScriptedResourceContainer {
      * @return The script engine manager
      */
     public ScriptEngineManager getScriptEngineManager() {
-        return ScriptedResource.scriptEngineManager;
+        return this.resource.getScriptEngineManager();
     }
 
     /**
@@ -283,8 +288,8 @@ public class ScriptedResourceContainer {
      */
     public void include(String name, String scriptEngineName)
             throws IOException, ScriptException {
-        ScriptSource.ScriptDescriptor<EmbeddedScript> scriptDescriptor = ScriptedResource.scriptSource
-                .getScriptDescriptor(name);
+        ScriptSource.ScriptDescriptor<EmbeddedScript> scriptDescriptor = this.resource
+                .getScriptSource().getScriptDescriptor(name);
 
         EmbeddedScript script = scriptDescriptor.getScript();
         if (script == null) {
@@ -293,10 +298,10 @@ public class ScriptedResourceContainer {
                 text = EmbeddedScript.delimiter1Start + scriptEngineName + " "
                         + text + EmbeddedScript.delimiter1End;
             }
-            script = new EmbeddedScript(text,
-                    ScriptedResource.scriptEngineManager,
-                    ScriptedResource.defaultEngineName,
-                    ScriptedResource.allowCompilation);
+            script = new EmbeddedScript(text, this.resource
+                    .getScriptEngineManager(), this.resource
+                    .getDefaultScriptEngineName(), this.resource
+                    .isAllowCompilation());
             scriptDescriptor.setScript(script);
         }
 
@@ -315,33 +320,33 @@ public class ScriptedResourceContainer {
      */
     public Object invoke(String entryPointName) throws ResourceException {
         String name = ScriptUtils.getRelativePart(this.resource.getRequest(),
-                ScriptedResource.defaultName);
+                this.resource.getDefaultName());
 
         try {
-            ScriptSource.ScriptDescriptor<EmbeddedScript> scriptDescriptor = ScriptedResource.scriptSource
-                    .getScriptDescriptor(name);
+            ScriptSource.ScriptDescriptor<EmbeddedScript> scriptDescriptor = this.resource
+                    .getScriptSource().getScriptDescriptor(name);
 
             EmbeddedScript script = scriptDescriptor.getScript();
             if (script == null) {
                 String text = scriptDescriptor.getText();
-                script = new EmbeddedScript(text,
-                        ScriptedResource.scriptEngineManager,
-                        ScriptedResource.defaultEngineName,
-                        ScriptedResource.allowCompilation);
+                script = new EmbeddedScript(text, this.resource
+                        .getScriptEngineManager(), this.resource
+                        .getDefaultScriptEngineName(), this.resource
+                        .isAllowCompilation());
                 scriptDescriptor.setScript(script);
                 script.run(this.writer, this.errorWriter, this.scriptEngines,
                         this.scriptContextController, false);
             }
 
             return script.invoke(entryPointName, this.scriptContextController);
-        } catch (FileNotFoundException x) {
-            throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, x);
-        } catch (IOException x) {
-            throw new ResourceException(x);
-        } catch (ScriptException x) {
-            throw new ResourceException(x);
-        } catch (NoSuchMethodException x) {
-            throw new ResourceException(x);
+        } catch (FileNotFoundException e) {
+            throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, e);
+        } catch (IOException e) {
+            throw new ResourceException(e);
+        } catch (ScriptException e) {
+            throw new ResourceException(e);
+        } catch (NoSuchMethodException e) {
+            throw new ResourceException(e);
         }
     }
 

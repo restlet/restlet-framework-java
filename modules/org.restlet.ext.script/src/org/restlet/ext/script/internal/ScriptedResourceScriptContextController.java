@@ -43,34 +43,42 @@ import com.threecrickets.scripturian.ScriptContextController;
  */
 class ScriptedResourceScriptContextController implements
         ScriptContextController {
+    private final ScriptedResource resource;
+
     private final ScriptedResourceContainer container;
 
     /**
      * Constructor.
      * 
-     * @param container
-     *            The container
+     * @param resource
+     *            The resource
      */
-    ScriptedResourceScriptContextController(ScriptedResourceContainer container) {
+    ScriptedResourceScriptContextController(ScriptedResource resource,
+            ScriptedResourceContainer container) {
+        this.resource = resource;
         this.container = container;
     }
 
     public void finalize(ScriptContext scriptContext) {
-        ScriptedResource.scriptSource.finalize(scriptContext);
+        this.resource.getScriptSource().finalize(scriptContext);
 
-        if (ScriptedResource.scriptContextController != null) {
-            ScriptedResource.scriptContextController.finalize(scriptContext);
+        ScriptContextController scriptContextController = this.resource
+                .getScriptContextController();
+        if (scriptContextController != null) {
+            scriptContextController.finalize(scriptContext);
         }
     }
 
     public void initialize(ScriptContext scriptContext) throws ScriptException {
-        scriptContext.setAttribute(ScriptedResource.containerVariableName,
+        scriptContext.setAttribute(this.resource.getContainerVariableName(),
                 this.container, ScriptContext.ENGINE_SCOPE);
 
-        if (ScriptedResource.scriptContextController != null) {
-            ScriptedResource.scriptContextController.initialize(scriptContext);
+        ScriptContextController scriptContextController = this.resource
+                .getScriptContextController();
+        if (scriptContextController != null) {
+            scriptContextController.initialize(scriptContext);
         }
 
-        ScriptedResource.scriptSource.initialize(scriptContext);
+        this.resource.getScriptSource().initialize(scriptContext);
     }
 }

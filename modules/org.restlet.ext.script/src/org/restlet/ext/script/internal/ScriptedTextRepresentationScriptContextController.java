@@ -13,30 +13,34 @@ import com.threecrickets.scripturian.ScriptContextController;
  */
 public class ScriptedTextRepresentationScriptContextController implements
         ScriptContextController {
+    private final ScriptedTextRepresentation representation;
+
     private final ScriptedTextRepresentationContainer container;
 
-    private final ScriptContextController scriptContextController;
-
     public ScriptedTextRepresentationScriptContextController(
-            ScriptedTextRepresentationContainer container,
-            ScriptContextController scriptContextController) {
+            ScriptedTextRepresentation representation,
+            ScriptedTextRepresentationContainer container) {
         this.container = container;
-        this.scriptContextController = scriptContextController;
+        this.representation = representation;
     }
 
     public void finalize(ScriptContext scriptContext) {
-        if (this.scriptContextController != null) {
-            this.scriptContextController.finalize(scriptContext);
+        ScriptContextController scriptContextController = this.representation
+                .getScriptContextController();
+        if (scriptContextController != null) {
+            scriptContextController.finalize(scriptContext);
         }
     }
 
     public void initialize(ScriptContext scriptContext) throws ScriptException {
-        scriptContext.setAttribute(
-                ScriptedTextRepresentation.containerVariableName,
-                this.container, ScriptContext.ENGINE_SCOPE);
+        scriptContext.setAttribute(this.representation
+                .getContainerVariableName(), this.container,
+                ScriptContext.ENGINE_SCOPE);
 
-        if (this.scriptContextController != null) {
-            this.scriptContextController.initialize(scriptContext);
+        ScriptContextController scriptContextController = this.representation
+                .getScriptContextController();
+        if (scriptContextController != null) {
+            scriptContextController.initialize(scriptContext);
         }
     }
 }

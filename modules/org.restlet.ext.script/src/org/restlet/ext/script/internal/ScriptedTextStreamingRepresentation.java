@@ -84,10 +84,10 @@ class ScriptedTextStreamingRepresentation extends WriterRepresentation {
             this.script.run(writer, this.container.getErrorWriter(),
                     this.container.scriptEngines,
                     this.container.scriptContextController, false);
-        } catch (ScriptException x) {
-            IOException xx = new IOException("EmbeddedScriptScript exception");
-            xx.initCause(x);
-            throw xx;
+        } catch (ScriptException e) {
+            IOException ioe = new IOException("Script exception");
+            ioe.initCause(e);
+            throw ioe;
         } finally {
             // The script may have set its cacheDuration, so we must
             // make sure to disable it!

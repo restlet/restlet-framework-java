@@ -33,8 +33,9 @@ package org.restlet.ext.script;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
@@ -92,8 +93,9 @@ import com.threecrickets.scripturian.ScriptSource;
  * <p>
  * A special container environment is created for scripts, with some useful
  * services. It is available to the script as a global variable named
- * "container". This name can be changed via {@link #containerVariableName},
- * though if you want the embedded script include tag to work, you must also set
+ * "container". This name can be configured via the application's
+ * {@link Context} (see {@link #getContainerVariableName()}), though if you want
+ * the embedded script include tag to work, you must also set
  * {@link EmbeddedScript#containerVariableName} to be the same. For some other
  * global variables available to scripts, see {@link EmbeddedScript}.
  * <p>
@@ -159,84 +161,46 @@ import com.threecrickets.scripturian.ScriptSource;
  * something else.</li>
  * <li><b>container.characterSet</b>: The {@link CharacterSet} that will be used
  * for the generated string. Defaults to what the client requested (in
- * container.variant), or to the value of {@link #defaultCharacterSet} if the
- * client did not specify it. If not in streaming mode, your script can change
- * this to something else.</li>
+ * container.variant), or to the value of {@link #getDefaultCharacterSet()} if
+ * the client did not specify it. If not in streaming mode, your script can
+ * change this to something else.</li>
  * <li><b>container.language</b>: The {@link Language} that will be used for the
  * generated string. Defaults to null. If not in streaming mode, your script can
  * change this to something else.</li>
  * </ul>
  * <p>
- * In addition to the above, a {@link #scriptContextController} can be set to
- * add your own global variables to each embedded script.
+ * In addition to the above, a {@link ScriptContextController} can be set to add
+ * your own global variables to each embedded script. See
+ * {@link #getScriptContextController()}.
  * 
  * @author Tal Liron
  * @see EmbeddedScript
  * @see ScriptedResource
  */
 public class ScriptedTextResource extends Resource {
-    /**
-     * The {@link ScriptEngineManager} used to create the script engines for the
-     * scripts. Uses a default instance, but can be set to something else.
-     */
-    public static ScriptEngineManager scriptEngineManager = new ScriptEngineManager();
+    private ScriptEngineManager scriptEngineManager;
 
-    /**
-     * The {@link ScriptSource} used to fetch scripts. This must be set to a
-     * valid value before this class is used!
-     */
-    public static ScriptSource<EmbeddedScript> scriptSource;
+    private ScriptSource<EmbeddedScript> scriptSource;
 
-    /**
-     *If the URL points to a directory rather than a file, and that directory
-     * contains a file with this name, then it will be used. This allows you to
-     * use the directory structure to create nice URLs that do not contain
-     * filenames. Defaults to "index.page".
-     */
-    public static String defaultName = "index.page";
+    private String defaultName;
 
-    /**
-     * The default script engine name to be used if the script doesn't specify
-     * one. Defaults to "js".
-     */
-    public static String defaultEngineName = "js";
+    private String defaultScriptEngineName;
 
-    /**
-     * The default character set to be used if the client does not specify it.
-     * Defaults to {@link CharacterSet#UTF_8}.
-     */
-    public static CharacterSet defaultCharacterSet = CharacterSet.UTF_8;
+    private CharacterSet defaultCharacterSet;
 
-    /**
-     * The default variable name for the {@link ScriptedTextResourceContainer}
-     * instance. Defaults to "container".
-     */
-    public static String containerVariableName = "container";
+    private String containerVariableName;
 
-    /**
-     * An optional {@link ScriptContextController} to be used with the scripts.
-     * Useful for adding your own global variables to the script.
-     */
-    public static ScriptContextController scriptContextController;
+    private ScriptContextController scriptContextController;
 
-    /**
-     * Whether or not compilation is attempted for script engines that support
-     * it. Defaults to true.
-     */
-    public static boolean allowCompilation = true;
+    private Boolean allowCompilation;
 
-    /**
-     * This is so we can see the source code for scripts by adding ?source=true
-     * to the URL. You probably wouldn't want this for most applications.
-     * Defaults to false.
-     */
-    public static boolean sourceViewable = false;
+    private Boolean sourceViewable;
 
     private static final String SOURCE = "source";
 
     private static final String TRUE = "true";
 
-    private static Map<String, RepresentableString> cache = new HashMap<String, RepresentableString>();
+    private static Map<String, RepresentableString> cache = new ConcurrentHashMap<String, RepresentableString>();
 
     /**
      * Constructs the resource.
@@ -266,43 +230,253 @@ public class ScriptedTextResource extends Resource {
         response.setEntity(represent());
     }
 
+    private Map<String, RepresentableString> getCache() {
+        /*
+         *
+         * TODO:
+         * 
+        if (this.cache == null) {
+            ConcurrentMap<String, Object> attributes = Application.getCurrent().getContext()
+                    .getAttributes();
+            this.cache = (Map<String, RepresentableString>) attributes
+                    .get("org.restlet.ext.script.ScriptedTextResource.cache");
+            if (this.cache == null) {
+                this.cache = new HashMap<String, RepresentableString>();
+            }
+        }*/
+
+        return ScriptedTextResource.cache;
+    }
+
+    /**
+     * The default variable name for the container instance. Defaults to
+     * "container".
+     * <p>
+     * This setting can be configured by setting an attribute named
+     * "org.restlet.ext.script.ScriptedTextResource.containerVariableName" in
+     * the application's {@link Context}.
+     */
+    public String getContainerVariableName() {
+        if (this.containerVariableName == null) {
+            ConcurrentMap<String, Object> attributes = getContext()
+                    .getAttributes();
+            this.containerVariableName = (String) attributes
+                    .get("org.restlet.ext.script.ScriptedTextResource.containerVariableName");
+            if (this.containerVariableName == null) {
+                this.containerVariableName = "container";
+            }
+        }
+
+        return this.containerVariableName;
+    }
+
+    /**
+     * The default character set to be used if the client does not specify it.
+     * Defaults to {@link CharacterSet#UTF_8}.
+     * <p>
+     * This setting can be configured by setting an attribute named
+     * "org.restlet.ext.script.ScriptedTextResource.defaultCharacterSet" in the
+     * application's {@link Context}.
+     */
+    public CharacterSet getDefaultCharacterSet() {
+        if (this.defaultCharacterSet == null) {
+            ConcurrentMap<String, Object> attributes = getContext()
+                    .getAttributes();
+            this.defaultCharacterSet = (CharacterSet) attributes
+                    .get("org.restlet.ext.script.ScriptedTextResource.defaultCharacterSet");
+            if (this.defaultCharacterSet == null) {
+                this.defaultCharacterSet = CharacterSet.UTF_8;
+            }
+        }
+
+        return this.defaultCharacterSet;
+    }
+
+    /**
+     * If the URL points to a directory rather than a file, and that directory
+     * contains a file with this name, then it will be used. This allows you to
+     * use the directory structure to create nice URLs that do not contain
+     * filenames. Defaults to "index.page".
+     * <p>
+     * This setting can be configured by setting an attribute named
+     * "org.restlet.ext.script.ScriptedTextResource.defaultName" in the
+     * application's {@link Context}.
+     */
+    public String getDefaultName() {
+        if (this.defaultName == null) {
+            ConcurrentMap<String, Object> attributes = getContext()
+                    .getAttributes();
+            this.defaultName = (String) attributes
+                    .get("org.restlet.ext.script.ScriptedTextResource.defaultName");
+            if (this.defaultName == null) {
+                this.defaultName = "index.page";
+            }
+        }
+
+        return this.defaultName;
+    }
+
+    /**
+     * The default script engine name to be used if the script doesn't specify
+     * one. Defaults to "js".
+     * <p>
+     * This setting can be configured by setting an attribute named
+     * "org.restlet.ext.script.ScriptedTextResource.defaultScriptEngineName" in
+     * the application's {@link Context}.
+     */
+    public String getDefaultScriptEngineName() {
+        if (this.defaultScriptEngineName == null) {
+            ConcurrentMap<String, Object> attributes = getContext()
+                    .getAttributes();
+            this.defaultScriptEngineName = (String) attributes
+                    .get("org.restlet.ext.script.ScriptedTextResource.defaultScriptEngineName");
+            if (this.defaultScriptEngineName == null) {
+                this.defaultScriptEngineName = "js";
+            }
+        }
+
+        return this.defaultScriptEngineName;
+    }
+
+    /**
+     * An optional {@link ScriptContextController} to be used with the scripts.
+     * Useful for adding your own global variables to the script.
+     * <p>
+     * This setting can be configured by setting an attribute named
+     * "org.restlet.ext.script.ScriptedTextResource.scriptContextController" in
+     * the application's {@link Context}.
+     */
+    public ScriptContextController getScriptContextController() {
+        if (this.scriptContextController == null) {
+            ConcurrentMap<String, Object> attributes = getContext()
+                    .getAttributes();
+            this.scriptContextController = (ScriptContextController) attributes
+                    .get("org.restlet.ext.script.ScriptedTextResource.scriptContextController");
+        }
+
+        return this.scriptContextController;
+    }
+
+    /**
+     * The {@link ScriptEngineManager} used to create the script engines for the
+     * scripts. Uses a default instance, but can be set to something else.
+     * <p>
+     * This setting can be configured by setting an attribute named
+     * "org.restlet.ext.script.ScriptedTextResource.scriptEngineManager" in the
+     * application's {@link Context}.
+     */
+    public ScriptEngineManager getScriptEngineManager() {
+        if (this.scriptEngineManager == null) {
+            ConcurrentMap<String, Object> attributes = getContext()
+                    .getAttributes();
+            this.scriptEngineManager = (ScriptEngineManager) attributes
+                    .get("org.restlet.ext.script.ScriptedTextResource.scriptEngineManager");
+            if (this.scriptEngineManager == null) {
+                this.scriptEngineManager = new ScriptEngineManager();
+            }
+        }
+
+        return this.scriptEngineManager;
+    }
+
+    /**
+     * The {@link ScriptSource} used to fetch scripts. This must be set to a
+     * valid value before this class is used!
+     * <p>
+     * This setting can be configured by setting an attribute named
+     * "org.restlet.ext.script.ScriptedTextResource.scriptSource" in the
+     * application's {@link Context}.
+     */
+    @SuppressWarnings("unchecked")
+    public ScriptSource<EmbeddedScript> getScriptSource() {
+        if (this.scriptSource == null) {
+            ConcurrentMap<String, Object> attributes = getContext()
+                    .getAttributes();
+            this.scriptSource = (ScriptSource<EmbeddedScript>) attributes
+                    .get("org.restlet.ext.script.ScriptedTextResource.scriptSource");
+            if (this.scriptSource == null) {
+                throw new RuntimeException(
+                        "Attribute org.restlet.ext.script.ScriptedTextResource.scriptSource must be set in context to use ScriptResource");
+            }
+        }
+
+        return this.scriptSource;
+    }
+
+    /**
+     * Whether or not compilation is attempted for script engines that support
+     * it. Defaults to true.
+     * <p>
+     * This setting can be configured by setting an attribute named
+     * "org.restlet.ext.script.ScriptedTextResource.allowCompilation" in the
+     * application's {@link Context}.
+     */
+    public boolean isAllowCompilation() {
+        if (this.allowCompilation == null) {
+            ConcurrentMap<String, Object> attributes = getContext()
+                    .getAttributes();
+            this.allowCompilation = (Boolean) attributes
+                    .get("org.restlet.ext.script.ScriptedTextResource.allowCompilation");
+            if (this.allowCompilation == null) {
+                this.allowCompilation = true;
+            }
+        }
+
+        return this.allowCompilation;
+    }
+
+    /**
+     * This is so we can see the source code for scripts by adding ?source=true
+     * to the URL. You probably wouldn't want this for most applications.
+     * Defaults to false.
+     * <p>
+     * This setting can be configured by setting an attribute named
+     * "org.restlet.ext.script.ScriptedTextResource.sourceViewable" in the
+     * application's {@link Context}.
+     */
+    public boolean isSourceViewable() {
+        if (this.sourceViewable == null) {
+            ConcurrentMap<String, Object> attributes = getContext()
+                    .getAttributes();
+            this.sourceViewable = (Boolean) attributes
+                    .get("org.restlet.ext.script.ScriptedTextResource.sourceViewable");
+            if (this.sourceViewable == null) {
+                this.sourceViewable = false;
+            }
+        }
+
+        return this.sourceViewable;
+    }
+
     @Override
     public Representation represent(Variant variant) throws ResourceException {
         Request request = getRequest();
-        String name = ScriptUtils.getRelativePart(request, defaultName);
+        String name = ScriptUtils.getRelativePart(request, getDefaultName());
 
         try {
-            if (sourceViewable
+            if (isSourceViewable()
                     && TRUE.equals(request.getResourceRef().getQueryAsForm()
                             .getFirstValue(SOURCE))) {
                 // Represent script source
-                return new StringRepresentation(scriptSource
+                return new StringRepresentation(getScriptSource()
                         .getScriptDescriptor(name).getText());
             } else {
                 // Run script and represent its output
                 ScriptedTextResourceContainer container = new ScriptedTextResourceContainer(
-                        variant, request, getResponse(), cache);
-                // container.stream();
+                        this, variant, getCache());
                 Representation representation = container.include(name);
                 if (representation == null) {
                     throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
                 } else {
                     return representation;
                 }
-
-                /*
-                 * String output = container.include(name); if (output == null)
-                 * throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
-                 * return new StringRepresentation(output, container.mediaType,
-                 * container.language, container.characterSet);
-                 */
             }
-        } catch (FileNotFoundException x) {
-            throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, x);
-        } catch (IOException x) {
-            throw new ResourceException(x);
-        } catch (ScriptException x) {
-            throw new ResourceException(x);
+        } catch (FileNotFoundException e) {
+            throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, e);
+        } catch (IOException e) {
+            throw new ResourceException(e);
+        } catch (ScriptException e) {
+            throw new ResourceException(e);
         }
     }
 }
