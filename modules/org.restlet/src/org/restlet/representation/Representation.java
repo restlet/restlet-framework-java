@@ -620,7 +620,11 @@ public abstract class Representation extends Variant {
     /**
      * Writes the representation to a byte stream. This method is ensured to
      * write the full content for each invocation unless it is a transient
-     * representation, in which case an exception is thrown.
+     * representation, in which case an exception is thrown.<br>
+     * <br>
+     * Note that the class implementing this method shouldn't flush or close the
+     * given {@link OutputStream} after writing to it as this will be handled by
+     * the Restlet connectors automatically.
      * 
      * @param outputStream
      *            The output stream.
@@ -643,7 +647,11 @@ public abstract class Representation extends Variant {
     /**
      * Writes the representation to a characters writer. This method is ensured
      * to write the full content for each invocation unless it is a transient
-     * representation, in which case an exception is thrown.
+     * representation, in which case an exception is thrown.<br>
+     * <br>
+     * Note that the class implementing this method shouldn't flush or close the
+     * given {@link Writer} after writing to it as this will be handled by the
+     * Restlet connectors automatically.
      * 
      * @param writer
      *            The characters writer.

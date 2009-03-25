@@ -61,7 +61,7 @@ public class JsonRepresentation extends WriterRepresentation {
     private Representation jsonRepresentation;
 
     /** Number of spaces to use for indentation. */
-    private int indentFactor;
+    private int indentSize;
 
     /** Indicates if JSON objects and arrays should be indented. */
     private boolean indent;
@@ -162,8 +162,38 @@ public class JsonRepresentation extends WriterRepresentation {
      * 
      * @return The number of spaces to use for indentation.
      */
-    public int getIndentFactor() {
-        return indentFactor;
+    public int getIndentSize() {
+        return indentSize;
+    }
+
+    /**
+     * Gets the wrapped JSON array or converts the wrapped representation if
+     * needed.
+     * 
+     * @return The converted JSON array.
+     * @throws JSONException
+     */
+    public JSONArray getJsonArray() throws JSONException {
+        if (this.jsonObject != null) {
+            return (JSONArray) this.jsonObject;
+        } else {
+            return toJsonArray();
+        }
+    }
+
+    /**
+     * Gets the wrapped JSON object or converts the wrapped representation if
+     * needed.
+     * 
+     * @return The converted JSON object.
+     * @throws JSONException
+     */
+    public JSONObject getJsonObject() throws JSONException {
+        if (this.jsonObject != null) {
+            return (JSONObject) this.jsonObject;
+        } else {
+            return toJsonObject();
+        }
     }
 
     /**
@@ -180,7 +210,7 @@ public class JsonRepresentation extends WriterRepresentation {
                 JSONArray jsonArray = (JSONArray) this.jsonObject;
 
                 if (isIndent()) {
-                    result = jsonArray.toString(getIndentFactor());
+                    result = jsonArray.toString(getIndentSize());
                 } else {
                     result = jsonArray.toString();
                 }
@@ -188,7 +218,7 @@ public class JsonRepresentation extends WriterRepresentation {
                 JSONObject jsonObject = (JSONObject) this.jsonObject;
 
                 if (isIndent()) {
-                    result = jsonObject.toString(getIndentFactor());
+                    result = jsonObject.toString(getIndentSize());
                 } else {
                     result = jsonObject.toString();
                 }
@@ -211,6 +241,21 @@ public class JsonRepresentation extends WriterRepresentation {
     }
 
     /**
+     * Gets the wrapped JSON tokener or converts the wrapped representation if
+     * needed.
+     * 
+     * @return The converted JSON tokener.
+     * @throws JSONException
+     */
+    public JSONTokener getJsonTokener() throws JSONException {
+        if (this.jsonObject != null) {
+            return (JSONTokener) this.jsonObject;
+        } else {
+            return toJsonTokener();
+        }
+    }
+
+    /**
      * 
      * @param jsonObject
      */
@@ -218,7 +263,7 @@ public class JsonRepresentation extends WriterRepresentation {
         setCharacterSet(CharacterSet.UTF_8);
         this.jsonObject = jsonObject;
         this.indent = false;
-        this.indentFactor = 3;
+        this.indentSize = 3;
     }
 
     /**
@@ -246,12 +291,13 @@ public class JsonRepresentation extends WriterRepresentation {
      * @param indentFactor
      *            The number of spaces to use for indentation.
      */
-    public void setIndentFactor(int indentFactor) {
-        this.indentFactor = indentFactor;
+    public void setIndentSize(int indentFactor) {
+        this.indentSize = indentFactor;
     }
 
     /**
-     * Converts the representation to a JSON array.
+     * Converts the representation to a JSON array. This method will trigger the
+     * serialization of any wrapped JSON array.
      * 
      * @return The converted JSON array.
      * @throws JSONException
@@ -261,7 +307,8 @@ public class JsonRepresentation extends WriterRepresentation {
     }
 
     /**
-     * Converts the representation to a JSON object.
+     * Converts the representation to a JSON object. This method will trigger
+     * the serialization of any wrapped JSON object.
      * 
      * @return The converted JSON object.
      * @throws JSONException
@@ -270,15 +317,25 @@ public class JsonRepresentation extends WriterRepresentation {
         return new JSONObject(getJsonText());
     }
 
+    /**
+     * Converts the representation to a JSON tokener. This method will trigger
+     * the serialization of any wrapped JSON tokener.
+     * 
+     * @return The converted JSON tokener.
+     * @throws JSONException
+     */
+    public JSONTokener toJsonTokener() throws JSONException {
+        return new JSONTokener(getJsonText());
+    }
+
     @Override
     public void write(Writer writer) throws IOException {
         try {
             writer.write(getJsonText());
         } catch (JSONException e) {
-            throw new IOException(e.getLocalizedMessage());
-        } finally {
-            writer.close();
+            IOException ioe = new IOException(e.getLocalizedMessage());
+            ioe.initCause(e.getCause());
+            throw ioe;
         }
     }
-
 }
