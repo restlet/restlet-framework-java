@@ -92,8 +92,6 @@ class ScriptedTextStreamingRepresentation extends WriterRepresentation {
             // The script may have set its cacheDuration, so we must
             // make sure to disable it!
             this.script.setCacheDuration(0);
-
-            writer.close();
         }
     }
 }

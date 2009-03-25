@@ -62,10 +62,10 @@ import com.threecrickets.scripturian.ScriptSource;
  * <ul>
  * <li><b>initializeResource()</b>: This function is called when the resource is
  * initialized. We will use it set general characteristics for the resource.</li>
- * <li><b>represent()</b>: This function is called for the GET verb, which is expected
- * to behave as a logical "read" of the resource's state. The expectation is
- * that it return one representation, out of possibly many, of the resource's
- * state. Returned values can be of any explicit sub-class of
+ * <li><b>represent()</b>: This function is called for the GET verb, which is
+ * expected to behave as a logical "read" of the resource's state. The
+ * expectation is that it return one representation, out of possibly many, of
+ * the resource's state. Returned values can be of any explicit sub-class of
  * {@link Representation}. Other types will be automatically converted to string
  * representation using the client's requested media type and character set.
  * These, and the language of the representation (defaulting to null), can be
@@ -311,7 +311,7 @@ public class ScriptedResource extends Resource {
      * 
      * @param entity
      * @see #acceptRepresentationEntryPointName
-     * @see org.restlet.resource.Resource#acceptRepresentation(org.restlet.resource.Representation)
+     * @see Resource#acceptRepresentation(Representation)
      */
     @Override
     public void acceptRepresentation(Representation entity)
@@ -336,7 +336,7 @@ public class ScriptedResource extends Resource {
      * Delegates to the removeRepresentations entry point in the script.
      * 
      * @see #removeRepresentationsEntryPointName
-     * @see org.restlet.resource.Resource#removeRepresentations()
+     * @see Resource#removeRepresentations()
      */
     @Override
     public void removeRepresentations() throws ResourceException {
@@ -352,7 +352,7 @@ public class ScriptedResource extends Resource {
      * @param variant
      * @return A representation of the resource's state
      * @see #representEntryPointName
-     * @see org.restlet.resource.Resource#represent(org.restlet.resource.Variant)
+     * @see Resource#represent(Variant)
      */
     @Override
     public Representation represent(Variant variant) throws ResourceException {
@@ -391,7 +391,7 @@ public class ScriptedResource extends Resource {
      * 
      * @param entity
      * @see #storeRepresentationEntryPointName
-     * @see org.restlet.resource.Resource#storeRepresentation(org.restlet.resource.Representation)
+     * @see Resource#storeRepresentation(Representation)
      */
     @Override
     public void storeRepresentation(Representation entity)

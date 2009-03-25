@@ -209,8 +209,6 @@ public class ScriptedTextRepresentation extends WriterRepresentation {
             IOException ioe = new IOException("Script exception");
             ioe.initCause(e);
             throw ioe;
-        } finally {
-            writer.close();
         }
     }
 }
