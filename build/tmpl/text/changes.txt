@@ -30,6 +30,9 @@ Changes log
         - Fixed missing entries in ChallengeScheme#valueOf.
           Reported by Sean Sullivan.
         - Fixed JAXB pom issue. Reported by Fabio Mancinelli.
+        - Added workaround to make sure that the JAX-RS extension
+          is registered as an implementation of the JAX-RS API.
+          Suggested by David Fogel.
     - Enhancements
         - Added a getItemIterator() on RestletFileUpload to facilitate
           access to parts in streaming mode. Suggested by Paul Austin.

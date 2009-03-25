@@ -124,6 +124,10 @@ import org.restlet.service.MetadataService;
  * @author Stephan Koops
  */
 public class JaxRsRestlet extends Restlet {
+    static {
+        javax.ws.rs.ext.RuntimeDelegate
+                .setInstance(new org.restlet.ext.jaxrs.internal.spi.RuntimeDelegateImpl());
+    }
 
     private static final Annotation[] EMPTY_ANNOTATION_ARRAY = new Annotation[0];
 
