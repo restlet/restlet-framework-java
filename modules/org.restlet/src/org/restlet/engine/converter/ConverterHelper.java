@@ -30,6 +30,7 @@
 
 package org.restlet.engine.converter;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.restlet.representation.Representation;
@@ -77,7 +78,7 @@ public abstract class ConverterHelper {
      * @return The converted Java object.
      */
     public abstract <T> T toObject(Representation representation,
-            Class<T> targetClass, UniformResource resource);
+            Class<T> targetClass, UniformResource resource) throws IOException;
 
     /**
      * Converts a regular Java object into a Representation.

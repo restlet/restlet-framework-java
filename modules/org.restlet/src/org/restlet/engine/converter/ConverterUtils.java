@@ -42,6 +42,31 @@ import org.restlet.resource.UniformResource;
  */
 public class ConverterUtils {
 
+    public static <T> ConverterHelper getHelper(Variant variant,
+            Class<T> targetClass, UniformResource resource) {
+
+        List<Class<?>> classes;
+        for (ConverterHelper ch : Engine.getInstance()
+                .getRegisteredConverters()) {
+
+            classes = ch.getObjectClasses(variant);
+
+            if (classes != null) {
+                if (targetClass != null) {
+                    for (Class<?> clazz : classes) {
+                        if (targetClass.isAssignableFrom(clazz)) {
+                            return ch;
+                        }
+                    }
+                } else {
+                    return ch;
+                }
+            }
+        }
+
+        return null;
+    }
+
     public static ConverterHelper getHelper(Object object,
             Variant targetVariant, UniformResource resource) {
 

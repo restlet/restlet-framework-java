@@ -30,12 +30,12 @@
 
 package org.restlet.ext.atom.internal;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.data.MediaType;
 import org.restlet.engine.converter.ConverterHelper;
-import org.restlet.ext.atom.Category;
 import org.restlet.ext.atom.Feed;
 import org.restlet.ext.atom.Service;
 import org.restlet.representation.Representation;
@@ -55,12 +55,40 @@ public class AtomConverter extends ConverterHelper {
     private static final Variant VARIANT_ATOMPUB_SERVICE = new Variant(
             MediaType.APPLICATION_ATOMPUB_SERVICE);
 
-    private static final Variant VARIANT_ATOMPUB_CATEGORY = new Variant(
-            MediaType.APPLICATION_ATOMPUB_CATEGORY);
+    // private static final Variant VARIANT_ATOMPUB_CATEGORY = new Variant(
+    // MediaType.APPLICATION_ATOMPUB_CATEGORY);
 
     @Override
     public List<Class<?>> getObjectClasses(Variant variant) {
-        return null;
+        List<Class<?>> result = null;
+
+        if (variant != null) {
+            if (VARIANT_ATOM.isCompatible(variant)) {
+                if (result == null) {
+                    result = new ArrayList<Class<?>>();
+                }
+
+                result.add(Feed.class);
+            }
+
+            if (VARIANT_ATOMPUB_SERVICE.isCompatible(variant)) {
+                if (result == null) {
+                    result = new ArrayList<Class<?>>();
+                }
+
+                result.add(Service.class);
+            }
+
+            // if (VARIANT_ATOMPUB_CATEGORY.isCompatible(variant)) {
+            // if (result == null) {
+            // result = new ArrayList<Class<?>>();
+            // }
+            //
+            // result.add(Category.class);
+            // }
+        }
+
+        return result;
     }
 
     @Override
@@ -79,21 +107,42 @@ public class AtomConverter extends ConverterHelper {
             }
 
             result.add(VARIANT_ATOMPUB_SERVICE);
-        } else if (Category.class.isAssignableFrom(objectClass)) {
-            if (result == null) {
-                result = new ArrayList<Variant>();
-            }
-
-            result.add(VARIANT_ATOMPUB_CATEGORY);
+            // } else if (Category.class.isAssignableFrom(objectClass)) {
+            // if (result == null) {
+            // result = new ArrayList<Variant>();
+            // }
+            //
+            // result.add(VARIANT_ATOMPUB_CATEGORY);
         }
 
         return result;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T toObject(Representation representation, Class<T> targetClass,
-            UniformResource resource) {
-        return null;
+            UniformResource resource) throws IOException {
+        T result = null;
+
+        if (representation != null) {
+            if (VARIANT_ATOM.isCompatible(representation)) {
+                result = (T) new Feed(representation);
+            }
+
+            // if (VARIANT_ATOMPUB_SERVICE.isCompatible(representation)) {
+            // result = (T) new Service(representation);
+            // }
+
+            // if (VARIANT_ATOMPUB_CATEGORY.isCompatible(representation)) {
+            // if (result == null) {
+            // result = new ArrayList<Class<?>>();
+            // }
+            //
+            // result.add(Category.class);
+            // }
+        }
+
+        return result;
     }
 
     @Override

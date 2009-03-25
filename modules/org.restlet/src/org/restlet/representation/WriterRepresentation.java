@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
+import java.io.Writer;
 
 import org.restlet.data.MediaType;
 import org.restlet.engine.io.ByteUtils;
@@ -88,7 +89,10 @@ public abstract class WriterRepresentation extends CharacterRepresentation {
 
     @Override
     public void write(OutputStream outputStream) throws IOException {
-        write(new OutputStreamWriter(outputStream, getCharacterSet().getName()));
+        Writer writer = new OutputStreamWriter(outputStream, getCharacterSet()
+                .getName());
+        write(writer);
+        writer.flush();
     }
 
 }

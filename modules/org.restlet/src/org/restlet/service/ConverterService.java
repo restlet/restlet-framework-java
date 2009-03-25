@@ -30,6 +30,7 @@
 
 package org.restlet.service;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.restlet.Context;
@@ -101,8 +102,9 @@ public class ConverterService extends Service {
      * @param objectClass
      *            The expected class of the Java object.
      * @return The converted Java object.
+     * @throws IOException
      */
-    public Object toObject(Representation representation) {
+    public Object toObject(Representation representation) throws IOException {
         return toObject(representation, null, null);
     }
 
@@ -118,10 +120,23 @@ public class ConverterService extends Service {
      * @param resource
      *            The calling resource.
      * @return The converted Java object.
+     * @throws IOException
      */
     public <T> T toObject(Representation representation, Class<T> targetClass,
-            UniformResource resource) {
-        return null;
+            UniformResource resource) throws IOException {
+        T result = null;
+        ConverterHelper ch = ConverterUtils.getHelper(representation,
+                targetClass, resource);
+
+        if (ch != null) {
+            result = ch.toObject(representation, targetClass, resource);
+        } else {
+            Context.getCurrentLogger().warning(
+                    "Unable to find a converter for this representation : "
+                            + representation);
+        }
+
+        return result;
     }
 
     /**
