@@ -5,10 +5,10 @@ Bundle-SymbolicName: org.restlet.ext.atom
 Bundle-Version: 1.2
 Bundle-Vendor: Noelios Technologies
 Export-Package: org.restlet.ext.atom;
-  uses:="org.restlet.resource,
+  uses:="org.restlet.data,
+   org.restlet.representation,
    org.restlet,
-   org.restlet.util,
-   org.restlet.data"
+   org.restlet.util"
 Import-Package: org.restlet,
  org.restlet.data,
  org.restlet.engine.converter,
