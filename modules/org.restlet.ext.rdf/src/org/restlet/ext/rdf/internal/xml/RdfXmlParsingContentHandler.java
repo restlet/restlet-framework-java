@@ -13,7 +13,6 @@ import org.restlet.ext.rdf.GraphHandler;
 import org.restlet.ext.rdf.LinkReference;
 import org.restlet.ext.rdf.Literal;
 import org.restlet.ext.rdf.RdfRepresentation;
-import org.restlet.ext.rdf.RdfXmlRepresentation;
 import org.restlet.ext.rdf.internal.RdfConstants;
 import org.restlet.representation.Representation;
 import org.restlet.representation.SaxRepresentation;
@@ -192,26 +191,6 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 		}
 
 		/**
-		 * Indicates if the given qualified name is equals to a parsed element
-		 * represented by its uri, localName and name.
-		 * 
-		 * @param qName
-		 *            The qualified name to compare to.
-		 * @param uri
-		 *            The URI of the parsed element.
-		 * @param localName
-		 *            The local name of the parsed element.
-		 * @param name
-		 *            The (probably qualified) name of the parsed element.
-		 * @return true if the qualified name and the parsed element are equal.
-		 */
-		private boolean equals(String qName, String uri, String localName,
-				String name) {
-			boolean result = qName.equals(name);
-			return result;
-		}
-
-		/**
 		 * Returns the state at the top of the heap.
 		 * 
 		 * @return The state at the top of the heap.
@@ -366,9 +345,8 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 			// Create the available statements
 			if (!checkRdfQName("Description", name)) {
 				// Handle typed node
-				this.graphHandler.link(result,
-						RdfConstants.PREDICATE_TYPE, getReference(uri,
-								localName, name));
+				this.graphHandler.link(result, RdfConstants.PREDICATE_TYPE,
+						getReference(uri, localName, name));
 			}
 			for (String[] arc : arcs) {
 				this.graphHandler.link(result,
@@ -553,8 +531,8 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 				throws SAXException {
 			this.rdfDefaultNamespace = this.rdfDefaultNamespace
 					|| ((prefix == null || "".equals(prefix)
-							&& RdfConstants.RDF_SYNTAX
-									.toString(true, true).equals(uri)));
+							&& RdfConstants.RDF_SYNTAX.toString(true, true)
+									.equals(uri)));
 			this.prefixes.put(prefix, uri);
 		}
 
