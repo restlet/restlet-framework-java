@@ -90,22 +90,57 @@ public class ServerResource extends UniformResource {
 
     @Override
     public Set<Method> getAllowedMethods() {
-        return null;
+        return getResponse().getAllowedMethods();
     }
 
     @Override
     public Representation handle() {
-        return null;
+        Representation result = null;
+
+        try {
+            final Method method = getRequest().getMethod();
+
+            if (method == null) {
+                setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
+                        "No method specified");
+            } else {
+                if (method.equals(Method.GET)) {
+                    result = get();
+                } else if (method.equals(Method.HEAD)) {
+                    result = head();
+                } else if (method.equals(Method.POST)) {
+                    result = post(getRequest().getEntity());
+                } else if (method.equals(Method.PUT)) {
+                    result = put(getRequest().getEntity());
+                } else if (method.equals(Method.DELETE)) {
+                    result = delete();
+                } else if (method.equals(Method.OPTIONS)) {
+                    result = options();
+                } else {
+                    setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+                }
+            }
+        } catch (ResourceException re) {
+            setStatus(re.getStatus(), re.getCause(), re.getLocalizedMessage());
+        }
+
+        return result;
     }
 
+    /**
+     * Handles the {@link Method#HEAD} uniform method. By default, it just
+     * invokes {@link #get()}. The Restlet connector will use the result
+     * representation to extract the metadata and not return the actual content
+     * to the client.
+     */
     @Override
     public Representation head() throws ResourceException {
-        return null;
+        return get();
     }
 
     @Override
     public Representation head(Variant variant) throws ResourceException {
-        return null;
+        return get(variant);
     }
 
     /**
@@ -117,8 +152,7 @@ public class ServerResource extends UniformResource {
      * @return True if the authenticated subject is in the given role.
      */
     public boolean isInRole(String roleName) {
-        return getRequest().getClientInfo().isInRole(
-                getApplication().findRole(roleName));
+        return getClientInfo().isInRole(getApplication().findRole(roleName));
     }
 
     @Override

@@ -63,6 +63,7 @@
 		<lib-jaxb-api-version>2.1</lib-jaxb-api-version>
 		<lib-jaxb-ri-version>2.1.10</lib-jaxb-ri-version>
 		<lib-jaxrs-version>1.0</lib-jaxrs-version>
+		<lib-jdom-version>1.1</lib-jdom-version>
 		<lib-jetty-version>6.1.15</lib-jetty-version>
 		<lib-jibx-version>1.1.5</lib-jibx-version>
 		<lib-jline-version>0.9.94</lib-jline-version>
@@ -82,7 +83,8 @@
 		<lib-quercus-version>3.2.1</lib-quercus-version>
 		<lib-retroweaver-version>1.2</lib-retroweaver-version>
 		<lib-rhino-version>1.7R1</lib-rhino-version>
-		<lib-scripturian-version>1.0.0.rc1</lib-scripturian-version>
+		<lib-rome-version>1.0</lib-rome-version>
+		<lib-scripturian-version>1.0.0.rc2</lib-scripturian-version>
 		<lib-script-version>1.0</lib-script-version>
 		<lib-servlet-version>2.5</lib-servlet-version>
 		<lib-simple-version>4.1.8</lib-simple-version>

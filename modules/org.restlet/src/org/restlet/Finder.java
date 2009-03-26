@@ -318,7 +318,7 @@ public class Finder extends Restlet {
                 // earlier the status was changed from the default one. Don't go
                 // further.
             } else if (target == null) {
-                // If the currrent status is a success but we couldn't find the
+                // If the current status is a success but we couldn't find the
                 // target handler for the request's resource URI, then we set
                 // the response status to 404 (Not Found).
                 response.setStatus(Status.CLIENT_ERROR_NOT_FOUND);

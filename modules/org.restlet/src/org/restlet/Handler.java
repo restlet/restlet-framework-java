@@ -63,7 +63,7 @@ import org.restlet.util.Template;
  * response, as required by the HTTP specification.<br>
  * <br>
  * Also, you can declare which REST methods are allowed by your Handler by
- * overiding the matching allow*() method. By default, allowOptions() returns
+ * overriding the matching allow*() method. By default, allowOptions() returns
  * true, but all other allow*() methods will return false. Therefore, if you
  * want to accept MOVE method calls, just override allowMove() and return true.
  * Again, the invoking Finder will be able to detect this method and know

@@ -95,12 +95,8 @@ public class ConverterService extends Service {
     /**
      * Converts a Representation into a regular Java object.
      * 
-     * @param resource
-     *            The calling resource.
      * @param representation
      *            The representation to convert.
-     * @param objectClass
-     *            The expected class of the Java object.
      * @return The converted Java object.
      * @throws IOException
      */

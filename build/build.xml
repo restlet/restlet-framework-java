@@ -348,6 +348,13 @@
 		<fileset dir="${lib}/${lib-gwt-id}" includes="*.jar" />
 	</path>
 
+	<path id="mod-rome-path">
+		<path refid="mod-core-path" />
+		<pathelement path="${classes}/${mod-core-id}" />
+		<fileset dir="${lib}/${lib-rome-id}" includes="*.jar" />
+		<fileset dir="${lib}/${lib-jdom-id}" includes="*.jar" />
+	</path>
+
 	<path id="mod-script-path">
 		<path refid="mod-core-path" />
 		<pathelement path="${classes}/${mod-core-id}" />
@@ -575,6 +582,7 @@
 		<path refid="mod-net-path" />
 		<path refid="mod-oauth-path" />
 		<path refid="mod-rdf-path" />
+		<path refid="mod-rome-path" />
 		<path refid="mod-script-path" />
 		<path refid="mod-servlet-path" />
 		<path refid="mod-simple-path" />
@@ -978,6 +986,7 @@
 		<pomModule name="lucene" />
 		<pomModule name="net" />
 		<pomModule name="oauth" />
+		<!-- disabled for now <pomModule name="rome" /> -->
 		<pomModule name="script" />
 		<pomModule name="servlet" />
 		<!-- disabled for now  <pomModule name="shell" /> -->
@@ -1075,6 +1084,7 @@
 		<!-- depends on servlet -->
 		<compileModule name="gwt" />
 
+		<compileModule name="rome" />
 		<compileModule name="script" />
 		<compileModule name="shell" />
 		<compileModule name="simple" />
@@ -1119,6 +1129,7 @@
 		<backportModule name="net" failonwarning="@{backport-failonwarning}" />
 		<backportModule name="oauth" failonwarning="@{backport-failonwarning}" />
 		<backportModule name="rdf" failonwarning="@{backport-failonwarning}" />
+		<backportModule name="rome" failonwarning="@{backport-failonwarning}" />
 		<backportModule name="script" failonwarning="@{backport-failonwarning}" />
 		<backportModule name="servlet" failonwarning="@{backport-failonwarning}" />
 		<backportModule name="shell" failonwarning="@{backport-failonwarning}" />
@@ -1194,6 +1205,7 @@
 				<pathelement path="${mod}/${mod-net-id}/src/" />
 				<pathelement path="${mod}/${mod-oauth-id}/src/" />
 				<pathelement path="${mod}/${mod-rdf-id}/src/" />
+				<!-- disabled for now <pathelement path="${mod}/${mod-rome-id}/src/" /> -->
 				<pathelement path="${mod}/${mod-script-id}/src/" />
 				<pathelement path="${mod}/${mod-servlet-id}/src/" />
 				<!-- disabled for now <pathelement path="${mod}/${mod-shell-id}/src/" /> -->
@@ -1230,6 +1242,7 @@
 			<group title="${restlet-ext-integrations}">
 				<package name="org.restlet.ext.gwt*" />
 				<package name="org.restlet.ext.lucene*" />
+				<package name="org.restlet.ext.rome*" />
 				<package name="org.restlet.ext.servlet*" />
 				<package name="org.restlet.ext.spring*" />
 				<package name="org.restlet.ext.xdb*" />
@@ -1260,6 +1273,7 @@
 			<link href="http://lucene.apache.org/java/2_4_0/api/" />
 			<link href="http://lucene.apache.org/solr/api/" />
 			<link href="http://lucene.apache.org/tika/apidocs/" />
+			<link href="https://rome.dev.java.net/apidocs/1_0/" />
 			<link href="http://static.springframework.org/spring/docs/${lib-spring-version}.x/api/" />
 			<link href="http://www.json.org/javadoc/" />
 			<link href="http://www.restlet.org/documentation/${version-minor}/api/" packagelistLoc="${docs-api}" offline="true" />
@@ -1375,6 +1389,7 @@
 		<findbugsModule name="net" />
 		<findbugsModule name="oauth" />
 		<findbugsModule name="rdf" />
+		<findbugsModule name="rome" />
 		<findbugsModule name="script" />
 		<findbugsModule name="servlet" />
 		<findbugsModule name="shell" />
@@ -1410,6 +1425,7 @@
 		<checkstyleModule name="net" />
 		<checkstyleModule name="oauth" />
 		<checkstyleModule name="rdf" />
+		<checkstyleModule name="rome" />
 		<checkstyleModule name="script" />
 		<checkstyleModule name="servlet" />
 		<checkstyleModule name="shell" />
@@ -1497,6 +1513,7 @@
 		<stageLibrary name="jaxb-api" />
 		<stageLibrary name="jaxb-ri" />
 		<stageLibrary name="jaxrs" />
+		<!-- disabled for now  <stageLibrary name="jdom" /> -->
 		<stageLibrary name="activation" />
 		<stageLibrary name="jetty" />
 		<stageLibrary name="jibx" />
@@ -1511,6 +1528,7 @@
 		<stageLibrary name="oauth" />
 		<stageLibrary name="pool" />
 		<stageLibrary name="rhino" />
+		<!-- disabled for now  <stageLibrary name="rome" /> -->
 		<stageLibrary name="scripturian" />
 		<stageLibrary name="servlet" />
 		<stageLibrary name="simple" />
@@ -1545,6 +1563,7 @@
 		<stageModule name="net" />
 		<stageModule name="oauth" />
 		<stageModule name="rdf" />
+		<!-- disabled for now  <stageModule name="rome" /> -->
 		<stageModule name="script" />
 		<stageModule name="servlet" />
 		<!-- disabled for now <stageModule name="shell" /> -->
@@ -1605,6 +1624,7 @@
 		<maven2Module name="net" />
 		<maven2Module name="oauth" />
 		<maven2Module name="rdf" />
+		<!-- disabled for now <maven2Module name="rome" /> -->
 		<maven2Module name="script" />
 		<maven2Module name="servlet" />
 		<!-- disabled for now <maven2Module name="shell" /> -->
@@ -1618,7 +1638,8 @@
 		<maven2Library name="scripturian" />
 		<maven2Library name="simple" />
 		<maven2Library name="jaxrs" />
-		<maven2Library name="json" />
+		<!-- disabled for now <maven2Library name="jdom" /> -->
+		<!-- disabled for now <maven2Library name="rome" /> -->
 		<maven2Library name="db4o" />
 		<maven2Library name="db4o-nativequery" />
 		<maven2Library name="bloat" />
