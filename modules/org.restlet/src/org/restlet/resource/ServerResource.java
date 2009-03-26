@@ -136,8 +136,7 @@ public class ServerResource extends UniformResource {
      */
     @Override
     public Representation get() throws ResourceException {
-        handleGet(false);
-        return getResponse().getEntity();
+        return negotiate(Method.GET);
     }
 
     /**
@@ -291,8 +290,7 @@ public class ServerResource extends UniformResource {
                 if (variants.size() == 1) {
                     preferredVariant = variants.get(0);
                 } else {
-                    getResponse().setStatus(
-                            Status.CLIENT_ERROR_PRECONDITION_FAILED);
+                    setStatus(Status.CLIENT_ERROR_PRECONDITION_FAILED);
                     canDelete = false;
                 }
             }
@@ -304,7 +302,7 @@ public class ServerResource extends UniformResource {
                         getRequest().getMethod(), get(preferredVariant));
 
                 if (status != null) {
-                    getResponse().setStatus(status);
+                    setStatus(status);
                     canDelete = false;
                 }
             }
@@ -314,11 +312,163 @@ public class ServerResource extends UniformResource {
             try {
                 result = delete();
             } catch (ResourceException re) {
-                getResponse().setStatus(re.getStatus(), re);
+                setStatus(re.getStatus(), re);
             }
         }
 
         return result;
+    }
+
+    /**
+     * Handles an OPTIONS call introspecting the target resource (as provided by
+     * the 'findTarget' method). The default implementation is based on the HTTP
+     * specification which says that OPTIONS should return the list of allowed
+     * methods in the Response headers.
+     * 
+     * @throws ResourceException
+     */
+    private Representation handleOptions() throws ResourceException {
+        return options();
+    }
+
+    /**
+     * Handles a POST call by invoking the
+     * {@link #acceptRepresentation(Representation)} method. It also logs a
+     * trace if there is no entity posted.
+     */
+    private Representation handlePost() throws ResourceException {
+        Representation result = null;
+
+        if (!getRequest().isEntityAvailable()) {
+            getLogger()
+                    .fine(
+                            "POST request received without any entity. Continuing processing.");
+        }
+
+        try {
+            result = post(getRequest().getEntity());
+        } catch (ResourceException re) {
+            setStatus(re.getStatus(), re);
+        }
+
+        return result;
+    }
+
+    /**
+     * Handles a PUT call by invoking the
+     * {@link #storeRepresentation(Representation)} method. It also handles
+     * conditional PUTs and forbids partial PUTs as they are not supported yet.
+     * Finally, it prevents PUT with no entity by setting the response status to
+     * {@link Status#CLIENT_ERROR_BAD_REQUEST} following the HTTP
+     * specifications.
+     * 
+     * @throws ResourceException
+     */
+    @SuppressWarnings("unchecked")
+    private Representation handlePut() throws ResourceException {
+        Representation result = null;
+        boolean canPut = true;
+
+        if (getRequest().getConditions().hasSome()) {
+            Variant preferredVariant = null;
+
+            if (isNegotiateContent()) {
+                preferredVariant = getPreferredVariant();
+            } else {
+                final List<Variant> variants = getVariants();
+
+                if (variants.size() == 1) {
+                    preferredVariant = variants.get(0);
+                } else {
+                    setStatus(Status.CLIENT_ERROR_PRECONDITION_FAILED);
+                    canPut = false;
+                }
+            }
+
+            // The conditions have to be checked
+            // even if there is no preferred variant.
+            if (canPut) {
+                result = get(preferredVariant);
+                final Status status = getRequest().getConditions().getStatus(
+                        getRequest().getMethod(), result);
+                if (status != null) {
+                    setStatus(status);
+                    canPut = false;
+                }
+            }
+        }
+
+        if (canPut) {
+            // Check the Content-Range HTTP Header
+            // in order to prevent usage of partial PUTs
+            final Object oHeaders = getRequest().getAttributes().get(
+                    "org.restlet.http.headers");
+            if (oHeaders != null) {
+                final Series<Parameter> headers = (Series<Parameter>) oHeaders;
+                if (headers.getFirst("Content-Range", true) != null) {
+                    setStatus(new Status(Status.SERVER_ERROR_NOT_IMPLEMENTED,
+                            "The Content-Range header is not understood"));
+                    canPut = false;
+                }
+            }
+        }
+
+        if (canPut) {
+            if (getRequest().isEntityAvailable()) {
+                try {
+                    result = put(getRequest().getEntity());
+                } catch (ResourceException re) {
+                    setStatus(re.getStatus(), re);
+                }
+
+                // HTTP specification says that PUT may return
+                // the list of allowed methods
+                getAllowedMethods();
+            } else {
+                setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
+                        "Missing request entity");
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Handles the {@link Method#HEAD} uniform method. By default, it just
+     * invokes {@link #get()}. The Restlet connector will use the result
+     * representation to extract the metadata and not return the actual content
+     * to the client.
+     */
+    @Override
+    public Representation head() throws ResourceException {
+        return negotiate(Method.HEAD);
+    }
+
+    @Override
+    public Representation head(Variant variant) throws ResourceException {
+        return get(variant);
+    }
+
+    /**
+     * Indicates if the authenticated subject associated to the current request
+     * is in the given role name.
+     * 
+     * @param roleName
+     *            The role name to test.
+     * @return True if the authenticated subject is in the given role.
+     */
+    public boolean isInRole(String roleName) {
+        return getClientInfo().isInRole(getApplication().findRole(roleName));
+    }
+
+    /**
+     * Indicates if the best content is automatically negotiated. Default value
+     * is true.
+     * 
+     * @return True if the best content is automatically negotiated.
+     */
+    public boolean isNegotiateContent() {
+        return this.negotiateContent;
     }
 
     /**
@@ -357,14 +507,16 @@ public class ServerResource extends UniformResource {
      * 
      * @throws ResourceException
      */
-    private void handleGet(boolean head) throws ResourceException {
+    private Representation negotiate(Method method) throws ResourceException {
+        Representation result = null;
+
         // The variant that may need to meet the request conditions
         Representation selectedRepresentation = null;
 
         final List<Variant> variants = getVariants();
         if ((variants == null) || (variants.isEmpty())) {
             // Resource not found
-            getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+            setStatus(Status.CLIENT_ERROR_NOT_FOUND);
             getLogger()
                     .warning(
                             "A resource should normally have at least one variant added by calling getVariants().add() in the constructor. Check your resource \""
@@ -374,7 +526,7 @@ public class ServerResource extends UniformResource {
 
             if (preferredVariant == null) {
                 // No variant was found matching the client preferences
-                getResponse().setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
+                setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
 
                 // The list of all variants is transmitted to the client
                 final ReferenceList refs = new ReferenceList(variants.size());
@@ -384,24 +536,24 @@ public class ServerResource extends UniformResource {
                     }
                 }
 
-                getResponse().setEntity(refs.getTextRepresentation());
+                result = refs.getTextRepresentation();
             } else {
                 // Set the variant dimensions used for content negotiation
-                getResponse().getDimensions().clear();
-                getResponse().getDimensions().add(Dimension.CHARACTER_SET);
-                getResponse().getDimensions().add(Dimension.ENCODING);
-                getResponse().getDimensions().add(Dimension.LANGUAGE);
-                getResponse().getDimensions().add(Dimension.MEDIA_TYPE);
+                getDimensions().clear();
+                getDimensions().add(Dimension.CHARACTER_SET);
+                getDimensions().add(Dimension.ENCODING);
+                getDimensions().add(Dimension.LANGUAGE);
+                getDimensions().add(Dimension.MEDIA_TYPE);
 
                 // Set the negotiated representation as response entity
-                getResponse().setEntity(get(preferredVariant));
+                negotiate(method, preferredVariant);
             }
 
-            selectedRepresentation = getResponse().getEntity();
+            selectedRepresentation = result;
         } else {
             if (variants.size() == 1) {
-                getResponse().setEntity(get(variants.get(0)));
-                selectedRepresentation = getResponse().getEntity();
+                negotiate(method, variants.get(0));
+                selectedRepresentation = result;
             } else {
                 final ReferenceList variantRefs = new ReferenceList();
 
@@ -417,21 +569,19 @@ public class ServerResource extends UniformResource {
 
                 if (variantRefs.size() > 0) {
                     // Return the list of variants
-                    getResponse()
-                            .setStatus(Status.REDIRECTION_MULTIPLE_CHOICES);
-                    getResponse()
-                            .setEntity(variantRefs.getTextRepresentation());
+                    setStatus(Status.REDIRECTION_MULTIPLE_CHOICES);
+                    result = variantRefs.getTextRepresentation();
                 } else {
-                    getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+                    setStatus(Status.CLIENT_ERROR_NOT_FOUND);
                 }
             }
         }
 
         if (selectedRepresentation == null) {
-            if ((getResponse().getStatus() == null)
-                    || (getResponse().getStatus().isSuccess() && !Status.SUCCESS_NO_CONTENT
-                            .equals(getResponse().getStatus()))) {
-                getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+            if ((getStatus() == null)
+                    || (getStatus().isSuccess() && !Status.SUCCESS_NO_CONTENT
+                            .equals(getStatus()))) {
+                setStatus(Status.CLIENT_ERROR_NOT_FOUND);
             } else {
                 // Keep the current status as the developer might prefer a
                 // special status like 'method not authorized'.
@@ -444,168 +594,28 @@ public class ServerResource extends UniformResource {
                         getRequest().getMethod(), selectedRepresentation);
 
                 if (status != null) {
-                    getResponse().setStatus(status);
-                    getResponse().setEntity(null);
+                    setStatus(status);
+                    result = null;
                 }
-            }
-        }
-    }
-
-    /**
-     * Handles an OPTIONS call introspecting the target resource (as provided by
-     * the 'findTarget' method). The default implementation is based on the HTTP
-     * specification which says that OPTIONS should return the list of allowed
-     * methods in the Response headers.
-     * 
-     * @throws ResourceException
-     */
-    private Representation handleOptions() throws ResourceException {
-        return options();
-    }
-
-    /**
-     * Handles a POST call by invoking the
-     * {@link #acceptRepresentation(Representation)} method. It also logs a
-     * trace if there is no entity posted.
-     */
-    private Representation handlePost() throws ResourceException {
-        Representation result = null;
-
-        if (!getRequest().isEntityAvailable()) {
-            getLogger()
-                    .fine(
-                            "POST request received without any entity. Continuing processing.");
-        }
-
-        try {
-            result = post(getRequest().getEntity());
-        } catch (ResourceException re) {
-            getResponse().setStatus(re.getStatus(), re);
-        }
-
-        return result;
-    }
-
-    /**
-     * Handles a PUT call by invoking the
-     * {@link #storeRepresentation(Representation)} method. It also handles
-     * conditional PUTs and forbids partial PUTs as they are not supported yet.
-     * Finally, it prevents PUT with no entity by setting the response status to
-     * {@link Status#CLIENT_ERROR_BAD_REQUEST} following the HTTP
-     * specifications.
-     * 
-     * @throws ResourceException
-     */
-    @SuppressWarnings("unchecked")
-    private Representation handlePut() throws ResourceException {
-        Representation result = null;
-        boolean canPut = true;
-
-        if (getRequest().getConditions().hasSome()) {
-            Variant preferredVariant = null;
-
-            if (isNegotiateContent()) {
-                preferredVariant = getPreferredVariant();
-            } else {
-                final List<Variant> variants = getVariants();
-
-                if (variants.size() == 1) {
-                    preferredVariant = variants.get(0);
-                } else {
-                    getResponse().setStatus(
-                            Status.CLIENT_ERROR_PRECONDITION_FAILED);
-                    canPut = false;
-                }
-            }
-
-            // The conditions have to be checked
-            // even if there is no preferred variant.
-            if (canPut) {
-                result = get(preferredVariant);
-                final Status status = getRequest().getConditions().getStatus(
-                        getRequest().getMethod(), result);
-                if (status != null) {
-                    getResponse().setStatus(status);
-                    canPut = false;
-                }
-            }
-        }
-
-        if (canPut) {
-            // Check the Content-Range HTTP Header
-            // in order to prevent usage of partial PUTs
-            final Object oHeaders = getRequest().getAttributes().get(
-                    "org.restlet.http.headers");
-            if (oHeaders != null) {
-                final Series<Parameter> headers = (Series<Parameter>) oHeaders;
-                if (headers.getFirst("Content-Range", true) != null) {
-                    getResponse()
-                            .setStatus(
-                                    new Status(
-                                            Status.SERVER_ERROR_NOT_IMPLEMENTED,
-                                            "The Content-Range header is not understood"));
-                    canPut = false;
-                }
-            }
-        }
-
-        if (canPut) {
-            if (getRequest().isEntityAvailable()) {
-                try {
-                    result = put(getRequest().getEntity());
-                } catch (ResourceException re) {
-                    getResponse().setStatus(re.getStatus(), re);
-                }
-
-                // HTTP specification says that PUT may return
-                // the list of allowed methods
-                getAllowedMethods();
-            } else {
-                getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
-                        "Missing request entity");
             }
         }
 
         return result;
     }
 
-    /**
-     * Handles the {@link Method#HEAD} uniform method. By default, it just
-     * invokes {@link #get()}. The Restlet connector will use the result
-     * representation to extract the metadata and not return the actual content
-     * to the client.
-     */
-    @Override
-    public Representation head() throws ResourceException {
-        handleGet(true);
-        return getResponse().getEntity();
-    }
+    private Representation negotiate(Method method, Variant variant)
+            throws ResourceException {
+        Representation result = null;
 
-    @Override
-    public Representation head(Variant variant) throws ResourceException {
-        return get(variant);
-    }
+        if (Method.GET.equals(method)) {
+            result = get(variant);
+        } else if (Method.HEAD.equals(method)) {
+            result = head(variant);
+        } else if (Method.OPTIONS.equals(method)) {
+            result = options(variant);
+        }
 
-    /**
-     * Indicates if the authenticated subject associated to the current request
-     * is in the given role name.
-     * 
-     * @param roleName
-     *            The role name to test.
-     * @return True if the authenticated subject is in the given role.
-     */
-    public boolean isInRole(String roleName) {
-        return getClientInfo().isInRole(getApplication().findRole(roleName));
-    }
-
-    /**
-     * Indicates if the best content is automatically negotiated. Default value
-     * is true.
-     * 
-     * @return True if the best content is automatically negotiated.
-     */
-    public boolean isNegotiateContent() {
-        return this.negotiateContent;
+        return result;
     }
 
     /**
@@ -618,9 +628,7 @@ public class ServerResource extends UniformResource {
      */
     @Override
     public Representation options() throws ResourceException {
-        getAllowedMethods();
-        getResponse().setStatus(Status.SUCCESS_OK);
-        return getResponse().getEntity();
+        return negotiate(Method.OPTIONS);
     }
 
     @Override
