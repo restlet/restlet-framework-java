@@ -12,6 +12,7 @@ import org.restlet.ext.rdf.Graph;
 import org.restlet.ext.rdf.GraphHandler;
 import org.restlet.ext.rdf.LinkReference;
 import org.restlet.ext.rdf.Literal;
+import org.restlet.ext.rdf.RdfRepresentation;
 import org.restlet.ext.rdf.RdfXmlRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.representation.SaxRepresentation;
@@ -68,6 +69,12 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 		/** The list of known prefixes. */
 		private Map<String, String> prefixes;
 
+		/**
+		 * True if {@link RdfRepresentation#RDF_SYNTAX} is the default
+		 * namespace.
+		 */
+		private boolean rdfDefaultNamespace;
+
 		/** Heap of states. */
 		private List<State> states;
 
@@ -92,6 +99,27 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 					|| getCurrentState() == State.PREDICATE) {
 				builder.append(ch, start, length);
 			}
+		}
+
+		/**
+		 * Returns true of the given qualified name is in the RDF namespace and
+		 * is equals to the given local name.
+		 * 
+		 * @param localName
+		 *            The local name to compare to.
+		 * @param qName
+		 *            The qualified name
+		 */
+		private boolean checkRdfQName(String localName, String qName) {
+			boolean result = qName.equals("rdf:" + localName);
+			if (!result) {
+				int index = qName.indexOf(":");
+				// The qualified name has no prefix.
+				result = rdfDefaultNamespace && (index == -1)
+						&& localName.equals(qName);
+			}
+
+			return result;
 		}
 
 		@Override
@@ -236,7 +264,6 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 				if (base.isRelative()) {
 					base = new Reference(this.base, uri);
 				}
-
 				if (localName != null) {
 					result = new Reference(base, localName);
 				} else {
@@ -304,13 +331,13 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 			// Get the RDF URI of this node
 			for (int i = 0; i < attributes.getLength(); i++) {
 				String qName = attributes.getQName(i);
-				if ("rdf:about".equals(qName)) {
+				if (checkRdfQName("about", qName)) {
 					found = true;
 					result = getReference(null, attributes.getValue(i), null);
-				} else if ("rdf:nodeID".equals(qName)) {
+				} else if (checkRdfQName("nodeID", qName)) {
 					found = true;
 					result = LinkReference.createBlank(attributes.getValue(i));
-				} else if ("rdf:ID".equals(qName)) {
+				} else if (checkRdfQName("ID", qName)) {
 					found = true;
 					result = getReference(null, "#" + attributes.getValue(i),
 							null);
@@ -326,7 +353,7 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 			}
 
 			// Create the available statements
-			if (!"rdf:Description".equals(name)) {
+			if (!checkRdfQName("Description", name)) {
 				// Handle typed node
 				this.graphHandler.link(result,
 						RdfXmlRepresentation.PREDICATE_TYPE, getReference(uri,
@@ -414,7 +441,7 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 				this.builder = new StringBuilder();
 			}
 			if (state == State.NONE) {
-				if (equals("rdf:RDF", uri, localName, name)) {
+				if (checkRdfQName("RDF", name)) {
 					// Top element
 					String base = attributes.getValue("xml:base");
 					if (base != null) {
@@ -432,17 +459,17 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 				this.currentPredicate = getReference(uri, localName, name);
 				for (int i = 0; i < attributes.getLength(); i++) {
 					String qName = attributes.getQName(i);
-					if ("rdf:resource".equals(qName)) {
+					if (checkRdfQName("resource", qName)) {
 						this.graphHandler.link(getCurrentSubject(),
 								this.currentPredicate, getReference(attributes
 										.getValue(i), null, null));
 						break;
-					} else if ("rdf:datatype".equals(qName)) {
+					} else if (checkRdfQName("datatype", qName)) {
 						// The object is a literal
 						popState();
 						pushState(State.LITERAL);
 						this.currentDataType = attributes.getValue(i);
-					} else if ("rdf:parseType".equals(qName)) {
+					} else if (checkRdfQName("parseType", qName)) {
 						String value = attributes.getValue(i);
 						if ("Literal".equals(value)) {
 							// The object is an XML literal
@@ -464,7 +491,7 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 						} else {
 							// Error
 						}
-					} else if ("rdf:nodeID".equals(qName)) {
+					} else if (checkRdfQName("nodeID", qName)) {
 						this.graphHandler.link(getCurrentSubject(),
 								this.currentPredicate, LinkReference
 										.createBlank(attributes.getValue(i)));
@@ -513,6 +540,10 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 		@Override
 		public void startPrefixMapping(String prefix, String uri)
 				throws SAXException {
+			this.rdfDefaultNamespace = this.rdfDefaultNamespace
+					|| ((prefix == null || "".equals(prefix)
+							&& RdfRepresentation.RDF_SYNTAX
+									.toString(true, true).equals(uri)));
 			this.prefixes.put(prefix, uri);
 		}
 
