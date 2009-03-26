@@ -157,7 +157,7 @@ public class Reference {
      * <em><strong>Note:</strong> The <a
      * href="http://www.w3.org/TR/html40/appendix/notes.html#non-ascii-chars">
      * World Wide Web Consortium Recommendation</a> states that UTF-8 should be
-     * used. Not doing so may introduce incompatibilites.</em>
+     * used. Not doing so may introduce incompatibilities.</em>
      * 
      * @param toDecode
      *            The string to decode.
@@ -733,6 +733,15 @@ public class Reference {
                             "Invalid character detected in URI reference at index '"
                                     + i + "': \"" + uriRef.charAt(i)
                                     + "\". It will be automatically encoded.");
+                } else if ((uriRef.charAt(i) == '%')
+                        && (i > uriRef.length() - 2)) {
+                    // A percent encoding character has been detected but
+                    // without the necessary two hexadecimal digits following
+                    valid = false;
+                    Context.getCurrentLogger().fine(
+                            "Invalid percent encoding detected in URI reference at index '"
+                                    + i + "': \"" + uriRef.charAt(i)
+                                    + "\". It will be automatically encoded.");
                 }
             }
 
@@ -741,7 +750,12 @@ public class Reference {
 
                 for (int i = 0; (i < uriRef.length()); i++) {
                     if (isValid(uriRef.charAt(i))) {
-                        sb.append(uriRef.charAt(i));
+                        if ((uriRef.charAt(i) == '%')
+                                && (i > uriRef.length() - 2)) {
+                            sb.append("%25");
+                        } else {
+                            sb.append(uriRef.charAt(i));
+                        }
                     } else {
                         sb.append(encode(String.valueOf(uriRef.charAt(i))));
                     }

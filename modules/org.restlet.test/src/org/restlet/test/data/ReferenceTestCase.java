@@ -465,6 +465,17 @@ public class ReferenceTestCase extends RestletTestCase {
         assertEquals("http://restlet.org?abc=123", ref.toString());
     }
 
+    public void testQuery() {
+
+        Reference ref1 = new Reference(
+                "http://localhost/search?q=anythingelse%");
+        String query = ref1.getQuery();
+        assertEquals("q=anythingelse%25", query);
+
+        Form queryForm = ref1.getQueryAsForm();
+        assertEquals("anythingelse%", queryForm.getFirstValue("q"));
+    }
+
     /**
      * Tests the parsing of a reference into its components
      * 

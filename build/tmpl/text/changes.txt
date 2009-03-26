@@ -33,6 +33,10 @@ Changes log
         - Added workaround to make sure that the JAX-RS extension
           is registered as an implementation of the JAX-RS API.
           Suggested by David Fogel.
+        - Fixed encoding issue with percent characters at the end
+          of URI references with the required two digits following.
+          Now the percentage sign is encoded and a fine trace is logged.
+          Reported by Nels Nelson
     - Enhancements
         - Added a getItemIterator() on RestletFileUpload to facilitate
           access to parts in streaming mode. Suggested by Paul Austin.
