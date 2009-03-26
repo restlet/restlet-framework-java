@@ -31,51 +31,26 @@
 # $mymethod.call 5
 #
 
-$statics_module = Module.new do
+$static_module = Module.new do
 
-	# Utilities to access $script.statics
-	
-	# These functions allow for safe, scalable access in heavily concurrent
-	# applications, by following the semantics of reentrant read-write locks.
-	
-	def get_static name
-		value = nil
-		$script.statics_lock.read_lock().lock()
-		begin
-			value = $script.statics[name]
-			if value == nil
-				$script.statics_lock.read_lock().unlock()
-	
-				# We're not holding any lock!
-				# Statics may change here!
-	
-				$script.statics_lock.write_lock().lock()
-				begin
-					# We must test again, because statics may have changed
-					value = $script.statics[name]
-					if value == nil
-						value = yield
-						$script.statics[name] = value
-					end
-				ensure
-					$script.statics_lock.read_lock().lock()
-					$script.statics_lock.write_lock().unlock()
-				end
+	# Helper to access the static scope
+
+	def get_static_value name
+		value = $script.static_scope[name]
+		if value == nil
+			value = yield
+
+			# Note: another thread might have changed our value in the meantime.
+			# We'll make sure there is no duplication.
+
+			old = $script.static_scope.put_if_absent name, value
+			if old != nil
+				value = old
 			end
-		ensure
-			$script.statics_lock.read_lock().unlock()
+
 		end
-	
+
 		return value
-	end
-	
-	def set_static name, value
-		$script.statics_lock.write_lock().lock()
-		begin
-			$script.statics[name] = value
-		ensure
-			$script.statics_lock.write_lock().unlock()
-		end
 	end
 
 end

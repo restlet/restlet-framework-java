@@ -35,7 +35,7 @@ print('This page was dynamically generated at ' + java.lang.System.currentTimeMi
 //
 
 %>
-<%& script.statics.get('exampleBasePath') + 'demos/rhino.fragment' %>
+<%& script.staticScope.get('exampleBasePath') + 'demos/rhino.fragment' %>
 <%
 
 //

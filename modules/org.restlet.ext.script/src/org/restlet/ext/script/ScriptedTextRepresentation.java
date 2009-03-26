@@ -33,8 +33,8 @@ package org.restlet.ext.script;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -100,7 +100,7 @@ public class ScriptedTextRepresentation extends WriterRepresentation {
 
     private ScriptContextController scriptContextController;
 
-    private final Map<String, ScriptEngine> scriptEngines = new HashMap<String, ScriptEngine>();
+    private final ConcurrentMap<String, ScriptEngine> scriptEngines = new ConcurrentHashMap<String, ScriptEngine>();
 
     /**
      * Construct an instance to wrap an existing embedded script instance.

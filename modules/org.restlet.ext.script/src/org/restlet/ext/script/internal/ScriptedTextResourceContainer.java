@@ -34,8 +34,9 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -85,7 +86,7 @@ public class ScriptedTextResourceContainer {
 
     protected final ScriptedTextResourceScriptContextController scriptContextController;
 
-    protected final Map<String, ScriptEngine> scriptEngines = new HashMap<String, ScriptEngine>();
+    protected final ConcurrentMap<String, ScriptEngine> scriptEngines = new ConcurrentHashMap<String, ScriptEngine>();
 
     /**
      * Constructs a container with media type and character set according to the

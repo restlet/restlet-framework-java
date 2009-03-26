@@ -19,9 +19,9 @@ importClass(
 	org.restlet.ext.json.JsonRepresentation,
 	org.restlet.ext.script.ScriptedResource);
 
-// Include the statics library
+// Include the static scope library
 
-container.include('rhino/statics.fragment');
+container.include('rhino/static.fragment');
 
 // Include the JSON library
 print(container.resource.defaultScriptEngineName);
@@ -29,24 +29,23 @@ container.include('rhino/json2.js', container.resource.defaultScriptEngineName);
 
 // State
 //
-// These make sure that our state is properly stored in the statics,
-// so that we always use the same state, even if this script is
-// recompiled or if various versions of this script are in use.
+// These make sure that our state is properly stored in the static scope,
+// so that we always use the same state, even if this script is recompiled.
 
 function getStateLock() {
-	return getStatic('rhino.stateLock', function() {
+	return getStaticValue('rhino.stateLock', function() {
 		return new ReentrantReadWriteLock();
 	});
 }
 
 function getState() {
-	return getStatic('rhino.state', function() {
+	return getStaticValue('rhino.state', function() {
 		return {'name': 'Coraline', 'media': 'Film', 'rating': 'A+', 'characters': ['Coraline', 'Wybie', 'Mom', 'Dad']};
 	});
 }
 
 function setState(value) {
-	setStatic('rhino.state', value); 
+	script.staticScope.put('rhino.state', value); 
 }
 
 // This function is called when the resource is initialized. We will use it to set

@@ -34,8 +34,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -80,7 +80,7 @@ public class ScriptedResourceContainer {
 
     private final ScriptedResourceScriptContextController scriptContextController;
 
-    private final Map<String, ScriptEngine> scriptEngines = new HashMap<String, ScriptEngine>();
+    private final ConcurrentMap<String, ScriptEngine> scriptEngines = new ConcurrentHashMap<String, ScriptEngine>();
 
     /**
      * Constructs a container with no variant or entity, plain text media type,

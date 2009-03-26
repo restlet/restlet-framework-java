@@ -18,30 +18,29 @@ import org.restlet.representation.Variant
 import org.restlet.ext.json.JsonRepresentation
 import org.json.JSONObject
 
-// Include the statics library
+// Include the static scope library
 
-container.include('groovy/statics.fragment')
+container.include('groovy/static.fragment')
 
 // State
 //
-// These make sure that our state is properly stored in the statics,
-// so that we always use the same state, even if this script is
-// recompiled or if various versions of this script are in use.
+// These make sure that our state is properly stored in the static scope,
+// so that we always use the same state, even if this script is recompiled.
 
 getStateLock = {
-	return getStatic('groovy.stateLock', {
+	return getStaticValue('groovy.stateLock', {
 		return new ReentrantReadWriteLock()
 	})
 }
 
 getState = {
-	return getStatic('groovy.state', {
+	return getStaticValue('groovy.state', {
 		return ['name': 'Coraline', 'media': 'Film', 'rating': 'A+', 'characters': ['Coraline', 'Wybie', 'Mom', 'Dad']]
 	})
 }
 
 setState = { value ->
-	setStatic('groovy.state', value) 
+	script.staticScope['groovy.state'] = value 
 }
 
 // This closure is called when the resource is initialized. We will use it to set

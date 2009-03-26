@@ -1,4 +1,4 @@
-<% script.cacheDuration = 5000; var exampleBasePath = script.statics.get('exampleBasePath'); %><%& exampleBasePath + 'header.fragment' %>
+<% script.cacheDuration = 5000; var exampleBasePath = script.staticScope.get('exampleBasePath'); %><%& exampleBasePath + 'header.fragment' %>
 
 <h2>Download</h2>
 
