@@ -163,8 +163,6 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 				link(getCurrentSubject(), this.currentPredicate, getLiteral(
 						builder.toString(), null, this.currentLanguage));
 			} else if (state == State.OBJECT) {
-				this.currentObject = getLiteral(builder.toString(), null,
-						this.currentLanguage);
 			} else if (state == State.LITERAL) {
 				if (nodeDepth == 0) {
 					// End of the XML literal
@@ -519,6 +517,8 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 						this.graphHandler.link(getCurrentSubject(),
 								this.currentPredicate, getReference(attributes
 										.getValue(i), null, null));
+						popState();
+						pushState(State.OBJECT);
 					} else if (checkRdfQName("datatype", qName)) {
 						// The object is a literal
 						popState();
@@ -566,7 +566,7 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 				if (!arcs.isEmpty()) {
 					// Create arcs that starts from a blank node and ends to
 					// literal values. This blank node is the object of the
-					// current statement
+					// current statement.
 					Reference blankNode = LinkReference
 							.createBlank(ContentReader.newBlankNodeId());
 					this.graphHandler.link(getCurrentSubject(),
@@ -575,6 +575,8 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 						this.graphHandler.link(blankNode, getReference(null,
 								null, arc[0]), new Literal(arc[1]));
 					}
+					popState();
+					pushState(State.OBJECT);
 				}
 				// TODO Caution, what about the scope of the language attribute?
 				this.currentLanguage = attributes.getValue("xml:lang");
