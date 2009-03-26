@@ -43,7 +43,7 @@ import org.restlet.ext.rdf.GraphHandler;
 import org.restlet.ext.rdf.Link;
 import org.restlet.ext.rdf.LinkReference;
 import org.restlet.ext.rdf.Literal;
-import org.restlet.ext.rdf.RdfRepresentation;
+import org.restlet.ext.rdf.internal.RdfConstants;
 
 /**
  * Handler of RDF content according to the N3 notation.
@@ -81,8 +81,8 @@ public class RdfN3WritingContentHandler extends GraphHandler {
 		this.bw = new BufferedWriter(new OutputStreamWriter(outputStream));
 		this.context = new Context();
 		Map<String, String> prefixes = context.getPrefixes();
-		prefixes.put(RdfRepresentation.RDF_SCHEMA.toString(), "rdf");
-		prefixes.put(RdfRepresentation.RDF_SYNTAX.toString(), "rdfs");
+		prefixes.put(RdfConstants.RDF_SCHEMA.toString(), "rdf");
+		prefixes.put(RdfConstants.RDF_SYNTAX.toString(), "rdfs");
 		prefixes.put("http://www.w3.org/2000/10/swap/grammar/bnf#", "cfg");
 		prefixes.put("http://www.w3.org/2000/10/swap/grammar/n3#", "n3");
 		prefixes.put("http://www.w3.org/2000/10/swap/list#", "list");

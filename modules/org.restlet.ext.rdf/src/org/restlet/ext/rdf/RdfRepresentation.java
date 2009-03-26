@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import org.restlet.data.MediaType;
-import org.restlet.data.Reference;
 import org.restlet.representation.OutputRepresentation;
 import org.restlet.representation.Representation;
 
@@ -46,111 +45,71 @@ import org.restlet.representation.Representation;
  */
 public abstract class RdfRepresentation extends OutputRepresentation {
 
-    /** List "first". */
-    public static Reference LIST_FIRST = new Reference(
-            "http://www.w3.org/1999/02/22-rdf-syntax-ns#first");
+	/** The inner graph of links. */
+	private Graph graph;
 
-    /** List "rest". */
-    public static Reference LIST_REST = new Reference(
-            "http://www.w3.org/1999/02/22-rdf-syntax-ns#rest");
+	/**
+	 * Constructor with argument.
+	 * 
+	 * @param linkSet
+	 *            The graph of link.
+	 */
+	public RdfRepresentation(Graph linkSet) {
+		super(null);
+		this.graph = linkSet;
+	}
 
-    /** Object "nil". */
-    public static Reference OBJECT_NIL = new Reference(
-            "http://www.w3.org/1999/02/22-rdf-syntax-ns#nil");
+	/**
+	 * Constructor that parsed a given RDF representation into a link set.
+	 * 
+	 * @param rdfRepresentation
+	 *            The RDF representation to parse.
+	 * @param linkSet
+	 *            The link set to update.
+	 * @throws IOException
+	 */
+	public RdfRepresentation(Representation rdfRepresentation, Graph linkSet)
+			throws IOException {
+		this(linkSet);
+		if (MediaType.TEXT_RDF_N3.equals(rdfRepresentation.getMediaType())) {
+			new RdfN3Representation(rdfRepresentation, linkSet);
+		} else if (MediaType.TEXT_XML.equals(rdfRepresentation.getMediaType())) {
+			new RdfXmlRepresentation(rdfRepresentation, linkSet);
+		} else if (MediaType.APPLICATION_ALL_XML.includes(rdfRepresentation
+				.getMediaType())) {
+			new RdfXmlRepresentation(rdfRepresentation, linkSet);
+		}
+		// Parsing for other media types goes here.
+	}
 
-    /** Predicate "implies" . */
-    public static Reference PREDICATE_IMPLIES = new Reference(
-            "http://www.w3.org/2000/10/swap/log#implies");
+	/**
+	 * Returns the graph of links.
+	 * 
+	 * @return The graph of links.
+	 */
+	public Graph getGraph() {
+		return graph;
+	}
 
-    /** Predicate "same as". */
-    public static Reference PREDICATE_SAME = new Reference(
-            "http://www.w3.org/2002/07/owl#sameAs");
+	/**
+	 * Sets the graph of links.
+	 * 
+	 * @param linkSet
+	 *            The graph of links.
+	 */
+	public void setGraph(Graph linkSet) {
+		this.graph = linkSet;
+	}
 
-    /** Predicate "is a". */
-    public static Reference PREDICATE_TYPE = new Reference(
-            "http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
-
-    /** Rdf schema. */
-    public static Reference RDF_SCHEMA = new Reference(
-            "http://www.w3.org/2000/01/rdf-schema#");
-
-    /** Rdf syntax. */
-    public static Reference RDF_SYNTAX = new Reference(
-            "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
-
-    public static Reference XML_SCHEMA = new Reference(
-            "http://www.w3.org/2001/XMLSchema#");
-
-    public static Reference XML_SCHEMA_TYPE_FLOAT = new Reference(
-            "http://www.w3.org/2001/XMLSchema#float");
-
-    public static Reference XML_SCHEMA_TYPE_INTEGER = new Reference(
-            "http://www.w3.org/2001/XMLSchema#int");
-    /** The inner graph of links. */
-    private Graph graph;
-
-    /**
-     * Constructor with argument.
-     * 
-     * @param linkSet
-     *            The graph of link.
-     */
-    public RdfRepresentation(Graph linkSet) {
-        super(null);
-        this.graph = linkSet;
-    }
-
-    /**
-     * Constructor that parsed a given RDF representation into a link set.
-     * 
-     * @param rdfRepresentation
-     *            The RDF representation to parse.
-     * @param linkSet
-     *            The link set to update.
-     * @throws IOException
-     */
-    public RdfRepresentation(Representation rdfRepresentation, Graph linkSet)
-            throws IOException {
-        this(linkSet);
-        if (MediaType.TEXT_RDF_N3.equals(rdfRepresentation.getMediaType())) {
-            new RdfN3Representation(rdfRepresentation, linkSet);
-        } else if (MediaType.TEXT_XML.equals(rdfRepresentation.getMediaType())) {
-            new RdfXmlRepresentation(rdfRepresentation, linkSet);
-        } else if (MediaType.APPLICATION_ALL_XML.includes(rdfRepresentation
-                .getMediaType())) {
-            new RdfXmlRepresentation(rdfRepresentation, linkSet);
-        }
-        // Parsing for other media types goes here.
-    }
-
-    /**
-     * Returns the graph of links.
-     * 
-     * @return The graph of links.
-     */
-    public Graph getGraph() {
-        return graph;
-    }
-
-    /**
-     * Sets the graph of links.
-     * 
-     * @param linkSet
-     *            The graph of links.
-     */
-    public void setGraph(Graph linkSet) {
-        this.graph = linkSet;
-    }
-
-    @Override
-    public void write(OutputStream outputStream) throws IOException {
-        if (MediaType.TEXT_RDF_N3.equals(getMediaType())) {
-            new RdfN3Representation(getGraph()).write(outputStream);
-        } else if (MediaType.TEXT_XML.equals(getMediaType())) {
-            new RdfXmlRepresentation(getGraph()).write(outputStream);
-        } else if (MediaType.APPLICATION_ALL_XML.includes(getMediaType())) {
-            new RdfXmlRepresentation(getGraph()).write(outputStream);
-        }
-        // Writing for other media types goes here.
-    }
+	@Override
+	public void write(OutputStream outputStream) throws IOException {
+		if (MediaType.TEXT_RDF_N3.equals(getMediaType())) {
+			new RdfN3Representation(getGraph()).write(outputStream);
+		} else if (MediaType.TEXT_XML.equals(getMediaType())) {
+			new RdfXmlRepresentation(getGraph()).write(outputStream);
+		} else if (MediaType.APPLICATION_ALL_XML.includes(getMediaType())) {
+			new RdfXmlRepresentation(getGraph()).write(outputStream);
+		}
+		// Writing for other media types goes here.
+	}
 }

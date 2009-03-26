@@ -33,7 +33,7 @@ package org.restlet.ext.rdf.internal.n3;
 import java.io.IOException;
 
 import org.restlet.ext.rdf.Literal;
-import org.restlet.ext.rdf.RdfRepresentation;
+import org.restlet.ext.rdf.internal.RdfConstants;
 
 /**
  * Represents a still unidentified N3 token.
@@ -86,11 +86,11 @@ class Token extends LexicalUnit {
 				if (getValue().contains(".")) {
 					// Consider it as a float
 					result = new Literal(getValue(),
-							RdfRepresentation.XML_SCHEMA_TYPE_FLOAT);
+							RdfConstants.XML_SCHEMA_TYPE_FLOAT);
 				} else {
 					// Consider it as an integer
 					result = new Literal(getValue(),
-							RdfRepresentation.XML_SCHEMA_TYPE_INTEGER);
+							RdfConstants.XML_SCHEMA_TYPE_INTEGER);
 				}
 			} else {
 				// TODO What kind of literal?

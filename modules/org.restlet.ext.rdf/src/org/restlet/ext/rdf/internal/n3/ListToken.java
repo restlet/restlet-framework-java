@@ -35,8 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.restlet.data.Reference;
-import org.restlet.ext.rdf.RdfN3Representation;
-import org.restlet.ext.rdf.RdfRepresentation;
+import org.restlet.ext.rdf.internal.RdfConstants;
 
 /**
  * Represens a list of N3 tokens.
@@ -69,10 +68,10 @@ class ListToken extends LexicalUnit {
 
 			if (element instanceof Reference) {
 				getContentHandler().link(currentBlankNode,
-						RdfRepresentation.LIST_FIRST, (Reference) element);
+						RdfConstants.LIST_FIRST, (Reference) element);
 			} else if (element instanceof String) {
 				getContentHandler().link(currentBlankNode,
-						RdfRepresentation.LIST_FIRST,
+						RdfConstants.LIST_FIRST,
 						new Reference((String) element));
 			} else {
 				// TODO Error.
@@ -81,12 +80,12 @@ class ListToken extends LexicalUnit {
 			Reference restBlankNode = (Reference) new BlankNodeToken(
 					RdfN3ParsingContentHandler.newBlankNodeId()).resolve();
 
-			getContentHandler().link(currentBlankNode,
-					RdfRepresentation.LIST_REST, restBlankNode);
+			getContentHandler().link(currentBlankNode, RdfConstants.LIST_REST,
+					restBlankNode);
 			currentBlankNode = restBlankNode;
 		}
-		getContentHandler().link(currentBlankNode,
-				RdfRepresentation.LIST_REST, RdfRepresentation.OBJECT_NIL);
+		getContentHandler().link(currentBlankNode, RdfConstants.LIST_REST,
+				RdfConstants.OBJECT_NIL);
 
 		return currentBlankNode;
 	}

@@ -41,7 +41,7 @@ import org.restlet.data.Reference;
 import org.restlet.ext.rdf.Graph;
 import org.restlet.ext.rdf.GraphHandler;
 import org.restlet.ext.rdf.Literal;
-import org.restlet.ext.rdf.RdfRepresentation;
+import org.restlet.ext.rdf.internal.RdfConstants;
 import org.restlet.representation.Representation;
 
 /**
@@ -231,14 +231,14 @@ public class RdfN3ParsingContentHandler extends GraphHandler {
 				} else if ("has".equalsIgnoreCase(lexicalUnit.getValue())) {
 					nbTokens--;
 				} else if ("=".equalsIgnoreCase(lexicalUnit.getValue())) {
-					currentPredicate = RdfRepresentation.PREDICATE_SAME;
+					currentPredicate = RdfConstants.PREDICATE_SAME;
 				} else if ("=>".equalsIgnoreCase(lexicalUnit.getValue())) {
-					currentPredicate = RdfRepresentation.PREDICATE_IMPLIES;
+					currentPredicate = RdfConstants.PREDICATE_IMPLIES;
 				} else if ("<=".equalsIgnoreCase(lexicalUnit.getValue())) {
 					swapSubjectObject = true;
-					currentPredicate = RdfRepresentation.PREDICATE_IMPLIES;
+					currentPredicate = RdfConstants.PREDICATE_IMPLIES;
 				} else if ("a".equalsIgnoreCase(lexicalUnit.getValue())) {
-					currentPredicate = RdfRepresentation.PREDICATE_TYPE;
+					currentPredicate = RdfConstants.PREDICATE_TYPE;
 				} else if ("!".equalsIgnoreCase(lexicalUnit.getValue())) {
 					currentObject = new BlankNodeToken(
 							RdfN3ParsingContentHandler.newBlankNodeId())

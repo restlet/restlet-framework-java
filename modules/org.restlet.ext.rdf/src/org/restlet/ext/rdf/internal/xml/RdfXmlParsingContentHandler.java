@@ -14,6 +14,7 @@ import org.restlet.ext.rdf.LinkReference;
 import org.restlet.ext.rdf.Literal;
 import org.restlet.ext.rdf.RdfRepresentation;
 import org.restlet.ext.rdf.RdfXmlRepresentation;
+import org.restlet.ext.rdf.internal.RdfConstants;
 import org.restlet.representation.Representation;
 import org.restlet.representation.SaxRepresentation;
 import org.xml.sax.Attributes;
@@ -82,14 +83,24 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 		private List<Reference> subjects;
 
 		/**
+		 * 
+		 * 
+		 * @param graphHandler
+		 * 
+		 */
+		/**
 		 * Constructor.
 		 * 
 		 * @param graphHandler
 		 *            The graph handler to call when a link is detected.
+		 * @param representation
+		 *            The input representation.
 		 */
-		public ContentReader(GraphHandler graphHandler) {
+		public ContentReader(GraphHandler graphHandler,
+				Representation representation) {
 			super();
 			this.graphHandler = graphHandler;
+			this.base = representation.getIdentifier();
 		}
 
 		@Override
@@ -356,7 +367,7 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 			if (!checkRdfQName("Description", name)) {
 				// Handle typed node
 				this.graphHandler.link(result,
-						RdfXmlRepresentation.PREDICATE_TYPE, getReference(uri,
+						RdfConstants.PREDICATE_TYPE, getReference(uri,
 								localName, name));
 			}
 			for (String[] arc : arcs) {
@@ -475,7 +486,7 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 							// The object is an XML literal
 							popState();
 							pushState(State.LITERAL);
-							this.currentDataType = RdfXmlRepresentation.RDF_SYNTAX
+							this.currentDataType = RdfConstants.RDF_SYNTAX
 									+ "XMLLiteral";
 							nodeDepth = 0;
 						} else if ("Resource".equals(value)) {
@@ -542,7 +553,7 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 				throws SAXException {
 			this.rdfDefaultNamespace = this.rdfDefaultNamespace
 					|| ((prefix == null || "".equals(prefix)
-							&& RdfRepresentation.RDF_SYNTAX
+							&& RdfConstants.RDF_SYNTAX
 									.toString(true, true).equals(uri)));
 			this.prefixes.put(prefix, uri);
 		}
@@ -573,6 +584,10 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 		} else {
 			this.rdfXmlRepresentation = new SaxRepresentation(
 					rdfXmlRepresentation);
+			// Transmit the identifier used as a base for the resolution of
+			// relative URIs.
+			this.rdfXmlRepresentation.setIdentifier(rdfXmlRepresentation
+					.getIdentifier());
 		}
 
 		parse();
@@ -604,7 +619,8 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 	 * @throws IOException
 	 */
 	private void parse() throws IOException {
-		this.rdfXmlRepresentation.parse(new ContentReader(this));
+		this.rdfXmlRepresentation.parse(new ContentReader(this,
+				rdfXmlRepresentation));
 	}
 
 }
