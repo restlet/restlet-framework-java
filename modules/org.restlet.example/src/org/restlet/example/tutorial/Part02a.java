@@ -30,8 +30,7 @@
 
 package org.restlet.example.tutorial;
 
-import org.restlet.Client;
-import org.restlet.data.Protocol;
+import org.restlet.resource.ClientResource;
 
 /**
  * Retrieving the content of a Web page.
@@ -41,8 +40,7 @@ import org.restlet.data.Protocol;
 public class Part02a {
     public static void main(String[] args) throws Exception {
         // Outputting the content of a Web page
-        final Client client = new Client(Protocol.HTTP);
-        client.get("http://www.restlet.org").getEntity().write(System.out);
+        new ClientResource("http://www.restlet.org").get().write(System.out);
     }
 
 }

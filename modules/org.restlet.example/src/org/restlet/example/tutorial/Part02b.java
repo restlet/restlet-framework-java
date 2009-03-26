@@ -30,32 +30,23 @@
 
 package org.restlet.example.tutorial;
 
-import org.restlet.Client;
-import org.restlet.data.Method;
-import org.restlet.data.Protocol;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
-import org.restlet.representation.Representation;
+import org.restlet.resource.ClientResource;
 
 /**
- * Retrieving the content of a Web page (detailled).
+ * Retrieving the content of a Web page (detailed).
  * 
  * @author Jerome Louvel
  */
 public class Part02b {
     public static void main(String[] args) throws Exception {
-        // Prepare the request
-        final Request request = new Request(Method.GET,
-                "http://www.restlet.org");
-        request.setReferrerRef("http://www.mysite.org");
+        // Create the client resource
+        ClientResource resource = new ClientResource("http://www.restlet.org");
 
-        // Handle it using an HTTP client connector
-        final Client client = new Client(Protocol.HTTP);
-        final Response response = client.handle(request);
+        // Specify a referrer URI reference
+        resource.setReferrerRef("http://www.mysite.org");
 
         // Write the response entity on the console
-        final Representation output = response.getEntity();
-        output.write(System.out);
+        resource.get().write(System.out);
     }
 
 }
