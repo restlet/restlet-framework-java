@@ -248,8 +248,8 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 					// Get the prefix and return the URI.
 					String prefix = name.substring(0, index);
 					if (this.prefixes.containsKey(prefix)) {
-						result = new Reference(this.prefixes.get(prefix),
-								localName);
+						result = new Reference(this.prefixes.get(prefix)
+								+ name.substring(index + 1));
 					}
 				}
 			} else {
@@ -486,8 +486,8 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 					this.graphHandler.link(getCurrentSubject(),
 							this.currentPredicate, blankNode);
 					for (String[] arc : arcs) {
-						this.graphHandler.link(blankNode, getReference(arc[0],
-								null, null), new Literal(arc[1]));
+						this.graphHandler.link(blankNode, getReference(null,
+								null, arc[0]), new Literal(arc[1]));
 					}
 				}
 				// TODO Caution, what about the scope of the language attribute?
