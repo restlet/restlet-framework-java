@@ -17,11 +17,15 @@ public class ScriptedTextRepresentationScriptContextController implements
 
     private final ScriptedTextRepresentationContainer container;
 
+    private final String containerVariableName;
+
     public ScriptedTextRepresentationScriptContextController(
             ScriptedTextRepresentation representation,
-            ScriptedTextRepresentationContainer container) {
+            ScriptedTextRepresentationContainer container,
+            String containerVariableName) {
         this.container = container;
         this.representation = representation;
+        this.containerVariableName = containerVariableName;
     }
 
     public void finalize(ScriptContext scriptContext) {
@@ -33,8 +37,7 @@ public class ScriptedTextRepresentationScriptContextController implements
     }
 
     public void initialize(ScriptContext scriptContext) throws ScriptException {
-        scriptContext.setAttribute(this.representation
-                .getContainerVariableName(), this.container,
+        scriptContext.setAttribute(this.containerVariableName, this.container,
                 ScriptContext.ENGINE_SCOPE);
 
         ScriptContextController scriptContextController = this.representation

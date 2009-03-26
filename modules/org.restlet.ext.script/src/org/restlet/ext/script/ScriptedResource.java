@@ -61,10 +61,11 @@ import com.threecrickets.scripturian.ScriptSource;
  * closures, or whatever other technique the scripting engine uses to make entry
  * point available to Java. They entry points are:
  * <ul>
- * <li><b>initializeResource()</b>: This function is called when the resource is
- * initialized. We will use it set general characteristics for the resource.</li>
- * <li><b>represent()</b>: This function is called for the GET verb, which is
- * expected to behave as a logical "read" of the resource's state. The
+ * <li><code>initializeResource()</code>: This function is called when the
+ * resource is initialized. We will use it set general characteristics for the
+ * resource.</li>
+ * <li><code>represent()</code>: This function is called for the GET verb, which
+ * is expected to behave as a logical "read" of the resource's state. The
  * expectation is that it return one representation, out of possibly many, of
  * the resource's state. Returned values can be of any explicit sub-class of
  * {@link Representation}. Other types will be automatically converted to string
@@ -73,30 +74,30 @@ import com.threecrickets.scripturian.ScriptSource;
  * read and changed via container.mediaType, container.characterSet, and
  * container.language. Additionally, you can use container.variant to
  * interrogate the client's provided list of supported languages and encoding.</li>
- * <li><b>acceptRepresentation()</b>: This function is called for the POST verb,
- * which is expected to behave as a logical "update" of the resource's state.
- * The expectation is that container.entity represents an update to the state,
- * that will affect future calls to represent(). As such, it may be possible to
- * accept logically partial representations of the state. You may optionally
- * return a representation, in the same way as represent(). Because many
- * scripting languages functions return the last statement's value by default,
- * you must explicitly return a null if you do not want to return a
- * representation to the client.</li>
- * <li><b>storeRepresentation()</b>: This function is called for the PUT verb,
- * which is expected to behave as a logical "create" of the resource's state.
- * The expectation is that container.entity represents an entirely new state,
- * that will affect future calls to represent(). Unlike acceptRepresentation(),
- * it is expected that the representation be logically complete. You may
+ * <li><code>acceptRepresentation()</code>: This function is called for the POST
+ * verb, which is expected to behave as a logical "update" of the resource's
+ * state. The expectation is that container.entity represents an update to the
+ * state, that will affect future calls to represent(). As such, it may be
+ * possible to accept logically partial representations of the state. You may
  * optionally return a representation, in the same way as represent(). Because
- * JavaScript functions return the last statement's value by default, you must
- * explicitly return a null if you do not want to return a representation to the
- * client.</li>
- * <li><b>removeRepresentations()</b>: This function is called for the DELETE
- * verb, which is expected to behave as a logical "delete" of the resource's
- * state. The expectation is that subsequent calls to represent() will fail. As
- * such, it doesn't make sense to return a representation, and any returned
- * value will ignored. Still, it's a good idea to return null to avoid any
- * passing of value.</li>
+ * many scripting languages functions return the last statement's value by
+ * default, you must explicitly return a null if you do not want to return a
+ * representation to the client.</li>
+ * <li><code>storeRepresentation()</code>: This function is called for the PUT
+ * verb, which is expected to behave as a logical "create" of the resource's
+ * state. The expectation is that container.entity represents an entirely new
+ * state, that will affect future calls to represent(). Unlike
+ * acceptRepresentation(), it is expected that the representation be logically
+ * complete. You may optionally return a representation, in the same way as
+ * represent(). Because JavaScript functions return the last statement's value
+ * by default, you must explicitly return a null if you do not want to return a
+ * representation to the client.</li>
+ * <li><code>removeRepresentations()</code>: This function is called for the
+ * DELETE verb, which is expected to behave as a logical "delete" of the
+ * resource's state. The expectation is that subsequent calls to represent()
+ * will fail. As such, it doesn't make sense to return a representation, and any
+ * returned value will ignored. Still, it's a good idea to return null to avoid
+ * any passing of value.</li>
  * </ul>
  * <p>
  * Names of these entry point can be configured via attributes in the
@@ -125,8 +126,8 @@ import com.threecrickets.scripturian.ScriptSource;
  * <p>
  * Operations:
  * <ul>
- * <li><b>container.include(name)</b>: This powerful method allows scripts to
- * execute other scripts in place, and is useful for creating large,
+ * <li><code>container.include(name)</code>: This powerful method allows scripts
+ * to execute other scripts in place, and is useful for creating large,
  * maintainable applications based on scripts. Included scripts can act as a
  * library or toolkit and can even be shared among many applications. The
  * included script does not have to be in the same language or use the same
@@ -136,53 +137,107 @@ import com.threecrickets.scripturian.ScriptSource;
  * JRuby, every script is run in its own scope, so that sharing would have to be
  * done explicitly in the global scope. See the included embedded Ruby script
  * example for a discussion of various ways to do this.</li>
- * <li><b>container.include(name, scriptEngineName)</b>: As the above, except
- * that the script is not embedded. As such, you must explicitly specify the
- * name of the scripting engine that should evaluate it.</li>
+ * <li><code>container.include(name, scriptEngineName)</code>: As the above,
+ * except that the script is not embedded. As such, you must explicitly specify
+ * the name of the scripting engine that should evaluate it.</li>
  * </ul>
  * Read-only attributes:
  * <ul>
- * <li><b>container.resource</b>: The instance of this resource. Acts as a
+ * <li><code>container.resource</code>: The instance of this resource. Acts as a
  * "this" reference for the script. For example, during a call to
  * initializeResource(), this can be used to change the characteristics of the
  * resource. Otherwise, you can use it to access the request and response.</li>
- * <li><b>container.variant</b>: The {@link Variant} of this request. Useful for
- * interrogating the client's preferences. This is available only in
+ * <li><code>container.variant</code>: The {@link Variant} of this request.
+ * Useful for interrogating the client's preferences. This is available only in
  * represent(), acceptRepresentation() and storeRepresentation().</li>
- * <li><b>container.entity</b>: The {@link Representation} of an entity provided
- * with this request. Available only in acceptRepresentation() and
+ * <li><code>container.entity</code>: The {@link Representation} of an entity
+ * provided with this request. Available only in acceptRepresentation() and
  * storeRepresentation(). Note that container.variant is identical to
  * container.entity when available.</li>
- * <li><b>container.writer</b>: Allows the script direct access to the
+ * <li><code>container.writer</code>: Allows the script direct access to the
  * {@link Writer}. This should rarely be necessary, because by default the
  * standard output for your scripting engine would be directed to it, and the
  * scripting platform's native method for printing should be preferred. However,
  * some scripting platforms may not provide adequate access or may otherwise be
  * broken.</li>
- * <li><b>container.errorWriter</b>: Same as above, for standard error.</li>
- * <li><b>container.scriptEngineManager</b>: This is the
+ * <li><code>container.errorWriter</code>: Same as above, for standard error.</li>
+ * <li><code>container.scriptEngineManager</code>: This is the
  * {@link ScriptEngineManager} used to create the script engine. Scripts may use
  * it to get information about what other engines are available.</li>
  * </ul>
  * Modifiable attributes:
  * <ul>
- * <li><b>container.mediaType</b>: The {@link MediaType} that will be used if
- * you return an arbitrary type for represent(), acceptRepresentation() and
- * storeRepresentation(). Defaults to what the client requested (in
- * container.variant).</li>
- * <li><b>container.characterSet</b>: The {@link CharacterSet} that will be used
+ * <li><code>container.mediaType</code>: The {@link MediaType} that will be used
  * if you return an arbitrary type for represent(), acceptRepresentation() and
  * storeRepresentation(). Defaults to what the client requested (in
- * container.variant), or to the value of {@link #getDefaultCharacterSet()} if
- * the client did not specify it.</li>
- * <li><b>container.language</b>: The {@link Language} that will be used if you
- * return an arbitrary type for represent(), acceptRepresentation() and
+ * container.variant).</li>
+ * <li><code>container.characterSet</code>: The {@link CharacterSet} that will
+ * be used if you return an arbitrary type for represent(),
+ * acceptRepresentation() and storeRepresentation(). Defaults to what the client
+ * requested (in container.variant), or to the value of
+ * {@link #getDefaultCharacterSet()} if the client did not specify it.</li>
+ * <li><code>container.language</code>: The {@link Language} that will be used
+ * if you return an arbitrary type for represent(), acceptRepresentation() and
  * storeRepresentation(). Defaults to null.</li>
  * </ul>
  * <p>
  * In addition to the above, a {@link ScriptContextController} can be set to add
  * your own global variables to each embedded script. See
  * {@link #getScriptContextController()}.
+ * <p>
+ * Summary of settings configured via the application's {@link Context}:
+ * <ul>
+ * <li>
+ * <code>org.restlet.ext.script.ScriptedResource.acceptRepresentationEntryPointName:</code>
+ * {@link String}, defaults to "acceptRepresentation". See
+ * {@link #getAcceptRepresentationEntryPointName()}.</li>
+ * <li>
+ * <code>org.restlet.ext.script.ScriptedResource.allowCompilation:</code>
+ * {@link Boolean}, defaults to true. See {@link #isAllowCompilation()}.</li>
+ * <li>
+ * <code>org.restlet.ext.script.ScriptedResource.containerVariableName:</code>
+ * {@link String}, defaults to "container". See
+ * {@link #getContainerVariableName()}.</li>
+ * <li><code>org.restlet.ext.script.ScriptedResource.defaultCharacterSet:</code>
+ * {@link CharacterSet}, defaults to {@link CharacterSet#UTF_8}. See
+ * {@link #getDefaultCharacterSet()}.</li>
+ * <li><code>org.restlet.ext.script.ScriptedResource.defaultName:</code>
+ * {@link String}, defaults to "default.script". See {@link #getDefaultName()}.</li>
+ * <li>
+ * <code>org.restlet.ext.script.ScriptedResource.defaultScriptEngineName:</code>
+ * {@link String}, defaults to "js". See {@link #getDefaultScriptEngineName()}.</li>
+ * <li><code>org.restlet.ext.script.ScriptedResource.extension:</code>
+ * {@link String} , defaults to "script". See {@link #getExtension()}.</li>
+ * <li>
+ * <code>org.restlet.ext.script.ScriptedResource.initializeResourceEntryPointName:</code>
+ * {@link String}, defaults to "initializeResource". See
+ * {@link #getInitializeResourceEntryPointName()}.</li>
+ * <li>
+ * <code>org.restlet.ext.script.ScriptedResource.removeRepresentationsEntryPointName:</code>
+ * {@link String}, defaults to "removeRepresentations". See
+ * {@link #getRemoveRepresentationsEntryPointName()}.</li>
+ * <li>
+ * <code>org.restlet.ext.script.ScriptedResource.representEntryPointName:</code>
+ * {@link String}, defaults to "represent". See
+ * {@link #getRepresentEntryPointName()}.</li>
+ * <li>
+ * <code>org.restlet.ext.script.ScriptedResource.sourceViewable:</code>
+ * {@link Boolean}, defaults to false. See {@link #isSourceViewable()}.</li>
+ * <li>
+ * <code>org.restlet.ext.script.ScriptedResource.scriptContextController:</code>
+ * {@link ScriptContextController}. See {@link #getScriptContextController()}.</li>
+ * <li>
+ * <code>org.restlet.ext.script.ScriptedResource.scriptEngineManager:</code>
+ * {@link ScriptEngineManager}, defaults to a new instance. See
+ * {@link #getScriptEngineManager()}.</li>
+ * <li>
+ * <code>org.restlet.ext.script.ScriptedResource.scriptSource:</code>
+ * {@link ScriptSource}. <b>Required.</b> See {@link #getScriptSource()}.</li>
+ * <li>
+ * <code>org.restlet.ext.script.ScriptedResource.storeRepresentationEntryPointName:</code>
+ * {@link String}, defaults to "storeRepresentation". See
+ * {@link #getStoreRepresentationEntryPointName()}.</li>
+ * </ul>
  * 
  * @author Tal Liron
  * @see EmbeddedScript
@@ -281,6 +336,8 @@ public class ScriptedResource extends Resource {
      * This setting can be configured by setting an attribute named
      * "org.restlet.ext.script.ScriptedResource.acceptRepresentationEntryPointName"
      * in the application's {@link Context}.
+     * 
+     * @return The name of the "acceptRepresentation" entry point
      */
     public String getAcceptRepresentationEntryPointName() {
         if (this.acceptRepresentationEntryPointName == null) {
@@ -303,6 +360,8 @@ public class ScriptedResource extends Resource {
      * This setting can be configured by setting an attribute named
      * "org.restlet.ext.script.ScriptedResource.containerVariableName" in the
      * application's {@link Context}.
+     * 
+     * @return The container variable name
      */
     public String getContainerVariableName() {
         if (this.containerVariableName == null) {
@@ -325,6 +384,8 @@ public class ScriptedResource extends Resource {
      * This setting can be configured by setting an attribute named
      * "org.restlet.ext.script.ScriptedResource.defaultCharacterSet" in the
      * application's {@link Context}.
+     * 
+     * @return The default character set
      */
     public CharacterSet getDefaultCharacterSet() {
         if (this.defaultCharacterSet == null) {
@@ -349,6 +410,8 @@ public class ScriptedResource extends Resource {
      * This setting can be configured by setting an attribute named
      * "org.restlet.ext.script.ScriptedResource.defaultName" in the
      * application's {@link Context}.
+     * 
+     * @return The default name
      */
     public String getDefaultName() {
         if (this.defaultName == null) {
@@ -371,6 +434,8 @@ public class ScriptedResource extends Resource {
      * This setting can be configured by setting an attribute named
      * "org.restlet.ext.script.ScriptedResource.defaultScriptEngineName" in the
      * application's {@link Context}.
+     * 
+     * @return The default script engine name
      */
     public String getDefaultScriptEngineName() {
         if (this.defaultScriptEngineName == null) {
@@ -393,6 +458,8 @@ public class ScriptedResource extends Resource {
      * This setting can be configured by setting an attribute named
      * "org.restlet.ext.script.ScriptedResource.extension" in the application's
      * {@link Context}.
+     * 
+     * @return The extension
      */
     public String getExtension() {
         if (this.extension == null) {
@@ -415,6 +482,8 @@ public class ScriptedResource extends Resource {
      * This setting can be configured by setting an attribute named
      * "org.restlet.ext.script.ScriptedResource.initializeResourceEntryPointName"
      * in the application's {@link Context}.
+     * 
+     * @return The name of the "initializeResource" entry point
      */
     public String getInitializeResourceEntryPointName() {
         if (this.initializeResourceEntryPointName == null) {
@@ -437,6 +506,8 @@ public class ScriptedResource extends Resource {
      * This setting can be configured by setting an attribute named
      * "org.restlet.ext.script.ScriptedResource.removeRepresentationsEntryPointName"
      * in the application's {@link Context}.
+     * 
+     * @return The name of the "removeRepresentations" entry point
      */
     public String getRemoveRepresentationsEntryPointName() {
         if (this.removeRepresentationsEntryPointName == null) {
@@ -459,6 +530,8 @@ public class ScriptedResource extends Resource {
      * This setting can be configured by setting an attribute named
      * "org.restlet.ext.script.ScriptedResource.representEntryPointName" in the
      * application's {@link Context}.
+     * 
+     * @return The name of the "represent" entry point
      */
     public String getRepresentEntryPointName() {
         if (this.representEntryPointName == null) {
@@ -481,6 +554,8 @@ public class ScriptedResource extends Resource {
      * This setting can be configured by setting an attribute named
      * "org.restlet.ext.script.ScriptedResource.scriptContextController" in the
      * application's {@link Context}.
+     * 
+     * @return The script context controller
      */
     public ScriptContextController getScriptContextController() {
         if (this.scriptContextController == null) {
@@ -500,6 +575,8 @@ public class ScriptedResource extends Resource {
      * This setting can be configured by setting an attribute named
      * "org.restlet.ext.script.ScriptedResource.scriptEngineManager" in the
      * application's {@link Context}.
+     * 
+     * @return The script engine manager
      */
     public ScriptEngineManager getScriptEngineManager() {
         if (this.scriptEngineManager == null) {
@@ -522,6 +599,8 @@ public class ScriptedResource extends Resource {
      * This setting can be configured by setting an attribute named
      * "org.restlet.ext.script.ScriptedResource.scriptSource" in the
      * application's {@link Context}.
+     * 
+     * @return The script source
      */
     @SuppressWarnings("unchecked")
     public ScriptSource<EmbeddedScript> getScriptSource() {
@@ -546,6 +625,8 @@ public class ScriptedResource extends Resource {
      * This setting can be configured by setting an attribute named
      * "org.restlet.ext.script.ScriptedResource.storeRepresentationEntryPointName"
      * in the application's {@link Context}.
+     * 
+     * @return The name of the "storeRepresentation" entry point
      */
     public String getStoreRepresentationEntryPointName() {
         if (this.storeRepresentationEntryPointName == null) {
@@ -568,6 +649,8 @@ public class ScriptedResource extends Resource {
      * This setting can be configured by setting an attribute named
      * "org.restlet.ext.script.ScriptedResource.allowCompilation" in the
      * application's {@link Context}.
+     * 
+     * @return Whether to allow compilation
      */
     public boolean isAllowCompilation() {
         if (this.allowCompilation == null) {
@@ -591,6 +674,8 @@ public class ScriptedResource extends Resource {
      * This setting can be configured by setting an attribute named
      * "org.restlet.ext.script.ScriptedResource.sourceViewable" in the
      * application's {@link Context}.
+     * 
+     * @return Whether to allow viewing of script source code
      */
     public boolean isSourceViewable() {
         if (this.sourceViewable == null) {

@@ -101,8 +101,8 @@ import com.threecrickets.scripturian.ScriptSource;
  * <p>
  * Operations:
  * <ul>
- * <li><b>container.include(name)</b>: This powerful method allows scripts to
- * execute other scripts in place, and is useful for creating large,
+ * <li><code>container.include(name)</code>: This powerful method allows scripts
+ * to execute other scripts in place, and is useful for creating large,
  * maintainable applications based on scripts. Included scripts can act as a
  * library or toolkit and can even be shared among many applications. The
  * included script does not have to be in the same language or use the same
@@ -112,10 +112,10 @@ import com.threecrickets.scripturian.ScriptSource;
  * JRuby, every script is run in its own scope, so that sharing would have to be
  * done explicitly in the global scope. See the included embedded Ruby script
  * example for a discussion of various ways to do this.</li>
- * <li><b>container.include(name, scriptEngineName)</b>: As the above, except
- * that the script is not embedded. As such, you must explicitly specify the
- * name of the scripting engine that should evaluate it.</li>
- * <li><b>container.stream()</b>: If you are in caching mode, calling this
+ * <li><code>container.include(name, scriptEngineName)</code>: As the above,
+ * except that the script is not embedded. As such, you must explicitly specify
+ * the name of the scripting engine that should evaluate it.</li>
+ * <li><code>container.stream()</code>: If you are in caching mode, calling this
  * method will return true and cause the script to run again, where this next
  * run will be in streaming mode. Whatever output the script created in the
  * current run is discarded, and all further exceptions are ignored. For this
@@ -130,15 +130,15 @@ import com.threecrickets.scripturian.ScriptSource;
  * </ul>
  * Read-only attributes:
  * <ul>
- * <li><b>container.variant</b>: The {@link Variant} of this request. Useful for
- * interrogating the client's preferences.</li>
- * <li><b>container.request</b>: The {@link Request}. Useful for accessing URL
- * attributes, form parameters, etc.</li>
- * <li><b>container.response</b>: The {@link Response}. Useful for explicitly
- * setting response characteristics.</li>
- * <li><b>container.isStreaming</b>: This boolean is true when the writer is in
- * streaming mode (see above).</li>
- * <li><b>container.writer</b>: Allows the script direct access to the
+ * <li><code>container.variant</code>: The {@link Variant} of this request.
+ * Useful for interrogating the client's preferences.</li>
+ * <li><code>container.request</code>: The {@link Request}. Useful for accessing
+ * URL attributes, form parameters, etc.</li>
+ * <li><code>container.response</code>: The {@link Response}. Useful for
+ * explicitly setting response characteristics.</li>
+ * <li><code>container.isStreaming</code>: This boolean is true when the writer
+ * is in streaming mode (see above).</li>
+ * <li><code>container.writer</code>: Allows the script direct access to the
  * {@link Writer}. This should rarely be necessary, because by default the
  * standard output for your scripting engine would be directed to it, and the
  * scripting platform's native method for printing should be preferred. However,
@@ -146,34 +146,68 @@ import com.threecrickets.scripturian.ScriptSource;
  * broken. Additionally, it may be useful to access the writer during streaming
  * mode. For example, you can call {@link Writer#flush()} to make sure all
  * output is sent to the client.</li>
- * <li><b>container.errorWriter</b>: Same as above, for standard error. (Nothing
- * is currently done with the contents of this, but this may change in future
- * implementations.)</li>
- * <li><b>container.scriptEngineManager</b>: This is the
+ * <li><code>container.errorWriter</code>: Same as above, for standard error.
+ * (Nothing is currently done with the contents of this, but this may change in
+ * future implementations.)</li>
+ * <li><code>container.scriptEngineManager</code>: This is the
  * {@link ScriptEngineManager} used to create the script engine. Scripts may use
  * it to get information about what other engines are available.</li>
  * </ul>
  * Modifiable attributes:
  * <ul>
- * <li><b>container.mediaType</b>: The {@link MediaType} that will be used for
- * the generated string. Defaults to what the client requested (in
+ * <li><code>container.mediaType</code>: The {@link MediaType} that will be used
+ * for the generated string. Defaults to what the client requested (in
  * container.variant). If not in streaming mode, your script can change this to
  * something else.</li>
- * <li><b>container.characterSet</b>: The {@link CharacterSet} that will be used
- * for the generated string. Defaults to what the client requested (in
+ * <li><code>container.characterSet</code>: The {@link CharacterSet} that will
+ * be used for the generated string. Defaults to what the client requested (in
  * container.variant), or to the value of {@link #getDefaultCharacterSet()} if
  * the client did not specify it. If not in streaming mode, your script can
  * change this to something else.</li>
- * <li><b>container.language</b>: The {@link Language} that will be used for the
- * generated string. Defaults to null. If not in streaming mode, your script can
- * change this to something else.</li>
+ * <li><code>container.language</code>: The {@link Language} that will be used
+ * for the generated string. Defaults to null. If not in streaming mode, your
+ * script can change this to something else.</li>
  * </ul>
  * <p>
  * In addition to the above, a {@link ScriptContextController} can be set to add
  * your own global variables to each embedded script. See
  * {@link #getScriptContextController()}.
+ * <p>
+ * Summary of settings configured via the application's {@link Context}:
+ * <ul>
+ * <li>
+ * <code>org.restlet.ext.script.ScriptedTextResource.allowCompilation:</code>
+ * {@link Boolean}, defaults to true. See {@link #isAllowCompilation()}.</li>
+ * <li>
+ * <code>org.restlet.ext.script.ScriptedTextResource.containerVariableName:</code>
+ * {@link String}, defaults to "container". See
+ * {@link #getContainerVariableName()}.</li>
+ * <li>
+ * <code>org.restlet.ext.script.ScriptedTextResource.defaultCharacterSet:</code>
+ * {@link CharacterSet}, defaults to {@link CharacterSet#UTF_8}. See
+ * {@link #getDefaultCharacterSet()}.</li>
+ * <li><code>org.restlet.ext.script.ScriptedTextResource.defaultName:</code>
+ * {@link String}, defaults to "index.page". See {@link #getDefaultName()}.</li>
+ * <li>
+ * <code>org.restlet.ext.script.ScriptedTextResource.defaultScriptEngineName:</code>
+ * {@link String}, defaults to "js". See {@link #getDefaultScriptEngineName()}.</li>
+ * <li>
+ * <code>org.restlet.ext.script.ScriptedTextResource.sourceViewable:</code>
+ * {@link Boolean}, defaults to false. See {@link #isSourceViewable()}.</li>
+ * <li>
+ * <code>org.restlet.ext.script.ScriptedTextResource.scriptContextController:</code>
+ * {@link ScriptContextController}. See {@link #getScriptContextController()}.</li>
+ * <li>
+ * <code>org.restlet.ext.script.ScriptedTextResource.scriptEngineManager:</code>
+ * {@link ScriptEngineManager}, defaults to a new instance. See
+ * {@link #getScriptEngineManager()}.</li>
+ * <li>
+ * <code>org.restlet.ext.script.ScriptedTextResource.scriptSource:</code>
+ * {@link ScriptSource}. <b>Required.</b> See {@link #getScriptSource()}.</li>
+ * </ul>
  * 
  * @author Tal Liron
+ * 
  * @see EmbeddedScript
  * @see ScriptedResource
  */
@@ -253,6 +287,8 @@ public class ScriptedTextResource extends Resource {
      * This setting can be configured by setting an attribute named
      * "org.restlet.ext.script.ScriptedTextResource.containerVariableName" in
      * the application's {@link Context}.
+     * 
+     * @return The container variable name
      */
     public String getContainerVariableName() {
         if (this.containerVariableName == null) {
@@ -275,6 +311,8 @@ public class ScriptedTextResource extends Resource {
      * This setting can be configured by setting an attribute named
      * "org.restlet.ext.script.ScriptedTextResource.defaultCharacterSet" in the
      * application's {@link Context}.
+     * 
+     * @return The default character set
      */
     public CharacterSet getDefaultCharacterSet() {
         if (this.defaultCharacterSet == null) {
@@ -299,6 +337,8 @@ public class ScriptedTextResource extends Resource {
      * This setting can be configured by setting an attribute named
      * "org.restlet.ext.script.ScriptedTextResource.defaultName" in the
      * application's {@link Context}.
+     * 
+     * @return The default name
      */
     public String getDefaultName() {
         if (this.defaultName == null) {
@@ -321,6 +361,8 @@ public class ScriptedTextResource extends Resource {
      * This setting can be configured by setting an attribute named
      * "org.restlet.ext.script.ScriptedTextResource.defaultScriptEngineName" in
      * the application's {@link Context}.
+     * 
+     * @return The default script engine name
      */
     public String getDefaultScriptEngineName() {
         if (this.defaultScriptEngineName == null) {
@@ -343,6 +385,8 @@ public class ScriptedTextResource extends Resource {
      * This setting can be configured by setting an attribute named
      * "org.restlet.ext.script.ScriptedTextResource.scriptContextController" in
      * the application's {@link Context}.
+     * 
+     * @return The script context controller
      */
     public ScriptContextController getScriptContextController() {
         if (this.scriptContextController == null) {
@@ -362,6 +406,8 @@ public class ScriptedTextResource extends Resource {
      * This setting can be configured by setting an attribute named
      * "org.restlet.ext.script.ScriptedTextResource.scriptEngineManager" in the
      * application's {@link Context}.
+     * 
+     * @return The script engine manager
      */
     public ScriptEngineManager getScriptEngineManager() {
         if (this.scriptEngineManager == null) {
@@ -384,6 +430,8 @@ public class ScriptedTextResource extends Resource {
      * This setting can be configured by setting an attribute named
      * "org.restlet.ext.script.ScriptedTextResource.scriptSource" in the
      * application's {@link Context}.
+     * 
+     * @return The script source
      */
     @SuppressWarnings("unchecked")
     public ScriptSource<EmbeddedScript> getScriptSource() {
@@ -408,6 +456,8 @@ public class ScriptedTextResource extends Resource {
      * This setting can be configured by setting an attribute named
      * "org.restlet.ext.script.ScriptedTextResource.allowCompilation" in the
      * application's {@link Context}.
+     * 
+     * @return Whether to allow compilation
      */
     public boolean isAllowCompilation() {
         if (this.allowCompilation == null) {
@@ -431,6 +481,8 @@ public class ScriptedTextResource extends Resource {
      * This setting can be configured by setting an attribute named
      * "org.restlet.ext.script.ScriptedTextResource.sourceViewable" in the
      * application's {@link Context}.
+     * 
+     * @return Whether to allow viewing of script source code
      */
     public boolean isSourceViewable() {
         if (this.sourceViewable == null) {

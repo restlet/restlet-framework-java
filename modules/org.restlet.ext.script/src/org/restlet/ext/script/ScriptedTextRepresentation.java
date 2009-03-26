@@ -35,13 +35,11 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentMap;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
-import org.restlet.Context;
 import org.restlet.data.CharacterSet;
 import org.restlet.data.MediaType;
 import org.restlet.ext.script.internal.ScriptedTextRepresentationContainer;
@@ -56,15 +54,13 @@ import com.threecrickets.scripturian.ScriptContextController;
  * A textual representation of a string with embedded scriptlets. The script is
  * run only when the representation is actually written.
  * <p>
- * Internally wraps a Scripturian {@link EmbeddedScript} instance. The script
- * engine to be used if none is explicitly specified in the embedded script can
- * be controlled via {@link #defaultScriptEngineName}.
+ * Internally wraps a Scripturian {@link EmbeddedScript} instance.
  * <p>
  * A special container environment is created for scripts, with some useful
  * services. It is available to the script as a global variable named
- * "container". This name can be configured via the application's
- * {@link Context}; see {@link #getContainerVariableName()}. The following
- * read-only attributes are available:
+ * "container" (or anything else returned by
+ * {@link EmbeddedScript#getContainerVariableName()}). The following read-only
+ * attributes are available:
  * <ul>
  * <li><b>container.representation</b>: Access to the representation itself.
  * This can be useful for generating text according to set characteristics. For
@@ -98,17 +94,11 @@ import com.threecrickets.scripturian.ScriptContextController;
  * @see ScriptedTextResource
  */
 public class ScriptedTextRepresentation extends WriterRepresentation {
-    private ScriptEngineManager scriptEngineManager;
-
     private final EmbeddedScript embeddedScript;
 
     private final StringWriter errorWriter = new StringWriter();
 
     private ScriptContextController scriptContextController;
-
-    private String containerVariableName;
-
-    private String defaultScriptEngineName;
 
     private final Map<String, ScriptEngine> scriptEngines = new HashMap<String, ScriptEngine>();
 
@@ -146,60 +136,18 @@ public class ScriptedTextRepresentation extends WriterRepresentation {
      *            The media type
      * @param text
      *            The embedded script text
+     * @param defaultScriptEngineName
+     *            The default script engine name to be used if none is specified
      * @param allowCompilation
      *            Whether to try to compile the script
      * @throws ScriptException
      */
     public ScriptedTextRepresentation(MediaType mediaType, String text,
-            boolean allowCompilation) throws ScriptException {
+            String defaultScriptEngineName, boolean allowCompilation,
+            ScriptEngineManager scriptEngineManager) throws ScriptException {
         super(mediaType);
-        this.embeddedScript = new EmbeddedScript(text,
-                this.scriptEngineManager, this.defaultScriptEngineName,
-                allowCompilation);
-    }
-
-    /**
-     * The default variable name for the container instance. Defaults to
-     * "container".
-     * <p>
-     * This setting can be configured by setting an attribute named
-     * "org.restlet.ext.script.ScriptedTextRepresentation.containerVariableName"
-     * in the application's {@link Context}.
-     */
-    public String getContainerVariableName() {
-        if (this.containerVariableName == null) {
-            ConcurrentMap<String, Object> attributes = Context.getCurrent()
-                    .getAttributes();
-            this.containerVariableName = (String) attributes
-                    .get("org.restlet.ext.script.ScriptedTextRepresentation.containerVariableName");
-            if (this.containerVariableName == null) {
-                this.containerVariableName = "container";
-            }
-        }
-
-        return this.containerVariableName;
-    }
-
-    /**
-     * The default script engine name to be used if the script doesn't specify
-     * one. Defaults to "js".
-     * <p>
-     * This setting can be configured by setting an attribute named
-     * "org.restlet.ext.script.ScriptedTextRepresentation.defaultScriptEngineName"
-     * in the application's {@link Context}.
-     */
-    public String getDefaultScriptEngineName() {
-        if (this.defaultScriptEngineName == null) {
-            ConcurrentMap<String, Object> attributes = Context.getCurrent()
-                    .getAttributes();
-            this.defaultScriptEngineName = (String) attributes
-                    .get("org.restlet.ext.script.ScriptedTextRepresentation.defaultScriptEngineName");
-            if (this.defaultScriptEngineName == null) {
-                this.defaultScriptEngineName = "js";
-            }
-        }
-
-        return this.defaultScriptEngineName;
+        this.embeddedScript = new EmbeddedScript(text, scriptEngineManager,
+                defaultScriptEngineName, allowCompilation, null);
     }
 
     /**
@@ -222,28 +170,6 @@ public class ScriptedTextRepresentation extends WriterRepresentation {
     }
 
     /**
-     * The {@link ScriptEngineManager} used to create the script engines for the
-     * scripts. Uses a default instance, but can be set to something else.
-     * <p>
-     * This setting can be configured by setting an attribute named
-     * "org.restlet.ext.script.ScriptedTextRepresentation.scriptEngineManager"
-     * in the application's {@link Context}.
-     */
-    public ScriptEngineManager getScriptEngineManager() {
-        if (this.scriptEngineManager == null) {
-            ConcurrentMap<String, Object> attributes = Context.getCurrent()
-                    .getAttributes();
-            this.scriptEngineManager = (ScriptEngineManager) attributes
-                    .get("org.restlet.ext.script.ScriptedTextRepresentation.scriptEngineManager");
-            if (this.scriptEngineManager == null) {
-                this.scriptEngineManager = new ScriptEngineManager();
-            }
-        }
-
-        return this.scriptEngineManager;
-    }
-
-    /**
      * @param scriptContextController
      *            The script context controller
      * @see #getScriptContextController()
@@ -261,7 +187,8 @@ public class ScriptedTextRepresentation extends WriterRepresentation {
             this.embeddedScript.run(writer, this.errorWriter,
                     this.scriptEngines,
                     new ScriptedTextRepresentationScriptContextController(this,
-                            container), false);
+                            container, this.embeddedScript
+                                    .getContainerVariableName()), false);
         } catch (ScriptException e) {
             IOException ioe = new IOException("Script exception");
             ioe.initCause(e);

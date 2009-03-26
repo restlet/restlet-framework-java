@@ -281,13 +281,14 @@ public class ScriptedTextResourceContainer {
             // Create script from descriptor
             String text = scriptDescriptor.getText();
             if (scriptEngineName != null) {
-                text = EmbeddedScript.delimiter1Start + scriptEngineName + " "
-                        + text + EmbeddedScript.delimiter1End;
+                text = EmbeddedScript.DEFAULT_DELIMITER1_START
+                        + scriptEngineName + " " + text
+                        + EmbeddedScript.DEFAULT_DELIMITER1_END;
             }
             script = new EmbeddedScript(text, this.resource
                     .getScriptEngineManager(), this.resource
                     .getDefaultScriptEngineName(), this.resource
-                    .isAllowCompilation());
+                    .isAllowCompilation(), this.resource.getScriptSource());
             scriptDescriptor.setScript(script);
         }
 

@@ -295,13 +295,14 @@ public class ScriptedResourceContainer {
         if (script == null) {
             String text = scriptDescriptor.getText();
             if (scriptEngineName != null) {
-                text = EmbeddedScript.delimiter1Start + scriptEngineName + " "
-                        + text + EmbeddedScript.delimiter1End;
+                text = EmbeddedScript.DEFAULT_DELIMITER1_START
+                        + scriptEngineName + " " + text
+                        + EmbeddedScript.DEFAULT_DELIMITER1_END;
             }
             script = new EmbeddedScript(text, this.resource
                     .getScriptEngineManager(), this.resource
                     .getDefaultScriptEngineName(), this.resource
-                    .isAllowCompilation());
+                    .isAllowCompilation(), this.resource.getScriptSource());
             scriptDescriptor.setScript(script);
         }
 
@@ -332,7 +333,7 @@ public class ScriptedResourceContainer {
                 script = new EmbeddedScript(text, this.resource
                         .getScriptEngineManager(), this.resource
                         .getDefaultScriptEngineName(), this.resource
-                        .isAllowCompilation());
+                        .isAllowCompilation(), this.resource.getScriptSource());
                 scriptDescriptor.setScript(script);
                 script.run(this.writer, this.errorWriter, this.scriptEngines,
                         this.scriptContextController, false);

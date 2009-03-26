@@ -59,7 +59,8 @@ public class ScriptedTextRepresentationContainer {
      * @return The script engine manager
      */
     public ScriptEngineManager getScriptEngineManager() {
-        return getRepresentation().getScriptEngineManager();
+        return null;
+        // return getRepresentation().getScriptEngineManager();
     }
 
     /**
