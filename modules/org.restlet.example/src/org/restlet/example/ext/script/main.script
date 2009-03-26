@@ -15,10 +15,7 @@
 // the built-in version of Rhino, and so Mozilla had to add the "rhino-nonjdk" engine name as a workaround.
 // We'll go ahead and set that as our default engine name.
 
-importClass(
-	com.threecrickets.scripturian.ScriptedMain);
-
-ScriptedMain.defaultEngineName = 'rhino-nonjdk';
+container.defaultScriptEngineName = 'rhino-nonjdk';
 
 %><%& 'conf/restlet.conf' %><%
 
@@ -88,7 +85,7 @@ var attributes = application.context.attributes;
 
 // ScriptedResource
 
-attributes.put('org.restlet.ext.script.ScriptedResource.defaultScriptEngineName', 'rhino-nonjdk');
+attributes.put('org.restlet.ext.script.ScriptedResource.defaultScriptEngineName', container.defaultScriptEngineName);
 attributes.put('org.restlet.ext.script.ScriptedResource.extension', resourceExtension);
 attributes.put('org.restlet.ext.script.ScriptedResource.defaultName', resourceDefaultName);
 attributes.put('org.restlet.ext.script.ScriptedResource.scriptSource',
@@ -97,7 +94,7 @@ attributes.put('org.restlet.ext.script.ScriptedResource.sourceViewable', resourc
 
 // ScriptedTextResource
 
-attributes.put('org.restlet.ext.script.ScriptedTextResource.defaultScriptEngineName', 'rhino-nonjdk');
+attributes.put('org.restlet.ext.script.ScriptedTextResource.defaultScriptEngineName', container.defaultScriptEngineName);
 attributes.put('org.restlet.ext.script.ScriptedTextResource.defaultName', scriptedWebDefaultScript);
 attributes.put('org.restlet.ext.script.ScriptedTextResource.scriptSource',
 	 new ScriptFileSource(new File(scriptedWebBasePath), scriptedWebDefaultScript, null, scriptedWebMinimumTimeBetweenValidityChecks));
