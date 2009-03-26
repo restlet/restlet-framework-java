@@ -393,6 +393,8 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 					found = true;
 					result = getReference(null, "#" + attributes.getValue(i),
 							null);
+				} else if ("xml:lang".equals(qName)) {
+					this.currentLanguage = attributes.getValue(i);
 				} else {
 					if (!qName.startsWith("xmlns")) {
 						String[] arc = { qName, attributes.getValue(i) };
@@ -414,7 +416,8 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 			}
 			for (String[] arc : arcs) {
 				this.graphHandler.link(result,
-						getReference(null, null, arc[0]), new Literal(arc[1]));
+						getReference(null, null, arc[0]), getLiteral(arc[1],
+								null, this.currentLanguage));
 			}
 
 			return result;
@@ -516,7 +519,6 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 						this.graphHandler.link(getCurrentSubject(),
 								this.currentPredicate, getReference(attributes
 										.getValue(i), null, null));
-						break;
 					} else if (checkRdfQName("datatype", qName)) {
 						// The object is a literal
 						popState();
@@ -539,8 +541,6 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 									this.currentPredicate, ref);
 							popState();
 							pushSubject(ref);
-							// TODO Do we really have to stop?
-							break;
 						} else {
 							// Error
 						}
@@ -552,6 +552,8 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 						// Reify the statement
 						reifiedRef = getReference(null, "#"
 								+ attributes.getValue(i), null);
+					} else if ("xml:lang".equals(qName)) {
+						this.currentLanguage = attributes.getValue(i);
 					} else {
 						if (!qName.startsWith("xmlns")) {
 							// Add arcs.
