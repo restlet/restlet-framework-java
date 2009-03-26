@@ -25,7 +25,7 @@ container.include('jython/statics.fragment')
 # (Note that we made a small change to minjson in order to accommodate Jython.
 # See line 334 there.)
 
-sys.path.append(str(basePath) + '/jython/')
+sys.path.append(str(script.source.basePath) + '/jython/')
 import minjson as json
 
 # State
