@@ -24,9 +24,25 @@ public class RdfConstants {
 	public static final Reference PREDICATE_IMPLIES = new Reference(
 			"http://www.w3.org/2000/10/swap/log#implies");
 
+	/** Predicate "object". */
+	public static final Reference PREDICATE_OBJECT = new Reference(
+			"http://www.w3.org/1999/02/22-rdf-syntax-ns#object");
+
+	/** Predicate "predicate". */
+	public static final Reference PREDICATE_PREDICATE = new Reference(
+			"http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate");
+
 	/** Predicate "same as". */
 	public static final Reference PREDICATE_SAME = new Reference(
 			"http://www.w3.org/2002/07/owl#sameAs");
+	
+	/** Predicate "statement". */
+	public static final Reference PREDICATE_STATEMENT = new Reference(
+			"http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement");
+
+	/** Predicate "subject". */
+	public static final Reference PREDICATE_SUBJECT = new Reference(
+			"http://www.w3.org/1999/02/22-rdf-syntax-ns#subject");
 
 	/** Predicate "is a". */
 	public static final Reference PREDICATE_TYPE = new Reference(

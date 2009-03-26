@@ -75,6 +75,9 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 		 */
 		private boolean rdfDefaultNamespace;
 
+		/** Used when a statement must be reified. */
+		private Reference reifiedRef;
+
 		/** Heap of states. */
 		private List<State> states;
 
@@ -157,20 +160,17 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 			if (state == State.SUBJECT) {
 				popSubject();
 			} else if (state == State.PREDICATE) {
-				this.graphHandler.link(getCurrentSubject(),
-						this.currentPredicate, getLiteral(builder.toString(),
-								null, this.currentLanguage));
-
+				link(getCurrentSubject(), this.currentPredicate, getLiteral(
+						builder.toString(), null, this.currentLanguage));
 			} else if (state == State.OBJECT) {
 				this.currentObject = getLiteral(builder.toString(), null,
 						this.currentLanguage);
 			} else if (state == State.LITERAL) {
 				if (nodeDepth == 0) {
 					// End of the XML literal
-					this.graphHandler.link(getCurrentSubject(),
-							this.currentPredicate, getLiteral(builder
-									.toString(), this.currentDataType,
-									this.currentLanguage));
+					link(getCurrentSubject(), this.currentPredicate,
+							getLiteral(builder.toString(),
+									this.currentDataType, this.currentLanguage));
 				} else {
 					// Still gleaning the content of an XML literal
 					// Glean the XML content
@@ -297,19 +297,68 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 			Reference currentSubject = getCurrentSubject();
 			if (currentSubject instanceof Reference) {
 				if (this.currentObject instanceof Reference) {
-					this.graphHandler.link((Reference) currentSubject,
-							this.currentPredicate,
+					link(currentSubject, this.currentPredicate,
 							(Reference) this.currentObject);
 				} else if (this.currentObject instanceof Literal) {
-					this.graphHandler
-							.link((Reference) currentSubject,
-									this.currentPredicate,
-									(Literal) this.currentObject);
+					link(currentSubject, this.currentPredicate,
+							(Literal) this.currentObject);
 				} else {
 					// TODO Error.
 				}
 			} else {
 				// TODO Error.
+			}
+		}
+
+		/**
+		 * Creates a statement and reify it, if necessary.
+		 * 
+		 * @param subject
+		 *            The subject of the statement.
+		 * @param predicate
+		 *            The predicate of the statement.
+		 * @param object
+		 *            The object of the statement.
+		 */
+		private void link(Reference subject, Reference predicate, Literal object) {
+			this.graphHandler.link(subject, predicate, object);
+			if (this.reifiedRef != null) {
+				this.graphHandler.link(this.reifiedRef,
+						RdfConstants.PREDICATE_SUBJECT, subject);
+				this.graphHandler.link(this.reifiedRef,
+						RdfConstants.PREDICATE_PREDICATE, predicate);
+				this.graphHandler.link(this.reifiedRef,
+						RdfConstants.PREDICATE_OBJECT, object);
+				this.graphHandler.link(reifiedRef, RdfConstants.PREDICATE_TYPE,
+						RdfConstants.PREDICATE_STATEMENT);
+				this.reifiedRef = null;
+			}
+		}
+
+		/**
+		 * Creates a statement and reify it, if necessary.
+		 * 
+		 * @param subject
+		 *            The subject of the statement.
+		 * @param predicate
+		 *            The predicate of the statement.
+		 * @param object
+		 *            The object of the statement.
+		 */
+		private void link(Reference subject, Reference predicate,
+				Reference object) {
+			this.graphHandler.link(subject, predicate, object);
+
+			if (this.reifiedRef != null) {
+				this.graphHandler.link(this.reifiedRef,
+						RdfConstants.PREDICATE_SUBJECT, subject);
+				this.graphHandler.link(this.reifiedRef,
+						RdfConstants.PREDICATE_PREDICATE, predicate);
+				this.graphHandler.link(this.reifiedRef,
+						RdfConstants.PREDICATE_OBJECT, object);
+				this.graphHandler.link(reifiedRef, RdfConstants.PREDICATE_TYPE,
+						RdfConstants.PREDICATE_STATEMENT);
+				this.reifiedRef = null;
 			}
 		}
 
@@ -336,7 +385,7 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 				String qName = attributes.getQName(i);
 				if (checkRdfQName("about", qName)) {
 					found = true;
-					result = getReference(null, attributes.getValue(i), null);
+					result = getReference(attributes.getValue(i), null, null);
 				} else if (checkRdfQName("nodeID", qName)) {
 					found = true;
 					result = LinkReference.createBlank(attributes.getValue(i));
@@ -499,6 +548,10 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 						this.graphHandler.link(getCurrentSubject(),
 								this.currentPredicate, LinkReference
 										.createBlank(attributes.getValue(i)));
+					} else if (checkRdfQName("ID", qName)) {
+						// Reify the statement
+						reifiedRef = getReference(null, "#"
+								+ attributes.getValue(i), null);
 					} else {
 						if (!qName.startsWith("xmlns")) {
 							// Add arcs.
