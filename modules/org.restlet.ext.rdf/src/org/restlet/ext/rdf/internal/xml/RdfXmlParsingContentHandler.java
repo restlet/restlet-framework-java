@@ -83,25 +83,29 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 		public ContentReader(GraphHandler graphHandler) {
 			super();
 			this.graphHandler = graphHandler;
-			this.prefixes = new HashMap<String, String>();
-			this.builder = new StringBuilder();
-			this.states = new ArrayList<State>();
-			this.subjects = new ArrayList<Reference>();
-			nodeDepth = 0;
-			pushState(State.NONE);
 		}
 
 		@Override
 		public void characters(char[] ch, int start, int length)
 				throws SAXException {
-			if (getCurrentState() == State.LITERAL || getCurrentState() == State.PREDICATE) {
+			if (getCurrentState() == State.LITERAL
+					|| getCurrentState() == State.PREDICATE) {
 				builder.append(ch, start, length);
 			}
 		}
 
 		@Override
 		public void endDocument() throws SAXException {
-			// TODO
+			this.builder = null;
+			this.currentObject = null;
+			this.currentPredicate = null;
+			this.graphHandler = null;
+			this.prefixes.clear();
+			this.prefixes = null;
+			this.states.clear();
+			this.states = null;
+			this.subjects.clear();
+			this.subjects = null;
 		}
 
 		@Override
@@ -392,6 +396,12 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 
 		@Override
 		public void startDocument() throws SAXException {
+			this.prefixes = new HashMap<String, String>();
+			this.builder = new StringBuilder();
+			this.states = new ArrayList<State>();
+			this.subjects = new ArrayList<Reference>();
+			nodeDepth = 0;
+			pushState(State.NONE);
 		}
 
 		@Override
