@@ -291,7 +291,7 @@ public class Resource extends Handler {
      * expensive.
      * 
      * @return The list of variants.
-     * @see #getRepresentation(Variant)
+     * @see #represent(Variant)
      */
     public List<Variant> getVariants() {
         // Lazy initialization with double-check.

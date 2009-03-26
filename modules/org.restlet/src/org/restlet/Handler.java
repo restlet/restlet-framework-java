@@ -287,7 +287,7 @@ public abstract class Handler {
     }
 
     /**
-     * Handles a DELETE call. The default behavior, to be overriden by
+     * Handles a DELETE call. The default behavior, to be overridden by
      * subclasses, is to set the status to {@link Status#SERVER_ERROR_INTERNAL}.
      */
     public void handleDelete() {
@@ -295,7 +295,7 @@ public abstract class Handler {
     }
 
     /**
-     * Handles a GET call. The default behavior, to be overriden by subclasses,
+     * Handles a GET call. The default behavior, to be overridden by subclasses,
      * is to set the status to {@link Status#SERVER_ERROR_INTERNAL}.
      */
     public void handleGet() {
@@ -324,15 +324,15 @@ public abstract class Handler {
     }
 
     /**
-     * Handles a POST call. The default behavior, to be overriden by subclasses,
-     * is to set the status to {@link Status#SERVER_ERROR_INTERNAL}.
+     * Handles a POST call. The default behavior, to be overridden by
+     * subclasses, is to set the status to {@link Status#SERVER_ERROR_INTERNAL}.
      */
     public void handlePost() {
         getResponse().setStatus(Status.SERVER_ERROR_INTERNAL);
     }
 
     /**
-     * Handles a PUT call. The default behavior, to be overriden by subclasses,
+     * Handles a PUT call. The default behavior, to be overridden by subclasses,
      * is to set the status to {@link Status#SERVER_ERROR_INTERNAL}.
      */
     public void handlePut() {

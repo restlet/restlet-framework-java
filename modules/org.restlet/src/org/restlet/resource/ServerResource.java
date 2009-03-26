@@ -30,17 +30,23 @@
 
 package org.restlet.resource;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 
+import org.restlet.Application;
 import org.restlet.Context;
+import org.restlet.Restlet;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.CookieSetting;
 import org.restlet.data.Dimension;
+import org.restlet.data.Language;
 import org.restlet.data.Method;
+import org.restlet.data.Parameter;
 import org.restlet.data.Reference;
+import org.restlet.data.ReferenceList;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.ServerInfo;
@@ -50,47 +56,184 @@ import org.restlet.representation.Variant;
 import org.restlet.util.Series;
 
 /**
- * Server-side resource.
+ * Server-side resource. TODO<br>
+ * <br>
+ * Concurrency note: contrary to the {@link org.restlet.Uniform} class and its
+ * main {@link Restlet} subclass where a single instance can handle several
+ * calls concurrently, one instance of {@link ServerResource} is created for
+ * each call handled and accessed by only one thread at a time.
  * 
  * @author Jerome Louvel
  */
 public class ServerResource extends UniformResource {
 
+    /** Indicates if the best content is automatically negotiated. */
+    private boolean negotiateContent;
+
+    /** The modifiable list of variants. */
+    private volatile List<Variant> variants;
+
     /**
-     * Default constructor.
+     * Initializer block to ensure that the basic properties of the Resource are
+     * initialized consistently across constructors.
+     */
+    {
+        this.negotiateContent = true;
+        this.variants = null;
+    }
+
+    /**
+     * Special constructor used by IoC frameworks. Note that the
+     * {@link #init(Context, Request, Response)}() method MUST be invoked right
+     * after the creation of the handler in order to keep a behavior consistent
+     * with the normal {@link #ServerResource(Context, Request, Response)}
+     * constructor.
      */
     public ServerResource() {
     }
 
     /**
-     * Constructor.
+     * Normal constructor. This constructor will invoke the
+     * {@link #init(Context, Request, Response)} method by default.
      * 
      * @param context
+     *            The parent context.
      * @param request
+     *            The request to handle.
      * @param response
+     *            The response to return.
      */
     public ServerResource(Context context, Request request, Response response) {
         init(context, request, response);
     }
 
+    /**
+     * Deletes the resource and all its representations. The default behavior is
+     * to set the response status to {@link Status#SERVER_ERROR_INTERNAL}.
+     * 
+     * @throws ResourceException
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.7">HTTP
+     *      DELETE method</a>
+     */
     @Override
     public Representation delete() throws ResourceException {
+        setStatus(Status.SERVER_ERROR_INTERNAL);
         return null;
     }
 
+    /**
+     * Represents the resource using content negotiation to select the best
+     * variant based on the client preferences. By default it calls the
+     * {@link #get(Variant)} method with the preferred variant returned by
+     * {@link #getPreferredVariant()}.
+     * 
+     * @return The best representation.
+     * @throws ResourceException
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.3">HTTP
+     *      GET method</a>
+     */
     @Override
     public Representation get() throws ResourceException {
-        return null;
+        handleGet(false);
+        return getResponse().getEntity();
     }
 
+    /**
+     * Returns a full representation for a given variant previously returned via
+     * the getVariants() method. The default implementation directly returns the
+     * variant in case the variants are already full representations. In all
+     * other cases, you will need to override this method in order to provide
+     * your own implementation. <br>
+     * <br>
+     * 
+     * This method is very useful for content negotiation when it is too costly
+     * to initialize all the potential representations. It allows a resource to
+     * simply expose the available variants via the getVariants() method and to
+     * actually server the one selected via this method.
+     * 
+     * @param variant
+     *            The variant whose full representation must be returned.
+     * @return The full representation for the variant.
+     * @see #getVariants()
+     */
     @Override
     public Representation get(Variant variant) throws ResourceException {
-        return null;
+        Representation result = null;
+
+        if (variant instanceof Representation) {
+            result = (Representation) variant;
+        }
+
+        return result;
     }
 
     @Override
     public Set<Method> getAllowedMethods() {
         return getResponse().getAllowedMethods();
+    }
+
+    /**
+     * Returns the preferred variant according to the client preferences
+     * specified in the request.
+     * 
+     * @return The preferred variant.
+     */
+    public Variant getPreferredVariant() {
+        Variant result = null;
+        final List<Variant> variants = getVariants();
+
+        if ((variants != null) && (!variants.isEmpty())) {
+            Language language = null;
+            // Compute the preferred variant. Get the default language
+            // preference from the Application (if any).
+            final Application app = Application.getCurrent();
+
+            if (app != null) {
+                language = app.getMetadataService().getDefaultLanguage();
+            }
+
+            result = getRequest().getClientInfo().getPreferredVariant(variants,
+                    language);
+
+        }
+
+        return result;
+    }
+
+    /**
+     * Returns the modifiable list of variants. Creates a new instance if no one
+     * has been set. A variant can be a purely descriptive representation, with
+     * no actual content that can be served. It can also be a full
+     * representation in case a resource has only one variant or if the
+     * initialization cost is very low.<br>
+     * <br>
+     * Note that the order in which the variants are inserted in the list
+     * matters. For example, if the client has no preference defined, or if the
+     * acceptable variants have the same quality level for the client, the first
+     * acceptable variant in the list will be returned.<br>
+     * <br>
+     * It is recommended to not override this method and to simply use it at
+     * construction time to initialize the list of available variants.
+     * Overriding it may reconstruct the list for each call which can be
+     * expensive.
+     * 
+     * @return The list of variants.
+     * @see #getRepresentation(Variant)
+     */
+    public List<Variant> getVariants() {
+        // Lazy initialization with double-check.
+        List<Variant> v = this.variants;
+        if (v == null) {
+            synchronized (this) {
+                v = this.variants;
+                if (v == null) {
+                    this.variants = v = new ArrayList<Variant>();
+                }
+            }
+        }
+        return v;
     }
 
     @Override
@@ -109,19 +252,318 @@ public class ServerResource extends UniformResource {
                 } else if (method.equals(Method.HEAD)) {
                     result = head();
                 } else if (method.equals(Method.POST)) {
-                    result = post(getRequest().getEntity());
+                    result = handlePost();
                 } else if (method.equals(Method.PUT)) {
-                    result = put(getRequest().getEntity());
+                    result = handlePut();
                 } else if (method.equals(Method.DELETE)) {
-                    result = delete();
+                    result = handleDelete();
                 } else if (method.equals(Method.OPTIONS)) {
-                    result = options();
+                    result = handleOptions();
                 } else {
                     setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
                 }
             }
         } catch (ResourceException re) {
             setStatus(re.getStatus(), re.getCause(), re.getLocalizedMessage());
+        }
+
+        return result;
+    }
+
+    /**
+     * Handles a DELETE call by invoking the {@link #delete()} method. It also
+     * automatically support conditional DELETEs.
+     * 
+     * @throws ResourceException
+     */
+    private Representation handleDelete() throws ResourceException {
+        Representation result = null;
+
+        boolean canDelete = true;
+        if (getRequest().getConditions().hasSome()) {
+            Variant preferredVariant = null;
+
+            if (isNegotiateContent()) {
+                preferredVariant = getPreferredVariant();
+            } else {
+                final List<Variant> variants = getVariants();
+
+                if (variants.size() == 1) {
+                    preferredVariant = variants.get(0);
+                } else {
+                    getResponse().setStatus(
+                            Status.CLIENT_ERROR_PRECONDITION_FAILED);
+                    canDelete = false;
+                }
+            }
+
+            // The conditions have to be checked
+            // even if there is no preferred variant.
+            if (canDelete) {
+                final Status status = getRequest().getConditions().getStatus(
+                        getRequest().getMethod(), get(preferredVariant));
+
+                if (status != null) {
+                    getResponse().setStatus(status);
+                    canDelete = false;
+                }
+            }
+        }
+
+        if (canDelete) {
+            try {
+                result = delete();
+            } catch (ResourceException re) {
+                getResponse().setStatus(re.getStatus(), re);
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Handles a GET call by automatically returning the best representation
+     * available. The content negotiation is automatically supported based on
+     * the client's preferences available in the request. This feature can be
+     * turned off using the "negotiateContent" property.<br>
+     * <br>
+     * If the resource's "available" property is set to false, the method
+     * immediately returns with a {@link Status#CLIENT_ERROR_NOT_FOUND} status.<br>
+     * <br>
+     * The negotiated representation is obtained by calling the
+     * {@link #getPreferredVariant()}. If a variant is successfully selected,
+     * then the {@link #represent(Variant)} method is called to get the actual
+     * representation corresponding to the metadata in the variant.<br>
+     * <br>
+     * If no variant matching the client preferences is available, the response
+     * status is set to {@link Status#CLIENT_ERROR_NOT_ACCEPTABLE} and the list
+     * of available representations is returned in the response entity as a
+     * textual list of URIs (only if the variants have an identifier properly
+     * set).<br>
+     * <br>
+     * If the content negotiation is turned off and only one variant is defined
+     * in the "variants" property, then its representation is returned by
+     * calling the {@link #represent(Variant)} method. If several variants are
+     * available, then the list of available representations is returned in the
+     * response entity as a textual list of URIs (only if the variants have an
+     * identifier properly set).<br>
+     * <br>
+     * If no variant is defined in the "variants" property, the response status
+     * is set to {@link Status#CLIENT_ERROR_NOT_FOUND}. <br>
+     * If it is disabled and multiple variants are available for the target
+     * resource, then a 300 (Multiple Choices) status will be returned with the
+     * list of variants URI if available. Conditional GETs are also
+     * automatically supported.
+     * 
+     * @throws ResourceException
+     */
+    private void handleGet(boolean head) throws ResourceException {
+        // The variant that may need to meet the request conditions
+        Representation selectedRepresentation = null;
+
+        final List<Variant> variants = getVariants();
+        if ((variants == null) || (variants.isEmpty())) {
+            // Resource not found
+            getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+            getLogger()
+                    .warning(
+                            "A resource should normally have at least one variant added by calling getVariants().add() in the constructor. Check your resource \""
+                                    + getRequest().getResourceRef() + "\".");
+        } else if (isNegotiateContent()) {
+            final Variant preferredVariant = getPreferredVariant();
+
+            if (preferredVariant == null) {
+                // No variant was found matching the client preferences
+                getResponse().setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
+
+                // The list of all variants is transmitted to the client
+                final ReferenceList refs = new ReferenceList(variants.size());
+                for (final Variant variant : variants) {
+                    if (variant.getIdentifier() != null) {
+                        refs.add(variant.getIdentifier());
+                    }
+                }
+
+                getResponse().setEntity(refs.getTextRepresentation());
+            } else {
+                // Set the variant dimensions used for content negotiation
+                getResponse().getDimensions().clear();
+                getResponse().getDimensions().add(Dimension.CHARACTER_SET);
+                getResponse().getDimensions().add(Dimension.ENCODING);
+                getResponse().getDimensions().add(Dimension.LANGUAGE);
+                getResponse().getDimensions().add(Dimension.MEDIA_TYPE);
+
+                // Set the negotiated representation as response entity
+                getResponse().setEntity(get(preferredVariant));
+            }
+
+            selectedRepresentation = getResponse().getEntity();
+        } else {
+            if (variants.size() == 1) {
+                getResponse().setEntity(get(variants.get(0)));
+                selectedRepresentation = getResponse().getEntity();
+            } else {
+                final ReferenceList variantRefs = new ReferenceList();
+
+                for (final Variant variant : variants) {
+                    if (variant.getIdentifier() != null) {
+                        variantRefs.add(variant.getIdentifier());
+                    } else {
+                        getLogger()
+                                .warning(
+                                        "A resource with multiple variants should provide an identifier for each variant when content negotiation is turned off");
+                    }
+                }
+
+                if (variantRefs.size() > 0) {
+                    // Return the list of variants
+                    getResponse()
+                            .setStatus(Status.REDIRECTION_MULTIPLE_CHOICES);
+                    getResponse()
+                            .setEntity(variantRefs.getTextRepresentation());
+                } else {
+                    getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+                }
+            }
+        }
+
+        if (selectedRepresentation == null) {
+            if ((getResponse().getStatus() == null)
+                    || (getResponse().getStatus().isSuccess() && !Status.SUCCESS_NO_CONTENT
+                            .equals(getResponse().getStatus()))) {
+                getResponse().setStatus(Status.CLIENT_ERROR_NOT_FOUND);
+            } else {
+                // Keep the current status as the developer might prefer a
+                // special status like 'method not authorized'.
+            }
+        } else {
+            // The given representation (even if null) must meet the request
+            // conditions (if any).
+            if (getRequest().getConditions().hasSome()) {
+                final Status status = getRequest().getConditions().getStatus(
+                        getRequest().getMethod(), selectedRepresentation);
+
+                if (status != null) {
+                    getResponse().setStatus(status);
+                    getResponse().setEntity(null);
+                }
+            }
+        }
+    }
+
+    /**
+     * Handles an OPTIONS call introspecting the target resource (as provided by
+     * the 'findTarget' method). The default implementation is based on the HTTP
+     * specification which says that OPTIONS should return the list of allowed
+     * methods in the Response headers.
+     * 
+     * @throws ResourceException
+     */
+    private Representation handleOptions() throws ResourceException {
+        return options();
+    }
+
+    /**
+     * Handles a POST call by invoking the
+     * {@link #acceptRepresentation(Representation)} method. It also logs a
+     * trace if there is no entity posted.
+     */
+    private Representation handlePost() throws ResourceException {
+        Representation result = null;
+
+        if (!getRequest().isEntityAvailable()) {
+            getLogger()
+                    .fine(
+                            "POST request received without any entity. Continuing processing.");
+        }
+
+        try {
+            result = post(getRequest().getEntity());
+        } catch (ResourceException re) {
+            getResponse().setStatus(re.getStatus(), re);
+        }
+
+        return result;
+    }
+
+    /**
+     * Handles a PUT call by invoking the
+     * {@link #storeRepresentation(Representation)} method. It also handles
+     * conditional PUTs and forbids partial PUTs as they are not supported yet.
+     * Finally, it prevents PUT with no entity by setting the response status to
+     * {@link Status#CLIENT_ERROR_BAD_REQUEST} following the HTTP
+     * specifications.
+     * 
+     * @throws ResourceException
+     */
+    @SuppressWarnings("unchecked")
+    private Representation handlePut() throws ResourceException {
+        Representation result = null;
+        boolean canPut = true;
+
+        if (getRequest().getConditions().hasSome()) {
+            Variant preferredVariant = null;
+
+            if (isNegotiateContent()) {
+                preferredVariant = getPreferredVariant();
+            } else {
+                final List<Variant> variants = getVariants();
+
+                if (variants.size() == 1) {
+                    preferredVariant = variants.get(0);
+                } else {
+                    getResponse().setStatus(
+                            Status.CLIENT_ERROR_PRECONDITION_FAILED);
+                    canPut = false;
+                }
+            }
+
+            // The conditions have to be checked
+            // even if there is no preferred variant.
+            if (canPut) {
+                result = get(preferredVariant);
+                final Status status = getRequest().getConditions().getStatus(
+                        getRequest().getMethod(), result);
+                if (status != null) {
+                    getResponse().setStatus(status);
+                    canPut = false;
+                }
+            }
+        }
+
+        if (canPut) {
+            // Check the Content-Range HTTP Header
+            // in order to prevent usage of partial PUTs
+            final Object oHeaders = getRequest().getAttributes().get(
+                    "org.restlet.http.headers");
+            if (oHeaders != null) {
+                final Series<Parameter> headers = (Series<Parameter>) oHeaders;
+                if (headers.getFirst("Content-Range", true) != null) {
+                    getResponse()
+                            .setStatus(
+                                    new Status(
+                                            Status.SERVER_ERROR_NOT_IMPLEMENTED,
+                                            "The Content-Range header is not understood"));
+                    canPut = false;
+                }
+            }
+        }
+
+        if (canPut) {
+            if (getRequest().isEntityAvailable()) {
+                try {
+                    result = put(getRequest().getEntity());
+                } catch (ResourceException re) {
+                    getResponse().setStatus(re.getStatus(), re);
+                }
+
+                // HTTP specification says that PUT may return
+                // the list of allowed methods
+                getAllowedMethods();
+            } else {
+                getResponse().setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
+                        "Missing request entity");
+            }
         }
 
         return result;
@@ -135,7 +577,8 @@ public class ServerResource extends UniformResource {
      */
     @Override
     public Representation head() throws ResourceException {
-        return get();
+        handleGet(true);
+        return getResponse().getEntity();
     }
 
     @Override
@@ -155,24 +598,60 @@ public class ServerResource extends UniformResource {
         return getClientInfo().isInRole(getApplication().findRole(roleName));
     }
 
+    /**
+     * Indicates if the best content is automatically negotiated. Default value
+     * is true.
+     * 
+     * @return True if the best content is automatically negotiated.
+     */
+    public boolean isNegotiateContent() {
+        return this.negotiateContent;
+    }
+
+    /**
+     * Indicates the communication options available for this resource. The
+     * default implementation is based on the HTTP specification which says that
+     * OPTIONS should return the list of allowed methods in the Response
+     * headers.
+     * 
+     * @return
+     */
     @Override
     public Representation options() throws ResourceException {
-        return null;
+        getAllowedMethods();
+        getResponse().setStatus(Status.SUCCESS_OK);
+        return getResponse().getEntity();
     }
 
     @Override
     public Representation options(Variant variant) throws ResourceException {
+        setStatus(Status.SERVER_ERROR_INTERNAL);
         return null;
     }
 
+    /**
+     * Posts a representation to the resource at the target URI reference. The
+     * default behavior is to set the response status to
+     * {@link Status#SERVER_ERROR_INTERNAL}.
+     * 
+     * @param entity
+     *            The posted entity.
+     * @return The optional result entity.
+     * @throws ResourceException
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.5">HTTP
+     *      POST method</a>
+     */
     @Override
     public Representation post(Representation entity) throws ResourceException {
+        setStatus(Status.SERVER_ERROR_INTERNAL);
         return null;
     }
 
     @Override
     public Representation put(Representation representation)
             throws ResourceException {
+        setStatus(Status.SERVER_ERROR_INTERNAL);
         return null;
     }
 
@@ -267,6 +746,17 @@ public class ServerResource extends UniformResource {
     }
 
     /**
+     * Indicates if the returned representation is automatically negotiated.
+     * Default value is true.
+     * 
+     * @param negotiateContent
+     *            True if content negotiation is enabled.
+     */
+    public void setNegotiateContent(boolean negotiateContent) {
+        this.negotiateContent = negotiateContent;
+    }
+
+    /**
      * Sets the server-specific information.
      * 
      * @param serverInfo
@@ -327,6 +817,15 @@ public class ServerResource extends UniformResource {
      */
     public void setStatus(Status status, Throwable throwable, String message) {
         getResponse().setStatus(status, throwable, message);
+    }
+
+    /**
+     * Invoked when the list of allowed methods needs to be updated. The
+     * {@link #getAllowedMethods()} or the {@link #setAllowedMethods(Set)}
+     * methods should be used. The default implementation does nothing.
+     * 
+     */
+    public void updateAllowedMethods() {
     }
 
 }

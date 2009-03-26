@@ -60,7 +60,7 @@ public class Permission extends BasicPermission {
 
     /**
      * Returns the canonical string representation of the actions. The actions
-     * are seperated by a comma and sorted alphabetically.
+     * are separated by a comma and sorted alphabetically.
      * 
      * @return The list of authorized uniform methods.
      */
