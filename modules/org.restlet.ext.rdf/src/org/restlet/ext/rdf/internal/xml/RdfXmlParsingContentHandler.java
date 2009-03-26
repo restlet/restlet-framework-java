@@ -157,16 +157,13 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 			if (state == State.SUBJECT) {
 				popSubject();
 			} else if (state == State.PREDICATE) {
-				if (this.builder.length() > 0) {
-					this.graphHandler.link(getCurrentSubject(),
-							this.currentPredicate, getLiteral(builder
-									.toString(), null, this.currentLanguage));
-				}
+				this.graphHandler.link(getCurrentSubject(),
+						this.currentPredicate, getLiteral(builder.toString(),
+								null, this.currentLanguage));
+
 			} else if (state == State.OBJECT) {
-				if (this.builder.length() > 0) {
-					this.currentObject = getLiteral(builder.toString(), null,
-							this.currentLanguage);
-				}
+				this.currentObject = getLiteral(builder.toString(), null,
+						this.currentLanguage);
 			} else if (state == State.LITERAL) {
 				if (nodeDepth == 0) {
 					// End of the XML literal
