@@ -62,20 +62,20 @@ import com.threecrickets.scripturian.ScriptContextController;
  * {@link EmbeddedScript#getContainerVariableName()}). The following read-only
  * attributes are available:
  * <ul>
- * <li><b>container.representation</b>: Access to the representation itself.
- * This can be useful for generating text according to set characteristics. For
- * example, calling {@link Representation#getLanguages()} and generating the
- * appropriate text.</li>
- * <li><b>container.writer</b>: Allows the script direct access to the
+ * <li><code>container.representation</code>: Access to the representation
+ * itself. This can be useful for generating text according to set
+ * characteristics. For example, calling {@link Representation#getLanguages()}
+ * and generating the appropriate text.</li>
+ * <li><code>container.writer</code>: Allows the script direct access to the
  * {@link Writer}. This should rarely be necessary, because by default the
  * standard output for your scripting engine would be directed to it, and the
  * scripting platform's native method for printing should be preferred. However,
  * some scripting platforms may not provide adequate access or may otherwise be
  * broken.</li>
- * <li><b>container.errorWriter</b>: Same as above, for standard error. (Nothing
- * is currently done with the contents of this, but this may change in future
- * implementations.)</li>
- * <li><b>container.scriptEngineManager</b>: This is the
+ * <li><code>container.errorWriter</code>: Same as above, for standard error.
+ * (Nothing is currently done with the contents of this, but this may change in
+ * future implementations.)</li>
+ * <li><code>container.scriptEngineManager</code>: This is the
  * {@link ScriptEngineManager} used to create the script engine. Scripts may use
  * it to get information about what other engines are available.</li>
  * </ul>
