@@ -108,7 +108,7 @@ public class RdfXmlRepresentation extends RdfRepresentation {
      */
     public RdfXmlRepresentation(Representation rdfRepresentation, Graph linkSet)
             throws IOException {
-        super(rdfRepresentation, linkSet);
+        super(linkSet);
         new RdfXmlParsingContentHandler(linkSet, rdfRepresentation);
     }
 
