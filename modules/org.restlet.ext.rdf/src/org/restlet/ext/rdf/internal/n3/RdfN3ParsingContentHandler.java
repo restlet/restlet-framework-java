@@ -112,7 +112,7 @@ public class RdfN3ParsingContentHandler extends GraphHandler {
     /** The current context object. */
     private Context context;
 
-    /** The set of links to update when parsing, or to read when writing. */
+    /** The set of links to update when parsing. */
     private Graph linkSet;
 
     /** The representation to read. */
