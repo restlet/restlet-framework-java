@@ -42,8 +42,8 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 			return "#_bn" + blankNodeId++;
 		}
 
-		/** The value of the "base" reference. */
-		private Reference base;
+		/** The value of the "base" URI. */
+		private String base;
 
 		/** Container for string content. */
 		private StringBuilder builder;
@@ -99,7 +99,10 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 				Representation representation) {
 			super();
 			this.graphHandler = graphHandler;
-			this.base = representation.getIdentifier();
+			if (representation.getIdentifier() != null) {
+				this.base = representation.getIdentifier().toString(true, true);
+			}
+
 		}
 
 		@Override
@@ -222,6 +225,17 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 			return result;
 		}
 
+		/**
+		 * Returns a Literal object according to the given parameters.
+		 * 
+		 * @param value
+		 *            The value of the literal.
+		 * @param datatype
+		 *            The datatype of the literal.
+		 * @param language
+		 *            The language of the literal.
+		 * @return A Literal object
+		 */
 		private Literal getLiteral(String value, String datatype,
 				String language) {
 			Literal literal = new Literal(value);
@@ -250,14 +264,16 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 			Reference result = null;
 
 			if (uri != null) {
-				Reference base = new Reference(uri);
-				if (base.isRelative()) {
-					base = new Reference(this.base, uri);
+				StringBuilder base = new StringBuilder();
+				if (new Reference(uri).isRelative()) {
+					base.append(this.base).append(uri);
+				} else {
+					base.append(uri);
 				}
 				if (localName != null) {
-					result = new Reference(base, localName);
+					result = new Reference(base.append(localName).toString());
 				} else {
-					result = base;
+					result = new Reference(base.toString());
 				}
 			} else if (name != null) {
 				int index = name.indexOf(":");
@@ -270,10 +286,10 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 					}
 				}
 			} else {
-				result = new Reference(this.base, localName);
+				result = new Reference(this.base + localName);
 			}
 
-			return result.getTargetRef();
+			return result;
 		}
 
 		/**
@@ -332,8 +348,10 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 					result = getReference(null, "#" + attributes.getValue(i),
 							null);
 				} else {
-					String[] arc = { qName, attributes.getValue(i) };
-					arcs.add(arc);
+					if (!qName.startsWith("xmlns")) {
+						String[] arc = { qName, attributes.getValue(i) };
+						arcs.add(arc);
+					}
 				}
 			}
 			if (!found) {
@@ -434,7 +452,7 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 					// Top element
 					String base = attributes.getValue("xml:base");
 					if (base != null) {
-						this.base = new Reference(base);
+						this.base = base;
 					}
 				} else {
 					// Parse the current subject
@@ -485,7 +503,7 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 								this.currentPredicate, LinkReference
 										.createBlank(attributes.getValue(i)));
 					} else {
-						if (!qName.startsWith("xlmns")) {
+						if (!qName.startsWith("xmlns")) {
 							// Add arcs.
 							String[] arc = { qName, attributes.getValue(i) };
 							arcs.add(arc);
