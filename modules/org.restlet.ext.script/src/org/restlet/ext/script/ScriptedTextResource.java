@@ -65,8 +65,8 @@ import com.threecrickets.scripturian.ScriptSource;
  * standard output to a {@link Representation}, for both HTTP GET and POST
  * verbs.
  * <p>
- * Before using this resource, make sure to set {@link ScriptSource} to a valid
- * source.
+ * Before using this resource, make sure to configure a valid source in the
+ * application's {@link Context}; see {@link #getScriptSource()}.
  * <p>
  * This resource supports two modes of output:
  * <ul>
