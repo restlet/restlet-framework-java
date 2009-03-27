@@ -828,6 +828,16 @@ public class ServerResource extends UniformResource {
     }
 
     /**
+     * Sets the modifiable list of variants.
+     * 
+     * @param variants
+     *            The modifiable list of variants.
+     */
+    public void setVariants(List<Variant> variants) {
+        this.variants = variants;
+    }
+
+    /**
      * Invoked when the list of allowed methods needs to be updated. The
      * {@link #getAllowedMethods()} or the {@link #setAllowedMethods(Set)}
      * methods should be used. The default implementation does nothing.

@@ -36,6 +36,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.restlet.engine.Method;
+
 /**
  * Annotates method that stores representations.
  * 
@@ -44,6 +46,7 @@ import java.lang.annotation.Target;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
+@Method("PUT")
 public @interface Put {
 
     /**
