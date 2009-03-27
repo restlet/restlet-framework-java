@@ -110,6 +110,7 @@ public class ServerResource extends UniformResource {
      * The default behavior is to set the response status to
      * {@link Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.
      * 
+     * @return The optional response entity.
      * @throws ResourceException
      * @see <a
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.7">HTTP
@@ -133,6 +134,7 @@ public class ServerResource extends UniformResource {
      * 
      * @param variant
      *            The variant of the response entity.
+     * @return The optional response entity.
      * @throws ResourceException
      * @see <a
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.7">HTTP
@@ -150,7 +152,7 @@ public class ServerResource extends UniformResource {
      * 
      * @param method
      *            The method to handle.
-     * @return
+     * @return The response entity.
      * @throws ResourceException
      */
     protected Representation doConditionalHandle(Method method)
@@ -191,10 +193,14 @@ public class ServerResource extends UniformResource {
             if ((getStatus() != null) && getStatus().isSuccess()) {
                 // Conditions where passed successfully.
                 // Continue the normal processing
-                if (isNegotiated()) {
-                    result = doNegotiatedHandle(method);
+                if (representationInfo instanceof Representation) {
+                    result = (Representation) representationInfo;
                 } else {
-                    result = doHandle(method);
+                    if (isNegotiated()) {
+                        result = doNegotiatedHandle(method);
+                    } else {
+                        result = doHandle(method);
+                    }
                 }
             }
         }
@@ -210,7 +216,7 @@ public class ServerResource extends UniformResource {
      * 
      * @param method
      *            The method to handle.
-     * @return
+     * @return The response entity.
      * @throws ResourceException
      */
     protected Representation doHandle(Method method) throws ResourceException {
@@ -240,7 +246,7 @@ public class ServerResource extends UniformResource {
     }
 
     /**
-     * Handles a call without content negotiation of the response entity. The
+     * Handles a call with content negotiation of the response entity. The
      * default behavior is to dispatch the call to one of the
      * {@link #get(Variant)}, {@link #post(Representation,Variant)},
      * {@link #put(Representation,Variant)}, {@link #delete(Variant)},
@@ -248,7 +254,7 @@ public class ServerResource extends UniformResource {
      * 
      * @param method
      *            The method to handle.
-     * @return
+     * @return The response entity.
      * @throws ResourceException
      */
     protected Representation doHandle(Method method, Variant variant)
@@ -279,10 +285,11 @@ public class ServerResource extends UniformResource {
     }
 
     /**
+     * Handles the content negotiation of a call.
      * 
      * @param method
      *            The method to handle.
-     * @return
+     * @return The response entity.
      * @throws ResourceException
      */
     protected Representation doNegotiatedHandle(Method method)
@@ -293,7 +300,7 @@ public class ServerResource extends UniformResource {
         if (preferredVariant == null) {
             // No variant was found matching the client preferences
             setStatus(Status.CLIENT_ERROR_NOT_ACCEPTABLE);
-            result = getAvailableVariants();
+            result = describeVariants();
         } else {
             // Update the variant dimensions used for content negotiation
             updateDimensions();
@@ -313,7 +320,7 @@ public class ServerResource extends UniformResource {
      * The default behavior is to set the response status to
      * {@link Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.
      * 
-     * @return The best representation.
+     * @return The resource's representation.
      * @throws ResourceException
      * @see <a
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.3">HTTP
@@ -339,7 +346,7 @@ public class ServerResource extends UniformResource {
      * 
      * @param variant
      *            The variant whose full representation must be returned.
-     * @return The full representation for the variant.
+     * @return The resource's representation.
      * @see #getVariants()
      * @throws ResourceException
      */
@@ -353,7 +360,13 @@ public class ServerResource extends UniformResource {
         return result;
     }
 
-    protected Representation getAvailableVariants() {
+    /**
+     * Describes the available variants to help client-side content negotiation.
+     * Return null by default.
+     * 
+     * @return The description of available variants.
+     */
+    protected Representation describeVariants() {
         Representation result = null;
 
         // The list of all variants is transmitted to the client
@@ -376,7 +389,7 @@ public class ServerResource extends UniformResource {
      * <br>
      * By default, the {@link #get()} method is invoked.
      * 
-     * @return Information about the best representation.
+     * @return Information about the resource's representation.
      * @throws ResourceException
      */
     public RepresentationInfo getInfo() throws ResourceException {
@@ -393,7 +406,7 @@ public class ServerResource extends UniformResource {
      * 
      * @param variant
      *            The variant whose representation information must be returned.
-     * @return Information about the best representation.
+     * @return Information about the resource's representation.
      * @throws ResourceException
      */
     public RepresentationInfo getInfo(Variant variant) throws ResourceException {
@@ -428,10 +441,10 @@ public class ServerResource extends UniformResource {
     }
 
     /**
-     * Returns the modifiable list of variants. Creates a new instance if no one
-     * has been set. A variant can be a purely descriptive representation, with
-     * no actual content that can be served. It can also be a full
-     * representation in case a resource has only one variant or if the
+     * Returns the modifiable map of variant declarations. Creates a new
+     * instance if no one has been set. A variant can be a purely descriptive
+     * representation, with no actual content that can be served. It can also be
+     * a full representation in case a resource has only one variant or if the
      * initialization cost is very low.<br>
      * <br>
      * Note that the order in which the variants are inserted in the list
@@ -474,6 +487,8 @@ public class ServerResource extends UniformResource {
      * {@link Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}, then
      * {@link #updateAllowedMethods()} is invoked to give the resource a chance
      * to inform the client about the allowed methods.
+     * 
+     * @return The response entity.
      */
     @Override
     public Representation handle() {
@@ -488,6 +503,8 @@ public class ServerResource extends UniformResource {
                 result = doHandle(getMethod());
             }
 
+            getResponse().setEntity(result);
+
             if (Status.CLIENT_ERROR_METHOD_NOT_ALLOWED.equals(getStatus())) {
                 updateAllowedMethods();
             }
@@ -499,15 +516,44 @@ public class ServerResource extends UniformResource {
     }
 
     /**
-     * Handles the {@link Method#HEAD} uniform method. By default, it just
-     * invokes {@link #get()}. The Restlet connector will use the result
-     * representation to extract the metadata and not return the actual content
-     * to the client.
+     * Returns a representation whose metadata will be returned to the client.<br>
+     * <br>
+     * This method is only invoked if content negotiation has been disabled as
+     * indicated by the {@link #isNegotiated()}, otherwise the
+     * {@link #get(Variant)} method is invoked.<br>
+     * <br>
+     * The default behavior is to set the response status to
+     * {@link Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.
+     * 
+     * @return The resource's representation.
+     * @throws ResourceException
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.3">HTTP
+     *      GET method</a>
      */
     public Representation head() throws ResourceException {
         return get();
     }
 
+    /**
+     * Returns a representation whose metadata will be returned to the client.
+     * The default implementation directly returns the variant if it is already
+     * an instance of {@link Representation}. In other cases, you need to
+     * override this method in order to provide your own implementation.<br>
+     * <br>
+     * This method is only invoked if content negotiation has been enabled as
+     * indicated by the {@link #isNegotiated()}, otherwise the {@link #get()}
+     * method is invoked.<br>
+     * <br>
+     * The default behavior is to set the response status to
+     * {@link Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.
+     * 
+     * @param variant
+     *            The variant whose full representation must be returned.
+     * @return The resource's representation.
+     * @see #getVariants()
+     * @throws ResourceException
+     */
     public Representation head(Variant variant) throws ResourceException {
         return get(variant);
     }
@@ -554,11 +600,10 @@ public class ServerResource extends UniformResource {
 
     /**
      * Indicates the communication options available for this resource. The
-     * default implementation is based on the HTTP specification which says that
-     * OPTIONS should return the list of allowed methods in the Response
-     * headers.
+     * default behavior is to set the response status to
+     * {@link Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.
      * 
-     * @return
+     * @return The optional response entity.
      */
     public Representation options() throws ResourceException {
         setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
@@ -566,11 +611,13 @@ public class ServerResource extends UniformResource {
     }
 
     /**
+     * Indicates the communication options available for this resource. The
+     * default behavior is to set the response status to
+     * {@link Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.
      * 
      * @param variant
      *            The variant of the response entity.
-     * @return
-     * @throws ResourceException
+     * @return The optional response entity.
      */
     public Representation options(Variant variant) throws ResourceException {
         setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
@@ -584,7 +631,7 @@ public class ServerResource extends UniformResource {
      * 
      * @param entity
      *            The posted entity.
-     * @return The optional result entity.
+     * @return The optional response entity.
      * @throws ResourceException
      * @see <a
      *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.5">HTTP
@@ -616,6 +663,19 @@ public class ServerResource extends UniformResource {
         return null;
     }
 
+    /**
+     * Creates or updates a resource with the given representation as new state
+     * to be stored. The default behavior is to set the response status to
+     * {@link Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.
+     * 
+     * @param representation
+     *            The representation to store.
+     * @return The optional result entity.
+     * @throws ResourceException
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6">HTTP
+     *      PUT method</a>
+     */
     public Representation put(Representation representation)
             throws ResourceException {
         setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
@@ -623,12 +683,19 @@ public class ServerResource extends UniformResource {
     }
 
     /**
+     * Creates or updates a resource with the given representation as new state
+     * to be stored. The default behavior is to set the response status to
+     * {@link Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.
      * 
      * @param representation
+     *            The representation to store.
      * @param variant
      *            The variant of the response entity.
-     * @return
+     * @return The optional result entity.
      * @throws ResourceException
+     * @see <a
+     *      href="http://www.w3.org/Protocols/rfc2616/rfc2616-sec9.html#sec9.6">HTTP
+     *      PUT method</a>
      */
     public Representation put(Representation representation, Variant variant)
             throws ResourceException {
@@ -820,10 +887,10 @@ public class ServerResource extends UniformResource {
     }
 
     /**
-     * Sets the modifiable list of variants.
+     * Sets the modifiable map of variant declarations.
      * 
      * @param variants
-     *            The modifiable list of variants.
+     *            The modifiable map of variant declarations.
      */
     public void setVariants(Map<Method, Object> variants) {
         this.variants = variants;
@@ -838,13 +905,16 @@ public class ServerResource extends UniformResource {
     protected void updateAllowedMethods() {
     }
 
+    /**
+     * Update the dimensions that were used for content negotiation. By default,
+     * it adds the {@link Dimension#CHARACTER_SET}, {@link Dimension#ENCODING},
+     * {@link Dimension#LANGUAGE}and {@link Dimension#MEDIA_TYPE} constants.
+     */
     protected void updateDimensions() {
-        getDimensions().clear();
         getDimensions().add(Dimension.CHARACTER_SET);
         getDimensions().add(Dimension.ENCODING);
         getDimensions().add(Dimension.LANGUAGE);
         getDimensions().add(Dimension.MEDIA_TYPE);
-
     }
 
 }

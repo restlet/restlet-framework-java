@@ -30,6 +30,7 @@
 
 package org.restlet.test;
 
+import org.restlet.Restlet;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 
@@ -43,7 +44,8 @@ public class RestartTestCase extends RestletTestCase {
     public void testRestart() throws Exception {
         final int waitTime = 100;
 
-        final Server connector = new Server(Protocol.HTTP, TEST_PORT, null);
+        final Server connector = new Server(Protocol.HTTP, TEST_PORT,
+                (Restlet) null);
 
         System.out.print("Starting connector... ");
         connector.start();

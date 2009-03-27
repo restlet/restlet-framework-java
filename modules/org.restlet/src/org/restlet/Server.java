@@ -41,6 +41,7 @@ import org.restlet.data.Response;
 import org.restlet.engine.Engine;
 import org.restlet.engine.Helper;
 import org.restlet.resource.Resource;
+import org.restlet.resource.ServerResource;
 
 /**
  * Connector acting as a generic server. It internally uses one of the available
@@ -80,6 +81,23 @@ public class Server extends Connector {
     public Server(Context context, List<Protocol> protocols, int port,
             Restlet target) {
         this(context, protocols, null, port, target);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param context
+     *            The context.
+     * @param protocols
+     *            The connector protocols.
+     * @param port
+     *            The listening port.
+     * @param targetClass
+     *            The target server resource.
+     */
+    public Server(Context context, List<Protocol> protocols, int port,
+            Class<? extends ServerResource> targetClass) {
+        this(context, protocols, null, port, new Finder(context, targetClass));
     }
 
     /**
@@ -233,6 +251,22 @@ public class Server extends Connector {
      */
     public Server(Protocol protocol, int port, Restlet target) {
         this(null, protocol, port, target);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param protocol
+     *            The connector protocol.
+     * @param port
+     *            The listening port.
+     * @param targetClass
+     *            The target server resource.
+     */
+    public Server(Protocol protocol, int port,
+            Class<? extends ServerResource> targetClass) {
+        this(null, protocol, port,
+                new Finder(Context.getCurrent(), targetClass));
     }
 
     /**

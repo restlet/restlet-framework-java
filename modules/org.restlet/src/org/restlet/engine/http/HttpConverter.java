@@ -202,7 +202,11 @@ public class HttpConverter {
      * @return The logger.
      */
     public Logger getLogger() {
-        return getContext().getLogger();
+        if (getContext() != null) {
+            return getContext().getLogger();
+        } else {
+            return Context.getCurrentLogger();
+        }
     }
 
 }

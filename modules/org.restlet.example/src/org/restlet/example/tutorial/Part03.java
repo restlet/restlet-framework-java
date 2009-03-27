@@ -30,30 +30,29 @@
 
 package org.restlet.example.tutorial;
 
-import org.restlet.Restlet;
 import org.restlet.Server;
 import org.restlet.data.MediaType;
 import org.restlet.data.Protocol;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
+import org.restlet.representation.Representation;
+import org.restlet.representation.StringRepresentation;
+import org.restlet.resource.ResourceException;
+import org.restlet.resource.ServerResource;
 
 /**
  * Listening to Web browsers.
  * 
  * @author Jerome Louvel
  */
-public class Part03 {
-    public static void main(String[] args) throws Exception {
-        // Creating a minimal Restlet returning "Hello World"
-        final Restlet restlet = new Restlet() {
-            @Override
-            public void handle(Request request, Response response) {
-                response.setEntity("Hello World!", MediaType.TEXT_PLAIN);
-            }
-        };
+public class Part03 extends ServerResource {
 
-        // Create the HTTP server and listen on port 8182
-        new Server(Protocol.HTTP, 8182, restlet).start();
+    @Override
+    public Representation get() throws ResourceException {
+        return new StringRepresentation("Hello World!", MediaType.TEXT_PLAIN);
     }
 
+    public static void main(String[] args) throws Exception {
+
+        // Create the HTTP server and listen on port 8182
+        new Server(Protocol.HTTP, 8182, Part03.class).start();
+    }
 }

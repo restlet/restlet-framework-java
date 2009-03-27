@@ -381,18 +381,61 @@ public class Finder extends Restlet {
      * @param response
      *            The response to update.
      */
+    @SuppressWarnings("unchecked")
     @Override
     public void handle(Request request, Response response) {
         super.handle(request, response);
 
         if (isStarted()) {
-            final Handler targetHandler = findTarget(request, response);
+            if (Handler.class
+                    .isAssignableFrom((Class<? extends Handler>) getTargetClass())) {
+                final Handler targetHandler = findTarget(request, response);
 
-            if (!response.getStatus().equals(Status.SUCCESS_OK)) {
-                // Probably during the instantiation of the target handler, or
-                // earlier the status was changed from the default one. Don't go
-                // further.
-            } else if (targetHandler == null) {
+                if (!response.getStatus().equals(Status.SUCCESS_OK)) {
+                    // Probably during the instantiation of the target handler,
+                    // or
+                    // earlier the status was changed from the default one.
+                    // Don't go
+                    // further.
+                } else {
+                    final Method method = request.getMethod();
+
+                    if (method == null) {
+                        response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
+                                "No method specified");
+                    } else {
+                        if (!allow(method, targetHandler)) {
+                            response
+                                    .setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+                            targetHandler.updateAllowedMethods();
+                        } else {
+
+                            if (method.equals(Method.GET)) {
+                                targetHandler.handleGet();
+                            } else if (method.equals(Method.HEAD)) {
+                                targetHandler.handleHead();
+                            } else if (method.equals(Method.POST)) {
+                                targetHandler.handlePost();
+                            } else if (method.equals(Method.PUT)) {
+                                targetHandler.handlePut();
+                            } else if (method.equals(Method.DELETE)) {
+                                targetHandler.handleDelete();
+                            } else if (method.equals(Method.OPTIONS)) {
+                                targetHandler.handleOptions();
+                            } else {
+                                final java.lang.reflect.Method handleMethod = getHandleMethod(
+                                        targetHandler, method);
+                                if (handleMethod != null) {
+                                    invoke(targetHandler, handleMethod);
+                                } else {
+                                    response
+                                            .setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
                 final ServerResource targetResource = find(request, response);
                 targetResource.init(getContext(), request, response);
 
@@ -410,42 +453,6 @@ public class Finder extends Restlet {
                 }
 
                 targetResource.destroy();
-            } else {
-                final Method method = request.getMethod();
-
-                if (method == null) {
-                    response.setStatus(Status.CLIENT_ERROR_BAD_REQUEST,
-                            "No method specified");
-                } else {
-                    if (!allow(method, targetHandler)) {
-                        response
-                                .setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-                        targetHandler.updateAllowedMethods();
-                    } else {
-                        if (method.equals(Method.GET)) {
-                            targetHandler.handleGet();
-                        } else if (method.equals(Method.HEAD)) {
-                            targetHandler.handleHead();
-                        } else if (method.equals(Method.POST)) {
-                            targetHandler.handlePost();
-                        } else if (method.equals(Method.PUT)) {
-                            targetHandler.handlePut();
-                        } else if (method.equals(Method.DELETE)) {
-                            targetHandler.handleDelete();
-                        } else if (method.equals(Method.OPTIONS)) {
-                            targetHandler.handleOptions();
-                        } else {
-                            final java.lang.reflect.Method handleMethod = getHandleMethod(
-                                    targetHandler, method);
-                            if (handleMethod != null) {
-                                invoke(targetHandler, handleMethod);
-                            } else {
-                                response
-                                        .setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-                            }
-                        }
-                    }
-                }
             }
         }
     }
