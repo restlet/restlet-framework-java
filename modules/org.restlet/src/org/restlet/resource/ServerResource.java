@@ -57,7 +57,8 @@ import org.restlet.representation.Variant;
 import org.restlet.util.Series;
 
 /**
- * Server-side resource. TODO<br>
+ * Server-side resource. It is a full replacement for the {@link Resource} class
+ * that will be deprecated in Restlet 1.2.<br>
  * <br>
  * Concurrency note: contrary to the {@link org.restlet.Uniform} class and its
  * main {@link Restlet} subclass where a single instance can handle several
@@ -85,8 +86,9 @@ public class ServerResource extends UniformResource {
      * consistently across constructors.
      */
     {
+        this.conditional = true;
         this.exists = true;
-        this.negotiated = true;
+        this.negotiated = false;
         this.variants = null;
     }
 
@@ -99,8 +101,14 @@ public class ServerResource extends UniformResource {
     }
 
     /**
-     * Deletes the resource and all its representations. The default behavior is
-     * to set the response status to {@link Status#SERVER_ERROR_INTERNAL}.
+     * Deletes the resource and all its representations.<br>
+     * <br>
+     * This method is only invoked if content negotiation has been disabled as
+     * indicated by the {@link #isNegotiated()}, otherwise the
+     * {@link #delete(Variant)} method is invoked.<br>
+     * <br>
+     * The default behavior is to set the response status to
+     * {@link Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.
      * 
      * @throws ResourceException
      * @see <a
@@ -108,13 +116,20 @@ public class ServerResource extends UniformResource {
      *      DELETE method</a>
      */
     public Representation delete() throws ResourceException {
-        setStatus(Status.SERVER_ERROR_INTERNAL);
+        setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
         return null;
     }
 
     /**
-     * Deletes the resource and all its representations. The default behavior is
-     * to set the response status to {@link Status#SERVER_ERROR_INTERNAL}.
+     * Deletes the resource and all its representations. A variant parameter is
+     * passed to indicate which representation should be returned if any.<br>
+     * <br>
+     * This method is only invoked if content negotiation has been enabled as
+     * indicated by the {@link #isNegotiated()}, otherwise the {@link #delete()}
+     * method is invoked.<br>
+     * <br>
+     * The default behavior is to set the response status to
+     * {@link Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.
      * 
      * @param variant
      *            The variant of the response entity.
@@ -124,7 +139,7 @@ public class ServerResource extends UniformResource {
      *      DELETE method</a>
      */
     public Representation delete(Variant variant) throws ResourceException {
-        setStatus(Status.SERVER_ERROR_INTERNAL);
+        setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
         return null;
     }
 
@@ -218,7 +233,6 @@ public class ServerResource extends UniformResource {
                 result = options();
             } else {
                 setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-                updateAllowedMethods();
             }
         }
 
@@ -258,7 +272,6 @@ public class ServerResource extends UniformResource {
                 result = options(variant);
             } else {
                 setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
-                updateAllowedMethods();
             }
         }
 
@@ -291,10 +304,14 @@ public class ServerResource extends UniformResource {
     }
 
     /**
-     * Represents the resource using content negotiation to select the best
-     * variant based on the client preferences. By default it calls the
-     * {@link #get(Variant)} method with the preferred variant returned by
-     * {@link #getPreferredVariant()}.
+     * Returns a full representation.<br>
+     * <br>
+     * This method is only invoked if content negotiation has been disabled as
+     * indicated by the {@link #isNegotiated()}, otherwise the
+     * {@link #get(Variant)} method is invoked.<br>
+     * <br>
+     * The default behavior is to set the response status to
+     * {@link Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.
      * 
      * @return The best representation.
      * @throws ResourceException
@@ -303,22 +320,22 @@ public class ServerResource extends UniformResource {
      *      GET method</a>
      */
     public Representation get() throws ResourceException {
-        setStatus(Status.SERVER_ERROR_INTERNAL);
+        setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
         return null;
     }
 
     /**
-     * Returns a full representation for a given variant previously returned via
-     * the getVariants() method. The default implementation directly returns the
-     * variant in case the variants are already full representations. In all
-     * other cases, you will need to override this method in order to provide
-     * your own implementation. <br>
+     * Returns a full representation for a given variant. The default
+     * implementation directly returns the variant if it is already an instance
+     * of {@link Representation}. In other cases, you need to override this
+     * method in order to provide your own implementation.<br>
      * <br>
-     * 
-     * This method is very useful for content negotiation when it is too costly
-     * to initialize all the potential representations. It allows a resource to
-     * simply expose the available variants via the getVariants() method and to
-     * actually server the one selected via this method.
+     * This method is only invoked if content negotiation has been enabled as
+     * indicated by the {@link #isNegotiated()}, otherwise the {@link #get()}
+     * method is invoked.<br>
+     * <br>
+     * The default behavior is to set the response status to
+     * {@link Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.
      * 
      * @param variant
      *            The variant whose full representation must be returned.
@@ -334,11 +351,6 @@ public class ServerResource extends UniformResource {
         }
 
         return result;
-    }
-
-    @Override
-    public Set<Method> getAllowedMethods() {
-        return getResponse().getAllowedMethods();
     }
 
     protected Representation getAvailableVariants() {
@@ -456,7 +468,12 @@ public class ServerResource extends UniformResource {
      * {@link #doNegotiatedHandle()} and {@link #doHandle()} methods should be
      * invoked. It also catches any {@link ResourceException} thrown and updates
      * the response status using the
-     * {@link #setStatus(Status, Throwable, String)} method.
+     * {@link #setStatus(Status, Throwable, String)} method.<br>
+     * <br>
+     * After handling, if the status is set to
+     * {@link Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}, then
+     * {@link #updateAllowedMethods()} is invoked to give the resource a chance
+     * to inform the client about the allowed methods.
      */
     @Override
     public Representation handle() {
@@ -469,6 +486,10 @@ public class ServerResource extends UniformResource {
                 result = doNegotiatedHandle(getMethod());
             } else {
                 result = doHandle(getMethod());
+            }
+
+            if (Status.CLIENT_ERROR_METHOD_NOT_ALLOWED.equals(getStatus())) {
+                updateAllowedMethods();
             }
         } catch (ResourceException re) {
             setStatus(re.getStatus(), re.getCause(), re.getLocalizedMessage());
@@ -522,7 +543,8 @@ public class ServerResource extends UniformResource {
     }
 
     /**
-     * Indicates if content negotiation of response entities is enabled.
+     * Indicates if content negotiation of response entities is enabled. The
+     * default value is 'false'.
      * 
      * @return True if content negotiation of response entities is enabled.
      */
@@ -539,7 +561,7 @@ public class ServerResource extends UniformResource {
      * @return
      */
     public Representation options() throws ResourceException {
-        setStatus(Status.SERVER_ERROR_INTERNAL);
+        setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
         return null;
     }
 
@@ -551,14 +573,14 @@ public class ServerResource extends UniformResource {
      * @throws ResourceException
      */
     public Representation options(Variant variant) throws ResourceException {
-        setStatus(Status.SERVER_ERROR_INTERNAL);
+        setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
         return null;
     }
 
     /**
      * Posts a representation to the resource at the target URI reference. The
      * default behavior is to set the response status to
-     * {@link Status#SERVER_ERROR_INTERNAL}.
+     * {@link Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.
      * 
      * @param entity
      *            The posted entity.
@@ -569,14 +591,14 @@ public class ServerResource extends UniformResource {
      *      POST method</a>
      */
     public Representation post(Representation entity) throws ResourceException {
-        setStatus(Status.SERVER_ERROR_INTERNAL);
+        setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
         return null;
     }
 
     /**
      * Posts a representation to the resource at the target URI reference. The
      * default behavior is to set the response status to
-     * {@link Status#SERVER_ERROR_INTERNAL}.
+     * {@link Status#CLIENT_ERROR_METHOD_NOT_ALLOWED}.
      * 
      * @param entity
      *            The posted entity.
@@ -590,13 +612,13 @@ public class ServerResource extends UniformResource {
      */
     public Representation post(Representation entity, Variant variant)
             throws ResourceException {
-        setStatus(Status.SERVER_ERROR_INTERNAL);
+        setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
         return null;
     }
 
     public Representation put(Representation representation)
             throws ResourceException {
-        setStatus(Status.SERVER_ERROR_INTERNAL);
+        setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
         return null;
     }
 
@@ -610,7 +632,7 @@ public class ServerResource extends UniformResource {
      */
     public Representation put(Representation representation, Variant variant)
             throws ResourceException {
-        setStatus(Status.SERVER_ERROR_INTERNAL);
+        setStatus(Status.CLIENT_ERROR_METHOD_NOT_ALLOWED);
         return null;
     }
 

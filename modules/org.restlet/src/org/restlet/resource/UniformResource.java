@@ -104,7 +104,9 @@ public abstract class UniformResource {
      * 
      * @return The set of allowed methods.
      */
-    public abstract Set<Method> getAllowedMethods();
+    public Set<Method> getAllowedMethods() {
+        return getResponse().getAllowedMethods();
+    }
 
     /**
      * Returns the parent application if it exists, or null.

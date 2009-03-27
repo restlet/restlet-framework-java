@@ -32,8 +32,6 @@ package org.restlet.resource;
 
 import java.net.URI;
 import java.util.List;
-import java.util.Set;
-import java.util.logging.Level;
 
 import org.restlet.Client;
 import org.restlet.Context;
@@ -313,28 +311,6 @@ public class ClientResource extends UniformResource {
 
         // Restore the current client info
         setClientInfo(currentClientInfo);
-        return result;
-    }
-
-    /**
-     * Retrieve the allowed methods on the target resource. This is done by
-     * invoking {@link #head()}.
-     */
-    @Override
-    public Set<Method> getAllowedMethods() {
-        Set<Method> result = null;
-
-        try {
-            head();
-            result = getResponse().getAllowedMethods();
-        } catch (ResourceException e) {
-            getLogger()
-                    .log(
-                            Level.INFO,
-                            "Unable to determine the allowed methods. The HEAD call failed.",
-                            e);
-        }
-
         return result;
     }
 
