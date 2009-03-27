@@ -43,16 +43,19 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 		}
 
 		/** The value of the "base" URI. */
-		private String base;
+		private ScopedProperty<Reference> base;
 
 		/** Container for string content. */
 		private StringBuilder builder;
+
+		/** Indicates if the string content must be consumed. */
+		private boolean consumeContent;
 
 		/** Current data type. */
 		private String currentDataType;
 
 		/** Current language. */
-		private String currentLanguage;
+		private ScopedProperty<Language> language;
 
 		/** Current object. */
 		private Object currentObject;
@@ -102,24 +105,29 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 				Representation representation) {
 			super();
 			this.graphHandler = graphHandler;
+			this.base = new ScopedProperty<Reference>();
+			this.language = new ScopedProperty<Language>();
 			if (representation.getIdentifier() != null) {
-				this.base = representation.getIdentifier().toString(true, true);
+				this.base.add(representation.getIdentifier().getTargetRef());
+				this.base.incrDepth();
 			}
-
+			if (representation.getLanguages().size() == 1) {
+				this.language.add(representation.getLanguages().get(1));
+				this.language.incrDepth();
+			}
 		}
 
 		@Override
 		public void characters(char[] ch, int start, int length)
 				throws SAXException {
-			if (getCurrentState() == State.LITERAL
-					|| getCurrentState() == State.PREDICATE) {
+			if (consumeContent) {
 				builder.append(ch, start, length);
 			}
 		}
 
 		/**
-		 * Returns true of the given qualified name is in the RDF namespace and
-		 * is equals to the given local name.
+		 * Returns true if the given qualified name is in the RDF namespace and
+		 * is equal to the given local name.
 		 * 
 		 * @param localName
 		 *            The local name to compare to.
@@ -150,6 +158,7 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 			this.states = null;
 			this.subjects.clear();
 			this.subjects = null;
+			this.nodeDepth = 0;
 		}
 
 		@Override
@@ -160,15 +169,20 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 			if (state == State.SUBJECT) {
 				popSubject();
 			} else if (state == State.PREDICATE) {
-				link(getCurrentSubject(), this.currentPredicate, getLiteral(
-						builder.toString(), null, this.currentLanguage));
+				if (this.consumeContent) {
+					link(getCurrentSubject(), this.currentPredicate,
+							getLiteral(builder.toString(), null, this.language
+									.getValue()));
+					this.consumeContent = false;
+				}
 			} else if (state == State.OBJECT) {
 			} else if (state == State.LITERAL) {
 				if (nodeDepth == 0) {
 					// End of the XML literal
 					link(getCurrentSubject(), this.currentPredicate,
 							getLiteral(builder.toString(),
-									this.currentDataType, this.currentLanguage));
+									this.currentDataType, this.language
+											.getValue()));
 				} else {
 					// Still gleaning the content of an XML literal
 					// Glean the XML content
@@ -181,6 +195,8 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 					pushState(state);
 				}
 			}
+			this.base.decrDepth();
+			this.language.decrDepth();
 		}
 
 		@Override
@@ -232,59 +248,15 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 		 * @return A Literal object
 		 */
 		private Literal getLiteral(String value, String datatype,
-				String language) {
+				Language language) {
 			Literal literal = new Literal(value);
 			if (datatype != null) {
 				literal.setDatatypeRef(new Reference(datatype));
 			}
 			if (language != null) {
-				literal.setLanguage(Language.valueOf(language));
+				literal.setLanguage(language);
 			}
 			return literal;
-		}
-
-		/**
-		 * Returns the absolute reference of a parsed element according to its
-		 * URI, local name and name.
-		 * 
-		 * @param uri
-		 *            The URI (maybe null) of the parsed element.
-		 * @param localName
-		 *            The local name of the parsed element.
-		 * @param name
-		 *            The (maybe qualified name of the parsed element.
-		 * @return Returns the absolute reference of a parsed element.
-		 */
-		private Reference getReference(String uri, String localName, String name) {
-			Reference result = null;
-
-			if (uri != null) {
-				StringBuilder base = new StringBuilder();
-				if (new Reference(uri).isRelative()) {
-					base.append(this.base).append(uri);
-				} else {
-					base.append(uri);
-				}
-				if (localName != null) {
-					result = new Reference(base.append(localName).toString());
-				} else {
-					result = new Reference(base.toString());
-				}
-			} else if (name != null) {
-				int index = name.indexOf(":");
-				if (index != -1) {
-					// Get the prefix and return the URI.
-					String prefix = name.substring(0, index);
-					if (this.prefixes.containsKey(prefix)) {
-						result = new Reference(this.prefixes.get(prefix)
-								+ name.substring(index + 1));
-					}
-				}
-			} else {
-				result = new Reference(this.base + localName);
-			}
-
-			return result;
 		}
 
 		/**
@@ -378,21 +350,25 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 			// Stores the arcs
 			List<String[]> arcs = new ArrayList<String[]>();
 			boolean found = false;
+			if (attributes.getIndex("xml:base") != -1) {
+				this.base.add(new Reference(attributes.getValue("xml:base")));
+			}
 			// Get the RDF URI of this node
 			for (int i = 0; i < attributes.getLength(); i++) {
 				String qName = attributes.getQName(i);
 				if (checkRdfQName("about", qName)) {
 					found = true;
-					result = getReference(attributes.getValue(i), null, null);
+					result = resolve(attributes.getValue(i), false);
 				} else if (checkRdfQName("nodeID", qName)) {
 					found = true;
 					result = LinkReference.createBlank(attributes.getValue(i));
 				} else if (checkRdfQName("ID", qName)) {
 					found = true;
-					result = getReference(null, "#" + attributes.getValue(i),
-							null);
+					result = resolve(attributes.getValue(i), true);
 				} else if ("xml:lang".equals(qName)) {
-					this.currentLanguage = attributes.getValue(i);
+					this.language.add(Language.valueOf(attributes.getValue(i)));
+				} else if ("xml:base".equals(qName)) {
+					// Already stored
 				} else {
 					if (!qName.startsWith("xmlns")) {
 						String[] arc = { qName, attributes.getValue(i) };
@@ -410,12 +386,11 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 			if (!checkRdfQName("Description", name)) {
 				// Handle typed node
 				this.graphHandler.link(result, RdfConstants.PREDICATE_TYPE,
-						getReference(uri, localName, name));
+						resolve(uri, name));
 			}
 			for (String[] arc : arcs) {
-				this.graphHandler.link(result,
-						getReference(null, null, arc[0]), getLiteral(arc[1],
-								null, this.currentLanguage));
+				this.graphHandler.link(result, resolve(null, arc[0]),
+						getLiteral(arc[1], null, this.language.getValue()));
 			}
 
 			return result;
@@ -475,6 +450,73 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 			this.subjects.add(subject);
 		}
 
+		/**
+		 * Returns the absolute reference for a given value. If this value is
+		 * not an absolute URI, then the base URI is used.
+		 * 
+		 * @param value
+		 *            The value.
+		 * @param fragment
+		 *            True if the value is a fragment to add to the base
+		 *            reference.
+		 * @return Returns the absolute reference for a given value.
+		 */
+		private Reference resolve(String value, boolean fragment) {
+			Reference result = null;
+
+			if (fragment) {
+				result = new Reference(this.base.getValue());
+				result.setFragment(value);
+			} else {
+				result = new Reference(value);
+				if (result.isRelative()) {
+					result = new Reference(this.base.getValue(), value);
+				}
+			}
+			return result.getTargetRef();
+		}
+
+		/**
+		 * Returns the absolute reference of a parsed element according to its
+		 * URI, qualified name. In case the base URI is null or empty, then an
+		 * attempt is made to look for the mapped URI according to the qName.
+		 * 
+		 * @param uri
+		 *            The base URI.
+		 * @param qName
+		 *            The qualified name of the parsed element.
+		 * @return Returns the absolute reference of a parsed element.
+		 */
+		private Reference resolve(String uri, String qName) {
+			Reference result = null;
+
+			int index = qName.indexOf(":");
+			String prefix = null;
+			String localName = null;
+			if (index != -1) {
+				prefix = qName.substring(0, index);
+				localName = qName.substring(index + 1);
+			} else {
+				localName = qName;
+				prefix = "";
+			}
+
+			if (uri != null && !"".equals(uri)) {
+				if (!uri.endsWith("#") && !uri.endsWith("/")) {
+					result = new Reference(uri + "/" + localName);
+				} else {
+					result = new Reference(uri + localName);
+				}
+			} else {
+				String baseUri = this.prefixes.get(prefix);
+				if (baseUri != null) {
+					result = new Reference(baseUri + localName);
+				}
+			}
+
+			return (result == null) ? null : result.getTargetRef();
+		}
+
 		@Override
 		public void startDocument() throws SAXException {
 			this.prefixes = new HashMap<String, String>();
@@ -488,18 +530,18 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 		@Override
 		public void startElement(String uri, String localName, String name,
 				Attributes attributes) throws SAXException {
-
 			State state = getCurrentState();
-			if (state != State.LITERAL && this.builder.length() > 0) {
-				// Reset the gleaner of text content.
-				this.builder = new StringBuilder();
+			this.base.incrDepth();
+			this.language.incrDepth();
+			if (!this.consumeContent && this.builder != null) {
+				this.builder = null;
 			}
 			if (state == State.NONE) {
 				if (checkRdfQName("RDF", name)) {
 					// Top element
 					String base = attributes.getValue("xml:base");
 					if (base != null) {
-						this.base = base;
+						this.base.add(new Reference(base));
 					}
 				} else {
 					// Parse the current subject
@@ -507,26 +549,30 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 					pushState(State.SUBJECT);
 				}
 			} else if (state == State.SUBJECT) {
-				List<String[]> arcs = new ArrayList<String[]>();
 				// Parse the current predicate
+				List<String[]> arcs = new ArrayList<String[]>();
 				pushState(State.PREDICATE);
-				this.currentPredicate = getReference(uri, localName, name);
+				this.consumeContent = true;
+				Reference currentSubject = getCurrentSubject();
+				this.currentPredicate = resolve(uri, name);
+				Reference currentObject = null;
 				for (int i = 0; i < attributes.getLength(); i++) {
 					String qName = attributes.getQName(i);
 					if (checkRdfQName("resource", qName)) {
-						this.graphHandler.link(getCurrentSubject(),
-								this.currentPredicate, getReference(attributes
-										.getValue(i), null, null));
+						this.consumeContent = false;
+						currentObject = resolve(attributes.getValue(i), false);
 						popState();
 						pushState(State.OBJECT);
 					} else if (checkRdfQName("datatype", qName)) {
 						// The object is a literal
+						this.consumeContent = true;
 						popState();
 						pushState(State.LITERAL);
 						this.currentDataType = attributes.getValue(i);
 					} else if (checkRdfQName("parseType", qName)) {
 						String value = attributes.getValue(i);
 						if ("Literal".equals(value)) {
+							this.consumeContent = true;
 							// The object is an XML literal
 							popState();
 							pushState(State.LITERAL);
@@ -534,26 +580,30 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 									+ "XMLLiteral";
 							nodeDepth = 0;
 						} else if ("Resource".equals(value)) {
+							this.consumeContent = false;
 							// Create a new blank node
-							Reference ref = LinkReference
+							currentObject = LinkReference
 									.createBlank(ContentReader.newBlankNodeId());
-							this.graphHandler.link(getCurrentSubject(),
-									this.currentPredicate, ref);
 							popState();
-							pushSubject(ref);
+							pushState(State.SUBJECT);
+							pushSubject(currentObject);
 						} else {
+							this.consumeContent = false;
 							// Error
 						}
 					} else if (checkRdfQName("nodeID", qName)) {
-						this.graphHandler.link(getCurrentSubject(),
-								this.currentPredicate, LinkReference
-										.createBlank(attributes.getValue(i)));
+						this.consumeContent = false;
+						currentObject = LinkReference.createBlank(attributes
+								.getValue(i));
+						popState();
+						pushState(State.SUBJECT);
+						pushSubject(currentObject);
 					} else if (checkRdfQName("ID", qName)) {
 						// Reify the statement
-						reifiedRef = getReference(null, "#"
-								+ attributes.getValue(i), null);
+						reifiedRef = resolve(attributes.getValue(i), true);
 					} else if ("xml:lang".equals(qName)) {
-						this.currentLanguage = attributes.getValue(i);
+						this.language.add(Language.valueOf(attributes
+								.getValue(i)));
 					} else {
 						if (!qName.startsWith("xmlns")) {
 							// Add arcs.
@@ -562,30 +612,44 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 						}
 					}
 				}
+				if (currentObject != null) {
+					link(currentSubject, this.currentPredicate, currentObject);
+				}
 
 				if (!arcs.isEmpty()) {
 					// Create arcs that starts from a blank node and ends to
 					// literal values. This blank node is the object of the
 					// current statement.
+
+					boolean found = false;
 					Reference blankNode = LinkReference
 							.createBlank(ContentReader.newBlankNodeId());
-					this.graphHandler.link(getCurrentSubject(),
-							this.currentPredicate, blankNode);
 					for (String[] arc : arcs) {
-						this.graphHandler.link(blankNode, getReference(null,
-								null, arc[0]), new Literal(arc[1]));
+						Reference pRef = resolve(null, arc[0]);
+						// Silently remove unrecognized attributes
+						if (pRef != null) {
+							found = true;
+							this.graphHandler.link(blankNode, pRef,
+									new Literal(arc[1]));
+						}
 					}
-					popState();
-					pushState(State.OBJECT);
+					if (found) {
+						link(currentSubject, this.currentPredicate, blankNode);
+						popState();
+						pushState(State.OBJECT);
+					}
 				}
-				// TODO Caution, what about the scope of the language attribute?
-				this.currentLanguage = attributes.getValue("xml:lang");
+				if (this.consumeContent) {
+					builder = new StringBuilder();
+				}
 			} else if (state == State.PREDICATE) {
+				this.consumeContent = false;
 				// Parse the current object, create the current link
 				Reference object = parseNode(uri, localName, name, attributes);
 				this.currentObject = object;
 				link();
 				pushSubject(object);
+				pushState(State.SUBJECT);
 			} else if (state == State.OBJECT) {
 			} else if (state == State.LITERAL) {
 				// Glean the XML content
@@ -605,9 +669,100 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 					|| ((prefix == null || "".equals(prefix)
 							&& RdfConstants.RDF_SYNTAX.toString(true, true)
 									.equals(uri)));
-			this.prefixes.put(prefix, uri);
+
+			if (!uri.endsWith("#") && !uri.endsWith("/")) {
+				this.prefixes.put(prefix, uri + "/");
+			} else {
+				this.prefixes.put(prefix, uri);
+			}
+		}
+	}
+
+	/**
+	 * Used to handle properties that have a scope such as the base URI, the
+	 * xml:lang property.
+	 * 
+	 * @param <E>
+	 *            The type of the property.
+	 */
+	private static class ScopedProperty<E> {
+		private int[] depths;
+		private List<E> values;
+		private int size;
+
+		/**
+		 * Constructor.
+		 */
+		public ScopedProperty() {
+			super();
+			this.depths = new int[10];
+			this.values = new ArrayList<E>();
+			this.size = 0;
 		}
 
+		/**
+		 * Constructor.
+		 * 
+		 * @param value
+		 *            Value.
+		 */
+		public ScopedProperty(E value) {
+			this();
+			add(value);
+			incrDepth();
+		}
+
+		/**
+		 * Add a new value.
+		 * 
+		 * @param value
+		 *            The value to be added.
+		 */
+		public void add(E value) {
+			this.values.add(value);
+			if (this.size == this.depths.length) {
+				int[] temp = new int[2 * this.depths.length];
+				System.arraycopy(this.depths, 0, temp, 0, this.depths.length);
+				this.depths = temp;
+			}
+			this.size++;
+			this.depths[size - 1] = 0;
+		}
+
+		/**
+		 * Decrements the depth of the current value, and remove it if
+		 * necessary.
+		 */
+		public void decrDepth() {
+			if (this.size > 0) {
+				this.depths[size - 1]--;
+				if (this.depths[size - 1] < 0) {
+					this.size--;
+					this.values.remove(size);
+				}
+			}
+		}
+
+		/**
+		 * Returns the current value.
+		 * 
+		 * @return The current value.
+		 */
+		public E getValue() {
+			if (this.size > 0) {
+				return this.values.get(this.size - 1);
+			}
+			return null;
+		}
+
+		/**
+		 * Increments the depth of the current value.
+		 */
+		public void incrDepth() {
+			if (this.size > 0) {
+				this.depths[size - 1]++;
+			}
+		}
 	}
 
 	/** The set of links to update when parsing, or to read when writing. */
@@ -645,22 +800,30 @@ public class RdfXmlParsingContentHandler extends GraphHandler {
 
 	@Override
 	public void link(Graph source, Reference typeRef, Literal target) {
-		this.linkSet.add(source, typeRef, target);
+		if (source != null && typeRef != null && target != null) {
+			this.linkSet.add(source, typeRef, target);
+		}
 	}
 
 	@Override
 	public void link(Graph source, Reference typeRef, Reference target) {
-		this.linkSet.add(source, typeRef, target);
+		if (source != null && typeRef != null && target != null) {
+			this.linkSet.add(source, typeRef, target);
+		}
 	}
 
 	@Override
 	public void link(Reference source, Reference typeRef, Literal target) {
-		this.linkSet.add(source, typeRef, target);
+		if (source != null && typeRef != null && target != null) {
+			this.linkSet.add(source, typeRef, target);
+		}
 	}
 
 	@Override
 	public void link(Reference source, Reference typeRef, Reference target) {
-		this.linkSet.add(source, typeRef, target);
+		if (source != null && typeRef != null && target != null) {
+			this.linkSet.add(source, typeRef, target);
+		}
 	}
 
 	/**
