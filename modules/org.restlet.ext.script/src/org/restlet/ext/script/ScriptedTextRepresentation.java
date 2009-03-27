@@ -139,7 +139,12 @@ public class ScriptedTextRepresentation extends WriterRepresentation {
      * @param defaultScriptEngineName
      *            The default script engine name to be used if none is specified
      * @param allowCompilation
-     *            Whether to try to compile the script
+     *            Whether or not compilation is attempted for script engines
+     *            that support it (this is usually undesirable, but you mat want
+     *            this is you will be re-using the embedded script accessed via
+     *            {@link #getEmbeddedScript()})
+     * @param scriptEngineManager
+     *            The script engine manager
      * @throws ScriptException
      */
     public ScriptedTextRepresentation(MediaType mediaType, String text,
@@ -160,10 +165,10 @@ public class ScriptedTextRepresentation extends WriterRepresentation {
     }
 
     /**
-     * The script context controller to be used when the {@link EmbeddedScript}
-     * instance is run during {@link #write(Writer)}.
+     * The optional script context controller to be used when the
+     * {@link EmbeddedScript} instance is run during {@link #write(Writer)}.
      * 
-     * @return The script context controller
+     * @return The script context controller or null if none used
      */
     public ScriptContextController getScriptContextController() {
         return this.scriptContextController;
@@ -171,7 +176,7 @@ public class ScriptedTextRepresentation extends WriterRepresentation {
 
     /**
      * @param scriptContextController
-     *            The script context controller
+     *            The script context controller or null if none used
      * @see #getScriptContextController()
      */
     public void setScriptContextController(

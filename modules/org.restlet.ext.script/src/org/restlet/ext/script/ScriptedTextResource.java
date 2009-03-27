@@ -388,7 +388,7 @@ public class ScriptedTextResource extends Resource {
      * "org.restlet.ext.script.ScriptedTextResource.scriptContextController" in
      * the application's {@link Context}.
      * 
-     * @return The script context controller
+     * @return The script context controller or null if none used
      */
     public ScriptContextController getScriptContextController() {
         if (this.scriptContextController == null) {
