@@ -79,12 +79,12 @@ import com.threecrickets.scripturian.ScriptSource;
  * script to determine output characteristics at any time by changing the values
  * of container.mediaType, container.characterSet, and container.language (see
  * below).</li>
- * <li>Streaming mode: RepresentableString is sent to the client <i>while</i>
- * the script runs. This is recommended for scripts that need to output a very
- * large amount of string, which might take a long time, or that might otherwise
- * encounter slow-downs while running. In either case, you want the client to
- * receive ongoing output. The output of the script is not cached, and the value
- * of script.cacheDuration is reset to 0. To enter streaming mode, call
+ * <li>Streaming mode: Output is sent to the client <i>while</i> the script
+ * runs. This is recommended for scripts that need to output a very large amount
+ * of string, which might take a long time, or that might otherwise encounter
+ * slow-downs while running. In either case, you want the client to receive
+ * ongoing output. The output of the script is not cached, and the value of
+ * script.cacheDuration is reset to 0. To enter streaming mode, call
  * container.stream() (see below for details). Note that you must determine
  * output characteristics (container.mediaType, container.characterSet, and
  * container.language) <i>before</i> entering streaming mode. Trying to change
