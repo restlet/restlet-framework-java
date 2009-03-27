@@ -90,27 +90,6 @@ public abstract class UniformResource {
     private volatile Response response;
 
     /**
-     * Default constructor.
-     */
-    public UniformResource() {
-        this(null, null, null);
-    }
-
-    /**
-     * Constructor.
-     * 
-     * @param context
-     *            The current context.
-     * @param request
-     *            The handled request.
-     * @param response
-     *            The handled response.
-     */
-    public UniformResource(Context context, Request request, Response response) {
-        init(context, request, response);
-    }
-
-    /**
      * Returns the set of methods allowed for the current client by the
      * resource. The result can vary based on the client's user agent,
      * authentication and authorization data provided by the client.

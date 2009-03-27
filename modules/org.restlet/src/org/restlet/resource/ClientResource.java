@@ -138,6 +138,20 @@ public class ClientResource extends UniformResource {
      * Constructor.
      * 
      * @param context
+     *            The current context.
+     * @param request
+     *            The handled request.
+     * @param response
+     *            The handled response.
+     */
+    public ClientResource(Context context, Request request, Response response) {
+        init(context, request, response);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param context
      *            The context.
      * @param uri
      *            The target URI.
@@ -167,7 +181,7 @@ public class ClientResource extends UniformResource {
      *            The target reference.
      */
     public ClientResource(Method method, Reference reference) {
-        this(null, method, reference);
+        this(Context.getCurrent(), method, reference);
     }
 
     /**
@@ -179,7 +193,7 @@ public class ClientResource extends UniformResource {
      *            The target URI.
      */
     public ClientResource(Method method, String uri) {
-        this(null, method, uri);
+        this(Context.getCurrent(), method, uri);
     }
 
     /**
@@ -191,7 +205,7 @@ public class ClientResource extends UniformResource {
      *            The target URI.
      */
     public ClientResource(Method method, URI uri) {
-        this(null, method, uri);
+        this(Context.getCurrent(), method, uri);
     }
 
     /**
@@ -201,7 +215,19 @@ public class ClientResource extends UniformResource {
      *            The target reference.
      */
     public ClientResource(Reference reference) {
-        this(null, null, reference);
+        this(Context.getCurrent(), null, reference);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param request
+     *            The handled request.
+     * @param response
+     *            The handled response.
+     */
+    public ClientResource(Request request, Response response) {
+        init(Context.getCurrent(), request, response);
     }
 
     /**
@@ -211,7 +237,7 @@ public class ClientResource extends UniformResource {
      *            The target URI.
      */
     public ClientResource(String uri) {
-        this(null, null, uri);
+        this(Context.getCurrent(), null, uri);
     }
 
     /**
@@ -221,7 +247,7 @@ public class ClientResource extends UniformResource {
      *            The target URI.
      */
     public ClientResource(URI uri) {
-        this(null, null, uri);
+        this(Context.getCurrent(), null, uri);
     }
 
     /**

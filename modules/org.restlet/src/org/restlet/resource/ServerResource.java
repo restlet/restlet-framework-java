@@ -90,28 +90,11 @@ public class ServerResource extends UniformResource {
     }
 
     /**
-     * Special constructor used by IoC frameworks. Note that the
-     * {@link #init(Context, Request, Response)}() method MUST be invoked right
-     * after the creation of the handler in order to keep a behavior consistent
-     * with the normal {@link #ServerResource(Context, Request, Response)}
-     * constructor.
+     * Default constructor. Note that the
+     * {@link #init(Context, Request, Response)}() method will be invoked right
+     * after the creation of the resource.
      */
     public ServerResource() {
-    }
-
-    /**
-     * Normal constructor. This constructor will invoke the
-     * {@link #init(Context, Request, Response)} method by default.
-     * 
-     * @param context
-     *            The parent context.
-     * @param request
-     *            The request to handle.
-     * @param response
-     *            The response to return.
-     */
-    public ServerResource(Context context, Request request, Response response) {
-        init(context, request, response);
     }
 
     /**
