@@ -69,9 +69,48 @@ public abstract class RepresentationInfo extends Variant {
      *            The media type.
      */
     public RepresentationInfo(MediaType mediaType) {
+        this(mediaType, null, null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param mediaType
+     *            The media type.
+     * @param modificationDate
+     *            The modification date.
+     */
+    public RepresentationInfo(MediaType mediaType, Date modificationDate) {
+        this(mediaType, modificationDate, null);
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param mediaType
+     *            The media type.
+     * @param modificationDate
+     *            The modification date.
+     * @param tag
+     *            The tag.
+     */
+    public RepresentationInfo(MediaType mediaType, Date modificationDate,
+            Tag tag) {
         super(mediaType);
-        this.modificationDate = null;
-        this.tag = null;
+        this.modificationDate = modificationDate;
+        this.tag = tag;
+    }
+
+    /**
+     * Constructor.
+     * 
+     * @param mediaType
+     *            The media type.
+     * @param tag
+     *            The tag.
+     */
+    public RepresentationInfo(MediaType mediaType, Tag tag) {
+        this(mediaType, null, tag);
     }
 
     /**
